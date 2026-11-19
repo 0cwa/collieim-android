@@ -22,6 +22,7 @@ import android.database.Cursor
 import android.media.MediaDataSource
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.core.content.contentValuesOf
 import com.bumptech.glide.Glide
 import okio.ByteString
@@ -492,6 +493,55 @@ class AttachmentTable(
       .readToList { it.readAttachments() }
       .flatten()
       .firstOrNull()
+  }
+
+  data class UploadCandidate(val attachment: DatabaseAttachment, val info: DataFileInfo?, val filePath: String?, val random: ByteArray?)
+
+  private fun readUploadCandidate(db: SupportSQLiteDatabase, id: AttachmentId): UploadCandidate? {
+    val attachment = db.select(*PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readAttachment() } ?: return null
+    val raw = db.select(DATA_FILE, DATA_RANDOM).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.requireString(DATA_FILE) to it.requireBlob(DATA_RANDOM) } ?: return null
+    val info = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
+    return UploadCandidate(attachment, info, raw.first, raw.second)
+  }
+
+  private fun candidateMatches(db: SupportSQLiteDatabase, candidate: UploadCandidate): Boolean {
+    val old = candidate.attachment
+    val current = readUploadCandidate(db, old.attachmentId) ?: return false
+    val row = current.attachment
+    return current.filePath == candidate.filePath && current.random.contentEquals(candidate.random) &&
+      row.remoteLocation == old.remoteLocation && row.remoteKey == old.remoteKey && row.dataHash == old.dataHash &&
+      row.remoteDigest.contentEquals(old.remoteDigest) && row.incrementalDigest.contentEquals(old.incrementalDigest) &&
+      row.incrementalMacChunkSize == old.incrementalMacChunkSize && row.uploadTimestamp == old.uploadTimestamp && row.cdn == old.cdn &&
+      row.size == old.size && row.transferState == old.transferState && row.archiveTransferState == old.archiveTransferState &&
+      row.archiveCdn == old.archiveCdn && row.archiveThumbnailTransferState == old.archiveThumbnailTransferState &&
+      row.contentType == old.contentType && row.fileName == old.fileName && row.caption == old.caption && row.uuid == old.uuid &&
+      row.width == old.width && row.height == old.height && row.voiceNote == old.voiceNote && row.borderless == old.borderless && row.videoGif == old.videoGif &&
+      row.transformProperties?.serialize() == old.transformProperties?.serialize() && row.getVisualHashStringOrNull() == old.getVisualHashStringOrNull() &&
+      current.info?.thumbnailFile == candidate.info?.thumbnailFile && current.info?.thumbnailRandom.contentEquals(candidate.info?.thumbnailRandom) &&
+      current.info?.thumbnailRestoreState == candidate.info?.thumbnailRestoreState && current.info?.metadataId == candidate.info?.metadataId
+  }
+
+  /** Stable submission ownership excludes only transfer state, which onAdded itself changes. */
+  fun uploadOwnerToken(candidate: UploadCandidate): String {
+    val row = candidate.attachment
+    val values = org.json.JSONArray().put("attachment-owner-v1")
+    fun add(value: Any?) { values.put(value ?: org.json.JSONObject.NULL) }
+    fun bytes(value: ByteArray?): String? = value?.let { Base64.encodeWithPadding(it) }
+    add(candidate.filePath); add(bytes(candidate.random)); add(row.remoteLocation); add(row.remoteKey); add(row.dataHash)
+    add(bytes(row.remoteDigest)); add(bytes(row.incrementalDigest)); add(row.incrementalMacChunkSize); add(row.uploadTimestamp); add(row.cdn.serialize())
+    add(row.size); add(row.archiveTransferState.value); add(row.archiveCdn); add(row.archiveThumbnailTransferState.value)
+    add(row.contentType); add(row.fileName); add(row.caption); add(row.uuid?.toString()); add(row.width); add(row.height)
+    add(row.voiceNote); add(row.borderless); add(row.videoGif); add(row.transformProperties?.serialize()); add(row.getVisualHashStringOrNull())
+    add(candidate.info?.thumbnailFile); add(bytes(candidate.info?.thumbnailRandom)); add(candidate.info?.thumbnailRestoreState); add(candidate.info?.metadataId)
+    return Base64.encodeWithPadding(MessageDigest.getInstance("SHA-256").digest(values.toString().toByteArray(Charsets.UTF_8)))
+  }
+
+  /** Read upload metadata and its optional local version in one database snapshot. */
+  fun getUploadCandidate(id: AttachmentId): UploadCandidate? = readableDatabase.withinTransaction { db -> readUploadCandidate(db, id) }
+
+  fun getUploadSource(id: AttachmentId): Pair<DatabaseAttachment, DataFileInfo>? {
+    val candidate = getUploadCandidate(id) ?: return null
+    return candidate.info?.let { candidate.attachment to it }
   }
 
   fun getAttachmentWithMetadata(attachmentId: AttachmentId): DatabaseAttachment? {
@@ -1120,7 +1170,7 @@ class AttachmentTable(
       writableDatabase
         .update(TABLE_NAME)
         .values(ARCHIVE_TRANSFER_STATE to state.value)
-        .where("$DATA_FILE = ?", dataFile)
+        .where("$DATA_FILE = ? AND $REMOTE_KEY = ? AND $DATA_HASH_END = ?", dataFile, remoteKey, plaintextHash)
         .run()
     }
 
@@ -1179,6 +1229,51 @@ class AttachmentTable(
     }
 
     AppDependencies.databaseObserver.notifyAttachmentUpdatedObservers()
+  }
+
+  fun markArchivePendingIfEligible(id: AttachmentId, state: ArchiveTransferState): Boolean {
+    require(state == ArchiveTransferState.UPLOAD_IN_PROGRESS || state == ArchiveTransferState.COPY_PENDING)
+    return writableDatabase.withinTransaction { db ->
+      val path = db.select(DATA_FILE).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.requireString(DATA_FILE) } ?: return@withinTransaction false
+      val allowed = if (state == ArchiveTransferState.UPLOAD_IN_PROGRESS) "${ArchiveTransferState.NONE.value}" else "${ArchiveTransferState.NONE.value},${ArchiveTransferState.UPLOAD_IN_PROGRESS.value}"
+      db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$DATA_FILE = ? AND $ARCHIVE_TRANSFER_STATE IN ($allowed)", path).run() > 0
+    }
+  }
+
+  /** Bind remote-only or local archive decisions to their captured identity. */
+  fun archiveCandidateUnchanged(candidate: UploadCandidate): Boolean = readableDatabase.withinTransaction { db -> candidateMatches(db, candidate) }
+
+  fun setArchiveStateIfCandidateUnchanged(candidate: UploadCandidate, state: ArchiveTransferState): Boolean = writableDatabase.withinTransaction { db ->
+    if (!candidateMatches(db, candidate) || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
+      candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE) return@withinTransaction false
+    db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$ID = ?", candidate.attachment.attachmentId.id).run() == 1
+  }
+
+  /** Update archive state only for the source version captured by this job. */
+  fun setArchiveStateIfSourceUnchanged(id: AttachmentId, source: DataFileInfo, state: ArchiveTransferState): Boolean {
+    val updated = writableDatabase.withinTransaction { db ->
+      val current = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
+      if (current == null || current.file != source.file || !current.random.contentEquals(source.random)) return@withinTransaction false
+      val randomHex = source.random.joinToString("") { "%02X".format(it.toInt() and 0xff) }
+      db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value)
+        .where("$DATA_FILE = ? AND hex($DATA_RANDOM) = ? AND $ARCHIVE_TRANSFER_STATE NOT IN (?, ?)", source.file.absolutePath, randomHex, ArchiveTransferState.PERMANENT_FAILURE.value, ArchiveTransferState.FINISHED.value).run() > 0
+    }
+    if (updated) AppDependencies.databaseObserver.notifyAttachmentUpdatedObservers()
+    return updated
+  }
+
+  /** A failed old copy must not update a row that now refers to other media. */
+  fun setArchiveTransferStateFailureForIdentity(id: AttachmentId, remoteKey: String, plaintextHash: String, state: ArchiveTransferState): Boolean {
+    val updated = writableDatabase.withinTransaction { db ->
+      val path = db.select(DATA_FILE).from(TABLE_NAME)
+        .where("$ID = ? AND $REMOTE_KEY = ? AND $DATA_HASH_END = ?", id.id, remoteKey, plaintextHash)
+        .run().readToSingleObject { it.requireString(DATA_FILE) } ?: return@withinTransaction false
+      db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value)
+        .where("$ARCHIVE_TRANSFER_STATE NOT IN (?, ?) AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $DATA_HASH_END = ?", ArchiveTransferState.PERMANENT_FAILURE.value, ArchiveTransferState.FINISHED.value, path, remoteKey, plaintextHash)
+        .run() > 0
+    }
+    if (updated) AppDependencies.databaseObserver.notifyAttachmentUpdatedObservers()
+    return updated
   }
 
   /**
@@ -1926,6 +2021,51 @@ class AttachmentTable(
     notifyConversationListeners(threadId)
   }
 
+  fun markTransferStateIfOwnerMatches(id: AttachmentId, token: String, state: Int): Boolean {
+    require(state == TRANSFER_PROGRESS_STARTED || state == TRANSFER_PROGRESS_FAILED)
+    val updated = writableDatabase.withinTransaction { db ->
+      val current = readUploadCandidate(db, id) ?: return@withinTransaction false
+      if (uploadOwnerToken(current) != token) return@withinTransaction false
+      db.update(TABLE_NAME).values(TRANSFER_STATE to state)
+        .where("$ID = ? AND $TRANSFER_STATE != ? AND $TRANSFER_STATE != ?", id.id, TRANSFER_PROGRESS_DONE, TRANSFER_PROGRESS_PERMANENT_FAILURE).run() == 1
+    }
+    if (updated) getAttachment(id)?.let { notifyConversationListeners(messages.getThreadIdForMessage(it.mmsId)) }
+    return updated
+  }
+
+  fun markTransferStartedIfOwned(id: AttachmentId, path: String, random: ByteArray): Boolean {
+    val updated = writableDatabase.withinTransaction { db ->
+      val current = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
+      if (current == null || current.file.absolutePath != path || !current.random.contentEquals(random)) return@withinTransaction false
+      db.update(TABLE_NAME).values(TRANSFER_STATE to TRANSFER_PROGRESS_STARTED)
+        .where("$ID = ? AND $TRANSFER_STATE != ? AND $TRANSFER_STATE != ?", id.id, TRANSFER_PROGRESS_DONE, TRANSFER_PROGRESS_PERMANENT_FAILURE).run() == 1
+    }
+    if (updated) getAttachment(id)?.let { notifyConversationListeners(messages.getThreadIdForMessage(it.mmsId)) }
+    return updated
+  }
+
+  fun markTransferFailedIfSourceUnchanged(id: AttachmentId, source: DataFileInfo): Boolean {
+    val updated = writableDatabase.withinTransaction { db ->
+      val current = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
+      if (current == null || current.file != source.file || !current.random.contentEquals(source.random)) return@withinTransaction false
+      db.update(TABLE_NAME).values(TRANSFER_STATE to TRANSFER_PROGRESS_FAILED)
+        .where("$ID = ? AND $TRANSFER_STATE != ? AND $TRANSFER_STATE < ?", id.id, TRANSFER_PROGRESS_DONE, TRANSFER_PROGRESS_PERMANENT_FAILURE).run() == 1
+    }
+    if (updated) getAttachment(id)?.let { notifyConversationListeners(messages.getThreadIdForMessage(it.mmsId)) }
+    return updated
+  }
+
+  /** Reuse only if both optional local version and remote object still match. */
+  fun markUploadedIfUnchanged(candidate: UploadCandidate): Boolean {
+    val captured = candidate.attachment
+    val updated = writableDatabase.withinTransaction { db ->
+      if (!candidateMatches(db, candidate) || captured.transferState == TRANSFER_PROGRESS_PERMANENT_FAILURE) return@withinTransaction false
+      db.update(TABLE_NAME).values(TRANSFER_STATE to TRANSFER_PROGRESS_DONE).where("$ID = ?", captured.attachmentId.id).run() == 1
+    }
+    if (updated) notifyConversationListeners(messages.getThreadIdForMessage(captured.mmsId))
+    return updated
+  }
+
   fun setTransferProgressFailed(attachmentId: AttachmentId, mmsId: Long) {
     writableDatabase
       .update(TABLE_NAME)
@@ -2111,6 +2251,16 @@ class AttachmentTable(
       .values(DATA_SIZE to length)
       .where("$DATA_FILE = ?", dataFile.file.absolutePath)
       .run()
+  }
+
+  /** Repair only the initiating candidate; do not update independently changed aliases. */
+  fun repairUploadLengthIfCandidateUnchanged(candidate: UploadCandidate, actualLength: Long): UploadCandidate? {
+    if (actualLength < 0) return null
+    return writableDatabase.withinTransaction { db ->
+      if (!candidateMatches(db, candidate)) return@withinTransaction null
+      val count = db.update(TABLE_NAME).values(DATA_SIZE to actualLength).where("$ID = ?", candidate.attachment.attachmentId.id).run()
+      if (count == 1) readUploadCandidate(db, candidate.attachment.attachmentId) else null
+    }
   }
 
   /**
@@ -2358,6 +2508,35 @@ class AttachmentTable(
 
     if (updateCount <= 0) {
       Log.w(TAG, "[finalizeAttachmentAfterUpload] Failed to update attachment after upload! $id")
+    }
+  }
+
+  /** Finalize the initiating row only while its complete captured identity still matches. */
+  @Throws(IOException::class)
+  fun finalizeAttachmentAfterSnapshotUpload(candidate: UploadCandidate, uploadResult: AttachmentUploadResult, plaintextHash: String): Boolean {
+    return writableDatabase.withinTransaction { db ->
+      if (!candidateMatches(db, candidate) || candidate.attachment.transferState == TRANSFER_PROGRESS_PERMANENT_FAILURE) return@withinTransaction false
+      val terminalArchive = candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED || candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE
+      if (terminalArchive && (candidate.attachment.dataHash != plaintextHash || candidate.attachment.remoteKey != Base64.encodeWithPadding(uploadResult.key))) return@withinTransaction false
+      val values = contentValuesOf(
+        TRANSFER_STATE to TRANSFER_PROGRESS_DONE,
+        CDN_NUMBER to uploadResult.cdnNumber,
+        REMOTE_LOCATION to uploadResult.remoteId.toString(),
+        REMOTE_KEY to Base64.encodeWithPadding(uploadResult.key),
+        REMOTE_DIGEST to uploadResult.digest,
+        REMOTE_INCREMENTAL_DIGEST to uploadResult.incrementalDigest,
+        REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to uploadResult.incrementalDigestChunkSize,
+        DATA_SIZE to uploadResult.dataSize,
+        DATA_HASH_END to plaintextHash,
+        UPLOAD_TIMESTAMP to uploadResult.uploadTimestamp,
+        BLUR_HASH to (uploadResult.blurHash ?: uploadResult.audioHash)
+      )
+      if (!terminalArchive) {
+        values.put(ARCHIVE_TRANSFER_STATE, ArchiveTransferState.NONE.value)
+        values.putNull(ARCHIVE_CDN)
+        values.put(ARCHIVE_THUMBNAIL_TRANSFER_STATE, ArchiveTransferState.NONE.value)
+      }
+      db.update(TABLE_NAME).values(values).where("$ID = ?", candidate.attachment.attachmentId.id).run() == 1
     }
   }
 
@@ -2614,22 +2793,67 @@ class AttachmentTable(
    * Updates the data stored for an existing attachment. This happens after transformations, like transcoding.
    */
   @Throws(MmsException::class, IOException::class)
-  fun updateAttachmentData(
-    databaseAttachment: DatabaseAttachment,
-    mediaStream: MediaStream
-  ) {
+  fun updateAttachmentData(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream): Boolean {
+    val expected = getDataFileInfo(databaseAttachment.attachmentId) ?: throw MmsException("No attachment data found!")
+    return updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, false) {}
+  }
+
+  @Throws(MmsException::class, IOException::class)
+  fun updateAttachmentData(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, expected: DataFileInfo, withFastStart: Boolean): Boolean {
+    return updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, withFastStart) {}
+  }
+
+  @VisibleForTesting
+  internal fun updateAttachmentDataForTest(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, beforePublish: () -> Unit) {
+    updateAttachmentDataInternal(databaseAttachment, mediaStream, getDataFileInfo(databaseAttachment.attachmentId) ?: throw MmsException("No attachment data found!"), false, beforePublish)
+  }
+
+  private fun updateAttachmentDataInternal(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, existingDataFileInfo: DataFileInfo, withFastStart: Boolean, beforePublish: () -> Unit): Boolean {
     val attachmentId = databaseAttachment.attachmentId
-    val existingDataFileInfo: DataFileInfo = getDataFileInfo(attachmentId) ?: throw MmsException("No attachment data found!")
-    val newDataFileInfo: DataFileWriteResult = writeToDataFile(existingDataFileInfo.file, mediaStream.stream, databaseAttachment.transformProperties ?: TransformProperties.empty())
+    // Publish transformed data under a new path. Existing readers retain a stable
+    // file version until the database atomically switches path and random together.
+    val destination = newDataFile(context)
+    val newDataFileInfo = try {
+      writeToDataFile(destination, mediaStream.stream, databaseAttachment.transformProperties ?: TransformProperties.empty())
+    } catch (e: Throwable) {
+      destination.delete()
+      throw e
+    }
 
-    // TODO We don't dedupe here because we're assuming that we should have caught any dupe scenarios on first insert. We could consider doing dupe checks here though.
-
-    writableDatabase.withinTransaction { db ->
+    var published = false
+    try {
+      beforePublish()
+      val updated = writableDatabase.withinTransaction { db ->
+      val current = db.select(DATA_FILE, DATA_RANDOM, TRANSFER_STATE).from(TABLE_NAME).where("$ID = ?", attachmentId.id).run().readToSingleObject {
+        Triple(it.requireString(DATA_FILE), it.requireBlob(DATA_RANDOM), it.requireInt(TRANSFER_STATE))
+      }
+      // An upload may have completed while this compression was running. Do not
+      // replace bytes already finalized by that upload.
+      if (current == null || current.first != existingDataFileInfo.file.absolutePath || current.second == null ||
+          !current.second!!.contentEquals(existingDataFileInfo.random) ||
+          (databaseAttachment.transferState != TRANSFER_PROGRESS_DONE && current.third == TRANSFER_PROGRESS_DONE)) {
+        newDataFileInfo.file.delete()
+        return@withinTransaction false
+      }
+      var transformed = existingDataFileInfo.transformProperties.withSkipTransform()
+      if (withFastStart) transformed = transformed.withMp4FastStart()
       val contentValues = contentValuesOf(
+        TRANSFORM_PROPERTIES to transformed.serialize(),
         DATA_SIZE to newDataFileInfo.length,
         CONTENT_TYPE to mediaStream.mimeType,
         DATA_FILE to newDataFileInfo.file.absolutePath,
-        DATA_RANDOM to newDataFileInfo.random
+        DATA_RANDOM to newDataFileInfo.random,
+        DATA_HASH_END to null,
+        BLUR_HASH to null,
+        TRANSFER_STATE to TRANSFER_PROGRESS_STARTED,
+        REMOTE_LOCATION to null,
+        REMOTE_DIGEST to null,
+        REMOTE_INCREMENTAL_DIGEST to null,
+        REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+        UPLOAD_TIMESTAMP to 0,
+        ARCHIVE_TRANSFER_STATE to ArchiveTransferState.NONE.value,
+        ARCHIVE_CDN to null,
+        ARCHIVE_THUMBNAIL_TRANSFER_STATE to ArchiveTransferState.NONE.value
       )
 
       if (mediaStream.width > 0 && mediaStream.height > 0) {
@@ -2637,12 +2861,19 @@ class AttachmentTable(
         contentValues.put(HEIGHT, mediaStream.height)
       }
 
+      // Other rows may share the old file and may already have uploaded it.
       val updateCount = db.update(TABLE_NAME)
         .values(contentValues)
-        .where("$ID = ? OR $DATA_FILE = ?", attachmentId.id, existingDataFileInfo.file.absolutePath)
+        .where("$ID = ?", attachmentId.id)
         .run()
 
       Log.i(TAG, "[updateAttachmentData] Updated $updateCount rows.")
+      updateCount > 0
+      }
+      published = updated
+      return updated
+    } finally {
+      if (!published) newDataFileInfo.file.delete()
     }
   }
 
@@ -2716,32 +2947,24 @@ class AttachmentTable(
       .readToSingleObject { it.requireString(DATA_FILE) }
   }
 
-  fun markAttachmentAsTransformed(attachmentId: AttachmentId, withFastStart: Boolean) {
-    Log.i(TAG, "[markAttachmentAsTransformed] Marking $attachmentId as transformed. withFastStart: $withFastStart")
-    writableDatabase.withinTransaction { db ->
-      try {
-        val dataInfo = getDataFileInfo(attachmentId)
-        if (dataInfo == null) {
-          Log.w(TAG, "[markAttachmentAsTransformed] Failed to get transformation properties, attachment no longer exists.")
-          return@withinTransaction
-        }
+  @VisibleForTesting
+  fun markAttachmentAsTransformed(id: AttachmentId, withFastStart: Boolean) {
+    getDataFileInfo(id)?.let { markAttachmentAsTransformedIfUnchanged(id, it, withFastStart) }
+  }
 
-        var transformProperties = dataInfo.transformProperties.withSkipTransform()
-        if (withFastStart) {
-          transformProperties = transformProperties.withMp4FastStart()
-        }
+  /** Mark only the source version actually checked by a no-transform path. */
+  fun markAttachmentAsTransformedIfUnchanged(id: AttachmentId, source: DataFileInfo, withFastStart: Boolean): Boolean = writableDatabase.withinTransaction { db ->
+    val current = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
+    if (current == null || current.file != source.file || !current.random.contentEquals(source.random)) return@withinTransaction false
+    var properties = current.transformProperties.withSkipTransform()
+    if (withFastStart) properties = properties.withMp4FastStart()
+    db.update(TABLE_NAME).values(TRANSFORM_PROPERTIES to properties.serialize()).where("$ID = ?", id.id).run() == 1
+  }
 
-        val count = writableDatabase
-          .update(TABLE_NAME)
-          .values(TRANSFORM_PROPERTIES to transformProperties.serialize())
-          .where("$ID = ? OR $DATA_FILE = ?", attachmentId.id, dataInfo.file.absolutePath)
-          .run()
-
-        Log.i(TAG, "[markAttachmentAsTransformed] Updated $count rows.")
-      } catch (e: Exception) {
-        Log.w(TAG, "[markAttachmentAsTransformed] Could not mark attachment as transformed.", e)
-      }
-    }
+  fun writeAudioHashIfUnchanged(id: AttachmentId, source: DataFileInfo, audioWaveForm: AudioWaveFormData?): Boolean = writableDatabase.withinTransaction { db ->
+    val current = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
+    if (current == null || current.file != source.file || !current.random.contentEquals(source.random)) return@withinTransaction false
+    db.update(TABLE_NAME).values(BLUR_HASH to audioWaveForm?.let { AudioHash(it).hash }).where("$ID = ?", id.id).run() == 1
   }
 
   @WorkerThread
@@ -2752,6 +2975,18 @@ class AttachmentTable(
       .values(BLUR_HASH to audioWaveForm?.let { AudioHash(it).hash })
       .where("$ID = ?", attachmentId.id)
       .run()
+  }
+
+  fun isDataFileVersionCurrent(id: AttachmentId, expected: DataFileInfo): Boolean {
+    val current = getDataFileInfo(id) ?: return false
+    return current.file == expected.file && current.random.contentEquals(expected.random)
+  }
+
+  fun mediaDataSourceFor(info: DataFileInfo): MediaDataSource = EncryptedMediaDataSource.createFor(attachmentSecret, info.file, info.random, info.length)
+
+  fun inputStreamFactoryFor(info: DataFileInfo): org.signal.glide.common.io.InputStreamFactory = object : org.signal.glide.common.io.InputStreamFactory {
+    override fun create(): InputStream = ModernDecryptingPartInputStream.createFor(attachmentSecret, info.random, info.file, 0)
+    override fun length(): Long = info.length
   }
 
   fun mediaDataSourceFor(attachmentId: AttachmentId, allowReadingFromTempFile: Boolean): MediaDataSource? {
@@ -2872,6 +3107,14 @@ class AttachmentTable(
         .where("$DATA_HASH_END = ? AND $REMOTE_KEY = ?", plaintextHash, remoteKey)
         .run()
     }
+  }
+
+  /** Complete only the media identity captured when the archive copy started. */
+  fun setArchiveCdnForIdentity(plaintextHash: String, remoteKey: String, archiveCdn: Int) {
+    writableDatabase.update(TABLE_NAME)
+      .values(ARCHIVE_CDN to archiveCdn, ARCHIVE_TRANSFER_STATE to ArchiveTransferState.FINISHED.value)
+      .where("$DATA_HASH_END = ? AND $REMOTE_KEY = ?", plaintextHash, remoteKey)
+      .run()
   }
 
   /**
@@ -3038,6 +3281,13 @@ class AttachmentTable(
     return updatedCount
   }
 
+  fun clearArchiveDataIfUnchanged(candidate: UploadCandidate): UploadCandidate? = writableDatabase.withinTransaction { db ->
+    if (!candidateMatches(db, candidate) || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED || candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE) return@withinTransaction null
+    val count = db.update(TABLE_NAME).values(ARCHIVE_CDN to null, ARCHIVE_TRANSFER_STATE to ArchiveTransferState.NONE.value, UPLOAD_TIMESTAMP to 0)
+      .where("$ID = ?", candidate.attachment.attachmentId.id).run()
+    if (count == 1) readUploadCandidate(db, candidate.attachment.attachmentId) else null
+  }
+
   fun clearArchiveData(attachmentId: AttachmentId) {
     writableDatabase
       .update(TABLE_NAME)
@@ -3168,10 +3418,14 @@ class AttachmentTable(
    */
   @Throws(MmsException::class, IllegalStateException::class)
   private fun writeToDataFile(destination: File, inputStream: InputStream, transformProperties: TransformProperties, closeInputStream: Boolean = true): DataFileWriteResult {
+    val tempFile = try {
+      newDataFile(context)
+    } catch (e: IOException) {
+      throw MmsException(e)
+    }
     return try {
-      // Sometimes the destination is a file that's already in use, sometimes it's not.
-      // To avoid writing to a file while it's in-use, we write to a temp file and then rename it to the destination file at the end.
-      val tempFile = newDataFile(context)
+      // Write privately before replacing the destination, including for callers
+      // that still use an existing destination path.
       val messageDigest = MessageDigest.getInstance("SHA-256")
       val digestInputStream = DigestInputStream(inputStream, messageDigest)
 
@@ -3199,6 +3453,8 @@ class AttachmentTable(
       throw MmsException(e)
     } catch (e: NoSuchAlgorithmException) {
       throw MmsException(e)
+    } finally {
+      tempFile.delete()
     }
   }
 

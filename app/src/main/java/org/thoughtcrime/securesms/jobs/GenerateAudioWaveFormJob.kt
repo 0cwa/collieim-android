@@ -5,6 +5,7 @@ import org.signal.core.util.concurrent.safeBlockingGet
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
 import org.thoughtcrime.securesms.audio.AudioWaveForms
+import org.thoughtcrime.securesms.audio.AudioSourceChangedException
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -40,7 +41,7 @@ class GenerateAudioWaveFormJob private constructor(private val attachmentId: Att
     Parameters.Builder()
       .setQueue(queue)
       .setLifespan(1.days.inWholeMilliseconds)
-      .setMaxAttempts(1)
+      .setMaxAttempts(3)
       .build()
   )
 
@@ -71,13 +72,15 @@ class GenerateAudioWaveFormJob private constructor(private val attachmentId: Att
         .safeBlockingGet()
 
       Log.i(TAG, "Generation successful")
+    } catch (e: AudioSourceChangedException) {
+      throw e
     } catch (e: Exception) {
       Log.i(TAG, "Generation failed", e)
     }
   }
 
   override fun onShouldRetry(e: Exception): Boolean {
-    return false
+    return isAudioSourceRetryable(e)
   }
 
   override fun onFailure() = Unit
@@ -89,3 +92,5 @@ class GenerateAudioWaveFormJob private constructor(private val attachmentId: Att
     }
   }
 }
+
+internal fun isAudioSourceRetryable(e: Exception): Boolean = e is AudioSourceChangedException

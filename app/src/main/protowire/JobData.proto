@@ -53,6 +53,13 @@ message AttachmentUploadJobData {
   uint64 attachmentId = 1;
   reserved /*attachmentUniqueId*/ 2;
   optional ResumableUpload uploadSpec = 3;
+  optional string snapshotId = 4;
+  optional uint64 snapshotLength = 5;
+  optional string snapshotDigest = 6;
+  optional string snapshotSourcePath = 7;
+  optional bytes snapshotSourceRandom = 8;
+  optional string snapshotPlaintextDigest = 9;
+  optional string ownerIdentity = 10;
 }
 
 message PreKeysSyncJobData {
@@ -141,12 +148,19 @@ message RestoreAttachmentJobData {
 
 message CopyAttachmentToArchiveJobData {
   uint64 attachmentId = 1;
+  optional string progressToken = 2;
 }
 
 message UploadAttachmentToArchiveJobData {
   uint64 attachmentId = 1;
   ResumableUpload uploadSpec = 2;
   optional bool canReuseUpload = 3;
+  optional string snapshotId = 4;
+  optional uint64 snapshotLength = 5;
+  optional string snapshotDigest = 6;
+  optional string snapshotSourcePath = 7;
+  optional bytes snapshotSourceRandom = 8;
+  optional string snapshotPlaintextDigest = 9;
 }
 
 message ArchiveAttachmentReconciliationJobData {

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is a helper class for {@link Downsampler} that abstracts out image operations from the input
@@ -49,6 +50,8 @@ interface ImageReader {
   int getImageOrientation() throws IOException;
 
   void stopGrowingBuffers();
+
+  default void cleanup() {}
 
   final class ByteArrayReader implements ImageReader {
 
@@ -179,13 +182,36 @@ interface ImageReader {
     private final ArrayPool           byteArrayPool;
     private final List<ImageHeaderParser> parsers;
     private final InputStreamFactory      inputStreamFactory;
+    private final List<InputStream>        openedStreams = new ArrayList<>();
 
     InputStreamImageReader(@NonNull InputStreamFactory inputStreamFactory, List<ImageHeaderParser> parsers, ArrayPool byteArrayPool) {
       this.byteArrayPool = Preconditions.checkNotNull(byteArrayPool);
       this.parsers       = Preconditions.checkNotNull(parsers);
 
-      this.inputStreamFactory = inputStreamFactory;
-      this.dataRewinder       = new InputStreamRewinder(inputStreamFactory.create(), byteArrayPool);
+      this.inputStreamFactory = new InputStreamFactory() {
+        @NonNull
+        @Override
+        public InputStream create() {
+          InputStream stream = inputStreamFactory.create();
+          openedStreams.add(stream);
+          return stream;
+        }
+
+        @NonNull
+        @Override
+        public InputStream createRecyclable(@NonNull ArrayPool pool) {
+          InputStream buffered = new RecyclableBufferedInputStream(create(), pool);
+          openedStreams.add(buffered);
+          return buffered;
+        }
+
+        @Nullable
+        @Override
+        public Long length() {
+          return inputStreamFactory.length();
+        }
+      };
+      this.dataRewinder = new InputStreamRewinder(this.inputStreamFactory.create(), byteArrayPool);
     }
 
     @Nullable
@@ -219,6 +245,22 @@ interface ImageReader {
     @Override
     public void stopGrowingBuffers() {
       dataRewinder.fixMarkLimits();
+    }
+
+    @Override
+    public void cleanup() {
+      try {
+        dataRewinder.cleanup();
+      } finally {
+        for (InputStream stream : openedStreams) {
+          try {
+            stream.close();
+          } catch (IOException ignored) {
+            // Decoding is already complete; preserve its result or original failure.
+          }
+        }
+        openedStreams.clear();
+      }
     }
   }
 

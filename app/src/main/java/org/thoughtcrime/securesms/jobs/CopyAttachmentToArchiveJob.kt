@@ -36,7 +36,8 @@ import java.util.concurrent.TimeUnit
  * This job runs at high priority within its queue, which it shares with [UploadAttachmentToArchiveJob]. Therefore, copies are given priority over new uploads,
  * which allows the two-part archive upload process to finish quickly.
  */
-class CopyAttachmentToArchiveJob private constructor(private val attachmentId: AttachmentId, parameters: Parameters) : CoroutineJob(parameters) {
+class CopyAttachmentToArchiveJob private constructor(private val attachmentId: AttachmentId, private val progressToken: String?, parameters: Parameters) : CoroutineJob(parameters) {
+  private var attemptedCandidate: AttachmentTable.UploadCandidate? = null
 
   companion object {
     private val TAG = Log.tag(CopyAttachmentToArchiveJob::class.java)
@@ -47,8 +48,11 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
     val ALLOWED_SOURCE_CDNS = setOf(Cdn.CDN_2, Cdn.CDN_3)
   }
 
-  constructor(attachmentId: AttachmentId) : this(
+  constructor(attachmentId: AttachmentId) : this(attachmentId, null)
+
+  constructor(attachmentId: AttachmentId, progressToken: String?) : this(
     attachmentId = attachmentId,
+    progressToken = progressToken,
     parameters = Parameters.Builder()
       .addConstraint(NetworkConstraint.KEY)
       .addConstraint(NoRemoteArchiveGarbageCollectionPendingConstraint.KEY)
@@ -61,7 +65,8 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
   )
 
   override fun serialize(): ByteArray = CopyAttachmentToArchiveJobData(
-    attachmentId = attachmentId.id
+    attachmentId = attachmentId.id,
+    progressToken = progressToken
   ).encode()
 
   override fun getFactoryKey(): String = KEY
@@ -71,14 +76,20 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
 
     if (transferStatus == AttachmentTable.ArchiveTransferState.NONE || transferStatus == AttachmentTable.ArchiveTransferState.UPLOAD_IN_PROGRESS) {
       Log.d(TAG, "[$attachmentId] Updating archive transfer state to ${AttachmentTable.ArchiveTransferState.COPY_PENDING}")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.COPY_PENDING)
+      SignalDatabase.attachments.markArchivePendingIfEligible(attachmentId, AttachmentTable.ArchiveTransferState.COPY_PENDING)
     }
   }
 
   override suspend fun doRun(): Result {
+    val result = runCopy()
+    if (!result.isRetry) progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
+    return result
+  }
+
+  private suspend fun runCopy(): Result {
     if (SignalStore.account.isLinkedDevice) {
       Log.w(TAG, "[$attachmentId] Linked devices don't backup media. Skipping.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      SignalDatabase.attachments.getUploadCandidate(attachmentId)?.let { setArchiveStateIfUnchanged(it, AttachmentTable.ArchiveTransferState.NONE) }
       return Result.success()
     }
 
@@ -92,12 +103,15 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
       return Result.failure()
     }
 
-    val attachment: DatabaseAttachment? = SignalDatabase.attachments.getAttachment(attachmentId)
+    val captured = SignalDatabase.attachments.getUploadCandidate(attachmentId)
+    val attachment: DatabaseAttachment? = captured?.attachment
 
     if (attachment == null) {
       Log.w(TAG, "[$attachmentId] Attachment no longer exists! Skipping.")
       return Result.failure()
     }
+
+    attemptedCandidate = captured
 
     val mediaIdLog: String = if (RemoteConfig.internalUser && attachment.remoteKey != null && attachment.dataHash != null) {
       val mediaId = MediaName.fromPlaintextHashAndRemoteKey(attachment.dataHash.decodeBase64()!!, attachment.remoteKey.decodeBase64()!!).toMediaId(SignalStore.backup.mediaRootBackupKey)
@@ -108,54 +122,54 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
 
     if (attachment.archiveTransferState == AttachmentTable.ArchiveTransferState.FINISHED) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Already finished. Skipping.")
-      return Result.success()
+      return if (SignalDatabase.attachments.archiveCandidateUnchanged(captured!!)) Result.success() else Result.retry(defaultBackoff())
     }
 
     if (attachment.archiveTransferState == AttachmentTable.ArchiveTransferState.PERMANENT_FAILURE) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Already marked as a permanent failure. Skipping.")
-      return Result.failure()
+      return if (SignalDatabase.attachments.archiveCandidateUnchanged(captured!!)) Result.failure() else Result.retry(defaultBackoff())
     }
 
     if (SignalDatabase.messages.isStory(attachment.mmsId)) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment is a story. Resetting transfer state to none and skipping.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       return Result.success()
     }
 
     if (SignalDatabase.messages.isViewOnce(attachment.mmsId)) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment is view-once. Resetting transfer state to none and skipping.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       return Result.success()
     }
 
     if (SignalDatabase.messages.willMessageExpireBeforeCutoff(attachment.mmsId)) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Message will expire in less than 24 hours. Resetting transfer state to none and skipping.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       return Result.success()
     }
 
     if (attachment.contentType == MediaUtil.LONG_TEXT) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment is long text. Resetting transfer state to none and skipping.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       return Result.success()
     }
 
     if (!attachment.hadIntegrityCheckPerformed()) {
       Log.w(TAG, "[$attachmentId]$mediaIdLog Attachment has not had its integrity check performed yet (transferState: ${attachment.transferState}). Resetting transfer state to none and skipping.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       return Result.success()
     }
 
     if (attachment.cdn !in ALLOWED_SOURCE_CDNS) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment CDN (${attachment.cdn}) is not in allowed source CDNs. Enqueueing an upload job instead.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
       return Result.success()
     }
 
     if (attachment.remoteLocation == null) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment has no remote location. Enqueueing an upload job instead.")
-      setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+      if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
       AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
       return Result.success()
     }
@@ -185,14 +199,14 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
           }
           is ArchiveError.CopyMediaError.WrongSourceLength -> {
             Log.w(TAG, "[$attachmentId]$mediaIdLog Something is invalid about our request. Possibly the length. Scheduling a re-upload.")
-            setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+            if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
             AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
             // Returning immediately to avoid marking the attachment as finished.
             return Result.success()
           }
           is ArchiveError.CopyMediaError.SourceNotFound -> {
             Log.w(TAG, "[$attachmentId]$mediaIdLog The attachment no longer exists on the transit tier. Scheduling a re-upload.")
-            setArchiveTransferStateWithDelayedNotification(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
+            if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
             AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
             // Returning immediately to avoid marking the attachment as finished.
             return Result.success()
@@ -238,9 +252,14 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
 
     if (result.isSuccess) {
       Log.d(TAG, "[$attachmentId]$mediaIdLog Updating archive transfer state to ${AttachmentTable.ArchiveTransferState.FINISHED}")
-      ArchiveDatabaseExecutor.runBlocking {
-        SignalDatabase.attachments.setArchiveTransferState(attachmentId, attachment.remoteKey!!, attachment.dataHash!!, AttachmentTable.ArchiveTransferState.FINISHED, notify = false)
-        ArchiveDatabaseExecutor.throttledNotifyAttachmentObservers()
+      val updated = ArchiveDatabaseExecutor.runBlocking {
+        val matched = SignalDatabase.attachments.setArchiveTransferState(attachmentId, attachment.remoteKey!!, attachment.dataHash!!, AttachmentTable.ArchiveTransferState.FINISHED, notify = false)
+        if (matched) ArchiveDatabaseExecutor.throttledNotifyAttachmentObservers()
+        matched
+      }
+      if (!updated) {
+        Log.i(TAG, "[$attachmentId] Attachment changed during archive copy; retrying.")
+        return Result.retry(defaultBackoff())
       }
 
       if (!isCanceled) {
@@ -253,7 +272,7 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
         Log.d(TAG, "[$attachmentId]$mediaIdLog Refusing to enqueue thumb for canceled upload.")
       }
 
-      ArchiveUploadProgress.onAttachmentFinished(attachmentId)
+      progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
       SignalStore.backup.archiveAttachmentReconciliationAttempts = 0
     }
 
@@ -267,33 +286,24 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
   }
 
   override fun onFailure() {
-    if (this.isCanceled) {
-      Log.w(TAG, "[$attachmentId] Job was canceled, updating archive transfer state to ${AttachmentTable.ArchiveTransferState.COPY_PENDING}.")
-      ArchiveDatabaseExecutor.runBlocking {
-        SignalDatabase.attachments.setArchiveTransferState(attachmentId, AttachmentTable.ArchiveTransferState.COPY_PENDING)
-      }
-    } else {
-      Log.w(TAG, "[$attachmentId] Job failed, updating archive transfer state to ${AttachmentTable.ArchiveTransferState.TEMPORARY_FAILURE}.")
-      ArchiveDatabaseExecutor.runBlocking {
-        SignalDatabase.attachments.setArchiveTransferStateFailure(attachmentId, AttachmentTable.ArchiveTransferState.TEMPORARY_FAILURE)
-      }
-    }
-
-    ArchiveUploadProgress.onAttachmentFinished(attachmentId)
+    val state = if (isCanceled) AttachmentTable.ArchiveTransferState.COPY_PENDING else AttachmentTable.ArchiveTransferState.TEMPORARY_FAILURE
+    attemptedCandidate?.let { setArchiveStateIfUnchanged(it, state) }
+    progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
   }
 
-  private fun setArchiveTransferStateWithDelayedNotification(attachmentId: AttachmentId, transferState: AttachmentTable.ArchiveTransferState) {
+  private fun setArchiveStateIfUnchanged(candidate: AttachmentTable.UploadCandidate, state: AttachmentTable.ArchiveTransferState): Boolean =
     ArchiveDatabaseExecutor.runBlocking {
-      SignalDatabase.attachments.setArchiveTransferState(attachmentId, transferState, notify = false)
-      ArchiveDatabaseExecutor.throttledNotifyAttachmentObservers()
+      val changed = SignalDatabase.attachments.setArchiveStateIfCandidateUnchanged(candidate, state)
+      if (changed) ArchiveDatabaseExecutor.throttledNotifyAttachmentObservers()
+      changed
     }
-  }
 
   class Factory : Job.Factory<CopyAttachmentToArchiveJob> {
     override fun create(parameters: Parameters, serializedData: ByteArray?): CopyAttachmentToArchiveJob {
       val jobData = CopyAttachmentToArchiveJobData.ADAPTER.decode(serializedData!!)
       return CopyAttachmentToArchiveJob(
         attachmentId = AttachmentId(jobData.attachmentId),
+        progressToken = jobData.progressToken,
         parameters = parameters
       )
     }

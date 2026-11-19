@@ -755,18 +755,35 @@ class AppRegistrationStorageControllerTest {
   }
 
   @Test
-  fun `v1 restore after commit - keeps backup state that the backup's aep did not touch`() = runBlocking<Unit> {
+  fun `v1 restore after commit - keeps backup state that when the imported AEP matches`() = runBlocking<Unit> {
     commitThenSetUpV1Restore(RegistrationData(accountData = accountData(), accountEntropyPool = aep.value, pin = PIN))
     val chain = byteArrayOf(1, 2, 3)
     SignalStore.backup.nextBackupSecretData = chain
     SignalStore.backup.messageBackupInitialized = true
 
-    runV1Restore { overwriteAccountKeysLikeABackup() }
+    runV1Restore { overwriteAccountKeysLikeABackup(backupAep = aep) }
 
     assertThat(SignalStore.account.accountEntropyPool.value).isEqualTo(aep.value)
     assertThat(SignalStore.backup.nextBackupSecretData).isNotNull().isEqualTo(chain)
     assertThat(SignalStore.backup.messageBackupInitialized).isTrue()
     assertThat(SignalStore.backup.backupSecretRestoreRequired).isFalse()
+  }
+
+  @Test
+  fun `v1 restore after commit - clears dependent state when the imported AEP differs`() = runBlocking<Unit> {
+    commitThenSetUpV1Restore(RegistrationData(accountData = accountData(), accountEntropyPool = aep.value, pin = PIN))
+    val chain = byteArrayOf(1, 2, 3)
+    SignalStore.backup.nextBackupSecretData = chain
+    SignalStore.backup.messageBackupInitialized = true
+
+    val differentAep = AccountEntropyPool.generate()
+    assertThat(differentAep.value).isNotEqualTo(aep.value)
+    runV1Restore { overwriteAccountKeysLikeABackup(backupAep = differentAep) }
+
+    assertThat(SignalStore.account.accountEntropyPool.value).isEqualTo(aep.value)
+    assertThat(SignalStore.backup.nextBackupSecretData).isNull()
+    assertThat(SignalStore.backup.messageBackupInitialized).isFalse()
+    assertThat(SignalStore.backup.backupSecretRestoreRequired).isTrue()
   }
 
   @Test
@@ -957,13 +974,13 @@ class AppRegistrationStorageControllerTest {
     return result
   }
 
-  /** Writes every [SignalStore.account] key a V1 backup carries, with values from a different account. */
-  private fun overwriteAccountKeysLikeABackup() {
+  /** Writes every [SignalStore.account] key a V1 backup carries, with different identity keys and the requested AEP. */
+  private fun overwriteAccountKeysLikeABackup(backupAep: AccountEntropyPool = AccountEntropyPool.generate()) {
     val backupAci = IdentityKeyPair.generate()
     val backupPni = IdentityKeyPair.generate()
     SignalStore.account.restoreAciIdentityKeyFromBackup(backupAci.publicKey.serialize(), backupAci.privateKey.serialize())
     SignalStore.account.restorePniIdentityKeyFromBackup(backupPni.publicKey.serialize(), backupPni.privateKey.serialize())
-    SignalStore.account.restoreAccountEntropyPool(AccountEntropyPool.generate())
+    SignalStore.account.restoreAccountEntropyPool(backupAep)
   }
 
   /** Puts onboarding into the state a fresh install leaves it in, where the get-started megaphone would show. */

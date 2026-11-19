@@ -1176,4 +1176,75 @@
     <string name="SelectRecipientsFragment__add">Дадаць</string>
     <!-- Title for add recipients to notification profile screen in create flow -->
     <string name="SelectRecipientsScreen__allowed_notifications">Дазволіць апавяшчэнні</string>
+
+    <!-- AdvancedPrivacySettingsScreen -->
+    <string name="preferences__advanced">Пашыраныя</string>
+    <string name="preferences_advanced__always_relay_calls">Заўсёды рэтрансляваць званкі</string>
+    <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Прапускаць усе званкі праз сервер Signal, каб не раскрываць ваш IP-адрас кантакту. Якасць званка пагоршыцца.</string>
+    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
+    <string name="preferences_communication__category_censorship_circumvention">Абыход цэнзуры</string>
+    <!-- Title of the \'censorship circumvention\' toggle switch -->
+    <string name="preferences_communication__censorship_circumvention">Абыход цэнзуры</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Калі ўключыць гэтую опцыю, Signal будзе спрабаваць абысці цэнзуру (блакіроўку правайдарам). Не ўключайце яе, калі там, дзе вы знаходзіцеся, Signal не блакуецца.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Абыход цэнзуры аўтаматычна актываваны на аснове нумара тэлефона вашага ўліковага запісу.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_you_have_manually_disabled">Вы ўручную адключылі абыход цэнзуры.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
+    <string name="preferences_communication__censorship_circumvention_is_not_necessary_you_are_already_connected">Абыход цэнзуры не патрэбны; вы ўжо падключаны да сэрвісу Signal.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
+    <string name="preferences_communication__censorship_circumvention_can_only_be_activated_when_connected_to_the_internet">Абыход цэнзуры можа быць актываваны толькі пры падключэнні да інтэрнэту.</string>
+    <string name="preferences_communication__category_sealed_sender">Запячатаны адпраўнік</string>
+    <string name="AdvancedPrivacySettingsFragment__show_status_icon">Паказваць значок статусу</string>
+    <string name="AdvancedPrivacySettingsFragment__show_an_icon">Паказваць значок у «Звесткі аб паведамленні», калі яны былі дастаўлены з дапамогай запячатанага адпраўніка.</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone">Дазволіць ад усіх</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Дазволіць запячатанага адпраўніка для ўваходных паведамленняў ад людзей, якіх няма ў вашых кантактах і якім вы яшчэ не раскрывалі свой профіль.</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">Аўтаматычная праверка ключоў</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">Калі гэта функцыя ўключана, Signal будзе спрабаваць аўтаматычна правяраць шыфраванне прыватных чатаў.</string>
+
+    <!-- ExpireTimerSettingsScreen -->
+    <!-- Title of the screen for choosing a disappearing messages timer -->
+    <string name="ExpireTimerSettingsScreen__disappearing_messages">Знікаючыя паведамленні</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">Калі гэта функцыя ўключаная, новыя паведамленні, што былі адпраўлены і атрыманы ў новых чатах, якія вы стварылі, знікнуць пасля прагляду.</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">Калі гэта функцыя ўключаная, новыя паведамленні, што былі адпраўлены і атрыманы ў гэтым чаце, знікнуць пасля прагляду.</string>
+    <string name="ExpireTimerSettingsFragment__off">Адкл.</string>
+    <string name="ExpireTimerSettingsFragment__4_weeks">4 тыдні</string>
+    <string name="ExpireTimerSettingsFragment__1_week">1 тыдзень</string>
+    <string name="ExpireTimerSettingsFragment__1_day">1 дзень</string>
+    <string name="ExpireTimerSettingsFragment__8_hours">8 гадзін</string>
+    <string name="ExpireTimerSettingsFragment__1_hour">1 гадзіна</string>
+    <string name="ExpireTimerSettingsFragment__5_minutes">5 хвілін</string>
+    <string name="ExpireTimerSettingsFragment__30_seconds">30 секунд</string>
+    <string name="ExpireTimerSettingsFragment__custom_time">Персаналізаваны час</string>
+    <string name="ExpireTimerSettingsFragment__save">Захаваць</string>
+
+    <!-- AccountSettingsScreen -->
+    <!-- Snackbar shown after the user creates a PIN -->
+    <string name="AccountSettingsScreen__pin_created">PIN-код створаны.</string>
+    <!-- Snackbar shown when wiping all of the app\'s data on this device fails -->
+    <string name="AccountSettingsScreen__delete_all_data_failed">Не атрымалася выдаліць даныя</string>
+    <string name="preferences_app_protection__failed_to_enable_registration_lock">Не атрымалася ўключыць блакіроўку рэгістрацыі.</string>
+    <string name="preferences_app_protection__failed_to_disable_registration_lock">Не атрымалася адключыць блакіроўку рэгістрацыі.</string>
+
+    <!-- AdvancedPinSettingsScreen -->
+    <!-- Title of toolbar for the advanced pin settings screen -->
+    <string name="preferences__advanced_pin_settings_title">Пашыраныя налады PIN-кода</string>
+    <string name="preferences__enable_pin">Уключыць PIN-код</string>
+    <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">PIN-коды трымаюць інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Ваш профіль, налады і кантакты будуць адноўлены, калі вы зробіце паўторнае ўсталяванне. Вам не спатрэбіцца PIN-код, каб адкрыць праграму.</string>
+    <string name="preferences__disable_pin">Адключыць PIN-код</string>
+    <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Калі адключыць PIN-код, вы страціце ўсе даныя пры паўторнай рэгістрацыі ў Signal, таму загадзя зрабіце ўручную рэзервовае капіраванне і аднаўленне. Пакуль PIN-код адключаны, нельга будзе ўключыць блакіроўку рэгістрацыі.</string>
+    <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">Для блакіроўкі рэгістрацыі патрэбны PIN-коды. Каб адключыць PIN-коды, спачатку адключыце блакіроўку рэгістрацыі.</string>
+    <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Запісаць фразу для аднаўлення плацяжоў</string>
+    <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Перш чым адключыць PIN-код, вы павінны запісаць фразу для аднаўлення плацяжоў, каб мець магчымасць аднавіць свой плацежны ўліковы запіс.</string>
+    <string name="ApplicationPreferencesActivity_record_phrase">Запісаць фразу</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">Стварыце новы код для аднаўлення</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">Перш чым адключыць свой PIN-код, вам трэба стварыць і запісаць новы код для аднаўлення.</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Стварыць новы код</string>
+    <string name="ApplicationPreferencesActivity_pin_created">PIN-код створаны.</string>
+    <string name="ApplicationPreferencesActivity_pin_disabled">PIN-код адключаны.</string>
 </resources>

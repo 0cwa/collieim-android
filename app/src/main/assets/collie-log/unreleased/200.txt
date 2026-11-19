@@ -1,0 +1,3 @@
+topic: signal
+pr: 200
+TrailBlazer updates to Signal 8.36.3 with refreshed settings and media browsing.

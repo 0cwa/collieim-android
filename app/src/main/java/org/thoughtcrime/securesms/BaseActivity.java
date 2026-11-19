@@ -24,7 +24,7 @@ import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.AppStartup;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.WindowUtil;
-import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import org.signal.locale.AppLocale;
 
 import java.util.List;
 import java.util.Objects;
@@ -268,7 +268,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   @Override
   public void applyOverrideConfiguration(@NonNull Configuration overrideConfiguration) {
-    DynamicLanguageContextWrapper.prepareOverrideConfiguration(overrideConfiguration);
+    AppLocale.prepareOverrideConfiguration(overrideConfiguration);
     super.applyOverrideConfiguration(overrideConfiguration);
   }
 

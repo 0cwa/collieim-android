@@ -38,4 +38,7 @@ sealed interface HelpSettingsEvent {
 
   /** The user tapped the terms and privacy policy row. */
   data object TermsAndPrivacyPolicyClicked : HelpSettingsEvent
+
+  /** The snackbar finished showing. */
+  data object SnackbarDismissed : HelpSettingsEvent
 }

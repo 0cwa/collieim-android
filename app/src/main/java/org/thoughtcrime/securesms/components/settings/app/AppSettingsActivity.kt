@@ -8,14 +8,15 @@ import android.os.Process
 import androidx.navigation.NavDirections
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.UsernameEditMode
+import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.getParcelableExtraCompat
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.NavGraphHostActivity
+import org.thoughtcrime.securesms.components.settings.app.backups.local.usesOnDeviceBackupsScreen
 import org.thoughtcrime.securesms.help.HelpFragment
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
 private const val START_ROUTE = "app.settings.args.START_ROUTE"
@@ -38,14 +39,14 @@ class AppSettingsActivity : NavGraphHostActivity() {
       when (val appSettingsRoute: AppSettingsRoute? = intent?.getParcelableExtraCompat(START_ROUTE, AppSettingsRoute::class.java)) {
         AppSettingsRoute.Empty -> null
         is AppSettingsRoute.BackupsRoute.Local -> {
-          if (SignalStore.backup.newLocalBackupsEnabled || (Environment.Backups.isNewFormatSupportedForLocalBackup() && (!SignalStore.settings.isBackupEnabled || appSettingsRoute.triggerUpdateFlow))) {
+          if (appSettingsRoute.usesOnDeviceBackupsScreen()) {
             AppSettingsFragmentDirections.actionDirectToLocalBackupsFragment()
               .setTriggerUpdateFlow(appSettingsRoute.triggerUpdateFlow)
           } else {
             AppSettingsFragmentDirections.actionDirectToBackupsPreferenceFragment()
           }
         }
-        is AppSettingsRoute.HelpRoute.Settings -> AppSettingsFragmentDirections.actionDirectToHelpFragment()
+        is AppSettingsRoute.HelpRoute.Help -> AppSettingsFragmentDirections.actionDirectToHelpFragment()
           .setStartCategoryIndex(appSettingsRoute.startCategoryIndex)
         AppSettingsRoute.DataAndStorageRoute.Proxy -> AppSettingsFragmentDirections.actionDirectToNetworkPreferenceFragment()
         AppSettingsRoute.NotificationsRoute.Notifications -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
@@ -122,7 +123,7 @@ class AppSettingsActivity : NavGraphHostActivity() {
 
     @JvmStatic
     fun help(context: Context, startCategoryIndex: Int = 0): Intent {
-      return getIntentForStartLocation(context, AppSettingsRoute.HelpRoute.Settings(startCategoryIndex = startCategoryIndex))
+      return getIntentForStartLocation(context, AppSettingsRoute.HelpRoute.Help(startCategoryIndex = startCategoryIndex))
         .putExtra(HelpFragment.START_CATEGORY_INDEX, startCategoryIndex)
     }
 

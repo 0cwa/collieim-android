@@ -268,7 +268,6 @@ import org.thoughtcrime.securesms.conversation.ui.inlinequery.InlineQueryViewMod
 import org.thoughtcrime.securesms.conversation.v2.computed.ConversationMessageComputeWorkers
 import org.thoughtcrime.securesms.conversation.v2.data.AvatarDownloadStateCache
 import org.thoughtcrime.securesms.conversation.v2.data.ConversationMessageElement
-import org.thoughtcrime.securesms.conversation.v2.data.DeletedMessageTombstoneCache
 import org.thoughtcrime.securesms.conversation.v2.groups.ConversationGroupCallViewModel
 import org.thoughtcrime.securesms.conversation.v2.groups.ConversationGroupViewModel
 import org.thoughtcrime.securesms.conversation.v2.items.ChatColorsDrawable
@@ -325,8 +324,8 @@ import org.thoughtcrime.securesms.main.MainSnackbarHostKey
 import org.thoughtcrime.securesms.mediakeyboard.SignalMediaKeyboardRepository
 import org.thoughtcrime.securesms.mediaoverview.MediaOverviewActivity
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory
-import org.thoughtcrime.securesms.mediapreview.MediaPreviewActivity
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
+import org.thoughtcrime.securesms.mediaviewer.MediaViewerActivity
 import org.thoughtcrime.securesms.messagerequests.MessageRequestRepository
 import org.thoughtcrime.securesms.mms.AttachmentManager
 import org.thoughtcrime.securesms.mms.AudioSlide
@@ -375,6 +374,7 @@ import org.thoughtcrime.securesms.stickers.preview.StickerPreviewBottomSheet
 import org.thoughtcrime.securesms.stories.StoryViewerArgs
 import org.thoughtcrime.securesms.stories.viewer.StoryViewerActivity
 import org.thoughtcrime.securesms.util.BubbleUtil
+import org.thoughtcrime.securesms.util.CachedInflater
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.DateUtils
@@ -394,6 +394,7 @@ import org.thoughtcrime.securesms.util.Projection
 import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.thoughtcrime.securesms.util.UriUtil
 import org.thoughtcrime.securesms.util.doAfterNextLayout
+import org.thoughtcrime.securesms.util.fragments.findListener
 import org.thoughtcrime.securesms.util.fragments.requireListener
 import org.thoughtcrime.securesms.util.getPoll
 import org.thoughtcrime.securesms.util.getQuote
@@ -470,6 +471,14 @@ class ConversationFragment :
       "image/heif",
       "image/avif"
     )
+  }
+
+  /**
+   * Notified when a conversation opened with share data that [ConversationArgs.mayOpenMediaEditor] flagged won't be
+   * opening an editor after all.
+   */
+  interface MediaEditorHandoffListener {
+    fun onMediaEditorNotOpened()
   }
 
   private val args: ConversationArgs by lazy {
@@ -680,12 +689,13 @@ class ConversationFragment :
 
   private val stickerConfirmation: ChatStickerConfirmationController by lazy(LazyThreadSafetyMode.NONE) {
     ChatStickerConfirmationController(
-      favoritesEnabled = RemoteConfig.internalUser,
+      moveToTopEnabled = RemoteConfig.internalUser,
       onSend = { sticker ->
         mediaKeyboardRepository.stickers.onStickerUsed(sticker)
         sendKeyboardSticker(sticker)
       },
       onToggleFavorite = { sticker -> setStickerFavorite(sticker, favorited = !sticker.isFavorite) },
+      onMoveFavoriteToTop = ::moveFavoriteStickerToTop,
       onViewPack = { sticker ->
         sticker.packKey?.let { packKey ->
           startActivity(StickerPackPreviewActivityV2.createIntent(StickerPackId(sticker.packId), StickerPackKey(packKey)))
@@ -793,6 +803,14 @@ class ConversationFragment :
     }
   }
 
+  /** Moves favorited sticker to the top by refavoriting it. */
+  private fun moveFavoriteStickerToTop(sticker: KeyboardSticker) {
+    val packKey = sticker.packKey ?: return
+    viewLifecycleOwner.lifecycleScope.launch(SignalDispatchers.IO) {
+      StickerFavoriteRepository.setFavorite(sticker.packId, packKey, sticker.stickerId.toInt(), favorited = true)
+    }
+  }
+
   private fun onMediaKeyboardAction(action: MediaKeyboardAction) {
     when (action) {
       is MediaKeyboardAction.EmojiSelected -> inputPanel.onEmojiSelected(action.emoji)
@@ -801,7 +819,7 @@ class ConversationFragment :
 
       is MediaKeyboardAction.StickerSelected -> {
         viewLifecycleOwner.lifecycleScope.launch {
-          stickerConfirmation.show(action.sticker, stickerReplyHeader())
+          stickerConfirmation.show(action.sticker, stickerReplyHeader(), action.isInFavorites)
         }
       }
 
@@ -858,12 +876,7 @@ class ConversationFragment :
 
       is MediaKeyboardAction.RemoveStickerFromFavoritesConfirmed -> setStickerFavorite(action.sticker, favorited = false)
 
-      is MediaKeyboardAction.MoveFavoriteToTopClicked -> {
-        val packKey = action.sticker.packKey ?: return
-        viewLifecycleOwner.lifecycleScope.launch(SignalDispatchers.IO) {
-          StickerFavoriteRepository.setFavorite(action.sticker.packId, packKey, action.sticker.stickerId.toInt(), favorited = true)
-        }
-      }
+      is MediaKeyboardAction.MoveFavoriteToTopClicked -> moveFavoriteStickerToTop(action.sticker)
 
       MediaKeyboardAction.EmptyFavoritesClicked -> {
         snackbar(R.string.ConversationFragment__press_and_hold_a_sticker_to_add_to_favorites, duration = Snackbar.LENGTH_SHORT)
@@ -917,8 +930,11 @@ class ConversationFragment :
   private val searchNav: ConversationSearchBottomBar
     get() = binding.conversationSearchBottomBar.root
 
+  private var lastPresentedTitleRecipient: Recipient? = null
+  private var isOptionsMenuInvalidationPending = false
+  private val actionModeTopBarStub: Stub<ActionModeTopBarView> by lazy { Stub(binding.actionModeTopBarStub) }
   private val actionModeTopBarView: ActionModeTopBarView
-    get() = binding.actionModeTopBar
+    get() = actionModeTopBarStub.get()
 
   private val scheduledMessagesStub: Stub<View> by lazy { Stub(binding.scheduledMessagesStub) }
 
@@ -980,7 +996,11 @@ class ConversationFragment :
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     conversationBackground = inflater.inflate(R.layout.v2_conversation_background, container, false)
-    conversationContent = inflater.inflate(R.layout.v2_conversation_fragment, container, false)
+    conversationContent = if (args.conversationScreenType == ConversationScreenType.NORMAL) {
+      CachedInflater.from(requireContext()).inflate(R.layout.v2_conversation_fragment, container, false)
+    } else {
+      inflater.inflate(R.layout.v2_conversation_fragment, container, false)
+    }
 
     // Read once here rather than in composition: it only matters when the keyboard's view model is
     // first created, and it comes from disk.
@@ -1328,7 +1348,6 @@ class ConversationFragment :
 
     if (!requireActivity().isChangingConfigurations) {
       (requireActivity().supportFragmentManager.findFragmentByTag(MESSAGE_DETAILS_TAG) as? DialogFragment)?.dismissAllowingStateLoss()
-      DeletedMessageTombstoneCache.clearThread(args.threadId)
     }
 
     super.onDestroyView()
@@ -1562,13 +1581,15 @@ class ConversationFragment :
   }
 
   private fun isActionModeStarted(): Boolean {
-    return actionModeTopBarView.isVisible
+    return actionModeTopBarStub.resolved() && actionModeTopBarView.isVisible
   }
 
   private fun finishActionMode() {
     viewModel.setIsInActionMode(false)
 
-    actionModeTopBarView.isVisible = false
+    if (actionModeTopBarStub.resolved()) {
+      actionModeTopBarView.isVisible = false
+    }
 
     adapter.clearSelection()
     setBottomActionBarVisibility(false)
@@ -1615,7 +1636,7 @@ class ConversationFragment :
 
           if (firstRender) {
             firstRender = false
-            binding.conversationItemRecycler.doAfterNextLayout {
+            doAfterSettledLayout {
               SignalLocalMetrics.ConversationOpen.onRenderFinished()
               (context as? MainActivity)?.onFirstRender()
               doAfterFirstRender()
@@ -1632,12 +1653,44 @@ class ConversationFragment :
       })
   }
 
+  /**
+   * Runs [action] after the next layout that leaves the thread header where it belongs, relaying out if the header was
+   * placed from a stale scroll extent.
+   */
+  private fun doAfterSettledLayout(remainingRelayouts: Int = 2, action: () -> Unit) {
+    val recycler = binding.conversationItemRecycler
+    recycler.doAfterNextLayout {
+      if (remainingRelayouts > 0 && conversationHeaderPositionDecoration.isHeaderMarginStale(recycler)) {
+        doAfterSettledLayout(remainingRelayouts - 1, action)
+        recycler.invalidateItemDecorations()
+      } else {
+        action()
+      }
+    }
+  }
+
   private fun doAfterFirstRender() {
     Log.d(TAG, "doAfterFirstRender")
 
     if (!isAdded || view == null) {
       Log.w(TAG, "Bailing, fragment no longer added")
       return
+    }
+
+    if (args.conversationScreenType == ConversationScreenType.NORMAL) {
+      CachedInflater.from(requireContext()).apply {
+        cacheUntilLimit(R.layout.v2_conversation_fragment, chatHost, 1)
+        cacheUntilLimit(R.layout.v2_conversation_item_text_only_incoming, binding.conversationItemRecycler, 15)
+        cacheUntilLimit(R.layout.v2_conversation_item_text_only_outgoing, binding.conversationItemRecycler, 15)
+        cacheUntilLimit(R.layout.conversation_item_received_multimedia, binding.conversationItemRecycler, 6)
+        cacheUntilLimit(R.layout.conversation_item_sent_multimedia, binding.conversationItemRecycler, 6)
+        cacheUntilLimit(R.layout.conversation_item_received_thumbnail, binding.conversationItemRecycler, 4)
+        cacheUntilLimit(R.layout.conversation_item_sent_thumbnail, binding.conversationItemRecycler, 4)
+        cacheUntilLimit(R.layout.conversation_item_thumbnail_thumbnail_view_stub, binding.conversationItemRecycler, 8)
+        cacheUntilLimit(R.layout.conversation_item_received_audio, binding.conversationItemRecycler, 2)
+        cacheUntilLimit(R.layout.conversation_item_sent_audio, binding.conversationItemRecycler, 2)
+        cacheUntilLimit(R.layout.conversation_item_update, binding.conversationItemRecycler, 3)
+      }
     }
 
     activity?.supportStartPostponedEnterTransition()
@@ -1845,12 +1898,19 @@ class ConversationFragment :
 
     viewModel
       .inputReadyState
-      .take(1)
-      .flatMapMaybe { inputReadyState ->
+      .firstElement()
+      .flatMap { inputReadyState ->
         draftViewModel.loadShareOrDraftData()
           .map { inputReadyState to it }
       }
-      .subscribeBy { (inputReadyState, data) -> handleShareOrDraftData(inputReadyState, data) }
+      .subscribeBy(
+        onSuccess = { (inputReadyState, data) ->
+          if (!handleShareOrDraftData(inputReadyState, data)) {
+            findListener<MediaEditorHandoffListener>()?.onMediaEditorNotOpened()
+          }
+        },
+        onComplete = { findListener<MediaEditorHandoffListener>()?.onMediaEditorNotOpened() }
+      )
       .addTo(disposables)
 
     disposables.add(
@@ -2190,7 +2250,17 @@ class ConversationFragment :
 
   private fun invalidateOptionsMenu() {
     if (searchMenuItem?.isActionViewExpanded != true || !isSearchRequested) {
-      binding.toolbar.invalidateMenu()
+      if (isOptionsMenuInvalidationPending) {
+        return
+      }
+
+      isOptionsMenuInvalidationPending = true
+      binding.toolbar.post {
+        isOptionsMenuInvalidationPending = false
+        if (view != null) {
+          binding.toolbar.invalidateMenu()
+        }
+      }
     }
   }
 
@@ -2199,7 +2269,7 @@ class ConversationFragment :
       optionsMenuCallback = ConversationOptionsMenuCallback()
       menuProvider = ConversationOptionsMenu.Provider(optionsMenuCallback, disposables)
       binding.toolbar.addMenuProvider(menuProvider!!)
-      invalidateOptionsMenu()
+      binding.toolbar.invalidateMenu()
     }
 
     when (args.conversationScreenType) {
@@ -2272,9 +2342,10 @@ class ConversationFragment :
   }
 
   private fun presentConversationTitle(recipient: Recipient?) {
-    if (recipient == null) {
+    if (recipient == null || recipient === lastPresentedTitleRecipient) {
       return
     }
+    lastPresentedTitleRecipient = recipient
 
     val titleView = binding.conversationTitleView.root
 
@@ -2570,14 +2641,17 @@ class ConversationFragment :
     }
   }
 
-  private fun handleShareOrDraftData(inputReadyState: InputReadyState, data: ShareOrDraftData) {
+  /**
+   * @return whether [data] was handed off to an editor.
+   */
+  private fun handleShareOrDraftData(inputReadyState: InputReadyState, data: ShareOrDraftData): Boolean {
     if (inputReadyState.isAnnouncementGroup == true && inputReadyState.isAdmin == false) {
       Toast.makeText(requireContext(), R.string.MultiselectForwardFragment__only_admins_can_send_messages_to_this_group, Toast.LENGTH_SHORT).show()
       draftViewModel.clearDraft()
-      return
+      return false
     } else if (inputReadyState.shouldClearDraft()) {
       draftViewModel.clearDraft()
-      return
+      return false
     }
 
     when (data) {
@@ -2608,10 +2682,12 @@ class ConversationFragment :
       }
 
       is ShareOrDraftData.StartSendMedia -> {
-        val recipientId = viewModel.recipientSnapshot?.id ?: return
+        val recipientId = viewModel.recipientSnapshot?.id ?: return false
         conversationActivityResultContracts.launchMediaEditor(data.mediaList, recipientId, data.text)
       }
     }
+
+    return data is ShareOrDraftData.SetMedia || data is ShareOrDraftData.StartSendMedia
   }
 
   private fun handleScheduledMessagesCountChange(count: Int) {
@@ -3567,13 +3643,46 @@ class ConversationFragment :
       message = requireContext().resources.getQuantityString(R.plurals.ConversationFragment_delete_selected_body, records.size, records.size),
       isAdmin = conversationGroupViewModel.isAdmin()
     ).observeOn(AndroidSchedulers.mainThread())
-      .subscribe { (deleted: Boolean, _: Boolean) ->
-        if (!deleted) return@subscribe
+      .subscribe { result ->
+        if (result == DeleteDialog.DeleteResult.Cancelled) return@subscribe
         val editMessageId = inputPanel.editMessageId?.id
         if (editMessageId != null && records.any { it.id == editMessageId }) {
           inputPanel.exitEditMessageMode()
         }
+
+        if (result is DeleteDialog.DeleteResult.DeletedForMe) {
+          maybeShowDeletedForMeSnackbar(records)
+        }
       }
+  }
+
+  private fun maybeShowDeletedForMeSnackbar(records: Set<MessageRecord>) {
+    if (!SignalStore.labs.improvedMessageDeletion) {
+      return
+    }
+
+    if (records.any { it.toRecipient.isSelf } || !MessageConstraintsUtil.isValidRemoteDeleteSend(records, System.currentTimeMillis())) {
+      return
+    }
+
+    val deletedMessages = records.map(LocallyDeletedMessage::from)
+
+    Snackbar.make(binding.conversationItemRecycler, R.string.ConversationFragment__deleted_for_me, Snackbar.LENGTH_LONG)
+      .setAction(R.string.ConversationFragment_delete_for_everyone) {
+        showDeleteLocallyDeletedMessagesForEveryoneDialog(deletedMessages)
+      }
+      .show()
+  }
+
+  private fun showDeleteLocallyDeletedMessagesForEveryoneDialog(deletedMessages: List<LocallyDeletedMessage>) {
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.ConversationFragment_delete_for_everyone_title)
+      .setMessage(R.string.ConversationFragment_this_message_will_be_deleted_for_everyone_in_the_conversation)
+      .setPositiveButton(R.string.ConversationFragment_delete_for_everyone) { _, _ ->
+        viewModel.deleteLocallyDeletedMessagesForEveryone(deletedMessages)
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
   }
 
   private fun handleEndPoll(pollId: Long?) {
@@ -4288,9 +4397,7 @@ class ConversationFragment :
       adapter.playInlineContent(conversationMessage)
     }
 
-    override fun onInMemoryMessageClicked(messageRecord: InMemoryMessageRecord) {
-      ConversationDialogs.displayInMemoryMessageDialog(requireContext(), messageRecord)
-    }
+    override fun onInMemoryMessageClicked(messageRecord: InMemoryMessageRecord) = Unit
 
     override fun onViewGroupDescriptionChange(groupId: GroupId?, description: String, isMessageRequestAccepted: Boolean) {
       if (groupId != null) {
@@ -4396,9 +4503,9 @@ class ConversationFragment :
 
       container.hideAll(composeText)
 
-      sharedElement.transitionName = MediaPreviewActivity.SHARED_ELEMENT_TRANSITION_NAME
+      sharedElement.transitionName = MediaViewerActivity.SHARED_ELEMENT_TRANSITION_NAME
       requireActivity().setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
-      val options = ActivityOptions.makeSceneTransitionAnimation(requireActivity(), sharedElement, MediaPreviewActivity.SHARED_ELEMENT_TRANSITION_NAME)
+      val options = ActivityOptions.makeSceneTransitionAnimation(requireActivity(), sharedElement, MediaViewerActivity.SHARED_ELEMENT_TRANSITION_NAME)
       requireActivity().startActivity(MediaIntentFactory.create(requireActivity(), args), options.toBundle())
     }
 

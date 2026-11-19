@@ -86,6 +86,7 @@ import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.jobs.RotateCertificateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.thoughtcrime.securesms.megaphone.SignalLoginReminderSchedule
 import org.thoughtcrime.securesms.megaphone.TwoFactorReminderSchedule
 import org.thoughtcrime.securesms.pin.SvrRepository
@@ -423,10 +424,9 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
           // carry the identity keys and AEP. Re-apply the frozen account data to heal the committed registration.
           val committedAccountData = inProgressData.accountData
           if (inProgressData.accountDataCommitted && committedAccountData != null) {
-            Log.i(TAG, "V1 restore ran after an account was committed. Re-applying committed account data.")
+            Log.i(TAG, "V1 restore ran after an account was committed. Restoring committed state without re-registering prekeys.")
             UnifiedPushAccountTransition.withTransition(completesAccountRegistration = true) {
-              val masterKey = applyAccountEntropyPool(inProgressData)
-              applyAccountDataInTransition(committedAccountData, pin = inProgressData.pin, registrationLockEnabled = inProgressData.registrationLockEnabled, masterKey = masterKey)
+              restoreCommittedAccountAfterV1Restore(inProgressData, committedAccountData)
             }
           }
         }
@@ -508,14 +508,21 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
         when (val result = LocalArchiver.import(snapshotFileSystem, selfData, messageBackupKey)) {
           is Result.Success -> {
-            AppDependencies.jobManager.add(LocalBackupRestoreMediaJob.create(rootUri))
-
-            // The entered recovery key decrypted the backup the user chose to restore, so it always becomes the
-            // account's AEP -- even if the backup was made by a different account.
+            // The entered recovery key becomes the AEP for the account that imported the backup.
             withRegistrationDataOperationLock {
-              UnifiedPushAccountTransition.withTransition {
-                adoptAccountEntropyPool(aep)
+              val generation = synchronized(UnifiedPushLifecycle.monitor) {
+                check(SignalStore.account.aci == selfAci) { "Account changed during local backup restore" }
+                UnifiedPushLifecycle.currentGeneration()
+              }
+              UnifiedPushAccountTransition.withTransition(expectedGeneration = generation) {
+                check(SignalStore.account.aci == selfAci) { "Account changed during local backup restore" }
+                val aepChanged = adoptAccountEntropyPool(aep)
                 updateInProgressRegistrationDataWhileOperationLocked { this.accountEntropyPool = aep.value }
+                if (aepChanged) {
+                  Log.i(TAG, "V2 restore changed the account's AEP. Refreshing state derived from the master key.")
+                  BackupRepository.refreshMasterKeyDependents()
+                }
+                AppDependencies.jobManager.add(LocalBackupRestoreMediaJob.create(rootUri))
               }
             }
 
@@ -772,11 +779,13 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   internal var applyAccountEntropyPoolForCommit: (RegistrationData) -> MasterKey? = ::applyAccountEntropyPool
 
   /**
-   * Makes [aep] the account's AEP. Clears any dependent data, like SVRB state.
+   * Makes [aep] the account's AEP. Clears any dependent data, like SVRB state. Returns true if it replaced a different
+   * AEP the account already had.
    */
-  private fun adoptAccountEntropyPool(aep: AccountEntropyPool) {
+  private fun adoptAccountEntropyPool(aep: AccountEntropyPool): Boolean {
     val existing = SignalStore.account.accountEntropyPoolOrNull
-    if (existing != null && existing.value != aep.value && SignalStore.account.aci != null) {
+    val replacedExisting = existing != null && existing.value != aep.value && SignalStore.account.aci != null
+    if (replacedExisting) {
       Log.w(TAG, "[adoptAccountEntropyPool] Committing an AEP that differs from the one this account already had. Resetting dependent backup state.")
       SignalStore.backup.nextBackupSecretData = null
       SignalStore.backup.backupSecretRestoreRequired = true
@@ -785,6 +794,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
     }
 
     SignalStore.account.restoreAccountEntropyPool(aep)
+    return replacedExisting
   }
 
   /** The E164 and PNI are deliberately not required -- an account may have no phone number. */
@@ -793,10 +803,58 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   }
 
   /**
-   * Applies the one-time [AccountData] to permanent storage, registering the account locally. This runs once per
-   * registration, guarded by [RegistrationData.accountDataCommitted] -- the only re-application is after a
-   * post-registration V1 backup restore, which clobbers parts of [SignalStore.account] and re-applies this frozen
-   * data to heal them.
+   * A V1 restore after the account was committed replaces every database table except the prekey tables, and
+   * overwrites the identity keys and AEP in [SignalStore.account] with the backup's. This puts back only that state.
+   */
+  private fun restoreCommittedAccountAfterV1Restore(inProgressData: RegistrationData, accountData: AccountData) {
+    applyAccountEntropyPool(inProgressData)
+
+    val aci = ACI.parseOrThrow(accountData.aci)
+    val pni = PNI.parseOrNull(accountData.pni)
+    val e164 = accountData.e164?.nullIfBlank()
+
+    val aciIdentityKeyPair = IdentityKeyPair(accountData.aciIdentityKeyPair.toByteArray())
+    SignalStore.account.restoreAciIdentityKeyFromBackup(aciIdentityKeyPair.publicKey.serialize(), aciIdentityKeyPair.privateKey.serialize())
+
+    val pniIdentityKeyPair = accountData.pniIdentityKeyPair.takeIf { it.size > 0 }?.let { IdentityKeyPair(it.toByteArray()) }
+    if (pniIdentityKeyPair != null) {
+      SignalStore.account.restorePniIdentityKeyFromBackup(pniIdentityKeyPair.publicKey.serialize(), pniIdentityKeyPair.privateKey.serialize())
+    } else if (pni == null) {
+      SignalStore.account.clearPniIdentityKey()
+    }
+
+    AppDependencies.resetProtocolStores()
+
+    val aciProtocolStore = AppDependencies.protocolStore.aci()
+    val pniProtocolStore = AppDependencies.protocolStore.pniOrNull()
+
+    aciProtocolStore.sessions().archiveAllSessions()
+    pniProtocolStore?.sessions()?.archiveAllSessions()
+    SenderKeyUtil.clearAllState()
+
+    val profileKey = getOrCreateProfileKey(aci)
+    val recipientTable = SignalDatabase.recipients
+    val selfId = recipientTable.getAndPossiblyMergePnpVerified(aci, pni, e164)
+
+    recipientTable.setProfileSharing(selfId, true)
+    recipientTable.markRegisteredOrThrow(selfId, aci)
+    recipientTable.linkIdsForSelf(aci, pni, e164)
+    recipientTable.setProfileKey(selfId, profileKey)
+
+    AppDependencies.recipientCache.clearSelf()
+
+    val now = System.currentTimeMillis()
+    saveOwnIdentityKey(selfId, aci, aciProtocolStore, now)
+    if (pni != null && pniProtocolStore != null) {
+      saveOwnIdentityKey(selfId, pni, pniProtocolStore, now)
+    }
+
+    CheckKeyTransparencyJob.enqueueIfNecessary(addDelay = true)
+  }
+
+  /**
+   * Applies the one-time [AccountData] to permanent storage, registering the account locally. This must only run once
+   * per registration, guarded by [RegistrationData.accountDataCommitted].
    */
   private suspend fun applyAccountDataInTransition(accountData: AccountData, pin: String, registrationLockEnabled: Boolean, masterKey: MasterKey?) {
     Log.i(TAG, "[applyAccountData] Registering account locally.")

@@ -36,6 +36,7 @@ import org.signal.core.util.ServiceUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.signal.devicetransfer.TransferStatus;
+import org.signal.locale.AppLocale;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.DummyActivity;
 import org.thoughtcrime.securesms.MainActivity;
@@ -44,7 +45,6 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
-import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.notifications.NotificationIds;
@@ -68,8 +68,6 @@ public class KeyCachingService extends Service {
   public  static final String LOCALE_CHANGE_EVENT      = BuildConfig.APPLICATION_ID + ".service.action.LOCALE_CHANGE_EVENT";
 
   public static final String EXTRA_KEY_EXPIRED = "extra.key_expired";
-
-  private DynamicLanguage dynamicLanguage = new DynamicLanguage();
 
   private final IBinder binder  = new KeySetBinder();
 
@@ -196,7 +194,6 @@ public class KeyCachingService extends Service {
   }
 
   private void handleLocaleChanged() {
-    dynamicLanguage.updateServiceLocale(this);
     foregroundService();
   }
 
@@ -250,8 +247,9 @@ public class KeyCachingService extends Service {
     NotificationChannels.getInstance();
     NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.LOCKED_STATUS);
 
-    builder.setContentTitle(getString(R.string.KeyCachingService_passphrase_cached));
-    builder.setContentText(getString(R.string.KeyCachingService_signal_passphrase_cached));
+    Context localizedContext = createConfigurationContext(AppLocale.createOverrideConfiguration());
+    builder.setContentTitle(localizedContext.getString(R.string.KeyCachingService_passphrase_cached));
+    builder.setContentText(localizedContext.getString(R.string.KeyCachingService_signal_passphrase_cached));
     builder.setSmallIcon(R.drawable.ic_notification_unlocked);
     builder.setColor(DynamicTheme.resolveColor(this, com.google.android.material.R.attr.colorTertiary));
     builder.setWhen(0);
@@ -259,7 +257,7 @@ public class KeyCachingService extends Service {
     builder.setCategory(NotificationCompat.CATEGORY_STATUS);
     builder.setOngoing(true);
 
-    builder.addAction(org.signal.core.ui.R.drawable.symbol_lock_24, getString(R.string.KeyCachingService_lock), buildLockIntent());
+    builder.addAction(org.signal.core.ui.R.drawable.symbol_lock_24, localizedContext.getString(R.string.KeyCachingService_lock), buildLockIntent());
     builder.setContentIntent(buildLaunchIntent());
 
     stopForeground(true);

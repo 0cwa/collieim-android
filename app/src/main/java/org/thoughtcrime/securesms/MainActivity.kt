@@ -102,7 +102,6 @@ import org.signal.core.ui.viewModel
 import org.signal.core.util.AppForegroundObserver
 import org.signal.core.util.Util
 import org.signal.core.util.concurrent.LifecycleDisposable
-import org.signal.core.util.getParcelableCompat
 import org.signal.core.util.getSerializableCompat
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
@@ -127,6 +126,7 @@ import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaController
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.conversation.NewConversationActivity
+import org.thoughtcrime.securesms.conversation.v2.ConversationFragment
 import org.thoughtcrime.securesms.conversation.v2.MotionEventRelay
 import org.thoughtcrime.securesms.conversationlist.ConversationListFragment
 import org.thoughtcrime.securesms.conversationlist.RelinkDevicesReminderBottomSheetFragment
@@ -182,6 +182,8 @@ import org.thoughtcrime.securesms.util.SplashScreenUtil
 import org.thoughtcrime.securesms.util.TopToastPopup
 import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import org.signal.core.ui.R as CoreUiR
 
 class MainActivity :
   PassphraseRequiredActivity(),
@@ -190,17 +192,20 @@ class MainActivity :
   Material3OnScrollHelperBinder,
   ConversationListFragment.Callback,
   MainNavigationEventSink,
-  CallLogFragment.Callback {
+  CallLogFragment.Callback,
+  ConversationFragment.MediaEditorHandoffListener {
 
   companion object {
     private val TAG = Log.tag(MainActivity::class)
 
     private const val KEY_STARTING_TAB = "STARTING_TAB"
-    private const val KEY_DETAIL_LOCATION = "DETAIL_LOCATION"
     private const val KEY_EXIT_DETAIL = "EXIT_DETAIL"
 
     /** Width the navigation rail occupies inside the list pane. */
     private val RAIL_WIDTH = 80.dp
+
+    /** Longest [holdDrawingUntilCovered] waits for another activity to be launched. */
+    private val COVER_LAUNCH_TIMEOUT = 1.seconds
 
     @JvmStatic
     fun clearTop(context: Context): Intent {
@@ -211,11 +216,6 @@ class MainActivity :
     @JvmStatic
     fun clearTopAndOpenTab(context: Context, startingTab: MainListRoute): Intent {
       return clearTop(context).putExtra(KEY_STARTING_TAB, startingTab)
-    }
-
-    @JvmStatic
-    fun clearTopAndOpenDetail(context: Context, location: MainDetailRoute): Intent {
-      return clearTop(context).putExtra(KEY_DETAIL_LOCATION, location)
     }
 
     /**
@@ -238,7 +238,7 @@ class MainActivity :
     get() = mediaController
 
   private val mainNavigationViewModel: MainNavigationViewModel by viewModel {
-    val startingTab = intent.extras?.getSerializableCompat(KEY_STARTING_TAB, MainListRoute::class.java)
+    val startingTab = if (isTrustedIntent(intent)) intent.extras?.getSerializableCompat(KEY_STARTING_TAB, MainListRoute::class.java) else null
     MainNavigationViewModel(it.createSavedStateHandle(), startingTab ?: MainListRoute.Chats)
   }
 
@@ -254,6 +254,15 @@ class MainActivity :
   private val motionEventRelay: MotionEventRelay by viewModels()
 
   private var onFirstRender = false
+
+  /**
+   * True from creation or [onStop] until the next [onResume]. A conversation opened while this is set is shown without
+   * its enter animation, and the window holds off drawing until it renders.
+   */
+  private var hasBeenOffScreen = true
+
+  private var coverHold = CoverHold.NONE
+  private val coverLaunchTimeout = Runnable { coverHold = CoverHold.NONE }
   private var previousTopToastPopup: TopToastPopup? = null
 
   private val mainBottomChromeCallback = BottomChromeCallback()
@@ -426,6 +435,7 @@ class MainActivity :
 
         val paneAnchor by mainNavigationViewModel.paneAnchor.collectAsStateWithLifecycle()
         val hasDetailContent by mainNavigationViewModel.hasDetailContent.collectAsStateWithLifecycle()
+        val isHoldingEnter by mainNavigationViewModel.navigator.isHoldingEnter.collectAsStateWithLifecycle()
 
         val tabEntries = rememberDecoratedDetailEntries(mainNavigationViewModel, isSplitPane)
 
@@ -468,6 +478,8 @@ class MainActivity :
             layout = paneLayout,
             listPaneChrome = listPaneChrome,
             emptyDetailContent = emptyDetailContent,
+            isHoldingEnter = isHoldingEnter,
+            onTopEntryReady = { mainNavigationViewModel.navigator.processEvent(ListDetailEvents.TopEntryReady) },
             modifier = Modifier.padding(paddingValues)
           )
         }
@@ -667,14 +679,13 @@ class MainActivity :
 
     val extras = intent.extras ?: return
 
-    if (extras.getBoolean(KEY_EXIT_DETAIL, false)) {
-      mainNavigationViewModel.onEvent(MainNavigationEvents.ExitDetail)
+    if (!isTrustedIntent(intent)) {
+      Log.w(TAG, "Received navigation extras through an exported entry point. Ignoring them.")
       return
     }
 
-    val detailLocation = extras.getParcelableCompat(KEY_DETAIL_LOCATION, MainDetailRoute::class.java)
-    if (detailLocation != null) {
-      mainNavigationViewModel.onEvent(MainNavigationEvents.GoToDetail(detailLocation))
+    if (extras.getBoolean(KEY_EXIT_DETAIL, false)) {
+      mainNavigationViewModel.onEvent(MainNavigationEvents.ExitDetail)
       return
     }
 
@@ -692,6 +703,10 @@ class MainActivity :
 
   override fun onResume() {
     super.onResume()
+    if (coverHold == CoverHold.AWAITING_STOP) {
+      coverHold = CoverHold.NONE
+    }
+    hasBeenOffScreen = false
     dynamicTheme.onResume(this)
 
     toolbarViewModel.refresh()
@@ -722,8 +737,18 @@ class MainActivity :
     mainNavigationViewModel.onEvent(MainNavigationEvents.RefreshNavigationBar)
   }
 
+  override fun onPause() {
+    super.onPause()
+    if (coverHold == CoverHold.AWAITING_LAUNCH) {
+      findViewById<View>(android.R.id.content).removeCallbacks(coverLaunchTimeout)
+      coverHold = CoverHold.AWAITING_STOP
+    }
+  }
+
   override fun onStop() {
     super.onStop()
+    hasBeenOffScreen = true
+    coverHold = CoverHold.NONE
     SplashScreenUtil.setSplashScreenThemeIfNecessary(this, SignalStore.settings.theme, SignalStore.settings.isDynamicColorsEnabled)
   }
 
@@ -874,7 +899,7 @@ class MainActivity :
 
   private fun handleConversationIntent(intent: Intent) {
     if (ConversationIntents.isConversationIntent(intent)) {
-      if (!isTrustedConversationIntent(intent)) {
+      if (!isTrustedIntent(intent)) {
         Log.w(TAG, "Received a conversation intent through an exported entry point. Ignoring its extras.")
         intent.action = null
         setIntent(intent)
@@ -889,17 +914,88 @@ class MainActivity :
         return
       }
 
-      mainNavigationViewModel.onEvent(MainNavigationEvents.GoToDetail(MainDetailRoute.Conversation(ConversationIntents.readArgsFromBundle(extras))))
+      val conversationArgs = ConversationIntents.readArgsFromBundle(extras)
+
+      if (hasBeenOffScreen) {
+        holdDrawingUntilConversationRenders()
+
+        if (conversationArgs.mayOpenMediaEditor()) {
+          holdDrawingUntilCovered()
+        } else if (AppForegroundObserver.isForegrounded()) {
+          overridePendingTransition(R.anim.pane_shift_enter, R.anim.stationary)
+        }
+      }
+
+      mainNavigationViewModel.onEvent(MainNavigationEvents.GoToDetail(MainDetailRoute.Conversation(conversationArgs)))
       intent.action = null
       setIntent(intent)
     }
   }
 
   /**
-   * While MainActivity isn't exporting, we have launcher aliases that are, so we verify that someone isn't launching us through those befre
-   * respecting various intent attributes.
+   * Keeps the window from drawing until the conversation about to be opened has rendered, so that opening it from off
+   * screen reveals the finished conversation rather than whatever was beneath it.
    */
-  private fun isTrustedConversationIntent(intent: Intent): Boolean {
+  private fun holdDrawingUntilConversationRenders() {
+    val navigator = mainNavigationViewModel.navigator
+    val wasHolding = navigator.isHoldingEnter.value
+    navigator.processEvent(ListDetailEvents.HoldNextEnter)
+
+    if (wasHolding) {
+      return
+    }
+
+    holdDrawingWhile { navigator.isHoldingEnter.value }
+  }
+
+  /**
+   * Keeps the window from drawing until another activity covers it, so that a conversation which immediately hands off to
+   * the media editor isn't flashed on screen first. Ends early if the conversation reports it isn't opening one, and gives
+   * up after [COVER_LAUNCH_TIMEOUT] if nothing is launched.
+   */
+  private fun holdDrawingUntilCovered() {
+    if (coverHold != CoverHold.NONE) {
+      return
+    }
+
+    coverHold = CoverHold.AWAITING_LAUNCH
+    holdDrawingWhile { coverHold != CoverHold.NONE }
+
+    val content: View = findViewById(android.R.id.content)
+    content.removeCallbacks(coverLaunchTimeout)
+    content.postDelayed(coverLaunchTimeout, COVER_LAUNCH_TIMEOUT.inWholeMilliseconds)
+  }
+
+  override fun onMediaEditorNotOpened() {
+    if (coverHold == CoverHold.AWAITING_LAUNCH) {
+      findViewById<View>(android.R.id.content).removeCallbacks(coverLaunchTimeout)
+      coverHold = CoverHold.NONE
+    }
+  }
+
+  /**
+   * Cancels every window draw while [isHolding] returns true.
+   */
+  private fun holdDrawingWhile(isHolding: () -> Boolean) {
+    val content: View = findViewById(android.R.id.content)
+    content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+      override fun onPreDraw(): Boolean {
+        if (isHolding()) {
+          return false
+        }
+
+        content.viewTreeObserver.removeOnPreDrawListener(this)
+        return true
+      }
+    })
+  }
+
+  /**
+   * While MainActivity isn't exported, we have launcher aliases that are, so we verify that someone isn't launching us through those before
+   * respecting various intent attributes. Only intents addressed directly to MainActivity can come from our own code, since other apps are
+   * unable to target a non-exported component.
+   */
+  private fun isTrustedIntent(intent: Intent): Boolean {
     return intent.component?.className == MainActivity::class.java.name
   }
 
@@ -1158,4 +1254,14 @@ class MainActivity :
   }
 
   override fun onEvent(event: MainNavigationEvents) = mainNavigationViewModel.onEvent(event)
+}
+
+/**
+ * Progress of [MainActivity.holdDrawingUntilCovered]. Once another activity has been launched the hold lasts until it
+ * covers this one, or until this one resumes again if it never does.
+ */
+private enum class CoverHold {
+  NONE,
+  AWAITING_LAUNCH,
+  AWAITING_STOP
 }

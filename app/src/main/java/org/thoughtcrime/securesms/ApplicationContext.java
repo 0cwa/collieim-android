@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Build;
 
 import androidx.annotation.MainThread;
@@ -148,7 +149,7 @@ import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
 import org.thoughtcrime.securesms.util.SqlCipherLogTarget;
 import org.thoughtcrime.securesms.util.SupportEmailUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
-import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import org.signal.locale.AppLocale;
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket;
 
 import java.io.InterruptedIOException;
@@ -830,8 +831,14 @@ public class ApplicationContext extends Application implements AppForegroundObse
   @Override
   protected void attachBaseContext(Context base) {
     PlainTextKeyValueStore.init(org.thoughtcrime.securesms.util.SecurePreferenceManager.getSecurePreferences(base), BuildConfig.VERSION_CODE);
-    DynamicLanguageContextWrapper.updateContext(base);
+    AppLocale.initialize(base, BuildConfig.LANGUAGES, PlainTextKeyValueStore::getLanguage);
     super.attachBaseContext(base);
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    AppLocale.onConfigurationChanged(this, newConfig);
+    super.onConfigurationChanged(newConfig);
   }
 
   private static class ProviderInitializationException extends RuntimeException {

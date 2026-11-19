@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import org.signal.appsettings.routes.AppSettingsNavigationEvent
+import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.appsettings.routes.navigateBack
+import org.signal.appsettings.routes.navigateTo
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
 
@@ -21,7 +25,8 @@ import org.signal.core.util.logging.Log
 class HelpSettingsViewModel(
   versionName: String,
   logEnabled: Boolean = true,
-  showAppUpdates: Boolean = false
+  showAppUpdates: Boolean = false,
+  private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
 ) : EventDrivenViewModel<HelpSettingsEvent>(TAG) {
 
   companion object {
@@ -37,17 +42,21 @@ class HelpSettingsViewModel(
   override suspend fun processEvent(event: HelpSettingsEvent) {
     when (event) {
       HelpSettingsEvent.WebsiteClicked -> _actions.send(HelpSettingsAction.OpenWebsite)
-      HelpSettingsEvent.VersionClicked -> _actions.send(HelpSettingsAction.NavigateToAppUpdates)
+      HelpSettingsEvent.VersionClicked -> if (_state.value.showAppUpdates) parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates)
       is HelpSettingsEvent.LogEnabledChanged -> _actions.send(HelpSettingsAction.SetLogEnabled(event.enabled))
       is HelpSettingsEvent.LogEnabledSaved -> _state.update { it.copy(logEnabled = event.enabled) }
-      HelpSettingsEvent.NavigateBackClicked -> _actions.send(HelpSettingsAction.NavigateBack)
-      HelpSettingsEvent.SupportCenterClicked -> _actions.send(HelpSettingsAction.OpenSupportCenter)
-      HelpSettingsEvent.ContactUsClicked -> _actions.send(HelpSettingsAction.NavigateToContactUs)
-      HelpSettingsEvent.VersionLongClicked -> _actions.send(HelpSettingsAction.CopyVersionToClipboard(_state.value.versionName))
       HelpSettingsEvent.WhatsNewClicked -> _actions.send(HelpSettingsAction.OpenWhatsNew)
-      HelpSettingsEvent.DebugLogClicked -> if (_state.value.logEnabled) _actions.send(HelpSettingsAction.NavigateToDebugLog)
-      HelpSettingsEvent.LicensesClicked -> _actions.send(HelpSettingsAction.NavigateToLicenses)
+      HelpSettingsEvent.NavigateBackClicked -> parentEventEmitter.navigateBack()
+      HelpSettingsEvent.SupportCenterClicked -> _actions.send(HelpSettingsAction.OpenSupportCenter)
+      HelpSettingsEvent.ContactUsClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.Help())
+      HelpSettingsEvent.VersionLongClicked -> {
+        _actions.send(HelpSettingsAction.CopyVersionToClipboard(_state.value.versionName))
+        _state.update { it.copy(snackbar = HelpSettingsState.Snackbar.VersionCopied) }
+      }
+      HelpSettingsEvent.DebugLogClicked -> if (_state.value.logEnabled) parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.DebugLog)
+      HelpSettingsEvent.LicensesClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.Licenses)
       HelpSettingsEvent.TermsAndPrivacyPolicyClicked -> _actions.send(HelpSettingsAction.OpenTermsAndPrivacyPolicy)
+      HelpSettingsEvent.SnackbarDismissed -> _state.update { it.copy(snackbar = HelpSettingsState.Snackbar.None) }
     }
   }
 }

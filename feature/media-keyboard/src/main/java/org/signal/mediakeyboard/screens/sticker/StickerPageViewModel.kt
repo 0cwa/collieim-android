@@ -45,7 +45,7 @@ class StickerPageViewModel(
    */
   val searchFieldState = TextFieldState()
 
-  private val _state = MutableStateFlow(StickerPageState(allowAnimation = repository.allowStickerAnimation, favoritesEnabled = RemoteConfig.internalUser))
+  private val _state = MutableStateFlow(StickerPageState(allowAnimation = repository.allowStickerAnimation, moveToTopEnabled = RemoteConfig.internalUser))
   val state: StateFlow<StickerPageState> = _state.asStateFlow()
 
   init {
@@ -103,7 +103,7 @@ class StickerPageViewModel(
       }
 
       is StickerPageScreenEvents.StickerLongPressed -> {
-        emitAction(MediaKeyboardAction.StickerSelected(event.sticker))
+        emitAction(MediaKeyboardAction.StickerSelected(event.sticker, event.isInFavorites))
       }
 
       is StickerPageScreenEvents.StickerSendClicked -> {

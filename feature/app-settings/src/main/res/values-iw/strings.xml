@@ -1176,4 +1176,75 @@
     <string name="SelectRecipientsFragment__add">הוסף</string>
     <!-- Title for add recipients to notification profile screen in create flow -->
     <string name="SelectRecipientsScreen__allowed_notifications">התראות מותרות</string>
+
+    <!-- AdvancedPrivacySettingsScreen -->
+    <string name="preferences__advanced">מתקדם</string>
+    <string name="preferences_advanced__always_relay_calls">שדר מחדש שיחות תמיד</string>
+    <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">שדר את כל השיחות דרך שרת Signal כדי להימנע מחשיפת כתובת ה־IP שלך לאיש הקשר שלך. אפשור יפחית איכות שיחה.</string>
+    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
+    <string name="preferences_communication__category_censorship_circumvention">עקיפת צנזורה</string>
+    <!-- Title of the \'censorship circumvention\' toggle switch -->
+    <string name="preferences_communication__censorship_circumvention">עקיפת צנזורה</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">אם מאופשר, Signal ינסה לעקוף צנזורה. אל תאפשר מאפיין זה אלא אם אתה במיקום שבו Signal מצונזר.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">עקיפת צנזורה הופעלה על סמך מספר הטלפון של החשבון שלך.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_you_have_manually_disabled">הִשְׁבַּתָּ באופן ידני עקיפת צנזורה.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
+    <string name="preferences_communication__censorship_circumvention_is_not_necessary_you_are_already_connected">עקיפת צנזורה אינה הכרחית; אתה מחובר כבר אל שירות Signal.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
+    <string name="preferences_communication__censorship_circumvention_can_only_be_activated_when_connected_to_the_internet">עקיפת צנזורה יכולה להיפעל בעת התחברות אל האינטרנט.</string>
+    <string name="preferences_communication__category_sealed_sender">שולח אטום</string>
+    <string name="AdvancedPrivacySettingsFragment__show_status_icon">הראה איקון מעמד</string>
+    <string name="AdvancedPrivacySettingsFragment__show_an_icon">הראה איקון בפרטי הודעה כאשר היא נשלחה ע״י שימוש בשולח אטום.</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone">התר מכל אחד</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone_description">אפשר שולח אטום עבור הודעות נכנסות מאת אי־אנשי קשר ומאת אנשים איתם לא שיתפת את הפרופיל שלך.</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">אימות מפתח אוטומטי</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">כשהאפשרות הזו מופעלת, Signal תנסה לאמת אוטומטית את ההצפנה של צ׳אטים אישיים.</string>
+
+    <!-- ExpireTimerSettingsScreen -->
+    <!-- Title of the screen for choosing a disappearing messages timer -->
+    <string name="ExpireTimerSettingsScreen__disappearing_messages">הודעות נעלמות</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">כאשר אפשרות זו מופעלת, הודעות חדשות שנשלחות ומתקבלות בצ׳אטים חדשים שהותחלו על ידך ייעלמו לאחר שייראו.</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">כאשר אפשרות זו מופעלת, הודעות חדשות שנשלחות ומתקבלות בצ׳אט זה ייעלמו לאחר שייראו.</string>
+    <string name="ExpireTimerSettingsFragment__off">כבוי</string>
+    <string name="ExpireTimerSettingsFragment__4_weeks">4 שבועות</string>
+    <string name="ExpireTimerSettingsFragment__1_week">שבוע</string>
+    <string name="ExpireTimerSettingsFragment__1_day">יום</string>
+    <string name="ExpireTimerSettingsFragment__8_hours">8 שעות</string>
+    <string name="ExpireTimerSettingsFragment__1_hour">שעה</string>
+    <string name="ExpireTimerSettingsFragment__5_minutes">5 דקות</string>
+    <string name="ExpireTimerSettingsFragment__30_seconds">30 שניות</string>
+    <string name="ExpireTimerSettingsFragment__custom_time">זמן מותאם אישית</string>
+    <string name="ExpireTimerSettingsFragment__save">שמור</string>
+
+    <!-- AccountSettingsScreen -->
+    <!-- Snackbar shown after the user creates a PIN -->
+    <string name="AccountSettingsScreen__pin_created">PIN נוצר.</string>
+    <!-- Snackbar shown when wiping all of the app\'s data on this device fails -->
+    <string name="AccountSettingsScreen__delete_all_data_failed">מחיקת נתונים נכשלה</string>
+    <string name="preferences_app_protection__failed_to_enable_registration_lock">נכשל באיפשור נעילת הרשמה.</string>
+    <string name="preferences_app_protection__failed_to_disable_registration_lock">נכשל בהשבתת נעילת הרשמה.</string>
+
+    <!-- AdvancedPinSettingsScreen -->
+    <!-- Title of toolbar for the advanced pin settings screen -->
+    <string name="preferences__advanced_pin_settings_title">הגדרות PIN מתקדמות</string>
+    <string name="preferences__enable_pin">אפשר PIN</string>
+    <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">קודי PIN שומרים על מידע מאוחסן עם Signal מוצפן כך שרק אתה יכול להשיג גישה אליו. הפרופיל, ההגדרות ואנשי הקשר שלך ישוחזרו כשתתקין מחדש את Signal. לא תצטרך את ה־PIN שלך כדי לפתוח את היישום.</string>
+    <string name="preferences__disable_pin">השבת PIN</string>
+    <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">אם תשבית את ה־PIN, תאבד את כל הנתונים כאשר תירשם מחדש אל Signal אלא אם תגבה ותשחזר באופן ידני. אינך יכול להפעיל נעילת הרשמה בזמן שה־PIN מושבת.</string>
+    <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">קודי PIN נדרשים עבור נעילת הרשמה. כדי להשבית קודי PIN, אנא השבת תחילה נעילת הרשמה.</string>
+    <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">תעד משפט השבה של תשלומים</string>
+    <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">לפני שתוכל להשבית את ה־PIN שלך, אתה חייב לתעד את משפט ההשבה של התשלומים שלך כדי להבטיח שתוכל להשיב את חשבון התשלומים שלך.</string>
+    <string name="ApplicationPreferencesActivity_record_phrase">תעד משפט</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">יצירת מפתח שחזור חדש</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">יש ליצור ולתעד מפתח שחזור חדש לפני שתהיה לך אפשרות להשבית את קוד ה–PIN שלך.</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">יצירת מפתח</string>
+    <string name="ApplicationPreferencesActivity_pin_created">PIN נוצר.</string>
+    <string name="ApplicationPreferencesActivity_pin_disabled">PIN הושבת.</string>
 </resources>

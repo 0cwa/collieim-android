@@ -1164,4 +1164,75 @@
     <string name="SelectRecipientsFragment__add">追加する</string>
     <!-- Title for add recipients to notification profile screen in create flow -->
     <string name="SelectRecipientsScreen__allowed_notifications">通知許可</string>
+
+    <!-- AdvancedPrivacySettingsScreen -->
+    <string name="preferences__advanced">詳細設定</string>
+    <string name="preferences_advanced__always_relay_calls">通話を常に中継する</string>
+    <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">すべての通話をSignalサーバで中継して、相手にIPアドレスを知られることを防ぎます。ただし通話の品質は下がります。</string>
+    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
+    <string name="preferences_communication__category_censorship_circumvention">検閲回避</string>
+    <!-- Title of the \'censorship circumvention\' toggle switch -->
+    <string name="preferences_communication__censorship_circumvention">検閲回避</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">有効にすると、Signalは検閲回避を試行します。Signalが検閲される場所にいない場合は、有効にしないでください。</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">アカウントの電話番号に基づいた、検閲回避が有効になりました。</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_you_have_manually_disabled">検閲回避を手動で無効にしました。</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
+    <string name="preferences_communication__censorship_circumvention_is_not_necessary_you_are_already_connected">すでにSignalサービスに接続しているため、検問回避は不要です。</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
+    <string name="preferences_communication__censorship_circumvention_can_only_be_activated_when_connected_to_the_internet">検閲回避は、インターネットに接続されている場合にのみ有効です。</string>
+    <string name="preferences_communication__category_sealed_sender">送信者の保護</string>
+    <string name="AdvancedPrivacySettingsFragment__show_status_icon">ステータスアイコンを表示する</string>
+    <string name="AdvancedPrivacySettingsFragment__show_an_icon">送信者の保護を使用して届けられたメッセージの詳細で、アイコンを表示します。</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone">全員を許可する</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone_description">あなたのプロフィールを共有しておらず、連絡先にもないユーザーからのメッセージ受信において、送信者の保護を有効にします。</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">自動キー検証</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">有効にすると、Signalは1対1のチャットの暗号化を自動的に検証します。</string>
+
+    <!-- ExpireTimerSettingsScreen -->
+    <!-- Title of the screen for choosing a disappearing messages timer -->
+    <string name="ExpireTimerSettingsScreen__disappearing_messages">消えるメッセージ</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">有効にすると、あなたの新規チャットで新たに送受信されるメッセージは、閲覧後に消えます。</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">有効にすると、このチャットで新たに送受信されたメッセージは、閲覧後に消えます。</string>
+    <string name="ExpireTimerSettingsFragment__off">オフ</string>
+    <string name="ExpireTimerSettingsFragment__4_weeks">4週間</string>
+    <string name="ExpireTimerSettingsFragment__1_week">1週間</string>
+    <string name="ExpireTimerSettingsFragment__1_day">1日</string>
+    <string name="ExpireTimerSettingsFragment__8_hours">8時間</string>
+    <string name="ExpireTimerSettingsFragment__1_hour">1時間</string>
+    <string name="ExpireTimerSettingsFragment__5_minutes">5分</string>
+    <string name="ExpireTimerSettingsFragment__30_seconds">30秒</string>
+    <string name="ExpireTimerSettingsFragment__custom_time">カスタム時間</string>
+    <string name="ExpireTimerSettingsFragment__save">保存</string>
+
+    <!-- AccountSettingsScreen -->
+    <!-- Snackbar shown after the user creates a PIN -->
+    <string name="AccountSettingsScreen__pin_created">PINを作成しました。</string>
+    <!-- Snackbar shown when wiping all of the app\'s data on this device fails -->
+    <string name="AccountSettingsScreen__delete_all_data_failed">データの消去に失敗しました</string>
+    <string name="preferences_app_protection__failed_to_enable_registration_lock">登録ロックを有効にすることに失敗しました。</string>
+    <string name="preferences_app_protection__failed_to_disable_registration_lock">登録ロックを無効にすることに失敗しました</string>
+
+    <!-- AdvancedPinSettingsScreen -->
+    <!-- Title of toolbar for the advanced pin settings screen -->
+    <string name="preferences__advanced_pin_settings_title">PINの詳細設定</string>
+    <string name="preferences__enable_pin">PINを有効化</string>
+    <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">Signal内に保存された情報は、PINにより暗号化を保持されるため、あなたのみアクセスできます。PINを使うことで、Signalの再インストール時にあなたのプロフィール、設定および連絡先が復元されます。アプリを開く際にはPINは必要はありません。</string>
+    <string name="preferences__disable_pin">PINを無効化</string>
+    <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">PINを無効にすると、自身でバックアップと復元を行わない限り、Signalに再登録する際すべてのデータが失われます。PINを無効にしている間は登録ロックは使用できません。</string>
+    <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">登録ロックを使うにはPINが必要です。PINを無効にするには、まず登録ロックを無効にしてください。</string>
+    <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">決済機能リカバリーフレーズの保管</string>
+    <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">PINを無効にする前に、決済口座を回復するためのリカバリーフレーズを保管しなければなりません。</string>
+    <string name="ApplicationPreferencesActivity_record_phrase">フレーズを記録</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">新しい回復キーを作成する</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">PINを無効にする前に、新しい回復キーを作成・記録する必要があります。</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">キーを作成</string>
+    <string name="ApplicationPreferencesActivity_pin_created">PINを作成しました。</string>
+    <string name="ApplicationPreferencesActivity_pin_disabled">PINを無効にしました。</string>
 </resources>

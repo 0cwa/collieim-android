@@ -1,0 +1,3 @@
+topic: settings
+pr: 152
+Collie settings has a Hardening section for optional protections.

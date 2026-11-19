@@ -87,7 +87,7 @@ class InAppPaymentRedemptionJobTest {
     state: InAppPaymentTable.State,
     redemptionState: InAppPaymentData.RedemptionState
   ): InAppPaymentTable.InAppPayment {
-    val iap = inAppPaymentsTestRule.createInAppPayment(InAppPaymentType.RECURRING_DONATION, PaymentSourceType.Stripe.SEPADebit)
+    val iap = inAppPaymentsTestRule.createInAppPayment(InAppPaymentType.RECURRING_BACKUP, PaymentSourceType.Stripe.SEPADebit)
     SignalDatabase.inAppPayments.insert(
       type = iap.type,
       state = state,

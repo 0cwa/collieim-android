@@ -27,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.PlayerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -67,6 +68,7 @@ import java.io.File
 import kotlin.math.roundToInt
 import org.signal.core.ui.R as CoreUiR
 import org.signal.uicomponents.R as UiComponentsR
+import org.signal.video.R as VideoR
 
 /** Real media decoding, activity recreation, and screenshots on Android 15; no account/network media. */
 @RunWith(AndroidJUnit4::class)
@@ -233,7 +235,8 @@ class MediaThemeRuntimeTest {
       return activity.findViewById<SubsamplingScaleImageView>(UiComponentsR.id.subsampling_image_view)?.isImageLoaded == true
     }
     val video = findVideoPlayer(activity) ?: return false
-    return video.duration > 0 && video.controlView?.player?.playbackState == Player.STATE_READY
+    val player = video.findViewById<PlayerView>(VideoR.id.video_view)?.player
+    return video.duration > 0 && player?.playbackState == Player.STATE_READY
   }
 
   private fun mediaIntent(sample: Sample, activityClass: Class<out Activity>): Intent {

@@ -1,5 +1,6 @@
 """Exercise the PR #168 regression through real commits, merges and pushes."""
 
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
@@ -13,6 +14,22 @@ CHECKER = SCRIPTS / "collie_check_layer_trailers.py"
 INSTALLER = SCRIPTS / "install.py"
 GOOD = "Change the website\n\nLayer: website\nCo-authored-by: Name <name@example.com>\n"
 BROKEN = GOOD.replace("website\nCo-authored", "website\n\nCo-authored")
+REPO_CATALOG = SCRIPTS.parent / "layers.toml"
+CATALOG = """
+[rules]
+one_feature_per_pr_from = 202
+[layers.website]
+kind = "infra"
+about = "Website"
+[layers.relay]
+kind = "feature"
+about = "Relay"
+[layers.setup]
+kind = "feature"
+about = "Setup"
+[layers.unified-push]
+alias_of = "relay"
+"""
 
 
 class LayerTrailerTests(unittest.TestCase):
@@ -56,6 +73,21 @@ class LayerTrailerTests(unittest.TestCase):
 
     def check_range(self, **kwargs):
         return self.run_command(sys.executable, str(CHECKER), "range", self.base, **kwargs)
+
+    def add_catalog(self, text=CATALOG, layer="website"):
+        path = self.repo / "tooling/layers.toml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+        self.git("add", str(path))
+        self.commit(f"Add the layer catalog\n\nLayer: {layer}\n")
+
+    def check_pr(self, number, **kwargs):
+        env = dict(self.env, COLLIE_PR_NUMBER=str(number))
+        result = subprocess.run(
+            [sys.executable, str(CHECKER), "range", self.base], cwd=self.repo, env=env,
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
+        )
+        return result
 
     def bare_remote(self):
         remote = self.root / "remote.git"
@@ -234,6 +266,50 @@ class LayerTrailerTests(unittest.TestCase):
             path.unlink()
         self.assertNotEqual(self.commit(BROKEN, check=False).returncode, 0)
         self.commit(GOOD)
+
+
+    def test_repository_catalog_parses(self):
+        spec = importlib.util.spec_from_file_location("checker", CHECKER)
+        checker = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(checker)
+        catalog = checker.Catalog(REPO_CATALOG.read_text(encoding="utf-8"))
+        self.assertIsNone(catalog.problem("unifiedpush"))
+        self.assertIn("use 'Layer: unifiedpush'", catalog.problem("unified-push"))
+
+    def test_catalog_rejects_unknown_and_old_layer_names(self):
+        self.add_catalog()
+        self.install()
+        rejected = self.commit("Change\n\nLayer: relays\n", check=False)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn("not in tooling/layers.toml", rejected.stderr)
+        rejected = self.commit("Change\n\nLayer: unified-push\n", check=False)
+        self.assertIn("use 'Layer: relay'", rejected.stderr)
+        self.git("-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-m", "Change", "-m", "Layer: relays")
+        self.assertIn("not in tooling/layers.toml", self.check_range(check=False).stderr)
+
+    def test_new_feature_is_accepted_with_its_catalog_entry_in_the_same_range(self):
+        self.add_catalog(CATALOG + '[layers.stickers]\nkind = "feature"\nabout = "Stickers"\n')
+        self.commit("Add sticker packs\n\nLayer: stickers\n")
+        self.assertIn("feature layer: stickers", self.check_pr(202).stdout)
+
+    def test_one_feature_per_pr_is_enforced_from_the_cutoff(self):
+        self.add_catalog()
+        self.commit("Relay change\n\nLayer: relay\n")
+        self.commit("Relay tests\n\nLayer: website\n")
+        self.assertEqual(self.check_pr(202).returncode, 0)  # One feature plus infra.
+        self.commit("Setup change\n\nLayer: setup\n")
+        enforced = self.check_pr(202)
+        self.assertNotEqual(enforced.returncode, 0)
+        self.assertIn("Error: this range changes 2 feature layers (relay, setup)", enforced.stderr)
+        older = self.check_pr(201)
+        self.assertEqual(older.returncode, 0)
+        self.assertIn("Warning:", older.stderr)
+        local = self.check_range()
+        self.assertIn("Warning:", local.stderr)
+
+    def test_range_without_catalog_checks_only_the_format(self):
+        self.commit("Change\n\nLayer: anything-new\n")
+        self.assertEqual(self.check_pr(300).returncode, 0)
 
 
 if __name__ == "__main__":

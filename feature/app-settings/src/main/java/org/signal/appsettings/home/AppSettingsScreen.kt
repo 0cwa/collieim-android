@@ -28,7 +28,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -63,6 +66,7 @@ object AppSettingsTestTags {
   const val ROW_BACKUP_WARNING = "row-backup-warning"
   const val ROW_ACCOUNT = "row-account"
   const val ROW_LINKED_DEVICES = "row-linked-devices"
+  const val ROW_COLLIE = "row-collie"
   const val ROW_DONATE = "row-donate"
   const val ROW_APPEARANCE = "row-appearance"
   const val ROW_CHATS = "row-chats"
@@ -254,6 +258,20 @@ fun AppSettingsScreen(
 
         item {
           Dividers.Default()
+        }
+
+        item {
+          Rows.TextRow(
+            text = AnnotatedString(
+              text = stringResource(R.string.CollieSettings__title),
+              spanStyle = SpanStyle(fontWeight = FontWeight.Bold)
+            ),
+            icon = SignalIcons.Settings.painter,
+            onClick = { onEvent(AppSettingsEvent.CollieClicked) },
+            modifier = Modifier
+              .selectionHighlight(selectedRoute == AppSettingsRoute.Collie)
+              .testTag(AppSettingsTestTags.ROW_COLLIE)
+          )
         }
 
         item {

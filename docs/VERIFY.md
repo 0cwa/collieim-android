@@ -25,7 +25,7 @@ done
 git diff --stat "$BASE...$HEAD"
 ```
 
-The PR check requires one lowercase `Layer: <feature>` trailer on every non-merge commit; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
+The PR check requires one `Layer:` trailer on every non-merge commit, naming an entry in [`tooling/layers.toml`](../tooling/layers.toml); from PR #202 on, a PR may change only one `feature` layer, and PRs land with a merge commit so each commit keeps its layer; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
 
 ## Catch trailer mistakes locally
 
@@ -56,7 +56,7 @@ python3 tooling/git-hooks/collie_check_layer_trailers.py range origin/main HEAD
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/git-hooks -p 'test_*.py'
 ```
 
-The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) runs after the message is available; `pre-commit` runs earlier and cannot validate the final message. A pre-commit framework could run a commit-message check, but these two hooks need only Git and Python 3, which CI already uses. Hooks are local and can be bypassed, so the required **Layer trailers** PR check remains the final guard and runs the same validator.
+The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) runs after the message is available; `pre-commit` runs earlier and cannot validate the final message. A pre-commit framework could run a commit-message check, but these two hooks need only Git and Python 3.11 or later (to read `tooling/layers.toml`), which CI already uses. Hooks are local and can be bypassed, so the required **Layer trailers** PR check remains the final guard and runs the same validator.
 
 ## Verify a Signal upgrade
 

@@ -1254,6 +1254,8 @@ object BackupRepository {
     SignalStore.backup.hasInvalidBackupVersion = false
     val selfId: RecipientId
 
+    var foreignKeysDisabled = false
+    var transactionStarted = false
     var transactionSuccessful = false
     try {
       // Removing all the data from the various tables is *very* expensive (i.e. can take *several* minutes) if we don't do some pre-work.
@@ -1261,9 +1263,11 @@ object BackupRepository {
 
       Log.d(TAG, "[import] Disabling foreign keys...")
       SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(false)
+      foreignKeysDisabled = true
 
       Log.d(TAG, "[import] Acquiring transaction...")
       SignalDatabase.writableDatabase.beginTransaction()
+      transactionStarted = true
 
       Log.d(TAG, "[import] Inside transaction.")
       stopwatch.split("get-transaction")
@@ -1476,7 +1480,7 @@ object BackupRepository {
       SignalDatabase.writableDatabase.setTransactionSuccessful()
       transactionSuccessful = true
     } finally {
-      if (SignalDatabase.writableDatabase.inTransaction()) {
+      if (transactionStarted && SignalDatabase.writableDatabase.inTransaction()) {
         SignalDatabase.writableDatabase.endTransaction()
       }
 
@@ -1485,8 +1489,10 @@ object BackupRepository {
         SignalStore.releaseChannel.clearReleaseChannelRecipientId()
       }
 
-      Log.d(TAG, "[import] Re-enabling foreign keys...")
-      SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+      if (foreignKeysDisabled) {
+        Log.d(TAG, "[import] Re-enabling foreign keys...")
+        SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+      }
     }
 
     SignalDatabase.remappedRecords.clearCache()

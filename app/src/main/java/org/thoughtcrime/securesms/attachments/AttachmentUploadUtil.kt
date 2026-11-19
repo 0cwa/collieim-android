@@ -66,13 +66,15 @@ object AttachmentUploadUtil {
     context: Context,
     attachment: Attachment,
     cancellationSignal: (() -> Boolean)? = null,
-    progressListener: ProgressListener? = null
+    progressListener: ProgressListener? = null,
+    inputStream: InputStream = PartAuthority.getAttachmentStream(context, attachment.uri!!),
+    inputLength: Long = attachment.size,
+    snapshotVisualHash: (() -> String?)? = null
   ): SignalServiceAttachmentStream {
-    val inputStream = PartAuthority.getAttachmentStream(context, attachment.uri!!)
     val builder = SignalServiceAttachment.newStreamBuilder()
       .withStream(inputStream)
       .withContentType(attachment.contentType)
-      .withLength(attachment.size)
+      .withLength(inputLength)
       .withFileName(attachment.fileName)
       .withVoiceNote(attachment.voiceNote)
       .withBorderless(attachment.borderless)
@@ -87,9 +89,9 @@ object AttachmentUploadUtil {
       .withUuid(attachment.uuid)
 
     if (MediaUtil.isImageType(attachment.contentType)) {
-      builder.withBlurHash(getImageBlurHash(context, attachment))
+      builder.withBlurHash(snapshotVisualHash?.invoke() ?: if (snapshotVisualHash == null) getImageBlurHash(context, attachment) else null)
     } else if (MediaUtil.isVideoType(attachment.contentType)) {
-      builder.withBlurHash(getVideoBlurHash(context, attachment))
+      builder.withBlurHash(snapshotVisualHash?.invoke() ?: if (snapshotVisualHash == null) getVideoBlurHash(context, attachment) else null)
     } else if (MediaUtil.isAudioType(attachment.contentType)) {
       builder.withAudioHash(attachment.audioHash?.hash)
     }

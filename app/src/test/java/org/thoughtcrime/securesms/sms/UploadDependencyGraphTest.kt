@@ -3,6 +3,8 @@ package org.thoughtcrime.securesms.sms
 import android.app.Application
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -16,6 +18,7 @@ import org.signal.core.util.JsonUtils
 import org.thoughtcrime.securesms.attachments.Attachment
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
 import org.thoughtcrime.securesms.database.AttachmentTable
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -243,7 +246,17 @@ class UploadDependencyGraphTest {
     if (expectedCopyDestinationCount > 0) {
       assertTrue(steps[2][0] is AttachmentCopyJob)
 
-      val uploadData = AttachmentUploadJobData.ADAPTER.decode(steps[1][0].serialize()!!)
+      // This graph-only fixture does not create database rows; serialization
+      // still asks the attachment table for an optional submission owner.
+      val table = mockk<AttachmentTable>()
+      mockkObject(SignalDatabase.Companion)
+      val uploadData = try {
+        every { SignalDatabase.attachments } returns table
+        every { table.getUploadCandidate(any()) } returns null
+        AttachmentUploadJobData.ADAPTER.decode(steps[1][0].serialize()!!)
+      } finally {
+        unmockkObject(SignalDatabase.Companion)
+      }
       val copyData = JsonJobData.deserialize(steps[2][0].serialize())
 
       val uploadAttachmentId = AttachmentId(uploadData.attachmentId)

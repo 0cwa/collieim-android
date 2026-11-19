@@ -10,4 +10,6 @@
     <string name="CollieSettings__better_search_description">Filter search results by date and sender using the filter button in the search toolbar.</string>
     <string name="CollieSettings__starred_messages">Starred Messages</string>
     <string name="CollieSettings__starred_messages_description">Star messages from the long-press menu to find them later in conversation settings or the main menu.</string>
+    <string name="CollieSettings__recovery_pin_guard">Require PIN for recovery changes</string>
+    <string name="CollieSettings__recovery_pin_guard_description">Require your current PIN to change or disable it in this app, and to turn this setting on or off. Remember your PIN: Forgot PIN cannot bypass this check. Disabling the PIN also turns off this setting. This protects only this app; copied recovery credentials can still be used directly with the service.</string>
 </resources>

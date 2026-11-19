@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.pin.PinOptOutDialog;
+import org.thoughtcrime.securesms.pin.RecoveryPinGuard;
 import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
 import org.thoughtcrime.securesms.util.navigation.SafeNavigation;
@@ -116,6 +117,14 @@ public final class SvrSplashFragment extends Fragment {
   }
 
   private void onCreatePin() {
+    if (SignalStore.svr().hasPin()) {
+      RecoveryPinGuard.ifEnabled(requireContext(), this::navigateToCreatePin);
+    } else {
+      navigateToCreatePin();
+    }
+  }
+
+  private void navigateToCreatePin() {
     SvrSplashFragmentDirections.ActionCreateKbsPin action = SvrSplashFragmentDirections.actionCreateKbsPin();
 
     action.setIsPinChange(SignalStore.svr().hasPin());

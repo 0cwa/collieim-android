@@ -7,6 +7,12 @@ package org.thoughtcrime.securesms.components.settings.app.collie
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.pin.RecoveryPinGuard
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.signal.appsettings.collie.CollieSettingsScreen
@@ -19,5 +25,17 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
   val viewModel: LabsSettingsViewModel = viewModel { LabsSettingsViewModel(parentEventEmitter) }
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  CollieSettingsScreen(state = state, onEvent = viewModel::onEvent)
+  val context = LocalContext.current
+  var enabled by remember { mutableStateOf(SignalStore.pin.recoveryPinGuardEnabled) }
+  CollieSettingsScreen(
+    state = state,
+    onEvent = viewModel::onEvent,
+    recoveryPinGuardEnabled = enabled,
+    onRecoveryPinGuardChanged = { desired ->
+      RecoveryPinGuard.verify(context) {
+        SignalStore.pin.recoveryPinGuardEnabled = desired
+        enabled = desired
+      }
+    }
+  )
 }

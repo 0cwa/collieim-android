@@ -30,6 +30,7 @@ import org.signal.core.ui.compose.horizontalGutters
 @VisibleForTesting
 object CollieSettingsTestTags {
   const val SCROLLER = "collie-settings-scroller"
+  const val ROW_RECOVERY_PIN_GUARD = "collie-recovery-pin-guard"
   const val ROW_STORY_ARCHIVE = "collie-story-archive"
   const val ROW_BETTER_SEARCH = "collie-better-search"
   const val ROW_STARRED_MESSAGES = "collie-starred-messages"
@@ -40,7 +41,9 @@ object CollieSettingsTestTags {
 fun CollieSettingsScreen(
   state: LabsSettingsState,
   onEvent: (LabsSettingsEvent) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  recoveryPinGuardEnabled: Boolean = false,
+  onRecoveryPinGuardChanged: (Boolean) -> Unit = {}
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.CollieSettings__title),
@@ -56,6 +59,16 @@ fun CollieSettingsScreen(
     ) {
       item {
         Texts.SectionHeader(text = stringResource(R.string.CollieSettings__hardening))
+      }
+
+      item {
+        Rows.ToggleRow(
+          checked = recoveryPinGuardEnabled,
+          text = stringResource(R.string.CollieSettings__recovery_pin_guard),
+          label = stringResource(R.string.CollieSettings__recovery_pin_guard_description),
+          onCheckChanged = onRecoveryPinGuardChanged,
+          modifier = Modifier.testTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD)
+        )
       }
 
       item {

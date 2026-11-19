@@ -11,9 +11,8 @@
 # Tests for a feature go in that feature's layer. `testing` is for shared test
 # infrastructure only.
 
-[rules]
-# PRs numbered below this opened before the one-feature rule and may mix features.
-one_feature_per_pr_from = 202
+# From PR #202 on, a PR changes one feature layer. The cutoff lives in
+# tooling/git-hooks/collie_check_layer_trailers.py so a PR cannot change it.
 
 # Features
 

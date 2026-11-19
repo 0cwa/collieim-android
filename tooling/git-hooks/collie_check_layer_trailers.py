@@ -7,13 +7,15 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-import tomllib
 
 
 LAYER = re.compile(r"[a-z0-9][a-z0-9-]*")
 BASE = "refs/remotes/origin/main"
 CATALOG = "tooling/layers.toml"
 KINDS = {"feature", "infra", "upstream"}
+# PRs numbered from here on may change only one feature layer. This lives in the
+# checker, which CI takes from the PR base, so a PR cannot move its own cutoff.
+ONE_FEATURE_PER_PR_FROM = 202
 
 
 def git(*args, **kwargs):
@@ -26,9 +28,11 @@ class Catalog:
     """The layer names in tooling/layers.toml, or None where a tree predates it."""
 
     def __init__(self, text):
-        data = tomllib.loads(text)
-        self.layers = data.get("layers", {})
-        self.one_feature_from = data.get("rules", {}).get("one_feature_per_pr_from")
+        try:
+            import tomllib  # Python 3.11+; only trees with a catalog need it.
+        except ModuleNotFoundError:
+            raise ValueError(f"{CATALOG} needs Python 3.11 or later to read") from None
+        self.layers = tomllib.loads(text).get("layers", {})
         for name, entry in self.layers.items():
             if not LAYER.fullmatch(name):
                 raise ValueError(f"{CATALOG}: invalid layer name {name!r}")
@@ -107,9 +111,12 @@ def resolve_commit(ref):
 
 
 def check_range(base, head, pr=None):
-    head = resolve_commit(head)
+    base, head = resolve_commit(base), resolve_commit(head)
     catalog = catalog_at(head)  # The PR's own catalog, so a new feature adds its entry.
-    commits = git("rev-list", "--no-merges", f"{resolve_commit(base)}..{head}").splitlines()
+    # Kinds of layers that already exist come from the base, so a PR cannot
+    # relabel a feature as infra to pass the one-feature rule.
+    base_catalog = catalog_at(base)
+    commits = git("rev-list", "--no-merges", f"{base}..{head}").splitlines()
     valid = True
     layers = set()
     for commit in commits:
@@ -120,10 +127,14 @@ def check_range(base, head, pr=None):
             valid = False
         else:
             layers.add(layer)
-    features = sorted(layer for layer in layers if catalog and catalog.kind(layer) == "feature")
+    def kind(layer):
+        if base_catalog and base_catalog.kind(layer):
+            return base_catalog.kind(layer)
+        return catalog.kind(layer) if catalog else None
+
+    features = sorted(layer for layer in layers if kind(layer) == "feature")
     if len(features) > 1:
-        enforced = (pr is not None and catalog.one_feature_from is not None
-                    and pr >= catalog.one_feature_from)
+        enforced = pr is not None and pr >= ONE_FEATURE_PER_PR_FROM
         print(
             f"{'Error' if enforced else 'Warning'}: this range changes {len(features)} feature "
             f"layers ({', '.join(features)}). A PR changes one feature; open one PR per "
@@ -170,7 +181,7 @@ def main():
             valid = check_range(args.base, args.head, int(pr) if pr else None)
         else:
             valid = check_push()
-    except (OSError, ValueError, tomllib.TOMLDecodeError, subprocess.CalledProcessError) as error:
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f"Cannot check Layer trailers: {error}", file=sys.stderr)
         if args.command == "pre-push":
             print(f"Fetch the PR base first: git fetch origin main ({BASE}).", file=sys.stderr)

@@ -1,6 +1,6 @@
 {
   "title": "Stay connected when push is unavailable",
-  "summary": "Designed to keep a background connection enabled when the selected push method is unavailable.",
+  "summary": "If your chosen push service is unavailable, Collie keeps “Stay connected in background” switched on. When push is available, you can choose.",
   "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
   "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
   "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
@@ -10,8 +10,8 @@
   "placement": "lead",
   "category": "Connection",
   "visual": "connection",
-  "display_title": "A background connection when push is unavailable",
-  "visible_limit": "Notification delivery and battery effects have not been measured.",
+  "display_title": "When push is unavailable",
+  "visible_limit": "Notification delivery and battery use are unmeasured.",
   "diagram": {
     "caption": "“Stay connected in background” setting",
     "cases": [

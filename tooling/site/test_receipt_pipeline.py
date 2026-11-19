@@ -82,14 +82,65 @@ class SourcePipelineTests(unittest.TestCase):
         releases = json.loads((evidence.DATA.parent / 'fixtures/releases.json').read_text())
         tags = build.published_tags(releases)
         self.assertEqual(tags, ['v99.0-rc1', 'v8.35.1-3-rc2', 'v8.35.1-3-rc1'])
-        pipeline.build(self.out, published=tags)
+        manifest = pipeline.build(self.out, published=tags)
         page = (self.out / 'releases/index.html').read_text()
-        self.assertIn('/releases/tag/v99.0-rc1', page)
         self.assertNotIn('v100.0', page)
-        self.assertIn('<h2>v8.35.1-3-rc2</h2>', page)
-        self.assertNotIn('<h2>v99.0-rc1</h2>', page)
+        self.assertEqual(manifest['newer_releases'], ['v99.0-rc1'])
+        # The newest release leads as a notes link only; the reviewed edition keeps its own heading and stories.
+        newest, reviewed = page.split('<main', 1)[1].split('<section class="current-edition"', 1)
+        self.assertIn('<h2 id="newest-title">v99.0-rc1</h2>', newest)
+        self.assertIn('/releases/tag/v99.0-rc1', newest)
+        self.assertNotIn('edition-story', newest)
+        self.assertIn('<h2>v8.35.1-3-rc2</h2>', reviewed.split('<aside', 1)[0])
+        self.assertNotIn('v99.0-rc1', reviewed.split('<aside', 1)[0])
+        self.assertNotIn('v99.0-rc1', reviewed.split('<aside', 1)[1])
+        self.assertIn('/releases/tag/v8.35.1-3-rc1', reviewed.split('<aside', 1)[1])
         self.assertEqual(page.count('class="edition-story"'), 2)
+        app = (self.out / 'patches/index.html').read_text()
+        self.assertIn('Newer release: <a href="https://github.com/0cwa/collieim-android/releases/tag/v99.0-rc1">v99.0-rc1</a>', app)
         self.assertEqual(self.receipt['editorial']['source'], 'cc55c02bef64b2980c5f384a6a04f52ffb7bef92')
+
+    def test_newer_release_detection(self):
+        def newer(published):
+            receipt = copy.deepcopy(self.receipt)
+            if published is not None:
+                receipt['published_releases'] = published
+            return render.newer_releases(receipt)
+        self.assertEqual(newer(None), [])
+        self.assertEqual(newer(['v8.35.1-3-rc2', 'v8.35.1-3-rc1']), [])
+        self.assertEqual(newer(['v9.1', 'v9.0', 'v8.35.1-3-rc2']), ['v9.1', 'v9.0'])
+        # An unpublished reviewed release: only tags before the first known-older release are newer.
+        self.assertEqual(newer(['v9.1', 'v9.0']), ['v9.1', 'v9.0'])
+        self.assertEqual(newer(['v9.1', 'v8.35.1-3-rc1', 'v8.35.1-2-rc1']), ['v9.1'])
+        self.assertEqual(newer(['v8.35.1-3-rc1', 'v8.35.1-2-rc1']), [])
+        unpublished = copy.deepcopy(self.receipt)
+        unpublished['published_releases'] = ['v8.35.1-3-rc1']
+        self.assertIs(render.reviewed_release_published(unpublished), False)
+        self.assertIsNone(render.reviewed_release_published(self.receipt))
+        current = pipeline.build(self.out, published=['v8.35.1-3-rc2', 'v8.35.1-3-rc1'])
+        self.assertEqual(current['newer_releases'], [])
+        for name in ('releases/index.html', 'patches/index.html'):
+            text = (self.out / name).read_text()
+            self.assertNotIn('class="newest"', text)
+            self.assertNotIn('class="newer"', text)
+
+    def test_build_reports_when_reviewed_pages_trail_a_release(self):
+        err = io.StringIO()
+        with patch.dict(os.environ, {'GITHUB_ACTIONS': ''}), patch('sys.stderr', err):
+            build.report_behind({'reviewed_release': 'v8.35.1-3-rc2', 'newer_releases': [], 'reviewed_release_published': False})
+        self.assertIn('v8.35.1-3-rc2, which is not a published release yet', err.getvalue())
+        manifest = {'reviewed_release': 'v8.35.1-3-rc2', 'newer_releases': ['v9.1', 'v9.0']}
+        for actions, stream in (('true', 'stdout'), ('', 'stderr')):
+            out, err = io.StringIO(), io.StringIO()
+            with self.subTest(actions=actions), patch.dict(os.environ, {'GITHUB_ACTIONS': actions}), patch('sys.stdout', out), patch('sys.stderr', err):
+                build.report_behind(manifest)
+                text = (out if stream == 'stdout' else err).getvalue()
+                self.assertIn('describe v8.35.1-3-rc2; newer published release(s): v9.1, v9.0', text)
+                self.assertEqual(text.startswith('::notice '), actions == 'true')
+        out = io.StringIO()
+        with patch('sys.stdout', out), patch('sys.stderr', out):
+            build.report_behind({'reviewed_release': 'v8.35.1-3-rc2', 'newer_releases': []})
+        self.assertEqual(out.getvalue(), '')
 
     def test_release_discovery_paginates_and_fails_at_bound(self):
         row = {'tag_name': 'v1.0', 'draft': False, 'published_at': '2026-01-01T00:00:00Z'}

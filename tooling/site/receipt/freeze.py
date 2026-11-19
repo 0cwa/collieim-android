@@ -61,6 +61,64 @@ def load_editorial(manifest_path=evidence.DATA, revision=None):
 record_hashes = evidence.record_hashes
 
 
+def _git_id(spec):
+    env = dict(os.environ, GIT_NO_LAZY_FETCH='1')
+    result = subprocess.run(['git', 'rev-parse', '--verify', '--quiet', '--end-of-options', spec],
+                            cwd=evidence.ROOT, env=env, capture_output=True, text=True)
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def _write_json(path, value):
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+
+def update_pins(manifest_path=evidence.DATA):
+    """Fill commit and file IDs from the tags and paths editors name.
+
+    Editors write the release tags, record text and file paths. This resolves
+    ``source``/``release_base`` from the tags and each record's file IDs from
+    the pinned source tree, rewrites only values that differ, and returns one
+    line per change. A changed file ID means the file changed since the record
+    was reviewed: the returned line names the diff to read before freezing.
+    """
+    manifest_path = Path(os.path.abspath(manifest_path))
+    base = manifest_path.parent
+    data = json.loads(manifest_path.read_text(encoding='utf-8'))
+    # Resolve everything before writing anything, so a failure leaves the files
+    # untouched and the review hints are printed on the run that succeeds.
+    report, writes = [], []
+    for tag_key, id_key in (('release', 'source'), ('release_base_tag', 'release_base')):
+        commit = _git_id('refs/tags/' + data.get(tag_key, '') + '^{commit}')
+        if commit is None:
+            raise ValueError(f'Tag {data.get(tag_key)!r} ({tag_key}) is not in this checkout; fetch tags first. Freezing never fetches.')
+        if data.get(id_key) != commit:
+            report.append(f'{manifest_path.name}: {id_key} {data.get(id_key) or "(empty)"} -> {commit} from {data[tag_key]}')
+            data[id_key] = commit
+    if report:
+        writes.append((manifest_path, data))
+    source = data['source']
+    for name in data.get('subjects', []):
+        path = base / PurePosixPath(name)
+        record = json.loads(path.read_text(encoding='utf-8'))
+        changed = False
+        pins = [(record, 'path', 'source_blob')] + [(ref, 'path', 'blob') for ref in record.get('supporting_paths', [])]
+        for holder, path_key, id_key in pins:
+            blob = _git_id(f'{source}:{holder[path_key]}')
+            if blob is None:
+                raise ValueError(f'{name}: {holder[path_key]} is not in {data["release"]}; update or remove the record')
+            old = holder.get(id_key)
+            if old != blob:
+                hint = f'; review: git diff {old} {blob}' if old else ''
+                report.append(f'{name}: {holder[path_key]} {old or "(empty)"} -> {blob}{hint}')
+                holder[id_key] = blob
+                changed = True
+        if changed:
+            writes.append((path, record))
+    for path, value in writes:
+        _write_json(path, value)
+    return report
+
+
 def freeze(data, previous=None, editorial_revision=None):
     try:
         evidence.validate(data)
@@ -109,12 +167,24 @@ def main():
     parser.add_argument('--previous', type=Path, help='Compare editorial records with a previous frozen receipt')
     parser.add_argument('--out', type=Path)
     parser.add_argument('--check', action='store_true', help='Check committed source receipt against records without Git')
+    parser.add_argument('--update-pins', action='store_true', help='Fill source/baseline commits from tags and file IDs from the source tree, then report each change')
     args = parser.parse_args()
+    if args.check and (args.update_pins or args.out or args.previous or args.editorial_revision):
+        parser.error('--check only reads the committed receipt; run it separately')
+    if args.previous and not args.out:
+        parser.error('--previous needs --out')
     if args.check:
         evidence.load_snapshot(args.input)
         return
+    if args.update_pins:
+        if args.editorial_revision:
+            parser.error('--update-pins edits working files; it cannot be combined with --editorial-revision')
+        report = update_pins(args.input)
+        print('\n'.join(report) if report else 'Pins already match the tags and source tree.')
+        if not args.out:
+            return
     if not args.out:
-        parser.error('--out is required unless --check is used')
+        parser.error('--out is required unless --check or --update-pins is used')
     data, revision = load_editorial(args.input, args.editorial_revision)
     previous = json.loads(args.previous.read_text(encoding='utf-8')) if args.previous else None
     args.out.write_bytes(encode(freeze(data, previous, revision)))

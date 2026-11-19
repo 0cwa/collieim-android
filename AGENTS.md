@@ -1,7 +1,8 @@
 # Collie agent notes
 
 - Workflow: `0cwa/collie-release-engineering` `docs/DEVELOPMENT-CYCLE.md`. Change app code directly in ordinary PRs.
-- Every non-merge commit carries one `Layer: <feature>` trailer (lowercase, hyphens), e.g. `Layer: settings`. Sign commits and confirm that GitHub verifies their signatures before landing.
+- Every non-merge commit carries one `Layer: <name>` trailer naming an entry in `tooling/layers.toml`, e.g. `Layer: settings`. Sign commits and confirm that GitHub verifies their signatures before landing.
+- Work is sliced by feature: a PR changes one `feature` layer, plus any `infra` or `upstream` layers. A second feature is a second PR. A feature's tests and docs use its layer. A new feature adds its entry to `tooling/layers.toml` in the same PR. Land PRs with a merge commit, not squash or rebase, so every commit keeps its layer.
 - Signal and Molly upgrades: follow that file's "Upstream upgrades" section. Never `git merge` an upstream tag.
 - Add nothing to the repo root; put new files under `docs/`, `tooling/` or `.github/`.
 - Releases: `docs/RELEASING.md`. Build and publish the APK first. Tooling changes go in separate PRs and never delay a release.

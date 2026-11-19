@@ -23,6 +23,7 @@ jobs:
       - name: Every non-merge commit names its feature layer
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
+          COLLIE_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           git show "$BASE:tooling/git-hooks/collie_check_layer_trailers.py" > "$RUNNER_TEMP/collie_check_layer_trailers.py"
           python3 "$RUNNER_TEMP/collie_check_layer_trailers.py" range "$BASE" HEAD

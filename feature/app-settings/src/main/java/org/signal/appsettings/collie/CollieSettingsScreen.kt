@@ -55,6 +55,10 @@ fun CollieSettingsScreen(
       modifier = Modifier.testTag(CollieSettingsTestTags.SCROLLER)
     ) {
       item {
+        Texts.SectionHeader(text = stringResource(R.string.CollieSettings__hardening))
+      }
+
+      item {
         Texts.SectionHeader(text = stringResource(R.string.CollieSettings__labs))
         Text(
           text = stringResource(R.string.CollieSettings__labs_description),

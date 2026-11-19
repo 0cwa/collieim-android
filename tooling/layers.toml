@@ -1,0 +1,321 @@
+# Collie layers: the name in each commit's `Layer:` trailer.
+#
+# Every non-merge commit names one layer from this file. Adding a feature means
+# adding its entry here in the same PR, so the new name is reviewed with it.
+#
+# kind = "feature"   behavior that ships in the app; a PR changes one feature
+# kind = "infra"     CI, tooling, docs, website, tests and release machinery
+# kind = "upstream"  Signal or Molly ports and their pinned inputs
+# alias_of = "name"  an old spelling; commits must use the named layer instead
+#
+# Tests for a feature go in that feature's layer. `testing` is for shared test
+# infrastructure only.
+
+[rules]
+# PRs numbered below this opened before the one-feature rule and may mix features.
+one_feature_per_pr_from = 202
+
+# Features
+
+[layers.unifiedpush]
+kind = "feature"
+about = "UnifiedPush distributor selection, registration and delivery"
+
+[layers.encrypted-push]
+kind = "feature"
+about = "Encrypted push payloads following the colliesocket contract"
+
+[layers.push-security]
+kind = "feature"
+about = "Consent and trust checks around push and relay credentials"
+
+[layers.relay]
+kind = "feature"
+about = "Encrypted relay and linked-device relay setup"
+
+[layers.setup]
+kind = "feature"
+about = "Finish Setup: setup, news and delivery problems under Collie"
+
+[layers.settings]
+kind = "feature"
+about = "Settings screens and routes not owned by a narrower feature"
+
+[layers.collie-settings]
+kind = "feature"
+about = "The Collie settings screen and its opt-in Labs features"
+
+[layers.hardening-settings]
+kind = "feature"
+about = "The Hardening section of Collie settings"
+
+[layers.recovery-pin-guard]
+kind = "feature"
+about = "Current-PIN and phone authentication for recovery changes"
+
+[layers.security]
+kind = "feature"
+about = "App security behavior not owned by a narrower feature"
+
+[layers.passphrase]
+kind = "feature"
+about = "Passphrase lock and timeout behavior"
+
+[layers.project-log]
+kind = "feature"
+about = "The project log in What's new and Help"
+
+[layers.release-notes]
+kind = "feature"
+about = "In-app release notes"
+
+[layers.trailblazer]
+kind = "feature"
+about = "The TrailBlazer Beta package and its product differences"
+
+[layers.branding]
+kind = "feature"
+about = "Collie names, icons and artwork in the app"
+
+[layers.app-updates]
+kind = "feature"
+about = "The in-app updater and its per-product checks"
+
+[layers.backup]
+kind = "feature"
+about = "Backup and restore"
+
+[layers.backup-progress]
+kind = "feature"
+about = "Backup progress reporting"
+
+[layers.backup-security]
+kind = "feature"
+about = "Backup key handling and restore safety"
+
+[layers.registration]
+kind = "feature"
+about = "Registration, re-registration and linking"
+
+[layers.network-settings]
+kind = "feature"
+about = "Proxy and network settings"
+
+[layers.web-link-preview-images]
+kind = "feature"
+about = "Text-only web link previews"
+
+[layers.webview]
+kind = "feature"
+about = "In-app WebView behavior"
+
+[layers.attachment-upload]
+kind = "feature"
+about = "Attachment upload integrity"
+
+[layers.attachment-privacy]
+kind = "feature"
+about = "Attachment identity and key privacy"
+
+[layers.attachment-backfill]
+kind = "feature"
+about = "Attachment key backfill"
+
+[layers.archive-media]
+kind = "feature"
+about = "Archived media retries and completion"
+
+[layers.signal-donation-removal]
+kind = "feature"
+about = "Removing Signal donation checkout and payment clients"
+
+[layers.donations]
+kind = "feature"
+about = "Support Collie and donation entry points"
+
+[layers.stickers]
+kind = "feature"
+about = "Stickers"
+
+[layers.call-safety]
+kind = "feature"
+about = "Call safety behavior"
+
+[layers.group-profile-sharing]
+kind = "feature"
+about = "Profile sharing in groups"
+
+[layers.name-collisions]
+kind = "feature"
+about = "Name collision warnings"
+
+[layers.theme-propagation]
+kind = "feature"
+about = "Theme propagation across screens"
+
+[layers.system-bars]
+kind = "feature"
+about = "System bar colors and insets"
+
+[layers.logging]
+kind = "feature"
+about = "App logging and debug log controls"
+
+[layers.database]
+kind = "feature"
+about = "Database schema and migrations not owned by a narrower feature"
+
+[layers.app]
+kind = "feature"
+about = "Older catch-all name; new commits should name the specific feature"
+
+# Infrastructure
+
+[layers.ci]
+kind = "infra"
+about = "GitHub Actions workflows and CI scripts"
+
+[layers.workflow]
+kind = "infra"
+about = "Development workflow configuration"
+
+[layers.tooling]
+kind = "infra"
+about = "Developer tooling under tooling/"
+
+[layers.build]
+kind = "infra"
+about = "Gradle build logic and dependency resolution"
+
+[layers.testing]
+kind = "infra"
+about = "Shared test infrastructure and fixtures"
+
+[layers.instrumentation]
+kind = "infra"
+about = "Instrumentation test setup"
+
+[layers.test-worker-memory]
+kind = "infra"
+about = "Test worker memory limits"
+
+[layers.runtime-proof]
+kind = "infra"
+about = "Retained runtime and browser evidence"
+
+[layers.screenshots]
+kind = "infra"
+about = "Screenshot capture and retained screenshots"
+
+[layers.docs]
+kind = "infra"
+about = "Documentation"
+
+[layers.docs-maintenance]
+kind = "infra"
+about = "Cleanup of historical documentation"
+
+[layers.build-docs]
+kind = "infra"
+about = "Build documentation"
+
+[layers.agent-docs]
+kind = "infra"
+about = "Agent instructions (AGENTS.md)"
+
+[layers.website]
+kind = "infra"
+about = "The collie.im website and patch explorer"
+
+[layers.website-output-safety]
+kind = "infra"
+about = "Escaping and output safety in the website build"
+
+[layers.fastlane]
+kind = "infra"
+about = "Fastlane store metadata"
+
+[layers.distribution]
+kind = "infra"
+about = "Distribution channels and repository metadata"
+
+[layers.funding]
+kind = "infra"
+about = "Repository funding metadata"
+
+[layers.release]
+kind = "infra"
+about = "Release preparation"
+
+[layers.release-tooling]
+kind = "infra"
+about = "Release scripts"
+
+[layers.release-policy]
+kind = "infra"
+about = "Release identity and publication policy"
+
+[layers.release-verification]
+kind = "infra"
+about = "Release verification"
+
+[layers.security-ci]
+kind = "infra"
+about = "Security checks in CI"
+
+[layers.security-scanning]
+kind = "infra"
+about = "CodeQL and other scanner coverage"
+
+[layers.security-audit]
+kind = "infra"
+about = "Security review records and their loaders"
+
+[layers.security-fuzzing]
+kind = "infra"
+about = "Fuzzing harnesses"
+
+[layers.security-test-floor]
+kind = "infra"
+about = "Minimum security test requirements"
+
+[layers.codeql-review]
+kind = "infra"
+about = "Reviewed CodeQL findings and context guards"
+
+[layers.codeql-policy]
+kind = "infra"
+about = "CodeQL configuration policy"
+
+# Upstream ports
+
+[layers.upgrade]
+kind = "upstream"
+about = "Porting a Signal or Molly release"
+
+[layers.native-inputs]
+kind = "upstream"
+about = "Pinned native inputs such as libsignal"
+
+# Old spellings
+
+[layers.unified-push]
+alias_of = "unifiedpush"
+
+[layers.unifiedpush-settings]
+alias_of = "unifiedpush"
+
+[layers.documentation]
+alias_of = "docs"
+
+[layers.tests]
+alias_of = "testing"
+
+[layers.updater]
+alias_of = "app-updates"
+
+[layers.codeql-reviews]
+alias_of = "codeql-review"
+
+[layers.codeql-reviewed-findings]
+alias_of = "codeql-review"

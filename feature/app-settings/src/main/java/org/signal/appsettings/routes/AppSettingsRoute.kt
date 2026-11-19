@@ -124,6 +124,9 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   data object AppUpdates : AppSettingsRoute
 
   @Serializable
+  data object Collie : AppSettingsRoute
+
+  @Serializable
   @Parcelize
   sealed interface StoriesRoute : AppSettingsRoute {
     @Serializable

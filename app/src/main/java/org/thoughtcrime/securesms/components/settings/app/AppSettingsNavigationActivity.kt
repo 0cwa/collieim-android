@@ -34,6 +34,7 @@ import org.thoughtcrime.securesms.components.settings.app.backups.registerBackup
 import org.thoughtcrime.securesms.components.settings.app.changenumber.registerChangeNumberRoutes
 import org.thoughtcrime.securesms.components.settings.app.chats.folders.registerChatFoldersRoutes
 import org.thoughtcrime.securesms.components.settings.app.chats.registerChatsRoutes
+import org.thoughtcrime.securesms.components.settings.app.collie.registerCollieRoutes
 import org.thoughtcrime.securesms.components.settings.app.help.registerHelpRoutes
 import org.thoughtcrime.securesms.components.settings.app.internal.registerInternalRoutes
 import org.thoughtcrime.securesms.components.settings.app.invite.registerInviteRoutes
@@ -124,6 +125,7 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity() {
               registerAppearanceRoutes(router::onEvent)
               registerChatsRoutes(router::onEvent)
               registerChatFoldersRoutes(router::onEvent)
+              registerCollieRoutes(router::onEvent)
               registerNotificationsRoutes(router::onEvent)
               registerLabsRoutes(router::onEvent)
               registerAppUpdatesRoutes(router::onEvent)

@@ -31,6 +31,9 @@ sealed interface AppSettingsEvent {
   /** The user tapped the linked devices row. */
   data object LinkedDevicesClicked : AppSettingsEvent
 
+  /** The user tapped the Collie settings row. */
+  data object CollieClicked : AppSettingsEvent
+
   /** The user tapped the donate row. */
   data object DonateClicked : AppSettingsEvent
 

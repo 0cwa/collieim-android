@@ -77,6 +77,7 @@ class WhatsNewDialogFragment : ComposeFullScreenDialogFragment() {
       onBack = { dismissAllowingStateLoss() },
       onReleaseAction = { SetupActions.fixProblem(requireActivity(), Problem.RELEASE_ACTION) },
       onFullNotes = { SetupActions.openReleaseNotes(requireActivity()) },
+      onSupport = { SetupActions.openSupport(requireActivity()) },
       onOpenPullRequest = { SetupActions.openPullRequest(requireActivity(), it) }
     )
   }
@@ -88,6 +89,7 @@ private fun WhatsNewContent(
   onBack: () -> Unit,
   onReleaseAction: () -> Unit,
   onFullNotes: () -> Unit,
+  onSupport: () -> Unit,
   onOpenPullRequest: (Int) -> Unit
 ) {
   var tab by rememberSaveable { mutableStateOf(startTab) }
@@ -109,6 +111,7 @@ private fun WhatsNewContent(
         WhatsNewTab.THIS_UPDATE -> ThisUpdate(
           onReleaseAction = onReleaseAction,
           onFullNotes = onFullNotes,
+          onSupport = onSupport,
           onProjectLog = { tab = WhatsNewTab.PROJECT_LOG }
         )
         WhatsNewTab.PROJECT_LOG -> ProjectLogTab(installedVersion = ApkInfo.versionName, onOpenPullRequest = onOpenPullRequest)
@@ -121,6 +124,7 @@ private fun WhatsNewContent(
 private fun ThisUpdate(
   onReleaseAction: () -> Unit,
   onFullNotes: () -> Unit,
+  onSupport: () -> Unit,
   onProjectLog: () -> Unit
 ) {
   LazyColumn(
@@ -167,6 +171,14 @@ private fun ThisUpdate(
         }
         TextButton(onClick = onFullNotes, modifier = Modifier.fillMaxWidth()) {
           Text(text = stringResource(R.string.CollieWhatsNew__full_release_notes))
+          Icon(
+            imageVector = SignalIcons.Open.imageVector,
+            contentDescription = null,
+            modifier = Modifier.padding(start = 8.dp)
+          )
+        }
+        TextButton(onClick = onSupport, modifier = Modifier.fillMaxWidth()) {
+          Text(text = stringResource(R.string.CollieSetup__support))
           Icon(
             imageVector = SignalIcons.Open.imageVector,
             contentDescription = null,

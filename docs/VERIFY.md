@@ -25,7 +25,7 @@ done
 git diff --stat "$BASE...$HEAD"
 ```
 
-The PR check requires one lowercase `Layer: <feature>` trailer on every non-merge commit; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
+The PR check requires one `Layer:` trailer on every non-merge commit, naming an entry in [`tooling/layers.toml`](../tooling/layers.toml); from PR #202 on, a PR may change only one `feature` layer, and PRs land with a merge commit so each commit keeps its layer; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
 
 ## Catch trailer mistakes locally
 

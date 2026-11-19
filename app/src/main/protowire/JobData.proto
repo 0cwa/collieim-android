@@ -161,6 +161,8 @@ message UploadAttachmentToArchiveJobData {
   optional string snapshotSourcePath = 7;
   optional bytes snapshotSourceRandom = 8;
   optional string snapshotPlaintextDigest = 9;
+  optional string ownerIdentity = 10;
+  optional string progressToken = 11;
 }
 
 message ArchiveAttachmentReconciliationJobData {

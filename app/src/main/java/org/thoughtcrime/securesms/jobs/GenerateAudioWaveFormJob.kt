@@ -54,6 +54,8 @@ class GenerateAudioWaveFormJob private constructor(private val attachmentId: Att
   override fun getFactoryKey(): String = KEY
 
   override fun onRun() {
+    // Pass the compression job's exact owner through, never mint a new one here.
+    setOutputData(inputData)
     val attachment: DatabaseAttachment? = SignalDatabase.attachments.getAttachment(attachmentId)
 
     if (attachment == null) {

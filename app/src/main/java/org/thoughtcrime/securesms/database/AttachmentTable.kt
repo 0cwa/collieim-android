@@ -522,18 +522,35 @@ class AttachmentTable(
   }
 
   /** Stable submission ownership excludes only transfer state, which onAdded itself changes. */
-  fun uploadOwnerToken(candidate: UploadCandidate): String {
+  fun uploadOwnerToken(candidate: UploadCandidate): String = uploadOwnerToken(candidate, false)
+
+  private fun uploadOwnerToken(candidate: UploadCandidate, projectKeyToNull: Boolean): String {
     val row = candidate.attachment
-    val values = org.json.JSONArray().put("attachment-owner-v1")
+    val values = org.json.JSONArray().put("attachment-owner-v2")
     fun add(value: Any?) { values.put(value ?: org.json.JSONObject.NULL) }
     fun bytes(value: ByteArray?): String? = value?.let { Base64.encodeWithPadding(it) }
-    add(candidate.filePath); add(bytes(candidate.random)); add(row.remoteLocation); add(row.remoteKey); add(row.dataHash)
+    add(candidate.filePath); add(bytes(candidate.random)); add(row.remoteLocation); add(if (projectKeyToNull) null else row.remoteKey); add(row.dataHash)
     add(bytes(row.remoteDigest)); add(bytes(row.incrementalDigest)); add(row.incrementalMacChunkSize); add(row.uploadTimestamp); add(row.cdn.serialize())
     add(row.size); add(row.archiveTransferState.value); add(row.archiveCdn); add(row.archiveThumbnailTransferState.value)
     add(row.contentType); add(row.fileName); add(row.caption); add(row.uuid?.toString()); add(row.width); add(row.height)
-    add(row.voiceNote); add(row.borderless); add(row.videoGif); add(row.transformProperties?.serialize()); add(row.getVisualHashStringOrNull())
+    add(row.voiceNote); add(row.borderless); add(row.videoGif); add(row.transformProperties?.serialize())
     add(candidate.info?.thumbnailFile); add(bytes(candidate.info?.thumbnailRandom)); add(candidate.info?.thumbnailRestoreState); add(candidate.info?.metadataId)
-    return Base64.encodeWithPadding(MessageDigest.getInstance("SHA-256").digest(values.toString().toByteArray(Charsets.UTF_8)))
+    return "attachment-owner-v2:" + Base64.encodeWithPadding(MessageDigest.getInstance("SHA-256").digest(values.toString().toByteArray(Charsets.UTF_8)))
+  }
+
+  /** Check ownership and perform this job's missing-key write in the same transaction. */
+  fun prepareUploadIfOwned(id: AttachmentId, owner: String): UploadCandidate? = writableDatabase.withinTransaction { db ->
+    val candidate = readUploadCandidate(db, id) ?: return@withinTransaction null
+    if (uploadOwnerToken(candidate) != owner) {
+      // A crash after this job initialized only the key can leave the saved
+      // owner one transaction behind. No other field may change, and a
+      // nonempty old key can never compare equal to the null-key projection.
+      val currentKey = candidate.attachment.remoteKey
+      val validKey = currentKey != null && try { Base64.decode(currentKey).size == 64 } catch (_: IOException) { false } catch (_: IllegalArgumentException) { false }
+      if (!validKey || uploadOwnerToken(candidate, true) != owner) return@withinTransaction null
+    }
+    createRemoteKeyIfNecessary(id)
+    readUploadCandidate(db, id)
   }
 
   /** Read upload metadata and its optional local version in one database snapshot. */
@@ -1234,9 +1251,8 @@ class AttachmentTable(
   fun markArchivePendingIfEligible(id: AttachmentId, state: ArchiveTransferState): Boolean {
     require(state == ArchiveTransferState.UPLOAD_IN_PROGRESS || state == ArchiveTransferState.COPY_PENDING)
     return writableDatabase.withinTransaction { db ->
-      val path = db.select(DATA_FILE).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.requireString(DATA_FILE) } ?: return@withinTransaction false
       val allowed = if (state == ArchiveTransferState.UPLOAD_IN_PROGRESS) "${ArchiveTransferState.NONE.value}" else "${ArchiveTransferState.NONE.value},${ArchiveTransferState.UPLOAD_IN_PROGRESS.value}"
-      db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$DATA_FILE = ? AND $ARCHIVE_TRANSFER_STATE IN ($allowed)", path).run() > 0
+      db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$ID = ? AND $ARCHIVE_TRANSFER_STATE IN ($allowed)", id.id).run() == 1
     }
   }
 
@@ -1247,6 +1263,13 @@ class AttachmentTable(
     if (!candidateMatches(db, candidate) || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
       candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE) return@withinTransaction false
     db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$ID = ?", candidate.attachment.attachmentId.id).run() == 1
+  }
+
+  fun setArchiveStateIfOwnerMatches(id: AttachmentId, owner: String, state: ArchiveTransferState): Boolean = writableDatabase.withinTransaction { db ->
+    val candidate = readUploadCandidate(db, id) ?: return@withinTransaction false
+    if (uploadOwnerToken(candidate) != owner || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
+      candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE) return@withinTransaction false
+    db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$ID = ?", id.id).run() == 1
   }
 
   /** Update archive state only for the source version captured by this job. */
@@ -2795,20 +2818,24 @@ class AttachmentTable(
   @Throws(MmsException::class, IOException::class)
   fun updateAttachmentData(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream): Boolean {
     val expected = getDataFileInfo(databaseAttachment.attachmentId) ?: throw MmsException("No attachment data found!")
-    return updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, false) {}
+    return updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, false, null, Long.MAX_VALUE) {} != null
   }
 
   @Throws(MmsException::class, IOException::class)
   fun updateAttachmentData(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, expected: DataFileInfo, withFastStart: Boolean): Boolean {
-    return updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, withFastStart) {}
+    return updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, withFastStart, null, Long.MAX_VALUE) {} != null
   }
+
+  @Throws(MmsException::class, IOException::class)
+  fun updateAttachmentDataIfOwned(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, expected: DataFileInfo, withFastStart: Boolean, owner: String, maxLength: Long): String? =
+    updateAttachmentDataInternal(databaseAttachment, mediaStream, expected, withFastStart, owner, maxLength) {}
 
   @VisibleForTesting
   internal fun updateAttachmentDataForTest(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, beforePublish: () -> Unit) {
-    updateAttachmentDataInternal(databaseAttachment, mediaStream, getDataFileInfo(databaseAttachment.attachmentId) ?: throw MmsException("No attachment data found!"), false, beforePublish)
+    updateAttachmentDataInternal(databaseAttachment, mediaStream, getDataFileInfo(databaseAttachment.attachmentId) ?: throw MmsException("No attachment data found!"), false, null, Long.MAX_VALUE, beforePublish)
   }
 
-  private fun updateAttachmentDataInternal(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, existingDataFileInfo: DataFileInfo, withFastStart: Boolean, beforePublish: () -> Unit): Boolean {
+  private fun updateAttachmentDataInternal(databaseAttachment: DatabaseAttachment, mediaStream: MediaStream, existingDataFileInfo: DataFileInfo, withFastStart: Boolean, expectedOwner: String?, maxLength: Long, beforePublish: () -> Unit): String? {
     val attachmentId = databaseAttachment.attachmentId
     // Publish transformed data under a new path. Existing readers retain a stable
     // file version until the database atomically switches path and random together.
@@ -2822,8 +2849,11 @@ class AttachmentTable(
 
     var published = false
     try {
+      if (newDataFileInfo.length > maxLength) throw MmsException("Transformed attachment exceeds size constraints")
       beforePublish()
       val updated = writableDatabase.withinTransaction { db ->
+      val candidate = readUploadCandidate(db, attachmentId)
+      if (expectedOwner != null && (candidate == null || uploadOwnerToken(candidate) != expectedOwner)) return@withinTransaction null
       val current = db.select(DATA_FILE, DATA_RANDOM, TRANSFER_STATE).from(TABLE_NAME).where("$ID = ?", attachmentId.id).run().readToSingleObject {
         Triple(it.requireString(DATA_FILE), it.requireBlob(DATA_RANDOM), it.requireInt(TRANSFER_STATE))
       }
@@ -2833,7 +2863,7 @@ class AttachmentTable(
           !current.second!!.contentEquals(existingDataFileInfo.random) ||
           (databaseAttachment.transferState != TRANSFER_PROGRESS_DONE && current.third == TRANSFER_PROGRESS_DONE)) {
         newDataFileInfo.file.delete()
-        return@withinTransaction false
+        return@withinTransaction null
       }
       var transformed = existingDataFileInfo.transformProperties.withSkipTransform()
       if (withFastStart) transformed = transformed.withMp4FastStart()
@@ -2868,9 +2898,9 @@ class AttachmentTable(
         .run()
 
       Log.i(TAG, "[updateAttachmentData] Updated $updateCount rows.")
-      updateCount > 0
+      if (updateCount > 0) uploadOwnerToken(checkNotNull(readUploadCandidate(db, attachmentId))) else null
       }
-      published = updated
+      published = updated != null
       return updated
     } finally {
       if (!published) newDataFileInfo.file.delete()
@@ -2953,12 +2983,18 @@ class AttachmentTable(
   }
 
   /** Mark only the source version actually checked by a no-transform path. */
-  fun markAttachmentAsTransformedIfUnchanged(id: AttachmentId, source: DataFileInfo, withFastStart: Boolean): Boolean = writableDatabase.withinTransaction { db ->
-    val current = db.select(*DATA_FILE_INFO_PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run().readToSingleObject { it.readDataFileInfo() }
-    if (current == null || current.file != source.file || !current.random.contentEquals(source.random)) return@withinTransaction false
+  fun markAttachmentAsTransformedIfUnchanged(id: AttachmentId, source: DataFileInfo, withFastStart: Boolean): Boolean =
+    markAttachmentAsTransformedIfOwned(id, source, withFastStart, null) != null
+
+  fun markAttachmentAsTransformedIfOwned(id: AttachmentId, source: DataFileInfo, withFastStart: Boolean, owner: String?): String? = writableDatabase.withinTransaction { db ->
+    val candidate = readUploadCandidate(db, id) ?: return@withinTransaction null
+    if (owner != null && uploadOwnerToken(candidate) != owner) return@withinTransaction null
+    val current = candidate.info
+    if (current == null || current.file != source.file || !current.random.contentEquals(source.random)) return@withinTransaction null
     var properties = current.transformProperties.withSkipTransform()
     if (withFastStart) properties = properties.withMp4FastStart()
-    db.update(TABLE_NAME).values(TRANSFORM_PROPERTIES to properties.serialize()).where("$ID = ?", id.id).run() == 1
+    if (db.update(TABLE_NAME).values(TRANSFORM_PROPERTIES to properties.serialize()).where("$ID = ?", id.id).run() != 1) return@withinTransaction null
+    readUploadCandidate(db, id)?.let { uploadOwnerToken(it) }
   }
 
   fun writeAudioHashIfUnchanged(id: AttachmentId, source: DataFileInfo, audioWaveForm: AudioWaveFormData?): Boolean = writableDatabase.withinTransaction { db ->

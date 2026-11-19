@@ -14,6 +14,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasScrollToNodeAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
@@ -81,6 +82,9 @@ class ProjectLogScreenshotTest {
       awaitText(context.getString(R.string.CollieStatus__updated_long))
       compose.onNode(hasText(context.getString(R.string.CollieStatus__updated_long)) and isClickable()).performClick()
       awaitText(context.getString(R.string.CollieWhatsNew__heading))
+      val support = hasText(context.getString(R.string.CollieSetup__support)) and isClickable()
+      compose.onNode(hasScrollToNodeAction()).performScrollToNode(support)
+      compose.onNode(support).assertExists()
       saveScreenshot(scenario, "01-light-this-update.png")
 
       compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_project_log)) and isClickable()).performClick()

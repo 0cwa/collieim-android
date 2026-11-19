@@ -16,8 +16,6 @@ GOOD = "Change the website\n\nLayer: website\nCo-authored-by: Name <name@example
 BROKEN = GOOD.replace("website\nCo-authored", "website\n\nCo-authored")
 REPO_CATALOG = SCRIPTS.parent / "layers.toml"
 CATALOG = """
-[rules]
-one_feature_per_pr_from = 202
 [layers.website]
 kind = "infra"
 about = "Website"
@@ -306,6 +304,17 @@ class LayerTrailerTests(unittest.TestCase):
         self.assertIn("Warning:", older.stderr)
         local = self.check_range()
         self.assertIn("Warning:", local.stderr)
+
+    def test_pr_cannot_relabel_an_existing_feature_or_move_the_cutoff(self):
+        self.add_catalog()
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()  # The catalog is on the base.
+        relabelled = CATALOG.replace('[layers.setup]\nkind = "feature"', '[layers.setup]\nkind = "infra"')
+        self.add_catalog(relabelled + "[rules]\none_feature_per_pr_from = 999\n")
+        self.commit("Relay change\n\nLayer: relay\n")
+        self.commit("Setup change\n\nLayer: setup\n")
+        enforced = self.check_pr(202)
+        self.assertNotEqual(enforced.returncode, 0)
+        self.assertIn("2 feature layers (relay, setup)", enforced.stderr)
 
     def test_range_without_catalog_checks_only_the_format(self):
         self.commit("Change\n\nLayer: anything-new\n")

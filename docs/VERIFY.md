@@ -56,7 +56,7 @@ python3 tooling/git-hooks/collie_check_layer_trailers.py range origin/main HEAD
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/git-hooks -p 'test_*.py'
 ```
 
-The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) runs after the message is available; `pre-commit` runs earlier and cannot validate the final message. A pre-commit framework could run a commit-message check, but these two hooks need only Git and Python 3, which CI already uses. Hooks are local and can be bypassed, so the required **Layer trailers** PR check remains the final guard and runs the same validator.
+The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) runs after the message is available; `pre-commit` runs earlier and cannot validate the final message. A pre-commit framework could run a commit-message check, but these two hooks need only Git and Python 3.11 or later (to read `tooling/layers.toml`), which CI already uses. Hooks are local and can be bypassed, so the required **Layer trailers** PR check remains the final guard and runs the same validator.
 
 ## Verify a Signal upgrade
 

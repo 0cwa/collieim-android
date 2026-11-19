@@ -163,7 +163,7 @@ class AppSettingsViewModelTest {
       AppSettingsRoute.DataAndStorageRoute.Proxy,
       AppSettingsRoute.DataAndStorageRoute.DataAndStorage,
       AppSettingsRoute.AppUpdates,
-      AppSettingsRoute.HelpRoute.Settings(),
+      AppSettingsRoute.HelpRoute.Settings,
       AppSettingsRoute.Invite,
       AppSettingsRoute.LabsRoute.Labs,
       AppSettingsRoute.InternalRoute.Internal

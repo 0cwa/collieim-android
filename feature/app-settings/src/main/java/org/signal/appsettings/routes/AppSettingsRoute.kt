@@ -9,8 +9,10 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import org.signal.appsettings.account.TwoFactorMethod
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.compose.split.DetailNavKey
+import org.signal.core.util.censor
 import org.signal.donations.InAppPaymentType
 
 /**
@@ -64,6 +66,45 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     @Serializable
     data object DeleteAccount : AccountRoute
 
+    /** Picking the country for the number the user confirms when deleting their account. */
+    @Serializable
+    data object DeleteAccountCountryCode : AccountRoute
+
+    /** The account's Signal login: its username and recovery key. */
+    @Serializable
+    data object SignalLoginDetails : AccountRoute
+
+    /** Adding an authenticator app as a second factor. */
+    @Serializable
+    data object TotpSetup : AccountRoute
+
+    /** Entering a code from the authenticator app being added. */
+    @Serializable
+    data object TotpCodeEntry : AccountRoute
+
+    /** Adding a passkey as a second factor. */
+    @Serializable
+    data object PasskeySetup : AccountRoute
+
+    /** Naming the second factor identified by [methodId], which was just added and has no name of its own yet. */
+    @Serializable
+    data class NameNewTwoFactorMethod(
+      val methodId: Long,
+      val methodKind: TwoFactorMethod.Kind,
+      val methodCreatedAt: Long?
+    ) : AccountRoute
+
+    /** Renaming the second factor identified by [methodId], whose current details are carried so the screen needn't refetch them. */
+    @Serializable
+    data class RenameTwoFactorMethod(
+      val methodId: Long,
+      val methodKind: TwoFactorMethod.Kind,
+      val methodName: String?,
+      val methodCreatedAt: Long?
+    ) : AccountRoute {
+      override fun toString(): String = "RenameTwoFactorMethod(methodId=$methodId, methodKind=$methodKind, methodName=${methodName?.censor()}, methodCreatedAt=$methodCreatedAt)"
+    }
+
     @Serializable
     data object ExportAccountData : AccountRoute
 
@@ -106,9 +147,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     @Serializable
     data object AllExcept : StoriesRoute
 
-    @Serializable
-    data object SignalConnections : StoriesRoute
-
     /** [distributionListId] is a serialized `DistributionListId`. */
     @Serializable
     data class EditName(val distributionListId: Long, val name: String) : StoriesRoute
@@ -126,9 +164,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object QRColorPicker : UsernameLinkRoute
-
-    @Serializable
-    data object Share : UsernameLinkRoute
   }
 
   @Serializable
@@ -140,13 +175,14 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     ) : BackupsRoute
 
     @Serializable
-    data class Local(val triggerUpdateFlow: Boolean = false) : BackupsRoute
+    data class Local @JvmOverloads constructor(val triggerUpdateFlow: Boolean = false) : BackupsRoute
 
     @Serializable
     data class Remote(val forQuickRestore: Boolean = false) : BackupsRoute
 
+    /** The backup key, optionally starting straight into rotating it when [startWithKeyRotation] is set. */
     @Serializable
-    data object DisplayKey : BackupsRoute
+    data class DisplayKey(val startWithKeyRotation: Boolean = false) : BackupsRoute
   }
 
   @Serializable
@@ -203,9 +239,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     data class Receipt(val id: Long) : DonationsRoute
 
     @Serializable
-    data object LearnMore : DonationsRoute
-
-    @Serializable
     data object Featured : DonationsRoute
   }
 
@@ -254,6 +287,15 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object ConversationTestFragment : InternalRoute
+
+    @Serializable
+    data object DataSeedingPlayground : InternalRoute
+
+    @Serializable
+    data object Issues : InternalRoute
+
+    @Serializable
+    data object RemoteConfig : InternalRoute
   }
 
   @Serializable
@@ -300,13 +342,13 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   @Serializable
   @Parcelize
   sealed interface HelpRoute : AppSettingsRoute {
+    /** The help section, listing the support center, contact form, debug log and licenses. */
     @Serializable
-    data class Settings(
-      val startCategoryIndex: Int = 0
-    ) : HelpRoute
+    data object Settings : HelpRoute
 
+    /** The contact form, with category [startCategoryIndex] preselected. */
     @Serializable
-    data object Help : HelpRoute
+    data class Help(val startCategoryIndex: Int = 0) : HelpRoute
 
     @Serializable
     data object DebugLog : HelpRoute
@@ -336,9 +378,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   sealed interface ChatsRoute : AppSettingsRoute {
     @Serializable
     data object Chats : ChatsRoute
-
-    @Serializable
-    data object Reactions : ChatsRoute
   }
 
   @Serializable
@@ -371,11 +410,9 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
       }
     }
 
+    /** Picks the chats a folder includes, or with [includeChats] false, the ones it excludes. */
     @Serializable
-    data object Education : ChatFoldersRoute
-
-    @Serializable
-    data object ChooseChats : ChatFoldersRoute
+    data class ChooseChats(val includeChats: Boolean) : ChatFoldersRoute
   }
 
   @Serializable
@@ -385,25 +422,10 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     data object LinkDevice : LinkDeviceRoute
 
     @Serializable
-    data object Finished : LinkDeviceRoute
-
-    @Serializable
-    data object LearnMore : LinkDeviceRoute
-
-    @Serializable
-    data object Education : LinkDeviceRoute
-
-    @Serializable
     data object EditName : LinkDeviceRoute
 
     @Serializable
     data object Add : LinkDeviceRoute
-
-    @Serializable
-    data object Intro : LinkDeviceRoute
-
-    @Serializable
-    data object Sync : LinkDeviceRoute
   }
 
   @Serializable
@@ -411,32 +433,5 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   sealed interface ChangeNumberRoute : AppSettingsRoute {
     @Serializable
     data object Start : ChangeNumberRoute
-
-    @Serializable
-    data object EnterPhoneNumber : ChangeNumberRoute
-
-    @Serializable
-    data object Confirm : ChangeNumberRoute
-
-    @Serializable
-    data object CountryPicker : ChangeNumberRoute
-
-    @Serializable
-    data object Verify : ChangeNumberRoute
-
-    @Serializable
-    data object Captcha : ChangeNumberRoute
-
-    @Serializable
-    data object EnterCode : ChangeNumberRoute
-
-    @Serializable
-    data object RegistrationLock : ChangeNumberRoute
-
-    @Serializable
-    data object AccountLocked : ChangeNumberRoute
-
-    @Serializable
-    data object PinDiffers : ChangeNumberRoute
   }
 }

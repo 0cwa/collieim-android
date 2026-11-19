@@ -111,7 +111,18 @@ fun rememberListDetailPaneLayout(
  */
 typealias ListPaneChrome = @Composable (content: @Composable () -> Unit) -> Unit
 
-internal val LocalListPaneChrome = compositionLocalOf<ListPaneChrome?> { null }
+/**
+ * The chrome for the list pane, in two forms. [movable] carries its state from one list to the next, and so can only be
+ * placed once: it goes to the list in the scene being navigated to. A list animating out keeps it only if it has
+ * [movableOwnerKey], which is the last list to have been navigated to, and otherwise gets its own [chrome].
+ */
+internal class ListPaneChromeHost(
+  val chrome: ListPaneChrome,
+  val movable: ListPaneChrome,
+  val movableOwnerKey: Any?
+)
+
+internal val LocalListPaneChrome = compositionLocalOf<ListPaneChromeHost?> { null }
 
 /**
  * Fills the detail pane when there is no detail content to show. Defaults to nothing, leaving the pane's

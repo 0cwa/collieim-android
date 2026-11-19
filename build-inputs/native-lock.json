@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source_provenance": {
-    "libsignal": "904c8dc8216073b078a5f2f5090e3da8382e6a92",
+    "libsignal": "0abcfd4044a5827d73b657c1170ab3638d660330",
     "ringrtc": "bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f",
     "webrtc": "d7dbd6fdddac949e89501e6ea947a344e9ffde72"
   },
@@ -10,22 +10,22 @@
   "modules": [
     {
       "name": "libsignal-android",
-      "input_version": "0.106.1",
-      "output_version": "0.106.1-collie.1",
+      "input_version": "0.107.0",
+      "output_version": "0.107.0-collie.1",
       "extension": "aar",
-      "binary_sha256": "4247031a753f73f12753d04f14d9316436bbf07af2097c1b897feedd360dbd9a",
-      "pom_sha256": "1f126e627c035d8fa2e3c2caca29a5af87f4013b8b9c430bfea9ab5d2aa7347d",
+      "binary_sha256": "6d6c59ff67b6a0a328b66b737f92f679000eebdd92681aaa802ee7c9f2a9e897",
+      "pom_sha256": "c20f82196c8e9e08e926b41ccda29df5568424a4bc05d05ec83a8cc6f4c739bf",
       "native_libraries": [
         "libsignal_jni.so"
       ]
     },
     {
       "name": "libsignal-client",
-      "input_version": "0.106.1",
-      "output_version": "0.106.1-collie.1",
+      "input_version": "0.107.0",
+      "output_version": "0.107.0-collie.1",
       "extension": "jar",
-      "binary_sha256": "c361b8e905c770b838535fdac5a0bdf0f995f8ed6ce0a6837cb4c7360e8c5a79",
-      "pom_sha256": "0d3570391d1594c4a91d67e899cded9bdcee7cc95468cf511cbb0619ee0368f4",
+      "binary_sha256": "76b20e6893ee3da7d63f34992f7960cef0694322ddef8c2d7dbf6214d3dcfa5d",
+      "pom_sha256": "e0681bfe941d5d4de6df6726077fb06b7f865cf0873698ecf8c115071850bcc8",
       "native_libraries": []
     },
     {
@@ -49,7 +49,7 @@
   ],
   "source_patches": [
     {
-      "path": "patches/libsignal-0.106.1-attributed.mbox",
+      "path": "patches/libsignal-0.107.0-attributed.mbox",
       "sha256": "56db63aafe770da39e249fcce6f9bac47cdffafa3734dab980ac85e0715e555e"
     },
     {

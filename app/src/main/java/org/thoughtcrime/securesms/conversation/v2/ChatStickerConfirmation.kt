@@ -12,6 +12,7 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,7 @@ import org.signal.mediakeyboard.data.KeyboardSticker
 import org.thoughtcrime.securesms.R
 import kotlin.coroutines.cancellation.CancellationException
 import org.signal.core.ui.R as CoreUiR
+import org.signal.mediakeyboard.R as MediaKeyboardR
 
 private const val PANEL_ALPHA = 0.6f
 
@@ -134,10 +137,11 @@ fun ChatStickerConfirmation(
     StickerConfirmationPanel(
       confirmation = shown,
       sendColor = controller.sendColor,
-      favoritesEnabled = controller.favoritesEnabled,
+      moveToTopEnabled = controller.moveToTopEnabled,
       onBack = controller::dismiss,
       onSend = controller::send,
       onToggleFavorite = controller::toggleFavorite,
+      onMoveFavoriteToTop = controller::moveFavoriteToTop,
       onViewPack = controller::viewPack,
       modifier = modifier.graphicsLayer { alpha = fade.value }
     )
@@ -174,10 +178,11 @@ private fun ConfirmRemoveFavoriteDialog(controller: ChatStickerConfirmationContr
 private fun StickerConfirmationPanel(
   confirmation: StickerConfirmation,
   sendColor: Color,
-  favoritesEnabled: Boolean,
+  moveToTopEnabled: Boolean,
   onBack: () -> Unit,
   onSend: () -> Unit,
   onToggleFavorite: () -> Unit,
+  onMoveFavoriteToTop: () -> Unit,
   onViewPack: () -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -189,6 +194,14 @@ private fun StickerConfirmationPanel(
       .pointerInput(Unit) {}
       .windowInsetsPadding(WindowInsets.navigationBarsCompat.only(WindowInsetsSides.Bottom))
   ) {
+    // Allows the background to dismiss the confirmation as well
+    Box(
+      modifier = Modifier
+        .matchParentSize()
+        .clearAndSetSemantics {}
+        .clickable(interactionSource = null, indication = null, onClick = onBack)
+    )
+
     Box(
       modifier = Modifier
         .fillMaxWidth()
@@ -242,12 +255,15 @@ private fun StickerConfirmationPanel(
       modifier = Modifier
         .size(StickerSize)
         .align(Alignment.Center)
+        .pointerInput(Unit) {}
     )
 
     StickerActionsPill(
       sticker = confirmation.sticker,
-      favoritesEnabled = favoritesEnabled,
+      moveToTopEnabled = moveToTopEnabled,
+      canMoveToTop = confirmation.isInFavorites && confirmation.sticker.isFavorite,
       onToggleFavorite = onToggleFavorite,
+      onMoveFavoriteToTop = onMoveFavoriteToTop,
       onViewPack = onViewPack,
       modifier = Modifier
         .align(Alignment.BottomCenter)
@@ -259,8 +275,10 @@ private fun StickerConfirmationPanel(
 @Composable
 private fun StickerActionsPill(
   sticker: KeyboardSticker,
-  favoritesEnabled: Boolean,
+  moveToTopEnabled: Boolean,
+  canMoveToTop: Boolean,
   onToggleFavorite: () -> Unit,
+  onMoveFavoriteToTop: () -> Unit,
   onViewPack: () -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -276,24 +294,36 @@ private fun StickerActionsPill(
     modifier = modifier
       .clip(CircleShape)
       .background(MaterialTheme.colorScheme.primaryContainer)
+      .pointerInput(Unit) {}
   ) {
-    if (favoritesEnabled) {
+    IconButton(
+      onClick = onToggleFavorite,
+      colors = buttonColors,
+      modifier = Modifier.size(ButtonSize)
+    ) {
+      if (sticker.isFavorite) {
+        Icon(
+          imageVector = SignalIcons.FavoriteOff.imageVector,
+          contentDescription = stringResource(CoreUiR.string.StickerFavorites__remove_from_favorites)
+        )
+      } else {
+        Icon(
+          imageVector = SignalIcons.Favorite.imageVector,
+          contentDescription = stringResource(CoreUiR.string.StickerFavorites__add_to_favorites)
+        )
+      }
+    }
+
+    if (moveToTopEnabled && canMoveToTop) {
       IconButton(
-        onClick = onToggleFavorite,
+        onClick = onMoveFavoriteToTop,
         colors = buttonColors,
         modifier = Modifier.size(ButtonSize)
       ) {
-        if (sticker.isFavorite) {
-          Icon(
-            imageVector = SignalIcons.FavoriteOff.imageVector,
-            contentDescription = stringResource(CoreUiR.string.StickerFavorites__remove_from_favorites)
-          )
-        } else {
-          Icon(
-            imageVector = SignalIcons.Favorite.imageVector,
-            contentDescription = stringResource(CoreUiR.string.StickerFavorites__add_to_favorites)
-          )
-        }
+        Icon(
+          imageVector = SignalIcons.Transfer.imageVector,
+          contentDescription = stringResource(MediaKeyboardR.string.MediaKeyboard__move_to_top)
+        )
       }
     }
 
@@ -344,10 +374,11 @@ private fun StickerConfirmationPanelPreview() {
   StickerConfirmationPanel(
     confirmation = StickerConfirmation(sticker = previewSticker, replyHeader = null),
     sendColor = Color(0xFF315FF4),
-    favoritesEnabled = true,
+    moveToTopEnabled = true,
     onBack = {},
     onSend = {},
     onToggleFavorite = {},
+    onMoveFavoriteToTop = {},
     onViewPack = {},
     modifier = Modifier.size(width = 412.dp, height = 409.dp)
   )
@@ -358,12 +389,13 @@ private fun StickerConfirmationPanelPreview() {
 @Composable
 private fun StickerConfirmationPanelReplyPreview() {
   StickerConfirmationPanel(
-    confirmation = StickerConfirmation(sticker = previewSticker.copy(isFavorite = true), replyHeader = "Reply to Maya Johnson"),
+    confirmation = StickerConfirmation(sticker = previewSticker.copy(isFavorite = true), replyHeader = "Reply to Maya Johnson", isInFavorites = true),
     sendColor = Color(0xFF315FF4),
-    favoritesEnabled = true,
+    moveToTopEnabled = true,
     onBack = {},
     onSend = {},
     onToggleFavorite = {},
+    onMoveFavoriteToTop = {},
     onViewPack = {},
     modifier = Modifier.size(width = 412.dp, height = 409.dp)
   )

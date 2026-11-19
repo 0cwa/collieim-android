@@ -535,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">परवाने</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">अटी आणि गोपनीयता धोरण</string>
-    कॉपीराईट Molly संदेशक
+    <string name="HelpFragment__copyright_signal_messenger">कॉपीराईट Molly संदेशक</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 खाली परवानाधारक</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal एक ना-नफा संस्था आहे</string>
@@ -1172,4 +1172,75 @@
     <string name="SelectRecipientsFragment__add">जोडा</string>
     <!-- Title for add recipients to notification profile screen in create flow -->
     <string name="SelectRecipientsScreen__allowed_notifications">सूचनांची अनुमती असलेले</string>
+
+    <!-- AdvancedPrivacySettingsScreen -->
+    <string name="preferences__advanced">प्रगत</string>
+    <string name="preferences_advanced__always_relay_calls">कॉल नेहमी रीले करा</string>
+    <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">आपल्या संपर्काला आपला IP अॅड्रेस कळू न देण्यासाठी सर्व कॉल Signal सर्व्हर वरून रीले करा. सक्षम केल्याने कॉल दर्जा कमी होईल.</string>
+    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
+    <string name="preferences_communication__category_censorship_circumvention">सेंसॉरशिप सर्कंवेंशन</string>
+    <!-- Title of the \'censorship circumvention\' toggle switch -->
+    <string name="preferences_communication__censorship_circumvention">सेंसॉरशिप सर्कंवेंशन</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">जर सक्षम केले, तर Signal सेंसॉरशिप सर्कंमवेंट करण्याचा प्रयत्न करेल. आपण Signal सेंसॉर केलेल्या स्थानावर असल्याखेरीज हे वैशिष्ट्य सक्षम करू नये.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">आपल्या खात्याच्या फोन नंबरच्या आधारावर सेंसॉरशिप सर्कंवेंशन सक्रिय केले गेले आहे.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_you_have_manually_disabled">आपण व्यक्तिचलितपणे सेंसॉरशिप सर्कंवेंशन अक्षम केले आहे.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
+    <string name="preferences_communication__censorship_circumvention_is_not_necessary_you_are_already_connected">सेंसॉरशिप सर्कंवेंशन गरजेचे नाही, आपण आधीपासून Signal सेवेला कनेक्ट केलेले आहात.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
+    <string name="preferences_communication__censorship_circumvention_can_only_be_activated_when_connected_to_the_internet">इंटरनेट सोबत कनेक्ट केल्यावरच सेंसॉरशिप सर्कंवेंशन सक्रिय करता येते.</string>
+    <string name="preferences_communication__category_sealed_sender">सीलबंद प्रेषक</string>
+    <string name="AdvancedPrivacySettingsFragment__show_status_icon">स्टेटस चिन्ह दाखवा</string>
+    <string name="AdvancedPrivacySettingsFragment__show_an_icon">सीलबंद प्रेषकद्वारे पोहोचवले गेल्यावर संदेश तपशीलामध्ये चिन्ह दाखवा.</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone">कुणाकडूनही अनुमती द्या</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone_description">विना-संपर्क आणि आपण ज्यांच्या सोबत आपली प्रोफाईल सामायिक केलेली नाही त्यांच्याकडून येणाऱ्या संदेशांकरिता सीलबंद प्रेषक सक्षम करा.</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">स्वयंचलित की पडताळणी</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">सक्रिय केल्यावर Signal आपोआप 1:1 चॅट्सच्या एन्क्रिप्शनची पडताळणी करेल.</string>
+
+    <!-- ExpireTimerSettingsScreen -->
+    <!-- Title of the screen for choosing a disappearing messages timer -->
+    <string name="ExpireTimerSettingsScreen__disappearing_messages">हरवणारे संदेश</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">सक्षम केल्यानंतर, या चॅटमधील आपल्याद्वारा पाठवलेले आणि प्राप्त झालेले नवीन संदेश पाहिल्यानंतर लुप्त होतील.</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">सक्षम केल्यानंतर, या चॅट मधील पाठविलेले आणि प्राप्त झालेले नवीन संदेश पाहिल्यानंतर लुप्त होतील.</string>
+    <string name="ExpireTimerSettingsFragment__off">बंद</string>
+    <string name="ExpireTimerSettingsFragment__4_weeks">4 आठवडे</string>
+    <string name="ExpireTimerSettingsFragment__1_week">1 आठवडा</string>
+    <string name="ExpireTimerSettingsFragment__1_day">1 दिवस</string>
+    <string name="ExpireTimerSettingsFragment__8_hours">8 तास</string>
+    <string name="ExpireTimerSettingsFragment__1_hour">1 तास</string>
+    <string name="ExpireTimerSettingsFragment__5_minutes">5 मिनिटे</string>
+    <string name="ExpireTimerSettingsFragment__30_seconds">30 सेकंद</string>
+    <string name="ExpireTimerSettingsFragment__custom_time">कस्टम वेळ</string>
+    <string name="ExpireTimerSettingsFragment__save">जतन करा</string>
+
+    <!-- AccountSettingsScreen -->
+    <!-- Snackbar shown after the user creates a PIN -->
+    <string name="AccountSettingsScreen__pin_created">PIN तयार केला.</string>
+    <!-- Snackbar shown when wiping all of the app\'s data on this device fails -->
+    <string name="AccountSettingsScreen__delete_all_data_failed">डेटा हटवण्यात अयशस्वी</string>
+    <string name="preferences_app_protection__failed_to_enable_registration_lock">नोंदणी लॉक सक्षम करण्यात अयशस्वी.</string>
+    <string name="preferences_app_protection__failed_to_disable_registration_lock">नोंदणी लॉक अक्षम करण्यात अयशस्वी.</string>
+
+    <!-- AdvancedPinSettingsScreen -->
+    <!-- Title of toolbar for the advanced pin settings screen -->
+    <string name="preferences__advanced_pin_settings_title">प्रगत PIN सेटिंग</string>
+    <string name="preferences__enable_pin">PIN सक्षम करा</string>
+    <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल. आपल्याला अॅप उघडण्यासाठी PIN ची गरज लागणार नाही.</string>
+    <string name="preferences__disable_pin">PIN अक्षम करा</string>
+    <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">आपण PIN अक्षम केल्यास, आपण व्यक्तिचलितरीत्या बॅक अप आणि पुनर्स्थापना केल्याशिवाय आपण Signal वर पुन्हा नोंदणी करताना आपण सर्व डेटा गमवाल. PIN अक्षम केलेले असताना आपण नोंदणी लॉक चालू करू शकत नाही.</string>
+    <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">नोंदणी लॉकसाठी पिन आवश्यक आहेत. पिन अक्षम करण्यासाठी, कृपया प्रथम नोंदणी लॉक अक्षम करा.</string>
+    <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">पेमेंट रिकव्हरी फ्रेझ रेकॉर्ड करा</string>
+    <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">आपला PIN अक्षम करण्यापूर्वी, आपले पेमेंट खाते आपण रिकव्हर करू शकता हे सुनिश्चित करण्यासाठी आपली पेमेंट रिकव्हरी फ्रेझ रेकॉर्ड करणे आवश्यक आहे.</string>
+    <string name="ApplicationPreferencesActivity_record_phrase">फ्रेझ रेकॉर्ड करा</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">एक नवीन रीकव्हरी की तयार करा</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">तुम्ही तुमचा पिन निष्क्रिय करण्यापूर्वी एक नवी रीकव्हरी की तयार आणि जतन करून ठेवायला हवी.</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">की तयार करा</string>
+    <string name="ApplicationPreferencesActivity_pin_created">PIN तयार केला.</string>
+    <string name="ApplicationPreferencesActivity_pin_disabled">PIN अक्षम केले.</string>
 </resources>

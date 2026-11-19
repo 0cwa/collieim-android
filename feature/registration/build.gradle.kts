@@ -46,6 +46,7 @@ dependencies {
   implementation(project(":core-gms:base"))
   implementation(project(":core:serialization"))
   implementation(project(":lib:device-transfer"))
+  implementation(project(":lib:locale"))
   implementation(project(":lib:password-manager"))
   implementation(project(":lib:signal-login"))
   implementation(project(":lib:ui-components"))

@@ -1,3 +1,0 @@
-topic: signal
-pr: 114
-Based on Signal 8.35.2.

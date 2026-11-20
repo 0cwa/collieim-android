@@ -1,3 +1,0 @@
-topic: privacy
-pr: 143
-A new setting lets link previews show only text, without downloading their images.

@@ -1,3 +1,0 @@
-topic: setup
-pr: 150
-A line under Collie shows what needs attention, new accounts get setup steps, and What's new includes Support Collie.

@@ -1,3 +1,0 @@
-topic: backups
-pr: 112
-Restoring a Molly backup keeps your security settings.

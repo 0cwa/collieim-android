@@ -13,11 +13,9 @@ METHODS = {
     'composeCaptchaEmitsSyntheticToken',
     'legacyCaptchaEmitsTokenAndNavigatesUp',
     'recaptchaSubmitsSyntheticChallengeThroughFakeTransport',
-    'paypalReturnsSyntheticConfirmation',
-    'stripeReturnsSyntheticIntentAccessor',
     'debugViewerLoadsAssetAndRoundTripsSyntheticLogs',
 }
-SCREENSHOTS = {'compose-captcha.png', 'legacy-captcha.png', 'recaptcha.png', 'paypal.png', 'stripe.png', 'debug-viewer.png'}
+SCREENSHOTS = {'compose-captcha.png', 'legacy-captcha.png', 'recaptcha.png', 'debug-viewer.png'}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
@@ -81,7 +79,7 @@ def check(root, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized screenshot: {path.name}')
-    print('Passed six offline WebView methods with matching APKs and decoded screenshots')
+    print('Passed four offline WebView methods with matching APKs and decoded screenshots')
 
 
 if __name__ == '__main__':

@@ -26,8 +26,6 @@ import org.signal.core.ui.compose.CollectActions
 import org.signal.core.ui.navigation.ResultEffect
 import org.signal.core.util.ServiceUtil
 import org.signal.passwordmanager.SignalPasskeyManager
-import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.lock.v2.CreateSvrPinActivity
 import org.thoughtcrime.securesms.registration.ui.RegistrationIntents
@@ -88,7 +86,6 @@ fun AccountSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Uni
   CollectActions(viewModel.actions) { action ->
     when (action) {
       AccountSettingsAction.NavigateToLinkedDevices -> parentEventEmitter.navigateTo(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
-      AccountSettingsAction.NavigateToManageDonations -> context.startActivity(AppSettingsActivity.manageSubscriptions(context))
       AccountSettingsAction.LaunchCreatePinFlow -> pinFlowLauncher.launch(CreateSvrPinActivity.getIntentForPinCreate(context))
       AccountSettingsAction.LaunchChangePinFlow -> pinFlowLauncher.launch(CreateSvrPinActivity.getIntentForPinChangeFromSettings(context))
       AccountSettingsAction.AuthenticateToViewSignalLoginDetails -> signalLoginBiometrics.withBiometricsAuthentication {
@@ -119,7 +116,6 @@ fun AccountSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Uni
 
   AccountSettingsScreen(
     state = state,
-    onEvent = viewModel::onEvent,
-    donationManagementLabel = stringResource(R.string.AppSettingsFragment__manage_existing_signal_donations)
+    onEvent = viewModel::onEvent
   )
 }

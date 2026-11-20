@@ -279,7 +279,7 @@ jobs:
             '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.security.WebViewRuntimeAcceptanceTest' \
             2>&1 | tee "$evidence/connected.log"
           SH
-      - name: Exercise six WebView flows offline
+      - name: Exercise four WebView flows offline
         id: device
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:

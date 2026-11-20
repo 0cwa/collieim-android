@@ -13,7 +13,6 @@ import android.net.Uri
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.provider.Settings
-import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.ViewGroup
@@ -37,8 +36,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.debuglogsviewer.DebugLogsViewer
-import org.signal.donations.InAppPaymentType
-import org.signal.donations.StripeIntentAccessor
 import org.signal.registration.screens.captcha.CaptchaScreen
 import org.signal.registration.screens.captcha.CaptchaScreenEvents
 import org.signal.registration.screens.captcha.CaptchaState
@@ -46,11 +43,6 @@ import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.SignalInstrumentationApplicationContext
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationDialogFragment
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationResult
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSDialogFragment
-import org.thoughtcrime.securesms.database.InAppPaymentTable
-import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.ratelimit.RecaptchaProofActivity
 import org.thoughtcrime.securesms.registration.ui.captcha.CaptchaFragment
@@ -64,7 +56,6 @@ import org.thoughtcrime.securesms.testing.endpoints.put
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.time.Duration.Companion.milliseconds
 
 /** Offline synthetic pages exercise the real WebView clients; no vendor request or payment is made. */
 @RunWith(AndroidJUnit4::class)
@@ -152,61 +143,6 @@ class WebViewRuntimeAcceptanceTest {
     }
   }
 
-  @Test fun paypalReturnsSyntheticConfirmation() {
-    val result = AtomicReference<Bundle>()
-    ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
-      lateinit var web: WebView
-      scenario.onActivity { activity ->
-        activity.supportFragmentManager.setFragmentResultListener(PayPalConfirmationDialogFragment.REQUEST_KEY, activity) { _, bundle -> result.set(bundle) }
-        val fragment = PayPalConfirmationDialogFragment().apply {
-          arguments = Bundle().apply { putParcelable("uri", Uri.parse("about:blank")) }
-        }
-        fragment.showNow(activity.supportFragmentManager, "paypal-test")
-        web = fragment.requireView().findViewById(R.id.web_view)
-      }
-      loadFixture(web)
-      assertFixture(web, "paypal")
-      instrumentation.runOnMainSync { assertTrue(web.settings.domStorageEnabled) }
-      instrumentation.runOnMainSync { web.loadDataWithBaseURL("https://signaldonations.org/return/onetime?PayerID=test-payer&token=test-token", html, "text/html", "UTF-8", null) }
-      await { result.get() != null }
-      val confirmation = result.get().getParcelable(PayPalConfirmationDialogFragment.REQUEST_KEY, PayPalConfirmationResult::class.java)
-      assertEquals(PayPalConfirmationResult("test-payer", null, "test-token"), confirmation)
-    }
-  }
-
-  @Test fun stripeReturnsSyntheticIntentAccessor() {
-    val result = AtomicReference<Bundle>()
-    val payment = InAppPaymentTable.InAppPayment(
-      id = InAppPaymentTable.InAppPaymentId(1), type = InAppPaymentType.ONE_TIME_DONATION,
-      state = InAppPaymentTable.State.CREATED, insertedAt = 0.milliseconds, updatedAt = 0.milliseconds,
-      notified = false, subscriberId = null, endOfPeriod = 0.milliseconds, data = InAppPaymentData()
-    )
-    ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
-      lateinit var web: WebView
-      scenario.onActivity { activity ->
-        activity.supportFragmentManager.setFragmentResultListener(Stripe3DSDialogFragment.REQUEST_KEY, activity) { _, bundle -> result.set(bundle) }
-        val fragment = Stripe3DSDialogFragment().apply {
-          arguments = Bundle().apply {
-            putParcelable("uri", Uri.parse("about:blank"))
-            putParcelable("return_uri", Uri.parse("https://return.invalid/complete"))
-            putParcelable("waiting_for_auth_payment", payment)
-          }
-        }
-        fragment.showNow(activity.supportFragmentManager, "stripe-test")
-        web = fragment.requireView().findViewById(R.id.web_view)
-      }
-      loadFixture(web)
-      assertFixture(web, "stripe")
-      instrumentation.runOnMainSync { assertTrue(web.settings.domStorageEnabled) }
-      javascript(web, "window.location.href='https://local.invalid/navigation'")
-      await { currentUrl(web) == "https://local.invalid/navigation" }
-      instrumentation.runOnMainSync { web.loadDataWithBaseURL("https://return.invalid/complete?payment_intent=pi_test&payment_intent_client_secret=secret_test", html, "text/html", "UTF-8", null) }
-      await { result.get() != null }
-      val intent = result.get().getParcelable(Stripe3DSDialogFragment.REQUEST_KEY, StripeIntentAccessor::class.java)
-      assertEquals(StripeIntentAccessor(StripeIntentAccessor.ObjectType.PAYMENT_INTENT, "pi_test", "secret_test"), intent)
-    }
-  }
-
   @Test fun debugViewerLoadsAssetAndRoundTripsSyntheticLogs() {
     ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
       val finished = CountDownLatch(1)
@@ -259,12 +195,6 @@ class WebViewRuntimeAcceptanceTest {
       assertFalse(web.settings.allowContentAccess)
       assertTrue(web.settings.javaScriptEnabled)
     }
-  }
-
-  private fun currentUrl(web: WebView): String? {
-    val url = AtomicReference<String>()
-    instrumentation.runOnMainSync { url.set(web.url) }
-    return url.get()
   }
 
   private fun clickCallback(web: WebView) { javascript(web, "document.getElementById('callback').click()") }

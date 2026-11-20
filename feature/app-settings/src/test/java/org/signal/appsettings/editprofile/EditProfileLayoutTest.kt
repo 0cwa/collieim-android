@@ -52,9 +52,4 @@ class EditProfileLayoutTest : SignalLayoutStressTest() {
     EditProfileScreen(state = populated.copy(dialog = EditProfileState.Dialog.UsernameOptions), onEvent = {})
   }
 
-  /** The sheet's content on its own: a modal sheet's scrim is a full-screen click target that would overlap everything. */
-  @Test
-  fun `become a sustainer`() = assertPassesLayoutChecks {
-    BecomeASustainerSheetContent(onEvent = {})
-  }
 }

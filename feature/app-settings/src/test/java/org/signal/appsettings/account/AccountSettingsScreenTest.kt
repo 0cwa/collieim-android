@@ -99,16 +99,13 @@ class AccountSettingsScreenTest {
   }
 
   @Test
-  fun `optional payments and donation management remain available in Account`() {
-    setContent(createState(isPrimaryDevice = true, showPayments = true, showDonationManagement = true), donationManagementLabel = "Manage donations")
+  fun `optional payments remain available in Account`() {
+    setContent(createState(isPrimaryDevice = true, showPayments = true))
 
     scrollTo(AccountSettingsTestTags.ROW_PAYMENTS)
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_PAYMENTS).performClick()
-    scrollTo(AccountSettingsTestTags.ROW_MANAGE_DONATIONS)
-    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_MANAGE_DONATIONS).performClick()
 
     assertThat(events).contains(AccountSettingsEvent.PaymentsClicked)
-    assertThat(events).contains(AccountSettingsEvent.ManageDonationsClicked)
   }
 
   @Test
@@ -578,12 +575,11 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER).assertDoesNotExist()
   }
 
-  private fun setContent(state: AccountSettingsState, donationManagementLabel: String? = null) {
+  private fun setContent(state: AccountSettingsState) {
     composeTestRule.setContent {
       AccountSettingsScreen(
         state = state,
-        onEvent = { events += it },
-        donationManagementLabel = donationManagementLabel
+        onEvent = { events += it }
       )
     }
   }
@@ -624,7 +620,6 @@ class AccountSettingsScreenTest {
     canOpenLinkedDevices: Boolean = false,
     showPayments: Boolean = false,
     unreadPaymentsCount: Int = 0,
-    showDonationManagement: Boolean = false,
     signalLogin: AccountSettingsState.SignalLogin? = null,
     dialog: Dialog = Dialog.None
   ): AccountSettingsState {
@@ -642,7 +637,6 @@ class AccountSettingsScreenTest {
       canOpenLinkedDevices = canOpenLinkedDevices,
       showPayments = showPayments,
       unreadPaymentsCount = unreadPaymentsCount,
-      showDonationManagement = showDonationManagement,
       signalLogin = signalLogin,
       dialog = dialog
     )

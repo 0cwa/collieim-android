@@ -20,10 +20,8 @@ import org.signal.libsignal.protocol.kem.KEMKeyPair
 import org.signal.libsignal.protocol.kem.KEMKeyType
 import org.signal.network.util.JsonUtil
 import org.whispersystems.signalservice.api.account.ChangePhoneNumberRequest
-import org.whispersystems.signalservice.api.donations.ReceiptCredentialResponseJson
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile
 import org.whispersystems.signalservice.api.push.SignedPreKeyEntity
-import org.whispersystems.signalservice.api.subscriptions.StripeClientSecret
 import org.whispersystems.signalservice.internal.push.AuthCredentials
 import org.whispersystems.signalservice.internal.push.DonationIntentResult
 import org.whispersystems.signalservice.internal.push.IdentityCheckRequest
@@ -193,19 +191,4 @@ class ConvertedModelJsonTest {
     assertThat(JsonUtil.fromJson("""{"username":"user","password":"pass"}""", AuthCredentials::class.java).asBasic()).isNotNull()
   }
 
-  /**
-   * Both of these had a single-argument `@JsonCreator` constructor in Java. Without an explicit mode, such a
-   * constructor is *delegating* — the parameter would receive the whole JSON object rather than the named field — so
-   * pin that the Kotlin module still binds them by property name.
-   */
-  @Test
-  fun singleArgumentConstructorsBindByName() {
-    val secret = JsonUtil.fromJson("""{"clientSecret":"pi_1234_secret_5678"}""", StripeClientSecret::class.java)
-    assertThat(secret.clientSecret).isEqualTo("pi_1234_secret_5678")
-    assertThat(secret.id).isEqualTo("pi_1234")
-
-    // Not a real zkgroup credential, so it decodes to null rather than throwing. A delegating creator would fail here.
-    val credential = JsonUtil.fromJson("""{"receiptCredentialResponse":"AQIDBA=="}""", ReceiptCredentialResponseJson::class.java)
-    assertThat(credential.credentialResponse).isNull()
-  }
 }

@@ -12,6 +12,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
@@ -28,11 +29,20 @@ import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDeliveryMethod__unifiedpush) {
 
   private lateinit var viewModel: UnifiedPushSettingsViewModel
+  private var scanDisclosure: RelayDisclosure.Snapshot? = null
 
   private val qrScanLauncher: ActivityResultLauncher<Unit> =
     registerForActivityResult(MollySocketQrScannerActivity.Contract()) { mollySocket ->
+      val disclosure = scanDisclosure
+      scanDisclosure = null
       if (mollySocket != null) {
-        viewModel.setMollySocket(mollySocket)
+        if (disclosure == null) {
+          RelayDisclosureDialogs.showStaleAction(requireContext())
+        } else {
+          RelayDisclosureDialogs.showRelay(requireContext(), mollySocket) {
+            viewModel.setMollySocket(mollySocket, disclosure)
+          }
+        }
       }
     }
 
@@ -52,6 +62,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
   }
 
   private fun showExportModeDialog(state: UnifiedPushSettingsState) {
+    val disclosure = state.relayDisclosure ?: return RelayDisclosureDialogs.showStaleAction(requireContext())
     val eligible = state.savedExports.filter { it.eligible }
     val choices = mutableListOf(
       getString(R.string.UnifiedPushSettingsFragment__export_new_intent),
@@ -62,25 +73,25 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
       .setItems(choices.toTypedArray()) { _, which ->
         when (which) {
-          0 -> showExportEpochDialog(ExportMode.NEW_INTENT)
-          1 -> showRecoveryAcknowledgement()
-          2 -> showRerenderDialog(eligible)
+          0 -> showExportEpochDialog(ExportMode.NEW_INTENT, disclosure)
+          1 -> showRecoveryAcknowledgement(disclosure)
+          2 -> showRerenderDialog(eligible, disclosure)
         }
       }
       .setNegativeButton(android.R.string.cancel, null)
       .show()
   }
 
-  private fun showRecoveryAcknowledgement() {
+  private fun showRecoveryAcknowledgement(disclosure: RelayDisclosure.Snapshot) {
     MaterialAlertDialogBuilder(requireContext())
       .setTitle(R.string.UnifiedPushSettingsFragment__export_recovery_title)
       .setMessage(R.string.UnifiedPushSettingsFragment__export_recovery_message)
-      .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_continue) { _, _ -> showExportEpochDialog(ExportMode.RECOVERY) }
+      .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_continue) { _, _ -> showExportEpochDialog(ExportMode.RECOVERY, disclosure) }
       .setNegativeButton(android.R.string.cancel, null)
       .show()
   }
 
-  private fun showExportEpochDialog(mode: ExportMode) {
+  private fun showExportEpochDialog(mode: ExportMode, disclosure: RelayDisclosure.Snapshot) {
     val input = EditText(requireContext()).apply {
       inputType = InputType.TYPE_CLASS_NUMBER
       hint = getString(R.string.UnifiedPushSettingsFragment__export_enrollment_epoch_hint)
@@ -95,20 +106,26 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       .setMessage(R.string.UnifiedPushSettingsFragment__export_enrollment_epoch_message)
       .setView(container)
       .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_enrollment_export) { _, _ ->
-        viewModel.exportEnrollment(requireContext(), input.text.toString(), mode)
+        val serverEpoch = input.text.toString()
+        RelayDisclosureDialogs.showExport(requireContext()) {
+          viewModel.exportEnrollment(requireContext(), serverEpoch, mode, disclosure = disclosure)
+        }
       }
       .setNegativeButton(android.R.string.cancel, null)
       .show()
   }
 
-  private fun showRerenderDialog(exports: List<SavedExport>) {
+  private fun showRerenderDialog(exports: List<SavedExport>, disclosure: RelayDisclosure.Snapshot) {
     val labels = exports.mapIndexed { index, saved ->
       getString(R.string.UnifiedPushSettingsFragment__saved_export_label, index + 1, saved.epoch)
     }.toTypedArray()
     MaterialAlertDialogBuilder(requireContext())
       .setTitle(R.string.UnifiedPushSettingsFragment__rerender_export_title)
       .setItems(labels) { _, which ->
-        viewModel.exportEnrollment(requireContext(), "", ExportMode.RERENDER, exports[which].requestId)
+        val requestId = exports[which].requestId
+        RelayDisclosureDialogs.showExport(requireContext()) {
+          viewModel.exportEnrollment(requireContext(), "", ExportMode.RERENDER, requestId, disclosure)
+        }
       }
       .setNegativeButton(android.R.string.cancel, null)
       .show()
@@ -135,7 +152,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         val selected = items[which]
         MaterialAlertDialogBuilder(requireContext())
           .setTitle(R.string.UnifiedPushSettingsFragment__forget_export_title)
-          .setMessage(R.string.UnifiedPushSettingsFragment__forget_export_warning)
+          .setMessage(R.string.UnifiedPushSettingsFragment__forget_export_revocation_warning)
           .setPositiveButton(R.string.UnifiedPushSettingsFragment__forget_export_confirm) { _, _ ->
             if (selected.third) viewModel.forgetLegacyExport() else viewModel.forgetExport(selected.second)
           }
@@ -149,11 +166,19 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
   private fun showControlStateRecoveryDialog() {
     MaterialAlertDialogBuilder(requireContext())
       .setTitle(R.string.UnifiedPushSettingsFragment__control_state_recovery_title)
-      .setMessage(R.string.UnifiedPushSettingsFragment__control_state_recovery_message)
+      .setMessage(R.string.UnifiedPushSettingsFragment__control_state_recovery_revocation_message)
       .setPositiveButton(R.string.UnifiedPushSettingsFragment__control_state_recovery_confirm) { _, _ ->
         viewModel.recoverCorruptControlState()
       }
       .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showRemoveRelayAccessDialog() {
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__remove_relay_access_title)
+      .setMessage(R.string.UnifiedPushSettingsFragment__remove_relay_access_message)
+      .setPositiveButton(android.R.string.ok, null)
       .show()
   }
 
@@ -192,7 +217,13 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           }
         ),
         onClick = {
-          qrScanLauncher.launch()
+          val disclosure = state.relayDisclosure
+          if (disclosure == null) {
+            RelayDisclosureDialogs.showStaleAction(requireContext())
+          } else {
+            scanDisclosure = disclosure
+            qrScanLauncher.launch()
+          }
         },
       )
 
@@ -221,7 +252,14 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           iconEnd = DSLSettingsIcon.from(org.signal.core.ui.R.drawable.symbol_copy_android_24),
           isEnabled = state.serverParameters != null,
           onClick = {
-            viewModel.copyParamsToClipboard(requireContext())
+            val disclosure = state.relayDisclosure
+            if (disclosure == null) {
+              RelayDisclosureDialogs.showStaleAction(requireContext())
+            } else {
+              RelayDisclosureDialogs.showCopy(requireContext()) {
+                viewModel.copyParamsToClipboard(requireContext(), disclosure)
+              }
+            }
           },
         )
       } else {
@@ -278,6 +316,19 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         ),
         isEnabled = !state.controlStateCorrupt,
         onClick = { showExportModeDialog(state) },
+      )
+
+      dividerPref()
+
+      textPref(
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_title),
+        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_summary),
+      )
+
+      clickPref(
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_title),
+        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_summary),
+        onClick = { showRemoveRelayAccessDialog() },
       )
     }
   }

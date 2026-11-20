@@ -49,6 +49,30 @@ class CollieSettingsScreenTest {
   }
 
   @Test
+  fun `recovery guard defaults off and requests enabling`() {
+    val changes = mutableListOf<Boolean>()
+    composeTestRule.setContent {
+      CollieSettingsScreen(state = LabsSettingsState(), onEvent = {}, onRecoveryPinGuardChanged = { changes += it })
+    }
+    switchIn(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertIsOff()
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).performClick()
+    assertThat(changes).containsExactly(true)
+    switchIn(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertIsOff()
+  }
+
+  @Test
+  fun `recovery guard requests disabling without changing its own state`() {
+    val changes = mutableListOf<Boolean>()
+    composeTestRule.setContent {
+      CollieSettingsScreen(state = LabsSettingsState(), onEvent = {}, recoveryPinGuardEnabled = true, onRecoveryPinGuardChanged = { changes += it })
+    }
+    switchIn(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertIsOn()
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).performClick()
+    assertThat(changes).containsExactly(false)
+    switchIn(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertIsOn()
+  }
+
+  @Test
   fun `clicking back emits NavigateBackClicked`() {
     setContent(LabsSettingsState())
     val description = ApplicationProvider.getApplicationContext<Application>().getString(R.string.AppSettingsScreen__go_back)

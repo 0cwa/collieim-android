@@ -14,6 +14,8 @@ import org.thoughtcrime.securesms.PassphrasePromptActivity;
 import org.thoughtcrime.securesms.PassphraseRequiredActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.service.KeyCachingService;
+import org.thoughtcrime.securesms.pin.RecoveryPinGuard;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.util.DynamicRegistrationTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 
@@ -66,10 +68,17 @@ public class CreateSvrPinActivity extends PassphraseRequiredActivity {
 
     dynamicTheme.onCreate(this);
 
-    setContentView(R.layout.create_kbs_pin_activity);
-
     CreateSvrPinFragmentArgs arguments = CreateSvrPinFragmentArgs.fromBundle(getIntent().getExtras());
 
+    if ((arguments.getIsPinChange() || SignalStore.svr().hasPin()) && SignalStore.pin().getRecoveryPinGuardEnabled()) {
+      RecoveryPinGuard.verify(this, () -> setPinGraph(arguments), this::finish);
+    } else {
+      setPinGraph(arguments);
+    }
+  }
+
+  private void setPinGraph(@NonNull CreateSvrPinFragmentArgs arguments) {
+    setContentView(R.layout.create_kbs_pin_activity);
     NavGraph graph = Navigation.findNavController(this, R.id.nav_host_fragment).getGraph();
     Navigation.findNavController(this, R.id.nav_host_fragment).setGraph(graph, arguments.toBundle());
   }

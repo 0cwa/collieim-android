@@ -2,7 +2,7 @@
   "title": "Signal donation checkout removed",
   "summary": "Collie removes Signal donation checkout, embedded payment screens and unused gateway clients.",
   "origin": "Collie carries forward its donation removal from PR #155 and adapts it to the Signal 8.36.3 Settings routes.",
-  "change": "620734dc8c1f4b42899b072291752b03f28d8236",
+  "change": "d460cd69d7ee4f8655cec6cb34274d6ca6920331",
   "path": "tooling/upstream/signal-donation-removals.json",
   "upstream": null,
   "limit": "The removal list covers exact source paths. Backup payment records and permits, received gifts and external Collie and Molly support links remain.",

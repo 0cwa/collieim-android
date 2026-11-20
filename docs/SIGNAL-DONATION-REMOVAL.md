@@ -15,3 +15,5 @@ The script applies the binary, rename-aware tag diff with `git apply --3way --in
 ## Patch evidence
 
 The [patch explorer record](../tooling/site/receipt/subjects/signal-donation-removal.json) binds this change and the literal deletion list to the source tree. Select it when reviewing a release tag that contains the removal and run the normal receipt freeze. The older reviewed release keeps its existing source pins. The [unreleased Project Log entry](../app/src/main/assets/collie-log/unreleased/210.txt) records the change for a future release.
+
+The API 35 navigation job verifies the built APK before installation. It checks the removed checkout classes and resources and confirms the retained backup classes. The output digest identifies the APK checked.

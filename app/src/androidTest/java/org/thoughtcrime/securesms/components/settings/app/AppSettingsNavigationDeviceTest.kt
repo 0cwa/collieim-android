@@ -43,6 +43,8 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.Espresso.pressBackUnconditionally
 import org.junit.Assert.assertTrue
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.Assert.assertEquals
 
@@ -92,6 +94,7 @@ class AppSettingsNavigationDeviceTest {
 
     ActivityScenario.launch<AppSettingsNavigationActivity>(intent).use { scenario ->
       awaitNode(AppSettingsTestTags.ROW_APPEARANCE)
+      compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).assertIsDisplayed()
 
       val splitPane = AtomicBoolean()
       scenario.onActivity { splitPane.set(it.resources.isSplitPane()) }
@@ -100,6 +103,7 @@ class AppSettingsNavigationDeviceTest {
         compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_APPEARANCE))
         compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).performClick()
         awaitNode(AppearanceSettingsTestTags.ROW_THEME)
+        compose.onNodeWithTag(AppearanceSettingsTestTags.ROW_THEME).assertIsDisplayed()
         captureScreenshot(scenario, "appearance-settings")
       }
 
@@ -145,13 +149,37 @@ class AppSettingsNavigationDeviceTest {
     }
   }
 
+  private fun awaitScreenshotFrame(scenario: ActivityScenario<AppSettingsNavigationActivity>) {
+    compose.waitForIdle()
+
+    // Compose can report idle before the window submits a frame with the new content or security flags.
+    val frameCommitted = CountDownLatch(1)
+    val callback = Runnable { frameCommitted.countDown() }
+    scenario.onActivity { activity ->
+      val decor = activity.window.decorView
+      assertTrue("Settings must use hardware rendering for frame capture", decor.isHardwareAccelerated)
+      decor.viewTreeObserver.registerFrameCommitCallback(callback)
+      decor.postInvalidateOnAnimation()
+    }
+    try {
+      assertTrue("Settings did not submit its rendered frame", frameCommitted.await(15, TimeUnit.SECONDS))
+    } finally {
+      scenario.onActivity { activity ->
+        val observer = activity.window.decorView.viewTreeObserver
+        if (observer.isAlive) observer.unregisterFrameCommitCallback(callback)
+      }
+    }
+    InstrumentationRegistry.getInstrumentation().uiAutomation.waitForIdle(500, 5_000)
+  }
+
   private fun captureScreenshot(
     scenario: ActivityScenario<AppSettingsNavigationActivity>,
     name: String
   ) {
-    compose.waitForIdle()
-    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+    awaitScreenshotFrame(scenario)
+    val bitmap = checkNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()) {
+      "Could not capture Settings screenshot"
+    }
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/collie-settings-navigation/"
     try {
       scenario.onActivity { activity ->

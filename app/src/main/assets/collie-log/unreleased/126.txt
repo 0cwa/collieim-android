@@ -1,0 +1,3 @@
+topic: push
+pr: 126
+Choosing a UnifiedPush app now uses Android’s own picker instead of taking the first app found.

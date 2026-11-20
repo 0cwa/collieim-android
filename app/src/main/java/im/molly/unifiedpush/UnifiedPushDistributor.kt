@@ -4,8 +4,6 @@ import android.content.Context
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.unifiedpush.android.connector.UnifiedPush
-import org.unifiedpush.android.connector.ui.SelectDistributorDialogsBuilder
-import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
 import org.thoughtcrime.securesms.service.KeyCachingService
 
 object UnifiedPushDistributor {
@@ -22,34 +20,17 @@ object UnifiedPushDistributor {
     SignalStore.unifiedpush.endpoint = null
   }
 
-  fun selectFirstDistributor() {
-    val context = AppDependencies.application
-    UnifiedPush.getDistributors(context).firstOrNull()?.also {
-      saveDistributor(context, it)
-    }
-  }
-
   fun saveDistributor(context: Context, distributor: String) {
     if (!KeyCachingService.isLocked()) SignalStore.unifiedpush.registrationRetryScheduled = false
     UnifiedPush.saveDistributor(context, distributor)
   }
 
-  @JvmStatic
-  fun showSelectDistributorDialog(context: Context) {
-    SelectDistributorDialogsBuilder(
-      context,
-      object : UnifiedPushFunctions {
-        override fun getAckDistributor(): String? = UnifiedPush.getAckDistributor(context)
-        override fun getDistributors(): List<String> = UnifiedPush.getDistributors(context)
-        override fun registerApp(instance: String) = UnifiedPush.registerApp(context, instance)
-        override fun saveDistributor(distributor: String) = UnifiedPushDistributor.saveDistributor(context, distributor)
-        override fun tryUseDefaultDistributor(callback: (Boolean) -> Unit) = UnifiedPush.tryUseDefaultDistributor(context, callback)
-      }
-    ).apply {
-      mayUseCurrent = false
-      mayUseDefault = false
-    }.run()
-  }
+  /** Read-only comparison against the pinned 3.0.10 connector's saved package.
+   * The public getter can enqueue an asynchronous unregistration for a removed provider.
+   * All changes still go through the connector's public API.
+   */
+  internal fun savedDistributorSnapshot(context: Context): String? =
+    context.getSharedPreferences("unifiedpush.connector", Context.MODE_PRIVATE).getString("unifiedpush.distributor", null)
 
   fun checkIfActive(): Boolean {
     return UnifiedPush.getAckDistributor(AppDependencies.application) != null

@@ -6,7 +6,6 @@ import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
@@ -163,12 +162,6 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
       AppDependencies.resetNetwork(true)
     }
     refresh()
-  }
-
-  fun selectFirstDistributor() {
-    synchronized(UnifiedPushLifecycle.monitor) {
-      UnifiedPushDistributor.selectFirstDistributor()
-    }
   }
 
   fun initializeMollySocket(

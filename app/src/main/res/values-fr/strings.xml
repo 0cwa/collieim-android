@@ -150,45 +150,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Carte de crédit ou de débit</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Veuillez saisir les informations de votre carte. Signal ne collecte pas et ne stocke pas vos informations personnelles.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Numéro de carte</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/AA</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">Cryptogramme visuel</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Numéro de carte incorrect</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Carte arrivée à expiration</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Code CVC trop court</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Code CVC trop long</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Code CVC incorrect</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Mois incorrect</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Veuillez indiquer une année.</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Année incorrecte</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Faire un don de %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Faire un don de %1$s/mois</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Payer %1$s/mois pour soutenir Signal</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Don ponctuel de %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Don en attente</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Don en cours de traitement</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Bloquer et quitter %1$s ?</string>
@@ -3714,7 +3695,6 @@
     <string name="preferences__notifications">Notifications</string>
     <string name="preferences__led_color_unknown">Inconnue</string>
     <string name="preferences__silent">Silencieux</string>
-    <string name="preferences__donate_to_signal">Faire un don à Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Confidentialité</string>
     <!-- Preference label for stories -->
@@ -5322,13 +5302,7 @@
 
     <string name="ImageView__badge">Macaron</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Résilier les dons mensuels</string>
-    <string name="SubscribeFragment__confirm_cancellation">Confirmer l\'annulation ?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Vous ne serez plus facturé. Votre macaron sera supprimé de votre profil à la fin de la période de facturation.</string>
-    <string name="SubscribeFragment__not_now">Plus tard</string>
-    <string name="SubscribeFragment__confirm">Confirmer</string>
     <string name="SubscribeFragment__update_subscription">Modifier le don mensuel</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Votre don mensuel a été résilié.</string>
     <string name="SubscribeFragment__update_subscription_question">Modifier le don mensuel ?</string>
     <string name="SubscribeFragment__update">Mise à jour</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Le montant total de votre nouveau don mensuel (%1$s) sera débité aujourd\'hui. Votre don se renouvellera ensuite tous les mois.</string>
@@ -5340,66 +5314,38 @@
     <string name="Subscription__expires_s">Date d\'expiration : %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Signal est un organisme indépendant à but non lucratif, qui s\'engage à protéger la confidentialité de vos communications. Ici, aucune publicité, aucun cookie de suivi, aucune surveillance. Faites un don pour soutenir Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Lorsque vous faites un don, vous pouvez afficher un macaron sur votre profil.</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Notre mission : protéger votre vie privée.</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal est un organisme à but non lucratif.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Merci pour votre soutien !</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Vous avez gagné un macaron de donateur Signal ! Affichez-le sur votre profil pour montrer que vous nous soutenez.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Envie d\'aller plus loin ?</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">N\'hésitez pas à rejoindre nos donateurs mensuels.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Afficher sur mon profil</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Afficher ce macaron</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Continuer</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Si vous avez plusieurs macarons, vous pouvez choisir celui que vous voulez afficher sur votre profil.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Faire un don à Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Plus</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Ma contribution</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Reçus de dons</string>
-    <string name="ManageDonationsFragment__badges">Macarons</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">FAQ dédiée aux donateurs</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Nous soutenir autrement</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Faire un don pour un ami</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Impossible de confirmer le don</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Impossible de confirmer votre don de %1$s/mois. Veuillez approuver votre paiement iDEAL | Wero via votre application bancaire.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Impossible de confirmer votre don ponctuel de %1$s. Veuillez approuver votre paiement iDEAL | Wero via votre application bancaire.</string>
 
-    <string name="Boost__enter_custom_amount">Saisir un montant personnalisé</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Le montant minimal est de %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/mois</string>
-    <string name="MySupportPreference__renews_s">Prochaine échéance : %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Traitement de la transaction…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Impossible d\'ajouter un macaron. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Veuillez contacter l\'assistance.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Paiement en attente</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Votre virement de %1$s est en attente. Le traitement des virements nécessite en général entre 1 et 14 jours ouvrés.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">En savoir plus</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Vérification de l\'abonnement…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Installez la dernière version de Collie</string>
@@ -5436,11 +5382,9 @@
     <string name="Subscription__get_a_s_badge">Gagnez un macaron %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Don en cours de traitement…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Don régulier de %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5459,11 +5403,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Erreur de traitement</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">En savoir plus</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Erreur de traitement du don. %1$s</string>
     <string name="DonationsErrors__your_payment">Impossible de traiter votre don. Vous n\'avez pas été débité. Veuillez réessayer.</string>
     <string name="DonationsErrors__still_processing">Traitement en cours</string>
     <string name="DonationsErrors__couldnt_add_badge">Impossible d\'ajouter le macaron.</string>
@@ -5481,8 +5422,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Votre don a bien été traité, mais impossible d\'envoyer à votre ami le message l\'informant de ce don. Merci de bien vouloir contacter l\'assistance.</string>
     <string name="DonationsErrors__your_badge_could_not">Nous n\'avons pas pu ajouter votre macaron à votre compte, mais vous avez peut-être été facturé. Merci de contacter l\'assistance.</string>
     <string name="DonationsErrors__your_payment_is_still">Votre don est en cours de traitement. Cela peut prendre quelques minutes en fonction de votre connexion.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Résiliation des dons mensuels : échec de l\'opération</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Pour résiliser votre don mensuel, veuillez vous connecter à Internet.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Votre appareil n\'est pas compatible avec les dons dans l\'application : vous ne pouvez malheureusement pas vous abonner et gagner un macaron. Quand même envie de soutenir Signal ? Vous pouvez encore faire un don via notre site web.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Erreur réseau. Veuillez vérifier votre connexion et réessayer.</string>
     <string name="NetworkFailure__retry">Réessayer</string>
@@ -5491,7 +5430,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Ce contact ne peut pas recevoir de dons, car sa version de Signal est obsolète. Vous pouvez l\'inviter à installer une mise à jour.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Impossible de traiter votre don iDEAL | Wero. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Don offert à %1$s</string>
@@ -5702,33 +5640,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Pour découvrir les nouveautés et notes de version</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Toutes les activités</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Tous</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Mensuel</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Ponctuel</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">Pour un ami</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Don pour un ami</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Type de don</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Date du paiement</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Partager le reçu</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Si vous avez fait des dons, puis réinstallé Signal, les reçus des dons antérieurs à la réinstallation ne sont pas disponibles.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Reçu de don</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Montant</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Merci de soutenir Signal. Votre contribution nous aide à remplir notre mission : protéger la liberté d\'expression et offrir des communications sécurisées à des millions de personnes aux quatre coins du monde – le tout, grâce à une technologie open source conçue pour la protection de la vie privée. Si vous résidez aux États-Unis, conservez ce reçu pour le communiquer aux services fiscaux. La Signal Technology Foundation est un organisme à but non lucratif exonéré d\'impôts, en vertu de la section 501c3 du code fédéral des impôts des États-Unis. Notre numéro d\'identification fiscale est le suivant : 82-4506840. Aucun bien ni service n\'a été fourni par Signal en échange de ce don.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Aucun reçu</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6367,27 +6291,17 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Sans but lucratif et fiers de l\'être</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Continuer</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Faites un don pour soutenir le droit à la vie privée. Aidez Signal à rester indépendant et sans publicité.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Don en attente</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Les virements sont généralement traités en 1 à 14 jours ouvrés. Veuillez attendre que ce paiement soit finalisé avant de mettre à jour votre don.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Les virements sont généralement traités en 1 à 14 jours ouvrés. Veuillez attendre que ce paiement soit effectif avant d’effectuer un autre don.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Votre don est en cours de traitement. Cela peut prendre quelques minutes en fonction de votre connexion. Veuillez attendre que ce paiement soit finalisé avant de modifier votre don.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Votre don est en cours de traitement. Cela peut prendre quelques minutes en fonction de votre connexion. Veuillez attendre que ce paiement soit finalisé avant de faire un autre don.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Votre don iDEAL | Wero est en cours de traitement. Consultez votre application bancaire pour approuver votre paiement avant de faire un nouveau don.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Le montant du don est trop élevé</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Vous pouvez envoyer jusqu\'à %1$s par virement bancaire. Veuillez saisir un autre montant ou choisir un autre mode de paiement.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Don mensuel</string>
@@ -6396,129 +6310,77 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Donner %1$s/par mois pour soutenir Signal</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Gagnez un macaron %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Faire un don de %1$s à Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Gagnez un macaron %1$s pour %2$d jour</item>
         <item quantity="other">Gagnez un macaron %1$s pour %2$d jours</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Virement bancaire</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Carte de crédit ou de débit</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Faire un don pour un ami</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Quitter Signal pour approuver ce don ?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Une fois le don approuvé, rouvrez Signal pour finaliser l\'opération.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Vous serez redirigé vers %1$s. Une fois le don approuvé, rouvrez Signal pour finaliser l\'opération.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Virement bancaire</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Les dons en faveur de Signal sont traités par Stripe. Signal ne collecte pas et ne stocke pas vos informations personnelles. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">En savoir plus</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Accepter</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">En savoir plus</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Impossible de charger l\'autorisation de prélèvement</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Saisissez vos coordonnées bancaires et votre adresse e-mail. Stripe utilisera cette adresse e-mail pour vous tenir informé du statut de votre don. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">En savoir plus</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Nom associé au compte bancaire</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">E-mail</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Trouver vos informations bancaires</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Faire un don de %1$s/mois</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Faire un don de %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">L\'IBAN saisi est trop court.</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">L\'IBAN saisi est trop long.</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Code pays de l\'IBAN non pris en charge</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">IBAN incorrect</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Saisissez au moins 3 caractères</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Adresse e-mail non valide</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Saisissez votre nom et votre adresse e-mail. Stripe utilisera cette adresse e-mail pour vous informer du traitement de votre don. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Veuillez saisir vos coordonnées bancaires. Signal ne collecte pas et ne stocke pas vos informations personnelles. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">En savoir plus</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Nom associé au compte bancaire</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">E-mail</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Confirmez votre don iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Pour mettre en place votre don mensuel, appuyez sur \"Continuer\". Vous confirmez ainsi le prélèvement de 0,01 € auprès de votre banque. Cette somme sera automatiquement remboursée et permettra de confirmer le prélèvement de la somme mensuelle de %1$s sur votre compte.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Continuer</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Trouver vos coordonnées bancaires</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Votre numéro IBAN se trouve généralement en haut de vos relevés bancaires. Il peut comporter jusqu\'à 34 caractères. Le nom que vous saisissez doit correspondre au nom complet associé à votre compte bancaire. Pour en savoir plus, contactez votre banque.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Don en attente</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Votre don mensuel est en attente. Vous pourrez afficher le macaron %1$s sur votre profil dès que nous recevrons votre don.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Votre don ponctuel est en attente. Vous pourrez afficher le macaron %1$s sur votre profil dès que nous recevrons votre don.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Les virements sont généralement traités en 1 à 14 jours ouvrés. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">En savoir plus</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">OK</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Impossible de traiter votre don</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Nous ne parvenons pas à traiter votre virement bancaire. Vous n\'avez pas été débité. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Réessayer</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Plus tard</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Don effectué</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Nous avons bien reçu votre virement. Vous pouvez afficher ce macaron sur votre profil pour montrer que vous soutenez Signal.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Annulation en cours…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Signal a traité un trop grand nombre de contacts</string>
@@ -6550,11 +6412,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s vous a envoyé</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Vos données sont confidentielles</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Lorsque vous faites un don, Signal ne collecte et ne stocke aucune de vos données personnelles.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Pour recevoir vos dons, nous utilisons le processeur de paiement Stripe. Nous n\'avons pas accès aux informations que vous fournissez à Stripe, ne les stockons pas et ne les enregistrons pas.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">De plus, Signal ne peut établir aucun lien entre votre don et votre compte Signal.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Merci pour votre soutien.</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6569,8 +6426,6 @@
     <string name="GroupStoryEducationSheet__next">Suivant</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Faire un don</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Paiement</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7018,15 +6873,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Activer les notifications en plein écran</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Don mensuel résililé</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Votre don mensuel a été résilié. %1$s\n\nVotre macaron ne s\'affichera plus sur votre profil. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">En savoir plus</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Renouveler le don mensuel</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Plus tard</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7294,7 +7144,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

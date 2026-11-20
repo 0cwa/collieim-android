@@ -117,6 +117,47 @@ class MapResourceCacheTest {
   }
 
   @Test
+  fun `cache misses discard native validators and store the complete response`() {
+    val client = client()
+    val nativeRequest = request().newBuilder()
+      .header("If-None-Match", "evicted-native-tile")
+      .header("If-Modified-Since", date(now - 100_000))
+      .build()
+    reply(headers = mapOf("ETag" to "current-tile"))
+    assertArrayEquals(tile, fetch(client, nativeRequest))
+    assertNull(requests.single().header("If-None-Match"))
+    assertNull(requests.single().header("If-Modified-Since"))
+    assertEquals(1, cacheFiles().size)
+    assertArrayEquals(tile, fetch(client, nativeRequest))
+    assertEquals(1, requests.size)
+  }
+
+  @Test
+  fun `non-tile and explicit no-store requests keep caller managed validators`() {
+    val client = client()
+    val bypasses = listOf(
+      request().newBuilder().header("Cache-Control", "no-store").build(),
+      request("/metadata.json")
+    )
+    for (bypass in bypasses) {
+      reply()
+      fetch(client, bypass.newBuilder().header("If-None-Match", "caller-validator").build())
+      assertEquals("caller-validator", requests.last().header("If-None-Match"))
+    }
+    assertTrue(cacheFiles().isEmpty())
+  }
+
+  @Test
+  fun `an unsolicited 304 without a cached body is closed and rejected`() {
+    val client = client()
+    var closed = false
+    reply(code = 304, body = ByteArray(0), onClose = { closed = true })
+    assertThrows(IOException::class.java) { fetch(client) }
+    assertTrue(closed)
+    assertTrue(cacheFiles().isEmpty())
+  }
+
+  @Test
   fun `Expires Date and Age limit freshness instead of applying the fallback lifetime`() {
     val client = client()
     reply(headers = mapOf("Date" to date(now - 30_000), "Expires" to date(now + 30_000), "Age" to "50"))

@@ -64,6 +64,7 @@ class MapResourceClientTest {
   fun `tile requests identify Collie without the SDK device fingerprint and retain cache validators`() {
     val request = Request.Builder()
       .url("https://tile.openstreetmap.org/14/8192/5461.png")
+      .header("Cache-Control", "no-store")
       .header("User-Agent", "MapLibre Android API device ABI fingerprint")
       .header("If-None-Match", "previous-tile-version")
       .header("If-Modified-Since", "Tue, 17 Nov 2026 12:00:00 GMT")

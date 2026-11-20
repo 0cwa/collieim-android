@@ -71,14 +71,17 @@ class MapResourceCache internal constructor(
       return cacheMiss(request)
     }
 
-    val conditional = if (cached == null) request else request.newBuilder()
+    // Native memory may retain validators after this cache evicts its body. Only this
+    // cache's validators can produce a 304 that we can combine with complete metadata.
+    // Non-tile and explicit no-store requests above retain their caller's conditionals.
+    val conditional = request.newBuilder()
       .headers(
         request.headers.newBuilder()
           .removeAll("If-None-Match")
           .removeAll("If-Modified-Since")
           .apply {
-            cached.headers["ETag"]?.let { addReceivedHeader("If-None-Match", it) }
-            cached.headers["Last-Modified"]?.let { addReceivedHeader("If-Modified-Since", it) }
+            cached?.headers?.get("ETag")?.let { addReceivedHeader("If-None-Match", it) }
+            cached?.headers?.get("Last-Modified")?.let { addReceivedHeader("If-Modified-Since", it) }
           }
           .build()
       )
@@ -87,6 +90,11 @@ class MapResourceCache internal constructor(
     val sentAt = clock()
     val networkResponse = chain.proceed(conditional)
     val receivedAt = clock()
+
+    if (networkResponse.code == 304 && cached == null) {
+      networkResponse.close()
+      throw IOException("Map tile validation has no cached response")
+    }
 
     if (networkResponse.code == 304 && cached != null) {
       val updatedHeaders = networkResponse.use { response ->

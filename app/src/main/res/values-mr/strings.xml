@@ -3934,8 +3934,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%2$s ला %1$s</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">चलन सेट करा</string>
-    <string name="SetCurrencyFragment__all_currencies">सर्व चलन</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5324,16 +5322,13 @@
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">आपणाकडे एकापेक्षा जास्त बॅज असल्यास आपल्या प्रोफाइलवर इतरांना पाहण्यासाठी आपण एक वैशिष्ट्य निवडू शकता.</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">Signal ला देणगी द्या</string>
     <!-- Heading for more area of manage subscriptions page -->
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
     <!-- Label for Donation Receipts button -->
     <!-- Label that externally links to Signal Donor FAQ page -->
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">देणगी देण्याचे इतर मार्ग</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">मित्रासाठी देणगी द्या</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
@@ -6292,7 +6287,6 @@
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">सुरू ठेवा</string>
     <!-- Description below title -->
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
@@ -6304,9 +6298,7 @@
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">महिन्याला</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">एक-वेळ</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->

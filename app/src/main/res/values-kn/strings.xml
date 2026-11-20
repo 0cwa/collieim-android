@@ -3934,8 +3934,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%2$s ರಲ್ಲಿ %1$s</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">ಕರೆನ್ಸಿ ಹೊಂದಿಸಿ</string>
-    <string name="SetCurrencyFragment__all_currencies">ಎಲ್ಲ ಕರೆನ್ಸಿಗಳು</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5324,16 +5322,13 @@
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">ನೀವು ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಬ್ಯಾಡ್ಜ್ ಹೊಂದಿದ್ದಾಗ, ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಇತರರು ನೋಡಲು ಒಂದು ಫೀಚರ್ ಅನ್ನು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">Signal ಗೆ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Heading for more area of manage subscriptions page -->
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
     <!-- Label for Donation Receipts button -->
     <!-- Label that externally links to Signal Donor FAQ page -->
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">ನೀಡಲು ಇತರೆ ದಾರಿಗಳು</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">ಸ್ನೇಹಿತರಿಗಾಗಿ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
@@ -6292,7 +6287,6 @@
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">ಮುಂದುವರಿಸಿ</string>
     <!-- Description below title -->
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
@@ -6304,9 +6298,7 @@
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">ಮಾಸಿಕ</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">ಒಂದು ಬಾರಿ</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->

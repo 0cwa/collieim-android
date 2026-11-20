@@ -70,7 +70,7 @@ class MapResourceClientTest {
       .build()
 
     client.newCall(request).execute().use { response ->
-      assertEquals("no-store, max-age=604800", response.header("Cache-Control"))
+      assertEquals("no-store, max-age=0, must-revalidate", response.header("Cache-Control"))
       assertEquals("tile-version", response.header("ETag"))
       assertEquals("Wed, 18 Nov 2026 12:00:00 GMT", response.header("Last-Modified"))
     }

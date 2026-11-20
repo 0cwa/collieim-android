@@ -56,7 +56,11 @@ class MapResourceCache internal constructor(
 
     if (request.cacheControl.noStore) {
       remove(request)
-      return bufferResponse(chain.proceed(request))
+      if (request.cacheControl.onlyIfCached) return cacheMiss(request)
+      val response = bufferResponse(chain.proceed(request))
+      return response.newBuilder()
+        .headers(response.headers.forMapLibre("no-store, max-age=0, must-revalidate"))
+        .build()
     }
 
     val cached = read(request)
@@ -64,17 +68,20 @@ class MapResourceCache internal constructor(
       return cached.response(request, clock())
     }
     if (request.cacheControl.onlyIfCached) {
-      return Response.Builder().request(request).protocol(Protocol.HTTP_1_1)
-        .code(504).message("Map tile is not cached").body(ByteArray(0).toResponseBody()).build()
+      return cacheMiss(request)
     }
 
     val conditional = if (cached == null) request else request.newBuilder()
-      .removeHeader("If-None-Match")
-      .removeHeader("If-Modified-Since")
-      .apply {
-        cached.headers["ETag"]?.let { header("If-None-Match", it) }
-        cached.headers["Last-Modified"]?.let { header("If-Modified-Since", it) }
-      }
+      .headers(
+        request.headers.newBuilder()
+          .removeAll("If-None-Match")
+          .removeAll("If-Modified-Since")
+          .apply {
+            cached.headers["ETag"]?.let { addReceivedHeader("If-None-Match", it) }
+            cached.headers["Last-Modified"]?.let { addReceivedHeader("If-Modified-Since", it) }
+          }
+          .build()
+      )
       .build()
 
     val sentAt = clock()
@@ -82,22 +89,25 @@ class MapResourceCache internal constructor(
     val receivedAt = clock()
 
     if (networkResponse.code == 304 && cached != null) {
-      val updatedHeaders = cached.headers.newBuilder().apply {
-        for (name in STORED_HEADERS) {
-          val values = networkResponse.headers.values(name)
-          if (values.isNotEmpty()) {
-            removeAll(name)
-            values.forEach { add(name, it) }
+      val updatedHeaders = networkResponse.use { response ->
+        cached.headers.newBuilder().apply {
+          for (name in STORED_HEADERS) {
+            val values = response.headers.values(name)
+            if (values.isNotEmpty()) {
+              removeAll(name)
+              values.forEach { addReceivedHeader(name, it) }
+            }
           }
-        }
-        // A validation response starts a new age calculation, even if it omits Date or Age.
-        set("Date", networkResponse.header("Date") ?: formatDate(receivedAt))
-        set("Age", networkResponse.header("Age") ?: "0")
-      }.build()
-      networkResponse.close()
+          // A validation response starts a new age calculation, even if it omits Date or Age.
+          removeAll("Date")
+          addReceivedHeader("Date", response.header("Date") ?: formatDate(receivedAt))
+          removeAll("Age")
+          addReceivedHeader("Age", response.header("Age") ?: "0")
+        }.build()
+      }
       val updated = entry(request, updatedHeaders, cached.body, sentAt, receivedAt)
       storeOrRemove(request, updated)
-      return updated.response(request, receivedAt)
+      return updated.response(request, clock())
     }
 
     val buffered = bufferResponse(networkResponse)
@@ -105,11 +115,18 @@ class MapResourceCache internal constructor(
       val bytes = buffered.body.bytes()
       val updated = entry(request, buffered.headers, bytes, sentAt, receivedAt)
       storeOrRemove(request, updated)
-      return buffered.newBuilder().body(bytes.toResponseBody(buffered.body.contentType())).build()
+      return buffered.newBuilder()
+        .headers(buffered.headers.forMapLibre(updated.nativeCacheControl(clock())))
+        .body(bytes.toResponseBody(buffered.body.contentType()))
+        .build()
     }
     if (buffered.code == 404 || buffered.code == 410) remove(request)
     return buffered
   }
+
+  private fun cacheMiss(request: Request): Response = Response.Builder()
+    .request(request).protocol(Protocol.HTTP_1_1).code(504).message("Map tile is not cached")
+    .body(ByteArray(0).toResponseBody()).build()
 
   private fun bufferResponse(response: Response): Response {
     try {
@@ -133,10 +150,10 @@ class MapResourceCache internal constructor(
 
   private fun entry(request: Request, headers: Headers, body: ByteArray, sentAt: Long, receivedAt: Long): Entry {
     val stored = Headers.Builder().apply {
-      for (name in STORED_HEADERS) headers.values(name).forEach { add(name, it) }
+      for (name in STORED_HEADERS) headers.values(name).forEach { addReceivedHeader(name, it) }
     }.build()
     val vary = Headers.Builder().apply {
-      for (name in varyNames(stored)) request.headers.values(name).forEach { add(name, it) }
+      for (name in varyNames(stored)) request.headers.values(name).forEach { addReceivedHeader(name, it) }
     }.build()
     val responseDate = parseDate(stored["Date"]) ?: receivedAt
     val age = stored["Age"]?.toLongOrNull()?.coerceIn(0, Long.MAX_VALUE / 1000)?.times(1000) ?: 0
@@ -163,7 +180,8 @@ class MapResourceCache internal constructor(
     val file = file(request)
     if (!file.isFile) return@synchronized null
     try {
-      if (file.length() > MAX_RECORD_BYTES * 2L) throw IOException("Invalid map cache record")
+      // The stream helper reads the complete 32-byte key prefix before returning a closeable stream.
+      if (file.length() < 32 || file.length() > MAX_RECORD_BYTES * 2L) throw IOException("Invalid map cache record")
       val entry = DataInputStream(EncryptedStreamUtils.getInputStream(context, file)).use { input ->
         if (input.readInt() != FORMAT_VERSION) throw IOException("Invalid map cache format")
         val receivedAt = input.readLong()
@@ -236,7 +254,7 @@ class MapResourceCache internal constructor(
         val name = input.readUTF()
         val value = input.readUTF()
         if (name.length > MAX_HEADER_LENGTH || value.length > MAX_HEADER_LENGTH) throw IOException("Invalid map cache header")
-        add(name, value)
+        addReceivedHeader(name, value)
       }
     }.build()
   }
@@ -254,27 +272,58 @@ class MapResourceCache internal constructor(
   private data class Entry(val headers: Headers, val varyHeaders: Headers, val body: ByteArray, val receivedAt: Long, val initialAge: Long) {
     fun age(now: Long): Long = saturatedAdd(initialAge, positiveDifference(now, receivedAt))
 
-    fun isFresh(request: Request, now: Long): Boolean {
+    private fun lifetime(): Long {
       val control = headers.toCacheControl()
-      if (control.noCache) return false
-      val lifetime = when {
+      if (control.noCache || control.noStore) return 0
+      return when {
         control.maxAgeSeconds >= 0 -> control.maxAgeSeconds * 1000L
         headers["Expires"] != null -> positiveDifference(parseDate(headers["Expires"]) ?: 0, parseDate(headers["Date"]) ?: receivedAt)
         else -> DEFAULT_LIFETIME_MILLIS
       }
+    }
+
+    fun isFresh(request: Request, now: Long): Boolean {
       val requestedLifetime = if (request.cacheControl.maxAgeSeconds >= 0) request.cacheControl.maxAgeSeconds * 1000L else Long.MAX_VALUE
-      return age(now) < minOf(lifetime, requestedLifetime)
+      return age(now) < minOf(lifetime(), requestedLifetime)
+    }
+
+    fun nativeCacheControl(now: Long): String {
+      val control = headers.toCacheControl()
+      val prefix = when {
+        control.noStore -> "no-store, "
+        control.noCache -> "no-cache, "
+        else -> ""
+      }
+      val remainingSeconds = (positiveDifference(lifetime(), age(now)) / 1000).coerceAtMost(Int.MAX_VALUE.toLong())
+      return "${prefix}max-age=$remainingSeconds, must-revalidate"
     }
 
     fun response(request: Request, now: Long): Response = Response.Builder()
       .request(request).protocol(Protocol.HTTP_1_1).code(200).message("OK")
-      .headers(headers).header("Age", (age(now) / 1000).toString())
+      .headers(headers.forMapLibre(nativeCacheControl(now))).header("Age", (age(now) / 1000).toString())
       .body(body.toResponseBody(headers["Content-Type"]?.toMediaTypeOrNull()))
       .sentRequestAtMillis(receivedAt).receivedResponseAtMillis(receivedAt).build()
   }
 }
 
 private fun Headers.toCacheControl() = okhttp3.CacheControl.parse(this)
+
+/** MapLibre 13.7.1 drops Age/Date, ignores no-cache, and lets Expires override max-age. */
+private fun Headers.forMapLibre(cacheControl: String): Headers = newBuilder()
+  .set("Cache-Control", cacheControl)
+  .removeAll("Expires")
+  .apply {
+    // Its request builder also rejects non-ASCII validators. This cache can replay them itself.
+    for (name in listOf("ETag", "Last-Modified")) {
+      if (values(name).any { value -> value.any { it != '\t' && it !in ' '..'~' } }) removeAll(name)
+    }
+  }
+  .build()
+
+private fun Headers.Builder.addReceivedHeader(name: String, value: String): Headers.Builder {
+  if (value.any { it != '\t' && (it < ' ' || it == '\u007f') }) throw IOException("Invalid map cache header")
+  return addUnsafeNonAscii(name, value)
+}
 
 private fun varyNames(headers: Headers): Set<String> = headers.values("Vary").flatMap { it.split(',') }.map { it.trim() }.filter { it.isNotEmpty() }.toSet()
 

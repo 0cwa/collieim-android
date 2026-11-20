@@ -8,17 +8,20 @@ import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
+import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
+import okio.ForwardingSource
+import okio.buffer
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -128,6 +131,64 @@ class MapResourceCacheTest {
   }
 
   @Test
+  fun `MapLibre receives remaining freshness without an Expires override`() {
+    val client = client()
+    reply(headers = mapOf("Cache-Control" to "max-age=60", "Age" to "45", "Expires" to date(now + TimeUnit.DAYS.toMillis(1))))
+    client.newCall(request()).execute().use {
+      assertEquals("max-age=15, must-revalidate", it.header("Cache-Control"))
+      assertNull(it.header("Expires"))
+    }
+    now += 10_000
+    client.newCall(request()).execute().use {
+      assertEquals("max-age=5, must-revalidate", it.header("Cache-Control"))
+      assertNull(it.header("Expires"))
+    }
+    now += 6_000
+    reply(code = 304, headers = mapOf("Cache-Control" to "max-age=120", "Age" to "30", "Expires" to date(now + TimeUnit.DAYS.toMillis(1))), body = ByteArray(0))
+    client.newCall(request()).execute().use {
+      assertEquals("max-age=90, must-revalidate", it.header("Cache-Control"))
+      assertNull(it.header("Expires"))
+      assertArrayEquals(tile, it.body.bytes())
+    }
+  }
+
+  @Test
+  fun `non-ASCII validators are retained for cache revalidation without reaching the SDK request builder`() {
+    val client = client()
+    reply(headers = mapOf("Cache-Control" to "max-age=0", "ETag" to "\"café\""))
+    client.newCall(request()).execute().use {
+      assertNull(it.header("ETag"))
+      assertArrayEquals(tile, it.body.bytes())
+    }
+    reply(code = 304, headers = mapOf("Cache-Control" to "max-age=60", "ETag" to "\"café\""), body = ByteArray(0))
+    assertArrayEquals(tile, fetch(client))
+    assertEquals("\"café\"", requests.last().header("If-None-Match"))
+    assertArrayEquals(tile, fetch(client))
+    assertEquals(2, requests.size)
+  }
+
+  @Test
+  fun `time spent downloading the body is removed from native freshness`() {
+    val client = client()
+    reply(headers = mapOf("Cache-Control" to "max-age=60"), onClose = { now += 20_000 })
+    client.newCall(request()).execute().use {
+      assertEquals("max-age=40, must-revalidate", it.header("Cache-Control"))
+      assertArrayEquals(tile, it.body.bytes())
+    }
+  }
+
+  @Test
+  fun `malformed validation metadata closes the network response`() {
+    val client = client()
+    reply(headers = mapOf("Cache-Control" to "max-age=0", "ETag" to "tile-v1"))
+    fetch(client)
+    var closed = false
+    reply(code = 304, headers = mapOf("ETag" to "invalid\u0000etag"), body = ByteArray(0), onClose = { closed = true })
+    assertThrows(IOException::class.java) { fetch(client) }
+    assertTrue(closed)
+  }
+
+  @Test
   fun `responses without expiry information receive a seven day lifetime`() {
     val client = client()
     reply()
@@ -164,8 +225,10 @@ class MapResourceCacheTest {
     reply(code = 304, body = ByteArray(0))
     fetch(client, request().newBuilder().header("Cache-Control", "no-cache").build())
     assertEquals("tile-v1", requests.last().header("If-None-Match"))
-    client.newCall(request("/1/0/0.png").newBuilder().header("Cache-Control", "only-if-cached").build()).execute().use {
-      assertEquals(504, it.code)
+    for (control in listOf("only-if-cached", "only-if-cached, no-store")) {
+      client.newCall(request("/1/0/0.png").newBuilder().header("Cache-Control", control).build()).execute().use {
+        assertEquals(504, it.code)
+      }
     }
     assertEquals(2, requests.size)
   }
@@ -223,6 +286,7 @@ class MapResourceCacheTest {
     assertArrayEquals(tile, fetch(client))
     assertEquals(2, requests.size)
     assertEquals(1, cacheFiles().size)
+    verify(exactly = 0) { EncryptedStreamUtils.getInputStream(any(), any()) }
   }
 
   @Test
@@ -249,16 +313,22 @@ class MapResourceCacheTest {
     replies.removeFirst().invoke(chain.request())
   }.build()
 
-  private fun reply(code: Int = 200, headers: Map<String, String> = emptyMap(), body: ByteArray = tile, unknownLength: Boolean = false) {
+  private fun reply(code: Int = 200, headers: Map<String, String> = emptyMap(), body: ByteArray = tile, unknownLength: Boolean = false, onClose: () -> Unit = {}) {
     replies.addLast { request ->
-      val responseBody = if (unknownLength) object : ResponseBody() {
-        private val buffer = Buffer().write(body)
+      val responseBody = object : ResponseBody() {
+        private val source = object : ForwardingSource(Buffer().write(body)) {
+          override fun close() {
+            onClose()
+            super.close()
+          }
+        }.buffer()
         override fun contentType() = null
-        override fun contentLength() = -1L
-        override fun source() = buffer
-      } else body.toResponseBody()
+        override fun contentLength() = if (unknownLength) -1L else body.size.toLong()
+        override fun source() = source
+      }
+      val responseHeaders = Headers.Builder().apply { headers.forEach { (name, value) -> addUnsafeNonAscii(name, value) } }.build()
       Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(code).message("Test tile response")
-        .body(responseBody).apply { headers.forEach { (name, value) -> header(name, value) } }.build()
+        .headers(responseHeaders).body(responseBody).build()
     }
   }
 

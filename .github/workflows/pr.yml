@@ -38,7 +38,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - run: python3 tooling/fastlane/check_metadata.py
+      - name: Check the metadata of the edition this change targets
+        env:
+          # Beta for a PR into trailblazer-beta or a direct run on that branch; Stable otherwise.
+          COLLIE_FASTLANE_EDITION: ${{ (github.event_name == 'pull_request' && github.base_ref == 'trailblazer-beta' || github.event_name != 'pull_request' && github.ref == 'refs/heads/trailblazer-beta') && 'beta' || 'stable' }}
+        run: python3 tooling/fastlane/check_metadata.py --edition "$COLLIE_FASTLANE_EDITION"
+      - name: Test the metadata checker
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/fastlane -p 'test_*.py'
 
   fast-lint:
     name: Fast lint
@@ -210,6 +216,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Release preparation checks resolve the pinned baseline commit and its ancestry.
+          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/disk-cleanup
       - name: Build the exact candidate with the release recipe

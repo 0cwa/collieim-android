@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Check fastlane/metadata/android against the IzzyOnDroid and F-Droid limits.
+"""Check Fastlane metadata against the IzzyOnDroid and F-Droid limits.
 
-Run from the repository root. Every locale is size-checked; en-US must be complete and must
-have a changelog for gradle.properties' releaseVersionCode, because clients show the changelog
-from the same commit the release is tagged on.
+Run from the repository root. Every locale of both editions is size-checked, and the Stable
+en-US listing must be complete. The release changelog for gradle.properties' releaseVersionCode
+is required only under the selected edition (--edition stable|beta, default stable), because
+clients show the changelog from the same commit the release is tagged on, and the Beta release
+route accepts only its own edition's changelog.
 """
+import argparse
 import re
 import struct
 import sys
 from pathlib import Path
 
 ROOT = Path("fastlane/metadata/android")
+EDITION_ROOTS = {"stable": ROOT, "beta": Path("fastlane/metadata/trailblazer-beta")}
 TEXT_LIMITS = {"title.txt": 30, "short_description.txt": 80, "full_description.txt": 3700}
 FEATURE_SIZES = {(512, 250), (1024, 500)}
 errors = []
@@ -57,15 +61,22 @@ def check_locale(locale):
                 errors.append(f"{shot}: long edge must be at most twice the short edge")
 
 
-def main():
-    for locale in sorted(p for p in ROOT.iterdir() if p.is_dir()):
-        check_locale(locale)
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--edition", choices=sorted(EDITION_ROOTS), default="stable")
+    edition = parser.parse_args(argv).edition
+    for root in EDITION_ROOTS.values():
+        if root.is_dir():
+            for locale in sorted(p for p in root.iterdir() if p.is_dir()):
+                check_locale(locale)
     english = ROOT / "en-US"
-    code = re.search(r"^releaseVersionCode=(\d+)$", Path("gradle.properties").read_text(), re.M)
     required = ["title.txt", "short_description.txt", "full_description.txt", "images/icon.png"]
-    if code:
-        required.append(f"changelogs/{code[1]}.txt")
     errors.extend(f"{english / name}: missing" for name in required if not (english / name).is_file())
+    code = re.search(r"^releaseVersionCode=(\d+)$", Path("gradle.properties").read_text(), re.M)
+    if code:
+        changelog = EDITION_ROOTS[edition] / "en-US" / "changelogs" / f"{code[1]}.txt"
+        if not changelog.is_file():
+            errors.append(f"{changelog}: missing for the {edition} edition")
     for error in errors:
         print(f"::error::{error}")
     if not errors:

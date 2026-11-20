@@ -11,7 +11,6 @@ import org.signal.appsettings.routes.UsernameEditMode
 import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.getParcelableExtraCompat
 import org.signal.core.util.logging.Log
-import org.signal.donations.InAppPaymentType
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.NavGraphHostActivity
@@ -54,7 +53,6 @@ class AppSettingsActivity : NavGraphHostActivity() {
         is AppSettingsRoute.NotificationsRoute.PlayServicesProblem -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
           .setPlayServicesErrorCode(appSettingsRoute.errorCode)
         AppSettingsRoute.ChangeNumberRoute.Start -> AppSettingsFragmentDirections.actionDirectToChangeNumberFragment()
-        is AppSettingsRoute.DonationsRoute.Donations -> AppSettingsFragmentDirections.actionDirectToManageDonations().setDirectToCheckoutType(appSettingsRoute.directToCheckoutType)
         AppSettingsRoute.NotificationsRoute.MutedNotifications -> AppSettingsFragmentDirections.actionDirectToChatsSettingsFragment()
         AppSettingsRoute.NotificationsRoute.NotificationProfiles -> AppSettingsFragmentDirections.actionDirectToNotificationProfiles()
         is AppSettingsRoute.NotificationsRoute.EditProfile -> AppSettingsFragmentDirections.actionDirectToCreateNotificationProfiles()
@@ -149,12 +147,6 @@ class AppSettingsActivity : NavGraphHostActivity() {
 
     @JvmStatic
     fun account(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.AccountRoute.Account)
-
-    @JvmStatic
-    fun subscriptions(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.DonationsRoute.Donations(directToCheckoutType = InAppPaymentType.RECURRING_DONATION))
-
-    @JvmStatic
-    fun manageSubscriptions(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.DonationsRoute.Donations())
 
     fun manageStorage(context: Context): Intent = Intent(context, AppSettingsActivity::class.java)
       .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)

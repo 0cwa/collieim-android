@@ -26,4 +26,27 @@ class JobManagerFactoriesTest {
 
     assertTrue(factories["MmsSendJob"] is FailingJob.Factory)
   }
+  @Test
+  fun retiredDonationJobsAcceptOldPayloadsAndFailWithoutExecutingThem() {
+    val factories = JobManagerFactories.getJobFactories(mockk<Application>())
+    val retiredKeys = listOf(
+      "InAppPaymentAuthCheckJob",
+      "InAppPurchaseOneTimeContextJob",
+      "InAppPaymentPayPalOneTimeSetupJob",
+      "InAppPaymentPayPalRecurringSetupJob",
+      "InAppPaymentStripeOneTimeSetupJob",
+      "InAppPaymentStripeRecurringSetupJob",
+      "RefreshDonationSubscriptionStatusJob"
+    )
+
+    for (key in retiredKeys) {
+      val factory = requireNotNull(factories[key]) { key }
+      val job = factory.create(org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(), byteArrayOf(1, 2, 3))
+      assertTrue(key, job.run().isFailure)
+    }
+
+    assertTrue(factories[InAppPaymentPurchaseTokenJob.KEY] is InAppPaymentPurchaseTokenJob.Factory)
+    assertTrue(factories[InAppPaymentRecurringContextJob.KEY] is InAppPaymentRecurringContextJob.Factory)
+  }
+
 }

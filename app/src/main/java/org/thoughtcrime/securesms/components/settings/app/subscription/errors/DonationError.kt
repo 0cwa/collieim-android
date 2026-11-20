@@ -7,7 +7,6 @@ import io.reactivex.rxjava3.subjects.Subject
 import org.signal.core.util.logging.Log
 import org.signal.donations.PaymentSourceType
 import org.signal.donations.StripeDeclineCode
-import org.signal.donations.StripeError
 import org.signal.donations.StripeFailureCode
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.model.databaseprotos.DonationErrorValue
@@ -189,7 +188,7 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
         }
         else -> {
           Log.i(TAG, "Routing background donation error to notification", error)
-          DonationErrorNotifications.displayErrorNotification(context, error)
+          donationErrorSubjectSourceMap[error.source]!!.onNext(error)
         }
       }
     }
@@ -207,36 +206,7 @@ sealed class DonationError(val source: DonationErrorSource, cause: Throwable) : 
         }
         else -> {
           Log.i(TAG, "Routing donation error to subject ${error.source} notification", error)
-          DonationErrorNotifications.displayErrorNotification(context, error)
-        }
-      }
-    }
-
-    /**
-     * Converts a throwable into a payment setup error. This should only be used when
-     * handling errors handed back via the Stripe API or via PayPal, when we know for sure that no
-     * charge has occurred.
-     */
-    @JvmStatic
-    fun getPaymentSetupError(source: DonationErrorSource, throwable: Throwable, method: PaymentSourceType): DonationError {
-      return when (throwable) {
-        is StripeError.PostError.Generic -> {
-          val errorCode: String? = throwable.errorCode
-          if (errorCode != null) {
-            PaymentSetupError.StripeCodedError(source, throwable, errorCode)
-          } else {
-            PaymentSetupError.GenericError(source, throwable)
-          }
-        }
-        is StripeError.PostError.Declined -> PaymentSetupError.StripeDeclinedError(source, throwable, throwable.declineCode, method as PaymentSourceType.Stripe)
-        is StripeError.PostError.Failed -> PaymentSetupError.StripeFailureCodeError(source, throwable, throwable.failureCode, method as PaymentSourceType.Stripe)
-
-        is UserCancelledPaymentError -> {
-          return throwable
-        }
-
-        else -> {
-          PaymentSetupError.GenericError(source, throwable)
+          donationErrorSubjectSourceMap[error.source]!!.onNext(error)
         }
       }
     }

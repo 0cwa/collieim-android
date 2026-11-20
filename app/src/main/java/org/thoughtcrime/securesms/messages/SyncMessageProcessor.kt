@@ -79,7 +79,6 @@ import org.thoughtcrime.securesms.jobs.MultiDeviceKeysUpdateJob
 import org.thoughtcrime.securesms.jobs.MultiDeviceStickerPackSyncJob
 import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
 import org.thoughtcrime.securesms.jobs.RefreshCallLinkDetailsJob
-import org.thoughtcrime.securesms.jobs.RefreshDonationSubscriptionStatusJob
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.jobs.StickerPackDownloadJob
 import org.thoughtcrime.securesms.jobs.StorageSyncJob
@@ -1190,7 +1189,7 @@ object SyncMessageProcessor {
     when (fetchType) {
       FetchLatest.Type.LOCAL_PROFILE -> AppDependencies.jobManager.add(RefreshOwnProfileJob())
       FetchLatest.Type.STORAGE_MANIFEST -> AppDependencies.jobManager.add(StorageSyncJob.forRemoteChange())
-      FetchLatest.Type.SUBSCRIPTION_STATUS -> RefreshDonationSubscriptionStatusJob.enqueue()
+      FetchLatest.Type.SUBSCRIPTION_STATUS -> Unit // Signal donation subscriptions are not supported.
       else -> warn(envelopeTimestamp, "Received a fetch message for an unknown type.")
     }
   }

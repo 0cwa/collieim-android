@@ -150,45 +150,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Kartë krediti ose debiti</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Shkruaj detajet e kartës. Signal nuk mbledh ose nuk ruan të dhënat e tua personale.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Numri i kartës</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Numri i kartës është i pavlefshëm</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Karta ka skaduar</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Kodi është shumë i shkurtër</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Kodi është shumë i gjatë</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Kod i pavlefshëm</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Muaj i pavlefshëm</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Kërkohet viti</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Vit i pavlefshëm</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Dhuro %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Dhuro %1$s/muaj</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Dhuro %1$s/muaj</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Një herë %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Dhurimi në pritje</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Përpunimi i dhurimit</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Blloko dhe largohu nga %1$s?</string>
@@ -3714,7 +3695,6 @@
     <string name="preferences__notifications">Njoftime</string>
     <string name="preferences__led_color_unknown">E panjohur</string>
     <string name="preferences__silent">Heshtazi</string>
-    <string name="preferences__donate_to_signal">Dhuro për Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Privatësi</string>
     <!-- Preference label for stories -->
@@ -3954,8 +3934,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s më %2$s</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">Vendos monedhën</string>
-    <string name="SetCurrencyFragment__all_currencies">Krejt Monedhat</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5322,13 +5300,7 @@
 
     <string name="ImageView__badge">Distinktiv</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Anuloje abonimin</string>
-    <string name="SubscribeFragment__confirm_cancellation">E konfirmon anulimin?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Nuk do të të mbahet më pagesë. Distinktivi yt do të hiqet nga profili në fund të periudhës së faturimit.</string>
-    <string name="SubscribeFragment__not_now">Jo tani</string>
-    <string name="SubscribeFragment__confirm">Ripohojeni</string>
     <string name="SubscribeFragment__update_subscription">Përditëso abonimin</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Abonimi yt është anuluar.</string>
     <string name="SubscribeFragment__update_subscription_question">Ta përditësojmë abonimin?</string>
     <string name="SubscribeFragment__update">Përditësoje</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Sot do të të mbahet shuma e plotë (%1$s) e çmimit të ri të abonimit. Abonimi yt do të rinovohet çdo muaj.</string>
@@ -5340,66 +5312,35 @@
     <string name="Subscription__expires_s">Skadon më %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Si një ent jofitimprurës i pavarur, Signal është i përkushtuar ndaj mesazheve dhe thirrjeve private. Pa reklama, pa gjurmues, pa mbikëqyrje. Dhuro sot për të mbështetur Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Merr distinktivin opsional në profil kur dhuron</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Privatësia jote është misioni ynë</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal është një ent jofitimprurës. Signal është një ent jofitimprurës.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Faleminderit për Përkrahjen tuaj!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Ke fituar një distinktiv dhuruesi nga Signal! Shfaqe atë në profil për të treguar mbështetjen tënde.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Mundeni edhe të</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">bëheni një Mbështetës mujor.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Shfaqe në Profil</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Bëj distinktiv të zgjedhur</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Vazhdo</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Kur ke më shumë se një distinktiv, mund të zgjedhësh një, që të tjerët ta shohin në profilin tënd.</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">Dhuro për Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Më tepër</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Përkrahja ime</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Faturat e dhurimit</string>
-    <string name="ManageDonationsFragment__badges">Distinktivët</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Pyetje të shpeshta të dhuruesve</string>
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">Rrugë të tjera për të dhuruar</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">Dhuro për një mik</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Dhurimi nuk mund të konfirmohej</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Dhurimi %1$s/muaj nuk mund të konfirmohej. Kontrollo aplikacionin bankar për të miratuar pagesën në iDEAL | Wero.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Dhurimi prej %1$s që bëhet vetëm një herë nuk mund të konfirmohej. Kontrollo aplikacionin bankar për të miratuar pagesën në iDEAL | Wero.</string>
 
-    <string name="Boost__enter_custom_amount">Vendos shumën e personalizuar</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Shuma minimale që mund të dhurosh është %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/muaj</string>
-    <string name="MySupportPreference__renews_s">Rinovohet më %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Po përpunohet transaksioni…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Distinktivi nuk mundi të shtohej. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Ju lutemi, lidhuni me ata të asistencës.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Pagesa në pritje</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Transferta bankare prej %1$s është në pritje. Transfertat bankare mund të zgjasin 1 deri në 14 ditë pune për të përfunduar.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Mëso më shumë</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Po kontrollohet abonimi…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Përditësoni Collie-in</string>
@@ -5436,11 +5377,9 @@
     <string name="Subscription__get_a_s_badge">Merr një distinktiv %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Dhurimi po përpunohet…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Të përsëritura %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5459,11 +5398,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Gabim gjatë përpunimit të dhurimit</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Provoni një metodë tjetër pagese, ose lidhuni me bankën tuaj për më tepër informacion.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Mëso më shumë</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Gabim gjatë përpunimit të dhurimit. %1$s</string>
     <string name="DonationsErrors__your_payment">Dhurimi nuk mund të përpunohej dhe nuk je tarifuar. Provo sërish.</string>
     <string name="DonationsErrors__still_processing">Ende në përpunim</string>
     <string name="DonationsErrors__couldnt_add_badge">Distinktivi nuk mundi të shtohej</string>
@@ -5481,8 +5417,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Dhurimi u përpunua, por Signal nuk e dërgoi dot mesazhin tënd dhuratë. Kontakto ndihmën.</string>
     <string name="DonationsErrors__your_badge_could_not">Distinktivi nuk mundi të shtohej në llogarinë tënde, por mund të të jetë mbajtur pagesa. Të lutemi, lidhu me ndihmën.</string>
     <string name="DonationsErrors__your_payment_is_still">Dhurimi është ende duke u përpunuar. Kjo mund të zgjasë disa minuta në varësi të lidhjes.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Anulimi i abonimit dështoi</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Anulimi i abonimit kërkon lidhje interneti.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Pajisja nuk i mbështet dhurimet brenda aplikacionit, ndaj nuk mund të abonohesh për të fituar distinktivin. Ende mund ta mbështesësh Signal duke bërë një dhurim në faqen e internetit.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Gabim rrjeti. Ju lutemi, kontrolloni lidhjen tuaj me rrjetin dhe riprovoni.</string>
     <string name="NetworkFailure__retry">Riprovo</string>
@@ -5491,7 +5425,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Ky përdorues nuk mund të marrë dhurata derisa të përditësojë Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Dhurimi në iDEAL | Wero nuk mund të përpunohej. Provo një metodë tjetër pagese ose kontakto bankën për më shumë informacion.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Dhurim në emër të %1$s</string>
@@ -5702,33 +5635,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Qëndro i përditësuar me lajmet dhe shënimet e publikimit</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Krejt veprimtaria</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Krejt</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">E ripërsëritshme</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Një herë</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">Për një mik</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Dhurim për një mik</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Lloji i dhurimit</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Datë pagese</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Ndani faturën</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Nëse ke riinstaluar Signal, faturat e dhurimeve të mëparshme nuk do të shfaqen.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Fatura e dhurimit</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Shuma</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Faleminderit që mbështet Signal. Kontributi yt ndihmon në nxitjen e misionit të mbrojtjes së shprehjes së lirë dhe mundësimit të komunikimit të sigurt global për miliona njerëz në mbarë botën, përmes teknologjisë së privatësisë me burim të hapur. Nëse je banor i Shteteve të Bashkuara, të lutem, ruaje këtë faturë për të dhënat tatimore. Signal Technology Foundation është një ent jofitimprurës, i përjashtuar nga taksat, në Shtetet e Bashkuara sipas seksionit 501c3 të Kodit të të Ardhurave të Brendshme. Numri i ID-së federale të tatimeve është 82-4506840. Signal nuk ka ofruar asnjë mall ose shërbim në këmbim të këtij kontributi.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">S’ka dëftesa</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6367,158 +6286,93 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Me krenari, enti jofitimprurës</string>
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">Vazhdo</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Dhuro për të mbështetur mesazhet private. Mbaj Signal të pavarur dhe pa reklama.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Ke një dhurim në pritje</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Përpunimi i transfertave bankare mund të zgjasë nga 1 deri në 14 ditë pune. Para se të përditësosh abonimin, prit derisa të përfundojë pagesa.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Përpunimi i transfertave bankare mund të zgjasë nga 1 deri në 14 ditë pune. Para se të bësh dhurim tjetër, prit derisa të përfundojë kjo pagesë.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Dhurimi është ende duke u përpunuar. Kjo mund të zgjasë disa minuta në varësi të lidhjes. Para se të përditësosh abonimin, prit derisa të përfundojë pagesa.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Dhurimi është ende duke u përpunuar. Kjo mund të zgjasë disa minuta në varësi të lidhjes. Para se të bësh dhurim tjetër, prit derisa të përfundojë pagesa.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Dhurimi në iDEAL | Wero është ende duke u përpunuar. Kontrollo aplikacionin bankar për të miratuar pagesën përpara se të bësh një dhurim tjetër.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Vlerë shumë e lartë dhurimi</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Mund të dërgosh deri në %1$s me transfertë bankare. Provo vlerë ose mënyrë tjetër pagese.</string>
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">I përmuajshëm</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">Një herë</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Dhuro %1$s/muaj për Signal</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Merr një distinktiv %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Dhuro %1$s te Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Merr një distinktiv %1$s për %2$d ditë</item>
         <item quantity="other">Merr një distinktiv %1$s për %2$d ditë</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Transfertë bankare</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kartë krediti ose debiti</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Dhuro për një mik</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Largohu nga Signal për të konfirmuar dhurimin?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Pasi të konfirmohet, kthehu te Signal për të përfunduar përpunimin e dhurimit.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Do të dërgohesh te %1$s. Pasi të konfirmohet, kthehu te Signal për të përfunduar përpunimin e dhurimit.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Transfertë bankare</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe përpunon dhurimet e bëra për Signal. Signal nuk mbledh ose nuk ruan të dhënat e tua personale. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Mëso më shumë</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Pranoj</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Lexoni më tepër</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Ngarkimi i mandatit dështoi</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Vendos të dhënat bankare dhe emailin. Stripe e përdor këtë email për të të dërguar përditësime rreth dhurimit. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Mëso më shumë</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Emri në llogarinë bankare</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">Email</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Gjej të dhënat e llogarisë</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Dhuro %1$s/muaj</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Dhuro %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN është shumë i shkurtër</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN është shumë i gjatë</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Kodi i shtetit IBAN nuk mbështetet</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">IBAN i pavlefshëm</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimumi 3 karaktere</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Adresë e pavlefshme emaili</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Shkruaj emrin dhe emailin. Stripe e përdor këtë email për të dërguar përditësime rreth dhurimit. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Vendos të dhënat e tua bankare. Signal nuk mbledh dhe as nuk ruan të dhënat e tua personale. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Mëso më shumë</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Emri në llogarinë bankare</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Konfirmo dhurimin me iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Për të konfiguruar dhurimin e përsëritur, kliko \"vazhdo\" për të konfirmuar tarifimin prej 0,01 € nga banka jote. Kjo do të rimbursohet automatikisht dhe lejon që dhurimi yt prej %1$s/muaj të debitohet nga llogaria jote.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Vazhdo</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Gjej të dhënat e llogarisë tënde</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Kërko IBAN-in tënd në krye të pasqyrës tënde bankare. Numrat IBAN përmbajnë deri në 34 karaktere. Emri që vendos duhet të përputhet me emrin tënd të plotë në llogarinë bankare. Kontakto bankën për më shumë informacion.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Dhurimi në pritje</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Dhurimi mujor është në pritje. Distinktivi do të shfaqet %1$s në profil kur të merret dhurimi.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Dhurimi që bëhet një herë të vetme është në pritje. Distinktivi do të shfaqet %1$s në profil kur të merret dhurimi.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Përpunimi i transfertave bankare mund të zgjasë nga 1 deri në 14 ditë pune. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Mëso më shumë</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">U bë</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Dhurimi nuk mund të përpunohej</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Kemi probleme me përpunimin e transfertës tënde bankare. Nuk të është mbajtur shuma. Provo një metodë tjetër pagese ose lidhu me bankën për më shumë informacion.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Riprovo</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Jo tani</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Dhurimi përfundoi</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Transferta bankare u krye. Mund të zgjedhësh ta shfaqësh distinktivin në profil për të treguar mbështetjen.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Po anulohet…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Janë përpunuar shumë kontakte</string>
@@ -6550,11 +6404,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s të dërgoi ty</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Informacioni yt është privat</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal nuk mbledh ose nuk ruan asnjë nga informacionet e tua personale, kur bën një donacion.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Ne përdorim Stripe si procesorin tonë të pagesave për të marrë dhurimet e tua. Ne nuk hyjmë, nuk magazinojmë apo nuk ruajmë asnjë nga informacionet që u jep atyre.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal nuk e lidh dhe nuk mund ta lidhë donacionin tënd me llogarinë tënde në Signal.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Faleminderit për përkrahjen!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6569,8 +6418,6 @@
     <string name="GroupStoryEducationSheet__next">Tjetër</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Dhuro</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Pagesa</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7018,15 +6865,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Lejo njoftimet në ekran të plotë</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Dhurimi mujor u anulua</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Dhurimi mujor periodik u anulua. %1$s\n\nDistinktivi nuk do të të shfaqet më në profil. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Mëso më shumë</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Rinovo abonimin</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Jo tani</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7294,7 +7136,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

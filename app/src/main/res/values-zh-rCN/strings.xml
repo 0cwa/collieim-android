@@ -150,45 +150,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">信用卡或借记卡</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">请输入您的卡片信息。Signal 不会收集或储存您的个人信息。</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">卡号</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">卡号无效</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">卡片已过期</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">代码太短</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">代码太长</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">代码无效</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">月份无效</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">年份为必填项</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">年份无效</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">捐款 %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">捐款 %1$s/月</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">捐款 %1$s/月</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">单次捐款 %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">捐款待处理</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">捐款处理中</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">要屏蔽并离开%1$s吗?</string>
@@ -3601,7 +3582,6 @@
     <string name="preferences__notifications">通知</string>
     <string name="preferences__led_color_unknown">未知</string>
     <string name="preferences__silent">无提示</string>
-    <string name="preferences__donate_to_signal">捐款给 Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">隐私</string>
     <!-- Preference label for stories -->
@@ -3841,8 +3821,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s 于 %2$s</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">设置货币</string>
-    <string name="SetCurrencyFragment__all_currencies">全部货币</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5177,13 +5155,7 @@
 
     <string name="ImageView__badge">徽章</string>
 
-    <string name="SubscribeFragment__cancel_subscription">取消定期捐款</string>
-    <string name="SubscribeFragment__confirm_cancellation">确定要取消吗？</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">之后您不会再被扣款。您的徽章将会在到期后从您的个人资料中移除。</string>
-    <string name="SubscribeFragment__not_now">稍后再说</string>
-    <string name="SubscribeFragment__confirm">确认</string>
     <string name="SubscribeFragment__update_subscription">更新定期捐款</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">您的定期捐款已取消。</string>
     <string name="SubscribeFragment__update_subscription_question">要更新定期捐款计划吗？</string>
     <string name="SubscribeFragment__update">更新</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">今天您将会被收取新定期捐款的全额（%1$s）。您的新定期捐款将会每月续期。</string>
@@ -5195,66 +5167,35 @@
     <string name="Subscription__expires_s">%1$s到期</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">作为独立的非营利组织，Signal 致力于保护消息和通话的私密性。这里无广告，无跟踪，无监视。立即捐款支持 Signal 吧。</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">捐款后可在个人资料上显示一个可选徽章</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">保护您的隐私是我们的使命</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal 是一个非营利组织。</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">感谢您的支持！</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">您获得了 Signal 的一个捐款徽章！赶快在个人资料中展示徽章吧，让大家看到您对 Signal 的支持。</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">您还可以</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">成为每月捐款的定期捐款人。</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">在个人资料中显示</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">设为精选徽章</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">继续</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">当您拥有多个徽章时，您可以选择将其中一个徽章设为精选徽章，在个人资料中向他人展示。</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">捐款给 Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">更多</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">我的赞助</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">捐款收据</string>
-    <string name="ManageDonationsFragment__badges">徽章</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">捐款人常见问题解答</string>
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">其他赞助方式</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">代朋友捐款</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">无法确认捐款</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">您的 %1$s/月捐款无法确认。请检查您的银行应用以批准您的 iDEAL | Wero 付款。</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">您的 %1$s 单次捐款无法确认。请检查您的银行应用以批准您的 iDEAL | Wero 付款。</string>
 
-    <string name="Boost__enter_custom_amount">输入自定义金额</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">捐款的最小金额是 %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/月</string>
-    <string name="MySupportPreference__renews_s">到 %1$s 续期</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">正在处理交易……</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">无法添加徽章。%1$s</string>
-    <string name="MySupportPreference__please_contact_support">请联系支持人员。</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">付款待处理</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">您的%1$s银行转账正在等待处理。完成银行转账可能需要 1 至 14 个工作日。  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">了解详情</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">正在检查定期捐款…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">升级 Collie</string>
@@ -5291,11 +5232,9 @@
     <string name="Subscription__get_a_s_badge">获得一个%1$s徽章</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">正在处理捐款……</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">定期 %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5314,11 +5253,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">处理捐款发生错误</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">请尝试另一种付款方式或联系您的银行了解详情。</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">了解详情</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">处理捐款发生错误。%1$s</string>
     <string name="DonationsErrors__your_payment">系统无法处理您的捐款，并且您尚未被扣款。请重试。</string>
     <string name="DonationsErrors__still_processing">仍在处理中</string>
     <string name="DonationsErrors__couldnt_add_badge">无法添加徽章</string>
@@ -5336,8 +5272,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">您的捐款已处理，但 Signal 无法发送您的捐款消息。请联系支持团队。</string>
     <string name="DonationsErrors__your_badge_could_not">您的徽章无法添加到您的帐户中，但您可能已经成功捐款。请联系支持人员。</string>
     <string name="DonationsErrors__your_payment_is_still">您的捐款仍在处理中。这可能需要几分钟时间，视您的网络连接情况而定。</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">无法取消定期捐款</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">取消定期捐款需要连接互联网。</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">您的设备不支持应用内捐款，因此您无法定期捐款和获取徽章。您可以在我们的网站中捐款以支持 Signal。</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">网络出错。请检查您的网络连接并重试。</string>
     <string name="NetworkFailure__retry">重试</string>
@@ -5346,7 +5280,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">该用户需要更新 Signal 才能接收送出的捐款。</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">您的 iDEAL | Wero 捐款无法处理。请尝试另一种付款方式或联系您的银行了解详情。</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">代%1$s捐款</string>
@@ -5557,33 +5490,19 @@
     <string name="ReleaseNotes__keep_up_to_date">让您掌握新闻动态和版本发布说明</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">全部活动</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">全部</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">定期</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">一次性</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">代朋友</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">代朋友捐款</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">捐款类型</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">付款日期</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">分享收据</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">如果您重新安装了 Signal，系统将无法提供先前的捐款收据。</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">捐款收据</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">金额</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">感谢您支持 Signal。您的捐款将助力我们履行使命：保护自由表达，通过开源隐私技术让全球数百万用户享受全球安全通信。如果您是美国居民，请保留此收据作为您的税务记录。Signal 技术基金会是美国国内税收法第 501c3 条定义的美国免税非营利组织。我们的联邦税号为 82-4506840。Signal 未因本次捐款而提供任何商品或服务。</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">无收据</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6201,157 +6120,92 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">以非营利为荣</string>
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">继续</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">欢迎捐款以支持私密消息传递。让 Signal 保持独立且无广告干扰。</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">你有一笔捐款正在等待处理</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">银行转账可能需要 1 至 14 个工作日。请等待这笔付款完成后再更新您的订阅。</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">银行转账可能需要 1 至 14 个工作日。请等待这笔付款完成后再进行另一笔捐款。</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">您的捐款仍在处理中。这可能需要几分钟时间，视您的网络连接情况而定。请等待这笔付款完成后再更新您的订阅。</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">您的捐款仍在处理中。这可能需要几分钟时间，视您的网络连接情况而定。请等待这笔付款完成后再进行另一笔捐款。</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">您的 iDEAL | Wero 捐款仍在处理中。请先检查您的银行应用以批准您的付款，然后再进行另一笔捐款。</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">捐款金额太高</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">通过银行转账捐款的金额最高不超过 %1$s。请尝试其他金额或更换另一种付款方式。</string>
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">每個月的</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">一次性</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">给 Signal 捐款 %1$s/月</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">获得一个%1$s徽章</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">给 Signal 捐款 %1$s</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="other">获得一个为期 %2$d 天的%1$s徽章</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">银行转账</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">信用卡或借记卡</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">代朋友捐款</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">要离开 Signal 以确认捐款吗？</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">确认捐款后，请返回 Signal 以完成捐款处理。</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">您将会跳转至 %1$s。确认捐款后，请返回 Signal 以完成捐款处理。</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">银行转账</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">用户给 Signal 进行的捐款由 Stripe 处理。Signal 不会收集或储存您的个人信息。%1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">了解详情</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">同意</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">阅读全文</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">指令加载失败</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">请输入您的银行详细信息和电子邮件地址。Stripe 将使用此电子邮件地址给您发送关于您的捐款的最新信息。%1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">了解详情</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">银行账户名称</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">邮箱</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">查找账户信息</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">捐款 %1$s/月</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">捐款 %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN 太短</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN 太长</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">不支持 IBAN 国家/地区代码</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">IBAN 无效</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">至少 3 个字符</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">无效的电子邮件地址</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">请输入您的姓名和电子邮件地址。Stripe 将使用此电子邮件地址给您发送关于您捐款的最新动态。%1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">请输入您的银行信息。Signal 不会收集或储存您的个人信息。%1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">了解详情</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">银行账户名称</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">邮箱</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">确认您的 iDEAL | Wero 捐款</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">如要设置您的定期捐款，请点击“继续”以便与您的银行确认扣除一笔 0.01 欧元的费用。这笔费用将会自动退还，并允许每月从您的账户中扣除 %1$s 用于捐款。</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">继续</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">查找您的账户信息</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">您可以在您的银行对账单顶部查看您的 IBAN。IBAN 至多包含 34 个字符。您输入的名称须与您银行账户上的名称一致。如需了解更多信息，请联系您的银行。</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">捐款待处理</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">您的每月捐款正在等待处理。当我们收到捐款后，您将可以在个人资料中显示%1$s徽章。</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">您的单次捐款正在等待处理。当我们收到捐款后，您将可以在个人资料中显示%1$s徽章。</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">银行转账可能需要 1 至 14 个工作日。%1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">了解详情</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">完成</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">捐款无法处理</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">我们在处理您的银行转账时遇到了问题。您尚未被扣款。请尝试另一种付款方式或联系您的银行了解详情。</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">重试</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">稍后再说</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">捐款完成</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">我们已收到您的银行转账。您可以选择在个人资料中显示此徽章，让大家看到您对 Signal 的支持。</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">正在取消……</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">处理的联系人过多</string>
@@ -6382,11 +6236,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s已向您发送</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">个人信息安全无忧</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">当您捐款时，Signal 不会收集或储存您的任何个人信息。</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">我们使用 Stripe 作为接收捐款的付款处理方。我们不会访问、储存或保存您向 Stripe 提供的任何信息。</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal 不会也无法关联您的捐款和您的 Signal 账户。</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">谢谢您的支持！</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6401,8 +6250,6 @@
     <string name="GroupStoryEducationSheet__next">下一步</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">捐款</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">付款</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6845,15 +6692,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s 允许全屏通知</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">每月捐款已取消</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">您的每月捐款已取消。%1$s\n\n您的个人资料将不再显示您的徽章。%2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">了解详情</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">定期捐款续期</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">稍后再说</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7118,7 +6960,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

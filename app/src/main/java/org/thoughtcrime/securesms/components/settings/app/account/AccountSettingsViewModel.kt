@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.signal.appsettings.account.AccountSettingsAction
 import org.signal.appsettings.account.AccountSettingsEvent
 import org.signal.appsettings.account.AccountSettingsState
@@ -27,7 +26,6 @@ import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.navigateBack
 import org.signal.appsettings.routes.navigateTo
 import org.signal.core.ui.compose.EventDrivenViewModel
-import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.MfaKeyKind
 import org.signal.libsignal.net.RequestResult
@@ -84,11 +82,6 @@ class AccountSettingsViewModel(
         }
       }
       AccountSettingsEvent.PaymentsClicked -> Unit
-      AccountSettingsEvent.ManageDonationsClicked -> {
-        if (_state.value.showDonationManagement) {
-          _actions.send(AccountSettingsAction.NavigateToManageDonations)
-        }
-      }
       AccountSettingsEvent.ModifyPinClicked -> {
         _actions.send(if (_state.value.hasPin) AccountSettingsAction.LaunchChangePinFlow else AccountSettingsAction.LaunchCreatePinFlow)
       }
@@ -275,7 +268,6 @@ class AccountSettingsViewModel(
 
   private suspend fun refresh() {
     val isPhoneNumberless = accountRepository.isPhoneNumberless()
-    val showDonationManagement = withContext(SignalDispatchers.IO) { AppSettingsRepository.shouldShowManageDonations() }
 
     _state.update {
       it.copy(
@@ -286,7 +278,6 @@ class AccountSettingsViewModel(
         userUnregistered = accountRepository.isUserUnregistered(),
         clientDeprecated = accountRepository.isClientDeprecated(),
         canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
-        showDonationManagement = showDonationManagement,
         isPhoneNumberless = isPhoneNumberless,
         // Held onto across refreshes so a resume doesn't drop the list back to its loading state.
         signalLogin = if (isPhoneNumberless) it.signalLogin ?: SignalLogin(maxTotpApps = accountRepository.getMaxTotpApps(), maxTwoFactorMethods = accountRepository.getMaxTwoFactorMethods()) else null

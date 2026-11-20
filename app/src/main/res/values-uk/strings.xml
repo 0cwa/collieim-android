@@ -150,45 +150,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Кредитна / Дебетова картка</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Введіть реквізити картки. Signal не збирає і не зберігає вашу особисту інформацію.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Номер картки</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">ММ/РР</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Неправильний номер картки</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Картка недійсна</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Код закороткий</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Код задовгий</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Неправильний код</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Неправильний місяць</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Зазначте рік</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Неправильний рік</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Задонатити %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Донатити %1$s/місяць</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Донатити %1$s/місяць</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">%1$s разово</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Ваш донат ще не надійшов</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Триває опрацювання донату</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Заблокувати й покинути «%1$s»?</string>
@@ -3940,7 +3921,6 @@
     <string name="preferences__notifications">Сповіщення</string>
     <string name="preferences__led_color_unknown">Невідомо</string>
     <string name="preferences__silent">Без звуку</string>
-    <string name="preferences__donate_to_signal">Підтримати Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Конфіденційність</string>
     <!-- Preference label for stories -->
@@ -4180,8 +4160,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s в %2$s</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">Установити валюту</string>
-    <string name="SetCurrencyFragment__all_currencies">Усі валюти</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5612,13 +5590,7 @@
 
     <string name="ImageView__badge">Значок</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Скасувати підписку</string>
-    <string name="SubscribeFragment__confirm_cancellation">Підтвердити скасування?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Оплата більше не стягуватиметься. Значок буде вилучено з профілю, коли спливе період підписки.</string>
-    <string name="SubscribeFragment__not_now">Не зараз</string>
-    <string name="SubscribeFragment__confirm">Підтвердити</string>
     <string name="SubscribeFragment__update_subscription">Змінити підписку</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Вашу підписку скасовано.</string>
     <string name="SubscribeFragment__update_subscription_question">Змінити підписку?</string>
     <string name="SubscribeFragment__update">Оновити</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Сьогодні з вас буде стягнуто повну суму (%1$s) нової підписки. Ми стягуватимемо таку суму щомісяця.</string>
@@ -5630,66 +5602,35 @@
     <string name="Subscription__expires_s">Дійсний до %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Signal — це незалежна неприбуткова організація, віддана ідеї конфіденційного спілкування. Без реклами, відстежування й нагляду. Підтримайте Signal донатом.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Отримайте особливий значок профілю за донат</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Наша місія — ваша конфіденційність</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal є неприбутковою організацією.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Дякуємо за підтримку!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Ви отримали значок донора від Signal! Показуйте його в профілі, щоб розповісти про свою підтримку.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Ви також можете</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">підтримувати щомісячно.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Показувати в профілі</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Обрати цей значок</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Продовжити</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Коли у вас є декілька значків, ви можете обрати, який саме показувати у своєму профілі.</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">Підтримати Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Докладніше</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Моя підтримка</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Підтвердження ваших донатів</string>
-    <string name="ManageDonationsFragment__badges">Значки</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Відповіді на запитання про донати</string>
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">Інші способи підтримки</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">Донат за друга</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Не вдалося підтвердити донат</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Ми не змогли підтвердити ваш донат на суму %1$s/місяць. Зайдіть у застосунок свого банку й схваліть платіж iDEAL | Wero.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Ми не змогли підтвердити ваш разовий донат на суму %1$s. Зайдіть у застосунок свого банку й схваліть платіж iDEAL | Wero.</string>
 
-    <string name="Boost__enter_custom_amount">Інша сума</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Мінімальна сума донату: %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/місяць</string>
-    <string name="MySupportPreference__renews_s">Наступний платіж %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Опрацювання трансакції…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Не вдалося додати значок. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Будь ласка, зверніться до служби підтримки.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Опрацювання платежу ще триває</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Триває опрацювання вашого банківського переказу на суму %1$s. На це може знадобитися від 1 до 14 робочих днів.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Докладніше</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Перевірка передплати…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Оновити Collie</string>
@@ -5726,11 +5667,9 @@
     <string name="Subscription__get_a_s_badge">Отримати значок %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Триває опрацювання донату…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Регулярно %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5749,11 +5688,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Помилка під час опрацювання донату</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Використайте інший платіжний засіб або зв\'яжіться зі своїм банком для додаткової інформації.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Докладніше</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Помилка під час опрацювання донату. %1$s</string>
     <string name="DonationsErrors__your_payment">Донат не вдалось опрацювати, тому кошти не було стягнуто. Будь ласка, повторіть оплату.</string>
     <string name="DonationsErrors__still_processing">Опрацювання триває</string>
     <string name="DonationsErrors__couldnt_add_badge">Не вдалося додати значок</string>
@@ -5771,8 +5707,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Ваш донат опрацьовано, але Signal не вдалося надіслати повідомлення про нього. Будь ласка, зверніться до служби підтримки.</string>
     <string name="DonationsErrors__your_badge_could_not">Не вдалося додати значок до вашого акаунту, але кошти, можливо, було стягнуто. Зверніться в службу підтримки.</string>
     <string name="DonationsErrors__your_payment_is_still">Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з\'єднання.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Не вдалося скасувати підписку</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Для скасування підписки потрібне з\'єднання з інтернетом.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Ваш пристрій не підтримує донати в застосунку, тому ви не можете оформити підписку й отримати за це значок. Але ви маєте змогу підтримати Signal, зробивши донат на нашому сайті.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Мережева помилка. Перевірте з\'єднання та спробуйте знов.</string>
     <string name="NetworkFailure__retry">Повторити</string>
@@ -5781,7 +5715,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Цей користувач не може отримувати донати, доки не оновить Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Не вдалось опрацювати донат, надісланий через iDEAL | Wero. Використайте інший платіжний засіб або зв\'яжіться зі своїм банком для додаткової інформації.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Донат від імені користувача %1$s</string>
@@ -5992,33 +5925,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Будьте в курсі новин і впроваджених змін.</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Усі операції</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Усі</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Щомісяця</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Разово</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">За друга</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Донат за друга</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Тип донату</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Дата платежу</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Поділитися</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Якщо ви перевстановлювали Signal, підтвердження попередніх донатів будуть недоступні.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Підтвердження донату</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Сума</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Дякуємо за підтримку Signal. Ваш внесок допомагає реалізувати нашу місію: захищати свободу слова і робити можливим безпечне спілкування для мільйонів людей у всьому світі за допомогою технології конфіденційного обміну повідомленнями з відкритим кодом. Якщо ви резидент Сполучених Штатів Америки, збережіть це підтвердження для звітування в податкові органи. Signal Technology Foundation — звільнена від оподаткування неприбуткова організація, створена відповідно до розділу 501c3 податкового кодексу США. Наш федеральний податковий номер: 82–4506840. За цей внесок Signal не надав ні товарів, ні послуг.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Підтверджень немає</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6699,40 +6618,24 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Ми неприбуткова організація і пишаємося цим</string>
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">Продовжити</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Підтримайте конфіденційне спілкування донатом. Допоможіть Signal лишатися незалежним месенджером без реклами.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Ваш попередній донат ще не надійшов</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися проведення платежу, перш ніж оновлювати підписку.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Опрацювання банківських переказів може займати від 1 до 14 робочих днів. Просимо вас дочекатися проведення платежу, перш ніж робити новий донат.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з\'єднання. Просимо вас дочекатися проведення платежу, перш ніж оновлювати підписку.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з\'єднання. Просимо вас дочекатися проведення платежу, перш ніж робити новий донат.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Опрацювання вашого донату через iDEAL | Wero ще триває. Зайдіть у застосунок свого банку й схваліть платіж, перш ніж робити новий донат.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Сума завелика</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Ми приймаємо банківські перекази на суму до %1$s. Спробуйте іншу суму або інший платіжний засіб.</string>
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">Щомісяця</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">Разово</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Донатити Signal %1$s/місяць</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Отримайте значок %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Задонатити Signal %1$s</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Отримайте значок %1$s на %2$d день</item>
@@ -6741,118 +6644,69 @@
         <item quantity="other">Отримайте значок %1$s на %2$d дня</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Банківський переказ</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Кредитна / Дебетова картка</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Донат за друга</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Покинути Signal для підтвердження донату?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Після підтвердження поверніться в Signal, щоб опрацювання вашого донату було завершено.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Вас буде перенаправлено в %1$s. Після підтвердження поверніться в Signal, щоб опрацювання вашого донату було завершено.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Банківський переказ</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe опрацьовує донати на користь Signal. Signal не збирає і не зберігає вашу особисту інформацію. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Докладніше</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Погоджуюся</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Дізнатися більше</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Не вдалося завантажити запит</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Введіть свої банківські реквізити й електронну адресу. Stripe використовує вашу електронну адресу, щоб надсилати оновлення про донат. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Докладніше</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Ім\'я власника банківського рахунку</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">Імейл</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Як знайти платіжні реквізити</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Донатити %1$s/місяць</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Задонатити %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN закороткий</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN задовгий</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN з кодом цієї країни не підтримуються</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Недійсний IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Мінімум 3 символи</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Неправильна електронна адреса</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Введіть своє ім\'я та електрону адресу. Stripe використовує вашу електронну адресу, щоб надсилати інформацію про донат. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Введіть свої банківські реквізити. Signal не збирає і не зберігає вашу особисту інформацію. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Докладніше</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Ім\'я власника банківського рахунку</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">Електронна пошта</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Підтвердьте донат через iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Щоб оформити регулярний благодійний платіж, виберіть «Продовжити» й підтвердьте списання 0,01€ у своєму банку. Цю суму буде автоматично повернуто. Ця операція потрібна, щоб активувати списання %1$s/місяць з вашого рахунку.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Продовжити</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Як знайти платіжні реквізити</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Номер IBAN має бути у верхній частині виписки за рахунком. IBAN складається з 34 символів. Введене ім\'я має збігатися з повним іменем власника банківського рахунку. Для додаткової інформації зв\'яжіться зі своїм банком.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Ваш донат ще не надійшов</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Ваш щомісячний донат ще не опрацьовано. Ви зможете показувати значок %1$s у профілі, коли ми отримаємо донат.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Ваш разовий донат ще не опрацьовано. Ви зможете показувати значок %1$s у профілі, коли ми отримаємо донат.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Опрацювання банківських переказів може займати від 1 до 14 робочих днів. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Докладніше</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">Готово</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Не вдалось опрацювати донат</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Під час опрацювання банківського переказу виникла проблема. Кошти не було стягнуто. Використайте інший платіжний засіб або зв\'яжіться зі своїм банком для додаткової інформації.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Повторити спробу</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Не зараз</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Донат підтверджено</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Ваш банківський переказ отримано. Тепер ви можете показувати в профілі цей значок, щоб розказати іншим про свою підтримку.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Скасування…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Опрацьовано забагато контактів</string>
@@ -6886,11 +6740,6 @@
     <string name="PaymentMessageView_s_sent_you">Користувач %1$s надіслав вам</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Ваша інформація конфіденційна</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal не збирає і не зберігає вашу особисту інформацію, коли ви робите донати.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Ми користуємося послугами компанії Stripe для опрацювання ваших донатів. Ми не зберігаємо інформацію, яку ви надаєте Stripe, і не маємо до неї доступу.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal не знає і не може дізнатися, що донат надійшов саме з вашого акаунту.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Дякуємо за підтримку!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6905,8 +6754,6 @@
     <string name="GroupStoryEducationSheet__next">Далі</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Задонатити</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Платіж</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7364,15 +7211,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Увімкніть повноекранні сповіщення</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Щомісячний донат скасовано</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Щомісячний донат було скасовано. %1$s\n\nЗначок зник з вашого профілю. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Докладніше</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Поновити підписку</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Не зараз</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7646,7 +7488,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

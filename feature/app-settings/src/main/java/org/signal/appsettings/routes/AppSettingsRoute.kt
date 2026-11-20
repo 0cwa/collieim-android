@@ -13,7 +13,6 @@ import org.signal.appsettings.account.TwoFactorMethod
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.compose.split.DetailNavKey
 import org.signal.core.util.censor
-import org.signal.donations.InAppPaymentType
 
 /**
  * Describes a route that the AppSettings screen can open. Every route listed here is displayed in
@@ -225,21 +224,7 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   @Parcelize
   sealed interface DonationsRoute : AppSettingsRoute {
     @Serializable
-    data class Donations(
-      val directToCheckoutType: InAppPaymentType = InAppPaymentType.UNKNOWN
-    ) : DonationsRoute
-
-    @Serializable
     data object Badges : DonationsRoute
-
-    @Serializable
-    data object Receipts : DonationsRoute
-
-    @Serializable
-    data class Receipt(val id: Long) : DonationsRoute
-
-    @Serializable
-    data object Featured : DonationsRoute
   }
 
   @Serializable
@@ -256,9 +241,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     data object Internal : InternalRoute
 
     @Serializable
-    data object DonorErrorConfiguration : InternalRoute
-
-    @Serializable
     data object StoryDialogs : InternalRoute
 
     @Serializable
@@ -269,12 +251,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object ChatSpringboard : InternalRoute
-
-    @Serializable
-    data object OneTimeDonationConfiguration : InternalRoute
-
-    @Serializable
-    data object TerminalDonationConfiguration : InternalRoute
 
     @Serializable
     data object BackupPlayground : InternalRoute

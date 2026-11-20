@@ -21,7 +21,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.core.util.getParcelableExtraCompat
-import org.signal.donations.InAppPaymentType
 import org.signal.remoteconfig.RemoteConfig
 
 @RunWith(RobolectricTestRunner::class)
@@ -38,26 +37,6 @@ class AppSettingsActivityIntentsTest {
   @After
   fun tearDown() {
     unmockkObject(RemoteConfig)
-  }
-
-  @Test
-  fun `subscriptions opens recurring checkout in the fragment host`() {
-    every { RemoteConfig.useAppSettingsNavigation } returns false
-
-    val intent = AppSettingsActivity.subscriptions(context)
-
-    assertThat(intent.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
-    assertThat(intent.startRoute()).isEqualTo(AppSettingsRoute.DonationsRoute.Donations(directToCheckoutType = InAppPaymentType.RECURRING_DONATION))
-  }
-
-  @Test
-  fun `subscriptions opens recurring checkout in the Nav3 host`() {
-    every { RemoteConfig.useAppSettingsNavigation } returns true
-
-    val intent = AppSettingsActivity.subscriptions(context)
-
-    assertThat(intent.component?.className).isEqualTo(AppSettingsNavigationActivity::class.java.name)
-    assertThat(intent.startRoute()).isEqualTo(AppSettingsRoute.DonationsRoute.Donations(directToCheckoutType = InAppPaymentType.RECURRING_DONATION))
   }
 
   @Test

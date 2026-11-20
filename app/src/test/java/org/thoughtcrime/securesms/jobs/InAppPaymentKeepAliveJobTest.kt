@@ -26,7 +26,6 @@ import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
-import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription.ChargeFailure
 import org.whispersystems.signalservice.api.subscriptions.SubscriberId
 import org.whispersystems.signalservice.internal.EmptyResponse
 import org.whispersystems.signalservice.internal.ServiceResponse
@@ -68,45 +67,6 @@ class InAppPaymentKeepAliveJobTest {
   }
 
   @Test
-  fun `Given an unregistered local user, when I run, then I expect skip`() {
-    every { mockSignalStore.account.isRegistered } returns false
-
-    val job = InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION)
-
-    val result = job.run()
-
-    assertThat(result.isSuccess).isTrue()
-  }
-
-  @Test
-  fun `Given a canceled subscription, when I run, then I write cancellation and return early`() {
-    val activeSubscription = inAppPaymentsTestRule.createActiveSubscription(
-      status = "canceled",
-      isActive = false
-    )
-    inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = activeSubscription)
-    every { InAppPaymentsRepository.updateInAppPaymentWithCancelation(any(), any()) } returns Unit
-
-    val job = InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION)
-    val result = job.run()
-
-    assertThat(result.isSuccess).isTrue()
-    verify(exactly = 1) { InAppPaymentsRepository.updateInAppPaymentWithCancelation(activeSubscription, InAppPaymentSubscriberRecord.Type.DONATION) }
-  }
-
-  @Test
-  fun `Given no subscription on the server, when I run, then I write cancellation and return early`() {
-    inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = ActiveSubscription(null, null))
-    every { InAppPaymentsRepository.updateInAppPaymentWithLapsedSubscription(any()) } returns Unit
-
-    val job = InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION)
-    val result = job.run()
-
-    assertThat(result.isSuccess).isTrue()
-    verify(exactly = 1) { InAppPaymentsRepository.updateInAppPaymentWithLapsedSubscription(InAppPaymentSubscriberRecord.Type.DONATION) }
-  }
-
-  @Test
   fun `Given no subscription on the server for a backup subscriber, when I run, then I do not write cancellation`() {
     val backupSubscriber = InAppPaymentSubscriberRecord(
       subscriberId = SubscriberId.generate(),
@@ -127,19 +87,11 @@ class InAppPaymentKeepAliveJobTest {
   }
 
   @Test
-  fun `Given a past-due subscription with charge failure, when I run, then I do not write cancellation`() {
-    val chargeFailure = ChargeFailure("test", "", "", "", "")
-    val activeSubscription = inAppPaymentsTestRule.createActiveSubscription(
-      status = "past_due",
-      isActive = false,
-      chargeFailure = chargeFailure
-    )
-    inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = activeSubscription)
-    every { InAppPaymentsRepository.updateInAppPaymentWithCancelation(any(), any()) } returns Unit
-
-    val job = InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION)
-    job.run()
-
-    verify(exactly = 0) { InAppPaymentsRepository.updateInAppPaymentWithCancelation(any(), any()) }
+  fun `a persisted donation renewal job performs no network requests`() {
+    val result = InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION).run()
+    assertThat(result.isSuccess).isTrue()
+    verify(exactly = 0) { AppDependencies.donationsService.putSubscription(any()) }
+    verify(exactly = 0) { AppDependencies.donationsService.getSubscription(any()) }
   }
+
 }

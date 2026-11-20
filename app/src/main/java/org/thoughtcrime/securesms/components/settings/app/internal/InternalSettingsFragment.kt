@@ -40,7 +40,6 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.app.appSettingsRouter
 import org.thoughtcrime.securesms.components.settings.app.privacy.advanced.AdvancedPrivacySettingsRepository
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.database.JobDatabase
@@ -49,7 +48,6 @@ import org.thoughtcrime.securesms.database.LogDatabase
 import org.thoughtcrime.securesms.database.MegaphoneDatabase
 import org.thoughtcrime.securesms.database.OneTimePreKeyTable
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.JobTracker
@@ -57,7 +55,6 @@ import org.thoughtcrime.securesms.jobs.BackfillCollapsedMessageJob
 import org.thoughtcrime.securesms.jobs.CheckKeyTransparencyJob
 import org.thoughtcrime.securesms.jobs.DownloadLatestEmojiDataJob
 import org.thoughtcrime.securesms.jobs.EmojiSearchIndexDownloadJob
-import org.thoughtcrime.securesms.jobs.InAppPaymentKeepAliveJob
 import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
@@ -153,9 +150,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       AppSettingsRoute.InternalRoute.SvrPlayground -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToInternalSvrPlaygroundFragment()
       AppSettingsRoute.InternalRoute.DataSeedingPlayground -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToDataSeedingPlaygroundFragment()
       AppSettingsRoute.InternalRoute.Search -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToInternalSearchFragment()
-      AppSettingsRoute.InternalRoute.DonorErrorConfiguration -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToDonorErrorConfigurationFragment()
-      AppSettingsRoute.InternalRoute.OneTimeDonationConfiguration -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToOneTimeDonationConfigurationFragment()
-      AppSettingsRoute.InternalRoute.TerminalDonationConfiguration -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToTerminalDonationConfigurationFragment()
       AppSettingsRoute.InternalRoute.StoryDialogs -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToStoryDialogsLauncherFragment()
       AppSettingsRoute.InternalRoute.ChatSpringboard -> InternalSettingsFragmentDirections.actionInternalSettingsFragmentToInternalConversationSpringboardFragment()
       else -> error("Unexpected route: ${route.javaClass.name}")
@@ -878,66 +872,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
 
       dividerPref()
 
-      // TODO [alex] -- db access on main thread!
-      if (InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null) {
-        sectionHeaderPref(DSLSettingsText.from("Badges"))
-
-        clickPref(
-          title = DSLSettingsText.from("Enqueue redemption."),
-          onClick = {
-            enqueueSubscriptionRedemption()
-          }
-        )
-
-        clickPref(
-          title = DSLSettingsText.from("Enqueue keep-alive."),
-          onClick = {
-            enqueueSubscriptionKeepAlive()
-          }
-        )
-
-        clickPref(
-          title = DSLSettingsText.from("Set error state."),
-          onClick = {
-            parentEventEmitter.navigateTo(AppSettingsRoute.InternalRoute.DonorErrorConfiguration)
-          }
-        )
-
-        clickPref(
-          title = DSLSettingsText.from("Clear keep-alive timestamps"),
-          onClick = {
-            SignalStore.inAppPayments.setLastEndOfPeriod(0L)
-            Toast.makeText(context, "Cleared", Toast.LENGTH_SHORT).show()
-          }
-        )
-        dividerPref()
-      }
-
-      if (state.hasPendingOneTimeDonation) {
-        clickPref(
-          title = DSLSettingsText.from("Clear pending one-time donation."),
-          onClick = {
-            SignalStore.inAppPayments.setPendingOneTimeDonation(null)
-          }
-        )
-      } else {
-        clickPref(
-          title = DSLSettingsText.from("Set pending one-time donation."),
-          onClick = {
-            parentEventEmitter.navigateTo(AppSettingsRoute.InternalRoute.OneTimeDonationConfiguration)
-          }
-        )
-      }
-
-      clickPref(
-        title = DSLSettingsText.from("Enqueue terminal donation"),
-        onClick = {
-          parentEventEmitter.navigateTo(AppSettingsRoute.InternalRoute.TerminalDonationConfiguration)
-        }
-      )
-
-      dividerPref()
-
       sectionHeaderPref(DSLSettingsText.from("Release channel"))
 
       clickPref(
@@ -1242,14 +1176,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
   private fun clearAllLocalMetricsState() {
     LocalMetricsDatabase.getInstance(AppDependencies.application).clear()
     Toast.makeText(context, "Cleared all local metrics state.", Toast.LENGTH_SHORT).show()
-  }
-
-  private fun enqueueSubscriptionRedemption() {
-    viewModel.enqueueSubscriptionRedemption()
-  }
-
-  private fun enqueueSubscriptionKeepAlive() {
-    InAppPaymentKeepAliveJob.enqueueAndTrackTime(System.currentTimeMillis().milliseconds)
   }
 
   private fun clearCdsHistory() {

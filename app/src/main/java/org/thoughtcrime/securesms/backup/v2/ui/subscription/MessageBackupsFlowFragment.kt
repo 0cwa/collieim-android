@@ -47,7 +47,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.DeletionState
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
 import org.thoughtcrime.securesms.components.settings.app.account.signallogin.SignalLoginViewDetailsAction
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.InAppPaymentCheckoutDelegate
+import org.thoughtcrime.securesms.backup.v2.ui.subscription.BackupPaymentErrorHandler
 import org.thoughtcrime.securesms.compose.Nav
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -59,7 +59,7 @@ import org.signal.signallogin.R as SignalLoginR
 /**
  * Handles the selection, payment, and changing of a user's backup tier.
  */
-class MessageBackupsFlowFragment : ComposeFragment(), InAppPaymentCheckoutDelegate.ErrorHandlerCallback {
+class MessageBackupsFlowFragment : ComposeFragment(), BackupPaymentErrorHandler.ErrorHandlerCallback {
 
   companion object {
 
@@ -103,7 +103,7 @@ class MessageBackupsFlowFragment : ComposeFragment(), InAppPaymentCheckoutDelega
     }
   }
 
-  private val errorHandler = InAppPaymentCheckoutDelegate.ErrorHandler()
+  private val errorHandler = BackupPaymentErrorHandler.ErrorHandler()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     errorHandler.attach(

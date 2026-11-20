@@ -199,17 +199,17 @@ public final class JobManagerFactories {
       put(GroupDeletedBackfillWorkerJob.KEY,           new GroupDeletedBackfillWorkerJob.Factory());
       put(GroupRingCleanupJob.KEY,                     new GroupRingCleanupJob.Factory());
       put(GroupV2UpdateSelfProfileKeyJob.KEY,          new GroupV2UpdateSelfProfileKeyJob.Factory());
-      put(InAppPaymentAuthCheckJob.KEY,                new InAppPaymentAuthCheckJob.Factory());
+      put("InAppPaymentAuthCheckJob", new FailingJob.Factory()); // Retired Signal donations
       put("InAppPaymentGiftSendJob",                   new FailingJob.Factory()); // MOLLY
       put(InAppPaymentKeepAliveJob.KEY,                new InAppPaymentKeepAliveJob.Factory());
       put(InAppPaymentPurchaseTokenJob.KEY,            new InAppPaymentPurchaseTokenJob.Factory());
       put(InAppPaymentRecurringContextJob.KEY,         new InAppPaymentRecurringContextJob.Factory());
-      put(InAppPaymentOneTimeContextJob.KEY,           new InAppPaymentOneTimeContextJob.Factory());
+      put("InAppPurchaseOneTimeContextJob", new FailingJob.Factory()); // Retired Signal donations
       put(InAppPaymentRedemptionJob.KEY,               new InAppPaymentRedemptionJob.Factory());
-      put(InAppPaymentPayPalOneTimeSetupJob.KEY,       new InAppPaymentPayPalOneTimeSetupJob.Factory());
-      put(InAppPaymentPayPalRecurringSetupJob.KEY,     new InAppPaymentPayPalRecurringSetupJob.Factory());
-      put(InAppPaymentStripeOneTimeSetupJob.KEY,       new InAppPaymentStripeOneTimeSetupJob.Factory());
-      put(InAppPaymentStripeRecurringSetupJob.KEY,     new InAppPaymentStripeRecurringSetupJob.Factory());
+      put("InAppPaymentPayPalOneTimeSetupJob", new FailingJob.Factory()); // Retired Signal donations
+      put("InAppPaymentPayPalRecurringSetupJob", new FailingJob.Factory()); // Retired Signal donations
+      put("InAppPaymentStripeOneTimeSetupJob", new FailingJob.Factory()); // Retired Signal donations
+      put("InAppPaymentStripeRecurringSetupJob", new FailingJob.Factory()); // Retired Signal donations
       put(IndividualSendJob.KEY,                       new IndividualSendJob.Factory());
       put(IndividualSendJobV2.KEY,                     new IndividualSendJobV2.Factory());
       put(LeaveGroupV2Job.KEY,                         new LeaveGroupV2Job.Factory());
@@ -274,7 +274,7 @@ public final class JobManagerFactories {
       put(ReclaimUsernameAndLinkJob.KEY,               new ReclaimUsernameAndLinkJob.Factory());
       put(RefreshAttributesJob.KEY,                    new RefreshAttributesJob.Factory());
       put(RefreshCallLinkDetailsJob.KEY,               new RefreshCallLinkDetailsJob.Factory());
-      put(RefreshDonationSubscriptionStatusJob.KEY,    new RefreshDonationSubscriptionStatusJob.Factory());
+      put("RefreshDonationSubscriptionStatusJob", new FailingJob.Factory()); // Retired Signal donations
       put(RefreshSvrCredentialsJob.KEY,                new RefreshSvrCredentialsJob.Factory());
       put(RefreshOwnProfileJob.KEY,                    new RefreshOwnProfileJob.Factory());
       put(RemoteConfigRefreshJob.KEY,                  new RemoteConfigRefreshJob.Factory());

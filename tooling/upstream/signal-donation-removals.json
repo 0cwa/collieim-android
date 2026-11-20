@@ -1,0 +1,922 @@
+{
+  "schema": 1,
+  "removed": [
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutFlowDriver.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutFlowPermitTestSupport.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationsCheckoutSpecTest.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationsCheckoutTestSpec.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/jobs/InAppPaymentAuthCheckJobTest.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/jobs/InAppPaymentSetupJobTest.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/util/DonationBrowserFailureTest.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/androidTest/java/org/thoughtcrime/securesms/util/TestStripePaths.kt",
+      "reason": "Instrumentation for removed donation checkout and jobs."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/badges/self/expired/MonthlyDonationCanceledBottomSheetDialogFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/badges/self/expired/MonthlyDonationCanceledState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/badges/self/expired/MonthlyDonationCanceledViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalPendingOneTimeDonationConfigurationFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalPendingOneTimeDonationConfigurationViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalTerminalDonationConfigurationFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/donor/InternalDonationErrorValues.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/donor/InternalDonorErrorConfigurationFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/donor/InternalDonorErrorConfigurationState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/donor/InternalDonorErrorConfigurationViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/DonationEvent.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/DonationPendingBottomSheet.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/DonationPendingBottomSheetViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/InAppDonations.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/OneTimeInAppPaymentRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/PayPalRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/StripeRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/boost/Boost.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/InAppPaymentsBottomSheetDelegate.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/currency/SetCurrencyFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/currency/SetCurrencyState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/currency/SetCurrencyViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutFlowActivity.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutNavHostFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalAction.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinations.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationPillToggle.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationWebViewOnBackPressedCallback.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/InAppPaymentCheckoutDelegate.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/InAppPaymentProcessorActionResult.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/InAppPaymentProcessorStage.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/SharedInAppPaymentPipeline.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardCodeValidator.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardExpiration.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardExpirationTextWatcher.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardExpirationValidator.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardFormState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardNumberValidator.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardResult.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardTextWatcher.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardType.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardValidationState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/YourInformationIsPrivateBottomSheet.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewayOrderStrategy.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorBottomSheet.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorBottomSheetContent.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorBottomSheetEvent.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorTestTags.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalCompleteOrderBottomSheet.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalCompleteOrderPaymentItem.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalConfirmationDialogFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalConfirmationResult.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalPaymentInProgressFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalPaymentInProgressViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalPaymentMethodId.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/stripe/ExternalNavigationHelper.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/stripe/Stripe3DSData.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/stripe/Stripe3DSDialogFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/stripe/StripePaymentInProgressFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/stripe/StripePaymentInProgressViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/BankDetailsValidator.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/BankTransferRequestKeys.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/DonationTransferTestTags.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/BankTransferDetailsFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/BankTransferDetailsState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/BankTransferDetailsViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/FindAccountInfoSheet.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/IBANValidator.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/IBANVisualTransformation.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/ideal/IdealTransferDetailsFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/ideal/IdealTransferDetailsState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/ideal/IdealTransferDetailsViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/mandate/BankTransferMandateFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/mandate/BankTransferMandateRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/mandate/BankTransferMandateViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/errors/DonationErrorNotifications.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ActiveSubscriptionPreference.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/DonationRedemptionJobStatus.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/NonVerifiedMonthlyDonation.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/OneTimeDonationPreference.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/InAppPaymentReceiptRecordExtensions.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/ReceiptImageRenderer.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailAction.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailEvent.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailScreen.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptBadge.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListAction.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListEvent.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListRepository.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListScreen.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListState.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListViewModel.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/subscribe/SubscribeLearnMoreBottomSheetDialogFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/thanks/ThanksForYourSupportBottomSheetDialogFragment.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/ui/CurrencySelection.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/ui/IdealWeroButton.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/ui/NetworkFailure.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/ui/PayPalButton.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentAuthCheckJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentOneTimeContextJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentPayPalOneTimeSetupJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentPayPalRecurringSetupJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentSetupJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentStripeOneTimeSetupJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentStripeRecurringSetupJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshDonationSubscriptionStatusJob.kt",
+      "reason": "Signal donation or gift purchase UI, gateway, management, notifications, or scheduling."
+    },
+    {
+      "path": "app/src/main/res/color-night/currency_selector_text_color.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/color/currency_selector_text_color.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/color/donation_pill_toggle_background_tint.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/color/signal_selectable_button_background_tint.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/color/signal_selectable_button_stroke.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/boost_loading_preference_background.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/currency_selection_background.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/custom_donation_amount_background.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/custom_donation_amount_background_normal.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/custom_donation_amount_background_selected.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/find_account_info.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_chevron_16.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_sustainer_heart.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/logo_ideal_wero.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/network_failure_pref_background.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/paypal.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/drawable/paypal_dark.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/drawable/rounded_outline_12_surface1.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/drawable/symbol_receipt_24.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/boost_loading_preference.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/boost_preference.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/boost_preview_preference.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/credit_card_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/donate_to_signal_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/donation_in_progress_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/donation_pill_toggle.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/layout/donation_receipt_png.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/donation_webview_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/manage_donations_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/network_failure_pref.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/paypal_button.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/layout/paypal_complete_order_payment_item.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/set_currency_fragment.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/layout/subscribe_learn_more_bottom_sheet_dialog_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/subscription_currency_selection.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/thanks_for_your_support_bottom_sheet_dialog_fragment.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/navigation/checkout.xml",
+      "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/values-night/values.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/OneTimeInAppPaymentRepositoryTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/SubscriptionsConfigurationExtensionsKtTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/boost/BoostTest__MoneyFilter.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheetTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/currency/SetCurrencyViewModel__CurrencyComparatorTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinationsTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/SharedInAppPaymentPipelineTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardCodeValidatorTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardExpirationTextWatcherBackspaceTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardExpirationTextWatcherTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardExpirationValidatorTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardNumberValidatorTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardTextWatcherBackspaceTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardTextWatcherTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/card/CreditCardTypeTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/gateway/GatewaySelectorBottomSheetContentTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/paypal/PayPalConfirmationResultTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/stripe/ExternalNavigationHelperTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/transfer/details/IBANValidatorTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailLayoutTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailScreenTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/detail/DonationReceiptDetailViewModelTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListLayoutTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListScreenTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/list/DonationReceiptListViewModelTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/jobs/InAppPaymentAuthCheckJobTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/jobs/InAppPaymentOneTimeContextJobTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/jobs/InAppPaymentStripeSetupJobTest.kt",
+      "reason": "Unit tests for removed donation-only checkout, management, or job code."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/CreditCardPaymentSource.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/IDEALPaymentSource.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/PayPalPaymentSource.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/PaymentSource.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/ResponseFieldLogger.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/SEPADebitPaymentSource.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/StripeApi.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/StripeError.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/StripeIntentAccessor.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/StripePaths.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/TokenPaymentSource.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/json/StripeIntentStatus.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/json/StripePaymentIntent.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/java/org/signal/donations/json/StripeSetupIntent.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/main/res/layout/donate_with_googlepay_button.xml",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/test/java/org/signal/donations/ResponseFieldLoggerTest.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/test/java/org/signal/donations/StripeApiGetIntentTest.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/test/java/org/signal/donations/StripeIntentAccessorTest.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/test/java/org/signal/donations/StripePaymentIntentTest.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/donations/src/test/java/org/signal/donations/StripeSetupIntentTest.kt",
+      "reason": "Donation-only gateway and checkout code. Shared backup permits and payment record types remain."
+    },
+    {
+      "path": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/subscriptions/PayPalConfirmPaymentIntentResponse.kt",
+      "reason": "Signal donation purchase API models for disabled checkout operations."
+    },
+    {
+      "path": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/subscriptions/PayPalCreatePaymentIntentResponse.kt",
+      "reason": "Signal donation purchase API models for disabled checkout operations."
+    },
+    {
+      "path": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/subscriptions/PayPalCreatePaymentMethodResponse.kt",
+      "reason": "Signal donation purchase API models for disabled checkout operations."
+    },
+    {
+      "path": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/subscriptions/StripeClientSecret.kt",
+      "reason": "Signal donation purchase API models for disabled checkout operations."
+    },
+    {
+      "path": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/BankMandate.kt",
+      "reason": "Signal donation purchase API models for disabled checkout operations."
+    }
+  ],
+  "modules": [],
+  "compatibility": [
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/JobManagerFactories.java",
+      "reason": "Recognize stored donation-only job names and route them to the existing failing job factory."
+    },
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/keyvalue/InAppPaymentValues.kt",
+      "reason": "Keep persisted keys readable for upgrades and backup without restoring donation checkout."
+    }
+  ],
+  "retained_modules": [
+    {
+      "module": ":lib:donations",
+      "reason": "Shared backup permit and payment record types remain."
+    }
+  ]
+}

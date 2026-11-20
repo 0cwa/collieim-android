@@ -172,18 +172,15 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   @Test
-  fun `Given a linked device, when I run for a donation, then I expect success`() {
-    every { mockSignalStore.account.isLinkedDevice } returns true
+  fun `a persisted donation context job does not request credentials`() {
+    val iap = insertInAppPayment(type = InAppPaymentType.RECURRING_DONATION)
+    val before = SignalDatabase.inAppPayments.getById(iap.id)
+    val result = InAppPaymentRecurringContextJob.create(iap).run()
 
-    val activeSubscription = inAppPaymentsTestRule.createActiveSubscription()
-    inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = activeSubscription)
-
-    val iap = insertInAppPayment()
-    val job = InAppPaymentRecurringContextJob.create(iap)
-    job.onAdded()
-
-    val result = job.run()
     assertThat(result.isSuccess).isTrue()
+    assertThat(SignalDatabase.inAppPayments.getById(iap.id)).isEqualTo(before)
+    verify(exactly = 0) { AppDependencies.donationsService.getSubscription(any()) }
+    verify(exactly = 0) { AppDependencies.donationsService.submitReceiptCredentialRequestSync(any(), any()) }
   }
 
   @Test
@@ -279,13 +276,14 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   @Test
-  fun `Given no available subscription, when I run, then I expect retry`() {
+  fun `Given no available backup subscription, when I run, then I fail without requesting credentials`() {
     val iap = insertInAppPayment()
     val job = InAppPaymentRecurringContextJob.create(iap)
     inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = ActiveSubscription(null, null))
 
     val result = job.run()
-    assertThat(result.isRetry).isTrue()
+    assertThat(result.isFailure).isTrue()
+    verify(exactly = 0) { AppDependencies.donationsService.submitReceiptCredentialRequestSync(any(), any()) }
   }
 
   @Test
@@ -351,7 +349,7 @@ class InAppPaymentRecurringContextJobTest {
     assertThat(updatedIap?.state).isEqualTo(InAppPaymentTable.State.END)
     assertThat(result.isFailure).isTrue()
 
-    val subscriber = InAppPaymentsRepository.requireSubscriber(InAppPaymentSubscriberRecord.Type.DONATION)
+    val subscriber = InAppPaymentsRepository.requireSubscriber(InAppPaymentSubscriberRecord.Type.BACKUP)
     assertThat(subscriber.requiresCancel).isTrue()
   }
 
@@ -375,7 +373,7 @@ class InAppPaymentRecurringContextJobTest {
     assertThat(updatedIap?.state).isEqualTo(InAppPaymentTable.State.END)
     assertThat(result.isFailure).isTrue()
 
-    val subscriber = InAppPaymentsRepository.requireSubscriber(InAppPaymentSubscriberRecord.Type.DONATION)
+    val subscriber = InAppPaymentsRepository.requireSubscriber(InAppPaymentSubscriberRecord.Type.BACKUP)
     assertThat(subscriber.requiresCancel).isTrue()
   }
 
@@ -445,29 +443,6 @@ class InAppPaymentRecurringContextJobTest {
     assertThat(updatedIap?.data?.cancellation?.chargeFailure).isEqualTo(chargeFailure.toInAppPaymentDataChargeFailure())
     assertThat(updatedIap?.state).isEqualTo(InAppPaymentTable.State.END)
     assertThat(result.isFailure).isTrue()
-  }
-
-  @Test
-  fun `Given user has donor entitlement already, when I run, then I do not expect receipt request`() {
-    val activeSubscription = inAppPaymentsTestRule.createActiveSubscription()
-    inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = activeSubscription)
-
-    every { AppDependencies.signalServiceAccountManager.whoAmI } returns mockk {
-      every { entitlements } returns WhoAmIResponse.Entitlements(
-        badges = listOf(WhoAmIResponse.BadgeEntitlement("2000", false, Long.MAX_VALUE))
-      )
-    }
-
-    val iap = insertInAppPayment(
-      badge = BadgeList.Badge(id = "2000")
-    )
-
-    val job = InAppPaymentRecurringContextJob.create(iap)
-    job.onAdded()
-
-    val result = job.run()
-    assertThat(result.isSuccess).isTrue()
-    verify(atLeast = 0, atMost = 0) { AppDependencies.donationsService.submitReceiptCredentialRequestSync(any(), any()) }
   }
 
   @Test
@@ -614,7 +589,7 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   private fun insertInAppPayment(
-    type: InAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+    type: InAppPaymentType = InAppPaymentType.RECURRING_BACKUP,
     state: InAppPaymentTable.State = InAppPaymentTable.State.TRANSACTING,
     subscriberId: SubscriberId? = SubscriberId.generate(),
     paymentSourceType: PaymentSourceType = PaymentSourceType.Stripe.CreditCard,

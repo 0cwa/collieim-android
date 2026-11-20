@@ -19,7 +19,6 @@ data class AccountSettingsState(
   val canOpenLinkedDevices: Boolean = false,
   val showPayments: Boolean = false,
   val unreadPaymentsCount: Int = 0,
-  val showDonationManagement: Boolean = false,
   val signalLogin: SignalLogin? = null,
   val dialog: Dialog = Dialog.None,
   /** The snackbar to show, or [Snackbar.None]. */

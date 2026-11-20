@@ -150,45 +150,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Kreditna ili debitna kartica</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Unesite detalje o kartici. Signal ne prikuplja niti pohranjuje vaše lične podatke.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Broj kartice</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/GG</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Nevažeći broj kartice</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Kartica je istekla</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Kôd je prekratak</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Kôd je predug</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Nevažeći kod</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Nevažeći mjesec</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Potrebno je navesti godinu</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Nevažeća godina</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Donirajte %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Donirajte %1$s mjesečno</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Donirajte %1$s mjesečno</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Jednokratno %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Donacija je na čekanju</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Donacija se obrađuje</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Blokirati i napustiti %1$s?</string>
@@ -3940,7 +3921,6 @@
     <string name="preferences__notifications">Obavještenja</string>
     <string name="preferences__led_color_unknown">Nepoznato</string>
     <string name="preferences__silent">Stišan</string>
-    <string name="preferences__donate_to_signal">Donirajte za Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Privatnost</string>
     <!-- Preference label for stories -->
@@ -4180,8 +4160,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s u %2$s</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">Zadaj valutu</string>
-    <string name="SetCurrencyFragment__all_currencies">Sve valute</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5612,13 +5590,7 @@
 
     <string name="ImageView__badge">Značka</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Otkaži pretplatu</string>
-    <string name="SubscribeFragment__confirm_cancellation">Potvrditi otkazivanje?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Iznos vam se neće naplatiti. Značka će biti uklonjena s Vašeg profila kad istekne platni period.</string>
-    <string name="SubscribeFragment__not_now">Ne sada</string>
-    <string name="SubscribeFragment__confirm">Potvrdi</string>
     <string name="SubscribeFragment__update_subscription">Ažuriraj pretplatu</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Vaša je pretplata otkazana.</string>
     <string name="SubscribeFragment__update_subscription_question">Ažurirati pretplatu?</string>
     <string name="SubscribeFragment__update">Ažuriraj</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Puni iznos cijene Vaše nove pretplate (%1$s) bit će naplaćen danas. Vaša pretplata obnavlja se mjesečno.</string>
@@ -5630,66 +5602,35 @@
     <string name="Subscription__expires_s">Ističe %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Kao nezavisna neprofitna organizacija, Signal je posvećen privatnim porukama i pozivima. Bez oglasa, bez praćenja, bez nadziranja. Donirajte danas da biste podržali Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Primite opcionalnu značku na svom profilu kada donirate</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Vaša privatnost je naša misija</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal je neprofitna organizacija.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Hvala Vam za Vašu podršku!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Zaradili ste značku donatora od Signala! Prikažite je na profilu da pokažete podršku.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Također možete</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">postati redovni mjesečni pokrovitelj.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Prikaži na profilu</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Postavi za odabranu značku</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Nastavi</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Kad posjedujete više od jedne značke, možete birati koju od njih želite prezentovati drugima na svom profilu.</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">Donirajte za Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Više</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Moja podrška</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Priznanice za donaciju</string>
-    <string name="ManageDonationsFragment__badges">Značke</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Česta pitanja donatora</string>
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">Drugi načini davanja</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">Donirajte za prijatelja</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Nije moguće potvrditi donaciju</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Vaša donacija od %1$s mjesečno nije potvrđena. Provjerite bankovnu aplikaciju da odobrite iDEAL | Wero plaćanje.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Vaša jednokratna donacija od %1$s nije mogla biti potvrđena. Provjerite bankovnu aplikaciju da odobrite iDEAL | Wero plaćanje.</string>
 
-    <string name="Boost__enter_custom_amount">Unesite iznos</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Minimalni iznos koji možete donirati je %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/mjesecu</string>
-    <string name="MySupportPreference__renews_s">Obnavlja se %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Obrađujem transakciju…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Nije bilo moguće dodati značku. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Molimo kontaktirajte podršku.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Plaćanje je na čekanju</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Vaš bankovni transfer od %1$s je na čekanju. Bankovni transferi mogu potrajati od 1 do 14 dana.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Saznaj više</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Provjera pretplate…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Ažurirajte Collie</string>
@@ -5726,11 +5667,9 @@
     <string name="Subscription__get_a_s_badge">Preuzmite značku %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Obrada donacije…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Ponavljajući %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5749,11 +5688,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Greška u obradi donacije</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Pokušajte koristiti drugi metod plaćanja ili kontaktirajte svoju banku za više informacija.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Saznaj više</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Greška u obradi donacije. %1$s</string>
     <string name="DonationsErrors__your_payment">Vaša donacija nije mogla biti obrađena i nije vam naplaćeno. Molimo pokušajte ponovno.</string>
     <string name="DonationsErrors__still_processing">Još uvijek obrađujem</string>
     <string name="DonationsErrors__couldnt_add_badge">Nije bilo moguće dodati značku</string>
@@ -5771,8 +5707,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Vaša donacija je obrađena ali Signal nije mogao poslati vašu poruku za donaciju. Molimo kontaktirajte podršku.</string>
     <string name="DonationsErrors__your_badge_could_not">Vašu značku nije bilo moguće dodati na Vaš račun, ali je moguće da je uplata prošla. Molimo, kontaktirajte podršku.</string>
     <string name="DonationsErrors__your_payment_is_still">Vaša donacija se još uvijek obrađuje. Ovo može potrajati nekoliko minuta ovisno o vašoj vezi.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Neuspjelo otkazivanje pretplate</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Otkazivanje pretplate traži internet-konekciju.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Vaš uređaj ne podržava donacije unutar aplikacije, tako da se ne možete pretplatiti da zaradite značku. Još uvijek možete podržati Signal donacijom na našoj web stranici.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Mrežna greška. Provjerite svoju internet-konekciju i pokušajte ponovo.</string>
     <string name="NetworkFailure__retry">Pokušaj</string>
@@ -5781,7 +5715,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Ovaj korisnik ne može primimati donacije dok ne nadogradi Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Vaša iDEAL | Wero donacija nije mogla biti obrađena. Pokušajte koristiti drugu metodu plaćanja ili kontaktirajte svoju banku za više informacija.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Donacija u ime korisnika %1$s</string>
@@ -5992,33 +5925,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Budite u toku s vijestima i napomenama o izdanjima</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Aktivnosti</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Sve</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Ponavljajuća</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Jednom</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">Za prijatelja</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Donacija za prijatelja</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Vrsta donacije</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Datum plaćanja</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Podijeli priznanicu</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Ako ste iznova instalirali Signal, priznanice za prethodne donacije neće biti dostupne.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Priznanica za donaciju</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Iznos</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Hvala što podržavate Signal! Vaš doprinos pomaže u ostvarivanju misije zaštite slobode izražavanja i omogućavanja sigurne globalne komunikacije za milione širom svijeta, putem tehnologije privatnosti otvorenog koda. Ako ste stanovnik Sjedinjenih Američkih Država, sačuvajte ovaj račun za svoju poreznu evidenciju. Fondacija Signal Technology je neprofitna organizacija oslobođena poreza u Sjedinjenim Američkim Državama prema članu 501c3 Zakona o unutrašnjim prihodima. Naš federalni poreski identifikacioni broj je 82-4506840. Signal nije dostavio nikakvu robu niti pružio usluge u zamjenu za ovaj doprinos.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Nema potvrda</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6699,40 +6618,24 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Ponosno neprofitna organizacija</string>
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">Nastavi</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Donirajte za podršku privatnim porukama. Održavajte Signal nezavisnim i bez reklama.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Imate donaciju na čekanju</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Obrada bankovnih transfera može potrajati od 1 do 14 dana. Pričekajte da se ovo plaćanje završi prije nego što ažurirate svoju pretplatu.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Obrada bankovnih transfera može potrajati od 1 do 14 dana. Pričekajte da se ova uplata završi prije nego što pošaljete drugu donaciju.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Vaša donacija se još uvijek obrađuje. Ovo može potrajati nekoliko minuta ovisno o vašoj vezi. Pričekajte da se ovo plaćanje završi prije nego što ažurirate svoju pretplatu.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Vaša donacija se još uvijek obrađuje. Ovo može potrajati nekoliko minuta ovisno o vašoj vezi. Pričekajte da se ova uplata završi prije nego što pošaljete drugu donaciju.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Vaša iDEAL | Wero donacija se još uvijek obrađuje. Provjerite bankovnu aplikaciju da odobrite uplatu prije nego date drugu donaciju.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Iznos donacije je prevelik</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Možete poslati do %1$s putem bankovnog transfera. Pokušajte s drugim iznosom ili drugim načinom plaćanja.</string>
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">Mjesečno</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">Jednom</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Donirajte %1$s/mjesečno Signalu</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Preuzmite značku %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Donirajte %1$s Signalu</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Nosite značku %1$s u trajanju od %2$d dana</item>
@@ -6741,118 +6644,69 @@
         <item quantity="other">Nosite značku %1$s u trajanju od %2$d dana</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Bankovni transfer</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kreditna ili debitna kartica</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Donirajte za prijatelja</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Napustiti Signal za potvrdu donacije?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Kada potvrdite, vratite se na Signal da završite obradu vaše donacije.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Preći ćete na %1$s. Kada potvrdite, vratite se na Signal da završite obradu vaše donacije.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Bankovni transfer</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe obrađuje donacije upućene Signalu. Signal ne prikuplja niti pohranjuje vaše lične podatke. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Saznaj više</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Slažem se</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Saznaj više</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Učitavanje naloga nije uspjelo</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Unesite svoje bankovne podatke i adresu e-pošte. Stripe koristi ovu e-poštu da vam šalje novosti o vašoj donaciji. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Saznaj više</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Ime na bankovnom računu</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">Email</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Pronađite informacije o računu</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Donirajte %1$s mjesečno</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Donirajte %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN je prekratak</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN je predugačak</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN kȏd zemlje nije podržan</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Nevažeći IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Najmanje 3 znaka</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Pogrešna adresa e-pošte</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Unesite svoje ime i e-poštu. Stripe koristi ovu e-poštu da vam šalje novosti o vašoj donaciji. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Unesite bankovne podatke. Signal ne prikuplja niti pohranjuje vaše lične podatke. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Saznaj više</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Ime na bankovnom računu</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Potvrdite svoju donaciju putem iDEAL-a | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Da biste podesili svoju ponavljajuću donaciju, dodirnite \"Nastavi\" da potvrdite naplatu od 0,01 € u vašoj banci. Ovo će biti automatski vraćeno i omogućava da se vaša donacija od %1$s/mjesečno naplati s vašeg računa.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Nastavi</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Pronađite informacije o svom računu</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Potražite svoj IBAN na vrhu vašeg bankovnog izvoda. IBAN sadrži do 34 znaka. Ime koje unesete treba da odgovara vašem punom imenu na vašem bankovnom računu. Za više informacija kontaktirajte svoju banku.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Donacija je na čekanju</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Vaša mjesečna donacija je na čekanju. Moći ćete prikazati značku %1$s na svom profilu kada primimo vašu donaciju.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Vaša jednokratna donacija je na čekanju. Moći ćete prikazati značku %1$s na svom profilu kada primimo vašu donaciju.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Obrada bankovnih transfera može potrajati od 1 do 14 dana. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Saznaj više</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">U redu</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Donacija se nije mogla obraditi</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Imamo problema s obradom vašeg bankovnog transfera. Uplata vam nije naplaćena. Pokušajte koristiti drugu metodu plaćanja ili kontaktirajte svoju banku za više informacija.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Pokušajte ponovo</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Ne sada</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Donacija je izvršena</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Vaš bankovni transfer je primljen. Možete odabrati da prikažete ovu značku na svom profilu kako biste pokazali svoju podršku.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Otkazivanje…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Obrađeno je previše kontakata</string>
@@ -6886,11 +6740,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s vam je poslao/la</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Vaše informacije su privatne</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal ne prikuplja niti pohranjuje vaše lične informacije prilikom doniranja.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Koristimo Stripe za obradu plaćanja kako bismo primili vaše donacije. Ne pristupamo, pohranjujemo niti zadržavamo informacije koje pružite.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal ne povezuje niti može povezati vašu donaciju s vašim Signal računom.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Hvala na podršci!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6905,8 +6754,6 @@
     <string name="GroupStoryEducationSheet__next">Dalje</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Doniraj</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Plaćanje</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7364,15 +7211,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Dozvoli obavještenja preko cijelog ekrana</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Mjesečna donacija je otkazana</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Vaša ponavljajuća mjesečna donacija je otkazana. %1$s\n\nVaša značka više neće biti vidljiva na vašem profilu. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Saznaj više</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Obnovi pretplatu</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Ne sada</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7646,7 +7488,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

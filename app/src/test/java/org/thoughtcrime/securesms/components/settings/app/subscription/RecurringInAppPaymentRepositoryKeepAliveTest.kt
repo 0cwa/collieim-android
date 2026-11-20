@@ -89,27 +89,12 @@ class RecurringInAppPaymentRepositoryKeepAliveTest {
   }
 
   @Test
-  fun `Given a donation subscription whose period has not advanced, when I getActiveSubscription, then I do not enqueue a keep-alive`() {
-    val endOfCurrentPeriod = setUpActiveSubscription()
-
-    every { SignalStore.inAppPayments.getLastEndOfPeriod() } returns endOfCurrentPeriod
-    stubLatestEndOfPeriod(InAppPaymentType.RECURRING_DONATION, endOfCurrentPeriod.seconds)
-
-    RecurringInAppPaymentRepository.getActiveSubscriptionSync(InAppPaymentSubscriberRecord.Type.DONATION)
-
+  fun `retired donation subscriptions never make a status request`() {
+    org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+      RecurringInAppPaymentRepository.getActiveSubscriptionSync(InAppPaymentSubscriberRecord.Type.DONATION)
+    }
+    verify(exactly = 0) { AppDependencies.donationsService.getSubscription(any()) }
     verify(exactly = 0) { AppDependencies.jobManager.add(any()) }
-  }
-
-  @Test
-  fun `Given a donation subscription whose period has advanced, when I getActiveSubscription, then I enqueue a keep-alive`() {
-    val endOfCurrentPeriod = setUpActiveSubscription()
-
-    every { SignalStore.inAppPayments.getLastEndOfPeriod() } returns endOfCurrentPeriod - 30.days.inWholeSeconds
-    stubLatestEndOfPeriod(InAppPaymentType.RECURRING_DONATION, endOfCurrentPeriod.seconds - 30.days)
-
-    RecurringInAppPaymentRepository.getActiveSubscriptionSync(InAppPaymentSubscriberRecord.Type.DONATION)
-
-    verify(atLeast = 1) { AppDependencies.jobManager.add(ofType(InAppPaymentKeepAliveJob::class)) }
   }
 
   /**

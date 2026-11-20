@@ -96,13 +96,16 @@ class InAppPaymentKeepAliveJob private constructor(
         return
       }
 
-      AppDependencies.jobManager.add(create(InAppPaymentSubscriberRecord.Type.DONATION))
       AppDependencies.jobManager.add(create(InAppPaymentSubscriberRecord.Type.BACKUP))
       SignalStore.inAppPayments.setLastKeepAliveLaunchTime(now.inWholeMilliseconds)
     }
   }
 
   override fun onRun() {
+    if (type != InAppPaymentSubscriberRecord.Type.BACKUP) {
+      return
+    }
+
     type.lock.withLock {
       doRun()
     }

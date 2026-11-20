@@ -56,10 +56,9 @@ class AppSettingsScreenTest {
   }
 
   @Test
-  fun `donation row displays the host app label`() {
-    setContent(createState(), donationLabel = "Donate to Molly")
-    scrollTo(AppSettingsTestTags.ROW_DONATE)
-    composeTestRule.onNodeWithText("Donate to Molly").assertIsDisplayed()
+  fun `settings does not supply a Signal donation checkout row`() {
+    setContent(createState())
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_DONATE).assertDoesNotExist()
   }
 
   @Test
@@ -120,7 +119,6 @@ class AppSettingsScreenTest {
 
     val rows = listOf(
       AppSettingsTestTags.ROW_ACCOUNT to AppSettingsEvent.AccountClicked,
-      AppSettingsTestTags.ROW_DONATE to AppSettingsEvent.DonateClicked,
       AppSettingsTestTags.ROW_APPEARANCE to AppSettingsEvent.AppearanceClicked,
       AppSettingsTestTags.ROW_CHATS to AppSettingsEvent.ChatsClicked,
       AppSettingsTestTags.ROW_STORIES to AppSettingsEvent.StoriesClicked,
@@ -139,16 +137,6 @@ class AppSettingsScreenTest {
     }
 
     assertThat(interactionEvents).containsExactly(*rows.map { it.second }.toTypedArray())
-  }
-
-  @Test
-  fun `long pressing donate emits DonateLongClicked`() {
-    setContent(createState())
-
-    scrollTo(AppSettingsTestTags.ROW_DONATE)
-    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_DONATE).performTouchInput { longClick() }
-
-    assertThat(interactionEvents).containsExactly(AppSettingsEvent.DonateLongClicked)
   }
 
   @Test
@@ -255,13 +243,12 @@ class AppSettingsScreenTest {
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_CHATS).assertIsSelected()
   }
 
-  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null, donationLabel: String? = null) {
+  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null) {
     composeTestRule.setContent {
       AppSettingsScreen(
         state = state,
         onEvent = { events += it },
-        selectedRoute = selectedRoute,
-        donationLabel = donationLabel
+        selectedRoute = selectedRoute
       )
     }
   }

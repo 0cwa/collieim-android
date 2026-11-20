@@ -3821,8 +3821,6 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s (喺 %2$s 換算)</string>
 
     <!-- SetCurrencyFragment -->
-    <string name="SetCurrencyFragment__set_currency">設定貨幣</string>
-    <string name="SetCurrencyFragment__all_currencies">所有貨幣</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -5179,16 +5177,13 @@
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">若您有唔止一枚襟章，您可揀一枚做賣飛佛襟章，掛上去個人資料度畀其他人睇到。</string>
 
     <!-- Button label for creating a donation -->
-    <string name="ManageDonationsFragment__donate_to_signal">捐款俾 Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
     <!-- Label for Donation Receipts button -->
     <!-- Label that externally links to Signal Donor FAQ page -->
     <!-- Preference heading for other ways to donate -->
-    <string name="ManageDonationsFragment__other_ways_to_give">其他捐款方式</string>
     <!-- Preference label to launch badge gifting -->
-    <string name="ManageDonationsFragment__donate_for_a_friend">代表朋友捐款</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
@@ -6126,7 +6121,6 @@
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
     <!-- Continue button label -->
-    <string name="DonateToSignalFragment__continue">繼續</string>
     <!-- Description below title -->
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
@@ -6138,9 +6132,7 @@
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
 
     <!-- Donation pill toggle monthly text -->
-    <string name="DonationPillToggle__monthly">每月</string>
     <!-- Donation pill toggle one-time text -->
-    <string name="DonationPillToggle__one_time">單次</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->

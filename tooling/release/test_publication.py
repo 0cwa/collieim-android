@@ -611,5 +611,34 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertLess(final.index('verify_release_readiness.py'), final.index('publication.py promote'))
 
 
+class GitHubReleaseLookupTests(unittest.TestCase):
+    """The real lookup, with only the gh API transport replaced."""
+
+    def lookup(self, rows):
+        github = p.GitHub()
+        calls = []
+
+        def api(suffix, **_):
+            calls.append(suffix)
+            require_page = suffix.startswith("releases?per_page=100&page=")
+            self.assertTrue(require_page, suffix)
+            return copy.deepcopy(rows) if suffix.endswith("page=1") else []
+
+        github.api = api
+        return github, calls
+
+    def test_draft_release_is_found_without_the_tags_endpoint(self):
+        github, calls = self.lookup([{"id": 7, "tag_name": TAG, "draft": True, "prerelease": False},
+                                     {"id": 6, "tag_name": "v8.35.1-3-rc2", "draft": False, "prerelease": False}])
+        self.assertEqual(github.release(TAG)["id"], 7)
+        self.assertFalse(any("releases/tags/" in call for call in calls))
+
+    def test_missing_or_duplicate_release_is_rejected(self):
+        for rows in ([], [{"id": 7, "tag_name": TAG}, {"id": 8, "tag_name": TAG}]):
+            github, _ = self.lookup(rows)
+            with self.assertRaisesRegex(p.Failure, "exactly one GitHub release"):
+                github.release(TAG)
+
+
 if __name__ == "__main__":
     unittest.main()

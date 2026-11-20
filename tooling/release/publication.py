@@ -181,7 +181,12 @@ class GitHub:
         raise Failure("GitHub collection is too large to verify completely")
 
     def release(self, tag):
-        return self.api("releases/tags/" + stable_tag(tag))
+        # The tags endpoint never returns drafts, and publication starts from a draft, so find the tag in
+        # the authenticated release list (which includes drafts) and require exactly one release for it.
+        tag = stable_tag(tag)
+        matches = [release for release in self.releases() if release.get("tag_name") == tag]
+        require(len(matches) == 1, f"Expected exactly one GitHub release for {tag}, found {len(matches)}")
+        return matches[0]
 
     def assets(self, release_id):
         return self.collection(f"releases/{release_id}/assets")

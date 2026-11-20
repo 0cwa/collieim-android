@@ -150,45 +150,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Kadi ya mkopo au fedha taslimu</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Ingiza taarifa za kadi yako. Signal haikusanyi wala kuhifadhi taarifa zako binafsi.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Nambari ya kadi</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Nambari ya kadi si sahihi</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Kadi imekwisha muda wake</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Kodi ni fupi sana</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Kodi ni ndefu sana</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Kodi si sahihi</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Mwezi si sahihi</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Mwaka unahitajika</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Mwaka si sahihi</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Changia %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Changia %1$s/kwa mwezi</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Changia %1$s/kwa mwezi</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">%1$s Mara moja</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Mchango unasubiri</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Mchango unachakatwa</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Zuia na uondoke %1$s?</string>
@@ -3714,7 +3695,6 @@
     <string name="preferences__notifications">Arifa</string>
     <string name="preferences__led_color_unknown">Isiyojulikana</string>
     <string name="preferences__silent">Kimya</string>
-    <string name="preferences__donate_to_signal">Changia Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Faragha</string>
     <!-- Preference label for stories -->
@@ -5322,13 +5302,7 @@
 
     <string name="ImageView__badge">Beji</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Ghairi Usajili</string>
-    <string name="SubscribeFragment__confirm_cancellation">Thibitisha ughairi?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Hutatozwa tena. Beji yako itaondolewa kwenye wasifu wako mwishoni mwa kipindi cha malipo.</string>
-    <string name="SubscribeFragment__not_now">Sio sasa</string>
-    <string name="SubscribeFragment__confirm">Thibitisha</string>
     <string name="SubscribeFragment__update_subscription">Sasisha Usajili</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Usajili wako umeghairiwa.</string>
     <string name="SubscribeFragment__update_subscription_question">Sasisha usajili wako?</string>
     <string name="SubscribeFragment__update">Sasisha</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Utatozwa kiwango kamili (%1$s) cha bei ya usajili mpya leo. Usajili wako utahuishwa upya kila mwezi.</string>
@@ -5340,66 +5314,38 @@
     <string name="Subscription__expires_s">Inakwisha muda %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Kama shirika lisilo la faida linalojitegemea, Signal imejikita katika kuhakikisha faragha ya ujumbe na simu. Hakuna matangazo, hakuna wafuatilizi, hakuna ufuatiliaji. Changia leo ili kuiunga mkono Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Pata beji ya hiari kwenye wasifu wako unapochanga</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Faragha yako ni jukumu letu</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal ni shirika lilisilo la faida. Michango inayotolewa Marekani hukatwa kodi.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Asante kwa kutuunga mkono!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Umetunukiwa beji kutoka Signal! Ionyeshe kwenye wasifu wako kuonyesha unavyotuunga mkono.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Unaweza pia</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">Kuwa Mfadhili wa kila mwezi.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Onyesha kwenye Wasifu</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Tengeneza Beji inayoangaziwa</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Endelea</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Unapokuwa na zaidi ya beji moja, unaweza kuchagua moja ya kuangazia ili wengine waione kwenye wasifu wako.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Changia Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Zaidi</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Msaada Wangu</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Risiti za uchangiaji</string>
-    <string name="ManageDonationsFragment__badges">Beji</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">FAQ za Mfadhili</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Namna nyingine za kutoa</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Mchangie rafiki</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Haijaweza kuthibitisha mchango</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Mchango wako wa %1$s/kwa mwezi haujathibitishwa. Angalia programu yako ya benki ili uidhinishe malipo yako ya iDEAL | Wero.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Mchango wako wa mara moja wa %1$s haujathibitishwa. Angalia programu yako ya benki ili uidhinishe malipo yako ya iDEAL | Wero.</string>
 
-    <string name="Boost__enter_custom_amount">Weka Kiasi Maalum</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Kiwango cha chini ambacho unaweza kuchangia ni %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/mwezi</string>
-    <string name="MySupportPreference__renews_s">Kuhuishwa %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Inachakata muamala…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Imeshindwa kuongeza beji. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Tafadhali wasiliana na Msaada.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Malipo yanasubiri</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Uhamisho wako wa benki wa %1$s unasubiri. Uhamisho wa benki unaweza kuchukua siku za biashara 1 hadi siku 14 kukamilika.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Jifunze zaidi</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Inaangalia usajili…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Sasisha Collie</string>
@@ -5436,11 +5382,9 @@
     <string name="Subscription__get_a_s_badge">Pata beji ya %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Inachakata mchango…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Inayojirudia %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5459,11 +5403,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Hitilafu katika kuchakata mchango</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Jaribu njia nyingine ya malipo au wasiliana na benki yako kwa habari zaidi.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Jifunze zaidi</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Hitilafu katika kuchakata mchango. %1$s</string>
     <string name="DonationsErrors__your_payment">Mchango wako haujachakatwa na hujatozwa. Tafadhali jaribu tena.</string>
     <string name="DonationsErrors__still_processing">Bado inachakata</string>
     <string name="DonationsErrors__couldnt_add_badge">Imeshindwa kuongeza beji</string>
@@ -5481,8 +5422,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Mchango wako ulichakatwa lakini Signal haikuweza kutuma ujumbe wa mchango wako. Tafadhali wasiliana na Watoa Huduma.</string>
     <string name="DonationsErrors__your_badge_could_not">Beji yako haijaweza kuongezwa kwenye akaunti yako, lakini huenda ukawa umetozwa. Tafadhali wasiliana na msaada.</string>
     <string name="DonationsErrors__your_payment_is_still">Mchango wako bado unachakatwa. Hii inaweza kuchukua dakika kadhaa kutegemeana na mtandao wako.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Imeshindwa kughairi usajili</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Kughairi usajili kunahitaji muunganisho wa mtandao.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Kifaa chako hakipokei michango ya ndani na msaada wa programu, hivyo huwezi kujiandikisha ili upate beji. Bado unaweza kuipa Signal msaada kwa kutoa mchango kwenye tovuti yetu.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Hitilafu ya mtandao. Angalia muunganisho wa mtandao wako kisha ujaribu tena.</string>
     <string name="NetworkFailure__retry">Jaribu Upya</string>
@@ -5491,7 +5430,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Mtumiaji huyu hawezi kupokea michango hadi atakaposasisha Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Mchango wako wa iDEAL | Wero haujachakatwa. Jaribu njia nyingine ya malipo au wasiliana na benki unayotumia kwa maelezo zaidi.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Mchango kwa niaba ya %1$s</string>
@@ -5702,33 +5640,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Pata taarifa mpya za habari na matoleo</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Shughuli zote</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Zote</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Inayojirudia</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Mara moja</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">Kwa ajili ya rafiki</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Mchango kwa rafiki</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Aina ya mchango</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Tarehe Ilipolipwa</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Shiriki risiti</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Kama sakinisha upya Signal, risiti kutoka kwa michango ya hapo awali hazitapatikana.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Risiti ya mchango</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Kiwango</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Asante kwa kuiunga mkono Signal. Mchango wako husaidia kuendelea dhamira ya kulinda uhuru wa kujieleza na kuwezesha mawasiliano salama ya kidunia kwa mamilioni ya watu duniani kote. Kama wewe ni mkazi wa Marekani, tafadhali hifadhi risiti hii kwa rekodi zako za kodi. Signal Technology Foundation ni shirika lisilo la kibiashara lisilotozwa kodi nchini Marekani chini ya kifungu cha 501c3 cha Kanuni ya Mapato ya Ndani. Kitambulisho chetu cha Ushuru wa Shirikisho ni 82-4506840. Signal haijatoa bidhaa wala huduma yoyote kwa kuzingatia mchango huu.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Hakuna risiti</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6367,27 +6291,17 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Tunajivunia kuwa shirika lisilo la faida</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Endelea</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Changa ili kuunga mkono utumaji ujumbe ulio na faragha. Saidia Signal iendelee kujitegemea bila matangazo.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Una mchango haujatolewa bado</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Uhamisho wa benki unaweza kuchukua siku za biashara 1 hadi 14 kuchakatwa. Tafadhali subiri hadi malipo haya yatakapokamilika kabla hujasasisha usajili wako.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Uhamisho wa benki unaweza kuchukua siku za biashara 1 hadi 14 kuchakatwa. Tafadhali subiri hadi malipo haya yatakapokamilika kabla hujatoa mchango mwingine.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Mchango wako bado unachakatwa. Hii inaweza kuchukua dakika kadhaa kutegemeana na mtandao wako. Tafadhali subiri hadi malipo haya yatakapokamilika kabla hujasasisha usajili wako.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Mchango wako bado unachakatwa. Hii inaweza kuchukua dakika kadhaa kutegemeana na mtandao wako. Tafadhali subiri hadi malipo haya yatakapokamilika kabla hujatoa mchango mwingine.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Mchango wako wa iDEAL | Wero bado unachakatwa. Angalia programu yako ya benki ili kuthibitisha malipo kabla kutoa mchango mwingine.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Kiwango cha mchango ni kikubwa sana</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Unaweza kutuma hadi %1$s kupitia benki. Jaribu kiasi tofauti au njia tofauti ya malipo.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Kila mwezi</string>
@@ -6396,129 +6310,77 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Changia %1$s/kila mwezi kwa Signal</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Pata beji ya %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Changia %1$s kwa Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Pata beji ya %1$s kwa siku %2$d</item>
         <item quantity="other">Pata beji za %1$s kwa siku %2$d</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Uhamishaji kupitia benki</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kadi ya mkopo au fedha taslimu</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Mchangie rafiki</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Toka Signal ili kuthibitisha mchango?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Utakapothibitishwa, rudi Signal kumaliza kuchakata mchango wako.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Utaelekezwa %1$s. Utakapothibitishwa, rudi Signal kumaliza kuchakata mchango wako.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Uhamishaji kupitia benki</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Michango ya uchangiaji wa Stripe iliyotumwa kwenye Signal. Signal haikusanyi wala kuhifadhi taarifa zako binafsi. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Jifunze zaidi</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Kubali</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Soma zaidi</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Imeshindwa kupakua jukumu</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Ingiza taarifa zako za benki na barua pepe. Stripe inatumia barua pepe hii kukutumia taarifa kuhusu mchango wako. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Jifunze zaidi</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Jina kwenye akaunti ya benki</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">Barua-pepe</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Tafuta taarifa za akaunti</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Changia %1$s/kwa mwezi</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Changia %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">Nambari ya IBAN ni fupi sana</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">Nambari ya IBAN ni ndefu sana</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Msimbo wa nchi wa IBAN hautumiki</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Nambari ya IBAN isiyo halali</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Kiwango cha chini herufi 3</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Anuani ya barua pepe isiyo sahihi</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Ingiza jina lako na barua pepe. Stripe inatumia barua pepe hii kukutumia sasisho kuhusu mchango wako. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Weka taarifa zako za benki. Signal haikusanyi wala kuhifadhi taarifa zako binafsi. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Jifunze zaidi</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Jina kwenye akaunti ya benki</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">Barua-pepe</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Thibitisha mchango wako ukitumia iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Ili kuweka mipangilio ya michango inayojirudia gusa endelea ili kuthibitisha tozo la €0,01 kwenye benki unayotumia. Hii itafidiwa kiotomatiki na inawezesha mchango wako wa %1$s/kila mwezi kukatwa kutoka kwa akaunti yako.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Endelea</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Tafuta taarifa za akaunti yako</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Tafuta nambari yako ya IBAN juu ya taarifa yako ya benki. Nambari za IBAN zina hadi herufi 34. Jina utakaloingiza lazima lilingane na jina lako kamili lililo kwenye akaunti yako ya benki. Wasiliana na benki yako kwa maelezo zaidi.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Mchango unasubiri</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Mchango wako wa kila mwezi unasubiri. Utaweza kuonyesha beji ya %1$s kwenye wasifu wako mchango wako utakapopokelewa.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Mchango wako wa mara moja unasubiri. Utaweza kuonyesha beji ya %1$s kwenye wasifu wako mchango wako utakapopokelewa.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Uhamisho wa benki unaweza kuchukua siku za biashara 1 hadi 14 kuchakatwa. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Jifunze zaidi</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">Imekamilika</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Mchango hauwezi kuchakatwa</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Tunapata shida kuchakata hamisho lako la benki. Hujatozwa. Jaribu njia nyingine ya malipo au wasiliana na benki yako kwa habari zaidi.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Jaribu tena</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Sio sasa</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Mchango Umekamilika</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Uhamisho wako wa benki umepokelewa. Unaweza kuchagua kuonyesha beji hii kwenye wasifu wako kuonyesha unavyotuunga mkono.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Kughairi…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Wawasiliani wengi sana wamechakatwa</string>
@@ -6550,11 +6412,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s amekutumia</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Taarifa zako ni za kibinafsi</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal haikusanyi au kuweka taarifa zako binafsi unapotoa mchango.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Tunatumia Stripe kama kichakata malipo chetu ili kupokea michango yako. Hatuwezi kufikia, kuweka, au kuhifadhi taarifa zozote unazowapatia.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal haiwezi na haitaunganisha mchango wako kwenye akaunti yako ya Signal.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Asante kwa msaada wako!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6569,8 +6426,6 @@
     <string name="GroupStoryEducationSheet__next">Inayofuata</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Changia</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Malipo</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7018,15 +6873,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Ruhusu arifa za skrini nzima</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Mchango wa mwezi umeghairishwa</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Mchango wako wa mwezi unaojirudia umeghairishwa. %1$s\n\nBeji yako haitaonekana tena kwenye wasifu wako. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Jifunze zaidi</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Tengeneza upya usajili wako</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Sio sasa</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7294,7 +7144,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

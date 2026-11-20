@@ -5,19 +5,16 @@
 
 package org.thoughtcrime.securesms.profiles.manage.editprofile
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.rx3.asFlow
 import kotlinx.coroutines.rx3.await
 import kotlinx.coroutines.withContext
 import org.signal.appsettings.editprofile.EditProfileState
-import org.signal.core.models.badges.Badge
 import org.signal.core.models.media.Media
 import org.signal.core.util.StreamUtil
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.MultiDeviceProfileContentUpdateJob
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
@@ -68,18 +65,6 @@ object EditProfileRepository {
   }
 
   fun hasBadges(): Boolean = Recipient.self().badges.isNotEmpty()
-
-  /** The badge a monthly donor gets, or null if the donation configuration couldn't be loaded. */
-  suspend fun getSustainerBadge(): Badge? {
-    return try {
-      RecurringInAppPaymentRepository.getSubscriptions().await().firstOrNull()?.badge
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      Log.w(TAG, "Could not load subscriptions.", e)
-      null
-    }
-  }
 
   /** Fetches the user's own profile, in case it changed on another device. */
   fun refreshOwnProfile() {

@@ -182,7 +182,8 @@ class MollyNotificationCallbacksTest {
     confirmScannedRelay()
     returnDistributorResult(null)
 
-    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
+    // Only the setup launch: a cancelled picker is never relaunched or replaced by another distributor.
+    verify(exactly = 1) { results.distributorLauncher.launch(Unit, null) }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 

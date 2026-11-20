@@ -546,6 +546,10 @@
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
     {
+      "path": "app/src/main/res/color/donation_pill_toggle_background_tint.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
       "path": "app/src/main/res/color/signal_selectable_button_background_tint.xml",
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
@@ -594,6 +598,14 @@
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
     {
+      "path": "app/src/main/res/drawable/paypal.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
+      "path": "app/src/main/res/drawable/paypal_dark.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
       "path": "app/src/main/res/drawable/rounded_outline_12_surface1.xml",
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
@@ -626,6 +638,10 @@
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
     {
+      "path": "app/src/main/res/layout/donation_pill_toggle.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
       "path": "app/src/main/res/layout/donation_receipt_png.xml",
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
@@ -642,8 +658,16 @@
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
     },
     {
+      "path": "app/src/main/res/layout/paypal_button.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
+    },
+    {
       "path": "app/src/main/res/layout/paypal_complete_order_payment_item.xml",
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/layout/set_currency_fragment.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
     },
     {
       "path": "app/src/main/res/layout/subscribe_learn_more_bottom_sheet_dialog_fragment.xml",
@@ -660,6 +684,10 @@
     {
       "path": "app/src/main/res/navigation/checkout.xml",
       "reason": "Resources used only by removed Signal donation and gift purchase flows."
+    },
+    {
+      "path": "app/src/main/res/values-night/values.xml",
+      "reason": "Orphaned Signal checkout layout or styling with no retained caller."
     },
     {
       "path": "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/OneTimeInAppPaymentRepositoryTest.kt",

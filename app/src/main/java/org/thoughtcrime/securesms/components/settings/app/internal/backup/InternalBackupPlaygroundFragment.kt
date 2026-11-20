@@ -61,6 +61,7 @@ import kotlinx.coroutines.withContext
 import org.signal.appsettings.backups.BackupCreationProgressRow
 import org.signal.appsettings.routes.navigateBack
 import org.signal.core.ui.compose.ComposeFragment
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Previews
@@ -146,6 +147,11 @@ class InternalBackupPlaygroundFragment : ComposeFragment() {
 
   @Composable
   override fun FragmentContent() {
+    BackupKeyAuthenticationGate { ProtectedContent() }
+  }
+
+  @Composable
+  private fun ProtectedContent() {
     val context = LocalContext.current
     val state by viewModel.state
     val statsState by viewModel.statsState.collectAsStateWithLifecycle()

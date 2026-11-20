@@ -40,6 +40,7 @@ import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyEdu
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyRecordMode
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyRecordScreen
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyVerifyScreen
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.Environment
 import kotlin.time.Duration.Companion.milliseconds
@@ -129,51 +130,55 @@ fun LocalBackupsEntry(
         }
 
         LocalBackupsNavKey.RECORD_RECOVERY_KEY -> NavEntry(key) {
-          val state: LocalBackupsKeyState by viewModel.backupState.collectAsStateWithLifecycle()
+          BackupKeyAuthenticationGate {
+            val state: LocalBackupsKeyState by viewModel.backupState.collectAsStateWithLifecycle()
 
-          MessageBackupsKeyRecordScreen(
-            backupKey = state.accountEntropyPool.displayValue,
-            keySaveState = state.keySaveState,
-            backupKeyCredentialManagerHandler = viewModel,
-            mode = MessageBackupsKeyRecordMode.Next {
-              backstack.add(LocalBackupsNavKey.CONFIRM_RECOVERY_KEY)
-            }
-          )
+            MessageBackupsKeyRecordScreen(
+              backupKey = state.accountEntropyPool.displayValue,
+              keySaveState = state.keySaveState,
+              backupKeyCredentialManagerHandler = viewModel,
+              mode = MessageBackupsKeyRecordMode.Next {
+                backstack.add(LocalBackupsNavKey.CONFIRM_RECOVERY_KEY)
+              }
+            )
+          }
         }
 
         LocalBackupsNavKey.CONFIRM_RECOVERY_KEY -> NavEntry(key) {
-          val state: LocalBackupsKeyState by viewModel.backupState.collectAsStateWithLifecycle()
-          val scope = rememberCoroutineScope()
-          val backupKeyUpdatedMessage = stringResource(R.string.OnDeviceBackupsFragment__recovery_key_updated)
-          var upgradeInProgress by remember { mutableStateOf(false) }
+          BackupKeyAuthenticationGate {
+            val state: LocalBackupsKeyState by viewModel.backupState.collectAsStateWithLifecycle()
+            val scope = rememberCoroutineScope()
+            val backupKeyUpdatedMessage = stringResource(R.string.OnDeviceBackupsFragment__recovery_key_updated)
+            var upgradeInProgress by remember { mutableStateOf(false) }
 
-          MessageBackupsKeyVerifyScreen(
-            backupKey = state.accountEntropyPool.displayValue,
-            onNavigationClick = navigateBack,
-            onNextClick = {
-              scope.launch {
-                upgradeInProgress = true
-                viewModel.handleUpgrade(activity)
-                upgradeInProgress = false
+            MessageBackupsKeyVerifyScreen(
+              backupKey = state.accountEntropyPool.displayValue,
+              onNavigationClick = navigateBack,
+              onNextClick = {
+                scope.launch {
+                  upgradeInProgress = true
+                  viewModel.handleUpgrade(activity)
+                  upgradeInProgress = false
 
-                if (!backstack.contains(LocalBackupsNavKey.SETTINGS)) {
-                  backstack.add(0, LocalBackupsNavKey.SETTINGS)
+                  if (!backstack.contains(LocalBackupsNavKey.SETTINGS)) {
+                    backstack.add(0, LocalBackupsNavKey.SETTINGS)
+                  }
+
+                  backstack.removeAll { it != LocalBackupsNavKey.SETTINGS }
+
+                  snackbarHostState.showSnackbar(
+                    message = backupKeyUpdatedMessage
+                  )
                 }
-
-                backstack.removeAll { it != LocalBackupsNavKey.SETTINGS }
-
-                snackbarHostState.showSnackbar(
-                  message = backupKeyUpdatedMessage
-                )
               }
-            }
-          )
+            )
 
-          Dialogs.IndeterminateProgressDialog(
-            visible = upgradeInProgress,
-            delayDuration = 100.milliseconds,
-            minimumDisplayDuration = 500.milliseconds
-          )
+            Dialogs.IndeterminateProgressDialog(
+              visible = upgradeInProgress,
+              delayDuration = 100.milliseconds,
+              minimumDisplayDuration = 500.milliseconds
+            )
+          }
         }
 
         else -> error("Unknown key: $key")

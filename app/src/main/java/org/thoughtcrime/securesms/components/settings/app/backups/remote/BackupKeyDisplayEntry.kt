@@ -27,6 +27,7 @@ import org.thoughtcrime.securesms.backup.v2.ui.subscription.KeyLimitExceededDial
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyRecordMode
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyRecordScreen
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyVerifyScreen
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.thoughtcrime.securesms.compose.Nav
 
 /**
@@ -35,6 +36,15 @@ import org.thoughtcrime.securesms.compose.Nav
  */
 @Composable
 fun BackupKeyDisplayEntry(
+  startWithKeyRotation: Boolean,
+  onKeyRotated: () -> Unit,
+  onClose: () -> Unit
+) {
+  BackupKeyAuthenticationGate { BackupKeyDisplayContent(startWithKeyRotation, onKeyRotated, onClose) }
+}
+
+@Composable
+private fun BackupKeyDisplayContent(
   startWithKeyRotation: Boolean,
   onKeyRotated: () -> Unit,
   onClose: () -> Unit

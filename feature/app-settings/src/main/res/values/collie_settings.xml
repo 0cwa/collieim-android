@@ -2,6 +2,8 @@
 <resources>
     <string name="CollieSettings__title" translatable="false">Collie</string>
     <string name="CollieSettings__hardening">Hardening</string>
+    <string name="CollieSettings__protect_backup_key">Protect backup recovery key</string>
+    <string name="CollieSettings__protect_backup_key_description">Require phone authentication to view or change the recovery key used by encrypted backups.</string>
     <string name="CollieSettings__labs">Labs</string>
     <string name="CollieSettings__labs_description">Try experimental features from Signal. These features may change as they are developed.</string>
     <string name="CollieSettings__story_archive">Story Archive</string>

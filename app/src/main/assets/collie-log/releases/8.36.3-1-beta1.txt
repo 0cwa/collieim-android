@@ -1,0 +1,82 @@
+version: 8.36.3-1-beta1
+date: 2026-11-20
+
+topic: setup
+pr: 150
+A line under Collie shows what needs attention, new accounts get setup steps, and What's new includes Support Collie.
+
+topic: push
+pr: 126
+Choosing a UnifiedPush app now uses Android’s own picker instead of taking the first app found.
+
+topic: push
+pr: 96
+Collie notices when push stops working. Settings has a Test my push button.
+
+topic: push
+pr: 92
+Encrypted push can be set up from an enrollment file, and pushes that fail to decrypt are ignored.
+
+topic: backups
+pr: 145
+Restoring a backup checks that every message and file is the one that was saved.
+
+topic: backups
+pr: 112
+Restoring a Molly backup keeps your security settings.
+
+topic: privacy
+pr: 146
+Group searches stay out of diagnostic logs.
+
+topic: privacy
+pr: 143
+A new setting lets link previews show only text, without downloading their images.
+
+topic: privacy
+pr: 135
+Your backup passphrase can't be captured in screenshots.
+
+topic: security
+pr: 154
+Collie settings can require your phone screen lock before anyone views or changes your backup recovery key.
+
+topic: security
+pr: 153
+You can require your current PIN before changing recovery PIN settings.
+
+topic: security
+pr: 119
+Sticker pack links are checked more strictly.
+
+topic: updates
+pr: 113
+Direct downloads tell you when a verified Collie update is out.
+
+topic: devices
+pr: 110
+A removed relay device stays removed, even if it was renamed.
+
+topic: settings
+pr: 156
+What’s new has a Project log of every change, also under Settings, Help.
+
+topic: settings
+pr: 152
+Collie settings has a Hardening section for optional protections.
+
+topic: settings
+pr: 149
+Open Collie in Settings to try Story Archive, Better Search, and Starred Messages.
+
+topic: fixes
+pr: 86
+Network settings and Database encryption no longer sit under the status bar.
+
+topic: signal
+pr: 200
+TrailBlazer updates to Signal 8.36.3 with refreshed settings and media browsing.
+
+topic: signal
+pr: 114
+Earlier development builds used Signal 8.35.2.

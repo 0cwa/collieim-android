@@ -1,3 +1,0 @@
-topic: security
-pr: 119
-Sticker pack links are checked more strictly.

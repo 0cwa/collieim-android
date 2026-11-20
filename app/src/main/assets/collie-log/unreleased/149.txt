@@ -1,3 +1,0 @@
-topic: settings
-pr: 149
-Open Collie in Settings to try Story Archive, Better Search, and Starred Messages.

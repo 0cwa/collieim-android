@@ -1,3 +1,0 @@
-topic: security
-pr: 154
-Collie settings can require your phone screen lock before anyone views or changes your backup recovery key.

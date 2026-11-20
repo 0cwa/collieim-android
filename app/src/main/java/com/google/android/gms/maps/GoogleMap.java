@@ -1,6 +1,11 @@
 package com.google.android.gms.maps;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -8,134 +13,111 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.events.MapListener;
-import org.osmdroid.events.ScrollEvent;
-import org.osmdroid.events.ZoomEvent;
+import org.maplibre.android.location.LocationComponent;
+import org.maplibre.android.location.LocationComponentActivationOptions;
+import org.maplibre.android.maps.MapLibreMap;
+import org.maplibre.android.maps.Style;
+import org.maplibre.android.style.sources.GeoJsonSource;
+import org.maplibre.geojson.Point;
+import org.thoughtcrime.securesms.maps.MapLibreStyle;
 
-public class GoogleMap {
+/** The small subset of upstream's GoogleMap API used by Collie's location sharing. */
+public final class GoogleMap {
   public static final int MAP_TYPE_NONE = 0;
   public static final int MAP_TYPE_NORMAL = 1;
   public static final int MAP_TYPE_SATELLITE = 2;
   public static final int MAP_TYPE_TERRAIN = 3;
   public static final int MAP_TYPE_HYBRID = 4;
 
-  private final MapView     mapView;
-  private final UiSettings  uiSettings  = new UiSettings();
-  private final MapListener mapListener = new MapListener() {
-
-    private boolean moving = false;
-
-    private final Runnable idleDetector = () -> {
-      moving = false;
-      onCameraIdle();
-    };
-
-    @Override
-    public boolean onScroll(ScrollEvent event) {
-      if (moving) return true;
-
-      onCameraMoveStarted();
-      moving = true;
-      mapView.getHandler().removeCallbacks(idleDetector);
-      mapView.getHandler().postDelayed(idleDetector, 1000);
-
-      return true;
-    }
-
-    @Override
-    public boolean onZoom(ZoomEvent event) {
-      return false;
-    }
-  };
-
-  private CameraPosition              cameraPosition;
-  private OnCameraIdleListener        onCameraIdleListener;
+  private final MapView mapView;
+  private final MapLibreMap map;
+  private final UiSettings uiSettings;
+  private OnCameraIdleListener onCameraIdleListener;
   private OnCameraMoveStartedListener onCameraMoveStartedListener;
 
-  public GoogleMap(MapView mapView) {
+  GoogleMap(MapView mapView, MapLibreMap map) {
     this.mapView = mapView;
-    this.mapView.addMapListener(mapListener);
+    this.map = map;
+    this.uiSettings = new UiSettings(mapView, map.getUiSettings());
+    map.addOnCameraMoveStartedListener(reason -> {
+      mapView.invalidateRenderedFrame();
+      if (onCameraMoveStartedListener != null) onCameraMoveStartedListener.onCameraMoveStarted(reason);
+    });
+    map.addOnCameraIdleListener(() -> {
+      if (onCameraIdleListener != null) onCameraIdleListener.onCameraIdle();
+    });
   }
 
-  public void setOnCameraMoveStartedListener(OnCameraMoveStartedListener onCameraMoveStartedListener) {
-    this.onCameraMoveStartedListener = onCameraMoveStartedListener;
+  public void setOnCameraMoveStartedListener(OnCameraMoveStartedListener listener) {
+    onCameraMoveStartedListener = listener;
   }
 
-  public void setOnCameraIdleListener(OnCameraIdleListener onCameraIdleListener) {
-    this.onCameraIdleListener = onCameraIdleListener;
+  public void setOnCameraIdleListener(OnCameraIdleListener listener) {
+    onCameraIdleListener = listener;
   }
 
   public CameraPosition getCameraPosition() {
-    return cameraPosition;
+    org.maplibre.android.camera.CameraPosition position = map.getCameraPosition();
+    org.maplibre.android.geometry.LatLng target = position.target;
+    return new CameraPosition(new LatLng(target.getLatitude(), target.getLongitude()), (float) position.zoom);
   }
 
   public void moveCamera(CameraUpdate update) {
-    // Zoom in a little bit because OSM Droid's zoom level is slightly wider than Google Maps'
-    float zoom = update.zoom + 2.0f;
-    cameraPosition = new CameraPosition(update.latLng, zoom);
-    mapView.setMapPosition(cameraPosition);
+    mapView.invalidateRenderedFrame();
+    // Preserve the old shim's +2 zoom adjustment, accounting for MapLibre's
+    // 512-pixel camera basis versus osmdroid's 256-pixel basis.
+    map.moveCamera(org.maplibre.android.camera.CameraUpdateFactory.newLatLngZoom(
+        new org.maplibre.android.geometry.LatLng(update.latLng.latitude, update.latLng.longitude), update.zoom + 1));
   }
 
   public Marker addMarker(MarkerOptions options) {
-    mapView.addMarker(options);
+    Style style = map.getStyle();
+    if (style != null) {
+      GeoJsonSource source = style.getSourceAs(MapLibreStyle.SELECTED_LOCATION);
+      if (source != null) {
+        mapView.invalidateRenderedFrame();
+        source.setGeoJson(Point.fromLngLat(options.getPosition().longitude, options.getPosition().latitude));
+      }
+    }
     return new Marker();
   }
 
-  public void setMyLocationEnabled(boolean myLocationEnabled) {
-    mapView.setMyLocationEnabled(myLocationEnabled);
+  @SuppressLint("MissingPermission")
+  public void setMyLocationEnabled(boolean enabled) {
+    boolean permitted = ContextCompat.checkSelfPermission(mapView.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(mapView.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    LocationComponent location = map.getLocationComponent();
+    Style style = map.getStyle();
+    if (enabled && permitted && style != null && !location.isLocationComponentActivated()) {
+      location.activateLocationComponent(LocationComponentActivationOptions.builder(mapView.getContext(), style).build());
+    }
+    if (location.isLocationComponentActivated()) location.setLocationComponentEnabled(enabled && permitted);
   }
 
-  public void setBuildingsEnabled(boolean isBuildingsEnabled) { }
+  public void setBuildingsEnabled(boolean enabled) {}
 
-  public void setMapType (int type) { }
+  // The raster provider has no satellite/terrain variants or Google JSON styling.
+  public void setMapType(int type) {}
 
-  /** Keeps the camera target and map controls inside the unobscured viewport. */
-  public void setPadding(int left, int top, int right, int bottom) {
-    mapView.setPadding(left, top, right, bottom);
-    mapView.setMapCenterOffset((left - right) / 2, (top - bottom) / 2);
-    mapView.getZoomController().getDisplay().setAdditionalPixelMargins(left, top, right, bottom);
-    mapView.requestLayout();
-    mapView.invalidate();
-  }
-
-  public boolean setMapStyle(MapStyleOptions loadRawResourceStyle) {
+  public boolean setMapStyle(MapStyleOptions style) {
     return false;
+  }
+
+  public void setPadding(int left, int top, int right, int bottom) {
+    map.setPadding(left, top, right, bottom);
+    mapView.setMapPadding(left, top, right, bottom);
   }
 
   public UiSettings getUiSettings() {
     return uiSettings;
   }
 
-  public void setOnMapLoadedCallback (OnMapLoadedCallback callback) {
+  public void setOnMapLoadedCallback(OnMapLoadedCallback callback) {
     mapView.setOnMapLoadedCallback(callback);
   }
 
   public void snapshot(SnapshotReadyCallback callback) {
-    Bitmap bitmap = mapView.snapshot();
-    callback.onSnapshotReady(bitmap);
-  }
-
-  private void updateCameraPosition() {
-    IGeoPoint geoPoint = mapView.getProjection().fromPixels(
-        mapView.getWidth() / 2 + mapView.getMapCenterOffsetX(),
-        mapView.getHeight() / 2 + mapView.getMapCenterOffsetY(), null, false);
-    LatLng    center   = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-    cameraPosition = new CameraPosition(center, (float) mapView.getZoomLevelDouble());
-  }
-
-  private void onCameraIdle() {
-    updateCameraPosition();
-    if (onCameraIdleListener != null) {
-      onCameraIdleListener.onCameraIdle();
-    }
-  }
-
-  private void onCameraMoveStarted() {
-    updateCameraPosition();
-    if (onCameraMoveStartedListener != null) {
-      onCameraMoveStartedListener.onCameraMoveStarted(0);
-    }
+    mapView.snapshot(map, callback);
   }
 
   public interface OnCameraMoveStartedListener {

@@ -1,177 +1,292 @@
 package com.google.android.gms.maps;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.ZoomControls;
 
-import androidx.core.content.res.ResourcesCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.osmdroid.api.IMapController;
-import org.osmdroid.config.Configuration;
-import org.osmdroid.config.IConfigurationProvider;
-import org.osmdroid.tileprovider.MapTileProviderBase;
-import org.osmdroid.tileprovider.TileStates;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsDisplay;
-import org.osmdroid.views.overlay.Marker;
-
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.thoughtcrime.securesms.BuildConfig;
+import org.maplibre.android.maps.MapLibreMap;
+import org.maplibre.android.maps.MapLibreMapOptions;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.net.Networking;
-import org.thoughtcrime.securesms.osm.MapTileProvider;
+import org.thoughtcrime.securesms.maps.MapLibreConfiguration;
+import org.thoughtcrime.securesms.maps.MapLibreStyle;
 
-import java.net.Proxy;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MapView extends org.osmdroid.views.MapView {
-  private Marker               marker;
-  private boolean isMyLocationEnabled = false;
-  private MyLocationNewOverlay myLocationNewOverlay;
-  private OnMapLoadedCallback  onMapLoadedCallback;
-  private boolean              isMapRenderWatcherRunning = false;
+/** Compatibility view for upstream callers, backed by MapLibre Native. */
+public final class MapView extends FrameLayout {
+  private final List<OnMapReadyCallback> readyCallbacks = new ArrayList<>();
 
-  static private MapTileProviderBase createTileProvider(Context context) {
-    return new MapTileProvider(context, TileSourceFactory.DEFAULT_TILE_SOURCE);
+  private org.maplibre.android.maps.MapView renderer;
+  private GoogleMap googleMap;
+  private TextView attribution;
+  private ZoomControls zoomControls;
+  private GoogleMap.OnMapLoadedCallback loadedCallback;
+  private OnMapErrorListener errorListener;
+  private Exception failure;
+  private Bundle savedState;
+  private int generation;
+  private boolean initializing;
+  private boolean started;
+  private boolean resumed;
+  private boolean fullyRendered;
+
+  public MapView(@NonNull Context context) {
+    this(context, null);
   }
 
-  public MapView(Context context) {
-    super(context, createTileProvider(context));
+  public MapView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    this(context, attrs, 0);
   }
 
-  public MapView(Context context, AttributeSet attrs) {
-    super(context, createTileProvider(context), null, attrs);
+  public MapView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
+    super(context, attrs, defStyle);
   }
 
-  public MapView(Context context, AttributeSet attrs, int defStyle) {
-    super(context, createTileProvider(context), null, attrs);
+  public void getMapAsync(@NonNull OnMapReadyCallback callback) {
+    if (googleMap != null) {
+      callback.onMapReady(googleMap);
+    } else if (failure == null) {
+      readyCallbacks.add(callback);
+      initialize();
+    }
   }
 
-  public void getMapAsync(OnMapReadyCallback callback) {
-    setDefaultConfiguration(getContext());
-    this.setTilesScaledToDpi(true);
-
-    GoogleMap googleMap = new GoogleMap(this);
-    callback.onMapReady(googleMap);
-  }
-
-  private void setDefaultConfiguration(Context context) {
-    final String userAgent = context.getPackageName();
-    final Proxy proxy = Networking.getProxy();
-    final IConfigurationProvider config = Configuration.getInstance();
-    config.setDebugMode(BuildConfig.DEBUG);
-    config.setUserAgentValue(userAgent);
-    config.setHttpProxy((proxy == Proxy.NO_PROXY) ? null : proxy);
-
-    getZoomController().getDisplay().setPositions(
-        false,
-        CustomZoomButtonsDisplay.HorizontalPosition.RIGHT,
-        CustomZoomButtonsDisplay.VerticalPosition.TOP);
-    setMultiTouchControls(true);
-  }
-
-  void addMarker(MarkerOptions markerOptions) {
-    removeExistingMarker();
-
-    marker = new Marker(this);
-    marker.setPosition(toPoint(markerOptions.getPosition()));
-    Drawable icon = ResourcesCompat.getDrawable(
-        getContext().getResources(),
-        R.drawable.ic_map_marker,
-        getContext().getTheme());
-    marker.setIcon(icon);
-    getOverlays().add(marker);
-  }
-
-  private void removeExistingMarker() {
-    if (marker == null) return;
-    getOverlays().remove(marker);
-    marker = null;
-  }
-
-  void setMapPosition(CameraPosition position) {
-    IMapController mapController = getController();
-    mapController.setCenter(toPoint(position.target));
-    mapController.setZoom(position.zoom);
-  }
-
-  Bitmap snapshot() {
-    Bitmap bitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(bitmap);
-    layout(getLeft(), getTop(), getRight(), getBottom());
-    draw(canvas);
-    return bitmap;
-  }
-
-  private void waitMapRender() {
-    if(isMapRenderWatcherRunning) return;
-    isMapRenderWatcherRunning = true;
-    postDelayed(new Runnable() {
+  private void initialize() {
+    if (initializing || renderer != null || failure != null) return;
+    initializing = true;
+    int currentGeneration = generation;
+    MapLibreConfiguration.prepare(getContext(), new MapLibreConfiguration.Callback() {
       @Override
-      public void run() {
-        TileStates tileStates = getOverlayManager().getTilesOverlay().getTileStates();
-        if (tileStates.getTotal() > 0 && (tileStates.getTotal() == tileStates.getUpToDate())) {
-          if (onMapLoadedCallback != null) onMapLoadedCallback.onMapLoaded();
-          isMapRenderWatcherRunning = false;
-        } else {
-          // We are not done yet. wait for a few cycles and check again
-          postDelayed(this, 72);
+      public void onReady() {
+        if (generation != currentGeneration) return;
+        createRenderer(currentGeneration);
+      }
+
+      @Override
+      public void onError(@NonNull Exception error) {
+        if (generation == currentGeneration) reportFailure(error);
+      }
+    });
+  }
+
+  private void createRenderer(int currentGeneration) {
+    // Never construct a renderer before the shared cache initialization gate succeeds.
+    renderer = new org.maplibre.android.maps.MapView(getContext(), new MapLibreMapOptions()
+        .textureMode(true)
+        .actionJournalEnabled(false)
+        .logoEnabled(false)
+        .attributionEnabled(false)
+        .compassEnabled(false)
+        .rotateGesturesEnabled(false)
+        .tiltGesturesEnabled(false)
+        .setPrefetchZoomDelta(0));
+    addView(renderer, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    addAttribution();
+    renderer.addOnDidFailLoadingMapListener(message -> {
+      if (generation == currentGeneration) reportFailure(new IOException("Map could not be loaded"));
+    });
+    renderer.addOnDidFinishRenderingFrameListener((fully, frameTime, encodingTime) -> {
+      if (generation != currentGeneration) return;
+      fullyRendered = fully;
+      dispatchLoadedCallback();
+    });
+    renderer.onCreate(savedState);
+    if (started) renderer.onStart();
+    if (resumed) renderer.onResume();
+    renderer.getMapAsync(map -> {
+      if (generation != currentGeneration) return;
+      map.setPrefetchZoomDelta(0);
+      map.setStyle(MapLibreStyle.create(getContext()), style -> {
+        if (generation != currentGeneration) return;
+        initializing = false;
+        googleMap = new GoogleMap(MapView.this, map);
+        addZoomControls(map);
+        List<OnMapReadyCallback> callbacks = new ArrayList<>(readyCallbacks);
+        readyCallbacks.clear();
+        for (OnMapReadyCallback callback : callbacks) {
+          if (generation != currentGeneration) break;
+          callback.onMapReady(googleMap);
         }
-      }
-    }, 72);
+      });
+    });
   }
 
-  void setOnMapLoadedCallback(OnMapLoadedCallback onMapLoadedCallback) {
-    this.onMapLoadedCallback = onMapLoadedCallback;
-    waitMapRender();
+  private void addAttribution() {
+    attribution = new TextView(getContext());
+    SpannableString text = new SpannableString(getContext().getString(R.string.MapView__osm_attribution));
+    text.setSpan(new URLSpan("https://www.openstreetmap.org/copyright"), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    attribution.setText(text);
+    attribution.setMovementMethod(LinkMovementMethod.getInstance());
+    attribution.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+    attribution.setTextColor(Color.BLACK);
+    attribution.setLinkTextColor(Color.BLACK);
+    attribution.setBackgroundColor(Color.argb(230, 255, 255, 255));
+    attribution.setPadding(dp(4), dp(2), dp(4), dp(2));
+    // A child of the native MapView is also included in its snapshot bitmap.
+    renderer.addView(attribution, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.START));
   }
 
-  void setMyLocationEnabled(boolean isMyLocationEnabled) {
-    // TODO this code does not add the "jump to my location" button on the map atm.
-    this.isMyLocationEnabled = isMyLocationEnabled;
-    if (isMyLocationEnabled) {
-      if (myLocationNewOverlay == null) {
-        myLocationNewOverlay = new MyLocationNewOverlay(this);
-        myLocationNewOverlay.enableMyLocation();
-      }
-      getOverlays().add(myLocationNewOverlay);
-    } else if (myLocationNewOverlay != null) {
-      getOverlays().remove(myLocationNewOverlay);
-      myLocationNewOverlay.disableMyLocation();
+  private void addZoomControls(@NonNull MapLibreMap map) {
+    zoomControls = new ZoomControls(getContext());
+    zoomControls.setOnZoomInClickListener(view -> map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.zoomIn()));
+    zoomControls.setOnZoomOutClickListener(view -> map.animateCamera(org.maplibre.android.camera.CameraUpdateFactory.zoomOut()));
+    renderer.addView(zoomControls, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END));
+  }
+
+  void setMapPadding(int left, int top, int right, int bottom) {
+    if (attribution != null) {
+      LayoutParams params = (LayoutParams) attribution.getLayoutParams();
+      params.setMargins(left, top, right, bottom);
+      attribution.setLayoutParams(params);
+    }
+    if (zoomControls != null) {
+      LayoutParams params = (LayoutParams) zoomControls.getLayoutParams();
+      params.setMargins(left, top, right, bottom);
+      zoomControls.setLayoutParams(params);
     }
   }
 
-  public final void onCreate(Bundle savedInstanceState) { }
+  void setGesturesEnabled(boolean enabled) {
+    if (zoomControls != null) zoomControls.setVisibility(enabled ? VISIBLE : GONE);
+  }
 
-  public final void onStart() { }
+  void invalidateRenderedFrame() {
+    fullyRendered = false;
+  }
 
-  public final void onResume() {
-    super.onResume();
-    if (myLocationNewOverlay != null && isMyLocationEnabled) {
-      myLocationNewOverlay.enableMyLocation();
+  void setOnMapLoadedCallback(@Nullable GoogleMap.OnMapLoadedCallback callback) {
+    loadedCallback = callback;
+    dispatchLoadedCallback();
+  }
+
+  private void dispatchLoadedCallback() {
+    if (!fullyRendered || loadedCallback == null || !resumed) return;
+    GoogleMap.OnMapLoadedCallback callback = loadedCallback;
+    loadedCallback = null;
+    int currentGeneration = generation;
+    // Leave the render callback before requesting a snapshot; never recurse through idle events.
+    post(() -> {
+      if (generation != currentGeneration || failure != null) return;
+      if (resumed) callback.onMapLoaded();
+      else loadedCallback = callback;
+    });
+  }
+
+  void snapshot(@NonNull MapLibreMap map, @NonNull GoogleMap.SnapshotReadyCallback callback) {
+    if (!started || renderer == null) {
+      reportFailure(new IOException("Map preview is not active"));
+      return;
+    }
+    int currentGeneration = generation;
+    map.snapshot(bitmap -> {
+      if (generation == currentGeneration) callback.onSnapshotReady(bitmap);
+    });
+  }
+
+  public void setOnMapErrorListener(@Nullable OnMapErrorListener listener) {
+    errorListener = listener;
+    if (listener != null && failure != null) listener.onMapError(failure);
+  }
+
+  private void reportFailure(@NonNull Exception error) {
+    failure = error;
+    readyCallbacks.clear();
+    loadedCallback = null;
+    if (errorListener != null) {
+      errorListener.onMapError(error);
+    } else {
+      TextView message = new TextView(getContext());
+      message.setText(R.string.MapView__could_not_load_map);
+      message.setGravity(Gravity.CENTER);
+      addView(message, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
   }
 
-  public final void onPause() {
-    super.onPause();
-    if (myLocationNewOverlay != null) {
-      myLocationNewOverlay.disableMyLocation();
-    }
+  public void onCreate(@Nullable Bundle state) {
+    savedState = state;
+    initialize();
   }
 
-  public final void onStop() { }
+  public void onStart() {
+    if (started) return;
+    started = true;
+    if (renderer != null) renderer.onStart();
+  }
 
-  public final void onDestroy() { }
+  public void onResume() {
+    if (resumed) return;
+    resumed = true;
+    if (renderer != null) renderer.onResume();
+    dispatchLoadedCallback();
+  }
 
-  private GeoPoint toPoint(LatLng latLng) {
-    return new GeoPoint(latLng.latitude, latLng.longitude);
+  public void onPause() {
+    if (!resumed) return;
+    resumed = false;
+    if (renderer != null) renderer.onPause();
+  }
+
+  public void onStop() {
+    if (!started) return;
+    started = false;
+    if (renderer != null) renderer.onStop();
+  }
+
+  public void onDestroy() {
+    OnMapErrorListener listener = errorListener;
+    errorListener = null;
+    generation++;
+    readyCallbacks.clear();
+    loadedCallback = null;
+    onPause();
+    onStop();
+    if (renderer != null) renderer.onDestroy();
+    renderer = null;
+    googleMap = null;
+    attribution = null;
+    zoomControls = null;
+    savedState = null;
+    failure = null;
+    fullyRendered = false;
+    initializing = false;
+    removeAllViews();
+    if (listener != null) listener.onMapError(new IOException("Map preview was closed"));
+  }
+
+  public void onLowMemory() {
+    if (renderer != null) renderer.onLowMemory();
+  }
+
+  public void onSaveInstanceState(@NonNull Bundle state) {
+    if (renderer != null) renderer.onSaveInstanceState(state);
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    onDestroy();
+    super.onDetachedFromWindow();
+  }
+
+  private int dp(int value) {
+    return Math.round(value * getResources().getDisplayMetrics().density);
+  }
+
+  public interface OnMapErrorListener {
+    void onMapError(@NonNull Exception error);
   }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="MapView__osm_attribution" translatable="false">© OpenStreetMap contributors</string>
+    <string name="MapView__could_not_load_map">Could not load the map. Please try again.</string>
+</resources>

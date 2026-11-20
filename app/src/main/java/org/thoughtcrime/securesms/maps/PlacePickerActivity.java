@@ -54,7 +54,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Allows selection of an address from a google map.
+ * Allows selection of an address from the OpenStreetMap raster map.
  * <p>
  * Based on https://github.com/suchoX/PlacePicker
  */
@@ -180,6 +180,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
   protected void onResume() {
     super.onResume();
     dynamicTheme.onResume(this);
+    if (googleMap != null) enableMyLocationButtonIfHaveThePermission(googleMap);
   }
 
   private void setInitialLocation(@NonNull LatLng latLng) {

@@ -177,7 +177,7 @@ molly-native-utils = "im.molly:native-utils:1.0.0"
 molly-argon2 = "im.molly:argon2:13.1-1"
 unifiedpush-connector = "org.unifiedpush.android:connector:3.0.10"
 unifiedpush-connector-ui = "org.unifiedpush.android:connector-ui:1.1.0-rc3"
-osmdroid-android = "org.osmdroid:osmdroid-android:6.1.20"
+maplibre-android = "org.maplibre.gl:android-sdk-opengl:13.7.1"
 
 # Third Party
 signal-android-database-sqlcipher = "net.zetetic:sqlcipher-android:4.17.0"

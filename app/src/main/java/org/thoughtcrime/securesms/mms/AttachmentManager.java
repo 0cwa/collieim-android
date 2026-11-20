@@ -65,7 +65,6 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.signal.core.ui.util.ViewUtil;
-import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -196,7 +195,7 @@ public class AttachmentManager {
     attachmentViewStub.get().setVisibility(View.VISIBLE);
     removableMediaView.display(mapView, false);
 
-    future.addListener(new AssertedSuccessListener<Bitmap>() {
+    future.addListener(new Listener<Bitmap>() {
       @Override
       public void onSuccess(@NonNull Bitmap result) {
         byte[]        blob          = BitmapUtil.toByteArray(result);
@@ -211,6 +210,13 @@ public class AttachmentManager {
           attachmentListener.onAttachmentChanged();
           returnResult.set(true);
         });
+      }
+
+      @Override
+      public void onFailure(ExecutionException error) {
+        // Offline maps, cancelled views and render timeouts are expected failures.
+        // Do not crash the conversation or leave its attachment future pending.
+        returnResult.set(false);
       }
     });
 

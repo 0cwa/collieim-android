@@ -561,7 +561,7 @@ dependencies {
   implementation(libs.molly.argon2) { artifact { type = "aar" } }
   implementation(libs.molly.native.utils)
   implementation(libs.gosimple.nbvcxz)
-  implementation(libs.osmdroid.android)
+  implementation(libs.maplibre.android)
   implementation(libs.unifiedpush.connector) {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
     exclude(group = "com.google.protobuf", module = "protobuf-java")

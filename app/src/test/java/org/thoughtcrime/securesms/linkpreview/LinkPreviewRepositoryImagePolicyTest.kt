@@ -49,8 +49,8 @@ import java.util.concurrent.atomic.AtomicLong
 class LinkPreviewRepositoryImagePolicyTest {
 
   companion object {
-    private const val PAGE = "https://example.org/article"
-    private const val IMAGE = "https://images.example.org/preview.png"
+    private const val PAGE = "https://news.collie.im/article"
+    private const val IMAGE = "https://images.collie.im/preview.png"
     private const val PAGE_WITH_IMAGE = """<meta property="og:title" content="Article"><meta property="og:description" content="Details"><meta property="og:image" content="$IMAGE">"""
   }
 

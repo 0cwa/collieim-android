@@ -9,6 +9,7 @@ import android.app.Application
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -24,6 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
@@ -86,6 +88,7 @@ class PrivacySettingsScreenTest {
   fun `toggling read receipts emits ReadReceiptsToggled`() {
     setContent(PrivacySettingsState(readReceipts = true))
 
+    scrollTo(PrivacySettingsTestTags.ROW_READ_RECEIPTS)
     composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_READ_RECEIPTS).performClick()
 
     assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.ReadReceiptsToggled(false))
@@ -112,62 +115,79 @@ class PrivacySettingsScreenTest {
   }
 
   @Test
-  fun `clicking screen lock on a secure device emits ScreenLockClicked`() {
-    setContent(PrivacySettingsState(isDeviceSecure = true))
+  fun `toggling biometric screen lock emits its requested state`() {
+    setContent(PrivacySettingsState(biometricScreenLock = false))
 
-    scrollTo(PrivacySettingsTestTags.ROW_SCREEN_LOCK)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_SCREEN_LOCK).performClick()
+    scrollTo(PrivacySettingsTestTags.ROW_BIOMETRIC_SCREEN_LOCK)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_BIOMETRIC_SCREEN_LOCK).performClick()
 
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.ScreenLockClicked)
+    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.BiometricScreenLockToggled(true))
   }
 
   @Test
-  fun `clicking screen lock on an insecure device emits DisabledScreenLockClicked`() {
-    setContent(PrivacySettingsState(isDeviceSecure = false))
+  fun `passphrase controls emit Molly actions independently of biometric lock`() {
+    setContent(
+      PrivacySettingsState(
+        passphraseLock = true,
+        passphraseLockTriggerValues = setOf("timeout"),
+        passphraseLockTriggerOptions = listOf(PassphraseLockTriggerOption("timeout", "On inactivity timeout")),
+        isPassphraseLockTimeoutEnabled = true
+      )
+    )
 
-    scrollTo(PrivacySettingsTestTags.ROW_SCREEN_LOCK)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_SCREEN_LOCK).performClick()
+    scrollTo(PrivacySettingsTestTags.ROW_BIOMETRIC_SCREEN_LOCK)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_BIOMETRIC_SCREEN_LOCK).assertExists()
+    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK).performClick()
+    scrollTo(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE).performClick()
+    scrollTo(PrivacySettingsTestTags.ROW_AUTOMATIC_LOCKDOWN)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_AUTOMATIC_LOCKDOWN).performClick()
+    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT).performClick()
 
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.DisabledScreenLockClicked)
+    assertThat(interactionEvents).containsExactly(
+      PrivacySettingsEvent.PassphraseLockToggled(false),
+      PrivacySettingsEvent.ChangePassphraseClicked,
+      PrivacySettingsEvent.AutomaticLockdownClicked,
+      PrivacySettingsEvent.PassphraseLockTimeoutClicked
+    )
   }
 
   @Test
-  fun `screen lock summary shows the timeout when screen lock is on`() {
-    setContent(PrivacySettingsState(screenLock = true, screenLockTimeout = 5.minutes))
+  fun `passphrase subordinate controls are disabled while encryption is off`() {
+    setContent(PrivacySettingsState(passphraseLock = false, isPassphraseLockTimeoutEnabled = true))
 
-    scrollTo(PrivacySettingsTestTags.ROW_SCREEN_LOCK)
+    scrollTo(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE).assertIsNotEnabled()
+    scrollTo(PrivacySettingsTestTags.ROW_AUTOMATIC_LOCKDOWN)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_AUTOMATIC_LOCKDOWN).assertIsNotEnabled()
+    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT).assertIsNotEnabled()
+  }
+
+  @Test
+  fun `zero passphrase timeout displays instant`() {
+    setContent(PrivacySettingsState(passphraseLock = true, isPassphraseLockTimeoutEnabled = true, passphraseLockTimeout = Duration.ZERO))
+
+    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT)
+    composeTestRule.onNodeWithText("Instant").assertIsDisplayed()
+  }
+
+  @Test
+  fun `positive passphrase timeout uses the existing duration formatter`() {
+    setContent(PrivacySettingsState(passphraseLock = true, isPassphraseLockTimeoutEnabled = true, passphraseLockTimeout = 5.minutes))
+
+    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT)
     composeTestRule.onNodeWithText("5 minutes").assertIsDisplayed()
   }
 
   @Test
-  fun `screen lock summary shows off when the device is insecure`() {
-    setContent(PrivacySettingsState(isDeviceSecure = false, screenLock = true))
+  fun `forced screen security cannot be toggled off independently`() {
+    setContent(PrivacySettingsState(screenSecurity = false, isScreenSecurityForced = true))
 
-    scrollTo(PrivacySettingsTestTags.ROW_SCREEN_LOCK)
-    composeTestRule.onNodeWithText("Off").assertIsDisplayed()
-  }
-
-  @Test
-  fun `passphrase rows replace screen lock while the legacy passphrase is enabled`() {
-    setContent(PrivacySettingsState(isObsoletePassphraseEnabled = true))
-
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_SCREEN_LOCK).assertDoesNotExist()
-
-    scrollTo(PrivacySettingsTestTags.ROW_ENABLE_PASSPHRASE)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_ENABLE_PASSPHRASE).performClick()
-    scrollTo(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE).performClick()
-    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_TIMEOUT)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PASSPHRASE_TIMEOUT).performClick()
-    scrollTo(PrivacySettingsTestTags.ROW_PASSPHRASE_TIMEOUT_INTERVAL)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PASSPHRASE_TIMEOUT_INTERVAL).performClick()
-
-    assertThat(interactionEvents).containsExactly(
-      PrivacySettingsEvent.DisablePassphraseClicked,
-      PrivacySettingsEvent.ChangePassphraseClicked,
-      PrivacySettingsEvent.PassphraseTimeoutToggled(true),
-      PrivacySettingsEvent.PassphraseTimeoutIntervalClicked
-    )
+    scrollTo(PrivacySettingsTestTags.ROW_SCREEN_SECURITY)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_SCREEN_SECURITY).assertIsNotEnabled()
   }
 
   @Test
@@ -191,33 +211,12 @@ class PrivacySettingsScreenTest {
   }
 
   @Test
-  fun `turning on payment lock emits EnablePaymentLockClicked`() {
-    setContent(PrivacySettingsState(paymentLock = false))
+  fun `payment controls stay removed from Molly privacy settings`() {
+    setContent(PrivacySettingsState())
 
-    scrollTo(PrivacySettingsTestTags.ROW_PAYMENT_LOCK)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PAYMENT_LOCK).performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.EnablePaymentLockClicked)
-  }
-
-  @Test
-  fun `turning off payment lock emits PaymentLockDisableAuthenticated once authenticated`() {
-    setContent(PrivacySettingsState(paymentLock = true))
-
-    scrollTo(PrivacySettingsTestTags.ROW_PAYMENT_LOCK)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PAYMENT_LOCK).performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.PaymentLockDisableAuthenticated)
-  }
-
-  @Test
-  fun `payment lock reads as off on an insecure device, so tapping it tries to turn it on`() {
-    setContent(PrivacySettingsState(paymentLock = true, isDeviceSecure = false))
-
-    scrollTo(PrivacySettingsTestTags.ROW_PAYMENT_LOCK)
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PAYMENT_LOCK).performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.EnablePaymentLockClicked)
+    scrollTo(PrivacySettingsTestTags.ROW_ADVANCED)
+    composeTestRule.onNodeWithText("Payments").assertDoesNotExist()
+    composeTestRule.onNodeWithText("Payment lock").assertDoesNotExist()
   }
 
   @Test
@@ -231,40 +230,22 @@ class PrivacySettingsScreenTest {
   }
 
   @Test
-  fun `asking to scroll to payment lock emits ScrolledToPaymentLock`() {
-    setContent(PrivacySettingsState(scrollToPaymentLock = true))
+  fun `confirming automatic lockdown emits the selected triggers`() {
+    setContent(
+      PrivacySettingsState(
+        passphraseLock = true,
+        passphraseLockTriggerOptions = listOf(PassphraseLockTriggerOption("timeout", "On inactivity timeout")),
+        dialog = PrivacySettingsState.Dialog.AutomaticLockdown
+      )
+    )
 
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_PAYMENT_LOCK).assertIsDisplayed()
+    composeTestRule.onNodeWithText("On inactivity timeout").performClick()
+    composeTestRule.onNodeWithText("OK").performClick()
 
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.ScrolledToPaymentLock)
-  }
-
-  @Test
-  fun `confirming the disable passphrase dialog emits DisablePassphraseConfirmed`() {
-    setContent(PrivacySettingsState(isObsoletePassphraseEnabled = true, dialog = PrivacySettingsState.Dialog.ConfirmDisablePassphrase))
-
-    composeTestRule.onNodeWithText("Disable").performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.DisablePassphraseConfirmed)
-  }
-
-  @Test
-  fun `accepting the payment lock dialog emits OpenDeviceSecuritySettingsClicked`() {
-    setContent(PrivacySettingsState(dialog = PrivacySettingsState.Dialog.PaymentLockNeedsDeviceSecurity))
-
-    composeTestRule.onNodeWithText("Turn On").performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.OpenDeviceSecuritySettingsClicked)
-  }
-
-  @Test
-  fun `declining the payment lock dialog emits DialogDismissed`() {
-    setContent(PrivacySettingsState(dialog = PrivacySettingsState.Dialog.PaymentLockNeedsDeviceSecurity))
-
-    composeTestRule.onNodeWithText("Not Now").performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.DialogDismissed)
+    assertThat(interactionEvents).containsExactly(
+      PrivacySettingsEvent.AutomaticLockdownSelected(setOf("timeout")),
+      PrivacySettingsEvent.DialogDismissed
+    )
   }
 
   @Test
@@ -286,8 +267,8 @@ class PrivacySettingsScreenTest {
   }
 
   @Test
-  fun `cancelling the disable passphrase dialog emits DialogDismissed`() {
-    setContent(PrivacySettingsState(isObsoletePassphraseEnabled = true, dialog = PrivacySettingsState.Dialog.ConfirmDisablePassphrase))
+  fun `cancelling automatic lockdown emits DialogDismissed`() {
+    setContent(PrivacySettingsState(passphraseLock = true, dialog = PrivacySettingsState.Dialog.AutomaticLockdown))
 
     composeTestRule.onNodeWithText("Cancel").performClick()
 
@@ -295,29 +276,20 @@ class PrivacySettingsScreenTest {
   }
 
   @Test
-  fun `confirming the passphrase timeout dialog emits PassphraseTimeoutSelected`() {
-    setContent(PrivacySettingsState(isObsoletePassphraseEnabled = true, obsoletePassphraseTimeout = 30.minutes, dialog = PrivacySettingsState.Dialog.PassphraseTimeout))
-
-    composeTestRule.onNodeWithText("Set").performClick()
-
-    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.PassphraseTimeoutSelected(30.minutes))
-  }
-
-  @Test
   fun `a snackbar in state is shown and then reported as dismissed`() {
-    setContent(PrivacySettingsState(snackbar = PrivacySettingsState.Snackbar.ScreenLockNeedsDeviceSecurity))
+    setContent(PrivacySettingsState(snackbar = PrivacySettingsState.Snackbar.BiometricsUnavailable))
 
-    composeTestRule.onNodeWithText("To use screen lock set a PIN, pattern, or password on this device.").assertIsDisplayed()
+    composeTestRule.onNodeWithText("No biometric features available on this device").assertIsDisplayed()
     composeTestRule.waitUntil(timeoutMillis = 10_000) { interactionEvents.isNotEmpty() }
 
     assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.SnackbarDismissed)
   }
 
   @Test
-  fun `the passphrase not set snackbar explains there is no passphrase`() {
-    setContent(PrivacySettingsState(snackbar = PrivacySettingsState.Snackbar.PassphraseNotSet))
+  fun `the biometric enrollment snackbar asks the user to enroll`() {
+    setContent(PrivacySettingsState(snackbar = PrivacySettingsState.Snackbar.BiometricEnrollmentRequired))
 
-    composeTestRule.onNodeWithText("You haven't set a passphrase yet!").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Please set up your biometrics in Android settings first").assertIsDisplayed()
   }
 
   @Test
@@ -325,6 +297,37 @@ class PrivacySettingsScreenTest {
     setContent(PrivacySettingsState(snackbar = PrivacySettingsState.Snackbar.DeviceSecuritySettingsUnavailable))
 
     composeTestRule.onNodeWithText("Failed to navigate to system settings").assertIsDisplayed()
+  }
+
+  @Test
+  fun `clicking check connection emits NetworkCheckConnectionClicked`() {
+    setContent(PrivacySettingsState())
+
+    scrollTo(PrivacySettingsTestTags.ROW_NETWORK_CHECK_CONNECTION)
+    composeTestRule.onNodeWithText("No connection test has run.").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_NETWORK_CHECK_CONNECTION).performClick()
+
+    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.NetworkCheckConnectionClicked)
+  }
+
+  @Test
+  fun `check connection is disabled while a test runs and says it goes through the proxy`() {
+    setContent(PrivacySettingsState(networkConnectionStatus = PrivacySettingsState.NetworkConnectionStatus.Checking(throughProxy = true)))
+
+    scrollTo(PrivacySettingsTestTags.ROW_NETWORK_CHECK_CONNECTION)
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_NETWORK_CHECK_CONNECTION).assertIsNotEnabled()
+    composeTestRule.onNodeWithText("Checking through the configured proxy…").assertIsDisplayed()
+  }
+
+  @Test
+  fun `the proxy row summarizes the configured proxy and emits NetworkProxyClicked`() {
+    setContent(PrivacySettingsState(proxySummary = PrivacySettingsState.ProxySummary.Socks5(host = "proxy.example", port = 1080)))
+
+    scrollTo(PrivacySettingsTestTags.ROW_NETWORK_PROXY)
+    composeTestRule.onNodeWithText("SOCKS5 configured at proxy.example:1080").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_NETWORK_PROXY).performClick()
+
+    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.NetworkProxyClicked)
   }
 
   private fun setContent(state: PrivacySettingsState) {

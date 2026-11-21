@@ -25,8 +25,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.signal.core.util.ContentTypeUtil
 import org.signal.core.ui.util.ThemeUtil
+import org.signal.core.util.ContentTypeUtil
 import org.signal.core.util.getParcelableArrayListCompat
 import org.signal.core.util.logging.Log
 import org.signal.mediasend.EditorState

@@ -94,7 +94,7 @@ open class NavGraphHostActivity : PassphraseRequiredActivity() {
  * Edge-to-edge with the navigation bar tinted to match the settings surfaces beneath it.
  */
 fun ComponentActivity.enableSettingsEdgeToEdge() {
-  val navBarColor = ThemeUtil.getThemedColor(this, com.google.android.material.R.attr.colorSurfaceContainer)
+  val navBarColor = DynamicTheme.resolveColor(this, com.google.android.material.R.attr.colorSurfaceContainer)
   val isDark = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
   if (Build.VERSION.SDK_INT >= 26) {

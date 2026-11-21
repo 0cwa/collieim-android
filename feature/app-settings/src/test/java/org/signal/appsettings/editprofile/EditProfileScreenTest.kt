@@ -75,6 +75,13 @@ class EditProfileScreenTest {
   }
 
   @Test
+  fun `the badges entry stays removed`() {
+    setContent(populated)
+
+    composeTestRule.onNodeWithTag(EditProfileTestTags.ROW_BADGES).assertDoesNotExist()
+  }
+
+  @Test
   fun givenAnEmptyProfile_whenIDisplayScreen_thenIExpectPlaceholders() {
     setContent(EditProfileState())
 

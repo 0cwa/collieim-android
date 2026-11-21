@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import java.util.Properties
-
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.compose.compiler)
@@ -14,9 +12,6 @@ plugins {
   id("signal-locales")
   id("pseudo-locales")
 }
-
-val staticIps = Properties().apply { file("static-ips.properties").reader().use { load(it) } }
-staticIps.stringPropertyNames().forEach { rootProject.extra[it] = staticIps.getProperty(it) }
 
 val canonicalVersionCode = 1782
 val canonicalVersionName = "8.36.3"
@@ -48,6 +43,11 @@ val selectableVariants = listOf(
 // Override build config via env vars when project property 'CI' is set
 val ciEnabled = project.hasProperty("CI")
 val firebaseFree = providers.gradleProperty("mollyFirebaseFree").map(String::toBoolean).getOrElse(false)
+
+// MOLLY: Check core-gms against Firebase Messaging; only meaningful when Firebase is in the build.
+if (!firebaseFree) {
+  apply(plugin = "gms-compat-check")
+}
 
 val baseAppTitle = "Collie"
 val baseAppFileName = "Collie"
@@ -176,10 +176,6 @@ android {
 
   if (mollyRevision < 0 || currentHotfixVersion < 0 || (mollyRevision + currentHotfixVersion) >= maxHotfixVersions) {
     throw GradleException("Molly revision $mollyRevision or Hotfix version $currentHotfixVersion out of range")
-  }
-
-  if (ciEnabled && !project.rootDir.resolve(".git").exists()) {
-    throw GradleException("CI build requires the project's Git repository (.git not found)")
   }
 
   defaultConfig {
@@ -569,7 +565,6 @@ dependencies {
   implementation(libs.rxjava3.rxandroid)
   implementation(libs.rxjava3.rxkotlin)
   implementation(libs.rxdogtag)
-  implementation(libs.androidx.credentials)
   implementation(libs.kotlinx.serialization.json)
 
   implementation(project(":feature:media-send"))

@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_icon_label_zen">Zen</string>
-    <string name="app_icon_label_moon">Moon</string>
-    <string name="app_icon_label_music">Music</string>
-    <string name="preferences_appearance__navigation_bar">Navigation bar</string>
+    <string name="preferences__network">Network</string>
     <string name="preferences_appearance__dynamic_colors">Dynamic Colors</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Use system colors for the app\'s theme</string>
-<string name="preferences__enable_debug_log">Enable debug log</string>
     <string name="HelpSettingsFragment__molly_im_website">Collie.im website</string>
-    <string name="preferences__autoupdate_molly">Auto-update Collie</string>
-    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Periodically check for new releases and ask to install them</string>
-    <string name="preferences__include_beta_updates">Include beta updates</string>
-    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta versions are intended for testing purposes and may contain bugs</string>
+    <string name="preferences__enable_debug_log">Enable debug log</string>
+    <string name="preferences__block_unknown">Block unknown</string>
+    <string name="preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts">Block users you\'ve never been in contact with and who are not saved in your contacts.</string>
+    <string name="preferences__passphrase_lock">Database encryption</string>
+    <string name="preferences__protect_molly_database_with_a_passphrase">Protect Collie\'s database with a passphrase</string>
+    <string name="preferences__automatic_lockdown">Automatic lockdown</string>
+    <string name="preferences__device_lock_timeout">Device lock timeout</string>
+    <string name="PrivacySettingsFragment_data_at_rest">Data at rest</string>
+    <string name="AppProtectionPreferenceFragment_instant">Instant</string>
+    <string name="PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition">Lock Collie access with fingerprint or face recognition</string>
+    <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">No biometric features available on this device</string>
+    <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">Please set up your biometrics in Android settings first</string>
+    <!-- Collie -->
+    <string name="preferences_appearance__navigation_bar">Navigation bar</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">For updates, please check your app store. This version does not include an in-app updater.</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Check for updates</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">Last checked: %s</string>
@@ -21,5 +27,5 @@
     <string name="CollieUpdates__view_release">Collie %1$s is available</string>
     <string name="CollieUpdates__open_official_release">View the official release in your browser</string>
     <string name="CollieUpdates__check_failed">The last update check failed. Try again when you can connect.</string>
-    <string name="CollieUpdates__available_notification">Collie %1$s is available. Tap to view the official release in your browser.</string>
+    <string name="preferences_network__check_connection">Check connection</string>
 </resources>

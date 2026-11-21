@@ -121,11 +121,11 @@ tasks.register("clean", Delete::class) {
 allprojects {
   configurations.configureEach {
     resolutionStrategy.dependencySubstitution {
-        substitute(module("im.molly:libsignal-android")).using(module("im.collie.native:libsignal-android:0.106.1-collie.1"))
-        substitute(module("im.molly:libsignal-client")).using(module("im.collie.native:libsignal-client:0.106.1-collie.1"))
+        substitute(module("im.molly:libsignal-android")).using(module("im.collie.native:libsignal-android:0.107.0-collie.1"))
+        substitute(module("im.molly:libsignal-client")).using(module("im.collie.native:libsignal-client:0.107.0-collie.1"))
         substitute(module("im.molly:ringrtc-android")).using(module("im.collie.native:ringrtc-android:2.74.0-collie.1"))
-        substitute(module("org.signal:libsignal-android")).using(module("im.collie.native:libsignal-android:0.106.1-collie.1"))
-        substitute(module("org.signal:libsignal-client")).using(module("im.collie.native:libsignal-client:0.106.1-collie.1"))
+        substitute(module("org.signal:libsignal-android")).using(module("im.collie.native:libsignal-android:0.107.0-collie.1"))
+        substitute(module("org.signal:libsignal-client")).using(module("im.collie.native:libsignal-client:0.107.0-collie.1"))
         substitute(module("org.signal:ringrtc-android")).using(module("im.collie.native:ringrtc-android:2.74.0-collie.1"))
     }
   }

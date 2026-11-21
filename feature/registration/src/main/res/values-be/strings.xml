@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Уключыць дазволы</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Каб вы маглі адпраўляць паведамленні тым, каго ведаеце, Signal будзе запытваць гэтыя дазволы. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Каб вы маглі адпраўляць паведамленні тым, каго ведаеце, Collie будзе запытваць гэтыя дазволы. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Не зараз</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Звярнуцца да службы падтрымкі</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Рэгістрацыя Signal - Праверачны код для Android</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Рэгістрацыя Collie - Праверачны код для Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Не атрымалася аднавіць гэту рэзервовую копію</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Гэтая версія Signal не дазваляе аднавіць вашу рэзервовую копію. Абнавіце да апошняй версіі і паспрабуйце яшчэ раз.</string>
+    <string name="RemoteRestoreScreen__update_latest">Гэтая версія Collie не дазваляе аднавіць вашу рэзервовую копію. Абнавіце да апошняй версіі і паспрабуйце яшчэ раз.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Абнавіць Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Абнавіць Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Не зараз</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Звярнуцца да службы падтрымкі</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Пастаянны збой падчас аднаўлення рэзервовай копіі Signal Android</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Пастаянны збой падчас аднаўлення рэзервовай копіі Collie Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Ваш уліковы запіс быў заблакаваны, каб абараніць вашу канфідэнцыйнасць і бяспеку. Пасля %1$d дзён бяздзейнасці ў сваім уліковым запісе вы зможаце паўторна зарэгістраваць гэты нумар тэлефона без уводу PIN-кода. Увесь кантэнт будзе выдалены.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Адкрыйце Signal на сваёй старой прыладзе</string>
+    <string name="QuickRestoreQRScreen__step_1">Адкрыйце Collie на сваёй старой прыладзе</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Націсніце на значок камеры </string>
     <!-- Step 3 to quick restore -->
@@ -430,7 +430,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Увядзіце свой PIN-код</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Увядзіце PIN-код, які вы стварылі, калі ўпершыню ўсталёўвалі Signal</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Увядзіце PIN-код, які вы стварылі, калі ўпершыню ўсталёўвалі Collie</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Вы нанова ўвялі код, які ўжо выкарыстоўваўся для праверкі вашага нумара тэлефона. Увядзіце ўнікальны PIN-код Signal, які вы раней стварылі для свайго ўліковага запісу.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -461,14 +461,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Звярнуцца да службы падтрымкі</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Рэгістрацыя Signal - Патрэбна дапамога з PIN-кодам для Android</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Рэгістрацыя Collie - Патрэбна дапамога з PIN-кодам для Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Дазволіць апавяшчэнні</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal жадае запытаць дазвол на апавяшчэнні. Дзякуючы гэтаму ваша прылада паказвае апавяшчэнні аб новых паведамленнях.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie жадае запытаць дазвол на апавяшчэнні. Дзякуючы гэтаму ваша прылада паказвае апавяшчэнні аб новых паведамленнях.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Не зараз</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -504,9 +504,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Праскануйце гэты код, каб звязаць свой уліковы запіс</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Адкрыць Signal на сваім тэлефоне</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Адкрыць Collie на сваім тэлефоне</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Націсніце на сваё фота профілю, каб адкрыць налады Signal</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Націсніце на сваё фота профілю, каб адкрыць налады Collie</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Націсніце на «Звязаныя прылады» і «Звязаць новую прыладу»</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -518,7 +518,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Не атрымалася згенераваць код</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Не маеце Signal на іншай прыладзе?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Не маеце Collie на іншай прыладзе?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Стварыць уліковы запіс</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -540,7 +540,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Перанесці свой уліковы запіс</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Каб перанесці свой уліковы запіс, адкрыйце Signal на сваёй старой прыладзе Android і выберыце «Перанесці ўліковы запіс».</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Каб перанесці свой уліковы запіс, адкрыйце Collie на сваёй старой прыладзе Android і выберыце «Перанесці ўліковы запіс».</string>
     <string name="DeviceTransferInstructions__continue">Працягнуць</string>
 
     <!-- Device transfer: Setup screen -->
@@ -551,11 +551,11 @@
     <string name="DeviceTransferSetup__numbers_match">Так, лічбы супадаюць</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Лічбы не супадаюць</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Чаканне падключэння да старой прылады, каб праверыць…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal патрабуе дазволу на вызначэнне месцазнаходжання, каб знайсці вашу старую прыладу і падключыцца да яе.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie патрабуе дазволу на вызначэнне месцазнаходжання, каб знайсці вашу старую прыладу і падключыцца да яе.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Даць дазвол</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal патрэбна ўключыць сэрвіс для вызначэння месцазнаходжання, каб знайсці вашу старую прыладу і падключыцца да яе.</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie патрэбна ўключыць сэрвіс для вызначэння месцазнаходжання, каб знайсці вашу старую прыладу і падключыцца да яе.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Уключыць сэрвіс для вызначэння месцазнаходжання</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal патрэбен уключаны Wi-Fi, каб знайсці вашу старую прыладу і падключыцца да яе.</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie патрэбен уключаны Wi-Fi, каб знайсці вашу старую прыладу і падключыцца да яе.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Уключыць Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">На жаль, ваша прылада не падтрымлівае Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Замест гэтага аднавіць рэзервовую копію</string>
@@ -572,7 +572,7 @@
     <string name="DeviceTransferProgress__transferring_data">Перанос даных</string>
     <string name="DeviceTransferProgress__d_messages_so_far">Ужо %1$d паведамленняў</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Немагчыма зрабіць перанос</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Перанос з навейшай версіі Signal немагчымы.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Перанос з навейшай версіі Collie немагчымы.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Не атрымалася перанесці некаторыя даныя з-за абмежавання базы даных.</string>
     <string name="DeviceTransferProgress__transfer_failed">Не атрымалася зрабіць перанос. Паўтарыце спробу.</string>
     <string name="DeviceTransferProgress__try_again">Паўтарыць спробу</string>

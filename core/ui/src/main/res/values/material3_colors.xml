@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Core colors for Material3 -->
+    <color name="signal_colorOnPrimary">@color/molly_on_primary_light</color>
+    <color name="signal_colorOnPrimaryContainer">@color/molly_on_primary_container_light</color>
+    <color name="signal_colorOnSurface">@color/signal_light_colorOnSurface</color>
+    <color name="signal_colorBackground">@color/molly_background_light</color>
+    <color name="signal_colorSurface1">@color/molly_surface_container_low_light</color>
+    <color name="signal_colorSurface2">@color/molly_surface_container_light</color>
+    <color name="signal_colorSurface5">@color/molly_surface_dim_light</color>
     <color name="signal_colorSurfaceVariantFill">@color/signal_light_colorSurfaceVariantFill</color>
     <color name="signal_neutralSurface">@color/signal_light_neutralSurface</color>
-    <color name="signal_neutralFill">@color/signal_dark_neutralFill</color>
+    <color name="signal_neutralFill">@color/signal_light_neutralFill</color>
     <color name="signal_colorOnCustom">@color/signal_light_colorOnCustom</color>
     <color name="signal_colorOnCustomVariant">@color/signal_light_colorOnCustomVariant</color>
-
     <color name="signal_colorTransparent1">@color/signal_light_colorTransparent1</color>
     <color name="signal_colorTransparent2">@color/signal_light_colorTransparent2</color>
     <color name="signal_colorTransparent3">@color/signal_light_colorTransparent3</color>
@@ -29,6 +35,7 @@
 
     <!-- Core color alpha variants -->
     <color name="signal_colorSecondaryContainer_12">#1FB7C597</color>
+    <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
     <color name="signal_colorSurface_60">#99FFF8F0</color>
     <color name="signal_colorSurfaceVariant_38">#61F8E2C0</color>
     <color name="signal_colorSurfaceVariant_64">#A3F8E2C0</color>
@@ -38,6 +45,7 @@
     <color name="signal_colorOnSurfaceVariant_60">#995A4033</color>
     <color name="signal_colorOnBackground_60">#9924130D</color>
     <color name="signal_colorOutline_38">#61687E59</color>
+    <color name="signal_colorOutlineVariant_38">#61B49D89</color>
     <color name="signal_colorBackground_0">#00FFF8F0</color>
 
     <!-- Core color alpha variants without alpha channel -->
@@ -45,6 +53,4 @@
     <color name="signal_colorSurfaceVariant_32_no_alpha">#B9A99B</color>
 
     <color name="reminder_background">#faf0dc</color>
-    <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
-    <color name="signal_colorOutlineVariant_38">#61B49D89</color>
 </resources>

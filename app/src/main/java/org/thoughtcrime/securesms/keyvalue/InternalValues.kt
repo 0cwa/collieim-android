@@ -42,7 +42,6 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
     const val CALLING_ENABLE_SVC: String = "internal.calling_enable_svc"
     const val CALLING_STATS_INTERVAL_SECS: String = "internal.calling_stats_interval_secs"
     const val CALLING_MINIMUM_CAPTURE_FPS: String = "internal.calling_minimum_capture_fps"
-    const val SHAKE_TO_REPORT: String = "internal.shake_to_report"
     const val DISABLE_STORAGE_SERVICE: String = "internal.disable_storage_service"
     const val LAST_SCROLL_POSITION: String = "internal.last_scroll_position"
     const val CONVERSATION_ITEM_V2_MEDIA: String = "internal.conversation_item_v2_media"

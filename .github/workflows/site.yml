@@ -32,6 +32,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Source evidence is committed and checked offline. No Android history or
+      # implicit object cache is required by this depth-1 checkout.
+      - name: Check reviewed source snapshot
+        run: python3 tooling/site/receipt/freeze.py --check
       - name: Check website generation
         run: python3 -m unittest discover -s tooling/site -p 'test_*.py' -v
       - name: Build the page with the latest release and upcoming features

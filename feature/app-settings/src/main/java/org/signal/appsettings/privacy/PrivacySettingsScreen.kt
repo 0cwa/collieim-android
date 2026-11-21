@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -32,18 +29,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import kotlinx.coroutines.flow.first
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
-import org.signal.core.ui.biometrics.rememberBiometricsAuthentication
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.compose.Dividers
-import org.signal.core.ui.compose.DurationPickerUnit
-import org.signal.core.ui.compose.Pickers
 import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
@@ -60,28 +51,28 @@ import org.signal.core.ui.R as CoreUiR
 @VisibleForTesting
 object PrivacySettingsTestTags {
   const val SCROLLER = "scroller"
+  const val ROW_NETWORK_CHECK_CONNECTION = "row-network-check-connection"
+  const val ROW_NETWORK_PROXY = "row-network-proxy"
   const val ROW_PHONE_NUMBER = "row-phone-number"
   const val ROW_BLOCKED = "row-blocked"
+  const val ROW_BLOCK_UNKNOWN = "row-block-unknown"
   const val ROW_READ_RECEIPTS = "row-read-receipts"
   const val ROW_TYPING_INDICATORS = "row-typing-indicators"
   const val ROW_DEFAULT_TIMER = "row-default-timer"
-  const val ROW_ENABLE_PASSPHRASE = "row-enable-passphrase"
+  const val ROW_PASSPHRASE_LOCK = "row-passphrase-lock"
   const val ROW_CHANGE_PASSPHRASE = "row-change-passphrase"
-  const val ROW_PASSPHRASE_TIMEOUT = "row-passphrase-timeout"
-  const val ROW_PASSPHRASE_TIMEOUT_INTERVAL = "row-passphrase-timeout-interval"
-  const val ROW_SCREEN_LOCK = "row-screen-lock"
+  const val ROW_AUTOMATIC_LOCKDOWN = "row-automatic-lockdown"
+  const val ROW_PASSPHRASE_LOCK_TIMEOUT = "row-passphrase-lock-timeout"
+  const val ROW_BIOMETRIC_SCREEN_LOCK = "row-biometric-screen-lock"
   const val ROW_SCREEN_SECURITY = "row-screen-security"
   const val ROW_INCOGNITO_KEYBOARD = "row-incognito-keyboard"
   const val TEXT_INCOGNITO_KEYBOARD_DISCLAIMER = "text-incognito-keyboard-disclaimer"
-  const val ROW_PAYMENT_LOCK = "row-payment-lock"
   const val ROW_ADVANCED = "row-advanced"
 }
 
-private val PASSPHRASE_TIMEOUT_UNITS = listOf(DurationPickerUnit.MINUTES, DurationPickerUnit.HOURS)
-
 /**
  * The top level privacy settings: who can see the user's number, blocked contacts, messaging privacy, disappearing
- * message defaults, app security and payment lock.
+ * message defaults and app security.
  */
 @Composable
 fun PrivacySettingsScreen(
@@ -95,13 +86,6 @@ fun PrivacySettingsScreen(
   }
 
   val listState = rememberLazyListState()
-
-  if (state.scrollToPaymentLock) {
-    LaunchedEffect(Unit) {
-      scrollToPaymentLock(listState)
-      onEvent(PrivacySettingsEvent.ScrolledToPaymentLock)
-    }
-  }
 
   Scaffolds.Settings(
     title = stringResource(R.string.PrivacySettingsScreen__privacy),
@@ -147,6 +131,16 @@ fun PrivacySettingsScreen(
       }
 
       item {
+        Rows.ToggleRow(
+          checked = state.blockUnknown,
+          text = stringResource(R.string.preferences__block_unknown),
+          label = stringResource(R.string.preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts),
+          onCheckChanged = { onEvent(PrivacySettingsEvent.BlockUnknownToggled(it)) },
+          modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_BLOCK_UNKNOWN)
+        )
+      }
+
+      item {
         Dividers.Default()
       }
 
@@ -179,6 +173,53 @@ fun PrivacySettingsScreen(
       }
 
       item {
+        Texts.SectionHeader(text = stringResource(R.string.PrivacySettingsFragment_data_at_rest))
+      }
+
+      item {
+        Rows.ToggleRow(
+          checked = state.passphraseLock,
+          text = stringResource(R.string.preferences__passphrase_lock),
+          label = stringResource(R.string.preferences__protect_molly_database_with_a_passphrase),
+          onCheckChanged = { onEvent(PrivacySettingsEvent.PassphraseLockToggled(it)) },
+          modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK)
+        )
+      }
+
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.preferences__change_passphrase),
+          enabled = state.passphraseLock,
+          onClick = { onEvent(PrivacySettingsEvent.ChangePassphraseClicked) },
+          modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE)
+        )
+      }
+
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.preferences__automatic_lockdown),
+          label = automaticLockdownSummary(state),
+          enabled = state.passphraseLock,
+          onClick = { onEvent(PrivacySettingsEvent.AutomaticLockdownClicked) },
+          modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_AUTOMATIC_LOCKDOWN)
+        )
+      }
+
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.preferences__device_lock_timeout),
+          label = passphraseLockTimeoutSummary(state.passphraseLockTimeout),
+          enabled = state.passphraseLock && state.isPassphraseLockTimeoutEnabled,
+          onClick = { onEvent(PrivacySettingsEvent.PassphraseLockTimeoutClicked) },
+          modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_PASSPHRASE_LOCK_TIMEOUT)
+        )
+      }
+
+      item {
+        Dividers.Default()
+      }
+
+      item {
         Texts.SectionHeader(text = stringResource(R.string.PrivacySettingsScreen__disappearing_messages))
       }
 
@@ -197,24 +238,20 @@ fun PrivacySettingsScreen(
         Texts.SectionHeader(text = stringResource(R.string.PrivacySettingsFragment__app_security))
       }
 
-      if (state.isObsoletePassphraseEnabled) {
-        obsoletePassphraseRows(state = state, onEvent = onEvent)
-      } else {
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.preferences_app_protection__screen_lock),
-            label = screenLockSummary(state),
-            enabled = state.isDeviceSecure,
-            onClick = { onEvent(PrivacySettingsEvent.ScreenLockClicked) },
-            onDisabledClick = { onEvent(PrivacySettingsEvent.DisabledScreenLockClicked) },
-            modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_SCREEN_LOCK)
-          )
-        }
+      item {
+        Rows.ToggleRow(
+          checked = state.biometricScreenLock,
+          text = stringResource(R.string.preferences_app_protection__screen_lock),
+          label = stringResource(R.string.PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition),
+          onCheckChanged = { onEvent(PrivacySettingsEvent.BiometricScreenLockToggled(it)) },
+          modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_BIOMETRIC_SCREEN_LOCK)
+        )
       }
 
       item {
         Rows.ToggleRow(
-          checked = state.screenSecurity,
+          checked = state.isScreenSecurityEnabled,
+          enabled = !state.isScreenSecurityForced,
           text = stringResource(R.string.preferences__screen_security),
           label = stringResource(R.string.PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app),
           onCheckChanged = { onEvent(PrivacySettingsEvent.ScreenSecurityToggled(it)) },
@@ -240,17 +277,7 @@ fun PrivacySettingsScreen(
         Dividers.Default()
       }
 
-      item {
-        Texts.SectionHeader(text = stringResource(R.string.preferences_app_protection__payments))
-      }
-
-      item {
-        PaymentLockRow(state = state, onEvent = onEvent)
-      }
-
-      item {
-        Dividers.Default()
-      }
+      networkSection(state, onEvent)
 
       item {
         Rows.TextRow(
@@ -264,34 +291,13 @@ fun PrivacySettingsScreen(
 
     when (state.dialog) {
       PrivacySettingsState.Dialog.None -> Unit
-      PrivacySettingsState.Dialog.ConfirmDisablePassphrase -> {
-        Dialogs.SimpleAlertDialog(
-          title = stringResource(R.string.ApplicationPreferencesActivity_disable_passphrase),
-          body = stringResource(R.string.ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications),
-          confirm = stringResource(R.string.ApplicationPreferencesActivity_disable),
-          dismiss = stringResource(android.R.string.cancel),
-          onConfirm = { onEvent(PrivacySettingsEvent.DisablePassphraseConfirmed) },
-          onDeny = { onEvent(PrivacySettingsEvent.DialogDismissed) },
-          onDismissRequest = { onEvent(PrivacySettingsEvent.DialogDismissed) }
-        )
-      }
-      PrivacySettingsState.Dialog.PassphraseTimeout -> {
-        Pickers.DurationDialog(
-          title = stringResource(R.string.preferences__inactivity_timeout_interval),
-          initialDuration = state.obsoletePassphraseTimeout,
-          units = PASSPHRASE_TIMEOUT_UNITS,
-          onConfirm = { onEvent(PrivacySettingsEvent.PassphraseTimeoutSelected(it)) },
-          onDismiss = { onEvent(PrivacySettingsEvent.DialogDismissed) }
-        )
-      }
-      PrivacySettingsState.Dialog.PaymentLockNeedsDeviceSecurity -> {
-        Dialogs.SimpleAlertDialog(
-          title = stringResource(R.string.PrivacySettingsFragment__cant_enable_title),
-          body = stringResource(R.string.PrivacySettingsFragment__cant_enable_description),
-          confirm = stringResource(R.string.PrivacySettingsScreen__turn_on),
-          dismiss = stringResource(R.string.PrivacySettingsScreen__not_now),
-          onConfirm = { onEvent(PrivacySettingsEvent.OpenDeviceSecuritySettingsClicked) },
-          onDeny = { onEvent(PrivacySettingsEvent.DialogDismissed) },
+      PrivacySettingsState.Dialog.AutomaticLockdown -> {
+        Dialogs.MultiSelectListDialog(
+          title = stringResource(R.string.preferences__automatic_lockdown),
+          labels = state.passphraseLockTriggerOptions.map { it.label }.toTypedArray(),
+          values = state.passphraseLockTriggerOptions.map { it.key }.toTypedArray(),
+          selection = state.passphraseLockTriggerValues.toTypedArray(),
+          onSelectionChanged = { onEvent(PrivacySettingsEvent.AutomaticLockdownSelected(it.toSet())) },
           onDismissRequest = { onEvent(PrivacySettingsEvent.DialogDismissed) }
         )
       }
@@ -299,60 +305,22 @@ fun PrivacySettingsScreen(
   }
 }
 
-/** Payment lock is the second to last row, so landing on the last row brings it fully into view. */
-private suspend fun scrollToPaymentLock(listState: LazyListState) {
-  val itemCount = snapshotFlow { listState.layoutInfo.totalItemsCount }.first { it > 0 }
-  listState.scrollToItem(itemCount - 1)
-}
-
-private fun LazyListScope.obsoletePassphraseRows(
-  state: PrivacySettingsState,
-  onEvent: (PrivacySettingsEvent) -> Unit
-) {
-  item {
-    Rows.ToggleRow(
-      checked = true,
-      text = stringResource(R.string.preferences__enable_passphrase),
-      label = stringResource(R.string.preferences__lock_signal_and_message_notifications_with_a_passphrase),
-      onCheckChanged = { onEvent(PrivacySettingsEvent.DisablePassphraseClicked) },
-      modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_ENABLE_PASSPHRASE)
-    )
+@Composable
+private fun automaticLockdownSummary(state: PrivacySettingsState): String {
+  if (state.passphraseLockTriggerValues.isEmpty()) {
+    return stringResource(CoreUiR.string.preferences__none)
   }
 
-  item {
-    Rows.TextRow(
-      text = stringResource(R.string.preferences__change_passphrase),
-      label = stringResource(R.string.preferences__change_your_passphrase),
-      onClick = { onEvent(PrivacySettingsEvent.ChangePassphraseClicked) },
-      modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_CHANGE_PASSPHRASE)
-    )
-  }
-
-  item {
-    Rows.ToggleRow(
-      checked = state.isObsoletePassphraseTimeoutEnabled,
-      text = stringResource(R.string.preferences__inactivity_timeout_passphrase),
-      label = stringResource(R.string.preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity),
-      onCheckChanged = { onEvent(PrivacySettingsEvent.PassphraseTimeoutToggled(it)) },
-      modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_PASSPHRASE_TIMEOUT)
-    )
-  }
-
-  item {
-    Rows.TextRow(
-      text = stringResource(R.string.preferences__inactivity_timeout_interval),
-      onClick = { onEvent(PrivacySettingsEvent.PassphraseTimeoutIntervalClicked) },
-      modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_PASSPHRASE_TIMEOUT_INTERVAL)
-    )
-  }
+  val labels = state.passphraseLockTriggerOptions.associate { it.key to it.label }
+  return state.passphraseLockTriggerValues.joinToString(", ") { labels[it] ?: it }
 }
 
 @Composable
-private fun screenLockSummary(state: PrivacySettingsState): String {
-  return if (state.isScreenLockOn) {
-    ExpirationUtil.getExpirationDisplayValue(LocalContext.current, state.effectiveScreenLockTimeout.inWholeSeconds.toInt())
+private fun passphraseLockTimeoutSummary(timeout: Duration): String {
+  return if (timeout <= Duration.ZERO) {
+    stringResource(R.string.AppProtectionPreferenceFragment_instant)
   } else {
-    stringResource(R.string.ScreenLockSettingsFragment__off)
+    ExpirationUtil.getExpirationDisplayValue(LocalContext.current, timeout.inWholeSeconds.toInt())
   }
 }
 
@@ -414,41 +382,68 @@ private fun IncognitoKeyboardDisclaimer(onEvent: (PrivacySettingsEvent) -> Unit)
   )
 }
 
-@Composable
-private fun PaymentLockRow(
+/** COLLIE: Inline network checks, so a connection problem can be diagnosed without leaving Privacy. */
+private fun LazyListScope.networkSection(
   state: PrivacySettingsState,
   onEvent: (PrivacySettingsEvent) -> Unit
 ) {
-  val disableBiometrics = rememberBiometricsAuthentication(
-    promptTitle = stringResource(R.string.PrivacySettingsScreen__signal),
-    proceedWhenUnavailable = false
-  )
-
-  LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-    disableBiometrics.cancelAuthentication()
+  item {
+    Texts.SectionHeader(text = stringResource(R.string.preferences__network))
   }
 
-  Rows.ToggleRow(
-    checked = state.isPaymentLockOn,
-    text = stringResource(R.string.preferences__payment_lock),
-    label = stringResource(R.string.PrivacySettingsFragment__payment_lock_require_lock),
-    onCheckChanged = { enabled ->
-      if (enabled) {
-        onEvent(PrivacySettingsEvent.EnablePaymentLockClicked)
-      } else {
-        disableBiometrics.withBiometricsAuthentication { onEvent(PrivacySettingsEvent.PaymentLockDisableAuthenticated) }
-      }
-    },
-    modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_PAYMENT_LOCK)
-  )
+  item {
+    Rows.TextRow(
+      text = stringResource(R.string.preferences_network__check_connection),
+      label = state.networkConnectionStatus.message(),
+      enabled = state.networkConnectionStatus !is PrivacySettingsState.NetworkConnectionStatus.Checking,
+      onClick = { onEvent(PrivacySettingsEvent.NetworkCheckConnectionClicked) },
+      modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_NETWORK_CHECK_CONNECTION)
+    )
+  }
+
+  item {
+    Rows.TextRow(
+      text = stringResource(R.string.preferences_use_proxy),
+      label = state.proxySummary.message(),
+      onClick = { onEvent(PrivacySettingsEvent.NetworkProxyClicked) },
+      modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_NETWORK_PROXY)
+    )
+  }
+
+  item {
+    Dividers.Default()
+  }
+}
+
+@Composable
+private fun PrivacySettingsState.NetworkConnectionStatus.message(): String {
+  return when (this) {
+    PrivacySettingsState.NetworkConnectionStatus.NotChecked -> stringResource(R.string.network_privacy_inline__not_checked)
+    is PrivacySettingsState.NetworkConnectionStatus.Checking -> if (throughProxy) {
+      stringResource(R.string.network_privacy_inline__checking_through_proxy)
+    } else {
+      stringResource(R.string.network_privacy_inline__checking)
+    }
+    PrivacySettingsState.NetworkConnectionStatus.Succeeded -> stringResource(R.string.network_privacy_inline__test_succeeded)
+    PrivacySettingsState.NetworkConnectionStatus.Failed -> stringResource(R.string.network_privacy_inline__test_failed)
+  }
+}
+
+@Composable
+private fun PrivacySettingsState.ProxySummary.message(): String {
+  return when (this) {
+    PrivacySettingsState.ProxySummary.None -> stringResource(R.string.network_privacy_inline__proxy_not_configured)
+    PrivacySettingsState.ProxySummary.Orbot -> stringResource(R.string.network_privacy_inline__proxy_orbot_configured)
+    is PrivacySettingsState.ProxySummary.Socks5 -> stringResource(R.string.network_privacy_inline__proxy_socks5_configured, host, port)
+  }
 }
 
 @Composable
 private fun PrivacySettingsState.Snackbar.message(): String? {
   return when (this) {
     PrivacySettingsState.Snackbar.None -> null
-    PrivacySettingsState.Snackbar.ScreenLockNeedsDeviceSecurity -> stringResource(R.string.preferences_app_protection__to_use_screen_lock)
-    PrivacySettingsState.Snackbar.PassphraseNotSet -> stringResource(R.string.ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet)
+    PrivacySettingsState.Snackbar.BiometricsUnavailable -> stringResource(R.string.PrivacySettingsFragment__no_biometric_features_available_on_this_device)
+    PrivacySettingsState.Snackbar.BiometricEnrollmentRequired -> stringResource(R.string.PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings)
     PrivacySettingsState.Snackbar.DeviceSecuritySettingsUnavailable -> stringResource(R.string.PrivacySettingsFragment__failed_to_navigate_to_system_settings)
   }
 }
@@ -458,10 +453,13 @@ private val previewState = PrivacySettingsState(
   readReceipts = true,
   typingIndicators = true,
   universalExpireTimer = 1.days,
-  screenLock = true,
-  screenLockTimeout = 5.minutes,
-  screenSecurity = true,
-  paymentLock = true
+  passphraseLock = true,
+  passphraseLockTriggerValues = setOf("timeout"),
+  passphraseLockTriggerOptions = listOf(PassphraseLockTriggerOption("timeout", "On inactivity timeout")),
+  isPassphraseLockTimeoutEnabled = true,
+  passphraseLockTimeout = 5.minutes,
+  biometricScreenLock = true,
+  screenSecurity = true
 )
 
 @PreviewWrapper(SignalPreviewWrapper::class)
@@ -482,7 +480,7 @@ private fun PrivacySettingsScreenDefaultsPreview() {
 @DayNightPreviews
 @Composable
 private fun PrivacySettingsScreenInsecureDevicePreview() {
-  PrivacySettingsScreen(state = previewState.copy(isDeviceSecure = false, hasPhoneNumber = false), onEvent = {})
+  PrivacySettingsScreen(state = previewState.copy(hasPhoneNumber = false), onEvent = {})
 }
 
 @PreviewWrapper(SignalPreviewWrapper::class)
@@ -490,7 +488,7 @@ private fun PrivacySettingsScreenInsecureDevicePreview() {
 @Composable
 private fun PrivacySettingsScreenPassphrasePreview() {
   PrivacySettingsScreen(
-    state = previewState.copy(isObsoletePassphraseEnabled = true, isObsoletePassphraseTimeoutEnabled = true, obsoletePassphraseTimeout = 2.hours),
+    state = previewState.copy(passphraseLockTimeout = 2.hours),
     onEvent = {}
   )
 }
@@ -498,29 +496,9 @@ private fun PrivacySettingsScreenPassphrasePreview() {
 @PreviewWrapper(SignalPreviewWrapper::class)
 @DayNightPreviews
 @Composable
-private fun PrivacySettingsScreenDisablePassphraseDialogPreview() {
+private fun PrivacySettingsScreenAutomaticLockdownDialogPreview() {
   PrivacySettingsScreen(
-    state = previewState.copy(isObsoletePassphraseEnabled = true, dialog = PrivacySettingsState.Dialog.ConfirmDisablePassphrase),
-    onEvent = {}
-  )
-}
-
-@PreviewWrapper(SignalPreviewWrapper::class)
-@DayNightPreviews
-@Composable
-private fun PrivacySettingsScreenPassphraseTimeoutDialogPreview() {
-  PrivacySettingsScreen(
-    state = previewState.copy(isObsoletePassphraseEnabled = true, dialog = PrivacySettingsState.Dialog.PassphraseTimeout),
-    onEvent = {}
-  )
-}
-
-@PreviewWrapper(SignalPreviewWrapper::class)
-@DayNightPreviews
-@Composable
-private fun PrivacySettingsScreenPaymentLockDialogPreview() {
-  PrivacySettingsScreen(
-    state = previewState.copy(isDeviceSecure = false, dialog = PrivacySettingsState.Dialog.PaymentLockNeedsDeviceSecurity),
+    state = previewState.copy(dialog = PrivacySettingsState.Dialog.AutomaticLockdown),
     onEvent = {}
   )
 }

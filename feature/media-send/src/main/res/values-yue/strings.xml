@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">去影相</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal 要有權限先可以顯示你嘅相片同影片</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie 要有權限先可以顯示你嘅相片同影片</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">允許存取</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">搵唔到任何相或者影片。Signal 只可以用你揀咗嘅相片同影片。</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">搵唔到任何相或者影片。Collie 只可以用你揀咗嘅相片同影片。</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal 得有限存取權用你嘅相或者影片</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie 得有限存取權用你嘅相或者影片</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">管理</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">顯示相片同影片：</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Signal 要有存取權先可以顯示你啲相同影片。</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Collie 要有存取權先可以顯示你啲相同影片。</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">揀相</string>
@@ -208,7 +208,7 @@
         <item quantity="other">%1$d 個項目設定咗做標準品質</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Signal 要攞「儲存裝置」權限先可以儲存到外置儲存裝置，但權限已被永久拒絕。請到呢個 app 嘅設定版面，揀選「權限」，然後啟用「儲存裝置」。</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Collie 要攞「儲存裝置」權限先可以儲存到外置儲存裝置，但權限已被永久拒絕。請到呢個 app 嘅設定版面，揀選「權限」，然後啟用「儲存裝置」。</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">影片會冇聲效咁發送</string>
 
@@ -229,7 +229,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">轉移唔到帳戶</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">你轉移緊去嘅裝置已經過時。喺嗰部裝置更新 Signal 然後再試。</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">你轉移緊去嘅裝置已經過時。喺嗰部裝置更新 Collie 然後再試。</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

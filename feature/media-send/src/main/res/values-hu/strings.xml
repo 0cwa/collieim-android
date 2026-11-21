@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Tovább a Kamerába</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">A Signalnak engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">A Collienak engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Hozzáférés engedélyezése</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Nincsenek fotók vagy videók. A Signal csak az általad kiválasztott fotókhoz és videókhoz fér hozzá.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Nincsenek fotók vagy videók. A Collie csak az általad kiválasztott fotókhoz és videókhoz fér hozzá.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">A Signal korlátozott hozzáféréssel rendelkezik a fotókhoz és videókhoz</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">A Collie korlátozott hozzáféréssel rendelkezik a fotókhoz és videókhoz</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Kezelés</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Fotók és videók megjelenítése:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">A Signalnak hozzáférési engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">A Collienak hozzáférési engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Fotó</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d elem normál minőségre van állítva</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">A Signalnak szüksége van a Tárhely engedélyre ahhoz, hogy külső tárolóra menthessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-t.</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">A Collienak szüksége van a Tárhely engedélyre ahhoz, hogy külső tárolóra menthessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-t.</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">A videó hang nélkül kerül elküldésre</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">A fiók nem helyezhető át</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Az áthelyezésre használt eszköz elavult. Frissítsd a Signalt az adott eszközön, és próbáld újra!</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Az áthelyezésre használt eszköz elavult. Frissítsd a Colliet az adott eszközön, és próbáld újra!</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

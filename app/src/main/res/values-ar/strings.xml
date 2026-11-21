@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -38,9 +35,6 @@
 
     <!-- ApplicationPreferencesActivity -->
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">حدث خطأ خلال الاتصال بالخادم!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -149,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">بطاقة الائتمان أو الخصم</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">يُرجى إدخال معلومات بطاقتك. لا يقوم سيجنال بجمع أو تخزين معلوماتك الشخصية.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">رقم البطاقة</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">الشهر/السنة</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">رقم التحقُّق (CVV)</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">رقم البطاقة غير صحيح</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">انتهت صلاحية بطاقتك</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">الرمز قصير جدًا</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">الرمز طويل جدًا</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">رمز غير صحيح</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">شهر غير صحيح</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">يُرجى إدخال السنة</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">سنة غير صحيحة</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">تبرّع بـ %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">تبرّع بـ %1$s/شهريًا</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">تبرّع بـ %1$s/شهريًا</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">%1$s لمرّة واحدة</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">التبرّع مُعلَّق</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">جارٍ معالجة التبرّع</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">هل ترغبُ بحظر مجموعة %1$s وتركها؟</string>
@@ -353,7 +366,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">حذفَ %1$s هذه الرسالة</string>
     <string name="ConversationItem_you_deleted_this_message">حذفتَ هذه الرسالة</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">حذفَ المُشرِف %1$s هذه الرسالة.</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -528,6 +540,8 @@
     <string name="ConversationFragment_deleting_messages">يجري حذف الرسائل…</string>
     <string name="ConversationFragment_delete_for_me">احذف من عندي</string>
     <string name="ConversationFragment_delete_for_everyone">احذف للجميع</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">تمَّ الحذف لدي</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="zero">هل ترغبُ بحذف الرسائل المُحدَّدة؟</item>
@@ -1202,7 +1216,7 @@
     <string name="ExpiredBuildReminder_update_now">حدِّث الآن</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">لم يعُد تطبيق Signal يَعمل على هذا الجهاز. لاستخدام التطبيق مرّة أخرى، قُم بتحديث الأندرويد على جهازك إلى إصدار أحدث أو قُم بالتغيير إلى جهاز أحدث.</string>
+    <string name="DeprecatedSdkBanner_body">لم يعُد تطبيق Collie يَعمل على هذا الجهاز. لاستخدام التطبيق مرّة أخرى، قُم بتحديث الأندرويد على جهازك إلى إصدار أحدث أو قُم بالتغيير إلى جهاز أحدث.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">تحديث سيجنال</string>
@@ -3296,8 +3310,6 @@
     <string name="KeyCachingService_lock">اقفِل سيجنال</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">ملف الوسائط لم يعد مُتاحًا.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">تعذَّر تشغيل الوسائط.</string>
@@ -3307,7 +3319,6 @@
     <string name="MediaPreviewFragment_edit_media_error">خطأ في ملف الوسائط</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">خطأ في حذف الرسالة. قد تكون الرسالة لا زالت موجودة.</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">مشاركة</string>
 
     <!-- MessageNotifier -->
@@ -4134,21 +4145,15 @@
     <string name="preferences__notifications">الإشعارات</string>
     <string name="preferences__led_color_unknown">مجهول</string>
     <string name="preferences__silent">صامت</string>
+    <string name="preferences__donate_to_signal">التبرُّع لسيجنال</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">القِصَص</string>
     <string name="preferences__payments">عمليات الدفع</string>
     <string name="preferences__linked_devices">الأجهزة المُرتبِطة</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">إرسال سجل الأخطاء</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">تذكيرات عدم القراءة</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">عنوان البروكسي</string>
     <string name="preferences_only_use_a_proxy_if">استخدِم البروكسي فقط إذا تعذَّر عليك الاتصال بسيجنال عبر بيانات الجوّال أو عبر الواي فاي.</string>
     <string name="preferences_share">مشاركة</string>
@@ -4162,8 +4167,6 @@
     <string name="preferences_success">نجاح</string>
     <string name="preferences_failed_to_connect">فشِل الاتصال</string>
     <string name="preferences_enter_proxy_address">أدخِل عنوان البروكسي</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
 
 
     <!-- Internal only preferences -->
@@ -4551,9 +4554,6 @@
     <string name="reminder_cds_permanent_error_body">لا يُمكن لميزة اكتشاف جهات الاتصال الخاصة في سيجنال مُعالجة جهات اتصال هاتفك.</string>
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">اعرف المزيد</string>
-
-    <!-- media_preview -->
-
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -5517,7 +5517,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5861,7 +5860,13 @@
 
     <string name="ImageView__badge">شارة</string>
 
+    <string name="SubscribeFragment__cancel_subscription">إلغاء الاشتراك</string>
+    <string name="SubscribeFragment__confirm_cancellation">هل ترغب بتأكيد الإلغاء؟</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">لن يتم خصم المبلغ مرّة أخرى. سَتتم إزالة شارتِك من حسابك الشخصي في نهاية المدة الزمنية لإعداد الفواتير.</string>
+    <string name="SubscribeFragment__not_now">ليس الآن</string>
+    <string name="SubscribeFragment__confirm">تأكيد</string>
     <string name="SubscribeFragment__update_subscription">تحديث الاشتراك</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">تمَّ إلغاء اشتراكك.</string>
     <string name="SubscribeFragment__update_subscription_question">هل ترغبُ بتحديث الاشتراك؟</string>
     <string name="SubscribeFragment__update">تحديث</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">سَتدفع مبلغ (%1$s) بالكامل من سعر الاشتراك الجديد اليوم. وسَيتجدَّد اشتراكك الجديد شهريًا.</string>
@@ -5873,38 +5878,66 @@
     <string name="Subscription__expires_s">سَتنتهي الصلاحية في %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">بصفتها شركة غير ربحية، سيجنال ملتزمة بتقديم مراسلة ومكالمات خاصة. بدون إعلانات، وبدون تعقُّب، وبدون مراقبة. تبرَّع اليوم لدعم سيجنال.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">احصل على شارة اختيارية على حسابك الشخصي عند التبرُّع.</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">خصوصيتك هي مهمتنا</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">سيجنال شركة غير ربحية.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">شكرا لدعمك!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">حصلتَ على شارة مُتبرِّع من سيجنال! اعرضها في حسابك الشخصي لإظهار دعمك.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">يُمكنك أيضًا</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">أن تكون داعمًا شهريًا.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">عرض في الحساب الشخصي</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">اصنع شارة مُميَّزة</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">متابعة</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">عندما يكون لديك أكثر من شارة واحدة، يُمكنك اختيار واحدة لإظهارها ليراها الآخرين في حسابك الشخصي.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">تبرَّع لسيجنال</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">المزيد</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">الدعم الخاص بي</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">إيصالات التبرُّعات</string>
+    <string name="ManageDonationsFragment__badges">الشارات</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">الأسئلة الشائعة للمُتبرِّعين</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">طرُق أخرى للتبرُّع</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">التبرُّع نيابةً عن صديق</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">تعذَّر تأكيد التبرُّع</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">تعذَّر تأكيد تبرُّعك بـ %1$s/شهريًا. يُرجى التحقُّق من تطبيق مصرفك لتأكيد عملية دفع iDEAL | Wero الخاصة بك.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">تعذَّر تأكيد تبرُّعك بـ %1$s لمرّة واحدة. يُرجى التحقُّق من تطبيق مصرفك لتأكيد عملية دفع iDEAL | Wero الخاصة بك.</string>
 
+    <string name="Boost__enter_custom_amount">أدخِل مبلغ مُخَصَّص</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">الحد الأدنى الذي يُمكنك التبرُّع به هو %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/شهر</string>
+    <string name="MySupportPreference__renews_s">يتجدَّد في %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">تجري معالجة المعاملة…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">تعذَّر إضافة الشارة. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">يُرجى التواصل مع فريق الدعم.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">عملية الدفع مُعلَّقة</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">تحويلك المصرفي بمبلغ %1$s مُعلَّق. عادة ما يستغرق إكمال التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">اعرف المزيد</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">جارٍ التحقُّق من الاشتراك…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">تحديث سيجنال</string>
@@ -5941,9 +5974,11 @@
     <string name="Subscription__get_a_s_badge">احصل على شارة %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">جارٍ معالجة التبرُّع…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">%1$d مُتكرِّر</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5962,8 +5997,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">حدث خطأ أثناء معالجة التبرُّع</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">جرِّب بطاقة أخرى للدفع أو تواصَل بالمصرف الذي تتعامل معه للمزيد من المعلومات.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">اعرف المزيد</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">حدث خطأ أثناء معالجة التبرُّع. %1$s</string>
     <string name="DonationsErrors__your_payment">تعذَّرت معالجة تبرّعك ولم يتم تحصيل رسوم منك. يُرجى إعادة المُحاولة مرّة أخرى.</string>
     <string name="DonationsErrors__still_processing">ما زال قيد المعالجة</string>
     <string name="DonationsErrors__couldnt_add_badge">تعذَّرت إضافة الشارة</string>
@@ -5981,6 +6019,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">تمَّت مُعالجة عملية التبرُّع الخاصة بك ولكن لم يتمكّن سيجنال من إرسال رسالة التبرُّع. يُرجى التواصل مع فريق الدعم.</string>
     <string name="DonationsErrors__your_badge_could_not">تعذَّرت إضافة شارتك إلى حسابك، ولكن يُمكن أن يكون المبلغ خُصِمَ من حسابك. يُرجى التواصل مع فريق الدعم.</string>
     <string name="DonationsErrors__your_payment_is_still">لا يزال تبرُّعك قيد المعالجة. قد يستغرق الأمر بضع دقائق حسب اتصال شبكتك.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">فشل إلغاء الاشتراك</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">يتطلب إلغاء الاشتراك اتصالًا بالإنترنت.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">لا يدعم جهازك التبرُّعات داخل التطبيق، لذلك لا يُمكنك الاشتراك لِربح شارة. لا يزال بإمكانك دعم سيجنال بالتبرُّع على موقعنا الإلكتروني.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">حدث خطأ في الشبكة. يُرجى التحقُّق من اتصالك بالانترنت ثم حاوِل مرّة أخرى.</string>
     <string name="NetworkFailure__retry">إعادة المُحاولة</string>
@@ -5989,6 +6029,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">لا يُمكن لهذا المُستخدم تلقّي التبرُّعات حتى يقوم بترقية تطبيق سيجنال.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">لم يتم التمكُّن من معالجة تبرُّع iDEAL | Wero الخاص بك. جرِّب طريقة دفع أخرى أو تواصَل مع المصرف الذي تتعامل معه للمزيد من المعلومات.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">التبرُّع نيابةً عن %1$s</string>
@@ -6193,19 +6234,33 @@
     <string name="ReleaseNotes__keep_up_to_date">ابقَ على اطِّلاع على آخر الأخبار وملاحظات الإصدارات</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">كل النشاطات</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">الجميع</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">مُتكرِّرة</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">لمرّة واحدة</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">نيابةً عن صديق</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">التبرُّع نيابةً عن صديق</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">نوع التبرُّع</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">تاريخ الدفع</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">مشاركة الإيصال</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">إذا أعدت تثبيت سيجنال، فلن تصبح إيصالات التبرُّعات السابقة متاحة.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">إيصال التبرُّع</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">المبلغ</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">شكرًا لك على دعم سيجنال. تساعدنا مساهمتكم على دعم مهمة حماية حرية التعبير وتمكين التواصل العالمي الآمن لملايين الأشخاص حول العالم، وذلك من خلال تقنية الخصوصية مفتوحة المصدر. إذا كُنتَ من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا الإيصال لتقديمه إلى مصلحة الضرائب. مؤسسة سيجنال‬ للتكنولوجيا هي منظمة غير ربحية معفاة من الضرائب ومُسجَّلة في الولايات المتحدة ضمن البند 501c3 من قانون الإيرادات الداخلية. مُعرِّفنا الضريبي هو 4506840-82. لا يُقدِّم سيجنال أي بضائع أو خدمات مقابل هذه المساهمة.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">لا توجد إيصالات</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6928,17 +6983,27 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">شركة غير ربحية بالفعل</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">متابعة</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">تبرَّع لدعم المراسلة الخصوصية. ساعِد في إبقاء سيجنال مستقلًا وخاليًا من الإعلانات.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">لديك تبرُّع مُعلَّق</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">عادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل. يُرجى الانتظار حتى اكتمال عملية الدفع هذه قبل تحديث اشتراكك.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">عادة ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل. يُرجى الانتظار حتى اكتمال عملية الدفع هذه قبل التبرُّع مرّة أخرى.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">لا يزال تبرُّعك قيد المعالجة. قد يستغرق الأمر بضع دقائق حسب اتصال شبكتك. يُرجى الانتظار حتى اكتمال عملية الدفع هذه قبل تحديث اشتراكك.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">لا يزال تبرُّعك قيد المعالجة. قد يستغرق الأمر بضع دقائق حسب اتصال شبكتك. يُرجى الانتظار حتى اكتمال عملية الدفع هذه قبل التبرُّع مرّة أخرى.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">لا يزال تبرُّع iDEAL | Wero الخاص بك قيد المعالجة. تفقَّد تطبيق مصرفك للموافقة على عملية الدفع الخاصة بك قبل التبرُّع مرّة أخرى.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">مبلغ التبرُّع كبير جدًا</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">يُمكنك إرسال ما يصل إلى %1$s عبر تحويل مصرفي. جرِّب مبلغًا مختلفًا أو طريقة دفع أخرى.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">شهريًا</string>
@@ -6947,8 +7012,11 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">تبرَّع بـ %1$s/شهريًا لسيجنال</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">احصل على شارة %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">تبرّع بـ %1$s لسيجنال</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="zero">احصل على شارة %1$s لمدة %2$d يوم</item>
@@ -6959,69 +7027,118 @@
         <item quantity="other">احصل على شارة %1$s لمدة %2$d يوم</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">تحويل مصرفي</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">بطاقة الائتمان أو الخصم</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">التبرُّع نيابةً عن صديق</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">هل ترغبُ بمغادرة سيجنال لتأكيد التبرُّع؟</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">بعد التأكيد، ارجع إلى سيجنال لإنهاء معالجة تبرُّعك.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">سَيتم توجيهك إلى %1$s. بعد التأكيد، ارجع إلى سيجنال لإكمال معالجة تبرُّعك.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">تحويل مصرفي</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">يُعالج Stripe التبرُّعات المُقدَّمة لسيجنال. لا يقوم سيجنال بجمع أو تخزين معلوماتك الشخصية. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">اعرف المزيد</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">موافق</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">اقرأ المزيد</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">تعذَّر تحميل الطلب</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">أدخِل معلومات المصرف الذي تتعامل معه وبريدك الإلكتروني. يستخدم Stripe هذا البريد الإلكتروني لإرسال تحديثات متعلقة بتبرُّعاتك. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">اعرف المزيد</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">الاسم كما يظهر في الحساب المصرفي</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">البريد الإلكتروني</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">العثور على معلومات الحساب</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">تبرّع بـ %1$s/شهريًا</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">تبرّع بـ %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">رقم IBAN قصير جدًا</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">رقم IBAN طويل جدًا</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">كود الدولة للـ IBAN غير مدعوم.</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">رقم IBAN غير صحيح</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">3 رموز كحدٍ أدنى</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">عنوان بريد إلكتروني غير صحيح</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">أدخِل اسمك وبريدك الإلكتروني. يستخدم Stripe هذا البريد الإلكتروني لإرسال تحديثات متعلقة بتبرُّعاتك. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">أدخِل معلومات المصرف الذي تتعامل معه. سيجنال لا يجمع أو يُخزِّن معلوماتك الشخصية.</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">اعرف المزيد</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">الاسم كما يظهر في الحساب المصرفي</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">البريد الإلكتروني</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">قُم بتأكيد تبرُّع iDEAL | Wero الخاص بك</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">لإعداد تبرُّعك المُتكرِّر، انقر على \"متابعة\" لتأكيد خصم €0,01 مع المصرف الذي تتعامل معه. سَيتم استرداد هذه القيمة تلقائيًا وسَيسمح هذا بخصم تبرُّعك بقيمة %1$s/شهريًا من حسابك.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">متابعة</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">العثور على معلومات حسابك</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">ابحث عن رقم IBAN الخاص بك في الجزء العلوي من كشف حسابك المصرفي. يَحتوي رقم IBAN على ما يصل إلى 34 رمزًا (حروف وأرقام). يَجب أن يتطابق الاسم الذي تُدخله مع اسمك الكامل في حسابك المصرفي. يُرجى الاتصال بمصرفك لمزيد من المعلومات.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">التبرُّّع مُعلَّق</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">تبرُّعك الشهري مُعلَّق. ستتمكّن من عرض شارتك %1$s على حسابك الشخصي فور استلام تبرُّعك.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">تبرُّعك لمرّة واحدة مُعلَّق. ستتمكّن من عرض شارتك %1$s على حسابك الشخصي فور استلام تبرُّعك.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">عادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">اعرف المزيد</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">تمّ</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">تعذَّرت معالجة التبرُّع.</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">نُواجه مشكلة في معالجة التحويل المصرفي الخاص بك. لم تُحصّل أي رسوم منك. يُرجى محاولة طريقة أخرى للدفع أو الاتصال بالمصرف الذي تتعامل معه للمزيد من المعلومات.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">حاوِل مُجدَّدًا</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">ليس الآن</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">اكتمل التبرُّع</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">تمَّ استلام حوالتك المصرفية. يُمكنك اختيار عرض هذه الشارة على حسابك الشخصي لإظهار دعمك.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">جارٍ الإلغاء…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">تمَّت معالجة عدد كبير جدًا من جهات الاتصال.</string>
@@ -7057,6 +7174,11 @@
     <string name="PaymentMessageView_s_sent_you">أرسلَ لك %1$s</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">سيتمُّ المحافظة على خصوصية معلوماتك.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">لا يقوم سيجنال بجمع أو تخزين معلوماتك الشخصية عند قيامك بتبرُّع.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">نستخدم Stripe كمعالج عمليات الدفع الخاصة بنا لتلقّي تبرُّعاتك. لا يُمكننا الوصول إلى أو تخزين أو حفظ أي من المعلومات التي تُقدُّمها.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">لا يقوم تطبيق سيجنال بربط تبرُّعاتك بحسابك على سيجنال.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">شكرًا لدعمك!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -7071,6 +7193,8 @@
     <string name="GroupStoryEducationSheet__next">التالي</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">تبرَّع</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">عمليات الدفع</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7538,10 +7662,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s اسمح بإشعارات بملء الشاشة</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">تمَّ إلغاء التبرُّعات الشهرية</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">تمَّ إلغاء التبرُّع الشهري المُتكرِّر. %1$s\n\nلن تبقى شارتك ظاهرة على حسابك الشخصي. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">اعرف المزيد</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">تجديد الاشتراك</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">ليس الآن</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7821,6 +7950,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -8530,6 +8660,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">البروكسي</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">تبرَّع</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -9064,8 +9195,6 @@
     <string name="ResetRecoveryKeyBottomSheet__continue">متابعة</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">استنفدت عدد المفاتيح التي يمكنك إنشاؤها. سيصبح بإمكانك إنشاء مفتاح استعادة جديد في 7 أيام.</string>
-
-    <string name="ConversationFragment__deleted_for_me">تمَّ الحذف لدي</string>
 
     <!-- EOF -->
 </resources>

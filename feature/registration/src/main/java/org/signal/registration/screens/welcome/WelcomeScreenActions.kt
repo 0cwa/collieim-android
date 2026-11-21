@@ -8,4 +8,7 @@ package org.signal.registration.screens.welcome
 sealed interface WelcomeScreenActions {
   /** Open the terms and privacy policy page. */
   data object ViewTermsAndPrivacy : WelcomeScreenActions
+
+  /** MOLLY: Open the app's proxy and network settings. */
+  data object ViewProxySettings : WelcomeScreenActions
 }

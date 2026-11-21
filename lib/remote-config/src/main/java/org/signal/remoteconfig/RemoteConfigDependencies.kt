@@ -18,6 +18,10 @@ interface RemoteConfigDependencies {
   /** Whether this build should always be treated as an internal user. */
   val isInternalBuild: Boolean
 
+  /** MOLLY: Whether [remoteConfigValues] can be read. It cannot while the app is locked. */
+  val isStoreReady: Boolean
+    get() = true
+
   /** Where the config, its pending replacement, and any local overrides are persisted. */
   val remoteConfigValues: RemoteConfigValues
 

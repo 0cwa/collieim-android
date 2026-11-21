@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Registreeri konto uuesti</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Uuenda Signalit</string>
+    <string name="preferences_account_update_signal">Uuenda Collieit</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Kustuta kõik andmed</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Aruande loomine …</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Sinu aruanne luuakse ainult ekspordi hetkel ja Signal ei salvesta seda sinu seadmesse.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Sinu aruanne luuakse ainult ekspordi hetkel ja Collie ei salvesta seda sinu seadmesse.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Sa pole veel paroolfraasi määranud!</string>
     <string name="ApplicationPreferencesActivity_disable">Keela</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Kas keelata paroolfraas?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">See lukustab Signali ja teavitused püsivalt lahti.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">See lukustab Colliei ja teavitused püsivalt lahti.</string>
     <string name="PrivacySettingsFragment__app_security">Rakenduse turvalisus</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Blokeeri kuvatõmmised hiljutiste nimekirjas ja rakenduse sees</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">See säte ei anna garantiid ja su klaviatuur võib seda ignoreerida.</string>
     <string name="preferences__typing_indicators">Trükkimise sümbolid</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Vali, kes sinu telefoninumbrit näevad ja sinuga selle kaudu Signalis ühendust saavad võtta.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Vali, kes sinu telefoninumbrit näevad ja sinuga selle kaudu Collieis ühendust saavad võtta.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Maksed</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Mitte praegu</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Rohkem teavet</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Sinu varukoopiate tellimust ei saanud laadida</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Anneta Collieile</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Sisemised eelistused</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Sinu profiil ja selle muudatused on nähtavad nendele, kellega sõnumeid oled vahetanud, kontaktidele ja gruppidele.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Uuenda Signalit</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Uuenda Collieit</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">See Signali versioon on aegunud. Signali kasutamise jätkamiseks uuenda nüüd.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">See Colliei versioon on aegunud. Colliei kasutamise jätkamiseks uuenda nüüd.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Uuenda</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Sulge</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Toeta Signalit ja teeni oma profiilile märke.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal on ilma reklaamide ja investoriteta mittetulundusühing, mida toetavad ainult inimesed nagu sina.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Hakka toetajaks</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,19 +1014,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Seda kasutajat ei leitud.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR-koodi skannimiseks vajab Signal ligipääsu kaamerale.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR-koodi skannimiseks vajab Collie ligipääsu kaamerale.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Luba ligipääs</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal vajab QR-koodide skannimiseks ligipääsu kaamerale</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie vajab QR-koodide skannimiseks ligipääsu kaamerale</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Mäluruum</string>
     <string name="preferences_storage__storage_usage">Mäluruumi kasutus</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signali salvestusruum</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Colliei salvestusruum</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimeeri Signali salvestusruumi</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimeeri Colliei salvestusruumi</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Kasutamata meedia teisaldatakse seadmevälisesse varukoopiasse, kuid saad neid igal ajal oma varukoopiast alla laadida.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Valija avamine nurjus.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Teavituste näitamiseks vajab Signal nende kuvamise luba.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Teavituste näitamiseks vajab Collie nende kuvamise luba.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Lülita sisse</string>
     <string name="NotificationsSettingsFragment__calls">Kõned</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Tsensuurivaba ligipääs</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Tsensuurivaba ligipääs</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Kui on lubatud, siis püüab Signal tsenseerimisest mööda hiilida. Luba see funktsioon vaid siis, kui oled kohas, kus Signal on tsenseeritud.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Kui on lubatud, siis püüab Collie tsenseerimisest mööda hiilida. Luba see funktsioon vaid siis, kui oled kohas, kus Collie on tsenseeritud.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Tsensuurivaba ligipääs on aktiveeritud sinu konto telefoninumbri tõttu.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automaatne võtme kinnitamine</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Kui see on lubatud, proovib Signal automaatselt kontrollida üks-ühele vestluste krüptimist.</string>
+    <string name="preferences_automatic_key_verification_body">Kui see on lubatud, proovib Collie automaatselt kontrollida üks-ühele vestluste krüptimist.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

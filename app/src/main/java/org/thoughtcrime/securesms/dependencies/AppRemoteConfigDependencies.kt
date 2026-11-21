@@ -29,6 +29,9 @@ object AppRemoteConfigDependencies : RemoteConfigDependencies {
   override val isInternalBuild: Boolean
     get() = Environment.isInternal()
 
+  override val isStoreReady: Boolean
+    get() = SignalStore.isInitialized
+
   override val remoteConfigValues: RemoteConfigValues
     get() = SignalStore.remoteConfig
 

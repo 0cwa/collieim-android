@@ -1493,6 +1493,7 @@ object DataMessageProcessor {
 
       val sharedContact = quotedMessage.sharedContacts.firstOrNull()
       val body = when {
+        // MOLLY: Keep legacy payment quotes localized, even if the payments database is gone.
         quotedMessage.isPaymentNotification -> quotedMessage.getDisplayBody(context).toString()
         sharedContact != null -> sharedContact.quoteText(context)
         else -> quotedMessage.body

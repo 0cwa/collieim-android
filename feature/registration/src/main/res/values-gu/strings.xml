@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">પરવાનગીઓને મંજૂરી આપો</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">તમે જાણતા હોય તેવા લોકોને મેસેજ મોકલવામાં તમારી સહાય કરવા માટે, Signal આ પરવાનગીઓની વિનંતી કરશે. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">તમે જાણતા હોય તેવા લોકોને મેસેજ મોકલવામાં તમારી સહાય કરવા માટે, Collie આ પરવાનગીઓની વિનંતી કરશે. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">અત્યારે નહીં</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">સપોર્ટનો સંપર્ક કરો</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal રજીસ્ટ્રેશન - Android માટે ચકાસણી કોડ</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie રજીસ્ટ્રેશન - Android માટે ચકાસણી કોડ</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">આ બેકઅપ રિસ્ટોર કરી શકાયું નથી</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Signalનું આ વર્ઝન તમારું બેકઅપ રિસ્ટોર કરી શકતું નથી. લેટેસ્ટ વર્ઝન પર અપડેટ કરો અને ફરી પ્રયાસ કરો.</string>
+    <string name="RemoteRestoreScreen__update_latest">Collieનું આ વર્ઝન તમારું બેકઅપ રિસ્ટોર કરી શકતું નથી. લેટેસ્ટ વર્ઝન પર અપડેટ કરો અને ફરી પ્રયાસ કરો.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signalને અપડેટ કરો</string>
+    <string name="RemoteRestoreScreen__update_signal">Collieને અપડેટ કરો</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">અત્યારે નહીં</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">સપોર્ટનો સંપર્ક કરો</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android બેકઅપ રિસ્ટોર કાયમી નિષ્ફળતા</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android બેકઅપ રિસ્ટોર કાયમી નિષ્ફળતા</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">તમારી ગોપનીયતા અને સુરક્ષાને સુરક્ષિત રાખવા માટે તમારું એકાઉન્ટ લૉક કરવામાં આવ્યું છે. તમારા એકાઉન્ટમાં %1$d દિવસની નિષ્ક્રિયતા પછી તમે તમારા પિન વિના આ ફોન નંબરને ફરીથી રજીસ્ટર કરાવી શકશો. બધી માહિતી ડિલીટ કરવામાં આવશે.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">તમારા જૂના ડિવાઇસ પર Signal ખોલો</string>
+    <string name="QuickRestoreQRScreen__step_1">તમારા જૂના ડિવાઇસ પર Collie ખોલો</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">કેમેરા આઇકન પર ટેપ કરો </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">તમારો પિન દાખલ કરો</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">તમે સૌપ્રથમ Signal ઇન્સ્ટોલ કર્યું ત્યારે તમે બનાવેલ પિન દાખલ કરો</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">તમે સૌપ્રથમ Collie ઇન્સ્ટોલ કર્યું ત્યારે તમે બનાવેલ પિન દાખલ કરો</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">તમે તમારા ફોન નંબરની વેરિફાય કરવા માટે પહેલાથી ઉપયોગમાં લેવાયેલો કોડ ફરીથી દાખલ કર્યો છે. એ અનન્ય Signal પિન દાખલ કરો જે તમે અગાઉ તમારા એકાઉન્ટ માટે પસંદ કર્યો હતો.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">સપોર્ટનો સંપર્ક કરો</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal  રજીસ્ટ્રેશન- Android માટે પિન સાથે સહાયની જરૂર છે</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie  રજીસ્ટ્રેશન- Android માટે પિન સાથે સહાયની જરૂર છે</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">નોટિફિકેશનને પરવાનગી આપો</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal નોટિફિકેશન પરવાનગીઓની વિનંતી કરવા માંગે છે. આ જ્યારે નવા મેસેજ આવે ત્યારે તમારા ડિવાઇસને એલર્ટ દર્શાવવાની મંજૂરી આપે છે.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie નોટિફિકેશન પરવાનગીઓની વિનંતી કરવા માંગે છે. આ જ્યારે નવા મેસેજ આવે ત્યારે તમારા ડિવાઇસને એલર્ટ દર્શાવવાની મંજૂરી આપે છે.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">અત્યારે નહીં</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">તમારા એકાઉન્ટને લિંક કરવા આ કોડ સ્કેન કરો</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">તમારા ફોન પર Signal ખોલો</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">તમારા ફોન પર Collie ખોલો</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Signal સેટિંગ્સ ખોલવા માટે તમારી પ્રોફાઇલ પર ટેપ કરો</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Collie સેટિંગ્સ ખોલવા માટે તમારી પ્રોફાઇલ પર ટેપ કરો</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">\"લિંક કરેલું ડિવાઇસ\" અને પછી \"નવું ડિવાઇસ લિંક કરો\" પર ટેપ કરો</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">કોડ જનરેટ કરવાનું નિષ્ફળ થયું</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">અન્ય ડિવાઇસ પર Signal નથી?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">અન્ય ડિવાઇસ પર Collie નથી?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">એકાઉન્ટ બનાવો</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">હા, નંબર મેચ થાય છે</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">નંબર મેચ થતાં નથી</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">તમારા જૂના ડિવાઇસને વેરિફાય કરવાની રાહ જોઈએ છીએ…</string>
-    <string name="DeviceTransferSetup__location_permission_required">તમારા જૂના ડિવાઇસને શોધવા અને કનેક્ટ કરવા માટે Signalને લોકેશન પરવાનગીની જરૂર છે.</string>
+    <string name="DeviceTransferSetup__location_permission_required">તમારા જૂના ડિવાઇસને શોધવા અને કનેક્ટ કરવા માટે Collieને લોકેશન પરવાનગીની જરૂર છે.</string>
     <string name="DeviceTransferSetup__grant_location_permission">પરવાનગી આપો</string>
-    <string name="DeviceTransferSetup__location_services_required">તમારા જૂના ડિવાઇસને શોધવા અને કનેક્ટ કરવા માટે Signalને લોકેશન સેવાઓ સક્ષમ કરવાની જરૂર છે.</string>
+    <string name="DeviceTransferSetup__location_services_required">તમારા જૂના ડિવાઇસને શોધવા અને કનેક્ટ કરવા માટે Collieને લોકેશન સેવાઓ સક્ષમ કરવાની જરૂર છે.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">લોકેશન સેવાઓ ચાલુ કરો</string>
-    <string name="DeviceTransferSetup__wifi_required">તમારા જૂના ડિવાઇસને શોધવા અને તેની સાથે કનેક્ટ કરવા Signal માટે જરૂરી છે કે Wi-Fi ચાલુ હોવું જોઈએ.</string>
+    <string name="DeviceTransferSetup__wifi_required">તમારા જૂના ડિવાઇસને શોધવા અને તેની સાથે કનેક્ટ કરવા Collie માટે જરૂરી છે કે Wi-Fi ચાલુ હોવું જોઈએ.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Wi-Fi ચાલુ કરો</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">માફ કરશો, એવું લાગે છે કે તમારું ડિવાઇસ Wi-Fi Directને સપોર્ટ કરતું નથી.</string>
     <string name="DeviceTransferSetup__restore_a_backup">તેના બદલે કોઈ બેકઅપ રિસ્ટોર કરો</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">ડેટા ટ્રાન્સફર કરી રહ્યા છીએ</string>
     <string name="DeviceTransferProgress__d_messages_so_far">%1$d મેસેજ અત્યાર સુધી</string>
     <string name="DeviceTransferProgress__unable_to_transfer">ટ્રાન્સફર કરવામાં અસમર્થ</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Signalના નવા વર્ઝનમાંથી ટ્રાન્સફર કરી શકાતું નથી</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Collieના નવા વર્ઝનમાંથી ટ્રાન્સફર કરી શકાતું નથી</string>
     <string name="DeviceTransferProgress__failure_foreign_key">ડેટાબેઝના પ્રતિબંધને કારણે કેટલાક ડેટા ટ્રાન્સફર કરી શકાયા નથી.</string>
     <string name="DeviceTransferProgress__transfer_failed">ટ્રાન્સફર નિષ્ફળ થયું. કૃપા કરીને ફરીથી પ્રયાસ કરો.</string>
     <string name="DeviceTransferProgress__try_again">ફરીથી પ્રયત્ન કરો</string>

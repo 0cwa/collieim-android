@@ -91,7 +91,7 @@ class WebViewGateTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'source identity'): gate.check(self.root, 'success', 'success', 'f' * 40)
 
     def test_missing_corrupt_and_blank_screenshot_rejected(self):
-        path = self.evidence / 'screenshots/debug-viewer.png'
+        path = self.evidence / 'screenshots/compose-captcha.png'
         original = path.read_bytes()
         for mutation in ('missing', 'corrupt', 'blank'):
             with self.subTest(mutation=mutation):

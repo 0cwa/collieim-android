@@ -383,7 +383,7 @@ fun TopAppBar(
         offsetY = 0.dp
       ) {
         DropdownMenus.Item(
-          text = { Text(text = stringResource(R.string.RegistrationActivity_network_settings)) },
+          text = { Text(text = stringResource(R.string.RegistrationActivity_use_proxy)) },
           onClick = {
             RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
             menuController.hide()

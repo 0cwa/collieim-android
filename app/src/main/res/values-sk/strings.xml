@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie sa aktualizuje…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Ešte ste si nenastavili heslo!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">Vypnúť heslo?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Toto natrvalo odomkne Collie a upozornenia na správy.</string>
-    <string name="ApplicationPreferencesActivity_disable">Vypnúť</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Chyba pripojenia na server!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Kreditná alebo debetná karta</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Zadajte údaje z platobnej karty. Signal nezhromažďuje ani neukladá vaše osobné údaje.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Číslo karty</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">MM/RR</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Neplatné číslo karty</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">Platnosť karty vypršala</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">Kód je príliš krátky</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">Kód je príliš dlhý</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Neplatný kód</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Neplatný mesiac</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Vyžaduje sa rok</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Neplatný rok</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">Prispieť %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Prispieť %1$s/mesačne</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Prispieť %1$s/mesačne</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">Jednorazovo %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Čaká sa na príspevok</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Príspevok sa spracováva</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Blokovať a opustiť %1$s?</string>
@@ -350,7 +362,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">Používateľ %1$s vymazal túto správu</string>
     <string name="ConversationItem_you_deleted_this_message">Vymazali ste túto správu</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Administrátor %1$s vymazal túto správu</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -459,7 +470,7 @@
     <string name="ConversationActivity_error_sending_media">Chyba pri odosielaní médií</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Signal už nepodporuje odosielanie SMS správ.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Collie už nepodporuje odosielanie SMS správ.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal už nepodporuje odosielanie SMS správ. Ak chcete konverzáciu zachovať tu, pozvite používateľa %1$s, aby sa pripojil k Signalu.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -515,6 +526,8 @@
     <string name="ConversationFragment_deleting_messages">Mažú sa správy…</string>
     <string name="ConversationFragment_delete_for_me">Vymazať pre mňa</string>
     <string name="ConversationFragment_delete_for_everyone">Vymazať pre všetkých</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Vymazané pre mňa</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Vymazať vybranú správu?</item>
@@ -1149,7 +1162,7 @@
     <string name="ExpiredBuildReminder_update_now">Aktualizovať teraz</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Signal už na tomto zariadení nefunguje. Ak chcete znova používať Signal, aktualizujte svoje zariadenie na novšiu verziu Androidu alebo prejdite na novšie zariadenie.</string>
+    <string name="DeprecatedSdkBanner_body">Collie už na tomto zariadení nefunguje. Ak chcete znova používať Collie, aktualizujte svoje zariadenie na novšiu verziu Androidu alebo prejdite na novšie zariadenie.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Aktualizujte Collie</string>
@@ -1537,9 +1550,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Pre používanie odkazov do skupín aktualizujte Signal.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Verzia aplikácie Signal, ktorú používate, nepodporuje pripojenie do skupín cez odkazy. Ak sa chcete pridať do tejto skupiny cez odkaz, aktualizujte na najnovšiu verziu.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Aktualizovať Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Pre používanie odkazov do skupín aktualizujte Collie.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Verzia aplikácie Collie, ktorú používate, nepodporuje pripojenie do skupín cez odkazy. Ak sa chcete pridať do tejto skupiny cez odkaz, aktualizujte na najnovšiu verziu.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Aktualizovať Collie</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Odkaz do skupiny nie je platný</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2209,7 +2222,7 @@
         <item quantity="many">Zostáva vám ešte %1$d pokusov. Ak počet pokusov vyčerpáte, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet naďalej, ale stratíte niektoré uložené nastavenia, ako napríklad profilové informácie.</item>
         <item quantity="other">Zostáva vám ešte %1$d pokusov. Ak počet pokusov vyčerpáte, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet naďalej, ale stratíte niektoré uložené nastavenia, ako napríklad profilové informácie.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal registrácia - potrebujem pomoct s PIN na Androide</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie registrácia - potrebujem pomoct s PIN na Androide</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">Vytvorte si PIN</string>
@@ -2301,7 +2314,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Ostatní vás nepočuli</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Váš mikrofón bol stlmený, kým bol Signal na pozadí. Ak to chcete vyriešiť, ťuknite na Nastavenia a povoľte aktivitu na pozadí v nastaveniach „Batéria“.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Váš mikrofón bol stlmený, kým bol Collie na pozadí. Ak to chcete vyriešiť, ťuknite na Nastavenia a povoľte aktivitu na pozadí v nastaveniach „Batéria“.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">Chcete schváliť %1$d žiadosť?</item>
@@ -2863,7 +2876,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">Žiadne výsledky pre „%1$s“</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Odoslať cez Signal</string>
+    <string name="StickerManagement_menu_send_signal_pack">Odoslať cez Collie</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Odkaz</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -3103,8 +3116,6 @@
     <string name="KeyCachingService_lock">Zamknúť Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">Médiá už nie sú dostupné.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Nemožno prehrať médiá.</string>
@@ -3114,7 +3125,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Chyba média</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Chyba pri odstraňovaní správy, správa môže stále existovať</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">Zdieľať</string>
 
     <!-- MessageNotifier -->
@@ -3364,7 +3374,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Znova zaregistrujte zariadenie</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Toto zariadenie už nie je prepojené. Ak chcete pokračovať v odosielaní správ, znova prepojte Signal so svojím telefónom.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Toto zariadenie už nie je prepojené. Ak chcete pokračovať v odosielaní správ, znova prepojte Collie so svojím telefónom.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">Znova prepojiť zariadenie</string>
 
@@ -3373,7 +3383,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">Aktualizujte Signal, aby ste mohli naďalej používať platby. Je možné, že váš zostatok nie je aktuálny.</string>
+    <string name="EnclaveFailureReminder_update_signal">Aktualizujte Collie, aby ste mohli naďalej používať platby. Je možné, že váš zostatok nie je aktuálny.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Prijaté na pripojenom zariadení.</string>
@@ -3711,18 +3721,6 @@
     <string name="EditProfileFragment__group_name">Názov skupiny</string>
     <string name="EditProfileFragment__group_description">Popis skupiny</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Aktualizovať Collie</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Táto verzia Collieu vypršala. Aktualizujte ju, aby ste mohli Collie používať naďalej.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizovať</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Zariadenie nie je registrované</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Toto zariadenie už nie je registrované. Ak chcete vykonať zmeny vo svojom účte, znova ho zaregistrujte.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Znovu zaregistrovať</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Uložiť</string>
@@ -3845,7 +3843,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Podporné informácie</string>
-    <string name="HelpFragment__signal_android_support_request">Žiadosť o podporu pre Signal Android</string>
+    <string name="HelpFragment__signal_android_support_request">Žiadosť o podporu pre Collie Android</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Nepodarilo sa nahrať denníky</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Prosíme, čo najpodrobnejšie popíšte situáciu a pomôžte nám tak porozumieť vášmu problému.</string>
@@ -3905,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikácie s umelou inteligenciou ako Gemini dokážu skenovať váš obsah v aplikácii Collie. Aby sme tomu zabránili, aktivovali sme zabezpečenie obrazovky. Tým sa zakážu aj snímky obrazovky.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikácie s umelou inteligenciou ako Gemini dokážu skenovať váš obsah v aplikácii Signal. Aby sme tomu zabránili, aktivovali sme zabezpečenie obrazovky. Tým sa zakážu aj snímky obrazovky.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Zabezpečenie obrazovky je zapnuté</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3913,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Vypnúť zabezpečenie obrazovky?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Ak je táto funkcia vypnutá, môže to umožniť asistentom s umelou inteligenciou, ako napríklad Google Gemini, skenovať obsah v aplikácii Collie a používať ho na funkcie, ktoré nemusia byť súkromné.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Ak je táto funkcia vypnutá, môže to umožniť asistentom s umelou inteligenciou, ako napríklad Google Gemini, skenovať obsah v aplikácii Signal a používať ho na funkcie, ktoré nemusia byť súkromné.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Vypnúť</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3921,24 +3919,15 @@
     <string name="preferences__notifications">Upozornenia</string>
     <string name="preferences__led_color_unknown">Neznáma</string>
     <string name="preferences__silent">Ticho</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Súkromie</string>
+    <string name="preferences__donate_to_signal">Prispieť na Collie</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Príbehy</string>
     <string name="preferences__payments">Platby</string>
     <string name="preferences__linked_devices">Pripojené zariadenia</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Odoslať ladiaci záznam</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Neprečítané pripomienky</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Keď je povolené, Collie sa pokúsi obísť cenzúru. Nepovoľujte v umiestneniach, kde Collie nie je cenzurovaný.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Proxy adresa</string>
     <string name="preferences_only_use_a_proxy_if">Server proxy používajte iba v prípade, že sa nemôžete pripojiť k Signal cez mobilné dáta, alebo Wi-Fi.</string>
     <string name="preferences_share">Zdieľať</string>
@@ -3952,9 +3941,6 @@
     <string name="preferences_success">Hotovo</string>
     <string name="preferences_failed_to_connect">Pripojenie zlyhalo</string>
     <string name="preferences_enter_proxy_address">Zadajte adresu proxy servera</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Keď je táto funkcia povolená, Collie sa pokúsi automaticky overiť šifrovanie 1:1 četov.</string>
 
 
     <!-- Internal only preferences -->
@@ -4339,9 +4325,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Zistiť viac</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">Náhľad média</string>
@@ -4524,15 +4507,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Zavolajte mi (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Znova odoslať kód (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Registrácia v Mollyi – Overovací kód pre Android</string>
+    <string name="RegistrationActivity_code_support_subject">Registrácia v Colliei – Overovací kód pre Android</string>
     <string name="RegistrationActivity_incorrect_code">Nesprávny kód</string>
     <string name="BackupUtil_never">Nikdy</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Neznáma</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Vyberte si, kto môže vidieť vaše telefónne číslo a kto vás môže pomocou neho kontaktovať v službe Collie.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">Ak chcete použiť zámok obrazovky, nastavte na tomto zariadení PIN kód, vzor alebo heslo.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Musíte zadať svoj PIN registračného zámku</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">Váš PIN kód má min. %1$d číslic alebo znakov</string>
     <string name="RegistrationActivity_too_many_attempts">Príliš veľa pokusov</string>
@@ -4565,11 +4544,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Toto je prepojené zariadenie</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Ak chcete spravovať nastavenia svojho účtu, otvorte Signal na svojom hlavnom zariadení.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Ak chcete spravovať nastavenia svojho účtu, otvorte Collie na svojom hlavnom zariadení.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Vymazať údaje aplikácie</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Týmto sa odstránia všetky údaje z aplikácie Signal na tomto zariadení.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Týmto sa odstránia všetky údaje z aplikácie Collie na tomto zariadení.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Vymazať údaje aplikácie?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -5095,7 +5074,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">Úprav číslo</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Zmena čísla Signal - potrebujete pomoc s PIN pre Android (PIN v2)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Zmena čísla Collie - potrebujete pomoc s PIN pre Android (PIN v2)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PIN kódy sa nezhodujú</string>
@@ -5264,7 +5243,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5592,7 +5570,13 @@
 
     <string name="ImageView__badge">Odznak</string>
 
+    <string name="SubscribeFragment__cancel_subscription">Zrušiť predplatné</string>
+    <string name="SubscribeFragment__confirm_cancellation">Potvrdiť zrušenie?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Už vám nebudeme účtovať žiadne poplatky. Na konci fakturačného obdobia bude váš odznak odstránený z vášho profilu.</string>
+    <string name="SubscribeFragment__not_now">Teraz nie</string>
+    <string name="SubscribeFragment__confirm">Potvrdiť</string>
     <string name="SubscribeFragment__update_subscription">Aktualizovať predplatné</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Vaše predplatné bolo zrušené.</string>
     <string name="SubscribeFragment__update_subscription_question">Aktualizovať predplatné?</string>
     <string name="SubscribeFragment__update">Aktualizovať</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Dnes vám bude naúčtovaná celá suma (%1$s) nového predplatného. Vaše predplatné sa bude obnovovať mesačne.</string>
@@ -5604,38 +5588,66 @@
     <string name="Subscription__expires_s">Platnosť vyprší %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Ako nezávislá nezisková organizácia Signal zaisťuje maximálne súkromie pre správy a hovory. Žiadne reklamy, žiadne sledovače, žiadne monitorovanie. Prispejte ešte dnes a podporte Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Prispejte a získajte odznak na svojom profile</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Záleží nám na vašom súkromí</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal je nezisková organizácia.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Ďakujem za tvoju podporu!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Získali ste odznak prispievateľa od Signalu! Ukážte ho vo svojom profile a dajte tak najavo svoju podporu.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Môžete tiež</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">stať sa mesačným podporovateľom.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Zobraziť v profile</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Zobraziť odznak v profile</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Pokračovať</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Ak máte viac ako jeden odznak, môžete si vybrať ten, ktorý sa zobrazí ostatným vo vašom profile.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Prispieť na Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">Viac</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Moja podpora</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Potvrdenia o prispení</string>
+    <string name="ManageDonationsFragment__badges">Odznaky</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Často kladené otázky prispievateľov</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Iné spôsoby, ako dať</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Prispejte za priateľa</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Príspevok sa nepodarilo potvrdiť</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Váš príspevok vo výške %1$s/mesiac sa nepodarilo potvrdiť. Ak chcete schváliť platbu cez iDEAL | Wero, skontrolujte svoju bankovú aplikáciu.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Váš jednorazový príspevok vo výške %1$s sa nepodarilo potvrdiť. Ak chcete schváliť platbu cez iDEAL | Wero, skontrolujte svoju bankovú aplikáciu.</string>
 
+    <string name="Boost__enter_custom_amount">Zadajte vlastnú čiastku</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Minimálna suma, ktorú môžete darovať, je %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/mesiac</string>
+    <string name="MySupportPreference__renews_s">Obnoví sa %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">Prebieha spracovanie transakcie…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Odznak sa nepodarilo pridať. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">Prosím, kontaktujte podporu.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Čaká sa na platbu</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">Čaká sa na váš bankový prevod vo výške %1$s. Dokončenie bankového prevodu môže trvať 1 až 14 pracovných dní.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Zistiť viac</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Prebieha kontrola predplatného…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Aktualizovať Collie</string>
@@ -5672,9 +5684,11 @@
     <string name="Subscription__get_a_s_badge">Získajte odznak %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Spracúva sa príspevok…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Opakujúce sa %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5693,8 +5707,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Chyba pri spracovaní príspevku</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Skúste iný spôsob platby, alebo kontaktujte svoju banku a požiadajte o viac informácií.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Zistiť viac</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Chyba pri spracovaní príspevku. %1$s</string>
     <string name="DonationsErrors__your_payment">Váš príspevok sa nepodarilo spracovať a neboli vám účtované žiadne poplatky. Skúste to znova.</string>
     <string name="DonationsErrors__still_processing">Stále sa spracováva</string>
     <string name="DonationsErrors__couldnt_add_badge">Odznak sa nepodarilo pridať</string>
@@ -5712,6 +5729,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Váš príspevok bol spracovaný ale Signalu sa nepodarilo odoslať správu o prispení. Kontaktujte náš tím podpory.</string>
     <string name="DonationsErrors__your_badge_could_not">Odznak nebolo možné pridať do vášho účtu, možno vám však boli účtované poplatky. Kontaktujte podporu.</string>
     <string name="DonationsErrors__your_payment_is_still">Váš príspevok sa stále spracováva. V závislosti od vášho pripojenia to môže trvať niekoľko minút.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Predplatné sa nepodarilo zrušiť</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Zrušenie predplatného vyžaduje internetové pripojenie.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Vaše zariadenie nepodporuje príspevky v aplikácii, nemôžete sa preto prihlásiť na prispievanie a získať odznak. Signal však môžete stále podporiť príspevkom na našej webovej stránke.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Chyba siete. Skontrolujte pripojenie a skúste to znova.</string>
     <string name="NetworkFailure__retry">Skúsiť znovu</string>
@@ -5720,6 +5739,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Tento používateľ nemôže dostávať príspevky, kým si neaktualizuje Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Váš príspevok cez iDEAL | Wero sa nepodarilo spracovať. Skúste iný spôsob platby alebo kontaktujte svoju banku a požiadajte o viac informácií.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Príspevok v mene používateľa %1$s</string>
@@ -5917,12 +5937,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Až do %1$s</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Výber sa nepodarilo otvoriť.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Ak chcete povoliť upozornenia, Collie potrebuje povolenie na ich zobrazenie.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">Zapnúť</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Toto je oficiálny a jediný čet od aplikácie Signal.</string>
@@ -5930,19 +5944,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Buďte informovaní o novinkách a poznámkach k vydaniu.</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">Všetky aktivity</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Všetko</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Opakujúce sa</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">Raz</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Za priateľa</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Príspevok za priateľa</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Typ príspevku</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Dátum zaplatenia</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Zdieľať potvrdenie</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Ak ste preinštalovali Collie, potvrdenia o predchádzajúcich príspevkoch nebudú k dispozícii.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Potvrdenie o príspevku</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Suma</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Ďakujeme, že podporujete Signal. Váš príspevok pomáha napĺňať naše poslanie chrániť slobodu prejavu a umožňovať bezpečnú globálnu komunikáciu pre milióny ľudí na celom svete prostredníctvom technológie ochrany súkromia s otvoreným zdrojovým kódom. Ak ste občanom Spojených štátov, uchovajte si toto potvrdenie pre svoju daňovú evidenciu. Signal Technology Foundation je nezisková organizácia oslobodená od platenia daní v Spojených štátoch, podľa sekcie 501c3 zákona Internal Revenue Code (IRC, zákon o vnútroštátnych výnosoch). Naše federálne daňové ID je 82-4506840. Signal vám za tento príspevok neposkytol žiadny tovar ani služby.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Žiadne účtenky</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6623,17 +6651,27 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Sme hrdí, že sme neziskovou organizáciou</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Pokračovať</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Prispejte a podporte posielanie súkromných správ. Pomôžte nám k tomu, aby bol Signal aj naďalej nezávislou aplikáciou bez reklám.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Čaká sa na príspevok</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Spracovanie bankového prevodu môže trvať 1 až 14 pracovných dní. Pred aktualizáciou prispievania počkajte, kým sa platba nedokončí.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Spracovanie bankového prevodu môže trvať 1 až 14 pracovných dní. Pred odoslaním ďalšieho príspevku počkajte, kým sa platba nedokončí.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Váš príspevok sa stále spracováva. V závislosti od vášho pripojenia to môže trvať niekoľko minút. Pred aktualizáciou prispievania počkajte, kým sa platba nedokončí.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Váš príspevok sa stále spracováva. V závislosti od vášho pripojenia to môže trvať niekoľko minút. Pred odoslaním ďalšieho príspevku počkajte, kým sa platba nedokončí.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Váš príspevok cez iDEAL | Wero sa stále spracováva. Pred odoslaním ďalšieho príspevku skontrolujte svoju bankovú aplikáciu, aby ste schválili platbu.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Príliš vysoká suma príspevku</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Bankovým prevodom môžete poslať maximálne %1$s. Skúste zadať inú sumu alebo iný spôsob platby.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Mesačne</string>
@@ -6642,8 +6680,11 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Prispejte na Signal %1$s mesačne</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Získate odznak %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Prispejte na Signal %1$s</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Získate odznak %1$s na %2$d deň</item>
@@ -6652,69 +6693,118 @@
         <item quantity="other">Získate odznak %1$s na %2$d dní</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Bankový prevod</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kreditná alebo debetná karta</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Prispejte za priateľa</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Opustiť Collie a potvrdiť príspevok?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Po potvrdení sa vráťte do aplikácie a dokončite spracovanie svojho príspevku.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Presmerujeme vás do aplikácie %1$s. Po potvrdení sa vráťte do Collieu a dokončite spracovanie svojho príspevku.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Bankový prevod</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Príspevky pre Signal spracováva Stripe. Signal nezhromažďuje ani neukladá vaše osobné údaje. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Zistiť viac</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Súhlasím</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Čítaj viac</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Nepodarilo sa načítať príkaz</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Zadajte údaje svojej banky a e-mail. Stripe používa tento e-mail na odosielanie aktualizácií o vašom príspevku. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Zistiť viac</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Meno majiteľa bankového účtu</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">Email</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Nájsť informácie o účte</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Prispieť %1$s/mesačne</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">Prispieť %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">Číslo IBAN je príliš krátke</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">Číslo IBAN je príliš dlhé</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Kód krajiny pre IBAN nie je podporovaný</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">Neplatné číslo IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimálne 3 znaky</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Neplatná emailová adresa</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Zadajte svoje meno a e-mail. Stripe používa tento e-mail na odosielanie aktualizácií o vašom príspevku. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Zadajte svoje bankové údaje. Signal nezhromažďuje ani neukladá vaše osobné údaje. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Zistiť viac</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Meno majiteľa bankového účtu</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Potvrďte svoj príspevok cez iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Ak chcete nastaviť pravidelné prispievanie, ťuknutím na Pokračovať potvrďte platbu vo výške 0,01 € vo svojej banke. Táto suma bude automaticky vrátená a umožní, aby bol váš príspevok vo výške %1$s/mesiac odpísaný z vášho účtu.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Pokračovať</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Nájdite informácie o svojom účte</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Vyhľadajte svoje číslo IBAN v hornej časti bankového výpisu. Čísla IBAN obsahujú až 34 znakov. Zadané meno by sa malo zhodovať s celým menom uvedeným na vašom bankovom účte. Ak chcete získať ďalšie informácie, kontaktujte svoju banku.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Čaká sa na príspevok</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Čaká sa na váš mesačný príspevok. Akonáhle bude váš príspevok prijatý, budete môcť vo svojom profile zobraziť odznak %1$s.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Čaká sa na váš jednorazový príspevok. Akonáhle bude váš príspevok prijatý, budete môcť vo svojom profile zobraziť odznak %1$s.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Spracovanie bankového prevodu môže trvať 1 až 14 pracovných dní. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Zistiť viac</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Hotovo</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Príspevok sa nepodarilo spracovať</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Pri spracovaní vášho bankového prevodu sa vyskytol problém. Neboli vám účtované žiadne poplatky. Skúste iný spôsob platby alebo kontaktujte svoju banku a požiadajte o viac informácií.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Skúsiť znova</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Teraz nie</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Prispenie prebehlo úspešne</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Váš bankový prevod bol prijatý. V profile si môžete vystaviť tento odznak a dať tak najavo svoju podporu.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">Prebieha zrušenie…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Bolo spracovaných príliš veľa kontaktov</string>
@@ -6748,6 +6838,11 @@
     <string name="PaymentMessageView_s_sent_you">Používateľ %1$s vám poslal</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Vaše údaje sú súkromné</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Počas vášho prispievania na Signal nezhromažďujeme ani neukladáme žiadne vaše osobné údaje.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Na prijímanie vašich príspevkov a spracovanie platieb používame službu Stripe. K údajom, ktoré v rámci tejto platobnej brány poskytnete, nemáme prístup ani ich neukladáme.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal si nespája a ani si nemôže spojiť váš príspevok s vaším Signal účtom.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Ďakujeme za vašu podporu!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6762,6 +6857,8 @@
     <string name="GroupStoryEducationSheet__next">Ďalej</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Prispieť</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Platba</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6985,7 +7082,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Vyžadovať schválenie administrátorom</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Zdieľať odkaz cez Signal</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Zdieľať odkaz cez Collie</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Skopírovať odkaz</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -7140,9 +7237,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Hotovo Môžete spustiť zálohovanie.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Môže to chvíľu trvať. Počas zálohovania môžete Signal používať ako obvykle.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Môže to chvíľu trvať. Počas zálohovania môžete Collie používať ako obvykle.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimalizácia úložiska Signal</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimalizácia úložiska Collie</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">Staršie médiá budú presunuté, môžete si ich však kedykoľvek stiahnuť zo zálohy.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -7160,7 +7257,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Pre obnovenie zálohy si nainštalujte novú kópiu Collieu. Otvorte aplikáciu a ťuknite na Obnoviť zálohu a potom vyhľadajte priečinok so zálohou."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Je zapnutá možnosť „Optimalizovať úložisko Signal“. Ak chcete do zálohy na zariadení zahrnúť všetky médiá, vypnite toto nastavenie.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Je zapnutá možnosť „Optimalizovať úložisko Collie“. Ak chcete do zálohy na zariadení zahrnúť všetky médiá, vypnite toto nastavenie.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Zobraziť nastavenie</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -7219,10 +7316,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Povoľte upozornenia na celú obrazovku</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Mesačný príspevok bol zrušený</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Váš pravidelný mesačný príspevok bol zrušený. %1$s\n\nVáš odznak sa už nebude zobrazovať vo vašom profile. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Zistiť viac</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Obnoviť predplatné</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Teraz nie</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7244,7 +7346,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Neplatné telefónne číslo</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Pozvať do Signalu</string>
+    <string name="FindByActivity__invite_to_signal">Pozvať do Collieu</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">Používateľské meno sa nenašlo</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7388,7 +7490,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Vaše predplatné záloh sa nepodarilo uplatniť</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Vyskytla sa chyba a zálohovanie nebolo možné dokončiť. Uistite sa, že používate najnovšiu verziu Signalu a skúste to znova. Ak problém pretrváva, kontaktujte podporu.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Vyskytla sa chyba a zálohovanie nebolo možné dokončiť. Uistite sa, že používate najnovšiu verziu Collieu a skúste to znova. Ak problém pretrváva, kontaktujte podporu.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Vyskytla sa chyba a zálohovanie nebolo možné dokončiť. Ak problém pretrváva, kontaktujte podporu.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7470,7 +7572,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Vašu poslednú zálohu sa nepodarilo dokončiť. Uistite sa, že váš telefón je pripojený k sieti Wi-Fi a skúste to znova ťuknutím na možnosť „Zálohovať teraz“.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Vašu poslednú zálohu sa nepodarilo dokončiť. Uistite sa, že používate najnovšiu verziu Signalu a skúste to znova.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Vašu poslednú zálohu sa nepodarilo dokončiť. Uistite sa, že používate najnovšiu verziu Collieu a skúste to znova.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Počet vašich správ presahuje limit úložného priestoru. Vymažte niektoré správy a skúste to znova.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7496,6 +7598,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7522,34 +7625,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Zistiť viac</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Nemôžete si predplatiť Bezpečné zálohy Signal, pretože váš telefón nepodporuje služby Google Play. Kontaktujte výrobcu svojho telefónu.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Obmedzenie počtu správ v čete</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Vymazať históriu správ</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Správy staršie ako zvolený čas budú natrvalo vymazané.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Správy presahujúce zvolenú dĺžku budú natrvalo vymazané.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">Použiť obmedzenie aj na prepojených zariadeniach</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Keď je táto možnosť povolená, obmedzenie dĺžky četu vymaže správy aj z vašich prepojených zariadení.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Úložisko Collie</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizovať úložisko Collie</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Nepoužívané médiá budú dočasne vymazané, môžete si ich však kedykoľvek stiahnuť zo zálohy.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Optimalizáciu úložiska je možné využiť iba v prípade, ak používate platenú verziu bezpečných Záloh Signal. Vaše predplatné záloh sa stále spracováva a ešte nie je aktívne. Skúste to znova neskôr.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Médiá budú odstránené zo zálohy na zariadení</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Zapnutím možnosti „Optimalizovať úložisko Signal“ sa z vášho zariadenia presunú staré médiá. Môžete si ich kedykoľvek znova stiahnuť. Taktiež sa odstránia staré médiá zo zálohy na zariadení.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">Zapnúť</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7951,7 +8026,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Tento kľúč nahradí kľúč pre zálohu na zariadení.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Váš kľúč na obnovenie je 64-miestny kód, ktorý vám umožňuje obnoviť zálohy, keď znovu nainštalujete Signal.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Váš kľúč na obnovenie je 64-miestny kód, ktorý vám umožňuje obnoviť zálohy, keď znovu nainštalujete Collie.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Zhoduje sa s vaším kľúčom na obnovenie na zariadení.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7989,7 +8064,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Nemáte nastaveného správcu hesiel alebo správca hesiel, ktorého používate, nie je podporovaný.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">V minulosti ste sa rozhodli neukladať heslá pre Signal do správcu hesiel Google. V nastaveniach správcu hesiel Google odstráňte Signal zo zoznamu „Odmietnuté stránky a aplikácie“ a skúste to znova.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">V minulosti ste sa rozhodli neukladať heslá pre Collie do správcu hesiel Google. V nastaveniach správcu hesiel Google odstráňte Collie zo zoznamu „Odmietnuté stránky a aplikácie“ a skúste to znova.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Prejsť na nastavenia</string>
     <!-- Action button label -->
@@ -8140,7 +8215,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Chyba siete pri exportovaní zálohy Signal Android</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Chyba siete pri exportovaní zálohy Collie Android</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -8170,7 +8245,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Pokračujte v prenose účtu na svojom druhom zariadení.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Zariadenie, do ktorého prenášate údaje, je zastarané. Aktualizujte Signal na danom zariadení a skúste to znova.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Zariadenie, do ktorého prenášate údaje, je zastarané. Aktualizujte Collie na danom zariadení a skúste to znova.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Pripravuje sa zariadenie</string>
@@ -8215,6 +8290,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Prispieť</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -8247,7 +8323,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">Úložný priestor je plný</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Dosiahli ste limit úložného priestoru. Ak chcete pokračovať v zálohovaní četov a médií, uvoľnite miesto v aplikácii Signal.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Dosiahli ste limit úložného priestoru. Ak chcete pokračovať v zálohovaní četov a médií, uvoľnite miesto v aplikácii Collie.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Zálohovanie zlyhalo</string>
     <!-- Notification body for when initial backup failed -->
@@ -8711,7 +8787,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Kopírovať</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Pozvať do Signalu</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Pozvať do Collieu</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">Pridať do kontaktov v telefóne</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8723,20 +8799,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Mapy sa nepodarilo otvoriť</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Pridajte sa ku mne v aplikácii Signal</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Pridajte sa ku mne v aplikácii Collie</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">Resetovanie vášho kľúča na obnovenie</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">Resetovaním kľúča na obnovenie sa vytvorí nový kľúč pre váš Signal Login. Toto je potrebné iba v prípade, že váš kľúč pozná niekto iný.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Ak sú povolené zálohy, budete musieť znova nahrať svoju zálohu vrátane médií. Ak používate funkciu „Optimalizovať úložisko Signal“, budete si musieť najprv stiahnuť presunuté médiá.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Ak sú povolené zálohy, budete musieť znova nahrať svoju zálohu vrátane médií. Ak používate funkciu „Optimalizovať úložisko Collie“, budete si musieť najprv stiahnuť presunuté médiá.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Pokračovať</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Vyčerpali ste počet nových kľúčov, ktoré môžete vytvoriť. Nový kľúč na obnovenie si budete môcť vytvoriť o 7 dní.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Vymazané pre mňa</string>
 
     <!-- EOF -->
 </resources>

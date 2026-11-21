@@ -27,6 +27,7 @@ import org.thoughtcrime.securesms.notifications.NotificationIds
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.time.Duration.Companion.hours
+import org.signal.core.ui.R as CoreUiR
 
 /**
  * Foreground service to provide "long" run support to backup jobs.
@@ -78,7 +79,7 @@ class BackupProgressService : SafeForegroundService() {
 
     private fun getForegroundNotification(context: Context): Notification {
       return NotificationCompat.Builder(context, NotificationChannels.getInstance().OTHER)
-        .setSmallIcon(R.drawable.ic_notification_backup)
+        .setSmallIcon(CoreUiR.drawable.ic_notification_backup)
         .setContentTitle(title)
         .setProgress(100, (progress * 100).toInt(), indeterminate)
         .setContentIntent(PendingIntent.getActivity(context, 0, MainActivity.clearTop(context), PendingIntentFlags.mutable()))

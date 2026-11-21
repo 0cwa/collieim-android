@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.core.text.buildSpannedString
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.util.BidiUtil
 
 /**
@@ -227,7 +228,7 @@ object SignalSymbols {
     text.setSpan(span, 0, text.length, 0)
 
     return if (color != null) {
-      colorSpan(color, text)
+      SpanUtil.color(color, text)
     } else {
       text
     }

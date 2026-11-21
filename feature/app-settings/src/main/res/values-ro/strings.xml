@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Înregistrează din nou contul</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Actualizează Signal</string>
+    <string name="preferences_account_update_signal">Actualizează Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Șterge toate datele</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Se generează raportul…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Raportul tău este generat numai în momentul exportului și nu este stocat de Signal pe dispozitiv.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Raportul tău este generat numai în momentul exportului și nu este stocat de Collie pe dispozitiv.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -597,7 +597,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Încă nu ai setat o parolă!</string>
     <string name="ApplicationPreferencesActivity_disable">Dezactivează</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Dezactivez parola?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Această acțiune va debloca permanent Signal și notificările pentru mesaje.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Această acțiune va debloca permanent Collie și notificările pentru mesaje.</string>
     <string name="PrivacySettingsFragment__app_security">Securitate aplicație</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Blochează capturile de ecran în lista cu aplicații recente și în interiorul aplicației</string>
@@ -644,7 +644,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Această setare nu este o garanție și este posibil ca tastatura ta să o ignore.</string>
     <string name="preferences__typing_indicators">Indicatori tastare</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Alege cine îți poate vedea numărul de telefon și cine te poate contacta pe Signal cu el.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Alege cine îți poate vedea numărul de telefon și cine te poate contacta pe Collie cu el.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Plăți</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -660,7 +660,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Nu Acum</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Află mai multe</string>
 
@@ -686,6 +686,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Nu s-a putut recupera abonamentul pentru copiile de rezervă</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Donează pentru Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Preferințe interne</string>
     <!-- App settings row that opens linked devices -->
@@ -875,9 +876,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Profilul și schimbările tale vor fi vizibile pentru persoanele cărora le dai mesaj, pentru contacte și grupuri.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Actualizează Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Actualizează Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Această versiune a Signal a expirat. Actualizează acum ca să continui să folosești Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Această versiune a Collie a expirat. Actualizează acum ca să continui să folosești Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Actualizează</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -933,8 +934,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Închide</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Poți obține insigne pentru profilul tău susținând Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal este o organizație non-profit, fără agenți de publicitate sau investitori, susținută doar de oameni ca tine.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Fii un Susținător</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1014,19 +1018,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Acest utilizator nu a putut fi găsit.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Ca să scanezi un cod QR, permite accesul Signal la cameră.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Ca să scanezi un cod QR, permite accesul Collie la cameră.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Permite accesul</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal are nevoie de acces la cameră pentru a scana codurile QR</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie are nevoie de acces la cameră pentru a scana codurile QR</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Spațiu stocare</string>
     <string name="preferences_storage__storage_usage">Utilizare spațiu stocare</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Stocare Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Stocare Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizează stocarea Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizează stocarea Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Fișierele neutilizate vor fi mutate, dar pot fi descărcate oricând din backup.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1052,7 +1056,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Fișierele media vor fi eliminate din backupul de pe dispozitiv</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Activarea opțiunii „Optimizare stocare Signal” va elimina fișierele media vechi de pe dispozitivul tău. Îl poți descărca din nou oricând. În plus, va elimina fișierele media vechi din backup-ul de pe dispozitiv.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Activarea opțiunii „Optimizare stocare Collie” va elimina fișierele media vechi de pe dispozitivul tău. Îl poți descărca din nou oricând. În plus, va elimina fișierele media vechi din backup-ul de pe dispozitiv.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Activare</string>
 
@@ -1082,7 +1086,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Nu s-a putut deschide selectorul.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Pentru a activa notificările, Signal are nevoie de permisiunea ta pentru a le afișa.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Pentru a activa notificările, Collie are nevoie de permisiunea ta pentru a le afișa.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Activare</string>
     <string name="NotificationsSettingsFragment__calls">Apeluri</string>
@@ -1181,7 +1185,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Ocolire cenzură</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Ocolire cenzură</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Dacă este activată, Signal va încerca să ocolească cenzura. Nu activa această funcționalitate doar dacă ești într-o locație unde Signal este cenzurat.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Dacă este activată, Collie va încerca să ocolească cenzura. Nu activa această funcționalitate doar dacă ești într-o locație unde Collie este cenzurat.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Ocolirea cenzurii a fost activată pe baza numărului tău de telefon.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1198,7 +1202,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Verificare automată a codului</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Când este activat, Signal va încerca să verifice automat criptarea conversațiilor 1:1.</string>
+    <string name="preferences_automatic_key_verification_body">Când este activat, Collie va încerca să verifice automat criptarea conversațiilor 1:1.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

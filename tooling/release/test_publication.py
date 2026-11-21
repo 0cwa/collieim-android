@@ -313,6 +313,29 @@ class PublicationTests(unittest.TestCase):
                         code=999999, name="8.36.0", certificate="c" * 64), prerelease=True)
         self.assertEqual(self.publish()["status"], "PRERELEASE_PUBLISHED")
 
+    def test_maintenance_publication_rejects_switching_to_main(self):
+        branch = "release/stable/8.35"
+        policy = "a" * 40
+        result = self.helper.publish(self.inspect(), "local", "Human release notes", branch, policy)
+        self.assertEqual(p.publication_route(result["identity"]["publication"]), (branch, policy))
+        snapshot = self.inspect("promote")
+        with self.assertRaisesRegex(p.Failure, "Requested branch differs"):
+            self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch="main")
+        self.assertEqual(self.inspect("promote"), snapshot)
+        with self.assertRaisesRegex(p.Failure, "Source branch or trusted policy differs"):
+            self.helper.publish(snapshot, "local", "Human release notes", "main")
+        with self.assertRaisesRegex(p.Failure, "trusted policy differs"):
+            self.helper.publish(snapshot, "local", "Human release notes", branch, "b" * 40)
+        result = self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch=branch)
+        self.assertEqual(p.publication_route(result["identity"]["publication"]), (branch, policy))
+
+    def test_historical_record_keeps_main_route_without_rewriting_record(self):
+        result = self.publish()
+        record = result["identity"]["publication"]
+        self.assertNotIn("source_branch", record)
+        self.assertEqual(p.publication_source_branch(record), "main")
+        self.assertEqual(self.inspect("promote")["publication"], record)
+
     def test_successful_promotion_keeps_every_immutable_asset(self):
         self.publish()
         expected = self.inspect("promote")
@@ -557,6 +580,27 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertIn('artifact-ids: ${{ needs.check.outputs.identity_artifact_id }}', final)
         self.assertNotIn('name: promotion-identity-${{ github.run_id }}-${{ github.run_attempt }}', final)
 
+    def test_promotion_uses_publication_route_for_both_ci_checks(self):
+        workflow = (ROOT / ".github/workflows/promote.yml").read_text()
+        check, final = workflow.split("  compare-and-promote:", 1)
+        self.assertNotIn("inputs.source_branch", workflow)
+        self.assertIn("source_branch: ${{ steps.identity.outputs.source_branch }}", check)
+        self.assertIn("SOURCE_BRANCH: ${{ steps.identity.outputs.source_branch }}", check)
+        self.assertIn("SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}", final)
+        self.assertIn("TRUSTED_MAIN: ${{ steps.identity.outputs.trusted_main }}", check)
+        self.assertIn("TRUSTED_MAIN: ${{ needs.check.outputs.trusted_main }}", final)
+        self.assertIn('cmp "$RUNNER_TEMP/promotion-evidence/ci.json" "$RUNNER_TEMP/promotion-evidence/final-ci.json"', final)
+
+    def test_prerelease_compares_draft_bytes_before_mutation(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text()
+        publish, verify = workflow.split("  verify:", 1)
+        self.assertIn("--allow-draft --tag", publish)
+        self.assertIn("--bound-build", publish)
+        self.assertIn('result=$(env -u GH_TOKEN bash', publish)
+        self.assertLess(publish.index("verify-apk-match.sh"), publish.index("publication.py publish"))
+        self.assertIn("inputs.verify_only", verify)
+        self.assertIn("--legacy-build-run", verify)
+
     def test_final_promotion_refreshes_exact_source_ci_after_rebuild(self):
         workflow = (ROOT / '.github/workflows/promote.yml').read_text()
         final = workflow.split('  compare-and-promote:', 1)[1]
@@ -565,6 +609,35 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertIn('verify_release_readiness.py --repository "$GH_REPO" --sha "$SOURCE_COMMIT"', final)
         self.assertIn('--report "$RUNNER_TEMP/promotion-evidence/final-ci.json"', final)
         self.assertLess(final.index('verify_release_readiness.py'), final.index('publication.py promote'))
+
+
+class GitHubReleaseLookupTests(unittest.TestCase):
+    """The real lookup, with only the gh API transport replaced."""
+
+    def lookup(self, rows):
+        github = p.GitHub()
+        calls = []
+
+        def api(suffix, **_):
+            calls.append(suffix)
+            require_page = suffix.startswith("releases?per_page=100&page=")
+            self.assertTrue(require_page, suffix)
+            return copy.deepcopy(rows) if suffix.endswith("page=1") else []
+
+        github.api = api
+        return github, calls
+
+    def test_draft_release_is_found_without_the_tags_endpoint(self):
+        github, calls = self.lookup([{"id": 7, "tag_name": TAG, "draft": True, "prerelease": False},
+                                     {"id": 6, "tag_name": "v8.35.1-3-rc2", "draft": False, "prerelease": False}])
+        self.assertEqual(github.release(TAG)["id"], 7)
+        self.assertFalse(any("releases/tags/" in call for call in calls))
+
+    def test_missing_or_duplicate_release_is_rejected(self):
+        for rows in ([], [{"id": 7, "tag_name": TAG}, {"id": 8, "tag_name": TAG}]):
+            github, _ = self.lookup(rows)
+            with self.assertRaisesRegex(p.Failure, "exactly one GitHub release"):
+                github.release(TAG)
 
 
 if __name__ == "__main__":

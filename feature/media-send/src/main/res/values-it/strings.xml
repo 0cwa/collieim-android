@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Vai alla fotocamera</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal richiede l\'autorizzazione per mostrare le tue foto e i tuoi video</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie richiede l\'autorizzazione per mostrare le tue foto e i tuoi video</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Consenti accesso</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Nessuna foto o video trovati. Signal può accedere solo alle foto e ai video che hai selezionato.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Nessuna foto o video trovati. Collie può accedere solo alle foto e ai video che hai selezionato.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal ha accesso limitato a foto e video</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie ha accesso limitato a foto e video</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Gestisci accesso</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Per mostrare foto e video:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Signal deve accedere alla tua galleria per poter mostrare foto e video.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Collie deve accedere alla tua galleria per poter mostrare foto e video.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Foto</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d elementi impostati su qualità standard</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Signal richiede l’autorizzazione per salvare nella memoria esterna, ma l’accesso è stato negato in modo permanente. Apri le impostazioni dell’app, seleziona “Autorizzazioni” e abilita “Archiviazione”.</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Collie richiede l’autorizzazione per salvare nella memoria esterna, ma l’accesso è stato negato in modo permanente. Apri le impostazioni dell’app, seleziona “Autorizzazioni” e abilita “Archiviazione”.</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Il video verrà inviato senza audio</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Impossibile trasferire l\'account</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Il dispositivo dove stai effettuando il trasferimento ha una versione troppo vecchia di Signal. Aggiorna l\'app di Signal su quel dispositivo e poi riprova.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Il dispositivo dove stai effettuando il trasferimento ha una versione troppo vecchia di Collie. Aggiorna l\'app di Collie su quel dispositivo e poi riprova.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

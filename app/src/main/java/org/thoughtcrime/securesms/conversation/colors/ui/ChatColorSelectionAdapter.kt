@@ -4,8 +4,8 @@ import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import org.signal.core.ui.util.ViewUtil
 import org.signal.core.ui.util.ThemeUtil
+import org.signal.core.ui.util.ViewUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.TooltipPopup
 import org.thoughtcrime.securesms.conversation.colors.ChatColors
@@ -14,7 +14,6 @@ import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingViewHolder
 import org.thoughtcrime.securesms.util.withFixedSize
-import org.signal.core.ui.R as CoreUiR
 
 class ChatColorSelectionAdapter(
   context: Context,

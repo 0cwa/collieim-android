@@ -1,0 +1,1 @@
+Collie is now based on Signal 8.36.3. Signal's donation and checkout screens are removed. Blocked group inviters can no longer turn on profile sharing. An attachment can no longer be swapped for a different file while it uploads, and restore details stay out of logs.

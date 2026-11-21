@@ -77,20 +77,15 @@ import javax.net.ssl.X509TrustManager
 class NetworkDependenciesModule(
   private val application: Application,
   private val provider: AppDependencies.Provider,
-  private val authWebSocketSupplier: () -> SignalWebSocket.AuthenticatedWebSocket,
-  private val unauthWebSocketSupplier: () -> SignalWebSocket.UnauthenticatedWebSocket,
+  private val authWebSocket: SignalWebSocket.AuthenticatedWebSocket,
+  private val unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket,
+  val signalServiceNetworkAccess: SignalServiceNetworkAccess,
+  val networkProxyState: NetworkProxyState,
   private val libsignalNetworkSupplier: Supplier<Network>
 ) {
 
   companion object {
     private val TAG = "NetworkDependencies"
-  }
-
-  private val authWebSocket by lazy(authWebSocketSupplier)
-  private val unauthWebSocket by lazy(unauthWebSocketSupplier)
-
-  val signalServiceNetworkAccess: SignalServiceNetworkAccess by lazy {
-    provider.provideSignalServiceNetworkAccess()
   }
 
   private val _protocolStore = resettableLazy {
@@ -134,8 +129,6 @@ class NetworkDependenciesModule(
   val signalServiceAccountManager: SignalServiceAccountManager by lazy {
     provider.provideSignalServiceAccountManager(authWebSocket, accountApi, pushServiceSocket, groupsV2Operations)
   }
-
-  val networkProxyState: NetworkProxyState = NetworkProxyState()
 
   val groupsV2Authorization: GroupsV2Authorization by lazy {
     val authCache: GroupsV2Authorization.ValueCache = GroupsV2AuthorizationMemoryValueCache(SignalStore.groupsV2AciAuthorizationCache)

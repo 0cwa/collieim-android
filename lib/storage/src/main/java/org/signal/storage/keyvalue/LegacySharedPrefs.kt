@@ -40,13 +40,19 @@ object LegacySharedPrefs {
 
   /** Some values were stored as strings, but some installs ended up with ints. */
   fun getIntegerFromString(context: Context, key: String, defaultValue: Int): Int {
-    return try {
-      getString(context, key, defaultValue.toString()).toInt()
+    val stringValue = try {
+      // MOLLY: EncryptedPreferences returns this sentinel for an encrypted integer instead of throwing ClassCastException.
+      getString(context, key, TYPE_DISAMBIGUATION_SENTINEL)
     } catch (e: ClassCastException) {
-      getInteger(context, key, defaultValue)
-    } catch (e: NumberFormatException) {
-      defaultValue
+      // Preserve the raw SharedPreferences behavior for old Signal backup and migration compatibility.
+      return getInteger(context, key, defaultValue)
     }
+
+    if (stringValue != TYPE_DISAMBIGUATION_SENTINEL) {
+      return stringValue.toIntOrNull() ?: defaultValue
+    }
+
+    return getInteger(context, key, defaultValue)
   }
 
   /** Mirrors the URI fixup the old ringtone getters did. */
@@ -68,6 +74,10 @@ object LegacySharedPrefs {
     }
   }
 
+  private const val TYPE_DISAMBIGUATION_SENTINEL = "__molly_not_a_string__"
+
+  // MOLLY: Decrypt values from the original file, never from upstream's raw default preference file. The app injects
+  // its SecurePreferenceManager preferences through PlainTextKeyValueStore.init, because lib/storage cannot see them.
   @Suppress("UNUSED_PARAMETER")
   private fun prefs(context: Context): SharedPreferences = PlainTextKeyValueStore.legacyPreferences
 }

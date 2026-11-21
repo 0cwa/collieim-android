@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Επανεγγραφή στον λογαριασμό</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Αναβάθμιση του Signal</string>
+    <string name="preferences_account_update_signal">Αναβάθμιση του Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Διαγραφή όλων των δεδομένων</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Δημιουργία αναφοράς…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Η αναφορά σου δημιουργείται μόνο κατά την εξαγωγή και δεν αποθηκεύεται από το Signal στη συσκευή σου.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Η αναφορά σου δημιουργείται μόνο κατά την εξαγωγή και δεν αποθηκεύεται από το Collie στη συσκευή σου.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Δεν έχεις ορίσει ακόμα συνθηματικό!</string>
     <string name="ApplicationPreferencesActivity_disable">Απενεργοποίηση</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Απενεργοποίηση συνθηματικού;</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Αυτό θα ξεκλειδώσει μόνιμα το Signal και τις ειδοποιήσεις μηνυμάτων.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Αυτό θα ξεκλειδώσει μόνιμα το Collie και τις ειδοποιήσεις μηνυμάτων.</string>
     <string name="PrivacySettingsFragment__app_security">Ασφάλεια εφαρμογής</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Να μην επιτρέπονται τα στιγμιότυπα οθόνης στη λίστα με τα πρόσφατα και μέσα στην εφαρμογή</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Αυτή η ρύθμιση δεν αποτελεί εγγύηση, και το πληκτρολόγιό σου μπορεί να την αγνοήσει.</string>
     <string name="preferences__typing_indicators">Δείκτες πληκτρολόγησης</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Επίλεξε ποια άτομα μπορούν να δουν τον αριθμό τηλεφώνου σου και ποια μπορούν να τον χρησιμοποιήσουν για να επικοινωνήσουν μαζί σου στο Signal.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Επίλεξε ποια άτομα μπορούν να δουν τον αριθμό τηλεφώνου σου και ποια μπορούν να τον χρησιμοποιήσουν για να επικοινωνήσουν μαζί σου στο Collie.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Πληρωμές</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Όχι τώρα</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Μάθε περισσότερα</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Δεν ήταν δυνατή η εξαργύρωση της συνδρομής σου για δημιουργία αντιγράφων ασφαλείας</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Κάνε μια δωρεά στο Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Εσωτερικές προτιμήσεις</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Το προφίλ σου και οι αλλαγές σε αυτό θα είναι ορατά στα άτομα στα οποία στέλνεις μηνύματα, στις επαφές και στις ομάδες σου.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Αναβάθμιση του Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Αναβάθμιση του Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Αυτή η έκδοση Signal έχει λήξει. Αναβάθμισε τώρα για να συνεχίσεις να χρησιμοποιείς το Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Αυτή η έκδοση Collie έχει λήξει. Αναβάθμισε τώρα για να συνεχίσεις να χρησιμοποιείς το Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Ενημέρωση</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Κλείσιμο</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Στηρίζοντας το Signal παίρνεις σήματα για το προφίλ σου.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Το Signal είναι μια μη κερδοσκοπική οργάνωση, χωρίς διαφημιστές και επενδυτές, που υποστηρίζεται από άτομα σαν κι εσένα.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Γίνε υποστηρικτής/τρια</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,17 +1014,17 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Δεν βρέθηκε αυτός ο χρήστης.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Για να σαρώσεις έναν κωδικό QR, δώσε στο Signal πρόσβαση στην κάμερά.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Για να σαρώσεις έναν κωδικό QR, δώσε στο Collie πρόσβαση στην κάμερά.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Να δοθεί πρόσβαση</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Το Signal χρειάζεται πρόσβαση στην κάμερα για τη σάρωση κωδικών QR</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Το Collie χρειάζεται πρόσβαση στην κάμερα για τη σάρωση κωδικών QR</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Αποθηκευτικός χώρος</string>
     <string name="preferences_storage__storage_usage">Χρήση αποθηκευτικού χώρου</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Αποθηκευτικός χώρος Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Αποθηκευτικός χώρος Collie</string>
     <!-- Setting row title for storage optimization -->
     <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Βελτιστοποίηση αποθηκευτικού χώρου Collie</string>
     <!-- Setting row explanation for storage optimization -->
@@ -1048,7 +1052,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Τα αρχεία πολυμέσων θα διαγραφούν από το αντίγραφο ασφαλείας που βρίσκεται στη συσκευή σου</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Η ενεργοποίηση της επιλογής «Βελτιστοποίηση αποθηκευτικού χώρου Signal» θα διαγράψει τα παλιά αρχεία πολυμέσων από τη συσκευή σου. Μπορείς να τα κατεβάσεις ξανά ανά πάσα στιγμή. Επίσης, θα διαγράψει τα παλιά αρχεία πολυμέσων από το αντίγραφο ασφαλείας στη συσκευή σου.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Η ενεργοποίηση της επιλογής «Βελτιστοποίηση αποθηκευτικού χώρου Collie» θα διαγράψει τα παλιά αρχεία πολυμέσων από τη συσκευή σου. Μπορείς να τα κατεβάσεις ξανά ανά πάσα στιγμή. Επίσης, θα διαγράψει τα παλιά αρχεία πολυμέσων από το αντίγραφο ασφαλείας στη συσκευή σου.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Ενεργοποίηση</string>
 
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Αποτυχία ανοίγματος επιλογέα.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Για να ενεργοποιήσεις τις ειδοποιήσεις, το Signal χρειάζεται άδεια για να τις εμφανίσει.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Για να ενεργοποιήσεις τις ειδοποιήσεις, το Collie χρειάζεται άδεια για να τις εμφανίσει.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Ενεργοποίηση</string>
     <string name="NotificationsSettingsFragment__calls">Κλήσεις</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Παράκαμψη λογοκρισίας</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Παράκαμψη λογοκρισίας</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Αν είναι ενεργοποιημένο, το Signal θα προσπαθήσει να παρακάμψει την λογοκρισία. Μην ενεργοποιήσεις αυτή την επιλογή εκτός και αν βρίσκεσαι σε περιοχή όπου το Signal έχει λογοκριθεί/μπλοκαριστεί.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Αν είναι ενεργοποιημένο, το Collie θα προσπαθήσει να παρακάμψει την λογοκρισία. Μην ενεργοποιήσεις αυτή την επιλογή εκτός και αν βρίσκεσαι σε περιοχή όπου το Collie έχει λογοκριθεί/μπλοκαριστεί.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Η παράκαμψη λογοκρισίας ενεργοποιήθηκε βάσει του αριθμού τηλεφώνου του λογαριασμού σου.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Αυτόματη επαλήθευση κλειδιού</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Όταν είναι ενεργοποιημένο, το Signal θα επιχειρήσει να επαληθεύσει αυτόματα την κρυπτογράφηση των προσωπικών συνομιλιών.</string>
+    <string name="preferences_automatic_key_verification_body">Όταν είναι ενεργοποιημένο, το Collie θα επιχειρήσει να επαληθεύσει αυτόματα την κρυπτογράφηση των προσωπικών συνομιλιών.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

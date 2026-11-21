@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="preferences_appearance__navigation_bar">שורת ניווט</string>
-    <string name="app_icon_label_zen">זן</string>
-    <string name="app_icon_label_moon">ירח</string>
-    <string name="app_icon_label_music">מוזיקה</string>
     <string name="preferences_appearance__dynamic_colors">צבעים דינמיים</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">השתמש בצבעי המערכת עבור האפליקציה</string>
-<string name="preferences__enable_debug_log">הפעלת יומן ניפוי שגיאות</string>
+    <string name="preferences__enable_debug_log">הפעלת יומן ניפוי שגיאות</string>
+    <string name="preferences__network">רשת</string>
     <string name="HelpSettingsFragment__molly_im_website">האתר של Collie.im</string>
-    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">בדיקה שגרתית לאיתור מהדורות חדשות והצגת בקשה להתקין אותן</string>
-    <string name="preferences__autoupdate_molly">עדכון אוטומטי Collie</string>
-    <string name="preferences__include_beta_updates">כולל גרסאות לבדיקה</string>
-    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">גרסאות לבדיקה מיועדות לניסוי ועשויות להציג תקלות</string>
-    <string name="EnableAppUpdatesMegaphone_check_for_updates">איתור עדכונים</string>
+    <string name="preferences__block_unknown">לחסום לא ידועים</string>
+    <string name="preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts">לחסום משתמשים שלא היו אתך בקשר בעבר וכאלו שלא נמצאים ברשימת אנשי הקשר שלך.</string>
+    <string name="preferences__passphrase_lock">הצפנת מסד נתונים</string>
+    <string name="preferences__protect_molly_database_with_a_passphrase">הגנת מסד הנתונים של Collie במילת צופן</string>
+    <string name="preferences__automatic_lockdown">נעילה אוטומטית</string>
+    <string name="preferences__device_lock_timeout">זמן המתנה לנעילת מכשיר</string>
+    <string name="PrivacySettingsFragment_data_at_rest">נתונים במנוחה</string>
+    <string name="AppProtectionPreferenceFragment_instant">מיידי</string>
+    <string name="PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition">ניתן לנעול את הגישה ל־Collie בטביעת אצבע או זיהוי פנים</string>
+    <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">אין אמצעים ביומטריים זמינים במכשיר הזה</string>
+    <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">נא להגדיר את הטביעות הביומטריות שלך בהגדרות של Android תחילה</string>
+    <!-- Collie -->
+    <string name="preferences_appearance__navigation_bar">שורת ניווט</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">לעדכונים נא לפנות לחנות היישומונים שלך. הגרסה הזאת לא מתעדכנת עצמאית.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">איתור עדכונים</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">נבדק לאחרונה: %s</string>
+    <string name="preferences_network__check_connection">בדיקת החיבור</string>
 </resources>

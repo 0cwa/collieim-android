@@ -23,8 +23,8 @@ dependencies {
   implementation(libs.jackson.core)
   implementation(libs.jackson.module.kotlin)
   implementation(libs.google.libphonenumber)
-  implementation(project(":core-gms:base"))
-  testImplementation(libs.androidx.sqlite.framework)
+
+  // MOLLY: no Play Services dependency. Upstream has it only for the deleted PlayServicesUtil.
 
   testImplementation(testLibs.junit.junit)
   testImplementation(testLibs.assertk)

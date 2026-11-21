@@ -82,7 +82,7 @@ class IndividualSettingsViewModelTest {
     every { repository.observeStoryViewState(RECIPIENT_ID) } returns flowOf(StoryViewState.NONE)
     every { repository.observeGroupsInCommon(RECIPIENT_ID) } returns flowOf(emptyList())
     every { repository.observeCalls(any<Flow<Long>>(), any()) } returns flowOf(emptyList())
-    coEvery { repository.getLinkedDeviceCount(any()) } returns null
+    coEvery { repository.getLinkedDevicesCount(any()) } returns null
     coEvery { repository.getThreadId(RECIPIENT_ID) } returns THREAD_ID
     coEvery { repository.hasGroups() } returns true
     coEvery { repository.getIdentity(RECIPIENT_ID) } returns null
@@ -207,7 +207,7 @@ class IndividualSettingsViewModelTest {
   fun `recipient state updates immediately and the latest linked-device count wins`() = runTest(testDispatcher) {
     val firstCount = CompletableDeferred<Int?>()
     val latestCount = CompletableDeferred<Int?>()
-    coEvery { repository.getLinkedDeviceCount(any()) } coAnswers {
+    coEvery { repository.getLinkedDevicesCount(any()) } coAnswers {
       if (firstArg<Recipient>().isBlocked) latestCount.await() else firstCount.await()
     }
 
@@ -216,23 +216,23 @@ class IndividualSettingsViewModelTest {
     viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(blockedRecipient))
 
     assertTrue(viewModel.state.value.recipient.isBlocked)
-    assertNull(viewModel.state.value.linkedDeviceCount)
-    coVerify(exactly = 2) { repository.getLinkedDeviceCount(any()) }
+    assertNull(viewModel.state.value.linkedDevicesCount)
+    coVerify(exactly = 2) { repository.getLinkedDevicesCount(any()) }
 
     latestCount.complete(2)
-    assertEquals(2, viewModel.state.value.linkedDeviceCount)
+    assertEquals(2, viewModel.state.value.linkedDevicesCount)
 
     firstCount.complete(1)
 
     assertTrue(viewModel.state.value.recipient.isBlocked)
-    assertEquals(2, viewModel.state.value.linkedDeviceCount)
+    assertEquals(2, viewModel.state.value.linkedDevicesCount)
   }
 
   @Test
   fun `changing to an ineligible recipient clears and fences an earlier lookup`() = runTest(testDispatcher) {
     val delayedCount = CompletableDeferred<Int?>()
     val oldLookupReturned = CompletableDeferred<Unit>()
-    coEvery { repository.getLinkedDeviceCount(any()) } coAnswers {
+    coEvery { repository.getLinkedDevicesCount(any()) } coAnswers {
       try {
         withContext(NonCancellable) { delayedCount.await() }
       } catch (cancelled: CancellationException) {
@@ -245,40 +245,40 @@ class IndividualSettingsViewModelTest {
     val viewModel = createViewModel()
     viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual(isSelf = true)))
     assertTrue(viewModel.state.value.recipient.isSelf)
-    assertNull(viewModel.state.value.linkedDeviceCount)
-    coVerify(exactly = 1) { repository.getLinkedDeviceCount(any()) }
+    assertNull(viewModel.state.value.linkedDevicesCount)
+    coVerify(exactly = 1) { repository.getLinkedDevicesCount(any()) }
 
     delayedCount.complete(4)
 
     assertTrue(oldLookupReturned.isCompleted)
-    assertNull(viewModel.state.value.linkedDeviceCount)
-    coVerify(exactly = 1) { repository.getLinkedDeviceCount(any()) }
+    assertNull(viewModel.state.value.linkedDevicesCount)
+    coVerify(exactly = 1) { repository.getLinkedDevicesCount(any()) }
   }
 
   @Test
   fun `unregistered and group recipients do not retain a prior linked-device count`() = runTest(testDispatcher) {
-    coEvery { repository.getLinkedDeviceCount(any()) } returns 2
+    coEvery { repository.getLinkedDevicesCount(any()) } returns 2
     val viewModel = createViewModel()
-    assertEquals(2, viewModel.state.value.linkedDeviceCount)
+    assertEquals(2, viewModel.state.value.linkedDevicesCount)
 
     viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual(isRegistered = false)))
-    assertNull(viewModel.state.value.linkedDeviceCount)
+    assertNull(viewModel.state.value.linkedDevicesCount)
     viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual(isGroup = true)))
-    assertNull(viewModel.state.value.linkedDeviceCount)
+    assertNull(viewModel.state.value.linkedDevicesCount)
 
-    coVerify(exactly = 1) { repository.getLinkedDeviceCount(any()) }
+    coVerify(exactly = 1) { repository.getLinkedDevicesCount(any()) }
   }
 
   @Test
   fun `linked-device count preserves the difference between unknown and zero`() = runTest(testDispatcher) {
-    coEvery { repository.getLinkedDeviceCount(any()) } returns 0
+    coEvery { repository.getLinkedDevicesCount(any()) } returns 0
     val viewModel = createViewModel()
-    assertEquals(0, viewModel.state.value.linkedDeviceCount)
+    assertEquals(0, viewModel.state.value.linkedDevicesCount)
 
-    coEvery { repository.getLinkedDeviceCount(any()) } returns null
+    coEvery { repository.getLinkedDevicesCount(any()) } returns null
     viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual()))
 
-    assertNull(viewModel.state.value.linkedDeviceCount)
+    assertNull(viewModel.state.value.linkedDevicesCount)
   }
 
   @Test

@@ -23,6 +23,7 @@ import org.signal.registration.util.SensitiveLog
  * @param sensitiveLogger A logger for logging sensitive material. The intention is this would only be used in the demo app for testing + debugging, while
  *   the actual app would just pass null.
  * @param debugLogCallback Callback to launch the debug log viewer. The actual app provides the real implementation.
+ * @param networkEnableCallback Callback to enable app networking when registration begins.
  * @param proxyConfigCallback Callback to launch the proxy configuration settings. The actual app provides the real implementation.
  * @param contactSupportController Lets the user contact support, optionally attaching a debug log. The actual app provides the real implementation.
  */
@@ -35,6 +36,7 @@ class RegistrationDependencies(
   val webAuthnRelyingPartyId: String,
   val sensitiveLogger: Log.Logger?,
   val debugLogCallback: ((Context) -> Unit)?,
+  val networkEnableCallback: () -> Unit,
   val proxyConfigCallback: ((Context) -> Unit)?,
   val contactSupportController: ContactSupportController?
 ) {

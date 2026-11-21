@@ -79,7 +79,6 @@ object AccountSettingsTestTags {
   const val SCROLLER = "scroller"
   const val ROW_LINKED_DEVICES = "row-linked-devices"
   const val ROW_PAYMENTS = "row-payments"
-  const val ROW_MANAGE_DONATIONS = "row-manage-donations"
   const val CARD_SIGNAL_LOGIN = "card-signal-login"
   const val LINK_SIGNAL_LOGIN_LEARN_MORE = "link-signal-login-learn-more"
   const val ROW_SET_UP_TWO_FACTOR = "row-set-up-two-factor"

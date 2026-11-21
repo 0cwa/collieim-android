@@ -315,7 +315,7 @@ open class DefaultNotificationsSettingsCallbacks(
     try {
       messageSoundSelectionLauncher.launch(Unit)
     } catch (e: ActivityNotFoundException) {
-      Toast.makeText(activity, R.string.NotificationSettingsFragment__failed_to_open_picker, Toast.LENGTH_LONG).show()
+      Toast.makeText(activity, AppSettingsR.string.NotificationSettingsFragment__failed_to_open_picker, Toast.LENGTH_LONG).show()
     }
   }
 
@@ -323,7 +323,7 @@ open class DefaultNotificationsSettingsCallbacks(
     try {
       callsSoundSelectionLauncher.launch(Unit)
     } catch (e: ActivityNotFoundException) {
-      Toast.makeText(activity, R.string.NotificationSettingsFragment__failed_to_open_picker, Toast.LENGTH_LONG).show()
+      Toast.makeText(activity, AppSettingsR.string.NotificationSettingsFragment__failed_to_open_picker, Toast.LENGTH_LONG).show()
     }
   }
 
@@ -545,8 +545,8 @@ fun NotificationsSettingsScreen(
       if (!state.messageNotificationsState.canEnableNotifications) {
         item {
           Banner(
-            text = stringResource(R.string.NotificationSettingsFragment__to_enable_notifications),
-            action = stringResource(R.string.NotificationSettingsFragment__turn_on),
+            text = stringResource(AppSettingsR.string.NotificationSettingsFragment__to_enable_notifications),
+            action = stringResource(AppSettingsR.string.NotificationSettingsFragment__turn_on),
             onActionClick = callbacks::onTurnOnNotificationsActionClick
           )
         }

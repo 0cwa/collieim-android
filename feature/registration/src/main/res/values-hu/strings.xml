@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Jogosultságok engedélyezése</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">A Signal kérni fogja ezeket az engedélyeket, hogy segítsen üzenetet küldeni az ismerőseidnek. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">A Collie kérni fogja ezeket az engedélyeket, hogy segítsen üzenetet küldeni az ismerőseidnek. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Később</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Segítségkérés</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal regisztráció - megerősítő kód Androidhoz</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie regisztráció - megerősítő kód Androidhoz</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Nem sikerült visszaállítani ezt a biztonsági másolatot</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">A Signal ezen verziója nem tudja visszaállítani a biztonsági másolatot. Frissíts a legújabb verzióra, és próbáld újra!</string>
+    <string name="RemoteRestoreScreen__update_latest">A Collie ezen verziója nem tudja visszaállítani a biztonsági másolatot. Frissíts a legújabb verzióra, és próbáld újra!</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signal frissítése</string>
+    <string name="RemoteRestoreScreen__update_signal">Collie frissítése</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Később</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Segítségkérés</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">A Signal Android biztonsági mentés visszaállításának tartós hibája</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">A Collie Android biztonsági mentés visszaállításának tartós hibája</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Biztonságod és személyes adataid védelme érdekében fiókodat zároltuk. %1$d nap inaktivitást követően újraregisztrálhatod ezt a telefonszámot a PIN kód használata nélkül. Az összes adat törlésre kerül.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Nyisd meg a Signalt a régi eszközödön</string>
+    <string name="QuickRestoreQRScreen__step_1">Nyisd meg a Colliet a régi eszközödön</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Koppints a kamera ikonra </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Add meg PIN kódodat</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Add meg a Signal első telepítésekor létrehozott PIN-kódot</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Add meg a Collie első telepítésekor létrehozott PIN-kódot</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Újra beírtad a kódot, amelyet már korábban használtál a telefonszámod megerősítéséhez. Add meg a fiókodhoz korábban kiválasztott egyedi Signal PIN kódot.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Segítségkérés</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal regisztráció - Segítségkérés a PIN kód használatához Androidon</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie regisztráció - Segítségkérés a PIN kód használatához Androidon</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Értesítések engedélyezése</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">A Signal szeretné kérni az értesítési engedélyt. Ez lehetővé teszi, hogy az eszközöd értesítéseket jelenítsen meg, amikor új üzenetek érkeznek.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">A Collie szeretné kérni az értesítési engedélyt. Ez lehetővé teszi, hogy az eszközöd értesítéseket jelenítsen meg, amikor új üzenetek érkeznek.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Később</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">A fiókod összekapcsolásához olvasd be ezt a kódot</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Nyisd meg a Signalt a telefonodon!</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Nyisd meg a Colliet a telefonodon!</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">A Signal beállításainak megnyitásához koppints a profilképedre</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">A Collie beállításainak megnyitásához koppints a profilképedre</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Koppints a „Kapcsolódó eszközök” és az „Új eszköz csatolása” lehetőségre</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">A kód generálása sikertelen</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Nincs letöltve a Signal másik eszközre?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Nincs letöltve a Collie másik eszközre?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Fiók létrehozása</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -536,7 +536,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Helyezd át a fiókodat</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">A fiókod áthelyezéséhez nyisd meg a Signalt a régi Android eszközödön, majd válaszd a Fiók áthelyezése lehetőséget.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">A fiókod áthelyezéséhez nyisd meg a Colliet a régi Android eszközödön, majd válaszd a Fiók áthelyezése lehetőséget.</string>
     <string name="DeviceTransferInstructions__continue">Folytatás</string>
 
     <!-- Device transfer: Setup screen -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">Igen, a számok egyeznek</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">A számok nem egyeznek</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Várakozás a régi eszközöd ellenőrzésére…</string>
-    <string name="DeviceTransferSetup__location_permission_required">A Signal alkalmazásnak szüksége van a helymeghatározási engedélyre ahhoz, hogy felismerje és csatlakozzon a régi eszközödhöz.</string>
+    <string name="DeviceTransferSetup__location_permission_required">A Collie alkalmazásnak szüksége van a helymeghatározási engedélyre ahhoz, hogy felismerje és csatlakozzon a régi eszközödhöz.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Engedély megadása</string>
-    <string name="DeviceTransferSetup__location_services_required">A Signal alkalmazásnak szüksége van a helymeghatározási szolgáltatások engedélyezésére, hogy felismerje és csatlakozzon a régi eszközödhöz.</string>
+    <string name="DeviceTransferSetup__location_services_required">A Collie alkalmazásnak szüksége van a helymeghatározási szolgáltatások engedélyezésére, hogy felismerje és csatlakozzon a régi eszközödhöz.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Helymeghatározás-szolgáltatások bekapcsolása</string>
-    <string name="DeviceTransferSetup__wifi_required">A Signal alkalmazásnak bekapcsolt Wi-Fi-re van szüksége, hogy felismerje és csatlakozzon a régi eszközödhöz.</string>
+    <string name="DeviceTransferSetup__wifi_required">A Collie alkalmazásnak bekapcsolt Wi-Fi-re van szüksége, hogy felismerje és csatlakozzon a régi eszközödhöz.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Wi-Fi bekapcsolása</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Sajnáljuk, úgy tűnik, hogy az eszközöd nem támogatja a Wi-Fi Direct funkciót.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Inkább állítsd vissza a biztonsági másolatot</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">Adat áttöltése</string>
     <string name="DeviceTransferProgress__d_messages_so_far">Eddig %1$d db üzenet</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Sikertelen az átvitel</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Nem lehetséges az átvitel újabb verziójú Signalból.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Nem lehetséges az átvitel újabb verziójú Collieból.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Az adatbázis korlátai miatt egyes adatok átvitele nem sikerült.</string>
     <string name="DeviceTransferProgress__transfer_failed">Az áthelyezés sikertelen. Próbáld újra!</string>
     <string name="DeviceTransferProgress__try_again">Próbáld újra</string>

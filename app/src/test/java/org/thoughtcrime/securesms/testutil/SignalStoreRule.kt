@@ -10,6 +10,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import org.junit.rules.ExternalResource
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
 import org.signal.remoteconfig.RemoteConfig
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValueStore
@@ -24,22 +28,33 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
  * stored state rather than stubbing interactions. Use [MockSignalStoreRule] instead when you need
  * interaction-based mocking.
  */
-class SignalStoreRule : ExternalResource() {
+class SignalStoreRule : TestRule {
 
-  private lateinit var preferences: SharedPreferences
+  private val storeRule = object : ExternalResource() {
+    private lateinit var preferences: SharedPreferences
 
-  override fun before() {
-    val application = ApplicationProvider.getApplicationContext<Application>()
-    preferences = application.getSharedPreferences("signal-store-test", Context.MODE_PRIVATE)
-    preferences.edit().clear().commit()
-    // AccountValues migrates legacy preferences when the in-memory store is created.
-    PlainTextKeyValueStore.init(preferences, BuildConfig.VERSION_CODE)
-    SignalStore.testInject(SignalStore(application, KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())))
-    RemoteConfig.initDependencies(AppRemoteConfigDependencies)
+    override fun before() {
+      val application = ApplicationProvider.getApplicationContext<Application>()
+      preferences = application.getSharedPreferences("signal-store-test", Context.MODE_PRIVATE)
+      preferences.edit().clear().commit()
+      // AccountValues and MollyValues migrate legacy preferences when the in-memory store is created.
+      PlainTextKeyValueStore.init(preferences, BuildConfig.VERSION_CODE)
+      SignalStore.testInject(SignalStore(application, KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())))
+      RemoteConfig.initDependencies(AppRemoteConfigDependencies)
+    }
+
+    override fun after() {
+      SignalStore.testInject(null)
+      preferences.edit().clear().commit()
+    }
   }
 
-  override fun after() {
-    SignalStore.testInject(null)
-    preferences.edit().clear().commit()
+  private val masterSecretRule = MasterSecretRule()
+
+  override fun apply(base: Statement, description: Description): Statement {
+    return RuleChain
+      .outerRule(masterSecretRule)
+      .around(storeRule)
+      .apply(base, description)
   }
 }

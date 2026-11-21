@@ -11,7 +11,9 @@ import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
@@ -27,13 +29,15 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.crypto.MasterSecret
+import org.thoughtcrime.securesms.keyvalue.MollyValues
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPreference
 import org.thoughtcrime.securesms.testutil.EmptyLogger
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [33])
@@ -41,10 +45,16 @@ class KeyCachingServiceTest {
   @Before
   fun setUp() {
     Log.initialize(EmptyLogger())
-    mockkStatic(TextSecurePreferences::class, NotificationChannels::class, DynamicTheme::class)
-    every { TextSecurePreferences.isPassphraseLockEnabled(any()) } returns true
-    every { TextSecurePreferences.getPassphraseLockTrigger(any()) } returns PassphraseLockTriggerPreference(setOf("timeout"))
-    every { TextSecurePreferences.getPassphraseLockTimeout(any()) } returns 60L
+    mockkStatic(NotificationChannels::class, DynamicTheme::class)
+    mockkObject(SignalStore)
+    // KeyCachingService reads the lock switch from PlainTextKeyValueStore and the trigger and timeout from MollyValues.
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    PlainTextKeyValueStore.init(context.getSharedPreferences("key-caching-service-test", Context.MODE_PRIVATE), BuildConfig.VERSION_CODE)
+    PlainTextKeyValueStore.passphraseLockEnabled = true
+    val molly = mockk<MollyValues>()
+    every { SignalStore.molly } returns molly
+    every { molly.passphraseLockTrigger } returns PassphraseLockTriggerPreference(setOf("timeout"))
+    every { molly.passphraseLockTimeout } returns 60L
     every { NotificationChannels.getInstance() } returns mockk()
     every { DynamicTheme.resolveColor(any(), any()) } returns 0
     KeyCachingService.setMasterSecret(mockk<MasterSecret>(relaxed = true))
@@ -53,7 +63,8 @@ class KeyCachingServiceTest {
   @After
   fun tearDown() {
     KeyCachingService.clearMasterSecret()
-    unmockkStatic(TextSecurePreferences::class, NotificationChannels::class, DynamicTheme::class)
+    unmockkObject(SignalStore)
+    unmockkStatic(NotificationChannels::class, DynamicTheme::class)
   }
 
   @Test
@@ -97,6 +108,7 @@ class KeyCachingServiceTest {
   @Test
   fun `locked actionless request stops without promoting the service or caching a key`() {
     KeyCachingService.clearMasterSecret()
+    mockkStatic(PlainTextKeyValueStore::class)
     val controller = Robolectric.buildService(KeyCachingService::class.java).create()
     val service = controller.get()
 
@@ -109,10 +121,11 @@ class KeyCachingServiceTest {
 
       assertTrue(KeyCachingService.isLocked())
       assertTrue(shadow.isStoppedBySelf)
-      verify(exactly = 0) { TextSecurePreferences.isPassphraseLockEnabled(any()) }
+      verify(exactly = 0) { PlainTextKeyValueStore.passphraseLockEnabled }
       verify(exactly = 0) { NotificationChannels.getInstance() }
     } finally {
       controller.destroy()
+      unmockkStatic(PlainTextKeyValueStore::class)
     }
   }
 

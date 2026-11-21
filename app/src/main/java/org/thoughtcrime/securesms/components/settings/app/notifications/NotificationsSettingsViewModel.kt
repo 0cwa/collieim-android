@@ -19,11 +19,12 @@ import kotlinx.coroutines.ensureActive
 import android.widget.Toast
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.ApplicationContext
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.DeviceSpecificNotificationConfig
@@ -33,7 +34,6 @@ import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPrefere
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientForeverObserver
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
@@ -150,14 +150,14 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
   }
 
   fun setNotifyWhileLocked(enabled: Boolean) {
-    TextSecurePreferences.setPassphraseLockNotificationsEnabled(AppDependencies.application, enabled)
+    PlainTextKeyValueStore.lockNotificationsEnabled = enabled
     refresh()
   }
 
   fun setPreferredNotificationMethod(method: NotificationDeliveryMethod) {
     synchronized(UnifiedPushLifecycle.monitor) {
       SignalStore.settings.preferredNotificationMethod = method
-      TextSecurePreferences.setPromptedOptimizeDoze(AppDependencies.application, false)
+      SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
       ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices()
       AppDependencies.resetNetwork(true)
     }
@@ -171,7 +171,7 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
   ) {
     viewModelScope.launch {
       val completed = RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
-          TextSecurePreferences.setPromptedOptimizeDoze(AppDependencies.application, false)
+          SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
           ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices(UnifiedPushRefreshJob(authorization))
           AppDependencies.resetNetwork(true)
           onSelected(authorization)
@@ -278,7 +278,7 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
         ringtone = SignalStore.settings.callRingtone,
         vibrateEnabled = SignalStore.settings.isCallVibrateEnabled
       ),
-      notifyWhileLocked = TextSecurePreferences.isPassphraseLockNotificationsEnabled(AppDependencies.application) && SignalStore.account.pushAvailable,
+      notifyWhileLocked = PlainTextKeyValueStore.lockNotificationsEnabled && SignalStore.account.pushAvailable,
       canEnableNotifyWhileLocked = SignalStore.account.pushAvailable,
       isLinkedDevice = SignalStore.account.isLinkedDevice,
       preferredNotificationMethod = SignalStore.settings.preferredNotificationMethod,

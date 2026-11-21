@@ -7,30 +7,34 @@ package org.whispersystems.signalservice.internal.util
 
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import assertk.assertions.isSameInstanceAs
+import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.junit.Assert.assertThrows
 import org.junit.Test
+import java.net.Socket
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import java.net.Socket
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.X509ExtendedTrustManager
 import javax.net.ssl.X509TrustManager
 
 class BlacklistingTrustManagerTest {
 
-  private val delegate = mockk<X509TrustManager>(relaxed = true)
+  private val delegate = mockk<X509ExtendedTrustManager>(relaxed = true)
   private val trustManager = BlacklistingTrustManager(delegate)
 
   @Test
@@ -38,6 +42,29 @@ class BlacklistingTrustManagerTest {
     val trustManager = BlacklistingTrustManager.createForDefaultTrustStore()
 
     assertThat(trustManager.acceptedIssuers).isNotEmpty()
+  }
+
+  @Test
+  fun `extended delegate is accepted by the factory`() {
+    val extendedDelegate = mockk<X509ExtendedTrustManager>(relaxed = true)
+    val trustManager = BlacklistingTrustManager.createFor(arrayOf(extendedDelegate))
+
+    trustManager.acceptedIssuers
+
+    verify { extendedDelegate.acceptedIssuers }
+  }
+
+  @Test
+  fun `factory rejects a basic delegate without selecting a later extended delegate`() {
+    val basicDelegate = mockk<X509TrustManager>()
+    val extendedDelegate = mockk<X509ExtendedTrustManager>()
+
+    val failure = assertThrows(IllegalArgumentException::class.java) {
+      BlacklistingTrustManager.createFor(arrayOf(basicDelegate, extendedDelegate))
+    }
+
+    assertThat(failure.message.orEmpty()).contains(basicDelegate.javaClass.name)
+    assertThat(failure.message.orEmpty()).contains(X509ExtendedTrustManager::class.java.simpleName)
   }
 
   @Test
@@ -86,6 +113,48 @@ class BlacklistingTrustManagerTest {
   }
 
   @Test
+  fun `extended delegate receives server socket and engine context`() {
+    val chain = arrayOf(readCertificate("ias.cert"))
+    val socket = Socket()
+    val engine = mockk<SSLEngine>()
+
+    trustManager.checkServerTrusted(chain, AUTH_TYPE, socket)
+    trustManager.checkServerTrusted(chain, AUTH_TYPE, engine)
+
+    verify(exactly = 1) { delegate.checkServerTrusted(chain, AUTH_TYPE, socket) }
+    verify(exactly = 1) { delegate.checkServerTrusted(chain, AUTH_TYPE, engine) }
+    verify(exactly = 0) { delegate.checkServerTrusted(chain, AUTH_TYPE) }
+  }
+
+  @Test
+  fun `extended delegate receives client socket and engine context`() {
+    val chain = arrayOf(readCertificate("ias.cert"))
+    val socket = Socket()
+    val engine = mockk<SSLEngine>()
+
+    trustManager.checkClientTrusted(chain, AUTH_TYPE, socket)
+    trustManager.checkClientTrusted(chain, AUTH_TYPE, engine)
+
+    verify(exactly = 1) { delegate.checkClientTrusted(chain, AUTH_TYPE, socket) }
+    verify(exactly = 1) { delegate.checkClientTrusted(chain, AUTH_TYPE, engine) }
+    verify(exactly = 0) { delegate.checkClientTrusted(chain, AUTH_TYPE) }
+  }
+
+  @Test
+  fun `extended server checks reject blacklisted certificates before delegation`() {
+    val chain = arrayOf(loadImpactedIntermediates().first().certificate())
+
+    assertFailure {
+      trustManager.checkServerTrusted(chain, AUTH_TYPE, Socket())
+    }.isInstanceOf<CertificateException>()
+    assertFailure {
+      trustManager.checkServerTrusted(chain, AUTH_TYPE, mockk<SSLEngine>())
+    }.isInstanceOf<CertificateException>()
+
+    verify { delegate wasNot Called }
+  }
+
+  @Test
   fun `a rejection from the delegate is propagated`() {
     every { delegate.checkServerTrusted(any(), any()) } throws CertificateException("untrusted")
 
@@ -95,53 +164,26 @@ class BlacklistingTrustManagerTest {
   }
 
   @Test
-  fun `socket context is forwarded to an extended delegate`() {
-    val extended = mockk<X509ExtendedTrustManager>(relaxed = true)
-    val wrapper = BlacklistingTrustManager(extended)
-    val socket = mockk<Socket>()
+  fun `connection-aware delegate rejections propagate without retry or downgrade`() {
     val chain = arrayOf(readCertificate("ias.cert"))
-
-    wrapper.checkServerTrusted(chain, AUTH_TYPE, socket)
-
-    verify { extended.checkServerTrusted(chain, AUTH_TYPE, socket) }
-  }
-
-  @Test
-  fun `engine context is forwarded to an extended delegate`() {
-    val extended = mockk<X509ExtendedTrustManager>(relaxed = true)
-    val wrapper = BlacklistingTrustManager(extended)
+    val socket = Socket()
     val engine = mockk<SSLEngine>()
-    val chain = arrayOf(readCertificate("ias.cert"))
-
-    wrapper.checkServerTrusted(chain, AUTH_TYPE, engine)
-
-    verify { extended.checkServerTrusted(chain, AUTH_TYPE, engine) }
-  }
-
-  @Test
-  fun `blacklisted chain is rejected before contextual delegate`() {
-    val extended = mockk<X509ExtendedTrustManager>(relaxed = true)
-    val wrapper = BlacklistingTrustManager(extended)
-    val socket = mockk<Socket>()
-    val compromised = loadImpactedIntermediates().first().certificate()
+    val socketFailure = CertificateException("untrusted via socket")
+    val engineFailure = CertificateException("untrusted via engine")
+    every { delegate.checkServerTrusted(chain, AUTH_TYPE, socket) } throws socketFailure
+    every { delegate.checkServerTrusted(chain, AUTH_TYPE, engine) } throws engineFailure
 
     assertFailure {
-      wrapper.checkServerTrusted(arrayOf(compromised), AUTH_TYPE, socket)
-    }.isInstanceOf<CertificateException>()
+      trustManager.checkServerTrusted(chain, AUTH_TYPE, socket)
+    }.isSameInstanceAs(socketFailure)
 
-    verify(exactly = 0) { extended.checkServerTrusted(any(), any(), any<Socket>()) }
-  }
+    assertFailure {
+      trustManager.checkServerTrusted(chain, AUTH_TYPE, engine)
+    }.isSameInstanceAs(engineFailure)
 
-  @Test
-  fun `legacy delegate is used when contextual validation is unavailable`() {
-    val plain = mockk<X509TrustManager>(relaxed = true)
-    val wrapper = BlacklistingTrustManager(plain)
-    val engine = mockk<SSLEngine>()
-    val chain = arrayOf(readCertificate("ias.cert"))
-
-    wrapper.checkServerTrusted(chain, AUTH_TYPE, engine)
-
-    verify { plain.checkServerTrusted(chain, AUTH_TYPE) }
+    verify(exactly = 1) { delegate.checkServerTrusted(chain, AUTH_TYPE, socket) }
+    verify(exactly = 1) { delegate.checkServerTrusted(chain, AUTH_TYPE, engine) }
+    verify(exactly = 0) { delegate.checkServerTrusted(any(), any()) }
   }
 
   private fun loadImpactedIntermediates(): List<ImpactedIntermediate> {
@@ -171,13 +213,23 @@ class BlacklistingTrustManagerTest {
   }
 
   /** Models a validating trust manager that caches intermediates from successful validations. */
-  private class CachingTrustManager : X509TrustManager {
+  private class CachingTrustManager : X509ExtendedTrustManager() {
     var hasCachedIntermediate = false
       private set
 
     override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
 
-    override fun checkServerTrusted(chain: Array<out X509Certificate>, authType: String) {
+    override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?, socket: Socket?) = Unit
+
+    override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?, engine: SSLEngine?) = Unit
+
+    override fun checkServerTrusted(chain: Array<out X509Certificate>, authType: String) = validateServerChain(chain)
+
+    override fun checkServerTrusted(chain: Array<out X509Certificate>, authType: String, socket: Socket?) = validateServerChain(chain)
+
+    override fun checkServerTrusted(chain: Array<out X509Certificate>, authType: String, engine: SSLEngine?) = validateServerChain(chain)
+
+    private fun validateServerChain(chain: Array<out X509Certificate>) {
       if (chain.size > 1) {
         hasCachedIntermediate = true
       } else if (!hasCachedIntermediate) {

@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Daftar ulang akun</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Perbarui Signal</string>
+    <string name="preferences_account_update_signal">Perbarui Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Hapus semua data</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Membuat laporan …</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Laporan Anda dibuat hanya pada saat proses ekspor dan tidak disimpan oleh Signal di perangkat Anda.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Laporan Anda dibuat hanya pada saat proses ekspor dan tidak disimpan oleh Collie di perangkat Anda.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -595,7 +595,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Anda belum mengatur frasa sandi!</string>
     <string name="ApplicationPreferencesActivity_disable">Nonaktifkan</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Nonaktifkan frasa sandi?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tindakan ini akan secara permanen membuka kunci Signal dan notifikasi pesan.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tindakan ini akan secara permanen membuka kunci Collie dan notifikasi pesan.</string>
     <string name="PrivacySettingsFragment__app_security">Keamanan aplikasi</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Blokir tangkapan layar di daftar terbaru dan di dalam aplikasi</string>
@@ -640,7 +640,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Pengaturan ini tidak menjamin apa pun, dan keyboard Anda bisa saja mengabaikannya.</string>
     <string name="preferences__typing_indicators">Indikator pengetikan</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Pilih siapa yang bisa melihat nomor telepon Anda dan siapa yang bisa menghubungi Anda di Signal dengan nomor tersebut.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Pilih siapa yang bisa melihat nomor telepon Anda dan siapa yang bisa menghubungi Anda di Collie dengan nomor tersebut.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Pembayaran</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -656,7 +656,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Jangan Sekarang</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Pelajari selengkapnya</string>
 
@@ -682,6 +682,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Tidak bisa me-redeem langganan pencadangan</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Donasi ke Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Preferensi Internal</string>
     <!-- App settings row that opens linked devices -->
@@ -867,9 +868,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Profil terbaru Anda akan dapat dilihat oleh kontak, grup, dan orang yang Anda kirimi pesan.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Perbarui Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Perbarui Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Versi Signal ini kedaluwarsa. Perbarui sekarang untuk terus menggunakan Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Versi Collie ini kedaluwarsa. Perbarui sekarang untuk terus menggunakan Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Perbarui</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -925,8 +926,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Tutup</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Dapatkan lencana untuk profil Anda dengan mendukung Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal adalah organisasi nirlaba tanpa pengiklan atau investor, hanya didukung orang baik seperti Anda.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Menjadi Penyokong</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1006,19 +1010,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Pengguna ini tidak dapat ditemukan.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Untuk memindai kode QR, izinkan Signal mengakses kamera.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Untuk memindai kode QR, izinkan Collie mengakses kamera.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Izinkan akses</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal memerlukan akses ke kamera untuk memindai kode QR</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie memerlukan akses ke kamera untuk memindai kode QR</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Penyimpanan</string>
     <string name="preferences_storage__storage_usage">Penggunaan media penyimpanan</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Penyimpanan Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Penyimpanan Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalkan penyimpanan Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalkan penyimpanan Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Media yang tidak digunakan akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1044,7 +1048,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media akan dihapus dari cadangan di perangkat Anda</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Mengaktifkan \"Optimalkan penyimpanan Signal\" akan meng-offload media lama dari perangkat Anda. Anda dapat mengunduhnya kembali kapan saja. Media lama juga akan dihapus dari cadangan di perangkat Anda.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Mengaktifkan \"Optimalkan penyimpanan Collie\" akan meng-offload media lama dari perangkat Anda. Anda dapat mengunduhnya kembali kapan saja. Media lama juga akan dihapus dari cadangan di perangkat Anda.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Aktifkan</string>
 
@@ -1074,7 +1078,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Gagal membuka pemilih dering.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Untuk mengaktifkan notifikasi, Signal memerlukan izin untuk menampilkannya.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Untuk mengaktifkan notifikasi, Collie memerlukan izin untuk menampilkannya.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Aktifkan</string>
     <string name="NotificationsSettingsFragment__calls">Panggilan</string>
@@ -1173,7 +1177,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Pengelakan sensor</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Pengelakan sensor</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Jika diaktifkan, Signal akan menggagalkan penyensoran. Jangan menonaktifkan fitur ini kecuali Anda berada di lokasi tempat Signal disensor.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Jika diaktifkan, Collie akan menggagalkan penyensoran. Jangan menonaktifkan fitur ini kecuali Anda berada di lokasi tempat Collie disensor.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Pengelakan sensor telah diaktifkan berdasarkan nomor telepon Anda.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1190,7 +1194,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Verifikasi kunci otomatis</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Jika diaktifkan, Signal akan mencoba proses verifikasi enkripsi chat 1:1 secara otomatis.</string>
+    <string name="preferences_automatic_key_verification_body">Jika diaktifkan, Collie akan mencoba proses verifikasi enkripsi chat 1:1 secara otomatis.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
   <!-- Removed by excludeNonTranslatables <string name="terms_and_privacy_policy_url" translatable="false">https://signal.org/legal</string> -->
   <!-- Removed by excludeNonTranslatables <string name="AccountLockedScreen__learn_more_url" translatable="false">https://support.signal.org/hc/articles/360007059792</string> -->
 
@@ -138,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">ياردەم خادىمى بىلەن ئالاقىلىشىش</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal تىزىملىتىش - Android ئۈچۈن دەلىللەش كودى</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie تىزىملىتىش - Android ئۈچۈن دەلىللەش كودى</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -323,7 +322,7 @@
     <!-- Body for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__update_latest">سىگنالنىڭ بۇ نەشرى زاپاسلاشنى ئەسلىگە كەلتۈرەلمىدى. ئەڭ يېڭى نەشرىگە يېڭىلاپ قايتا سىناڭ.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signal نى يېڭىلا</string>
+    <string name="RemoteRestoreScreen__update_signal">Collie نى يېڭىلا</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">ھازىر ئەمەس</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -333,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">ياردەم خادىمى بىلەن ئالاقىلىشىش</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android زاپاسلاش ئۈزلۈكسىز داۋاملاشقان زاپاسلاشتىكى كاشىلىنى ئەسلىگە كەلتۈرىدۇ</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android زاپاسلاش ئۈزلۈكسىز داۋاملاشقان زاپاسلاشتىكى كاشىلىنى ئەسلىگە كەلتۈرىدۇ</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -428,7 +427,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">PIN ڭىزنى كىرگۈزۈڭ</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Signal نى تۇنجى قېتىم چۈشۈرگەندە قۇرۇپ چىققان PIN نومۇرىنى كىرگۈزۈڭ</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Collie نى تۇنجى قېتىم چۈشۈرگەندە قۇرۇپ چىققان PIN نومۇرىنى كىرگۈزۈڭ</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">سىز تېلېفون نومۇرىڭىزنى دەلىللەش ئۈچۈن كىرگۈزۈپ ئىشلىتىپ بولغان كودنى يەنە قايتا كىرگۈزدىڭىز. ھېساباتىڭىز ئۈچۈن قۇرغان ئالاھىدە Signal PIN نومۇرىنى كىرگۈزۈڭ.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -456,14 +455,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">ياردەم خادىمى بىلەن ئالاقىلىشىش</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal تىزىملىتىش - Android نىڭ PIN بىلەن ياردەمگە موھتاج</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie تىزىملىتىش - Android نىڭ PIN بىلەن ياردەمگە موھتاج</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">ئۇقتۇرۇشقا رۇخسەت</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal، ئۇقتۇرۇش ئىجازىتىنى تەلەپ قىلىدۇ. بۇ، ئۈسكۈنىڭىزگە يېڭى ئۇچۇرلار كەلگەندە ئۇقتۇرۇشلارنى كۆرسىتىپ ئاگاھلاندۇرۇشقا ئىمكان بېرىدۇ.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie، ئۇقتۇرۇش ئىجازىتىنى تەلەپ قىلىدۇ. بۇ، ئۈسكۈنىڭىزگە يېڭى ئۇچۇرلار كەلگەندە ئۇقتۇرۇشلارنى كۆرسىتىپ ئاگاھلاندۇرۇشقا ئىمكان بېرىدۇ.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">ھازىر ئەمەس</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -499,9 +498,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">بۇ كودنى سكاننېرلاپ ھېساباتىڭىزنى ئۇلاڭ</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">تېلېفونىڭىزدا Signal نى ئېچىڭ</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">تېلېفونىڭىزدا Collie نى ئېچىڭ</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">باش رەسىمىڭىزنى چېكىپ Signal تەڭشەكلىرىنى ئېچىڭ</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">باش رەسىمىڭىزنى چېكىپ Collie تەڭشەكلىرىنى ئېچىڭ</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">«ئۇلانغان ئۈسكۈنىلەر» ۋە «يېڭى ئۈسكۈنىنى ئۇلاش» نى چېكىڭ</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -513,7 +512,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">كودنى ھاسىل قىلالمىدى</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">باشقا ئۈسكۈنىڭىزدە Signal يوقمۇ؟</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">باشقا ئۈسكۈنىڭىزدە Collie يوقمۇ؟</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">ھېسابات قۇرۇش</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -535,7 +534,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">ھېساباتنى يۆتكەش</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">ھېساباتىڭىزنى يۆتكەش ئۈچۈن، كونا ئۈسكۈنىڭىزدە Signal نى ئېچىڭ ۋە «ھېسابات يۆتكەش»نى تاللاڭ.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">ھېساباتىڭىزنى يۆتكەش ئۈچۈن، كونا ئۈسكۈنىڭىزدە Collie نى ئېچىڭ ۋە «ھېسابات يۆتكەش»نى تاللاڭ.</string>
     <string name="DeviceTransferInstructions__continue">داۋاملاشتۇر</string>
 
     <!-- Device transfer: Setup screen -->
@@ -546,11 +545,11 @@
     <string name="DeviceTransferSetup__numbers_match">ھەئە، نۇمۇرلار بىردەك</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">نومۇر ماس كەلمىدى</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">كونا ئۈسكۈنىڭىزنىڭ دەلىللىشىنى كۈتۈۋاتىدۇ…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signalنىڭ كونا ئاندىروئىد ئۈسكۈنىڭىزنى بايقىشى ۋە باغلىشى ئۈچۈن، جۇغراپىيەلىك ئورۇن بەلگىلەش ئىجازىتى بېرىلگەن بولۇشى كېرەك.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collieنىڭ كونا ئاندىروئىد ئۈسكۈنىڭىزنى بايقىشى ۋە باغلىشى ئۈچۈن، جۇغراپىيەلىك ئورۇن بەلگىلەش ئىجازىتى بېرىلگەن بولۇشى كېرەك.</string>
     <string name="DeviceTransferSetup__grant_location_permission">ئىجازەت بېرىش</string>
-    <string name="DeviceTransferSetup__location_services_required">Signalنىڭ كونا ئاندىروئىد ئۈسكۈنىڭىزنى بايقىشى ۋە باغلىشى ئۈچۈن، جۇغراپىيەلىك ئورۇن بەلگىلەش مۇلازىمىتى قوزغىتىلغان بولۇشى كېرەك.</string>
+    <string name="DeviceTransferSetup__location_services_required">Collieنىڭ كونا ئاندىروئىد ئۈسكۈنىڭىزنى بايقىشى ۋە باغلىشى ئۈچۈن، جۇغراپىيەلىك ئورۇن بەلگىلەش مۇلازىمىتى قوزغىتىلغان بولۇشى كېرەك.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">ئورۇن مۇلازىمىتىنى قوزغات</string>
-    <string name="DeviceTransferSetup__wifi_required">Signalنىڭ كونا ئاندىروئىد ئۈسكۈنىڭىزنى بايقىشى ۋە باغلىشى ئۈچۈن Wi-Fi ئوچۇق بولۇشى كېرەك.</string>
+    <string name="DeviceTransferSetup__wifi_required">Collieنىڭ كونا ئاندىروئىد ئۈسكۈنىڭىزنى بايقىشى ۋە باغلىشى ئۈچۈن Wi-Fi ئوچۇق بولۇشى كېرەك.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Wi-Fi نى قوزغات</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">كەچۈرۈڭ، سىزنىڭ ئۈسكۈنىڭىز Wi-Fi Direct نى قوللىمايدىكەن.</string>
     <string name="DeviceTransferSetup__restore_a_backup">بىر زاپاسنى ئەسلىگە كەلتۈرۈڭ</string>
@@ -567,7 +566,7 @@
     <string name="DeviceTransferProgress__transferring_data">مەلۇمات يۆتكىلىۋاتىدۇ</string>
     <string name="DeviceTransferProgress__d_messages_so_far">ھازىرچە %1$d ئۇچۇرلار</string>
     <string name="DeviceTransferProgress__unable_to_transfer">يۆتكىيەلمىدى</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Signal نىڭ يېڭىراق نەشرلىرىدىن يۆتكىيەلمەيدۇ.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Collie نىڭ يېڭىراق نەشرلىرىدىن يۆتكىيەلمەيدۇ.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">بىر ئۇچۇر ئائامبىرى چەكلىمىلىكى تۈپەيلى بەزى مەلۇماتلارنى يۆتكىگىلى بولمىدى.</string>
     <string name="DeviceTransferProgress__transfer_failed">يۆتكەش مەغلۇپ بولدى. قايتا سىناڭ.</string>
     <string name="DeviceTransferProgress__try_again">قايتا سىناڭ</string>

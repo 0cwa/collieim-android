@@ -8,6 +8,7 @@ import android.net.Uri;
 import kotlin.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
@@ -43,12 +44,15 @@ import org.thoughtcrime.securesms.database.SearchTable;
 import org.thoughtcrime.securesms.database.SignedPreKeyTable;
 import org.thoughtcrime.securesms.database.StickerTables;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
+import org.signal.storage.protos.SignalStoreList;
+import org.thoughtcrime.securesms.keyvalue.MollyValues;
+import org.thoughtcrime.securesms.keyvalue.SettingsValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.util.BackupUtil;
 import org.thoughtcrime.securesms.util.SecurePreferenceManager;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -369,6 +373,29 @@ public class FullBackupImporter extends FullBackupBase {
       "im.collie.app.staging_preferences"
   ));
 
+  private static final Map<String, String> LEGACY_BOOLEAN_MIRROR_KEYS = Map.ofEntries(
+      Map.entry(PlainTextKeyValueStore.SYSTEM_EMOJI_PREFERRED, SettingsValues.PREFER_SYSTEM_EMOJI),
+      Map.entry("pref_screen_security", SettingsValues.SCREEN_SECURITY_ENABLED),
+      Map.entry("pref_incognito_keyboard", SettingsValues.INCOGNITO_KEYBOARD_ENABLED),
+      Map.entry("pref_read_receipts", SettingsValues.READ_RECEIPTS_ENABLED),
+      Map.entry("pref_typing_indicators", SettingsValues.TYPING_INDICATORS_ENABLED),
+      Map.entry("pref_show_unidentifed_delivery_indicators", SettingsValues.SHOW_UNIDENTIFIED_DELIVERY_INDICATORS),
+      Map.entry("pref_universal_unidentified_access", SettingsValues.UNIVERSAL_UNIDENTIFIED_ACCESS),
+      Map.entry("pref_turn_only", SettingsValues.ALWAYS_RELAY_CALLS),
+      Map.entry(MollyValues.LOG_ENABLED, MollyValues.LOG_ENABLED),
+      Map.entry(MollyValues.UPDATE_APK_ENABLED, MollyValues.UPDATE_APK_ENABLED),
+      Map.entry(MollyValues.UPDATE_APK_INCLUDE_BETA, MollyValues.UPDATE_APK_INCLUDE_BETA),
+      Map.entry(MollyValues.BLOCK_UNKNOWN, MollyValues.BLOCK_UNKNOWN)
+  );
+
+  private static final Map<String, String> LEGACY_STRING_MIRROR_KEYS = Map.of(
+      PlainTextKeyValueStore.THEME, SettingsValues.THEME,
+      "pref_notification_privacy", SettingsValues.MESSAGE_NOTIFICATION_PRIVACY
+  );
+
+  // MOLLY: pref_passphrase_lock_timeout is deliberately not mirrored: every legacy V1 backup carries 0 for it, because
+  // the old exporter read a long-stored value with getInt.
+
   @SuppressLint("ApplySharedPref")
   @VisibleForTesting
   static void processPreference(@NonNull Context context, SharedPreference preference) {
@@ -402,7 +429,7 @@ public class FullBackupImporter extends FullBackupBase {
     boolean isDefaultFile = defaultSharedPreferencesFileNames.contains(preference.file_);
     boolean isHistoricalFile = historicalSharedPreferencesFileNames.contains(preference.file_);
 
-    if (isHistoricalFile && !isDefaultFile && !TextSecurePreferences.isRestorableMollyPreference(preference)) {
+    if (isHistoricalFile && !isDefaultFile && !isRestorableMollyPreference(preference)) {
       Log.i(TAG, "Skipping unsupported historical preference");
       return;
     }
@@ -422,7 +449,7 @@ public class FullBackupImporter extends FullBackupBase {
     } else if (preference.longValue != null) {
       preferences.edit().putLong(preference.key, preference.longValue).commit();
     } else if (preference.integerValue != null) {
-      if (TextSecurePreferences.PASSPHRASE_LOCK_TIMEOUT.equals(preference.key)) {
+      if (MollyValues.PASSPHRASE_LOCK_TIMEOUT.equals(preference.key)) {
         // Older Molly backups represented this long preference as a uint32.
         preferences.edit().putLong(preference.key, Integer.toUnsignedLong(preference.integerValue)).commit();
       } else {
@@ -436,6 +463,107 @@ public class FullBackupImporter extends FullBackupBase {
         storage.writeDataSet(legacySetting, Collections.emptyList());
       }
     }
+
+    KeyValueDataSet mirror = getLegacyPreferenceMirror(preference);
+    if (mirror != null) {
+      storage.writeDataSet(mirror, Collections.emptyList());
+    }
+  }
+
+  /**
+   * MOLLY: Convert only legacy records actually present in a recognized preference file. Post-restore code must never
+   * re-read arbitrary local preferences and overwrite restored SignalStore values with them. The mapped set is
+   * deliberately limited to the privacy, appearance, and Molly-owned keys. Other legacy preference records
+   * intentionally stay preference-only, matching upstream's V1 restore scope.
+   */
+  @VisibleForTesting
+  @Nullable
+  static KeyValueDataSet getLegacyPreferenceMirror(@NonNull SharedPreference preference) {
+    if (preference.key == null ||
+        (!defaultSharedPreferencesFileNames.contains(preference.file_) && !historicalSharedPreferencesFileNames.contains(preference.file_)))
+    {
+      return null;
+    }
+
+    KeyValueDataSet dataSet = new KeyValueDataSet();
+
+    String booleanKey = LEGACY_BOOLEAN_MIRROR_KEYS.get(preference.key);
+    if (booleanKey != null) {
+      if (preference.booleanValue == null) {
+        return null;
+      }
+      dataSet.putBoolean(booleanKey, preference.booleanValue);
+      return dataSet;
+    }
+
+    String stringKey = LEGACY_STRING_MIRROR_KEYS.get(preference.key);
+    if (stringKey != null) {
+      if (preference.value_ == null) {
+        return null;
+      }
+      dataSet.putString(stringKey, preference.value_);
+      return dataSet;
+    }
+
+    if (MollyValues.PASSPHRASE_LOCK_TRIGGER.equals(preference.key)) {
+      if (preference.isStringSetValue != Boolean.TRUE) {
+        return null;
+      }
+      byte[] triggers = new SignalStoreList.Builder()
+          .contents(preference.stringSetValue)
+          .build()
+          .encode();
+      dataSet.putBlob(MollyValues.PASSPHRASE_LOCK_TRIGGER, triggers);
+      return dataSet;
+    }
+
+    if (MollyValues.PASSPHRASE_LOCK_TIMEOUT.equals(preference.key) && preference.longValue != null && preference.longValue >= 0) {
+      // Collie exported this setting as a real int64 record. The uint32 records of old Molly exporters always carry 0
+      // (see above), so only the int64 form is mirrored into MollyValues.
+      dataSet.putLong(MollyValues.PASSPHRASE_LOCK_TIMEOUT, preference.longValue);
+      return dataSet;
+    }
+
+    return null;
+  }
+
+  private static final List<String> RESTORABLE_MOLLY_BOOLEAN_PREFERENCES = Arrays.asList(
+      MollyValues.LOG_ENABLED,
+      MollyValues.UPDATE_APK_ENABLED,
+      MollyValues.UPDATE_APK_INCLUDE_BETA,
+      MollyValues.BLOCK_UNKNOWN,
+      PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED,
+      PlainTextKeyValueStore.PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED,
+      PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED
+  );
+
+  /** Only portable settings exported by Molly may be remapped from another application's file. */
+  @VisibleForTesting
+  static boolean isRestorableMollyPreference(@NonNull SharedPreference preference) {
+    int valueCount = (preference.value_ != null ? 1 : 0) +
+                     (preference.booleanValue != null ? 1 : 0) +
+                     (preference.integerValue != null ? 1 : 0) +
+                     (preference.longValue != null ? 1 : 0) +
+                     (preference.isStringSetValue == Boolean.TRUE ? 1 : 0);
+
+    if (valueCount != 1 || (preference.isStringSetValue != Boolean.TRUE && !preference.stringSetValue.isEmpty())) {
+      return false;
+    }
+
+    if (RESTORABLE_MOLLY_BOOLEAN_PREFERENCES.contains(preference.key)) {
+      return preference.booleanValue != null;
+    }
+
+    if (MollyValues.PASSPHRASE_LOCK_TRIGGER.equals(preference.key)) {
+      return preference.isStringSetValue == Boolean.TRUE;
+    }
+
+    if (MollyValues.PASSPHRASE_LOCK_TIMEOUT.equals(preference.key)) {
+      // Historical Molly versions encoded the timeout as uint32; current versions use int64.
+      return preference.integerValue != null || (preference.longValue != null && preference.longValue >= 0);
+    }
+
+    return false;
   }
 
   private static void dropAllTables(@NonNull SQLiteDatabase db, boolean excludeKeyTables) {

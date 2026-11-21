@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Nastaviť povolenia</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Signal si vyžiada tieto povolenia, aby vám pomohol posielať správy ľuďom, ktorých poznáte. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Collie si vyžiada tieto povolenia, aby vám pomohol posielať správy ľuďom, ktorých poznáte. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Teraz nie</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">kontaktujte podporu</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Registrácia v Signali – Overovací kód pre Android</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Registrácia v Colliei – Overovací kód pre Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Túto zálohu sa nepodarilo obnoviť</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Táto verzia Signalu nedokáže obnoviť vašu zálohu. Aktualizujte na najnovšiu verziu a skúste to znova.</string>
+    <string name="RemoteRestoreScreen__update_latest">Táto verzia Collieu nedokáže obnoviť vašu zálohu. Aktualizujte na najnovšiu verziu a skúste to znova.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Aktualizujte Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Aktualizujte Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Teraz nie</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Kontaktovať podporu</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Trvalé zlyhanie pri obnovovaní zálohy Signal Android</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Trvalé zlyhanie pri obnovovaní zálohy Collie Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Váš účet sa uzamkol z dôvodu ochrany vášho súkromia a zabezpečenia. Po %1$d dňoch nečinnosti vo vašom účte budete môcť opätovne zaregistrovať toto telefónne číslo bez potreby PIN kódu. Všetok obsah sa odstráni.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Otvorte Signal na svojom starom zariadení</string>
+    <string name="QuickRestoreQRScreen__step_1">Otvorte Collie na svojom starom zariadení</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Ťuknite na ikonu fotoaparátu </string>
     <!-- Step 3 to quick restore -->
@@ -430,7 +430,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Zadajte svoj PIN</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Zadajte PIN kód, ktorý ste vytvorili pri prvej inštalácii Signalu</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Zadajte PIN kód, ktorý ste vytvorili pri prvej inštalácii Collieu</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Znova ste zadali kód, ktorý ste už použili na overenie vášho telefónneho čísla. Zadajte unikátny Signal PIN, ktorý ste si predtým vybrali pre svoj účet.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -461,14 +461,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Kontaktovať podporu</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal registrácia – Potrebujem pomoc s PIN na Androide</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie registrácia – Potrebujem pomoc s PIN na Androide</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Povoľte upozornenia</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal žiada o povolenie na odosielanie upozornení. Vďaka tomu môže vaše zariadenie zobrazovať upozornenia, keď vám prídu nové správy.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie žiada o povolenie na odosielanie upozornení. Vďaka tomu môže vaše zariadenie zobrazovať upozornenia, keď vám prídu nové správy.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Teraz nie</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -504,9 +504,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Naskenujte tento kód a prepojte svoj účet</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Otvorte Signal na svojom telefóne</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Otvorte Collie na svojom telefóne</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Ťuknutím na svoju profilovú fotku otvoríte Signal nastavenia</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Ťuknutím na svoju profilovú fotku otvoríte Collie nastavenia</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Ťuknite na „Prepojené zariadenia“ a „Prepojiť nové zariadenie“</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -518,7 +518,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Nepodarilo sa vygenerovať kód</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Nemáte Signal na inom zariadení?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Nemáte Collie na inom zariadení?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Vytvorte si účet</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -540,7 +540,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Preneste si účet</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Ak chcete preniesť svoj účet, otvorte Signal na svojom starom Android zariadení a vyberte možnosť Preniesť účet.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Ak chcete preniesť svoj účet, otvorte Collie na svojom starom Android zariadení a vyberte možnosť Preniesť účet.</string>
     <string name="DeviceTransferInstructions__continue">Pokračovať</string>
 
     <!-- Device transfer: Setup screen -->
@@ -551,11 +551,11 @@
     <string name="DeviceTransferSetup__numbers_match">Áno, čísla sa zhodujú</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Čísla sa nezhodujú</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Čaká sa na overenie vášho starého zariadenia…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Aby Signal mohol objaviť vaše staré zariadenie a pripojiť sa k nemu, potrebuje prístup k polohe.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Aby Collie mohol objaviť vaše staré zariadenie a pripojiť sa k nemu, potrebuje prístup k polohe.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Udeliť povolenie</string>
-    <string name="DeviceTransferSetup__location_services_required">Aby Signal mohol objaviť vaše staré zariadenie a pripojiť sa k nemu, musia byť zapnuté služby polohy.</string>
+    <string name="DeviceTransferSetup__location_services_required">Aby Collie mohol objaviť vaše staré zariadenie a pripojiť sa k nemu, musia byť zapnuté služby polohy.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Zapnúť služby polohy</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal potrebuje zapnuté Wi-Fi, aby mohol objaviť vaše staré zariadenie a pripojiť sa k nemu.</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie potrebuje zapnuté Wi-Fi, aby mohol objaviť vaše staré zariadenie a pripojiť sa k nemu.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Zapnúť Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Ľutujeme, zdá sa, že vaše zariadenie nepodporuje Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Obnoviť namiesto toho zálohu</string>
@@ -572,7 +572,7 @@
     <string name="DeviceTransferProgress__transferring_data">Prenášajú sa dáta</string>
     <string name="DeviceTransferProgress__d_messages_so_far">Zatiaľ %1$d správ</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Nemožno presunúť</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Prenos nie je možný z novšej verzie aplikácie Signal.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Prenos nie je možný z novšej verzie aplikácie Collie.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Niektoré údaje sa nepodarilo preniesť z dôvodu obmedzenia databázy.</string>
     <string name="DeviceTransferProgress__transfer_failed">Prenos zlyhal. Skúste to znova.</string>
     <string name="DeviceTransferProgress__try_again">Skúsiť znova</string>

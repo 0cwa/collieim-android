@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="preferences_appearance__navigation_bar">Barra di navigazione</string>
-    <string name="app_icon_label_music">Musica</string>
-    <string name="app_icon_label_zen">Zen</string>
-    <string name="app_icon_label_moon">Luna</string>
     <string name="preferences_appearance__dynamic_colors">Colori dinamici</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Utilizza i colori del sistema per il tema dell\'app</string>
-<string name="preferences__enable_debug_log">Abilita il registro di debug</string>
+    <string name="preferences__enable_debug_log">Abilita il registro di debug</string>
+    <string name="preferences__network">Rete</string>
     <string name="HelpSettingsFragment__molly_im_website">Sito web Collie.im</string>
-    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Controlla periodicamente la presenza di nuove versioni e chiedi di installarle</string>
-    <string name="preferences__autoupdate_molly">Aggiorna automaticamente Collie</string>
-    <string name="preferences__include_beta_updates">Includi gli aggiornamenti beta</string>
-    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Le versioni beta sono destinate a scopi di test e possono contenere errori</string>
-    <string name="EnableAppUpdatesMegaphone_check_for_updates">Controlla gli aggiornamenti</string>
+    <string name="preferences__block_unknown">Blocca gli sconosciuti</string>
+    <string name="preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts">Blocca gli utenti con cui non sei mai stato/a in contatto e quelli non salvati come contatti.</string>
+    <string name="preferences__passphrase_lock">Crittografia della base di dati</string>
+    <string name="preferences__protect_molly_database_with_a_passphrase">Proteggi la base di dati di Collie con una passphrase</string>
+    <string name="preferences__automatic_lockdown">Blocco automatico</string>
+    <string name="preferences__device_lock_timeout">Limite di tempo per il blocco del dispositivo</string>
+    <string name="PrivacySettingsFragment_data_at_rest">Dati a riposo</string>
+    <string name="AppProtectionPreferenceFragment_instant">Immediato</string>
+    <string name="PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition">Blocca l\'accesso di Collie con l\'impronta digitale o il riconoscimento del volto</string>
+    <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">Nessuna funzione biometrica disponibile su questo dispositivo</string>
+    <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">Prima di tutto, imposta la biometria nelle impostazioni Android</string>
+    <!-- Collie -->
+    <string name="preferences_appearance__navigation_bar">Barra di navigazione</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Per aggiornare l\'app, controlla il tuo negozio di applicazioni. Questa versione non ha una funzione di aggiornamento integrata nell\'app.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Controlla gli aggiornamenti</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">Ultimo controllo: %s</string>
+    <string name="preferences_network__check_connection">Controlla la connessione</string>
 </resources>

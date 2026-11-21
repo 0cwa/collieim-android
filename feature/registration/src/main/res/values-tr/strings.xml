@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">İzinleri etkinleştir</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Signal, tanıdığın kişilere mesaj gönderebilmen için bu izinleri talep edecek. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Collie, tanıdığın kişilere mesaj gönderebilmen için bu izinleri talep edecek. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Şimdi değil</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Destekle İletişime Geç</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal Kaydı - Android için Doğrulama Kodu</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie Kaydı - Android için Doğrulama Kodu</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Bu yedekleme geri yüklenemedi</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Signal\'ın bu sürümü yedeklemeni geri yükleyemez. En son sürüme güncelle ve tekrar dene.</string>
+    <string name="RemoteRestoreScreen__update_latest">Collie\'ın bu sürümü yedeklemeni geri yükleyemez. En son sürüme güncelle ve tekrar dene.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signal\'ı Güncelle</string>
+    <string name="RemoteRestoreScreen__update_signal">Collie\'ı Güncelle</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Şimdi değil</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Destekle iletişime geç</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android Yedeklemesi Geri Yükleme Kalıcı Hatası</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android Yedeklemesi Geri Yükleme Kalıcı Hatası</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Gizliliğini ve güvenliğini korumak için hesabın kilitlendi. %1$d gün boyunca hesabında hareket olmazsa, PIN’e ihtiyaç duymadan bu telefon numarasını yeniden kaydedebilirsin. Tüm içerikler silinecektir.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Signal\'ı eski cihazında aç</string>
+    <string name="QuickRestoreQRScreen__step_1">Collie\'ı eski cihazında aç</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Kamera simgesine dokun </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">PIN\'ini gir</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Signal\'ı ilk kez yüklediğinde oluşturduğun PIN\'i gir</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Collie\'ı ilk kez yüklediğinde oluşturduğun PIN\'i gir</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Telefon numaranı doğrulamak için daha önce kullandığın kodu tekrar girdin. Hesabın için daha önce belirlediğin benzersiz Signal PIN\'ini gir.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Destekle iletişime geç</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal Kaydı - Android\'de PIN ile İlgili Yardıma mı İhtiyacın Var</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie Kaydı - Android\'de PIN ile İlgili Yardıma mı İhtiyacın Var</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Bildirimlere izin ver</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal bildirim izni talep etmektedir. Bu, yeni mesajlar geldiğinde cihazının uyarı görüntülemesini sağlar.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie bildirim izni talep etmektedir. Bu, yeni mesajlar geldiğinde cihazının uyarı görüntülemesini sağlar.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Şimdi değil</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Hesabını bağlamak için bu kodu tara</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Signal\'ı telefonunda aç</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Collie\'ı telefonunda aç</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Signal Ayarları\'nı açmak için profil resmine dokun</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Collie Ayarları\'nı açmak için profil resmine dokun</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">\"Bağlı cihazlar\" ve \"Yeni cihaz bağla\"ya dokun</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Kod üretilemedi</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Başka bir cihazda Signal\'ın yok mu?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Başka bir cihazda Collie\'ın yok mu?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Hesap oluştur</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -536,7 +536,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Hesabını aktar</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Hesabını aktarmak için eski Android cihazında Signal\'ı aç ve Hesabı Aktar\'ı seç.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Hesabını aktarmak için eski Android cihazında Collie\'ı aç ve Hesabı Aktar\'ı seç.</string>
     <string name="DeviceTransferInstructions__continue">Devam et</string>
 
     <!-- Device transfer: Setup screen -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">Evet, numaralar eşleşiyor</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Numaralar eşleşmiyor</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Eski cihazının doğrulanması bekleniyor…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal, eski cihazını keşfetmek ve ona bağlanmak için konum iznine ihtiyaç duyar.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie, eski cihazını keşfetmek ve ona bağlanmak için konum iznine ihtiyaç duyar.</string>
     <string name="DeviceTransferSetup__grant_location_permission">İzin ver</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal, eski cihazını keşfetmek ve ona bağlanmak için konum hizmetlerinin etkinleştirilmesine ihtiyaç duyar.</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie, eski cihazını keşfetmek ve ona bağlanmak için konum hizmetlerinin etkinleştirilmesine ihtiyaç duyar.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Konum hizmetlerini aç</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal\'ın eski cihazını keşfetmesi ve ona bağlanması için Wi-Fi\'ın açık olması gerekir.</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie\'ın eski cihazını keşfetmesi ve ona bağlanması için Wi-Fi\'ın açık olması gerekir.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Wi-Fi\'ı aç</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Üzgünüz, cihazının Wi-Fi Direct\'i desteklemediği görülüyor.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Bunun yerine bir yedeklemeyi geri yükle</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">Veri aktarılıyor</string>
     <string name="DeviceTransferProgress__d_messages_so_far">Şimdiye kadar %1$d ileti</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Aktarım yapılamıyor</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Daha yeni bir Signal sürümünden aktarım yapılamaz.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Daha yeni bir Collie sürümünden aktarım yapılamaz.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Bazı veriler bir veritabanı kısıtı nedeniyle aktarılamadı.</string>
     <string name="DeviceTransferProgress__transfer_failed">Aktarım başarısız oldu. Lütfen tekrar dene.</string>
     <string name="DeviceTransferProgress__try_again">Tekrar dene</string>

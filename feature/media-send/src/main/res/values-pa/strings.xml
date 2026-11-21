@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">ਕੈਮਰਾ \'ਤੇ ਜਾਓ</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਦਿਖਾਉਣ ਲਈ Signal ਨੂੰ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਦਿਖਾਉਣ ਲਈ Collie ਨੂੰ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">ਕੋਈ ਵੀ ਫ਼ੋਟੋਆਂ ਜਾਂ ਵੀਡੀਓ ਨਹੀਂ ਲੱਭੇ। Signal ਕੋਲ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੀਆਂ ਗਈਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਹੈ।</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">ਕੋਈ ਵੀ ਫ਼ੋਟੋਆਂ ਜਾਂ ਵੀਡੀਓ ਨਹੀਂ ਲੱਭੇ। Collie ਕੋਲ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੀਆਂ ਗਈਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਹੈ।</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal ਕੋਲ ਫ਼ੋਟੋਆਂ ਜਾਂ ਵੀਡੀਓ ਤੱਕ ਸੀਮਿਤ ਪਹੁੰਚ ਹੈ</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie ਕੋਲ ਫ਼ੋਟੋਆਂ ਜਾਂ ਵੀਡੀਓ ਤੱਕ ਸੀਮਿਤ ਪਹੁੰਚ ਹੈ</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">ਪ੍ਰਬੰਧਿਤ ਕਰੋ</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਦਿਖਾਉਣ ਲਈ:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਦਿਖਾਉਣ ਲਈ Signal ਨੂੰ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ।</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਦਿਖਾਉਣ ਲਈ Collie ਨੂੰ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ।</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">ਫ਼ੋਟੋ</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d ਆਈਟਮਾਂ ਨੂੰ ਸਟੈਂਡਰਡ ਕੁਆਲਿਟੀ \'ਤੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">ਬਾਹਰੀ ਸਟੋਰੇਜ ਵਿੱਚ ਸੇਵ ਕਰਨ ਲਈ Signal ਨੂੰ ਸਟੋਰੇਜ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ, ਪਰ ਇਸਨੂੰ ਸਥਾਈ ਤੌਰ ’ਤੇ ਨਾਮਨਜ਼ੂਰ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਐਪ ਸੈਟਿੰਗਾਂ ’ਤੇ ਜਾਓ, \"ਇਜਾਜ਼ਤਾਂ\" ਚੁਣੋ, ਅਤੇ \"ਸਟੋਰੇਜ\" ਨੂੰ ਸਮਰੱਥ ਕਰੋ।</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">ਬਾਹਰੀ ਸਟੋਰੇਜ ਵਿੱਚ ਸੇਵ ਕਰਨ ਲਈ Collie ਨੂੰ ਸਟੋਰੇਜ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ, ਪਰ ਇਸਨੂੰ ਸਥਾਈ ਤੌਰ ’ਤੇ ਨਾਮਨਜ਼ੂਰ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਐਪ ਸੈਟਿੰਗਾਂ ’ਤੇ ਜਾਓ, \"ਇਜਾਜ਼ਤਾਂ\" ਚੁਣੋ, ਅਤੇ \"ਸਟੋਰੇਜ\" ਨੂੰ ਸਮਰੱਥ ਕਰੋ।</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">ਵੀਡੀਓ ਨੂੰ ਆਡੀਓ ਤੋਂ ਬਿਨਾਂ ਭੇਜਿਆ ਜਾਵੇਗਾ</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">ਖਾਤਾ ਟ੍ਰਾਂਸਫਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">ਜਿਸ ਡਿਵਾਈਸ \'ਤੇ ਤੁਸੀਂ ਟ੍ਰਾਂਸਫਰ ਕਰ ਰਹੇ ਹੋ, ਉਹ ਪੁਰਾਣਾ ਹੈ। ਉਸ ਡਿਵਾਈਸ \'ਤੇ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">ਜਿਸ ਡਿਵਾਈਸ \'ਤੇ ਤੁਸੀਂ ਟ੍ਰਾਂਸਫਰ ਕਰ ਰਹੇ ਹੋ, ਉਹ ਪੁਰਾਣਾ ਹੈ। ਉਸ ਡਿਵਾਈਸ \'ਤੇ Collie ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

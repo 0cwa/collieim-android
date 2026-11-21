@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie నవీకరిస్తోంది …</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">మీరింకా సంకేతపదమును సెట్ చేయలేదు!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">సంకేతపదమును ఆపివేయాలా?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ఇది శాశ్వతంగా Collie మరియు సందేశ ప్రకటనలను అన్లాక్ చేస్తుంది</string>
-    <string name="ApplicationPreferencesActivity_disable">అచేతనించు</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">సర్వర్ కి కలిపినపుడు లోపం!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">క్రెడిట్ లేదా డెబిట్ కార్డు</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">మీ కార్డు వివరాలను ఎంటర్ చేయండి. Signal మీ వ్యక్తిగత సమాచారాన్ని సేకరించదు లేదా నిల్వ చేయదు.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">కార్డు నంబర్</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">చెల్లని కార్డు నంబర్</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">కార్డు గడువు ముగిసింది</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">కోడ్ చాలా చిన్నదిగా ఉంది</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">కోడ్ చాలా పెద్దదిగా ఉంది</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">చెల్లని కోడ్</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">చెల్లని నెల</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">సంవత్సరం అవసరం</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">చెల్లని సంవత్సరం</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">%1$s విరాళం ఇవ్వండి</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">%1$s/నెలకు విరాళం ఇవ్వండి</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">%1$s/నెలకు విరాళం ఇవ్వండి</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">ఒక్కసారి %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">విరాళం పెండింగ్‌లో ఉంది</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">విరాళం ప్రక్రియ చేయబడుతోంది</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$sను బ్లాక్ చేసి మరియు వదలివేసేదా?</string>
@@ -346,7 +358,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s ఈ సందేశాన్ని తొలగించారు</string>
     <string name="ConversationItem_you_deleted_this_message">మీరు ఈ సందేశాన్ని తొలగించారు</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">అడ్మిన్ %1$s ఈ సందేశాన్ని తొలగించారు</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -451,7 +462,7 @@
     <string name="ConversationActivity_error_sending_media">మీడియాను పంపడంలో లోపం చోటుచేసుకుంది</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Signal లో SMS సందేశాలు పంపేందుకు ఇక ఏమాత్రం మద్దతు ఇవ్వబడదు.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Collie లో SMS సందేశాలు పంపేందుకు ఇక ఏమాత్రం మద్దతు ఇవ్వబడదు.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal లో SMS సందేశాలు పంపేందుకు ఇక ఏమాత్రం మద్దతు ఇవ్వబడదు. ఇక్కడ సంభాషణను ఉంచడానికి %1$s ను Signal కు ఆహ్వానించండి.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -501,6 +512,8 @@
     <string name="ConversationFragment_deleting_messages">సందేశాలను తొలగిస్తోంది …</string>
     <string name="ConversationFragment_delete_for_me">నాకు తొలగించండి</string>
     <string name="ConversationFragment_delete_for_everyone">ప్రతిఒక్కరికీ తొలగించండి</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">నా కోసం తొలగించబడింది</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">ఎంచుకున్న సందేశాన్ని తొలగించేదా?</item>
@@ -1095,7 +1108,7 @@
     <string name="ExpiredBuildReminder_update_now">నవీకరణ చేయండి ఇప్పుడు</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">ఈ పరికరంపై Signal ఇక ఏమాత్రం పని చేయదు. Signalను మళ్లీ ఉపయోగించడానికి, మీ పరికరాన్ని Android యొక్క కొత్త వెర్షన్‌కి అప్‌డేట్ చేయండి లేదా కొత్త పరికరానికి మారండి.</string>
+    <string name="DeprecatedSdkBanner_body">ఈ పరికరంపై Collie ఇక ఏమాత్రం పని చేయదు. Collieను మళ్లీ ఉపయోగించడానికి, మీ పరికరాన్ని Android యొక్క కొత్త వెర్షన్‌కి అప్‌డేట్ చేయండి లేదా కొత్త పరికరానికి మారండి.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Collie ను నవీకరించండి</string>
@@ -1443,9 +1456,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">సమూహ లింక్‌లను ఉపయోగించడానికి Signal‌ను నవీకరించండి</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">మీరు ఉపయోగిస్తున్న Signal సంస్కరణ ఈ సమూహ లింక్‌కు మద్దతు ఇవ్వదు. లింక్ ద్వారా ఈ గుంపులో చేరడానికి తాజా సంస్కరణకు నవీకరించండి.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signal ను నవీకరించండి</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">సమూహ లింక్‌లను ఉపయోగించడానికి Collie‌ను నవీకరించండి</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">మీరు ఉపయోగిస్తున్న Collie సంస్కరణ ఈ సమూహ లింక్‌కు మద్దతు ఇవ్వదు. లింక్ ద్వారా ఈ గుంపులో చేరడానికి తాజా సంస్కరణకు నవీకరించండి.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Collie ను నవీకరించండి</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">సమూహ లింక్ చెల్లదు</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2071,7 +2084,7 @@
         <item quantity="one">మీకు %1$d ప్రయత్నం మిగిలి ఉంది. అన్ని ప్రయత్నాలు కోల్పోతే, క్రొత్త పిన్ సృష్టించుకోవచ్చు. ఈ విధముగా మీరు ఖాతా నమోదు చేసి వాడవచ్చు కాని, మీ పూర్వ సరళికలను కోల్పోతారు.</item>
         <item quantity="other">మీకు %1$d ప్రయత్నాలు మిగిలివున్నాయి. అన్ని ప్రయత్నాలు కోల్పోతే, క్రొత్త పిన్ సృష్టించుకోవచ్చు. ఈ విధముగా మీరు ఖాతా నమోదు చేసి వాడవచ్చు కాని, మీ పూర్వ సరళికలను కోల్పోతారు.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal నమోదీకరణ - ఆండ్రోయిడ్ కొరకు పిన్ తొ సహాయం కావలెను</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie నమోదీకరణ - ఆండ్రోయిడ్ కొరకు పిన్ తొ సహాయం కావలెను</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">మీ పిన్ను సృష్టించండి</string>
@@ -2163,7 +2176,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">ఇతరులు మిమ్మల్ని వినలేకపోయారు.</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Signal బ్యాక్‌గ్రౌండ్‌లో ఉన్నప్పుడు మీ మైక్రోఫోన్ మ్యూట్ చేయబడింది. దీనిని పరిష్కరించడానికి సెట్టింగ్లు పై తట్టి, \"బ్యాటరీ\" సెట్టింగ్లలో బ్యాక్‌గ్రౌండ్ కార్యకలాపమును ప్రారంభించండి.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Collie బ్యాక్‌గ్రౌండ్‌లో ఉన్నప్పుడు మీ మైక్రోఫోన్ మ్యూట్ చేయబడింది. దీనిని పరిష్కరించడానికి సెట్టింగ్లు పై తట్టి, \"బ్యాటరీ\" సెట్టింగ్లలో బ్యాక్‌గ్రౌండ్ కార్యకలాపమును ప్రారంభించండి.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">%1$d అభ్యర్థనను ఆమోదించేదా?</item>
@@ -2671,7 +2684,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">\'%1$s\' కోసం ఫలితాలు కనుగొనబడలేదు</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Signal ద్వారా పంపండి</string>
+    <string name="StickerManagement_menu_send_signal_pack">Collie ద్వారా పంపండి</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">లింక్</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2909,8 +2922,6 @@
     <string name="KeyCachingService_lock">లాక్ Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">మీడియా ఇకపై అందుబాటులో లేదు.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">మీడియాను ప్లే చేయలేకపోయింది.</string>
@@ -2920,7 +2931,6 @@
     <string name="MediaPreviewFragment_edit_media_error">మీడియా లోపం</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">సందేశాన్ని తొలగించడంలో లోపం. సందేశం ఇప్పటికీ ఉండవచ్చు</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">పంచుకోండి</string>
 
     <!-- MessageNotifier -->
@@ -3156,7 +3166,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">పరికరాన్ని తిరిగి నమోదు చేయడం</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">ఈ పరికరాన్ని ఇకపై లింక్ చేయడం జరగదు. సందేశాలు పంపడం కొనసాగించడానికి Signal ను మీ ఫోన్‌తో మళ్ళీ లింక్ చేయండి.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">ఈ పరికరాన్ని ఇకపై లింక్ చేయడం జరగదు. సందేశాలు పంపడం కొనసాగించడానికి Collie ను మీ ఫోన్‌తో మళ్ళీ లింక్ చేయండి.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">పరికరాన్ని మళ్ళీ లింక్ చేయండి</string>
 
@@ -3165,7 +3175,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">చెల్లింపులను ఉపయోగించడం కొనసాగించడానికి Signal ను అప్‌డేట్ చేయండి. మీ బ్యాలెన్స్ అప్-టు-డేట్‌గా ఉండకపోవచ్చు.</string>
+    <string name="EnclaveFailureReminder_update_signal">చెల్లింపులను ఉపయోగించడం కొనసాగించడానికి Collie ను అప్‌డేట్ చేయండి. మీ బ్యాలెన్స్ అప్-టు-డేట్‌గా ఉండకపోవచ్చు.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">లింక్ చేయబడిన పరికరంలో సమాధానం ఇవ్వబడింది.</string>
@@ -3489,18 +3499,6 @@
     <string name="EditProfileFragment__group_name">సమూహం పేరు</string>
     <string name="EditProfileFragment__group_description">గ్రూపు వివరణ</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Collie ను నవీకరించండి</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Collie యొక్క ఈ వెర్షన్ గడువు తీరింది. Collie ఉపయోగించడం కొనసాగించడానికి ఇప్పుడు అప్‌డేట్ చేయండి.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">నవీకరణ</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">పరికరం నమోదు చేయబడలేదు</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">ఈ పరికరం ఇకపై నమోదు చేయబడిలేదు. మీ ఖాతాకు మార్పులు చేయడానికి మళ్ళీ నమోదు చేయండి.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">మల్లి నమోదుచేయుత </string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">భద్రపరుచు</string>
@@ -3623,7 +3621,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">మద్దతు సమాచారం</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Android మద్దతు అభ్యర్థన</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Android మద్దతు అభ్యర్థన</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">లాగ్‌లను అప్‌లోడ్ చేయలేదు</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">దయచేసి సమస్యను అర్థం చేసుకోవడంలో మాకు సహాయపడటానికి వీలైనంత వివరణాత్మకంగా ఉండండి.</string>
@@ -3679,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">జెమిని వంటి AI అసిస్టెంట్ యాప్ లు మీ Collie కంటెంట్ ను స్కాన్ చేయగలవు. దీనిని నిరోధించడానికి స్క్రీన్ భద్రత ప్రారంభించబడింది. దీనివల్ల స్క్రీన్ షాట్ లు తీసుకోవడం కూడా నిలిపివేయబడుతుంది.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">జెమిని వంటి AI అసిస్టెంట్ యాప్ లు మీ Signal కంటెంట్ ను స్కాన్ చేయగలవు. దీనిని నిరోధించడానికి స్క్రీన్ భద్రత ప్రారంభించబడింది. దీనివల్ల స్క్రీన్ షాట్ లు తీసుకోవడం కూడా నిలిపివేయబడుతుంది.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">స్క్రీన్ భద్రత ప్రారంభించబడింది</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3687,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">స్క్రీన్ భద్రతను ఆపివేయాలా?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">దీన్ని ఆఫ్ చేస్తే, Google Gemini వంటి AI అసిస్టెంట్లు Collie కంటెంట్‌ను స్కాన్ చేసి, గోప్యంగా ఉండకపోవచ్చని భావించే విలక్షణతల కోసం దాన్ని ఉపయోగించవచ్చు.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">దీన్ని ఆఫ్ చేస్తే, Google Gemini వంటి AI అసిస్టెంట్లు Signal కంటెంట్‌ను స్కాన్ చేసి, గోప్యంగా ఉండకపోవచ్చని భావించే విలక్షణతల కోసం దాన్ని ఉపయోగించవచ్చు.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">తీసివేయు</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3695,24 +3693,15 @@
     <string name="preferences__notifications">ప్రకటనలు</string>
     <string name="preferences__led_color_unknown">తెలియని</string>
     <string name="preferences__silent">మౌనం</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">గోప్యత</string>
+    <string name="preferences__donate_to_signal">Collie కు విరాళం ఇవ్వండి</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">స్టోరీస్</string>
     <string name="preferences__payments">చెల్లింపులు</string>
     <string name="preferences__linked_devices">పరికరాలు అనుసంధానించు</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">డీబగ్ లాగ్ను సమర్పించండి</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">చదవని రిమైండర్‌లు</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ప్రారంభించబడితే, Collie ప్రదర్శన నిషేధం తప్పించుకోవడానికి ప్రయత్నిస్తుంది. మీరు Collie నిషేధించ చేయబడిన ప్రదేశంలో ఉంటే తప్ప ఈ లక్షణాన్ని ప్రారంభించవద్దు.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">ప్రాక్సీ చిరునామా</string>
     <string name="preferences_only_use_a_proxy_if">మీరు మొబైల్ డేటా లేదా Wi-Fiపై Signal కు కనెక్ట్ చేయలేకపోతేనే ప్రాక్సీని ఉపయోగించండి.</string>
     <string name="preferences_share">పంచుకోండి</string>
@@ -3726,9 +3715,6 @@
     <string name="preferences_success">విజయం</string>
     <string name="preferences_failed_to_connect">కలవడం కుదరట్లేదు</string>
     <string name="preferences_enter_proxy_address">ప్రాక్సీ చిరునామాను నమోదు చేయండి</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">ప్రారంభించబడినప్పుడు, Collie 1:1 చాట్‌ల గుప్తీకరణను స్వయంచాలకంగా ధృవీకరించడానికి ప్రయత్నిస్తుంది.</string>
 
 
     <!-- Internal only preferences -->
@@ -4109,9 +4095,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">మరింత తెలుసుకోండి</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">మీడియా పూర్వప్రదర్శన</string>
@@ -4280,15 +4263,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">నాకు కాల్ చేయండి (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">కోడ్ మళ్ళీ పంపండి (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Molly రిజిస్ట్రేషన్ - Android కోసం ధృవీకరణ కోడ్</string>
+    <string name="RegistrationActivity_code_support_subject">Collie రిజిస్ట్రేషన్ - Android కోసం ధృవీకరణ కోడ్</string>
     <string name="RegistrationActivity_incorrect_code">తప్పు కోడ్</string>
     <string name="BackupUtil_never">ఎప్పుడూ</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">తెలియని</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">మీ ఫోన్ నంబర్‌ను ఎవరు చూడగలరు మరియు దానితో Collie లో మిమ్మల్ని ఎవరు సంప్రదించగలరో ఎంచుకోండి.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">స్క్రీన్ లాక్‌ను ఉపయోగించడానికి ఈ పరికరంలో PIN, నమూనా లేదా పాస్‌వర్డ్‌ను సెట్ చేయండి.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">మీరు మీ నమోదు లాక్ పిన్ నమోదు చేయాలి</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">మీ పిన్‌లో కనీసం %1$d అంకెలు లేదా అక్షరాలు ఉన్నాయి</string>
     <string name="RegistrationActivity_too_many_attempts">మితిమీరిన ప్రయత్నాలు</string>
@@ -4321,11 +4300,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">ఇది లింక్ చేయబడిన పరికరం</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">మీ ఖాతా సెట్టింగ్‌లను నిర్వహించడానికి, మీ ప్రాథమిక పరికరంలో Signal ను తెరవండి.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">మీ ఖాతా సెట్టింగ్‌లను నిర్వహించడానికి, మీ ప్రాథమిక పరికరంలో Collie ను తెరవండి.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">యాప్ డేటాను తొలగించండి</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">ఇది ఈ పరికరంలోని Signal యాప్ నుండి మొత్తం డేటాను తొలగిస్తుంది.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">ఇది ఈ పరికరంలోని Collie యాప్ నుండి మొత్తం డేటాను తొలగిస్తుంది.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">యాప్ డేటాను తొలగించాలా?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4827,7 +4806,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">సంఖ్య మార్చు</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal నెంబరు మార్చడం - Android కొరకు PINతో సాయం అవసరం (v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie నెంబరు మార్చడం - Android కొరకు PINతో సాయం అవసరం (v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PINలు మ్యాచ్ అవ్వడం లేదు</string>
@@ -4990,7 +4969,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5302,7 +5280,13 @@
 
     <string name="ImageView__badge">బ్యాడ్జి</string>
 
+    <string name="SubscribeFragment__cancel_subscription">సబ్‌స్క్రిప్షన్‌ను రద్దు చేయండి</string>
+    <string name="SubscribeFragment__confirm_cancellation">రద్దును నిర్ధారించేదా?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">మీకు మళ్ళీ ఛార్జీ విధించబడదు. మీ బిల్లింగ్ కాలవ్యవధి ముగింపులో మీ ప్రొఫైల్ నుంచి మీ బ్యాడ్జి తొలగించబడుతుంది.</string>
+    <string name="SubscribeFragment__not_now">ఇప్పుడు కాదు</string>
+    <string name="SubscribeFragment__confirm">నిర్ధారించండి</string>
     <string name="SubscribeFragment__update_subscription">సబ్‌స్క్రిప్షన్‌ను అప్‌డేట్ చేయండి</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">మీ సబ్‌స్క్రిప్షన్ రద్దు చేయబడింది.</string>
     <string name="SubscribeFragment__update_subscription_question">సబ్‌స్క్రిప్షన్‌ను అప్‌డేట్ చేసేదా?</string>
     <string name="SubscribeFragment__update">నవీకరణ</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">ఇవాళ మీకు కొత్త సబ్‌స్క్రిప్షన్ యొక్క పూర్తి మొత్తం (%1$s) ఛార్జీ విధించబడుతుంది. మీ సబ్‌స్క్రిప్షన్ నెలవారీగా పునరుద్ధరించబడుతుంది.</string>
@@ -5314,38 +5298,66 @@
     <string name="Subscription__expires_s">%1$s న గడువు ముగుస్తుంది</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">ఒక స్వతంత్ర లాభాపేక్షలేని సంస్థగా, Signal ప్రైవేట్ సందేశాలు పంపడం మరియు కాల్స్‌కు కట్టుబడి ఉంది. ప్రకటనలు లేవు, ట్రాకర్‌లు లేవు, నిఘా లేదు. Signal కు మద్దతు ఇవ్వడానికి ఈరోజే విరాళం ఇవ్వండి.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">మీరు విరాళం ఇచ్చినప్పుడు మీ ప్రొఫైల్‌పై ఐచ్ఛిక బ్యాడ్జ్‌ను పొందండి.</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">మీ గోప్యత మా లక్ష్యం</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal ఒక 501c3 లాభాపేక్ష లేని సంస్థ. US విరాళాలకు పన్ను మినహాయింపు లభిస్తుంది.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">మీ మద్దతుకు ధన్యవాదాలు!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Signal నుంచి ఒక విరాళకర్త బ్యాడ్జిని మీరు సంపాదించారు! మీ మద్దతును చూపించేందుకు మీ ప్రొఫైల్‌లో దానిని ప్రదర్శించండి.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">మీరు కూడా</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">నెలవారీ విరాళకర్త అవ్వండి.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">ప్రొఫైల్‌పై ప్రదర్శించు</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">ఫీచర్డ్ బ్యాడ్జిని తయారు చేయండి</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">కొనసాగు</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">మీకు ఒకటి కంటే ఎక్కువ బ్యాడ్జీలు ఉన్నప్పుడు, మీ ప్రొఫైల్‌లో ఇతరులు చూడటానికి ఫీచర్ చేయడానికి మీరు ఒకదాన్ని ఎంచుకోవచ్చు.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Signal కు విరాళం ఇవ్వండి</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">మరింత</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">My Support</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">విరాళం రసీదులు</string>
+    <string name="ManageDonationsFragment__badges">బ్యాడ్జీలు</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">దాత FAQ</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">ఇవ్వడానికి ఇతర మార్గాలు</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">ఒక స్నేహితుడి కొరకు విరాళం ఇవ్వండి</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">విరాళాన్ని ధృవీకరించడం సాధ్యం కాదు</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">నెలకు %1$s మీ విరాళం ధృవీకరించబడలేదు. మీ iDEAL | Wero చెల్లింపును ఆమోదించడానికి మీ బ్యాంకింగ్ యాప్‌ను తనిఖీ చేయండి.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">మీ ఒక్కసారి %1$s విరాళం ధృవీకరించబడలేదు. మీ iDEAL | Wero చెల్లింపును ఆమోదించడానికి మీ బ్యాంకింగ్ యాప్‌ను తనిఖీ చేయండి.</string>
 
+    <string name="Boost__enter_custom_amount">అనుకూల మొత్తాన్ని ఎంటర్ చేయండి</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">మీరు విరాళం ఇవ్వగల కనీస మొత్తం %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/నెల</string>
+    <string name="MySupportPreference__renews_s">%1$s ను పునరుద్ధరిస్తుంది</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">లావాదేవీని ప్రాసెస్ చేస్తోంది…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">బ్యాడ్జిని జోడించలేక పోయాను. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">దయచేసి సపోర్ట్‌ని సంప్రదించండి.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">చెల్లింపు పెండింగ్‌లో ఉంది</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">మీ %1$s బ్యాంక్ బదిలీ పెండింగ్‌లో ఉంది. బ్యాంక్ బదిలీలు పూర్తి కావడానికి 1 నుండి 14 వ్యాపార రోజులు పట్టవచ్చు.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">సబ్స్క్రిప్షన్‌ను తనిఖీ చేస్తోంది…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collie ను నవీకరించండి</string>
@@ -5382,9 +5394,11 @@
     <string name="Subscription__get_a_s_badge">%1$s బ్యాడ్జిని పొందండి</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">విరాళం ప్రక్రియ చేయబడుతోంది…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">పునరావృతమయ్యే %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5403,8 +5417,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">విరాళాన్ని ప్రక్రియ చేసేటప్పుడు పొరపాటు ఏర్పడింది</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">మరో పేమెంట్ విధానం ప్రయత్నించండి లేదా మరింత సమాచారం కొరకు మీ బ్యాంక్‌ని సంప్రదించండి.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">విరాళాన్ని ప్రక్రియ చేసేటప్పుడు పొరపాటు ఏర్పడింది. %1$s</string>
     <string name="DonationsErrors__your_payment">మీ విరాళం ప్రక్రియ చేయబడలేదు మరియు మీకు ఛార్జ్ విధించబడలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.</string>
     <string name="DonationsErrors__still_processing">ఇంకా ప్రాసెసింగ్ చేస్తోంది</string>
     <string name="DonationsErrors__couldnt_add_badge">బ్యాడ్జిని జోడించలేక పోయాను</string>
@@ -5422,6 +5439,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">మీ విరాళం ప్రక్రియ చేయబడింది, కాని Signal మీ విరాళ సందేశాన్ని పంపలేకపోయింది. దయచేసి మద్దతును సంప్రదించండి.</string>
     <string name="DonationsErrors__your_badge_could_not">మీ బ్యాడ్జి మీ ఖాతాకు జోడించబడలేదు, కానీ మీకు ఛార్జ్ విధంచబడి ఉండవచ్చు. దయచేసి మద్దతును సంప్రదించండి.</string>
     <string name="DonationsErrors__your_payment_is_still">మీ విరాళం ఇంకా ప్రక్రియ చేయబడుతోంది. మీ కనెక్షన్ ఆధారంగా దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">సబ్‌స్క్రిప్షన్ రద్దు చేయడంలో విఫలమైంది</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">సబ్‌స్క్రిప్షన్ రద్దుకు ఇంటర్నెట్ కనెక్షన్ అవసరం.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">మీ పరికరం యాప్‌లో విరాళాలకు మద్దతు ఇవ్వదు, అందువల్ల బ్యాడ్జ్‌ను సంపాదించడానికి మీరు సబ్‌స్క్రైబ్ చేసుకోలేరు. మా వెబ్‌సైట్‌లో విరాళం ఇవ్వడం ద్వారా మీరు ఇంకా Signal కు మద్దతు ఇవ్వచ్చు.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">నెట్‌వర్క్ దోషం. మీ కనెక్షన్ చెక్ చేసి, మళ్లీ ప్రయత్నించండి.</string>
     <string name="NetworkFailure__retry">మళ్ళీ ప్రయత్నించు</string>
@@ -5430,6 +5449,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">ఈ యూజర్ వారి Signalని అప్‌గ్రేడ్ చేసుకునేంత వరకు విరాళాలను పొందలేడు.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">మీ iDEAL | Wero విరాళం ప్రాసెస్ చేయబడలేదు. మరో చెల్లింపు విధానాన్ని ప్రయత్నించండి లేదా మరింత సమాచారం కొరకు మీ బ్యాంక్‌ను సంప్రదించండి.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s తరఫున విరాళం</string>
@@ -5627,12 +5647,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">%1$s వరకు ఆన్ చేయండి</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">పికర్ ఓపెన్ చేయడం విఫలమైంది</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">నోటిఫికేషన్‌లను ప్రారంభించడానికి, వాటిని ప్రదర్శించడానికి Collie కు అనుమతి అవసరం.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">ఆన్ చేయండి</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">ఇది Signal నుండి అధికారిక మరియు ఏకైక చాట్</string>
@@ -5640,19 +5654,33 @@
     <string name="ReleaseNotes__keep_up_to_date">వార్తలు మరియు విడుదల గమనికలతో అప్ టూ డేట్‌గా ఉండండి</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">మొత్తం యాక్టివిటీ</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">అన్ని</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">రికరింగ్</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">ఒక్క-సారి</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">స్నేహితుని కోసం</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">ఒక స్నేహితుడి కొరకు విరాళం</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">విరాళం రకం</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">చెల్లించిన తేదీ</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">రసీదును పంచుకోండి</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">ఒకవేళ మీరు Collie ను తిరిగి ఇన్‌స్టాల్ చేసినట్లయితే, ఇంతకు ముందు విరాళాల నుంచి రసీదులు లభ్యం కావు.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">విరాళం రసీదు</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">మొత్తం</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Signal కు మద్దతు ఇచ్చినందుకు ధన్యవాదాలు. ఓపెన్ సోర్స్ గోప్యతా సాంకేతికత ద్వారా ప్రపంచవ్యాప్తంగా లక్షలాది మందికి స్వేచ్ఛా వ్యక్తీకరణను రక్షించడం మరియు సురక్షితమైన భౌగోళిక కమ్యూనికేషన్‌ను ప్రారంభించడం అనే లక్ష్యాన్ని ముందుకు తీసుకెళ్ళడంలో మీ సహకారం సహాయపడుతుంది. ఒకవేళ మీరు యునైటెడ్ స్టేట్స్ నివాసి అయితే, మీ పన్ను రికార్డ్‌ల కోసం దయచేసి ఈ రసీదును మీ దగ్గర ఉంచుకోండి. Signal టెక్నాలజీ ఫౌండేషన్ అనేది యునైటెడ్ స్టేట్స్‌లోని అంతర్గత రెవెన్యూ కోడ్ యొక్క సెక్షన్ 501c3 కింద పన్ను మినహాయింపు పొందిన లాభాపేక్షలేని సంస్థ. మా ఫెడరల్ పన్ను ID 82-4506840. ఈ విరాళానికి ప్రతిఫలంగా Signal ఎటువంటి వస్తువులను లేదా సేవలను అందించలేదు.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">రసీదులు లేవు</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6291,17 +6319,27 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">లాభాపేక్షలేనిదని గర్వంగా చెప్పుకుంటున్నాము</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">కొనసాగు</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">ప్రైవేట్ సందేశాలు పంపేందుకు మద్దతు ఇవ్వడానికి విరాళం ఇవ్వండి. Signal ను స్వతంత్రంగా మరియు ప్రకటనలు లేకుండా ఉంచండి.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">మీకు ఒక విరాళం పెండింగులో ఉంది</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">బ్యాంక్ బదిలీలు ప్రక్రియ కావడానికి 1 నుండి 14 వ్యాపార రోజులు పట్టవచ్చు. మీ సబ్‌స్క్రిప్షన్‌ను అప్‌డేట్ చేయడానికి ముందు ఈ చెల్లింపు పూర్తయ్యే వరకు దయచేసి వేచి ఉండండి.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">బ్యాంక్ బదిలీలు ప్రక్రియ కావడానికి 1 నుండి 14 వ్యాపార రోజులు పట్టవచ్చు. మరొక విరాళం ఇచ్చే ముందు ఈ చెల్లింపు పూర్తయ్యే వరకు దయచేసి వేచి ఉండండి.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">మీ విరాళం ఇంకా ప్రక్రియ చేయబడుతోంది. మీ కనెక్షన్ ఆధారంగా దీనికి కొన్ని నిమిషాలు పట్టవచ్చు. మీ సబ్‌స్క్రిప్షన్‌ను అప్‌డేట్ చేయడానికి ముందు ఈ చెల్లింపు పూర్తయ్యే వరకు దయచేసి వేచి ఉండండి.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">మీ విరాళం ఇంకా ప్రక్రియ చేయబడుతోంది. మీ కనెక్షన్ ఆధారంగా దీనికి కొన్ని నిమిషాలు పట్టవచ్చు. మరొక విరాళం ఇచ్చే ముందు ఈ చెల్లింపు పూర్తయ్యే వరకు దయచేసి వేచి ఉండండి.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">మీ iDEAL | Wero విరాళం ఇంకా ప్రాసెస్ చేయబడుతోంది. మరొక విరాాళం చేయడానికి ముందు మీ చెల్లింపును ఆమోదించడానికి మీ బ్యాంకింగ్ యాప్‌ను తనిఖీ చేయండి.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">విరాళం మొత్తం చాలా ఎక్కువగా ఉంది</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">మీరు బ్యాంక్ బదిలీ ద్వారా %1$s వరకు పంపవచ్చు. వేరొక మొత్తం లేదా వేరొక చెల్లింపు విధానాన్ని ప్రయత్నించండి.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">నెలవారీ</string>
@@ -6310,77 +6348,129 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Signal కు %1$s/నెలకు విరాళం ఇవ్వండి</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">%1$s బ్యాడ్జిని పొందండి</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Signal కు %1$s విరాళం ఇవ్వండి</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">%2$d రోజుకు %1$s బ్యాడ్జిని పొందండి</item>
         <item quantity="other">%2$d రోజులకు %1$s బ్యాడ్జిని పొందండి</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">బ్యాంక్ బదిలీ</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">క్రెడిట్ లేదా డెబిట్ కార్డు</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">ఒక స్నేహితుడి కొరకు విరాళం ఇవ్వండి</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">విరాళాన్ని ధృవీకరించడానికి Collie నుండి నిష్క్రమించేదా?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">ధృవీకరించిన తర్వాత, మీ విరాళాన్ని ప్రక్రియ చేయడం పూర్తి చేయడానికి Collie కు తిరిగి రండి.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">మిమ్మల్ని %1$sకు పంపడం జరుగుతుంది. నిర్ధారించబడిన తర్వాత, మీ విరాళ ప్రక్రియను పూర్తి చేయడానికి Collie కు తిరిగి రండి.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">బ్యాంక్ బదిలీ</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Signal కు ఇవ్వబడిన విరాళాలను Stripe ప్రక్రియ చేస్తుంది. Signal మీ వ్యక్తిగత సమాచారాన్ని సేకరించదు లేదా నిల్వ చేయదు. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">అంగీకరించండి</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">మరింత చదవండి</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">ఆదేశాన్ని లోడ్ చేసేందుకు విఫలమైంది</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">మీ బ్యాంక్ వివరాలు మరియు ఈమెయిల్‌ను ఎంటర్ చేయండి. మీ విరాళం గురించి మీకు అప్‌డేట్‌లను పంపడానికి Stripe ఈ ఈమెయిల్‌ను ఉపయోగిస్తుంది. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">బ్యాంక్ ఖాతాలో పేరు</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">ఇమెయిల్</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">ఖాతా సమాచారాన్ని కనుగొనండి</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">%1$s/నెలకు విరాళం ఇవ్వండి</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">%1$s విరాళం ఇవ్వండి</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN చాలా చిన్నదిగా ఉంది</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN చాలా పెద్దదిగా ఉంది</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN దేశం కోడ్ మద్దతు ఇవ్వబడలేదు</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">చెల్లని IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">కనీసం 3 అక్షరాలు</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">ఈమెయిల్ చిరునామా చెల్లనిది</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">మీ పేరు మరియు ఈమెయిల్‌ను ఎంటర్ చేయండి. మీ విరాళం గురించి మీకు అప్‌డేట్‌లను పంపడానికి Stripe ఈ ఈమెయిల్‌ను ఉపయోగిస్తుంది. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">మీ బ్యాంక్ వివరాలు ఎంటర్ చేయండి. Signal మీ వ్యక్తిగత సమాచారాన్ని సేకరించదు లేదా నిల్వ చేయదు. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">బ్యాంక్ ఖాతాలో పేరు</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">ఇమెయిల్</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">iDEAL | wero తో మీ విరాళాన్ని నిర్ధారించండి</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">మీ పునరావృత విరాళాన్ని సెటప్ చేయడానికి, మీ బ్యాంక్‌తో €0,01 ఛార్జీని నిర్ధారించేందుకు కొనసాగించండిని తట్టండి. ఇది ఆటోమేటిక్‌గా రీఫండ్ చేయబడుతుంది మరియు మీ ఖాతా నుండి నెలకు %1$s మీ విరాళాన్ని డెబిట్ చేయడానికి అనుమతిస్తుంది.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">కొనసాగండి</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">మీ ఖాతా సమాచారాన్ని కనుగొనండి</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">మీ బ్యాంక్ స్టేట్‌మెంట్ పై భాగాన మీ IBAN కోసం చూడండి. IBANలు 34 అక్షరాల వరకు కలిగి ఉంటాయి. మీరు ఎంటర్ చేసే పేరు మీ బ్యాంక్ ఖాతాలోని మీ పూర్తి పేరుతో సరిపోలాలి. మరింత సమాచారం కొరకు మీ బ్యాంక్‌ను సంప్రదించండి.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">విరాళం పెండింగ్‌లో ఉంది</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">మీ నెలవారీ విరాళం పెండింగ్‌లో ఉంది. మీ విరాళం అందుకోబడినప్పుడు మీ ప్రొఫైల్‌పై మీరు %1$s బ్యాడ్జ్‌ను ప్రదర్శించగలుగుతారు.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">మీ ఒక్కసారి విరాళం పెండింగ్‌లో ఉంది. మీ విరాళం అందుకోబడినప్పుడు మీ ప్రొఫైల్‌పై మీరు %1$s బ్యాడ్జ్‌ను ప్రదర్శించగలుగుతారు.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">బ్యాంక్ బదిలీలు ప్రక్రియ కావడానికి 1 నుండి 14 వ్యాపార రోజులు పట్టవచ్చు. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">పూర్తయింది</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">విరాళం ప్రక్రియ చేయబడలేదు</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">మీ బ్యాంక్ బదిలీని ప్రక్రియ చేయడంలో మాకు సమస్య ఉంది. మీకు ఛార్జీ విధించబడలేదు. మరో చెల్లింపు విధానం ప్రయత్నించండి లేదా మరింత సమాచారం కొరకు మీ బ్యాంక్‌ను సంప్రదించండి.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">మళ్ళీ ప్రయత్నించండి</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">ఇప్పుడు కాదు</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">విరాళం పూర్తయింది</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">మీ బ్యాంక్ బదిలీ అందుకోబడింది. మీ మద్దతను చూపించేందుకు మీ ప్రొఫైల్‌పై ఈ బ్యాడ్జ్‌ను ప్రదర్శించేందుకు మీరు ఎంచుకోవచ్చు.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">రద్దు చేస్తోంది…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">చాలా ఎక్కువ పరిచయాలు ప్రాసెస్ చేయబడ్డాయి</string>
@@ -6412,6 +6502,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s మీకు పంపారు</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">మీ సమాచారం రహస్యమైనది</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">మీరు విరాళం ఇచ్చినప్పుడు, మీ వ్యక్తిగత సమాచారంలో దేనినైనా Signal సేకరించదు లేదా నిల్వ చేయదు.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">మీ విరాళాలను అందుకోవడానికి మా చెల్లింపు ప్రాసెసర్‌గా మేము Stripe ను ఉపయోగిస్తాము. వారికి మీరు అందించే సమాచారంలో దేనినైనా మేము యాక్సెస్ చేయము, నిల్వ చేయము లేదా భద్రపరచము.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal మీ విరాళాన్ని మీ Signal ఖాతాతో అనుసంధానం చేయదు మరియు చేయలేదు.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">మీ మద్దతుకు ధన్యవాదాలు!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6426,6 +6521,8 @@
     <string name="GroupStoryEducationSheet__next">తరువాత</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">విరాళం ఇవ్వండి</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">చెల్లింపు</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6643,7 +6740,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">అడ్మిన్ ఆమోదం అవసరం</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Signal ద్వారా లింక్‌ను పంచుకోండి</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Collie ద్వారా లింక్‌ను పంచుకోండి</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">లింక్‌ను కాపీ చేయండి</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6794,9 +6891,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">మీరు అంతా సిద్ధంగా ఉన్నారు. మీ బ్యాకప్‌ను ఇప్పుడే ప్రారంభించండి.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">దీనికి కొంత సమయం పట్టవచ్చు. బ్యాకప్ చేస్తున్నప్పుడు మీరు సాధారణంగా Signal ను ఉపయోగించవచ్చు.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">దీనికి కొంత సమయం పట్టవచ్చు. బ్యాకప్ చేస్తున్నప్పుడు మీరు సాధారణంగా Collie ను ఉపయోగించవచ్చు.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Signal నిల్వను అనుకూలపరచండి</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Collie నిల్వను అనుకూలపరచండి</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">పాత మీడియా ఆఫ్‌లోడ్ చేయబడుతుంది, అయితే మీ బ్యాకప్ నుండి ఎప్పుడైనా దానిని డౌన్‌లోడ్ చేసుకోవచ్చు.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6814,7 +6911,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"బ్యాకప్‌ను పునరుద్ధరించడానికి, Collie యొక్క క్రొత్త కాపీని ఇన్‌స్టాల్ చేయండి. యాప్‌ను తెరవండి మరియు బ్యాకప్‌ను పునరుద్ధరించండిని తట్టండి, ఆపై బ్యాకప్ ఫైల్‌ను కనుగొనండి."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">మీరు \"ఆప్టిమైజ్ Signal స్టోరేజ్\"ను ఆన్ చేసి ఉన్నారు. ఒకవేళ మీ పరికరంలోని బ్యాకప్‌లో అన్ని మీడియా అంశాలను చేర్చాలనుకుంటే, ఆ సెట్టింగ్‌ను ఆఫ్ చేయండి.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">మీరు \"ఆప్టిమైజ్ Collie స్టోరేజ్\"ను ఆన్ చేసి ఉన్నారు. ఒకవేళ మీ పరికరంలోని బ్యాకప్‌లో అన్ని మీడియా అంశాలను చేర్చాలనుకుంటే, ఆ సెట్టింగ్‌ను ఆఫ్ చేయండి.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">సెట్టింగ్‌ను వీక్షించండి</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6873,10 +6970,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s పూర్తి స్క్రీన్ నోటిఫికేషన్లను అనుమతించండి</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">నెలవారీ విరాళం రద్దు చేయబడింది</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">పునరావృతమయ్యే మీ నెలవారీ విరాళం రద్దు చేయబడింది. %1$s\n\nమీ బ్యాడ్జ్ ఇకపై మీ ప్రొఫైల్‌లో కనిపించదు. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">సబ్‌స్క్రిప్షన్‌ను పునరుద్ధరించండి</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">ఇప్పుడు కాదు</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6898,7 +7000,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">చెల్లని ఫోన్ నంబర్</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Signal కు ఆహ్వానించండి</string>
+    <string name="FindByActivity__invite_to_signal">Collie కు ఆహ్వానించండి</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">వినియోగదారు పేరు కనుగొనబడలేదు</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7036,7 +7138,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">మీ బ్యాకప్ల సబ్స్క్రిప్షన్‌ను రీడీమ్ చేయడం సాధ్యపడలేదు</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">ఒక లోపం సంభవించింది మరియు మీ బ్యాకప్ పూర్తి చేయబడలేదు. మీరు Signal యొక్క తాజా వెర్షన్‌లో ఉన్నారని నిర్ధారించుకోండి మరియు మళ్ళీ ప్రయత్నించండి. ఒకవేళ ఈ సమస్య కొనసాగితే, మద్దతును సంప్రదించండి.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">ఒక లోపం సంభవించింది మరియు మీ బ్యాకప్ పూర్తి చేయబడలేదు. మీరు Collie యొక్క తాజా వెర్షన్‌లో ఉన్నారని నిర్ధారించుకోండి మరియు మళ్ళీ ప్రయత్నించండి. ఒకవేళ ఈ సమస్య కొనసాగితే, మద్దతును సంప్రదించండి.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">ఒక పొరపాటు సంభవించింది మరియు మీ బ్యాకప్ పూర్తి చేయబడలేదు. ఒకవేళ ఈ సమస్య కొనసాగితే, మద్దతును సంప్రదించండి.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7118,7 +7220,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">మీ చివరి బ్యాకప్‌ను పూర్తిచేయడం సాధ్యం కాలేదు. మీ ఫోన్ Wi-Fi కు కనెక్ట్ చేయబడిందని నిర్ధారించుకొని మళ్ళీ ప్రయత్నించడానికి \"ఇప్పుడు బ్యాకప్ చేయండి\" ని తట్టండి.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">మీ చివరి బ్యాకప్‌ను పూర్తిచేయడం సాధ్యం కాలేదు. మీరు Signal యొక్క తాజా వెర్షన్‌లో ఉన్నారని నిర్ధారించుకోండి మరియు మళ్ళీ ప్రయత్నించండి.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">మీ చివరి బ్యాకప్‌ను పూర్తిచేయడం సాధ్యం కాలేదు. మీరు Collie యొక్క తాజా వెర్షన్‌లో ఉన్నారని నిర్ధారించుకోండి మరియు మళ్ళీ ప్రయత్నించండి.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">మీరు కలిగి ఉన్న సందేశాల సంఖ్య నిల్వ పరిమితిని మించిపోతుంది. కొన్ని సందేశాలను తొలగించి, మళ్ళీ ప్రయత్నించండి.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7144,6 +7246,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7170,34 +7273,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">మరింత తెలుసుకోండి</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">మీ ఫోన్ Google Play సేవలకు మద్దతు ఇవ్వనందున మీరు Signal సురక్షిత బ్యాకప్‌లకు సబ్‌స్క్రైబ్ చేసుకోలేరు. సహాయం కోసం ఫోన్ తయారీదారుని సంప్రదించండి.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">చాట్ పరిమితులు</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">సందేశం చరిత్రను తొలగించండి</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">ఎంచుకున్న సమయాని కంటే మునుపటి సందేశాలు శాశ్వతంగా తొలగించబడతాయి.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">ఎంచుకున్న నిడివిని మించే సందేశాలు శాశ్వతంగా తొలగించబడతాయి.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">లింక్ చేసిన పరికరాలకు పరిమితులను వర్తింపజేయండి</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">ఎనేబుల్ చేసినప్పుడు, చాట్ పరిమితులు మీ లింక్ చేసిన పరికరాల నుండి సందేశాలను కూడా తొలగిస్తాయి.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collie నిల్వ</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie నిల్వను అనుకూలపరచండి</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">ఉపయోగించని మీడియా ఆఫ్‌లోడ్ చేయబడుతుంది, అయితే మీ బ్యాకప్ నుండి ఎప్పుడైనా దానిని డౌన్‌లోడ్ చేసుకోవచ్చు.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">నిల్వ అనుకూలీకరణ Signal సురక్షిత బ్యాకప్‌ల చెల్లింపు శ్రేణితో మాత్రమే ఉపయోగించబడుతుంది. మీ బ్యాకప్‌ల సబ్‌స్క్రిప్షన్ ఇప్పటికీ ప్రాసెస్ చేయబడుతోంది మరియు ఇంకా యాక్టివ్‌గా లేదు. దయచేసి తర్వాత మళ్ళీ ప్రయత్నించండి.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">మీ పరికరంలోని బ్యాకప్ నుండి మీడియా తొలగించబడుతుంది.</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal నిల్వను ఆప్టిమైజ్ చేయండి\"ని ఆన్ చేయడం ద్వారా, పాత మీడియా మీ పరికరం నుండి తొలగించబడుతుంది. మీరు దీన్ని ఎప్పుడైనా మళ్ళీ డౌన్‌లోడ్ చేసుకోవచ్చు. ఇది మీ పరికరంలోని బ్యాకప్ నుండి పాత మీడియాను కూడా తొలగిస్తుంది.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">ఆన్ చేయండి</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7585,7 +7660,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">ఈ కీ మీ పరికరంలోని బ్యాకప్ కోసం కీని భర్తీ చేస్తుంది.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">మీ రికవరీ కీ అనేది 64-అక్షరాల కోడ్, ఇది మీరు Signal ను మళ్ళీ ఇన్‌స్టాల్ చేసినప్పుడు మీ బ్యాకప్‌లను పునరుద్ధరించడానికి మిమ్మల్ని అనుమతిస్తుంది.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">మీ రికవరీ కీ అనేది 64-అక్షరాల కోడ్, ఇది మీరు Collie ను మళ్ళీ ఇన్‌స్టాల్ చేసినప్పుడు మీ బ్యాకప్‌లను పునరుద్ధరించడానికి మిమ్మల్ని అనుమతిస్తుంది.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">ఇది మీ పరికరంలోని రికవరీ కీ లాంటిదే.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7623,7 +7698,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">మీకు పాస్‌వర్డ్ మేనేజర్ సెటప్ చేయబడలేదు లేదా మీరు ఉపయోగిస్తున్న పాస్‌వర్డ్ మేనేజర్‌కు మద్దతు ఇవ్వబడలేదు.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">మీరు గతంలో Signal కోసం పాస్‌వర్డ్‌లను Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేయకూడదని ఎంచుకున్నారు. మీ Google పాస్‌వర్డ్ మేనేజర్ సెట్టింగ్‌లలో, \"తిరస్కరించిన సైట్‌లు మరియు యాప్‌లు\" నుండి Signal ను తొలగించి, మళ్ళీ ప్రయత్నించండి.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">మీరు గతంలో Collie కోసం పాస్‌వర్డ్‌లను Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేయకూడదని ఎంచుకున్నారు. మీ Google పాస్‌వర్డ్ మేనేజర్ సెట్టింగ్‌లలో, \"తిరస్కరించిన సైట్‌లు మరియు యాప్‌లు\" నుండి Collie ను తొలగించి, మళ్ళీ ప్రయత్నించండి.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">సెట్టింగ్‌లకు వెళ్లండి</string>
     <!-- Action button label -->
@@ -7770,7 +7845,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android బ్యాకప్ ఎగుమతి నెట్‌వర్క్ పొరపాటు</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Collie Android బ్యాకప్ ఎగుమతి నెట్‌వర్క్ పొరపాటు</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7800,7 +7875,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">మీ ఇతర పరికరంలో మీ ఖాతాను బదిలీ చేయడాన్ని కొనసాగించండి.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">మీరు బదిలీ చేస్తున్న పరికరం పాతబడిపోయింది. ఆ పరికరంలో Signal ను అప్‌డేట్ చేసి మళ్ళీ ప్రయత్నించండి.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">మీరు బదిలీ చేస్తున్న పరికరం పాతబడిపోయింది. ఆ పరికరంలో Collie ను అప్‌డేట్ చేసి మళ్ళీ ప్రయత్నించండి.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">మీ పరికరాన్ని సిద్ధం చేస్తోంది</string>
@@ -7845,6 +7920,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">ప్రాక్సీ</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">విరాళం ఇవ్వండి</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7877,7 +7953,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">బ్యాకప్ నిల్వ నిండింది</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">మీరు మీ బ్యాకప్ నిల్వ పరిమితిని చేరుకున్నారు. చాట్‌లు మరియు మీడియాను బ్యాకప్ చేయడం కొనసాగించడానికి Signal లో స్థలాన్ని ఖాళీ చేయండి.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">మీరు మీ బ్యాకప్ నిల్వ పరిమితిని చేరుకున్నారు. చాట్‌లు మరియు మీడియాను బ్యాకప్ చేయడం కొనసాగించడానికి Collie లో స్థలాన్ని ఖాళీ చేయండి.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">ప్రత్యామ్నాయ విఫలమైంది</string>
     <!-- Notification body for when initial backup failed -->
@@ -8327,7 +8403,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">నకలు</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Signal కు ఆహ్వానించండి</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Collie కు ఆహ్వానించండి</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">ఫోన్ పరిచయాలకు జోడించండి</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8339,20 +8415,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">మ్యాప్‌లను తెరవలేకపోతున్నాము</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Signal లో నన్ను చేర్చండి</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Collie లో నన్ను చేర్చండి</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">మీ రికవరీ కీ ని రీసెట్ చేయండి</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">మీ రికవరీ కీ ని రీసెట్ చేయడం ద్వారా మీ Signal Login కోసం కొత్త కీ సృష్టించబడుతుంది. ఒకవేళ వేరొకరు మీ కీని తెలుసుకుంటే మాత్రమే ఇది అవసరం.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">ఒకవేళ బ్యాకప్‌లు ప్రారంభం చేసి ఉంటే మీరు మీడియాతో సహా మీ బ్యాకప్‌ను తిరిగి అప్‌లోడ్ చేయాల్సి ఉంటుంది. ఒకవేళ మీరు \"Signal నిల్వను అనుకూలపరచండి\"ని ఉపయోగిస్తుంటే, మీరు ముందుగా ఆఫ్‌లోడ్ చేసిన మీడియాను డౌన్‌లోడ్ చేసుకోవాలి.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">ఒకవేళ బ్యాకప్‌లు ప్రారంభం చేసి ఉంటే మీరు మీడియాతో సహా మీ బ్యాకప్‌ను తిరిగి అప్‌లోడ్ చేయాల్సి ఉంటుంది. ఒకవేళ మీరు \"Collie నిల్వను అనుకూలపరచండి\"ని ఉపయోగిస్తుంటే, మీరు ముందుగా ఆఫ్‌లోడ్ చేసిన మీడియాను డౌన్‌లోడ్ చేసుకోవాలి.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">కొనసాగించు</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">మీరు సృష్టించగల కొత్త కీల సంఖ్యను మీరు దాటిపోయారు. మీరు 7 రోజుల్లో కొత్త రికవరీ కీని సృష్టించగలరు.</string>
-
-    <string name="ConversationFragment__deleted_for_me">నా కోసం తొలగించబడింది</string>
 
     <!-- EOF -->
 </resources>

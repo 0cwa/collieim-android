@@ -2462,7 +2462,7 @@ class ConversationFragment :
     }
 
     chatScrims.navigationBarColor = ThemeUtil.getThemedColor(requireContext(), navColor)
-    chatScrims.attachmentKeyboardColor = androidx.compose.ui.graphics.Color(
+    chatScrims.attachmentKeyboardColor = ComposeColor(
       ThemeUtil.getThemedColor(
         requireContext(),
         if (hasWallpaper) R.color.wallpaper_compose_background else R.attr.signal_background_primary
@@ -3167,17 +3167,7 @@ class ConversationFragment :
   }
 
   private fun maybeShowSwipeToReplyTooltip() {
-    if (!SignalStore.tooltips.hasSeenSwipeToReplyTooltip()) {
-      val tooltipText = if (ViewUtil.isLtr(requireContext())) {
-        R.string.ConversationFragment_you_can_swipe_to_the_right_reply
-      } else {
-        R.string.ConversationFragment_you_can_swipe_to_the_left_reply
-      }
-
-      snackbar(tooltipText)
-
-      SignalStore.tooltips.markSwipeToReplyTooltipSeen()
-    }
+    // MOLLY: No-op
   }
 
   private fun calculateSelectedItemCount(): String {
@@ -4428,6 +4418,7 @@ class ConversationFragment :
     override fun onCallToAction(action: String) {
       when (action) {
         "gift_badge" -> Unit  // MOLLY: No action
+        "donate" -> Unit // MOLLY: No action
         "username_edit" -> startActivity(EditProfileActivity.getIntentForUsernameEdit(requireContext()))
         "calls_tab" -> startActivity(MainActivity.clearTopAndOpenTab(requireContext(), MainListRoute.Calls))
         "chat_folder" -> startActivity(AppSettingsActivity.chatFolders(requireContext()))
@@ -5729,10 +5720,6 @@ class ConversationFragment :
   }
 
   private fun onStickerPackInstalled(event: StickerPackInstallEvent) {
-    if (!SignalStore.tooltips.hasSeenStickerIntroTooltip()) {
-      return
-    }
-
     EventBus.default.removeStickyEvent(event)
 
     if (!inputPanel.isStickerMode) {

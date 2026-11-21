@@ -16,6 +16,17 @@ class AppIconUtility(context: Context) {
 
   val currentAppIcon by lazy { readCurrentAppIconFromPackageManager() }
 
+  /** MOLLY: Resolve from the actual manifest, so the picker cannot drift from installed icons. */
+  val appIconMetadata: Map<AppIconPreset, AppIconMetadata> by lazy {
+    AppIconPreset.entries.associateWith { preset ->
+      val activityInfo = pm.getActivityInfo(preset.getComponentName(applicationContext), PackageManager.MATCH_DISABLED_COMPONENTS)
+      AppIconMetadata(
+        iconResId = activityInfo.iconResource,
+        label = activityInfo.loadLabel(pm).toString()
+      )
+    }
+  }
+
   fun isCurrentlySelected(preset: AppIconPreset): Boolean {
     return preset == currentAppIcon
   }

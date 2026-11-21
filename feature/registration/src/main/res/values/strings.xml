@@ -14,7 +14,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Allow permissions</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">To help you message people you know, Signal will request these permissions. </string>
+    <string mollyify="true" name="GrantPermissionsFragment__to_help_you_message_people_you_know">To help you message people you know, Collie will request these permissions. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Not now</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -138,9 +138,9 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Contact Support</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal Registration - Verification Code for Android</string>
+    <string mollyify="true" name="VerificationCodeScreen__contact_support_email_subject">Collie Registration - Verification Code for Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
-    <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string>
+    <string mollyify="true" name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Collie Registration - Verification Code for Android</string>
     <!-- URL opened for troubleshooting steps from the verification code screen -->
     <string name="VerificationCodeScreen__support_center_url" translatable="false">https://support.signal.org/</string>
 
@@ -152,7 +152,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">I don\'t have my old phone</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling" mollyify="true">Or you\'re reinstalling Collie on the same device</string>
+    <string mollyify="true" name="WelcomeFragment_restore_action_reinstalling">Or you\'re reinstalling Collie on the same device</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->
@@ -321,9 +321,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Couldn\'t restore this backup</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">This version of Signal can\'t restore your backup. Update to the latest version and try again.</string>
+    <string mollyify="true" name="RemoteRestoreScreen__update_latest">This version of Collie can\'t restore your backup. Update to the latest version and try again.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Update Signal</string>
+    <string mollyify="true" name="RemoteRestoreScreen__update_signal">Update Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Not now</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -333,7 +333,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Contact support</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android Backup Restore Permanent Failure</string>
+    <string mollyify="true" name="RemoteRestoreScreen__contact_support_email_subject">Collie Android Backup Restore Permanent Failure</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
     <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string>
     <!-- Shown while downloading the backup from the server -->
@@ -355,7 +355,7 @@
     <string name="AccountLockedScreen__your_account">Your account has been locked to protect your privacy and security. After %1$d days of inactivity in your account you\'ll be able to re-register this phone number without needing your PIN. All content will be deleted.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Open Signal on your old device</string>
+    <string mollyify="true" name="QuickRestoreQRScreen__step_1">Open Collie on your old device</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Tap the camera icon </string>
     <!-- Step 3 to quick restore -->
@@ -429,7 +429,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Enter your PIN</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Enter the PIN you created when you first installed Signal</string>
+    <string mollyify="true" name="PinEntryScreen__enter_the_pin_you_created">Enter the PIN you created when you first installed Collie</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">You re-entered the code that was already used to verify your phone number. Enter the unique Signal PIN that you previously chose for your account.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -458,14 +458,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Contact support</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal Registration - Need Help with PIN for Android</string>
+    <string mollyify="true" name="PinEntryScreen__contact_support_email_subject">Collie Registration - Need Help with PIN for Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
-    <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string>
+    <string mollyify="true" name="PinEntryScreen__contact_support_email_filter" translatable="false">Collie Registration - Need Help with PIN for Android</string>
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Allow Notifications</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal would like to request the notification permission. This allows your device to display alerts when new messages arrive.</string>
+    <string mollyify="true" name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie would like to request the notification permission. This allows your device to display alerts when new messages arrive.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Not now</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -501,9 +501,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Scan this code to link your account</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Open Signal on your phone</string>
+    <string mollyify="true" name="LinkAccountScreen__open_signal_on_your_phone">Open Collie on your phone</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Tap your profile picture to open Signal Settings</string>
+    <string mollyify="true" name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Tap your profile picture to open Collie Settings</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Tap \"Linked devices\" and \"Link new device\"</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -515,7 +515,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Failed to generate code</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Don\'t have Signal on another device?</string>
+    <string mollyify="true" name="LinkAccountScreen__dont_have_signal_on_another_device">Don\'t have Collie on another device?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Create account</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -537,7 +537,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Transfer your account</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">To transfer your account, open Signal on your old Android device and select Transfer Account.</string>
+    <string mollyify="true" name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">To transfer your account, open Collie on your old Android device and select Transfer Account.</string>
     <string name="DeviceTransferInstructions__continue">Continue</string>
 
     <!-- Device transfer: Setup screen -->
@@ -548,11 +548,11 @@
     <string name="DeviceTransferSetup__numbers_match">Yes, the numbers match</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">The numbers do not match</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Waiting for your old device to verify…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal needs the location permission to discover and connect with your old device.</string>
+    <string mollyify="true" name="DeviceTransferSetup__location_permission_required">Collie needs the location permission to discover and connect with your old device.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Grant permission</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal needs location services enabled to discover and connect with your old device.</string>
+    <string mollyify="true" name="DeviceTransferSetup__location_services_required">Collie needs location services enabled to discover and connect with your old device.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Turn on location services</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal needs Wi-Fi turned on to discover and connect with your old device.</string>
+    <string mollyify="true" name="DeviceTransferSetup__wifi_required">Collie needs Wi-Fi turned on to discover and connect with your old device.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Turn on Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Sorry, it appears your device does not support Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Restore a backup instead</string>
@@ -569,7 +569,7 @@
     <string name="DeviceTransferProgress__transferring_data">Transferring data</string>
     <string name="DeviceTransferProgress__d_messages_so_far">%1$d messages so far</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Unable to transfer</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Cannot transfer from a newer version of Signal.</string>
+    <string mollyify="true" name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Cannot transfer from a newer version of Collie.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Some data could not be transferred due to a database constraint.</string>
     <string name="DeviceTransferProgress__transfer_failed">The transfer failed. Please try again.</string>
     <string name="DeviceTransferProgress__try_again">Try again</string>

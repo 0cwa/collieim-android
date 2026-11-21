@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">အကောင့်ကို ပြန်လည်၍ မှတ်ပုံတင်ရန်</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Signal ကို အပ်ဒိတ်လုပ်ရန်</string>
+    <string name="preferences_account_update_signal">Collie ကို အပ်ဒိတ်လုပ်ရန်</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">ဒေတာအားလုံး ဖျက်ရန်</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">အစီရင်ခံစာ ထုတ်နေဆဲ…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">သင့်အစီရင်ခံစာကို ထုတ်သိမ်းသည့်အချိန်တွင်သာ ထုတ်ယူထားပြီး Signal က သင့်စက်တွင် မသိမ်းထားပါ။</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">သင့်အစီရင်ခံစာကို ထုတ်သိမ်းသည့်အချိန်တွင်သာ ထုတ်ယူထားပြီး Collie က သင့်စက်တွင် မသိမ်းထားပါ။</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -595,7 +595,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">စကားဝှက် မသတ်မှတ်ရသေးပါ</string>
     <string name="ApplicationPreferencesActivity_disable">ပိတ်ထားရန်</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">စကားဝှက်ကို ပိတ်မည်လား။</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ယင်းသည် Signal နှင့် မက်ဆေ့ချ် အသိပေးချက်များကို အမြဲဖွင့်ထားပါလိမ့်မည်။</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ယင်းသည် Collie နှင့် မက်ဆေ့ချ် အသိပေးချက်များကို အမြဲဖွင့်ထားပါလိမ့်မည်။</string>
     <string name="PrivacySettingsFragment__app_security">အက်ပ် လုံခြုံရေး</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">နောက်ဆုံး စာရင်းနှင့် အက်ပ်အတွင်း စခရင်ရှော့(တ်)များကို ပိတ်ရန်</string>
@@ -640,7 +640,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">ဤဆက်တင်သည် မသေချာသည့်အပြင် သင့်ကီးဘုတ်က ၎င်းကို လျစ်လျူရှုနိုင်ပါသည်။</string>
     <string name="preferences__typing_indicators">စာရိုက်နေကြောင်း အချက်ပြမှု</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">သင့်ဖုန်းနံပါတ်ကို မြင်နိုင်သူများနှင့် Signal တွင် ထိုနံပါတ်ဖြင့် သင့်ထံသို့ ဆက်သွယ်နိုင်သူများကို ရွေးချယ်ပါ။</string>
+    <string name="preferences_app_protection__choose_who_can_see">သင့်ဖုန်းနံပါတ်ကို မြင်နိုင်သူများနှင့် Collie တွင် ထိုနံပါတ်ဖြင့် သင့်ထံသို့ ဆက်သွယ်နိုင်သူများကို ရွေးချယ်ပါ။</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">ငွေပေးချေမှုများ</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -656,7 +656,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">ယခု မလုပ်ပါ</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">ပိုမိုလေ့လာရန်</string>
 
@@ -682,6 +682,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">သင့် ဘက်ခ်အပ် ပုံမှန်လှူဒါန်းငွေကို ထုတ်ယူ၍မရပါ</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Collie ကို လှူဒါန်းရန်</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">အတွင်းပိုင်း စိတ်ကြိုက်ဦးစားပေးများ</string>
     <!-- App settings row that opens linked devices -->
@@ -867,9 +868,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">သင့်ပရိုဖိုင်နှင့် ၎င်းရှိ ပြောင်းလဲမှုများကို သင်မက်ဆေ့ချ်ပို့ထားသူများ၊ အဆက်အသွယ်များနှင့် အဖွဲ့များက မြင်ရပါမည်။</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Signal ကို အပ်ဒိတ်လုပ်ပါ။</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie ကို အပ်ဒိတ်လုပ်ပါ။</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">ဤ Signal ဗားရှင်းသည် သက်တမ်းကုန်သွားပါပြီ။ Signal ကို ဆက်လက်သုံးစွဲရန် ယခု အပ်ဒိတ်လုပ်ပေးပါ။</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">ဤ Collie ဗားရှင်းသည် သက်တမ်းကုန်သွားပါပြီ။ Collie ကို ဆက်လက်သုံးစွဲရန် ယခု အပ်ဒိတ်လုပ်ပေးပါ။</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">အပ်ဒိတ်လုပ်ရန်</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -925,8 +926,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">ပိတ်ရန်</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signal ကို ပံ့ပိုးခြင်းဖြင့် သင့်ပရိုဖိုင်အတွက် ဘဲ့ဂျ်များကို ရယူပါ။</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal သည် ကြော်ငြာသူများ သို့မဟုတ် ရင်းနှီးမြှုပ်နှံသူများ မရှိဘဲ သင်ကဲ့သို့သော သူများနှင့်သာ ပံ့ပိုးလုပ်ဆောင်သည့် အကျိုးအမြတ်မယူသော အဖွဲ့အစည်းဖြစ်ပါသည်။</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">ပါဝင်အားဖြည့်သူ ဖြစ်လာလိုက်ပါ</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1006,19 +1010,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">ဤသုံးစွဲသူကို ရှာမတွေ့နိုင်ပါ။</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR ကုဒ်ကို စကင်န်ဖတ်ရန် Signal ကို ကင်မရာ အသုံးပြုခွင့်ပေးပါ။</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR ကုဒ်ကို စကင်န်ဖတ်ရန် Collie ကို ကင်မရာ အသုံးပြုခွင့်ပေးပါ။</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">ဝင်ရောက် သုံးစွဲခွင့်ပြုရန်</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">QR ကုဒ်များကို စကင်န်ဖတ်ရန် Signal သည် ကင်မရာအသုံးပြုခွင့် လိုအပ်ပါသည်</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">QR ကုဒ်များကို စကင်န်ဖတ်ရန် Collie သည် ကင်မရာအသုံးပြုခွင့် လိုအပ်ပါသည်</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">သိုလှောင်မှု</string>
     <string name="preferences_storage__storage_usage">သိုလှောင်မှုအသုံးပြုမှု</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal သိုလှောင်မှု</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie သိုလှောင်မှု</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal သိုလှောင်မှုကို အကောင်းဆုံးချိန်ညှိရန်</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie သိုလှောင်မှုကို အကောင်းဆုံးချိန်ညှိရန်</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">အသုံးမပြုသော မီဒီယာကို Offload လုပ်ထားမည်ဖြစ်သော်လည်း သင်၏ဘက်ခ်အပ်မှ အချိန်မရွေး ဒေါင်းလုဒ်လုပ်နိုင်ပါသည်။</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1044,7 +1048,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">မီဒီယာဖိုင်များကို သင့်စက်ပေါ်ရှိ ဘက်ခ်အပ်မှ ဖယ်ရှားပါမည်</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal သိုလှောင်မှု အကောင်းဆုံးချိန်ညှိရန်” ကို ဖွင့်ပါက သင့်စက်ပေါ်ရှိ မီဒီယာအဟောင်းများကို Offload လုပ်သွားပါမည်။ ၎င်းကို အချိန်မရွေး ပြန်လည် ဒေါင်းလုဒ်လုပ်နိုင်ပါသည်။ ၎င်းသည် သင့်စက်ပေါ်ရှိ ဘက်ခ်အပ်မှ မီဒီယာအဟောင်းများကိုလည်း ဖယ်ရှားပါမည်။</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Collie သိုလှောင်မှု အကောင်းဆုံးချိန်ညှိရန်” ကို ဖွင့်ပါက သင့်စက်ပေါ်ရှိ မီဒီယာအဟောင်းများကို Offload လုပ်သွားပါမည်။ ၎င်းကို အချိန်မရွေး ပြန်လည် ဒေါင်းလုဒ်လုပ်နိုင်ပါသည်။ ၎င်းသည် သင့်စက်ပေါ်ရှိ ဘက်ခ်အပ်မှ မီဒီယာအဟောင်းများကိုလည်း ဖယ်ရှားပါမည်။</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">ဖွင့်ရန်</string>
 
@@ -1074,7 +1078,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">ရွေးချယ်ထားသည်ကို ဖွင့်ရန် မအောင်မြင်ပါ။</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">အသိပေးချက်များကို ဖွင့်ရန်အတွက် Signal သည် ၎င်းတို့ကို ပြသရန် ခွင့်ပြုချက် လိုအပ်ပါသည်။</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">အသိပေးချက်များကို ဖွင့်ရန်အတွက် Collie သည် ၎င်းတို့ကို ပြသရန် ခွင့်ပြုချက် လိုအပ်ပါသည်။</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">ဖွင့်ရန်</string>
     <string name="NotificationsSettingsFragment__calls">ဖုန်းခေါ်ဆိုမှုများ</string>
@@ -1173,7 +1177,7 @@
     <string name="preferences_communication__category_censorship_circumvention">ဆင်ဆာရှောင်တိမ်းမှု</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">ဆင်ဆာရှောင်တိမ်းမှု</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ဖွင့်ထားပါက Signal အနေဖြင့် ဆင်ဆာရှောင်တိမ်းမှု ပြုလုပ်ရန် ကြိုးပမ်းပါလိမ့်မည်။ Signal အားပိတ်ထားသောနေရာတွင် အသုံးပြုနေခြင်းမဟုတ်ပါက ဒါကိုသုံးရန်မလိုပါ။</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ဖွင့်ထားပါက Collie အနေဖြင့် ဆင်ဆာရှောင်တိမ်းမှု ပြုလုပ်ရန် ကြိုးပမ်းပါလိမ့်မည်။ Collie အားပိတ်ထားသောနေရာတွင် အသုံးပြုနေခြင်းမဟုတ်ပါက ဒါကိုသုံးရန်မလိုပါ။</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">သင့် အကောင့် ဖုန်းနံပါတ်အပေါ် မူတည်၍ ဆင်ဆာရှောင်တိမ်းမှု ပြုလုပ်ပြီး ဖြစ်သည်။</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1190,7 +1194,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">အလိုအလျောက် ကီးအတည်ပြုခြင်း</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">ဖွင့်ထားသည့်အခါ Signal သည် 1:1 ချက်(တ်)များ၏ ကုဒ်ပြောင်းဝှက်ခြင်းကို အလိုအလျောက် အတည်ပြုရန် ကြိုးစားပါလိမ့်မည်။</string>
+    <string name="preferences_automatic_key_verification_body">ဖွင့်ထားသည့်အခါ Collie သည် 1:1 ချက်(တ်)များ၏ ကုဒ်ပြောင်းဝှက်ခြင်းကို အလိုအလျောက် အတည်ပြုရန် ကြိုးစားပါလိမ့်မည်။</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

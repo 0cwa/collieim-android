@@ -44,7 +44,7 @@ class IncomingMessageObserverConnectivityTest {
   private val unifiedPushValues = mockk<UnifiedPushValues>(relaxed = true)
   private lateinit var observer: IncomingMessageObserver
   private lateinit var update: (ConnectivityState) -> Unit
-  private val connected = CountDownLatch(1)
+  private var connected = CountDownLatch(1)
 
   @Before fun setup() {
     Log.initialize(SystemOutLogger())
@@ -90,6 +90,12 @@ class IncomingMessageObserverConnectivityTest {
     val callbackField = InternetConnectivityMonitor::class.java.getDeclaredField("onConnectivityUpdated").apply { isAccessible = true }
     @Suppress("UNCHECKED_CAST")
     update = callbackField.get(monitor) as (ConnectivityState) -> Unit
+    // The observer now starts fail-open (MONITORING_UNAVAILABLE counts as online, as in Molly). Start every test
+    // from a reported offline network, then forget whatever the startup pass did.
+    update(ConnectivityState.OFFLINE)
+    Thread.sleep(300)
+    clearMocks(auth, unauth, answers = false, recordedCalls = true)
+    connected = CountDownLatch(1)
   }
 
   @After fun cleanup() {
@@ -100,23 +106,25 @@ class IncomingMessageObserverConnectivityTest {
     unmockkStatic(AppDependencies::class, AppForegroundObserver::class, MessageContentProcessor::class)
   }
 
-  @Test fun `startup and unavailable or unvalidated states do not connect but online does`() {
-    Assert.assertFalse("startup connected before a connectivity report", connected.await(500, TimeUnit.MILLISECONDS))
-    update(ConnectivityState.MONITORING_UNAVAILABLE)
-    Assert.assertFalse("monitor failure connected", connected.await(500, TimeUnit.MILLISECONDS))
+  // Offline detection matches Molly: unavailable monitoring and unvalidated networks are assumed online.
+  @Test fun `unvalidated network is assumed online and connects`() {
     update(ConnectivityState.CONNECTED_UNVALIDATED)
-    Assert.assertFalse("unvalidated network connected", connected.await(500, TimeUnit.MILLISECONDS))
-    update(ConnectivityState.ONLINE)
-    Assert.assertTrue("validated network did not connect", connected.await(2, TimeUnit.SECONDS))
+    Assert.assertTrue("unvalidated network did not connect", connected.await(2, TimeUnit.SECONDS))
   }
 
-  @Test fun `losing validation disconnects both websockets`() {
+  @Test fun `monitoring failure is assumed online and connects`() {
+    update(ConnectivityState.MONITORING_UNAVAILABLE)
+    Assert.assertTrue("unavailable monitoring did not connect", connected.await(2, TimeUnit.SECONDS))
+  }
+
+  @Test fun `offline does not connect and a blocked network disconnects both websockets`() {
+    Assert.assertFalse("offline state connected", connected.await(500, TimeUnit.MILLISECONDS))
     update(ConnectivityState.ONLINE)
     Assert.assertTrue(connected.await(2, TimeUnit.SECONDS))
     clearMocks(auth, unauth, answers = false, recordedCalls = true)
-    update(ConnectivityState.CONNECTED_UNVALIDATED)
-    verify(atLeast = 1) { auth.disconnect() }
-    verify(exactly = 1) { unauth.disconnect() }
+    update(ConnectivityState.BLOCKED)
+    verify(timeout = 2000, atLeast = 1) { auth.disconnect() }
+    verify(timeout = 2000, exactly = 1) { unauth.disconnect() }
   }
 
   @Test fun `pending admission revoked before observer resumes causes no token or connect`() {

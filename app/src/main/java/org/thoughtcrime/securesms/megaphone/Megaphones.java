@@ -48,7 +48,6 @@ import org.thoughtcrime.securesms.storage.StorageSyncHelper;
 import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.Environment;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.signal.core.util.ServiceUtil;
 import org.thoughtcrime.securesms.util.VersionTracker;
 import org.signal.locale.AppLocale;
@@ -133,6 +132,7 @@ public final class Megaphones {
       put(Event.LINKED_DEVICE_INACTIVE, shouldShowLinkedDeviceInactiveMegaphone() ? RecurringSchedule.every(TimeUnit.DAYS.toMillis(3)) : NEVER);
 
       // Specifically putting backup reminders here, above PIN reminders
+      // MOLLY: no paid backup tier, so there is only the generic turn-on-backups reminder.
       put(Event.BACKUPS_GENERIC_UPSELL, shouldShowGenericBackupsMegaphone(context) ? new RecurringSchedule(TimeUnit.DAYS.toMillis(30), TimeUnit.DAYS.toMillis(120)) : NEVER);
       put(Event.VERIFY_BACKUP_KEY, new VerifyBackupKeyReminderSchedule());
       put(Event.TWO_FACTOR_REMINDER, new TwoFactorReminderSchedule());
@@ -347,7 +347,7 @@ public final class Megaphones {
         .setImage(R.drawable.ic_avatar_celebration)
         .setBody(R.string.CollieUpdates__checks_megaphone)
         .setActionButton(R.string.EnableAppUpdatesMegaphone_check_for_updates, (megaphone, listener) -> {
-          TextSecurePreferences.setUpdateApkEnabled(context, true);
+          SignalStore.molly().setUpdateApkEnabled(true);
           ApkUpdateRefreshListener.scheduleIfAllowed(context);
           listener.onMegaphoneCompleted(Event.ENABLE_APP_UPDATES);
           listener.onMegaphoneToastRequested(context.getString(R.string.EnableAppUpdatesMegaphone_you_will_be_notified_when_updates_are_available));
@@ -460,7 +460,7 @@ public final class Megaphones {
 
   private static boolean shouldShowEnableAppUpdatesMegaphone(@NonNull Context context) {
     return BuildConfig.MANAGE_COLLIE_UPDATES &&
-           !TextSecurePreferences.isUpdateApkEnabled(context) &&
+           !SignalStore.molly().getUpdateApkEnabled() &&
            VersionTracker.getDaysSinceFirstInstalled(context) > 0;
   }
 

@@ -41,7 +41,6 @@ import org.thoughtcrime.securesms.conversation.v2.items.InteractiveConversationE
 import org.thoughtcrime.securesms.database.model.InMemoryMessageRecord
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
 import java.lang.Integer.max
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Decoration which renders the background shade and selection bubble for a {@link Multiselectable} item.

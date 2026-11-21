@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Nag-u-update ang Collie…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Hindi ka pa nagset ng passphrase!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">I-disable ang passphrase?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Permanente nitong i-u-unlock ang Collie at ang message notifications.</string>
-    <string name="ApplicationPreferencesActivity_disable">I-disable</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Nagka-error sa pagkonekta sa server!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Credit o debit card</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Ilagay ang iyong card details. Hindi kinokolekta o itinatago ng Signal ang iyong personal na impormasyon.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Card number</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Invalid ang card number</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">Expired na ang card</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">Masyadong maikli ang code</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">Masyadong mahaba ang code</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Invalid ang code</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Invalid ang buwan</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Required ang taon</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Invalid ang taon</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">Mag-donate %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Mag-donate ng %1$s/buwan</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Mag-donate ng %1$s/buwan</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">One time %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Pending ang donation</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Pinoproseso ang donation</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">I-block at umalis sa %1$s?</string>
@@ -346,7 +358,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">Binura ni %1$s ang message na ito</string>
     <string name="ConversationItem_you_deleted_this_message">Binura mo ang message na ito</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Binura ni admin %1$s ang message na ito</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -451,7 +462,7 @@
     <string name="ConversationActivity_error_sending_media">Error sending media</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Hindi na suportado sa Signal ang SMS messaging.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Hindi na suportado sa Collie ang SMS messaging.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Hindi na suportado sa Signal ang SMS messaging. I-invite si %1$s sa Signal para mapanatili ang convo niyo dito.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -501,6 +512,8 @@
     <string name="ConversationFragment_deleting_messages">Binubura ang mga mensahe…</string>
     <string name="ConversationFragment_delete_for_me">Burahin sa \'kin</string>
     <string name="ConversationFragment_delete_for_everyone">Burahin sa lahat</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Burahin para sa akin</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Burahin ang piniling message?</item>
@@ -1095,7 +1108,7 @@
     <string name="ExpiredBuildReminder_update_now">I-update na</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Hindi na gumagana ang Signal sa device na ito. Para magamit ulit ang Signal, i-update ang iyong device sa mas bagong version ng Android o lumipat sa mas bagong device.</string>
+    <string name="DeprecatedSdkBanner_body">Hindi na gumagana ang Collie sa device na ito. Para magamit ulit ang Collie, i-update ang iyong device sa mas bagong version ng Android o lumipat sa mas bagong device.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">I-update ang Collie</string>
@@ -1443,9 +1456,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">I-update ang Signal app para magamit ang group links</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Ang version ng Signal app na ginagamit mo ay hindi suportado ang group link na ito. Mag-update sa latest version para maka-join sa group gamit ang link.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">I-update ang Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">I-update ang Collie app para magamit ang group links</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Ang version ng Collie app na ginagamit mo ay hindi suportado ang group link na ito. Mag-update sa latest version para maka-join sa group gamit ang link.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">I-update ang Collie</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Ang group link ay hindi valid</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2071,7 +2084,7 @@
         <item quantity="one">Mayroon kang %1$d attempt na natitira. Kung maubusan ka ng attempts, pwede kang gumawa ng bagong PIN. Maaari kang mag-register at gamitin ang account mo pero mawawala ang ilang saved settings gaya ng iyong profile information.</item>
         <item quantity="other">Mayroon kang %1$d attempts na natitira. Kung maubusan ka ng attempts, pwede kang gumawa ng bagong PIN. Maaari kang mag-register at gamitin ang account mo pero mawawala ang ilang saved settings gaya ng iyong profile information.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Pagrehistro sa Signal - Kailangan ng tulong sa PIN para sa Android</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Pagrehistro sa Collie - Kailangan ng tulong sa PIN para sa Android</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">Likhain ang iyong PIN</string>
@@ -2163,7 +2176,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Hindi ka naririnig ng iba</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Naka-mute ang microphone mo habang nasa background ang Signal. Para ayusin ito, i-tap ang Settings at i-enable ang background activity sa \"Battery\" settings.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Naka-mute ang microphone mo habang nasa background ang Collie. Para ayusin ito, i-tap ang Settings at i-enable ang background activity sa \"Battery\" settings.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">Gusto mo bang aprubahan ang %1$d request?</item>
@@ -2671,7 +2684,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">Walang nakitang resulta para sa \'%1$s\'</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">I-send via Signal</string>
+    <string name="StickerManagement_menu_send_signal_pack">I-send via Collie</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Link</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2909,8 +2922,6 @@
     <string name="KeyCachingService_lock">I-lock ang Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">Hindi na available ang media.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Hindi ma-play ang media.</string>
@@ -2920,7 +2931,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Media Error</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Nagka-error sa Pag-delete ng Message, Maaaring Narito Pa Ito</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">I-share</string>
 
     <!-- MessageNotifier -->
@@ -3156,7 +3166,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Mag-register ulit ng device</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Ang device na ito ay hindi na naka-link. I-link ulit ang Signal sa phone mo para ituloy ang pag-message.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Ang device na ito ay hindi na naka-link. I-link ulit ang Collie sa phone mo para ituloy ang pag-message.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">I-link ulit ang device</string>
 
@@ -3165,7 +3175,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">I-update ang Signal app para patuloy na magamit ang payments. Maaaring hindi updated ang balance mo.</string>
+    <string name="EnclaveFailureReminder_update_signal">I-update ang Collie app para patuloy na magamit ang payments. Maaaring hindi updated ang balance mo.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Answered on a linked device.</string>
@@ -3489,18 +3499,6 @@
     <string name="EditProfileFragment__group_name">Pangalan ng grupo</string>
     <string name="EditProfileFragment__group_description">Group description</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">I-update ang Collie</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Expired na itong version ng Collie. Mag-update na para patuloy na magamit ang Collie.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">I-update</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Hindi registered ang device</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Hindi na registered ang device na ito. Mag-register ulit para gumawa ng changes sa account mo.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Mag-register ulit</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">I-save</string>
@@ -3623,7 +3621,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Pangsuportang impormasyon</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Android na pangsuportang hiling</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Android na pangsuportang hiling</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Hindi mai-upload ang mga log</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Pakiusap na hangga\'t maaari ay ipaliwanag ng mabuti upang matulungan kaming maunawaan ang isyu.</string>
@@ -3679,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Maaaring i-scan ang Collie content mo ng AI assistant apps gaya ng Gemini. Para mapigilan ito, in-enable ang screen security. Idi-disable rin nito ang screenshots.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Maaaring i-scan ang Signal content mo ng AI assistant apps gaya ng Gemini. Para mapigilan ito, in-enable ang screen security. Idi-disable rin nito ang screenshots.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Naka-enable ang screen security</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3687,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Gusto mo bang i-off ang screen security?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Kapag naka-off ito, papayagan nito ang AI assistants gaya ng Google Gemini na i-scan ang Collie content at gamitin ito para sa features na maaaring hindi private.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Kapag naka-off ito, papayagan nito ang AI assistants gaya ng Google Gemini na i-scan ang Signal content at gamitin ito para sa features na maaaring hindi private.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">I-off</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3695,24 +3693,15 @@
     <string name="preferences__notifications">Mga Notipikasyon</string>
     <string name="preferences__led_color_unknown">Hindi alam</string>
     <string name="preferences__silent">Tahimik</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Pagkapribado</string>
+    <string name="preferences__donate_to_signal">Mag-donate sa Collie</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Stories</string>
     <string name="preferences__payments">Payments</string>
     <string name="preferences__linked_devices">Mga naka-link na device</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Isumite ang debug log</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Unread reminders</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Kung gumagana, susubukin ng Collie na ikutan ang censorship. Huwag paganahin ang feature na ito maliban na lang kung ika\'y nasa lugar na naka-censor ang Collie.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Proxy address</string>
     <string name="preferences_only_use_a_proxy_if">Gumamit lang ng proxy kung hindi ka maka-connect sa Signal gamit ang mobile data o Wi-Fi.</string>
     <string name="preferences_share">Ibahagi</string>
@@ -3726,9 +3715,6 @@
     <string name="preferences_success">Success</string>
     <string name="preferences_failed_to_connect">Failed to connect</string>
     <string name="preferences_enter_proxy_address">I-enter ang proxy address</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Kapag naka-enable ito, susubukan ng Collie na i-verify automatically ang encryption ng 1:1 chats.</string>
 
 
     <!-- Internal only preferences -->
@@ -4109,9 +4095,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Matuto pa</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">Preview ng media</string>
@@ -4280,15 +4263,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Tawagan ako (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">I-resend ang Code (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Pagpaparehistro sa Molly - Verification Code para sa Android</string>
+    <string name="RegistrationActivity_code_support_subject">Pagpaparehistro sa Collie - Verification Code para sa Android</string>
     <string name="RegistrationActivity_incorrect_code">Maling kodigo</string>
     <string name="BackupUtil_never">Hindi kailanman</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Hindi alam</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Piliin kung sinong pwedeng makakita ng phone number mo at kung sinong pwedeng kumontak sa \'yo sa Collie gamit ito.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">Para gamitin ang screen lock, mag-set ng PIN, pattern, o password sa device na ito.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Kailangan mong ilagay ang iyong Lock PIN sa Pagpaparehistro</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">Ang iyong PIN ay may bilang na hindi bababa sa %1$d numero o mga character</string>
     <string name="RegistrationActivity_too_many_attempts">Masyadong maraming pagtatangka</string>
@@ -4321,11 +4300,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Ito ay isang linked device</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Para i-manage ang account settings mo, buksan ang Signal sa iyong primary device.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Para i-manage ang account settings mo, buksan ang Collie sa iyong primary device.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Burahin ang app data</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Aalisin nito ang lahat ng data mula sa Signal app sa device na ito.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Aalisin nito ang lahat ng data mula sa Collie app sa device na ito.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Burahin ang app data?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4827,7 +4806,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">I-edit ang numero</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal Change Number - Need Help with PIN for Android (v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie Change Number - Need Help with PIN for Android (v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">Hindi match ang PINs</string>
@@ -4990,7 +4969,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5302,7 +5280,13 @@
 
     <string name="ImageView__badge">Badge</string>
 
+    <string name="SubscribeFragment__cancel_subscription">I-cancel ang Subscription</string>
+    <string name="SubscribeFragment__confirm_cancellation">Gusto mo bang i-confirm ang Cancellation?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Hindi ka na ulit sisingilin. Matatanggal ang badge mo mula sa profile mo pagkatapos ng iyong billing period.</string>
+    <string name="SubscribeFragment__not_now">Hindi ngayon</string>
+    <string name="SubscribeFragment__confirm">Kumpirmahin</string>
     <string name="SubscribeFragment__update_subscription">I-update ang Subscription</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Cancelled na ang iyong subscription.</string>
     <string name="SubscribeFragment__update_subscription_question">Gusto mo bang i-update ang subscription?</string>
     <string name="SubscribeFragment__update">I-update</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Sisingilin ka ng full amount (%1$s) ng bagong subscription price ngayon. Magre-renew monthly ang iyong subscription.</string>
@@ -5314,38 +5298,66 @@
     <string name="Subscription__expires_s">Mage-expire sa %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Bilang isang independent nonprofit, ang Signal ay committed sa private messaging and calls. Walang ads, walang trackers, at walang surveillance. Mag-donate ngayon para suportahan ang Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Makakakuha ka ng optional badge sa profile mo kapag nag-donate ka</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Misyon namin ang iyong privacy</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Ang Signal ay isang nonprofit.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Maraming salamat sa iyong Support!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Nakakuha ka ng isang donor badge mula sa Signal! I-display ito sa profile mo para maipakita ang iyong suporta.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Pwede ka ring</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">maging isang monthly Sustainer.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">I-display sa Profile</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Gawing featured badge</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Magpatuloy</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Kapag higit sa isa ang iyong badge, pwede kang pumili ng isa na gusto mong i-feature para makita ito ng iba sa profile mo.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Mag-donate sa Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">More</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Suporta ko</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Donation Receipts</string>
+    <string name="ManageDonationsFragment__badges">Badges</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Donor FAQ</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Other ways to give</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Mag-donate para sa kaibigan</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Hindi makumpirma ang donation</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Hindi ma-confirm ang iyong %1$s/month na donation. I-check ang iyong banking app para ma-approve ang iyong iDEAL | Wero payment.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Hindi ma-confirm ang iyong one-time %1$s na donation. I-check ang banking app mo para ma-approve ang iyong iDEAL | Wero payment.</string>
 
+    <string name="Boost__enter_custom_amount">Maglagay ng Custom Amount</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Ang minimum amount na pwede mong i-donate ay %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/month</string>
+    <string name="MySupportPreference__renews_s">Mare-renew sa %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">Processing transaction…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Hindi ma-add ang badge. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">I-contact ang support.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Pending ang payment</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">Pending pa ang iyong bank transfer na may halagang %1$s. Maaaring umabot ng 1 hanggang 14 business days ang pagproseso ng bank transfers.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Matuto pa</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Chine-check ang subscription…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">I-update ang Collie</string>
@@ -5382,9 +5394,11 @@
     <string name="Subscription__get_a_s_badge">Kumuha ng %1$s badge</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Pina-process ang donation…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Umuulit %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5403,8 +5417,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Nagkaproblema sa pag-process ng donation</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Subukan ang iba pang payment method or contact your bank for more information.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Matuto pa</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Nagkaproblema sa pag-process ng donation. %1$s</string>
     <string name="DonationsErrors__your_payment">Hindi ma-process ang iyong donation at hindi ka na-charge. Paki subukan ulit.</string>
     <string name="DonationsErrors__still_processing">Still processing</string>
     <string name="DonationsErrors__couldnt_add_badge">Hindi ma-add ang badge</string>
@@ -5422,6 +5439,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Na-process na ang iyong payment pero hindi maipadala ng Signal ang donation message mo. Paki contact ang support.</string>
     <string name="DonationsErrors__your_badge_could_not">Hindi ma-add ang badge mo sa iyong account, pero baka na-charge ang account mo. Paki contact ang support.</string>
     <string name="DonationsErrors__your_payment_is_still">Pina-process pa ang iyong donation. Maaari itong tumagal nang ilang minuto depende sa connection mo.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Hindi na-cancel ang subscription</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Kailangan ng internet connection ang subscription cancellation.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Hindi suportado ng device mo ang in-app donations, kaya hindi ka makapag-subscribe para makakuha ng badge. Pwede mo pa ring suportahan ang Signal sa pamamagitan ng pag-donate sa aming website.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Network error. I-check ang iyong internet connection at subukan ulit.</string>
     <string name="NetworkFailure__retry">Subukang muli</string>
@@ -5430,6 +5449,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Kailangang i-upgrade ng user na ito ang kanyang Signal app bago siya makatanggap ng donation.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Hindi maproseso ang iyong iDEAL | Wero donation. Subukan ang ibang payment method o tawagan ang iyong bangko para sa karagdagang impormasyon.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Donation sa pangalan ni %1$s</string>
@@ -5627,12 +5647,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">On until %1$s</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Failed to open picker.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Para i-enable ang notifications, kailangan ng Collie ang iyong pahintulot para i-display ito.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">I-on</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ito ang opisyal at natatanging chat mula sa Signal</string>
@@ -5640,19 +5654,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Maging updated sa mga balita at release notes</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">All activity</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Lahat</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Recurring</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">One-time</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Para sa kaibigan</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Donation para sa kaibigan</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Donation type</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Date paid</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Share receipt</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Kung ni-reinstall mo ang Collie app, hindi na available ang receipts mula sa previous donations.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Donation receipt</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Amount</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Maraming salamat sa pagsuporta sa Signal. Nakatutulong ang contribution mo para maipagpatuloy ang aming mission na protektahan ang free expression at magbigay ng secure global communication sa milyun-milyong tao sa buong mundo, sa pamamagitan ng open source privacy technology. Kung isa kang residente ng Estados Unidos, ingatan ang receipt na ito para sa tax records mo. Ang Signal Technology Foundation ay isang tax-exempt nonprofit organization sa Estados Unidos sa ilalim ng section 501c3 ng Internal Revenue Code. Ang aming Federal Tax ID ay 82-4506840. Hindi nagbigay ng anumang produkto o serbisyo ang Signal kapalit ng contribution na ito.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Walang receipts</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6291,17 +6319,27 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Proudly Nonprofit</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Magpatuloy</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Mag-donate para suportahan ang private messaging. Panatilihing malaya at ad-free ang Signal.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">May pending donation ka</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Maaaring umabot ng 1 hanggang 14 business days ang pagproseso ng bank transfers. Hintaying matapos ang payment na ito bago gumawa ng panibagong donation.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Maaaring umabot ng 1 hanggang 14 business days ang pagproseso ng bank transfers. Hintaying matapos ang payment na ito bago gumawa ng panibagong donation.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Pina-process pa ang iyong donation. Maaari itong tumagal nang ilang minuto depende sa connection mo. Hintaying makumpleto ang payment bago mag-update ng iyong subscription.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Pina-process pa ang iyong donation. Maaari itong tumagal nang ilang minuto depende sa connection mo. Hintaying makumpleto ang payment na ito bago gumawa ng panibagong donation.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Pinoproseso pa ang iyong iDEAL | Wero donation. I-check ang iyong banking app para ma-approve ang iyong payment bago gumawa ng panibagong donation.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Masyadong mataas ang halaga ng donation</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Pwede kang magpadala nang hanggang %1$s via bank transfer. Subukan ang ibang halaga o ibang payment method.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Monthly</string>
@@ -6310,77 +6348,129 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Mag-donate ng %1$s/month sa Signal</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Kumuha ng %1$s badge</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Mag-donate ng %1$s sa Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Kumuha ng %1$s badge sa loob ng %2$d day</item>
         <item quantity="other">Kumuha ng %1$s badge sa loob ng %2$d days</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Bank transfer</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Credit o debit card</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Mag-donate para sa kaibigan</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Gusto mo bang umalis sa Collie para ma-confirm ang donation?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Kapag na-confirm na ito, bumalik sa Collie para tapusin ang pag-process ng iyong donation.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Mapupunta ka sa %1$s. Kapag na-confirm na ito, bumalik sa Collie para tapusin ang pag-process ng iyong donation.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Bank Transfer</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Pinoproseso ng Stripe ang mga donasyon na binibigay sa Signal. Hindi kinokolekta o itinatago ng Signal ang iyong personal na impormasyon. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Matuto pa</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Agree</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Magbasa pa</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Failed ang pag-load ng request</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Ilagay ang iyong bank details at email. Gagamitin ng Stripe ang email na ito para padalhan ka ng updates tungkol sa donation mo. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Matuto pa</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Pangalan sa bank account</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">email</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Hanapin ang iyong account info</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Mag-donate ng %1$s/buwan</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">Mag-donate %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">Masyadong maikli ang IBAN</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">Masyadong mahaba ang IBAN</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Hindi suportado ang IBAN country code</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">Invalid ang IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimum 3 characters</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Invalid email address</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Ilagay ang pangalan at email mo. Gagamitin ng Stripe ang email na ito para padalhan ka ng updates tungkol sa donation mo. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Ilagay ang iyong bank details. Hindi kinokolekta o itinatago ng Signal ang iyong personal na impormasyon. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Matuto pa</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Pangalan sa bank account</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">I-confirm ang donation mo sa iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Para i-setup ang iyong recurring na donasyon, i-tap ang continue para kumpirmahin ang €0.01 na charge sa bangkong ginamit mo. Automatic itong mare-refund at ang iyong %1$s/buwan na donasyon ay ibabawas sa account mo.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Magpatuloy</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Hanapin ang iyong account information</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Hanapin ang iyong IBAN sa itaas ng iyong bank statement. Naglalaman ang IBAN ng hanggang 34 characters. Magkapareho dapat ang pangalang inilagay mo at ang buong pangalan mo sa iyong bank account. Tawagan ang iyong bangko para sa karagdagang impormasyon.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Pending ang donation</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Pending ang iyong one-time donation. Pwede mong i-display ang %1$s badge sa profile mo kapag natanggap na namin ang donation mo.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Pending ang iyong one-time donation. Pwede mong i-display ang %1$s badge sa profile mo kapag natanggap na namin ang donation mo.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Maaaring umabot ng 1 hanggang 14 business days ang pagproseso ng bank transfers. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Matuto pa</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Done</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Hindi ma-process ang donation mo</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Nagkaroon kami ng problema sa pag-process ng iyong bank transfer. Hindi ka na-charge dito. Subukan ang iba pang payment method o tawagan ang iyong bangko para sa karagdagang impormasyon.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Subukang muli</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Hindi na muna</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Kumpleto na ang Donation</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Natanggap na namin ang iyong bank transfer. Pwede mo nang i-display ang badge na ito sa iyong profile para ipakita ang suporta mo.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">Kina-cancel…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Masyado nang marami ang na-process na contacts</string>
@@ -6412,6 +6502,11 @@
     <string name="PaymentMessageView_s_sent_you">Nag-send sa \'yo si %1$s</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Pribado ang iyong impormasyon</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Hindi kinokolekta o itinatago ng Signal ang iyong personal na impormasyon kapag nagbigay ka ng donasyon.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Ginagamit namin ang Stripe bilang payment processor para matanggap ang inyong mga donasyon. Wala kaming access at hindi namin kinokolekta o itinatago ang anumang impormasyon na ibinibigay mo sa kanila.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Hindi naka-connect sa Signal account mo ang iyong donasyon.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Maraming salamat sa iyong suporta!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6426,6 +6521,8 @@
     <string name="GroupStoryEducationSheet__next">Susunod</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Mag-donate</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Payment</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6643,7 +6740,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Mag-require ng admin approval</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">I-share ang link via Signal</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">I-share ang link via Collie</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Kopyahin ang link</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6794,9 +6891,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Ready ka na. Simulan na ang pag-backup.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Maaari itong magtagal. Maaari mong gamitin ang Signal nang normal habang nagba-back up.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Maaari itong magtagal. Maaari mong gamitin ang Collie nang normal habang nagba-back up.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">I-optimize ang Signal storage</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">I-optimize ang Collie storage</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">I-o-offload ang lumang media, pero pwede mo pa rin itong ma-download anumang oras mula sa backup mo.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6814,7 +6911,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Para mag-restore ng backup, mag-install ng bagong kopya ng Collie. Buksan ang app at i-tap ang Restore backup, pagkatapos ay maghanap ng backup file."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Naka-on ang \"I-optimize ang Signal storage\". Kung gusto mong isama ang lahat ng media sa iyong on-device backup, i-off ang setting.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Naka-on ang \"I-optimize ang Collie storage\". Kung gusto mong isama ang lahat ng media sa iyong on-device backup, i-off ang setting.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Tingnan ang setting</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6873,10 +6970,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s I-allow ang full screen notifications</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Na-cancel ang monthly donation</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Na-cancel ang iyong monthly donation. %1$s\n\nHindi na magiging visible sa profile mo ang iyong badge. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Matuto pa</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">I-renew ang subscription</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Hindi na muna</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6898,7 +7000,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Invalid phone number</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Imbitahan sa Signal</string>
+    <string name="FindByActivity__invite_to_signal">Imbitahan sa Collie</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">Hindi nahanap ang username</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7036,7 +7138,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Hindi ma-redeem ang backups subscription mo</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Nagkaroon ng error at hindi natapos ang pag-backup. Siguraduhing gamit mo ang latest version ng Signal at subukan ulit. Kung magpatuloy ang problema, kontakin ang support.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Nagkaroon ng error at hindi natapos ang pag-backup. Siguraduhing gamit mo ang latest version ng Collie at subukan ulit. Kung magpatuloy ang problema, kontakin ang support.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Nagkaroon ng error at hindi natapos ang pag-backup. Kung magpatuloy ang problema, kontakin ang support.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7118,7 +7220,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Hindi makumpleto ang huling backup mo. Siguraduhing connected sa Wi-Fi ang phone mo at i-tap ang \"Back up now\" para subukan ulit.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Hindi makumpleto ang huling backup mo. Siguraduhing gamit mo ang latest version ng Signal at subukan ulit.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Hindi makumpleto ang huling backup mo. Siguraduhing gamit mo ang latest version ng Collie at subukan ulit.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Lagpas sa storage limit mo ang bilang ng messages na mayroon ka. Burahin ang ibang messages at subukan ulit.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7144,6 +7246,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7170,34 +7273,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Matuto pa</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Hindi ka makapag-subscribe sa Signal Secure backups dahil hindi sinusuportahan ng phone mo ang Google Play services. Kontakin ang phone manufacturer para makakuha ng tulong.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Chat limits</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Burahin ang message history</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Ang messages na mas luma sa napiling haba ng panahon ay permanenteng mabubura.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Ang messages na mas luma sa napiling haba ng panahon ay permanenteng mabubura.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">I-apply ang limits sa linked devices</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Kapag naka-enable ito, buburahin din ng chat limits ang messages mula sa iyong linked devices.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collie storage</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">I-optimize ang Collie storage</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">I-o-offload o buburahin ang unused media sa device mo, ngunit maaari mo pa rin itong ma-download anumang oras mula sa backup mo.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Magagamit lamang ang storage optimization sa paid tier ng Signal Secure Backups. Pinoproseso pa ang backups subscription mo at hindi pa ito active. Subukan ulit mamaya.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Ang media ay tatanggalin mula sa on-device backup mo</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Sa pag-on ng \"I-optimize ang Signal storage\", mao-offload ang lumang media mula sa device mo. Maaari mo itong i-download ulit anumang oras. Tatanggalin din nito ang lumang media mula sa on-device backup mo.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">I-on</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7585,7 +7660,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Papalitan ng key na ito ang key sa on-device backup mo.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Ang recovery key mo ay isang 64-character code na magagamit mo sa pag-restore ng iyong backups kapag nag-install ka ulit ng Signal.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Ang recovery key mo ay isang 64-character code na magagamit mo sa pag-restore ng iyong backups kapag nag-install ka ulit ng Collie.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Kapareho ito ng on-device recovery key mo.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7623,7 +7698,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Wala ka pang naka-set up na password manager, o hindi suportado ang password manager na ginagamit mo ngayon.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Pinili mo dati na huwag i-save ang passwords para sa Signal sa Google Password Manager. Sa iyong Google Password Manager settings, alisin ang Signal sa \"Declined sites and apps\" at subukan ulit.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Pinili mo dati na huwag i-save ang passwords para sa Collie sa Google Password Manager. Sa iyong Google Password Manager settings, alisin ang Collie sa \"Declined sites and apps\" at subukan ulit.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Pumunta sa settings</string>
     <!-- Action button label -->
@@ -7770,7 +7845,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">May network error sa pag-restore ng Signal Android Backup</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">May network error sa pag-restore ng Collie Android Backup</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7800,7 +7875,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Ipagpatuloy ang paglipat ng account mo sa ibang device mo.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Ang device kung saan ka magta-transfer ay out of date. I-update ang Signal sa device na ito at subukan ulit.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Ang device kung saan ka magta-transfer ay out of date. I-update ang Collie sa device na ito at subukan ulit.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Hinahanda ang device mo</string>
@@ -7845,6 +7920,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Mag-donate</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7877,7 +7953,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">Puno ang backup storage</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Naabot mo na ang backup storage limit mo. Mag-free up ng space sa Signal para magpatuloy sa pag-back up ng chats at media.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Naabot mo na ang backup storage limit mo. Mag-free up ng space sa Collie para magpatuloy sa pag-back up ng chats at media.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Backup failed</string>
     <!-- Notification body for when initial backup failed -->
@@ -8327,7 +8403,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Kopyahin</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Imbitahan sa Signal</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Imbitahan sa Collie</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">I-add sa phone contacts</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8339,20 +8415,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Hindi mabuksan ang maps</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Samahan ako sa Signal</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Samahan ako sa Collie</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">I-reset ang recovery key mo</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">Kapag ni-reset mo ang iyong recovery key, magkakaroon ka ng bagong key para sa Signal Login mo. Kailangan lamang ito kapag may ibang nakaalam ng key mo.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Kapag naka-enable ang backups mo, kailangan mong i-upload ulit ang iyong backup, kasama ang media. Kung ginagamit mo ang \"I-optimize ang Signal storage\", kailangan mo munang i-download ang offloaded media.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Kapag naka-enable ang backups mo, kailangan mong i-upload ulit ang iyong backup, kasama ang media. Kung ginagamit mo ang \"I-optimize ang Collie storage\", kailangan mo munang i-download ang offloaded media.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Magpatuloy</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Naubos mo na ang bilang ng bagong keys na maaari mong gawin. Maaari kang gumawa ng bagong recovery key pagkatapos ng 7 araw.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Burahin para sa akin</string>
 
     <!-- EOF -->
 </resources>

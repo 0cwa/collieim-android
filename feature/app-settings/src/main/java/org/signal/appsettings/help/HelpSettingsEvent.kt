@@ -10,10 +10,8 @@ package org.signal.appsettings.help
  */
 sealed interface HelpSettingsEvent {
 
+  /** The user tapped Molly's website row. */
   data object WebsiteClicked : HelpSettingsEvent
-  data object VersionClicked : HelpSettingsEvent
-  data class LogEnabledChanged(val enabled: Boolean) : HelpSettingsEvent
-  data class LogEnabledSaved(val enabled: Boolean) : HelpSettingsEvent
 
   /** The user tapped the navigation (back) icon. */
   data object NavigateBackClicked : HelpSettingsEvent
@@ -24,11 +22,20 @@ sealed interface HelpSettingsEvent {
   /** The user tapped the contact us row. */
   data object ContactUsClicked : HelpSettingsEvent
 
+  /** The user tapped the version row (or the app updates row) to open app update settings. */
+  data object VersionClicked : HelpSettingsEvent
+
   /** The user tapped the What's new row. */
   data object WhatsNewClicked : HelpSettingsEvent
 
   /** The user long-pressed the version row. */
   data object VersionLongClicked : HelpSettingsEvent
+
+  /** The user changed Molly's debug-logging preference. */
+  data class DebugLoggingChanged(val enabled: Boolean) : HelpSettingsEvent
+
+  /** The user confirmed disabling logging and deleting the existing log. */
+  data object DisableDebugLoggingConfirmed : HelpSettingsEvent
 
   /** The user tapped the debug log row. */
   data object DebugLogClicked : HelpSettingsEvent

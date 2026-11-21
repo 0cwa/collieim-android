@@ -6,7 +6,6 @@
 package org.signal.network.config
 
 import org.signal.core.util.logging.Log
-import org.signal.libsignal.net.Network
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.ProxySelector
@@ -19,19 +18,24 @@ sealed interface ProxyConfig {
     val scheme: ProxyScheme,
     val host: String,
     val port: Int,
-    val source: ProxySource = ProxySource.SYSTEM
+    val source: ProxySource,
   ) : ProxyConfig
 
-  /** Supported proxy schemes by [Network]. */
+  /** Supported proxy schemes by libsignal-net. */
   enum class ProxyScheme(val value: String) {
-    TLS(Network.SIGNAL_TLS_PROXY_SCHEME),
     SOCKS("socks5"),
+
+    /**
+     * MOLLY: SOCKS with remote DNS resolution. A user-configured proxy is always resolved remotely so that
+     * hostnames are never handed to the local resolver (and never leak outside the proxy).
+     */
     SOCKS_REMOTE_DNS("socks5h"),
     HTTP("http")
   }
 
   enum class ProxySource {
-    USER, SYSTEM
+    USER,
+    SYSTEM
   }
 
   companion object {
@@ -40,15 +44,19 @@ sealed interface ProxyConfig {
     @JvmStatic
     @JvmOverloads
     fun resolve(
+      userProxy: Proxy,
       configuration: SignalServiceConfiguration,
       targetUrl: String,
-      proxySelector: ProxySelector? = ProxySelector.getDefault(),
-      userProxy: Proxy? = null
+      proxySelector: ProxySelector? = ProxySelector.getDefault()
     ): ProxyConfig {
+      // MOLLY: userProxy is resolved first and authoritatively.
+      if (userProxy != Proxy.NO_PROXY) {
+        return fromProxy(userProxy, ProxySource.USER)!!
+      }
+
       return when {
-        userProxy != null && userProxy != Proxy.NO_PROXY -> checkNotNull(fromProxy(userProxy, ProxySource.USER))
         configuration.censored -> Direct
-        else -> resolveSystemProxy(targetUrl, proxySelector)?.let { fromSystemProxy(it) } ?: Direct
+        else -> resolveSystemProxy(targetUrl, proxySelector)?.let { fromProxy(it, ProxySource.SYSTEM) } ?: Direct
       }
     }
 
@@ -66,34 +74,22 @@ sealed interface ProxyConfig {
       }
     }
 
-    @JvmStatic
-    fun fromProxy(proxy: Proxy, source: ProxySource): ProxyConfig? {
+    private fun fromProxy(proxy: Proxy, source: ProxySource): ProxyConfig? {
       val scheme = when (proxy.type()) {
         Proxy.Type.HTTP -> ProxyScheme.HTTP
-        Proxy.Type.SOCKS -> if (source == ProxySource.USER) ProxyScheme.SOCKS_REMOTE_DNS else ProxyScheme.SOCKS
+        Proxy.Type.SOCKS -> when (source) {
+          ProxySource.USER -> ProxyScheme.SOCKS_REMOTE_DNS
+          ProxySource.SYSTEM -> ProxyScheme.SOCKS
+        }
+
         Proxy.Type.DIRECT -> return null
       }
 
       val socketAddress = proxy.address() as? InetSocketAddress ?: return null
 
+      // MOLLY: Loopback addresses are allowed: a user's proxy often runs locally.
+
       return ProxyAddress(scheme, socketAddress.hostString, socketAddress.port, source)
-    }
-
-    private fun fromSystemProxy(proxy: Proxy): ProxyConfig? {
-      // The generic system resolver skips Android's PAC bridge. Molly's explicit proxy resolver uses fromProxy
-      // directly so an existing local SOCKS/HTTP configuration continues to work.
-      if ((proxy.address() as? InetSocketAddress)?.isLoopback() == true) {
-        return null
-      }
-      return fromProxy(proxy, ProxySource.SYSTEM)
-    }
-
-    /** [ProxySelector] returns unresolved addresses, so [InetSocketAddress.getAddress] is normally null and only the host string is available. */
-    private fun InetSocketAddress.isLoopback(): Boolean {
-      address?.let { return it.isLoopbackAddress }
-
-      val host = hostString.removeSurrounding("[", "]")
-      return host.equals("localhost", ignoreCase = true) || host.startsWith("127.") || host == "::1" || host == "0:0:0:0:0:0:0:1"
     }
   }
 }

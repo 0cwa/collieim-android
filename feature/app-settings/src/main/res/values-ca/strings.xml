@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Torna a registrar el compte</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Actualitza el Signal</string>
+    <string name="preferences_account_update_signal">Actualitza el Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Suprimeix totes les dades</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Generant informe…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">El teu informe només es genera en el moment de l\'exportació i Signal no l\'emmagatzema al teu dispositiu.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">El teu informe només es genera en el moment de l\'exportació i Collie no l\'emmagatzema al teu dispositiu.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Encara no heu establert cap contrasenya.</string>
     <string name="ApplicationPreferencesActivity_disable">Desactiva</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Voleu desactivar la contrasenya?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">El Signal i les notificacions es desblocaran permanentment.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">El Collie i les notificacions es desblocaran permanentment.</string>
     <string name="PrivacySettingsFragment__app_security">Seguretat de l\'aplicació</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Bloqueja les captures de pantalla a les llistes de recents i dins de l\'aplicació</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Aquesta opció de configuració no és una garantia i és possible que el teclat l’ignori.</string>
     <string name="preferences__typing_indicators">Indicadors de tecleig</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Tria qui pot veure el teu número de telèfon i qui pot contactar-te a Signal a través d\'ell.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Tria qui pot veure el teu número de telèfon i qui pot contactar-te a Collie a través d\'ell.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Pagaments</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Ara no</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Més informació</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">No s\'ha pogut activar la teva subscripció a les còpies de seguretat</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Fer una donació a Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Preferències internes</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Els canvis que hi facis i el teu perfil, seran visibles per la gent a la qual enviïs un missatge, els teus contactes i els teus grups.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Actualitza el Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Actualitza el Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Aquesta versió de Signal ha caducat. Actualitza-la ara per continuar utilitzant Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Aquesta versió de Collie ha caducat. Actualitza-la ara per continuar utilitzant Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Actualitza-la</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Tanca</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Aconsegueix insígnies per al perfil donant suport a Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">El Signal és una organització sense ànim de lucre sense anunciants ni inversors, amb el suport només de persones com vós.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Converteix-te en donant</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,19 +1014,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">No s\'ha pogut trobar aquest usuari.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Per escanejar un codi QR, permet que Signal accedeixi a la càmera.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Per escanejar un codi QR, permet que Collie accedeixi a la càmera.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Permet l\'accés</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal necessita accedir a la càmera per escanejar codis QR</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie necessita accedir a la càmera per escanejar codis QR</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Emmagatzematge</string>
     <string name="preferences_storage__storage_usage">Ús de l\'emmagatzematge</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Emmagatzematge de Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Emmagatzematge de Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimitzar l\'emmagatzematge de Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimitzar l\'emmagatzematge de Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Els arxius multimèdia no utilitzats es descarregaran, però es poden baixar de la còpia de seguretat en qualsevol moment.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1048,7 +1052,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">S\'eliminaran els arxius multimèdia de la teva còpia de seguretat local</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Si actives l\'opció \"Optimitzar l\'emmagatzematge de Signal\", s\'eliminaran els arxius multimèdia antics del teu dispositiu. Podràs tornar-los a descarregar quan vulguis. També s\'eliminaran els arxius multimèdia antics de la teva còpia de seguretat local.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Si actives l\'opció \"Optimitzar l\'emmagatzematge de Collie\", s\'eliminaran els arxius multimèdia antics del teu dispositiu. Podràs tornar-los a descarregar quan vulguis. També s\'eliminaran els arxius multimèdia antics de la teva còpia de seguretat local.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Activar</string>
 
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Ha fallat obrir el selector.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Per activar les notificacions, Signal necessita permís per mostrar-les.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Per activar les notificacions, Collie necessita permís per mostrar-les.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Activar</string>
     <string name="NotificationsSettingsFragment__calls">Trucades</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Elusió de la censura</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Elusió de la censura</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">En activar-ho, el Signal provarà d\'eludir la censura. No activeu aquesta característica si no sou a una ubicació on el Signal és censurat.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">En activar-ho, el Collie provarà d\'eludir la censura. No activeu aquesta característica si no sou a una ubicació on el Collie és censurat.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">L\'elusió de la censura s\'ha activat basant-se en el número de telèfon del vostre compte.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Verificació automàtica de clau</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Quan aquesta opció està habilitada, Signal intentarà verificar automàticament l\'encriptació dels xats individuals.</string>
+    <string name="preferences_automatic_key_verification_body">Quan aquesta opció està habilitada, Collie intentarà verificar automàticament l\'encriptació dels xats individuals.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

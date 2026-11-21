@@ -7,6 +7,7 @@ package org.signal.passwordmanager
 
 import android.content.Context
 import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.UiContext
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CreatePublicKeyCredentialResponse
@@ -74,7 +75,11 @@ object SignalPasskeyManager {
    * Molly uses the platform's passkey providers, available from API 34. It does not bundle the Play Services
    * credential bridge used on older Android versions. A capable device may still need its provider configured.
    */
-  fun isSupported(context: Context): Boolean = Build.VERSION.SDK_INT >= 34
+  @ChecksSdkIntAtLeast(api = 34)
+  fun isSupported(context: Context): Boolean {
+    // MOLLY: core-gms implements no Credential Manager transport, so below API 34 is unsupported.
+    return Build.VERSION.SDK_INT >= 34
+  }
 
   /**
    * Asks the user's passkey provider to create a credential for the account, returning the two pieces the service needs

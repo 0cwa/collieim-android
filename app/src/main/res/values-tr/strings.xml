@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie güncelleniyor…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Henüz bir parola belirlemediniz!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">Parolayı devre dışı bırak?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Bu işlem Collie ve ileti bildirimlerinin kilidini kalıcı olarak açacaktır.</string>
-    <string name="ApplicationPreferencesActivity_disable">Devre dışı bırak</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Sunucuya bağlanırken hata!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Kredi veya banka kartı</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Kart bilgilerini gir. Signal, kişisel bilgilerini toplamaz veya saklamaz.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Kart numarası</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">AA/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Geçersiz kart numarası</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">Kartın süresi doldu</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">Kod çok kısa</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">Kod çok uzun</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Geçersiz kod</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Geçersiz ay</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Yıl bilgisi gerekli</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Geçersiz yıl</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">%1$s bağış yap</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Ayda %1$s bağış yap</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Ayda %1$s bağış yap</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">Tek seferlik %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Bağış bekleniyor</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Bağış işleniyor</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$s grubundan ayrıl ve engelle?</string>
@@ -346,7 +358,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s bu mesajı sildi</string>
     <string name="ConversationItem_you_deleted_this_message">Bu mesajı sildin</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Yönetici %1$s bu mesajı sildi</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -451,7 +462,7 @@
     <string name="ConversationActivity_error_sending_media">İçerik gönderilemedi</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">SMS ile mesajlaşma artık Signal\'da desteklenmemektedir.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">SMS ile mesajlaşma artık Collie\'da desteklenmemektedir.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS ile mesajlaşma artık Signal\'da desteklenmemektedir. Sohbete burada devam etmek için %1$s adlı kişiyi Signal\'a davet et.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -501,6 +512,8 @@
     <string name="ConversationFragment_deleting_messages">İletiler siliniyor…</string>
     <string name="ConversationFragment_delete_for_me">Benden sil</string>
     <string name="ConversationFragment_delete_for_everyone">Herkesten sil</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Benden silindi</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Seçilen iletileri sil?</item>
@@ -1095,7 +1108,7 @@
     <string name="ExpiredBuildReminder_update_now">Şimdi güncelle</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Signal artık bu cihazda çalışmıyor. Signal\'ı tekrar kullanmak için cihazını daha yeni bir Android sürümüyle güncelle veya daha yeni bir cihaza geç.</string>
+    <string name="DeprecatedSdkBanner_body">Collie artık bu cihazda çalışmıyor. Collie\'ı tekrar kullanmak için cihazını daha yeni bir Android sürümüyle güncelle veya daha yeni bir cihaza geç.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Collie\'i Güncelle</string>
@@ -1443,9 +1456,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Grup bağlantılarını kullanabilmek için Signal\'i güncelleyin</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Kullandığınız bu Signal sürümü bu grup bağlantısını desteklemiyor. Bu gruba bağlantı aracılığıyla katılmak için son sürüme güncelleyin.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signal\'i Güncelle</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Grup bağlantılarını kullanabilmek için Collie\'i güncelleyin</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Kullandığınız bu Collie sürümü bu grup bağlantısını desteklemiyor. Bu gruba bağlantı aracılığıyla katılmak için son sürüme güncelleyin.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Collie\'i Güncelle</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Grup bağlantısı geçersiz</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2071,7 +2084,7 @@
         <item quantity="one">%1$d deneme hakkınız kaldı. Eğer hakkınız biterse, yeni bir tane oluşturabilirsiniz. Hesabınızı kaydedebilir ve kullanabilirsiniz, ancak profil bilgileriniz gibi kaydedilmiş bazı ayarları kaybedersiniz.</item>
         <item quantity="other">%1$d deneme hakkınız kaldı. Eğer hakkınız biterse, yeni bir tane oluşturabilirsiniz. Hesabınızı kaydedebilir ve kullanabilirsiniz, ancak profil bilgileriniz gibi kaydedilmiş bazı ayarları kaybedersiniz.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal Kaydı - Android için PIN ile ilgili Yardıma İhtiyacınız Var mı</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie Kaydı - Android için PIN ile ilgili Yardıma İhtiyacınız Var mı</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">PIN\'inizi oluşturun</string>
@@ -2163,7 +2176,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Başkaları seni duyamadı</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Signal arka plandayken mikrofonun sessizdeydi. Bunu düzeltmek için Ayarlar\'a dokun ve \"Batarya\" ayarlarından arka plan faaliyetini etkinleştir.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Collie arka plandayken mikrofonun sessizdeydi. Bunu düzeltmek için Ayarlar\'a dokun ve \"Batarya\" ayarlarından arka plan faaliyetini etkinleştir.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">%1$d istek onaylansın mı?</item>
@@ -2671,7 +2684,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">\'%1$s\' için hiç sonuç bulunamadı.</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Signal ile gönder</string>
+    <string name="StickerManagement_menu_send_signal_pack">Collie ile gönder</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Bağlantı</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2909,8 +2922,6 @@
     <string name="KeyCachingService_lock">Collie\'i Kilitle</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">İçerik artık mevcut değil.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Medya oynatılamıyor.</string>
@@ -2920,7 +2931,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Medya Hatası</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Mesaj Silinirken Hata Oluştu, Mesaj Hâlâ Silinmemiş Olabilir</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">Paylaş</string>
 
     <!-- MessageNotifier -->
@@ -3156,7 +3166,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Cihazı Tekrar Kaydet</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Bu cihaz artık bağlı değil. Mesajlaşmaya devam etmek için Signal\'ı telefonunla yeniden bağla.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Bu cihaz artık bağlı değil. Mesajlaşmaya devam etmek için Collie\'ı telefonunla yeniden bağla.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">Cihazı yeniden bağla</string>
 
@@ -3165,7 +3175,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">Ödemeleri kullanmaya devam etmek için Signal\'ı güncelle. Bakiyen güncel olmayabilir.</string>
+    <string name="EnclaveFailureReminder_update_signal">Ödemeleri kullanmaya devam etmek için Collie\'ı güncelle. Bakiyen güncel olmayabilir.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Bağlı cihazdan yanıtlandı.</string>
@@ -3489,18 +3499,6 @@
     <string name="EditProfileFragment__group_name">Grup adı</string>
     <string name="EditProfileFragment__group_description">Grup tanımı</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Collie\'i Güncelle</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Collie\'in bu sürümü kullanım dışı kaldı. Collie\'i kullanmaya devam etmek için şimdi güncelle.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">Güncelle</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Cihaz kayıtlı değil</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Bu cihaz artık kayıtlı değil. Hesabında değişiklik yapmak için yeniden kaydol.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Tekrar kaydet</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Kaydet</string>
@@ -3623,7 +3621,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Destek Bilgisi</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Android Destek İsteği</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Android Destek İsteği</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Günlükler karşıya yüklenemedi</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Lütfen sorunu anlamamıza yardımcı olabilecek şekilde açıklayın.</string>
@@ -3695,24 +3693,15 @@
     <string name="preferences__notifications">Bildirimler</string>
     <string name="preferences__led_color_unknown">Bilinmeyen</string>
     <string name="preferences__silent">Sessiz</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Gizlilik</string>
+    <string name="preferences__donate_to_signal">Collie\'e Bağış Yap</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Hikayeler</string>
     <string name="preferences__payments">Ödemeler</string>
     <string name="preferences__linked_devices">Bağlı cihazlar</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Hata ayıklama günlüğünü gönder</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Okunmamış hatırlatmalar</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Etkinleştirildiğinde, Collie sansürü atlatmaya çalışacaktır. Collie\'in sansürlendiği bir konumda olmadığınız sürece bu özelliği etkinleştirmeyin.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Vekil adres</string>
     <string name="preferences_only_use_a_proxy_if">Vekil sunucuyu yalnızca mobil veri veya kablosuz üzerinden Signal\'e bağlanamıyorsanız kullanın.</string>
     <string name="preferences_share">Paylaş</string>
@@ -3726,9 +3715,6 @@
     <string name="preferences_success">Başarılı</string>
     <string name="preferences_failed_to_connect">Bağlanılamadı</string>
     <string name="preferences_enter_proxy_address">Vekil sunucu adresi girin</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Etkinleştirildiğinde, Collie bire bir sohbetlerin şifrelemesini otomatik olarak doğrulamaya çalışacaktır.</string>
 
 
     <!-- Internal only preferences -->
@@ -4109,9 +4095,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Daha fazlasını öğren</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">İçerik önizlemesi</string>
@@ -4280,15 +4263,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Beni ara (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Kodu Yeniden Gönder (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Molly Kaydı - Android için Doğrulama Kodu</string>
+    <string name="RegistrationActivity_code_support_subject">Collie Kaydı - Android için Doğrulama Kodu</string>
     <string name="RegistrationActivity_incorrect_code">Geçersiz kod</string>
     <string name="BackupUtil_never">Asla</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Bilinmiyor</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Telefon numaranı kimlerin görebileceğini ve seninle kimlerin Collie üzerinden iletişim kurabileceğini seç.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">Ekran kilidi kullanmak için bu cihazda bir PIN, desen veya parola ayarla.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Kaydolma Kilidi PIN\'inizi girmek zorundasınız</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">PIN\'iniz en az %1$d haneli veya karakterli</string>
     <string name="RegistrationActivity_too_many_attempts">Çok fazla deneme yapıldı</string>
@@ -4321,11 +4300,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Bu bir bağlı cihazdır</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Hesap ayarlarını yönetmek için ana cihazında Signal\'ı aç.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Hesap ayarlarını yönetmek için ana cihazında Collie\'ı aç.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Uygulama verilerini sil</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Bu işlem, tüm verileri bu cihazdaki Signal uygulamasından kaldıracaktır.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Bu işlem, tüm verileri bu cihazdaki Collie uygulamasından kaldıracaktır.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Uygulama verileri silinsin mi?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4827,7 +4806,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">Numarayı düzenle</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal Numara Değiştir - Android için PIN (v2 PIN) ile ilgili Yardıma mı İhtiyacınız Var</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie Numara Değiştir - Android için PIN (v2 PIN) ile ilgili Yardıma mı İhtiyacınız Var</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PIN\'ler eşleşmiyor</string>
@@ -4990,7 +4969,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5302,7 +5280,13 @@
 
     <string name="ImageView__badge">Rozet</string>
 
+    <string name="SubscribeFragment__cancel_subscription">Aboneliği iptal et</string>
+    <string name="SubscribeFragment__confirm_cancellation">İptal edilsin mi?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Bir daha faturalandırılmayacaksın. Rozetin fatura döneminin sonunda profilinden kaldırılacaktır.</string>
+    <string name="SubscribeFragment__not_now">Şimdi değil</string>
+    <string name="SubscribeFragment__confirm">Onayla</string>
     <string name="SubscribeFragment__update_subscription">Aboneliği Güncelle</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Aboneliğin iptal edildi.</string>
     <string name="SubscribeFragment__update_subscription_question">Abonelik güncellensin mi?</string>
     <string name="SubscribeFragment__update">Güncelle</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Bugün yeni abonelik ücretinin tam tutarıyla (%1$s) ücretlendirileceksin. Aboneliğin aylık olarak yenilenecek.</string>
@@ -5314,38 +5298,66 @@
     <string name="Subscription__expires_s">%1$s tarihinde sona eriyor</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Kâr amacı gütmeyen, bağımsız bir kuruluş olarak Signal özel mesajlaşma ve aramalara önem verir. Reklam yok, takip yok, gözetleme yok. Signal\'ı desteklemek için bugün bağış yap.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Bağış yaptığında profilinde isteğe bağlı bir rozet al</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Gizliliğin görevimizdir</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal kâr amacı gütmeyen bir kuruluştur.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Desteğiniz için teşekkürler!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Signal\'den bir bağışçı rozeti kazandın! Desteğini göstermek için rozeti profilinde sergile.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Aynı zamanda</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">aylık bir Destekçi ol.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Profilde Göster</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Öne çıkarılan rozet seç</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Devam Et</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Birden fazla rozetin olduğunda, profilinde başkalarının görmesi için birini seçebilirsin.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Signal\'e Bağış Yap</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">Daha fazla</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Desteğim</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Bağış makbuzları</string>
+    <string name="ManageDonationsFragment__badges">Rozetler</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Bağışçılar için SSS</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Vermenin diğer yolları</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Bir arkadaşın için bağış yap</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Bağış onaylanamadı</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Aylık %1$s tutarındaki bağışın onaylanamadı. iDEAL | Wero ödemeni onaylamak için bankacılık uygulamanı kontrol et.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Tek seferlik %1$s bağışın onaylanamadı. iDEAL | Wero ödemeni onaylamak için bankacılık uygulamanı kontrol et.</string>
 
+    <string name="Boost__enter_custom_amount">Farklı Bir Miktar Gir</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">En az %1$s miktarında bağış yapabilirsin</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/ay</string>
+    <string name="MySupportPreference__renews_s">%1$s tarihinde yenilenir</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">İşlem gerçekleştiriliyor…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Rozet eklenemedi. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">Lütfen destek ekibiyle iletişime geç.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Ödeme bekleniyor</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">%1$s tutarındaki banka transferin beklemede. Banka transferlerinin tamamlanması 1 ila 14 iş günü sürebilir.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Daha fazlasını öğren</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Abonelik kontrol ediliyor…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collie\'i Güncelle</string>
@@ -5382,9 +5394,11 @@
     <string name="Subscription__get_a_s_badge">Bir %1$s rozeti al</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Bağış işleniyor…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Yinelenen %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5403,8 +5417,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Bağış işlenirken hata oluştu</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Başka bir ödeme yöntemi deneyin veya daha fazla bilgi için bankanızla iletişime geçin.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Daha fazlasını öğren</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Bağış işlenirken hata oluştu. %1$s</string>
     <string name="DonationsErrors__your_payment">Bağışın işlenemedi ve ödeme alınmadı. Lütfen tekrar dene.</string>
     <string name="DonationsErrors__still_processing">İşlem sürüyor</string>
     <string name="DonationsErrors__couldnt_add_badge">Rozet eklenemedi</string>
@@ -5422,6 +5439,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Bağışın işleme alındı fakat Signal bağış mesajını gönderemedi. Lütfen destek ekibiyle iletişime geç.</string>
     <string name="DonationsErrors__your_badge_could_not">Rozetin hesabına eklenemedi fakat ücret ödenmiş olabilir. Lütfen destek ekibiyle iletişime geç.</string>
     <string name="DonationsErrors__your_payment_is_still">Bağışın hâlâ işleniyor. Bağlantına bağlı olarak bu birkaç dakika sürebilir.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Abonelik iptal edilemedi</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Abonelik iptali için internet bağlantısı gerekir.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Cihazın uygulama içi bağışları desteklemiyor bu yüzden rozet kazanmak için abone olamazsın. Web sitemiz üzerinden bağış yaparak Signal\'e destek olmaya devam edebilirsin.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Ağ hatası. Bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="NetworkFailure__retry">Tekrar dene</string>
@@ -5430,6 +5449,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Bu kullanıcı, Signal sürümünü yükseltene kadar bağış alamaz.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">iDEAL | Wero bağışın işlenemedi. Başka bir ödeme yöntemi dene veya daha fazla bilgi için bankanla iletişime geç.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s adına bağış</string>
@@ -5627,12 +5647,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">%1$s tarihine kadar açık</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Seçicinin açılmasında hata oldu.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Collie\'ın bildirimleri açması için görüntüleme izni gerekiyor.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">Aç</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Bu, Signal\'in resmi ve tek sohbetidir</string>
@@ -5640,19 +5654,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Haberler ve sürüm notları ile güncel bilgilere eriş</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">Tüm faaliyet</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Tümü</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Yinelenen</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">Tek Seferlik</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Bir arkadaş için</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Arkadaşın için bağış</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Bağış türü</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Ödeme tarihi</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Makbuzu paylaş</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Collie\'i yeniden yüklediysen, önceki bağışların makbuzları mevcut olmayacaktır.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Bağış makbuzu</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Tutar</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Signal\'ı desteklediğin için teşekkürler. Katkın açık kaynak gizlilik teknolojisi aracılığıyla, ifade özgürlüğünü koruma ve dünya çapında milyonlarca kişi için güvenli küresel iletişim sağlama misyonunu desteklemeye yardımcı olur. Amerika Birleşik Devletleri\'nde ikamet ediyorsan, lütfen bu makbuzu vergi kayıtların için sakla. Signal Technology Foundation, Amerika Birleşik Devletleri\'nde İç Gelir Yasası\'nın 501c3 numaralı bölümü kapsamında vergiden muaf, kâr amacı gütmeyen bir kuruluştur. Federal Vergi Kimlik Numaramız 82-4506840\'tır. Signal bu katkı karşılığında herhangi bir mal veya hizmet sağlamamıştır.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Alıcı yok</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6291,17 +6319,27 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Gururla Kâr Amacı Gütmeyen</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Devam Et</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Özel mesajlaşmayı desteklemek için bağış yap. Signal\'ı bağımsız ve reklamsız tut.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Bekleyen bir bağışın var</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Banka transferlerinin işleme alınması 1 ila 14 iş günü sürebilir. Lütfen aboneliğini güncellemeden önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Banka transferlerinin işleme alınması 1 ila 14 iş günü sürebilir. Lütfen başka bir bağışta bulunmadan önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Bağışın hâlâ işleniyor. Bağlantına bağlı olarak bu birkaç dakika sürebilir. Lütfen aboneliğini güncellemeden önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Bağışın hâlâ işleniyor. Bağlantına bağlı olarak bu birkaç dakika sürebilir. Lütfen başka bir bağışta bulunmadan önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">iDEAL | Wero bağışın halen işleniyor. Başka bir bağış yapmadan önce, ödemeni onaylamak için bankacılık uygulamanı kontrol et.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Bağış miktarı çok yüksek</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Banka transferi yoluyla en fazla %1$s gönderebilirsin. Farklı bir tutar veya farklı bir ödeme yöntemi dene.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Aylık</string>
@@ -6310,77 +6348,129 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Signal\'e ayda %1$s bağış yap</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Bir %1$s rozeti al</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Signal\'e %1$s bağış yap</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">%2$d gün boyunca %1$s rozeti kazan</item>
         <item quantity="other">%2$d gün boyunca %1$s rozeti kazan</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Banka transferi</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kredi veya banka kartı</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Bir arkadaşın için bağış yap</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Bağışı onaylamak için Collie\'den ayrılmak istiyor musun?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Onaylandıktan sonra, bağışının işlenmesini tamamlamak için Collie\'e dön.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">%1$s uygulamasına yönlendirileceksin. Onaylandıktan sonra, bağışının işlenmesini tamamlamak için Collie\'a dön.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Banka Transferi</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe, Signal\'e yapılan bağışları işler. Signal, kişisel bilgilerini toplamaz veya saklamaz. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Daha fazlasını öğren</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Kabul et</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Devamını oku</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Talimat yüklenemedi</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Banka bilgilerini ve e-postanı gir. Stripe, sana bağışınla ilgili güncellemeleri göndermek için bu e-postayı kullanır. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Daha fazlasını öğren</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Banka hesabındaki isim</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">Eposta</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Hesap bilgileri bul</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Ayda %1$s bağış yap</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">%1$s bağış yap</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN çok kısa</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN çok uzun</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN ülke kodu desteklenmiyor</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">Geçersiz IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimum 3 karakter</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Geçersiz e-posta adresi</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Adını ve e-postanı gir. Stripe, sana bağışınla ilgili güncellemeleri göndermek için bu e-postayı kullanır. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Banka bilgilerini gir. Signal, kişisel bilgilerini toplamaz veya saklamaz. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Daha fazlasını öğren</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Banka hesabındaki isim</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">Eposta</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">iDEAL | Wero ile bağışını onayla</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Yinelenen bağışını ayarlamak için bankanın keseceği 0,01 €\'luk ücreti onaylamak üzere devam düğmesine dokun. Bu tutar otomatik olarak iade edilecek ve %1$s/ay bağışının hesabından çekilmesini sağlayacaktır.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Devam et</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Hesap bilgilerini bul</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Banka ekstrenin üst kısmında IBAN numaranı ara. IBAN numaraları en fazla 34 karakterden oluşur. Girdiğin ad, banka hesabındaki tam adınla eşleşmelidir. Daha fazla bilgi için bankanla iletişime geçebilirsin.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Bağış bekleniyor</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Aylık bağışın beklemede. Bağışın alındığında, profilinde %1$s rozetini görüntüleyebileceksin.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Tek seferlik bağışın beklemede. Bağışın alındığında, profilinde %1$s rozetini görüntüleyebileceksin.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Banka transferlerinin işleme alınması 1 ila 14 iş günü sürebilir. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Daha fazlasını öğren</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Tamam</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Bağış işlenemedi</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Banka transferini işleme alırken sorun yaşıyoruz. Ödemen alınamadı. Başka bir ödeme yöntemi dene veya daha fazla bilgi için bankanla iletişime geç.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Tekrar dene</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Şimdi değil</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Bağış Tamamlandı</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Banka transferin alındı. Desteğini göstermek için bu rozeti profilinde sergilemeyi seçebilirsin.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">İptal ediliyor…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Çok fazla kişi işlendi</string>
@@ -6412,6 +6502,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s adlı kişi sana gönderdi</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Bilgilerin gizlidir</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Bağış yaptığında, Signal kişisel bilgilerini toplamaz veya saklamaz.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Bağışlarını almak için ödeme işlemcimiz olarak Stripe\'ı kullanıyoruz. Onlara sağladığın bilgilerin hiçbirine erişmiyor, bilgileri saklamıyor veya kaydetmiyoruz.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal, bağışını ve buna dair bilgileri Signal hesabına bağlamaz ve bağlayamaz.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Desteğin için teşekkürler!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6426,6 +6521,8 @@
     <string name="GroupStoryEducationSheet__next">İleri</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Bağış yap</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Ödeme</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6643,7 +6740,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Yönetici onayı iste</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Bağlantıyı Signal ile paylaş</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Bağlantıyı Collie ile paylaş</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Bağlantıyı kopyala</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6794,9 +6891,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Şimdi hazırsın. Yedeklemeni şimdi başlat.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Bu işlem biraz zaman alabilir. Yedekleme yapılırken Signal\'ı normal şekilde kullanabilirsin.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Bu işlem biraz zaman alabilir. Yedekleme yapılırken Collie\'ı normal şekilde kullanabilirsin.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Signal depolama alanını optimize et</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Collie depolama alanını optimize et</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">Eski medya boşaltılır ancak istediğin zaman yedeklemenden indirilebilir.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6814,7 +6911,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Bir yedeklemeyi geri yüklemek için Collie\'ın yeni bir kopyasını yükle. Uygulamayı aç ve Yedeklemeyi geri yükle\'ye dokun, ardından bir yedekleme dosyası bul."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">\"Signal depolama alanını optimize et\" özelliğin açık. Cihazda yedeklemende bulunan tüm medyayı dahil etmek istiyorsan, ayarı kapat.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">\"Collie depolama alanını optimize et\" özelliğin açık. Cihazda yedeklemende bulunan tüm medyayı dahil etmek istiyorsan, ayarı kapat.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Ayarı görüntüle</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6873,10 +6970,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Tam ekran bildirimlerine izin ver</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Aylık bağış iptal edildi</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Yinelenen aylık bağışın iptal edildi. %1$s\n\nRozetin artık profilinde görünmeyecek. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Daha fazlasını öğren</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Aboneliği yenile</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Şimdi değil</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6898,7 +7000,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Geçersiz Telefon Numarası</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Signal\'e davet et</string>
+    <string name="FindByActivity__invite_to_signal">Collie\'e davet et</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">Kullanıcı adı bulunamadı</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7036,7 +7138,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Yedekleme aboneliğini kullanamadın</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Bir hata oluştu ve yedeklemen tamamlanamadı. Signal\'in en son sürümünde olduğundan emin ol ve tekrar dene. Sorun devam ederse, destekle iletişime geç.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Bir hata oluştu ve yedeklemen tamamlanamadı. Collie\'in en son sürümünde olduğundan emin ol ve tekrar dene. Sorun devam ederse, destekle iletişime geç.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Bir hata oluştu ve yedeklemen tamamlanamadı. Sorun devam ederse, destekle iletişime geç.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7118,7 +7220,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Son yedeklemen tamamlanamadı. Telefonunun Wi-Fi\'ye bağlı olduğundan emin ol ve tekrar denemek için \"Şimdi yedekle\"ye dokun.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Son yedeklemen tamamlanamadı. Signal\'in en son sürümünde olduğundan emin ol ve tekrar dene.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Son yedeklemen tamamlanamadı. Collie\'in en son sürümünde olduğundan emin ol ve tekrar dene.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Sahip olduğun mesaj sayısı depolama limitini aşıyor. Birkaç mesaj sil ve tekrar dene.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7144,6 +7246,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7170,34 +7273,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Daha fazlasını öğren</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Telefonun Google Play hizmetlerini desteklemediği için Signal Güvenli Yedeklemeler\'e abone olamazsın. Destek için telefon üreticisiyle iletişim kurabilirsin.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Konuşma uzunluğu limitleri</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Mesaj geçmişini sil</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Seçilen zamandan daha eski mesajlar kalıcı olarak silinecektir.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Seçilen uzunluğu aşan mesajlar kalıcı olarak silinecektir.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">Bağlı cihazlara limitler uygula</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Etkinleştirildiğinde, sohbet limitleri bağlı cihazlarındaki mesajları da siler.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collie depolama alanı</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie depolama alanını optimize et</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Kullanılmayan medya boşaltılır ancak istediğin zaman yedeklemenden indirilebilir.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Depolama optimizasyonu, yalnızca Signal Güvenli Yedeklemelerin ücretli katmanı ile kullanılabilir. Yedekleme aboneliğin hala işleniyor ve henüz etkin değil. Lütfen daha sonra tekrar dene.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Medya cihazda yedeklemenden kaldırılacak</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal depolama alanını optimize et\" özelliğinin açılması, cihazındaki eski medyayı kaldırır. İstediğin zaman tekrar indirebilirsin. Eski medyayı aynı zamanda cihazda yedeklemenden de kaldırır.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">Aç</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7585,7 +7660,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Bu anahtar, cihazda yedekleme anahtarının yerini alacaktır.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Kurtarma anahtarın, Signal\'ı yeniden kurduğunda yedeklemelerini geri yüklemeni sağlayan 64 karakterli bir koddur.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Kurtarma anahtarın, Collie\'ı yeniden kurduğunda yedeklemelerini geri yüklemeni sağlayan 64 karakterli bir koddur.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Bu, cihazda kurtarma anahtarınla aynıdır.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7623,7 +7698,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Bir parola yöneticisi kurulumun yok veya kullanmakta olduğun parola yöneticisi desteklenmiyor.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Daha önce Signal şifrelerini Google Parola Yöneticisi\'ne kaydetmemeyi seçmiştin. Google Parola Yöneticisi ayarlarında, Signal\'i \"Reddedilen siteler ve uygulamalar\" adresinden kaldır ve tekrar dene.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Daha önce Collie şifrelerini Google Parola Yöneticisi\'ne kaydetmemeyi seçmiştin. Google Parola Yöneticisi ayarlarında, Collie\'i \"Reddedilen siteler ve uygulamalar\" adresinden kaldır ve tekrar dene.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Ayarlara git</string>
     <!-- Action button label -->
@@ -7770,7 +7845,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android Yedeklemesini dışa aktarmada ağ hatası</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Collie Android Yedeklemesini dışa aktarmada ağ hatası</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7800,7 +7875,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Hesabını diğer cihazına aktarmaya devam et.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Aktardığın cihaz güncel değildir. Cihazda Signal\'ı güncelle ve tekrar dene.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Aktardığın cihaz güncel değildir. Cihazda Collie\'ı güncelle ve tekrar dene.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Cihazın Hazırlanıyor</string>
@@ -7845,6 +7920,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Vekil sunucu</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Bağış yap</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7877,7 +7953,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">Yedekleme depolama dolu</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Yedekleme depolama sınırına ulaştın. Sohbetleri ve medyayı yedeklemeye devam etmek için Signal\'da yer aç.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Yedekleme depolama sınırına ulaştın. Sohbetleri ve medyayı yedeklemeye devam etmek için Collie\'da yer aç.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Yedekleme başarısız oldu</string>
     <!-- Notification body for when initial backup failed -->
@@ -8327,7 +8403,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Kopyala</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Signal\'a davet et</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Collie\'a davet et</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">Telefon Rehberine Ekle</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8339,20 +8415,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Haritalar açılamadı</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Signal\'da Bana Katıl</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Collie\'da Bana Katıl</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">Kurtarma anahtarını sıfırla</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">Kurtarma anahtarının sıfırlanması, Signal Login\'in için yeni bir anahtar oluşturacaktır. Bu, yalnızca başka biri anahtarını biliyorsa gereklidir.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Yedeklemeler etkinleştirilirse, yedeklemeni medya dahil olmak üzere yeniden yüklemen gerekecektir. \"Signal depolama alanını optimize et\"i kullanıyorsan, öncelikle kaldırılan medyayı indirmen gerekecektir.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Yedeklemeler etkinleştirilirse, yedeklemeni medya dahil olmak üzere yeniden yüklemen gerekecektir. \"Collie depolama alanını optimize et\"i kullanıyorsan, öncelikle kaldırılan medyayı indirmen gerekecektir.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Devam et</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Oluşturabileceğin yeni anahtar sayısını tükettin. 7 gün sonra yeni bir kurtarma anahtarı oluşturabileceksin.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Benden silindi</string>
 
     <!-- EOF -->
 </resources>

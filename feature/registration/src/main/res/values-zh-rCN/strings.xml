@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">授予权限</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">为了帮助您给认识的人发送消息，Signal 需要下列权限。 </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">为了帮助您给认识的人发送消息，Collie 需要下列权限。 </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">稍后再说</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">联系支持人员</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal 注册 - 安卓验证码</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie 注册 - 安卓验证码</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">无法恢复此备份</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">此版本的 Signal 无法恢复您的备份。请更新到最新版本然后重试。</string>
+    <string name="RemoteRestoreScreen__update_latest">此版本的 Collie 无法恢复您的备份。请更新到最新版本然后重试。</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">升级 Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">升级 Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">稍后再说</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">联系支持人员</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Android 版 Signal 备份恢复永久失败</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Android 版 Collie 备份恢复永久失败</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">为了保护您的隐私和安全，您的账户已被锁定。在您的账户处于非活动状态连续 %1$d 天后，您将无需密码即可重新注册此手机号码。不过所有数据将被删除。</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">在您的旧设备上打开 Signal</string>
+    <string name="QuickRestoreQRScreen__step_1">在您的旧设备上打开 Collie</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">点击相机图标 </string>
     <!-- Step 3 to quick restore -->
@@ -427,7 +427,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">请输入密码</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">请输入您首次安装 Signal 时创建的密码</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">请输入您首次安装 Collie 时创建的密码</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">您再次输入了用于验证手机号码的验证码。请输入您之前为账户选择的唯一 Signal 密码。</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -455,14 +455,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">联系支持人员</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal 注册 - 需要 Android 版密码帮助</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie 注册 - 需要 Android 版密码帮助</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">允许通知</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal 希望获得通知权限。这让您的设备在有新消息时会显示提醒。</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie 希望获得通知权限。这让您的设备在有新消息时会显示提醒。</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">稍后再说</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -498,9 +498,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">扫描此二维码以链接您的账户</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">在您的手机上打开 Signal</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">在您的手机上打开 Collie</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">点击您的个人资料头像以打开 Signal 设置</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">点击您的个人资料头像以打开 Collie 设置</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">点击“已链接设备”，然后点击“链接新设备”</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -512,7 +512,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">无法生成二维码</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">在其他设备上没有 Signal 账户？</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">在其他设备上没有 Collie 账户？</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">创建账户</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -534,7 +534,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">转移您的账户</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">要转移您的账户，请在您的旧 Android 设备上打开 Signal，然后选择转移账户。</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">要转移您的账户，请在您的旧 Android 设备上打开 Collie，然后选择转移账户。</string>
     <string name="DeviceTransferInstructions__continue">继续</string>
 
     <!-- Device transfer: Setup screen -->
@@ -545,11 +545,11 @@
     <string name="DeviceTransferSetup__numbers_match">是的，数字一致</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">数字不一致</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">正在等待您的旧设备进行验证…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal 需要位置权限，以发现并连接您的旧设备。</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie 需要位置权限，以发现并连接您的旧设备。</string>
     <string name="DeviceTransferSetup__grant_location_permission">授予权限</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal 需要启用位置服务，以发现并连接您的旧设备。</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie 需要启用位置服务，以发现并连接您的旧设备。</string>
     <string name="DeviceTransferSetup__turn_on_location_services">开启位置服务</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal 需要启用 Wi-Fi，以发现并连接您的旧设备。</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie 需要启用 Wi-Fi，以发现并连接您的旧设备。</string>
     <string name="DeviceTransferSetup__turn_on_wifi">开启 Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">抱歉，您的设备似乎不支持 Wi-Fi Direct。</string>
     <string name="DeviceTransferSetup__restore_a_backup">改为恢复备份</string>
@@ -566,7 +566,7 @@
     <string name="DeviceTransferProgress__transferring_data">正在转移数据</string>
     <string name="DeviceTransferProgress__d_messages_so_far">已处理 %1$d 条消息</string>
     <string name="DeviceTransferProgress__unable_to_transfer">无法转移</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">无法从较新版 Signal 转移。</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">无法从较新版 Collie 转移。</string>
     <string name="DeviceTransferProgress__failure_foreign_key">由于数据库限制，部分数据无法转移。</string>
     <string name="DeviceTransferProgress__transfer_failed">转移失败。请重试。</string>
     <string name="DeviceTransferProgress__try_again">重试</string>

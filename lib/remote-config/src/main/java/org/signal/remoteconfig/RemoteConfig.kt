@@ -100,6 +100,12 @@ object RemoteConfig {
   @JvmStatic
   fun init() {
     initLock.withLock {
+      // MOLLY: The store cannot be read while the app is locked. Readers get defaults until a later init succeeds.
+      if (!this::dependencies.isInitialized || !dependencies.isStoreReady) {
+        Log.w(TAG, "init() skipped: the store is not available yet.")
+        return
+      }
+
       val current = parseStoredConfig(dependencies.remoteConfigValues.currentConfig)
       val pending = parseStoredConfig(dependencies.remoteConfigValues.pendingConfig)
       val changes = computeChanges(current, pending)
@@ -169,13 +175,25 @@ object RemoteConfig {
   @JvmStatic
   @get:Synchronized
   val debugDiskValues: Map<String, Any>
-    get() = TreeMap(parseStoredConfig(dependencies.remoteConfigValues.currentConfig))
+    get() {
+      // MOLLY: Debug logs can be built while the app is locked.
+      if (!this::dependencies.isInitialized || !dependencies.isStoreReady) {
+        return emptyMap()
+      }
+      return TreeMap(parseStoredConfig(dependencies.remoteConfigValues.currentConfig))
+    }
 
   /** Only for rendering debug info.  */
   @JvmStatic
   @get:Synchronized
   val debugPendingDiskValues: Map<String, Any>
-    get() = TreeMap(parseStoredConfig(dependencies.remoteConfigValues.pendingConfig))
+    get() {
+      // MOLLY: Debug logs can be built while the app is locked.
+      if (!this::dependencies.isInitialized || !dependencies.isStoreReady) {
+        return emptyMap()
+      }
+      return TreeMap(parseStoredConfig(dependencies.remoteConfigValues.pendingConfig))
+    }
 
   @JvmStatic
   @VisibleForTesting

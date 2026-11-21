@@ -10,7 +10,6 @@ import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.BackupUtil
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 object CoreUiDependenciesProvider : CoreUiDependencies.Provider {
   override fun provideBackupBaseDirName(): String {

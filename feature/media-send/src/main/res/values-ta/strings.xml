@@ -210,7 +210,7 @@
         <item quantity="other">%1$d ஐட்டங்கள் நிலையான தரத்திற்கு அமைக்கப்பட்டது</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">வெளிப்புற சேமிப்பகத்தில் சேமிக்க Signal சேமிப்பக அனுமதி தேவை, ஆனால் அது நிரந்தரமாக மறுக்கப்பட்டது. பயன்பாடு அமைப்புகளைத் தொடரவும், \"அனுமதிகள்\" என்பதைத் தேர்ந்தெடுத்து, \"சேமிப்பகத்தை\" இயக்கவும்.</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">வெளிப்புற சேமிப்பகத்தில் சேமிக்க Collie சேமிப்பக அனுமதி தேவை, ஆனால் அது நிரந்தரமாக மறுக்கப்பட்டது. பயன்பாடு அமைப்புகளைத் தொடரவும், \"அனுமதிகள்\" என்பதைத் தேர்ந்தெடுத்து, \"சேமிப்பகத்தை\" இயக்கவும்.</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">ஆடியோ இல்லாமல் வீடியோ அனுப்பப்படும்</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">கணக்கை இடமாற்ற முடியாது</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">நீங்கள் இடமாற்ற முயலும் சாதனம் காலாவதியாகிவிட்டது. அந்தச் சாதனத்தில் Signalஐப் புதுப்பித்து, மீண்டும் முயலவும்.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">நீங்கள் இடமாற்ற முயலும் சாதனம் காலாவதியாகிவிட்டது. அந்தச் சாதனத்தில் Collieஐப் புதுப்பித்து, மீண்டும் முயலவும்.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

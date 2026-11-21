@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Suteik leidimus</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Kad padėtų tau siųsti žinutes savo pažįstamiems, „Signal“ paprašys šių leidimų. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Kad padėtų tau siųsti žinutes savo pažįstamiems, „Collie“ paprašys šių leidimų. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Ne dabar</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Susisiekti su aptarnavimo komanda</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal registracija - Patvirtinimo kodas, skirtas „Android“</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie registracija - Patvirtinimo kodas, skirtas „Android“</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Nepavyko atkurti atsarginės kopijos</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Ši „Signal“ versija negali atkurti jūsų atsarginės kopijos. Atnaujinkite į naujausią versiją ir bandykite dar kartą.</string>
+    <string name="RemoteRestoreScreen__update_latest">Ši „Collie“ versija negali atkurti jūsų atsarginės kopijos. Atnaujinkite į naujausią versiją ir bandykite dar kartą.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Atnaujinti Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Atnaujinti Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Ne dabar</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Susisiekti su aptarnavimo komanda</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">„Signal“ „Android“ atsarginės kopijos atkūrimo pasikartojanti klaida</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">„Collie“ „Android“ atsarginės kopijos atkūrimo pasikartojanti klaida</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Siekiant apsaugoti tavo privatumą ir saugumą, tavo paskyra buvo užrakinta. Po %1$d dienų neveiklumo galėsi iš naujo registruoti šį telefono numerį be būtinybės įvesti PIN kodą. Visas turinys bus ištrintas.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Atverkite „Signal“ senajame telefone</string>
+    <string name="QuickRestoreQRScreen__step_1">Atverkite „Collie“ senajame telefone</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Bakstelėkite kameros piktogramą </string>
     <!-- Step 3 to quick restore -->
@@ -430,7 +430,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Įveskite savo PIN kodą</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Įveskite PIN kodą, kurį susikūrėte pirmą kartą įdiegę „Signal“</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Įveskite PIN kodą, kurį susikūrėte pirmą kartą įdiegę „Collie“</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Įvedėte kodą, kuris jau buvo panaudotas patvirtinti jūsų telefono numerį. Įveskite unikalų „Signal“ PIN, kurį anksčiau pasirinkote savo paskyrai.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -461,14 +461,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Susisiekti su aptarnavimo komanda</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal Registracija - Reikia pagalbos su PIN kodu „Android“ įrenginyje</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie Registracija - Reikia pagalbos su PIN kodu „Android“ įrenginyje</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Leisti pranešimus</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">„Signal“ prašo suteikti leidimą siųsti pranešimus. Tai leis jūsų įrenginiui parodyti įspėjimus atėjus naujoms žinutėms.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">„Collie“ prašo suteikti leidimą siųsti pranešimus. Tai leis jūsų įrenginiui parodyti įspėjimus atėjus naujoms žinutėms.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Ne dabar</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -504,9 +504,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Nuskaityti šį kodą, kad susietumėte paskyrą</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Atverkite savo telefone Signal programėlę</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Atverkite savo telefone Collie programėlę</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Bakstelėkite savo profilio nuotrauką, kad atvertumėte „Signal“ nustatymus.</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Bakstelėkite savo profilio nuotrauką, kad atvertumėte „Collie“ nustatymus.</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Bakstelėkite „Susieti įrenginiai“ ir „Susieti naują įrenginį“.</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -518,7 +518,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Nepavyko sugeneruoti kodo</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Neturite „Signal“ kitame įrenginyje?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Neturite „Collie“ kitame įrenginyje?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Susikurkite paskyrą</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -540,7 +540,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Perkelti paskyrą</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Norėdami perkelti paskyrą, atverkite „Signal“ senajame „Android“ įrenginyje ir pasirinkite „Perkelti paskyrą“.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Norėdami perkelti paskyrą, atverkite „Collie“ senajame „Android“ įrenginyje ir pasirinkite „Perkelti paskyrą“.</string>
     <string name="DeviceTransferInstructions__continue">Tęsti</string>
 
     <!-- Device transfer: Setup screen -->
@@ -551,11 +551,11 @@
     <string name="DeviceTransferSetup__numbers_match">Taip, numeriai sutampa</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Skaitmenys nesutampa</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Laukiama, kol patvirtins jūsų senasis įrenginys…</string>
-    <string name="DeviceTransferSetup__location_permission_required">„Signal“ reikia įrenginio vietos leidimo, kad galėtų atrasti ir prisijungti prie jūsų senojo įrenginio.</string>
+    <string name="DeviceTransferSetup__location_permission_required">„Collie“ reikia įrenginio vietos leidimo, kad galėtų atrasti ir prisijungti prie jūsų senojo įrenginio.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Suteikti leidimą</string>
-    <string name="DeviceTransferSetup__location_services_required">„Signal“ reikia įjungtų vietos paslaugų, kad galėtų atrasti ir prisijungti prie jūsų senojo įrenginio.</string>
+    <string name="DeviceTransferSetup__location_services_required">„Collie“ reikia įjungtų vietos paslaugų, kad galėtų atrasti ir prisijungti prie jūsų senojo įrenginio.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Įjungti vietos paslaugas</string>
-    <string name="DeviceTransferSetup__wifi_required">„Signal“ reikia įjungto „Wi-Fi“, kad galėtų atrasti ir prisijungti prie jūsų senojo įrenginio.</string>
+    <string name="DeviceTransferSetup__wifi_required">„Collie“ reikia įjungto „Wi-Fi“, kad galėtų atrasti ir prisijungti prie jūsų senojo įrenginio.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Įjungti belaidį (Wi-Fi)</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Deja, panašu, kad jūsų įrenginys nepalaiko „Wi-Fi Direct“.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Vietoje to atkurti atsarginę kopiją</string>
@@ -572,7 +572,7 @@
     <string name="DeviceTransferProgress__transferring_data">Duomenų perkėlimas</string>
     <string name="DeviceTransferProgress__d_messages_so_far">Jau %1$d žinučių</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Nepavyko perkelti</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Negalima perkelti iš naujesnės „Signal“ versijos.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Negalima perkelti iš naujesnės „Collie“ versijos.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Kai kurių duomenų nepavyko perkelti dėl duomenų bazės apribojimo.</string>
     <string name="DeviceTransferProgress__transfer_failed">Perkėlimas nepavyko. Bandykite dar kartą.</string>
     <string name="DeviceTransferProgress__try_again">Bandykite dar kartą</string>

@@ -17,8 +17,9 @@ data class IndividualSettingsState(
   val recipient: Recipient = Recipient.UNKNOWN,
   /** Changed when recipient content changes, since Recipient.equals only compares IDs. */
   val recipientContentVersion: Int = 0,
+  /** Null when the linked-device count is unavailable or does not apply to this chat. */
+  val linkedDevicesCount: Int? = null,
   val threadId: Long = -1L,
-  val linkedDeviceCount: Int? = null,
   val storyViewState: StoryViewState = StoryViewState.NONE,
   val isDeprecatedOrUnregistered: Boolean = false,
   val displayInternalRecipientDetails: Boolean = false,

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="preferences_appearance__navigation_bar">Navigációs csík</string>
-<string name="preferences__enable_debug_log">Hibakeresési napló engedélyezése</string>
+    <string name="preferences__enable_debug_log">Hibakeresési napló engedélyezése</string>
+    <string name="preferences__network">Hálózat</string>
     <string name="HelpSettingsFragment__molly_im_website">Collie.im weboldal</string>
-    <string name="preferences__autoupdate_molly">Collie auto frissítése</string>
+    <string name="preferences__block_unknown">Ismeretlen blokkolása</string>
+    <string name="preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts">Mindenki blokkolása aki jelenleg nincs a kapcsolatok között, és korábban sem volt.</string>
+    <string name="preferences__passphrase_lock">Adatbázis titkosítása</string>
+    <string name="preferences__protect_molly_database_with_a_passphrase">Védje meg a Collie adatbázisát egy jelmondattal</string>
+    <string name="preferences__automatic_lockdown">Automatikus zárolás</string>
+    <string name="preferences__device_lock_timeout">Készülék zárolásának időkorlátja</string>
+    <string name="PrivacySettingsFragment_data_at_rest">Adat biztonságos kezekben</string>
+    <string name="AppProtectionPreferenceFragment_instant">Azonnali</string>
+    <string name="PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition">Collie zárolása arc- vagy ujjlenyomat felismeréssel</string>
+    <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">Biometria nem elérhető az eszközön</string>
+    <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">Kérem állítsa be először a biometriát az Android beállításokban</string>
+    <!-- Collie -->
+    <string name="preferences_appearance__navigation_bar">Navigációs csík</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Frissítések keresése</string>
-    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Időközönként új verziók keresése és telepítése</string>
-    <string name="preferences__include_beta_updates">Beleértve a béta frissítéseket is</string>
-    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">A béta verziók lényege a tesztelés, ezért tartalmazhatnak hibákat</string>
+    <string name="preferences_network__check_connection">Kapcsolat ellenőrzése</string>
 </resources>

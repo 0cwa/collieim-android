@@ -20,6 +20,8 @@ import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -48,6 +50,7 @@ class MollyNotificationStartupRaceTest {
     val context = ApplicationProvider.getApplicationContext<Application>()
     mockkStatic(SecurePreferenceManager::class)
     every { SecurePreferenceManager.getSecurePreferences(any()) } returns context.getSharedPreferences("notification-startup-test", 0)
+    PlainTextKeyValueStore.init(context.getSharedPreferences("notification-startup-test", 0), BuildConfig.VERSION_CODE)
     val recipient = mockk<Recipient>()
     val liveRecipient = mockk<LiveRecipient>(relaxed = true)
     mockkStatic(Recipient::class)

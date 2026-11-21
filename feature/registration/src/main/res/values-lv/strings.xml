@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Sniegt atļaujas</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Lai jūs varētu nosūtīt ziņas cilvēkiem, kurus pazīstat, Signal pieprasīs šīs atļaujas. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Lai jūs varētu nosūtīt ziņas cilvēkiem, kurus pazīstat, Collie pieprasīs šīs atļaujas. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Ne tagad</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Sazināties ar atbalstu</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal reģistrācija - Android ierīces verifikācijas kods</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie reģistrācija - Android ierīces verifikācijas kods</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Neizdevās atjaunot šo rezerves kopiju</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Šī Signal versija nevar atjaunot rezerves kopiju. Atjauniniet uz jaunāko versiju un mēģiniet vēlreiz.</string>
+    <string name="RemoteRestoreScreen__update_latest">Šī Collie versija nevar atjaunot rezerves kopiju. Atjauniniet uz jaunāko versiju un mēģiniet vēlreiz.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Atjaunināt Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Atjaunināt Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Ne tagad</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Sazināties ar atbalstu</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android rezerves kopijas atjaunošanas neatgriezeniska kļūme</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android rezerves kopijas atjaunošanas neatgriezeniska kļūme</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Lai aizsargātu jūsu privātumu un drošību, jūsu konts tika bloķēts. Pēc %1$d dienu ilga jūsu konta iesaldēšanas perioda varēsiet pārreģistrēt šo tālruņa numuru, neievadot PIN. Tomēr viss tā saturs tiks dzēsts.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Atveriet Signal savā iepriekšējā ierīcē.</string>
+    <string name="QuickRestoreQRScreen__step_1">Atveriet Collie savā iepriekšējā ierīcē.</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Pieskarieties kameras ikonai. </string>
     <!-- Step 3 to quick restore -->
@@ -429,7 +429,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Ievadiet jūsu PIN</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Ievadiet PIN, kuru izveidojāt, kad pirmo reizi instalējāt Signal</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Ievadiet PIN, kuru izveidojāt, kad pirmo reizi instalējāt Collie</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Jūs atkārtoti ievadījāt kodu, kas jau tika izmantots jūsu tālruņa numura verifikācijai. Ievadiet unikālo Signal PIN kodu, kuru iepriekš izvēlējāties savam kontam.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -459,14 +459,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Sazināties ar atbalstu</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal reģistrācija - Nepieciešama palīdziba ar PIN priekš Android</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie reģistrācija - Nepieciešama palīdziba ar PIN priekš Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Atļaut paziņojumus</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal ir nepieciešama paziņojumu atļauja. Tas ļauj ierīcei rādīt jaunu ziņu paziņojumus.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie ir nepieciešama paziņojumu atļauja. Tas ļauj ierīcei rādīt jaunu ziņu paziņojumus.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Ne tagad</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -502,9 +502,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Skenējiet šo kodu, lai piesaistītu jūsu kontu</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Atveriet Signal tālrunī</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Atveriet Collie tālrunī</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Lai atvērtu Signal iestatījumus, pieskarieties sava profila fotoattēlam</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Lai atvērtu Collie iestatījumus, pieskarieties sava profila fotoattēlam</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Pieskarieties \"Saistītās ierīces\" un tad \"Piesaistīt jaunu ierīci\"</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -516,7 +516,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Neizdevās ģenerēt kodu</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Signal nav pieejams citā ierīcē?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Collie nav pieejams citā ierīcē?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Izveidot kontu</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -538,7 +538,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Pārsūtīt kontu</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Lai pārsūtītu savu kontu, atveriet Signal savā vecajā Android ierīcē un atlasiet \"Pārsūtīt kontu\".</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Lai pārsūtītu savu kontu, atveriet Collie savā vecajā Android ierīcē un atlasiet \"Pārsūtīt kontu\".</string>
     <string name="DeviceTransferInstructions__continue">Turpināt</string>
 
     <!-- Device transfer: Setup screen -->
@@ -549,11 +549,11 @@
     <string name="DeviceTransferSetup__numbers_match">Jā, cipari sakrīt</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Numuri nesakrīt</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Gaida vecās ierīces verifikāciju…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Lietotnei Signal ir nepieciešama atrašanās vietas noteikšanas atļauja, lai atrastu veco ierīci un izveidotu ar to savienojumu.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Lietotnei Collie ir nepieciešama atrašanās vietas noteikšanas atļauja, lai atrastu veco ierīci un izveidotu ar to savienojumu.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Piešķirt piekļuvi</string>
-    <string name="DeviceTransferSetup__location_services_required">Lietotnē Signal ir jābūt iespējotiem atrašanās vietas pakalpojumiem, lai atrastu veco ierīci un izveidotu ar to savienojumu.</string>
+    <string name="DeviceTransferSetup__location_services_required">Lietotnē Collie ir jābūt iespējotiem atrašanās vietas pakalpojumiem, lai atrastu veco ierīci un izveidotu ar to savienojumu.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Ieslēgt atrašanās vietas pakalpojumus</string>
-    <string name="DeviceTransferSetup__wifi_required">Lai Signal varētu atrast veco ierīci un izveidot ar to savienojumu, ir jābūt ieslēgtam Wi-Fi.</string>
+    <string name="DeviceTransferSetup__wifi_required">Lai Collie varētu atrast veco ierīci un izveidot ar to savienojumu, ir jābūt ieslēgtam Wi-Fi.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Ieslēgt Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Atvainojiet, izskatās, ka jūsu ierīce neatbalsta Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Tā vietā atjaunojiet rezerves kopiju</string>
@@ -570,7 +570,7 @@
     <string name="DeviceTransferProgress__transferring_data">Notiek datu pārsūtīšana</string>
     <string name="DeviceTransferProgress__d_messages_so_far">pagaidām %1$d ziņas</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Nevar pārsūtīt</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Nevar pārsūtīt no jaunākas Signal versijas.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Nevar pārsūtīt no jaunākas Collie versijas.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Dažus datus nevarēja pārsūtīt datubāzes ierobežojumu dēļ.</string>
     <string name="DeviceTransferProgress__transfer_failed">Pārsūtīšana neizdevās. Lūdzu, mēģiniet vēlreiz.</string>
     <string name="DeviceTransferProgress__try_again">Mēģināt vēlreiz</string>

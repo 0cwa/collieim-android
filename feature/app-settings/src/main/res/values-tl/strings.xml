@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">I-register ulit ang account</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">I-update ang Signal</string>
+    <string name="preferences_account_update_signal">I-update ang Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Burahin ang lahat ng data</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Gine-generate ang report…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Ginagawa lang ang iyong report sa oras ng pag-export nito at hindi ito nilalagay ng Signal sa device mo.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Ginagawa lang ang iyong report sa oras ng pag-export nito at hindi ito nilalagay ng Collie sa device mo.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Hindi ka pa nag-set ng passphrase!</string>
     <string name="ApplicationPreferencesActivity_disable">I-disable</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">I-disable ang passphrase?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Permanente nitong i-u-unlock ang Signal at ang message notifications.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Permanente nitong i-u-unlock ang Collie at ang message notifications.</string>
     <string name="PrivacySettingsFragment__app_security">App security</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">I-block ang screenshots sa recents list at sa loob ng app</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Walang garantiya ang setting na ito, at maaaring hindi ito pansinin ng keyboard mo.</string>
     <string name="preferences__typing_indicators">Typing indicators</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Piliin kung sinong pwedeng makakita ng phone number mo at kung sinong pwedeng kumontak sa \'yo sa Signal gamit ito.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Piliin kung sinong pwedeng makakita ng phone number mo at kung sinong pwedeng kumontak sa \'yo sa Collie gamit ito.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Payments</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Hindi na Muna</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Matuto pa</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Hindi ma-redeem ang backups subscription mo</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Mag-donate sa Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Internal Preferences</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Makikita ng contacts, groups, at mga taong napadalhan mo na ng mensahe ang profile mo at ang mga pagbabago dito.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">I-update ang Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">I-update ang Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Expired na itong version ng Signal. Mag-update na para patuloy na magamit ang Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Expired na itong version ng Collie. Mag-update na para patuloy na magamit ang Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">I-update</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Isara</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Makakuha ng badges para sa profile mo sa pamamagitan ng pagsuporta sa Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Ang Signal ay isang nonprofit na walang advertisers o investors, supported only by people like you.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Become a Sustainer</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,19 +1014,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Hindi mahanap ang user na ito.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Para mag-scan ng QR code, bigyan ng access sa camera ang Signal.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Para mag-scan ng QR code, bigyan ng access sa camera ang Collie.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Bigyan ng access</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Kailangan ng Signal ng access sa camera para mag-scan ng QR codes</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Kailangan ng Collie ng access sa camera para mag-scan ng QR codes</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Storage</string>
     <string name="preferences_storage__storage_usage">Pagkakagamit ng storage</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal storage</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie storage</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">I-optimize ang Signal storage</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">I-optimize ang Collie storage</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">I-o-offload o buburahin ang unused media sa device mo, ngunit maaari mo pa rin itong ma-download anumang oras mula sa backup mo.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1048,7 +1052,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Ang media ay tatanggalin mula sa on-device backup mo</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Sa pag-on ng \"I-optimize ang Signal storage\", mao-offload ang lumang media mula sa device mo. Maaari mo itong i-download ulit anumang oras. Tatanggalin din nito ang lumang media mula sa on-device backup mo.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Sa pag-on ng \"I-optimize ang Collie storage\", mao-offload ang lumang media mula sa device mo. Maaari mo itong i-download ulit anumang oras. Tatanggalin din nito ang lumang media mula sa on-device backup mo.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">I-on</string>
 
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Hindi mabuksan ang picker.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Para i-enable ang notifications, kailangan ng Signal ang iyong pahintulot para i-display ito.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Para i-enable ang notifications, kailangan ng Collie ang iyong pahintulot para i-display ito.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">I-on</string>
     <string name="NotificationsSettingsFragment__calls">Mga Tawag</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Censorship circumvention</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Censorship circumvention</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Kapag naka-enable ito, susubukan ng Signal na iwasan ang censorship. Huwag paganahin ang feature na ito maliban na lang kung ika\'y nasa lugar na naka-censor ang Signal.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Kapag naka-enable ito, susubukan ng Collie na iwasan ang censorship. Huwag paganahin ang feature na ito maliban na lang kung ika\'y nasa lugar na naka-censor ang Collie.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Ang censorship circumvention ay in-activate base sa phone number ng account mo.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatic Key Verification</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Kapag naka-enable ito, susubukan ng Signal na i-verify automatically ang encryption ng 1:1 chats.</string>
+    <string name="preferences_automatic_key_verification_body">Kapag naka-enable ito, susubukan ng Collie na i-verify automatically ang encryption ng 1:1 chats.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

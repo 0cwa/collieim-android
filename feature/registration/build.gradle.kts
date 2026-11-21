@@ -88,9 +88,6 @@ dependencies {
   }
   implementation(project(":core-gms:tasks"))
 
-  // Credential Manager (password manager retrieval)
-  implementation(libs.androidx.credentials)
-
   // Testing
   testImplementation(testFixtures(project(":core:ui")))
   testImplementation(testLibs.junit.junit)

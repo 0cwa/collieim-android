@@ -52,6 +52,7 @@ object AppearanceSettingsTestTags {
   const val SCROLLER = "scroller"
   const val ROW_LANGUAGE = "row-language"
   const val ROW_THEME = "row-theme"
+  const val ROW_DYNAMIC_COLORS = "row-dynamic-colors"
   const val ROW_CHAT_COLOR_AND_WALLPAPER = "row-chat-color-and-wallpaper"
   const val ROW_APP_ICON = "row-app-icon"
   const val ROW_MESSAGE_FONT_SIZE = "row-message-font-size"
@@ -108,10 +109,11 @@ fun AppearanceSettingsScreen(
       if (state.isDynamicColorsAvailable) {
         item {
           Rows.ToggleRow(
+            checked = state.dynamicColors,
             text = stringResource(R.string.preferences_appearance__dynamic_colors),
             label = stringResource(R.string.preferences_appearance__use_system_colors_for_the_app_theme),
-            checked = state.dynamicColors,
-            onCheckChanged = { onEvent(AppearanceSettingsEvent.DynamicColorsChanged(it)) }
+            onCheckChanged = { onEvent(AppearanceSettingsEvent.DynamicColorsChanged(it)) },
+            modifier = Modifier.testTag(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS)
           )
         }
       }
@@ -270,7 +272,7 @@ private val AppearanceSettingsState.Theme.labelRes: Int
 @Composable
 private fun AppearanceSettingsScreenPreview() {
   AppearanceSettingsScreen(
-    state = AppearanceSettingsState(language = "en"),
+    state = AppearanceSettingsState(language = "en", dynamicColors = true, isDynamicColorsAvailable = true),
     onEvent = {}
   )
 }

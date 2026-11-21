@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collieをアップデートしています…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">パスフレーズが設定されていません！</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">パスフレーズを無効にしますか？</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">これにより、Collieとメッセージ通知のロックが完全に解除されます。</string>
-    <string name="ApplicationPreferencesActivity_disable">無効</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">サーバ接続中にエラーが発生しました！</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">クレジットカードまたはデビットカード</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">以下にカード情報を入力してください。Signalがお客様の個人情報を収集したり保存したりすることはありません。</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">カード番号</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">月／年</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">無効なカード番号です</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">カードの有効期限が切れています</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">セキュリティコードが短すぎます</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">セキュリティコードが長すぎます</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">無効なセキュリティコードです</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">無効な月です</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">年の入力は必須です</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">無効な年です</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">%1$s を寄付</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">%1$s／月を寄付</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">%1$s／月を寄付</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">今回のみ %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">寄付の手続き中です</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">寄付の処理中です</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$s をブロックして抜けますか？</string>
@@ -344,7 +356,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$sがこのメッセージを消去しました</string>
     <string name="ConversationItem_you_deleted_this_message">メッセージを消去しました</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">管理者の%1$sがこのメッセージを消去しました</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -447,7 +458,7 @@
     <string name="ConversationActivity_error_sending_media">メディア送信エラー</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">SMSメッセージはSignalでサポートされなくなりました。</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">SMSメッセージはCollieでサポートされなくなりました。</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMSメッセージはSignalでサポートされなくなりました。%1$sをSignalへ招待して会話を続けてください。</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -494,6 +505,8 @@
     <string name="ConversationFragment_deleting_messages">メッセージを削除しています…</string>
     <string name="ConversationFragment_delete_for_me">自分の分だけ消去</string>
     <string name="ConversationFragment_delete_for_everyone">全員分を消去</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">自分の分だけ消去しました</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="other">選択したメッセージを消去しますか？</item>
@@ -1068,7 +1081,7 @@
     <string name="ExpiredBuildReminder_update_now">アップデート</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">このデバイスではSignalは動作しなくなりました。再びSignalを利用するためには、お使いのデバイスでAndroidのバージョンをアップデートするか、機種変更をしてください。</string>
+    <string name="DeprecatedSdkBanner_body">このデバイスではCollieは動作しなくなりました。再びCollieを利用するためには、お使いのデバイスでAndroidのバージョンをアップデートするか、機種変更をしてください。</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Collieをアップデートしてください</string>
@@ -1396,9 +1409,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">グループリンクを使用するためSignalをアップデート</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">このバージョンのSignalはグループリンクをサポートしていません。リンク経由でこのグループに参加するには、最新バージョンにアップデートしてください。</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signalをアップデート</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">グループリンクを使用するためCollieをアップデート</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">このバージョンのCollieはグループリンクをサポートしていません。リンク経由でこのグループに参加するには、最新バージョンにアップデートしてください。</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Collieをアップデート</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">グループリンクが正しくありません</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2002,7 +2015,7 @@
     <plurals name="PinRestoreEntryFragment_you_have_d_attempt_remaining">
         <item quantity="other">あと%1$d回試行できます。残りの試行回数がなくなった場合、新しいPINを作成できます。アカウントを登録して使用することもできますが、プロフィールなどの保存されている設定情報は失われます。</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal登録 - AndroidのPINに関するサポートが必要</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie登録 - AndroidのPINに関するサポートが必要</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">PINを作成</string>
@@ -2094,7 +2107,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">相手にはあなたの声が聞こえていませんでした</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Signalがバックグランドで動作しているとき、マイクがミュートになっていました。この問題を解決するには、「設定」をタップして、「バッテリー」の設定でバックグラウンドでの動作を有効にしてください。</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Collieがバックグランドで動作しているとき、マイクがミュートになっていました。この問題を解決するには、「設定」をタップして、「バッテリー」の設定でバックグラウンドでの動作を有効にしてください。</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="other">%1$d 人のリクエストを承認しますか？</item>
@@ -2575,7 +2588,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">「%1$s」の検索結果はありません</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Signal経由で送信する</string>
+    <string name="StickerManagement_menu_send_signal_pack">Collie経由で送信する</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">リンク</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2812,8 +2825,6 @@
     <string name="KeyCachingService_lock">Collieをロック</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">メディアが存在しません。</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">メディアを再生できません。</string>
@@ -2823,7 +2834,6 @@
     <string name="MediaPreviewFragment_edit_media_error">メディアエラー</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">メッセージ削除中にエラーが発生しました。メッセージが削除されていない可能性があります</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">共有</string>
 
     <!-- MessageNotifier -->
@@ -3052,7 +3062,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">端末を再登録する</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">この端末はリンクされていません。メッセージを送受信するには、Signal とお使いの携帯電話をリンクし直してください。</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">この端末はリンクされていません。メッセージを送受信するには、Collie とお使いの携帯電話をリンクし直してください。</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">端末をリンクし直す</string>
 
@@ -3061,7 +3071,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">決済機能を引き続きご利用いただくために、Signalをアップデートしてください。残高が最新の状態ではない可能性があります。</string>
+    <string name="EnclaveFailureReminder_update_signal">決済機能を引き続きご利用いただくために、Collieをアップデートしてください。残高が最新の状態ではない可能性があります。</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">リンクした端末で応答しました。</string>
@@ -3378,18 +3388,6 @@
     <string name="EditProfileFragment__group_name">グループ名</string>
     <string name="EditProfileFragment__group_description">グループの説明</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Collieをアップデートしてください</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">このバージョンの Collie は期限が切れています。引き続きご利用いただくために、Collie をアップデートしてください。</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">アップデートする</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">端末が登録されていません</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">この端末は登録されていません。アカウントに変更を追加する場合は再登録をしてください。</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">再登録する</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">保存</string>
@@ -3512,7 +3510,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">サポート情報</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Androidサポートリクエスト</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Androidサポートリクエスト</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">ログをアップロードできませんでした</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">問題を理解するため、できるだけ詳細に記述してください。</string>
@@ -3566,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">GeminiのようなAIアシスタントアプリがCollieのコンテンツをスキャンできる状態です。これを防ぐために、スクリーンセキュリティが有効になりました。有効になるとスクリーンショットもできなくなります。</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">GeminiのようなAIアシスタントアプリがSignalのコンテンツをスキャンできる状態です。これを防ぐために、スクリーンセキュリティが有効になりました。有効になるとスクリーンショットもできなくなります。</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">画面のセキュリティが有効化されています</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3574,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">画面のセキュリティを無効化しますか？</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">オフにすると、Google GeminiなどのAIアシスタントがCollieコンテンツをスキャンできるようになり、プライバシーが保護されない恐れのある機能に利用される場合があります。</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">オフにすると、Google GeminiなどのAIアシスタントがSignalコンテンツをスキャンできるようになり、プライバシーが保護されない恐れのある機能に利用される場合があります。</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">無効化する</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3582,24 +3580,15 @@
     <string name="preferences__notifications">通知</string>
     <string name="preferences__led_color_unknown">不明</string>
     <string name="preferences__silent">無音</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">プライバシー</string>
+    <string name="preferences__donate_to_signal">Collieへの寄付</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">ストーリー</string>
     <string name="preferences__payments">決済機能</string>
     <string name="preferences__linked_devices">リンク済み端末</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">デバッグログの提出</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">未読リマインダー</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">有効にすると、Collieは検閲回避を試行します。Collieが検閲される場所にいない場合は、有効にしないでください。</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">プロキシアドレス</string>
     <string name="preferences_only_use_a_proxy_if">Wi-FiやモバイルデータでSignalに接続できない場合のみ、プロキシを使用してください。</string>
     <string name="preferences_share">共有</string>
@@ -3613,9 +3602,6 @@
     <string name="preferences_success">成功</string>
     <string name="preferences_failed_to_connect">接続に失敗しました</string>
     <string name="preferences_enter_proxy_address">プロキシアドレスを入力してください</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">有効にすると、Collieは1対1のチャットの暗号化を自動的に確認します。</string>
 
 
     <!-- Internal only preferences -->
@@ -3821,6 +3807,8 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s (%2$s現在)</string>
 
     <!-- SetCurrencyFragment -->
+    <string name="SetCurrencyFragment__set_currency">通貨を設定</string>
+    <string name="SetCurrencyFragment__all_currencies">すべての通貨</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -3992,9 +3980,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">詳しく見る</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">メディアのプレビュー</string>
@@ -4156,15 +4141,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">電話で確認 (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">コードの再送信まで (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Molly登録 - Android用認証コード</string>
+    <string name="RegistrationActivity_code_support_subject">Collie登録 - Android用認証コード</string>
     <string name="RegistrationActivity_incorrect_code">コードが違います</string>
     <string name="BackupUtil_never">なし</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">不明</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">あなたの電話番号を見ることができる人と、Collieであなたに連絡できる人を選択してください。</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">画面ロックを使用するには、この端末でPIN、パターン、またはパスワードを設定します。</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">登録ロックPINの入力が必要です</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">あなたのPINは%1$d字以上です</string>
     <string name="RegistrationActivity_too_many_attempts">試行回数が多すぎます</string>
@@ -4197,11 +4178,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">この端末はリンク済み端末です</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">アカウント設定を管理するには、メイン端末でSignalを開いてください</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">アカウント設定を管理するには、メイン端末でCollieを開いてください</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">アプリのデータを消去</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">この端末上にあるSignalアプリからすべてのデータが削除されます。</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">この端末上にあるCollieアプリからすべてのデータが削除されます。</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">アプリのデータを消去しますか？</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4691,7 +4672,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">電話番号を編集</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal電話番号変更 - AndroidのPINに関するサポートが必要 (v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie電話番号変更 - AndroidのPINに関するサポートが必要 (v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PINが一致しません</string>
@@ -4851,7 +4832,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5155,7 +5135,13 @@
 
     <string name="ImageView__badge">バッジ</string>
 
+    <string name="SubscribeFragment__cancel_subscription">サブスクリプションを解除する</string>
+    <string name="SubscribeFragment__confirm_cancellation">本当に解除しますか？</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">再度課金されることはありません。課金期間が終了すると、バッジがプロフィールから削除されます。</string>
+    <string name="SubscribeFragment__not_now">あとで</string>
+    <string name="SubscribeFragment__confirm">解除する</string>
     <string name="SubscribeFragment__update_subscription">サブスクリプションを更新する</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">あなたのサブスクリプションは解除されました。</string>
     <string name="SubscribeFragment__update_subscription_question">サブスクリプションを更新しますか？</string>
     <string name="SubscribeFragment__update">更新する</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">本日、新しいサブスクリプション価格の全額 (%1$s) が請求されます。あなたのサブスクリプションは毎月更新されます。</string>
@@ -5167,35 +5153,66 @@
     <string name="Subscription__expires_s">有効期限%1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Signalは、独立した非営利団体としてメッセージと通話のプライバシーを守ることに取り組んでいます。広告なし、トラッキングなし、監視なし。Signalのこの取り組みのために、ご支援をお願いします。</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">寄付をすると、プロフィールにバッジが表示（任意）されます</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">皆さんのプライバシーを守ることが私たちの使命です</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signalは非営利団体です。</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">ご支援をありがとうございます！</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Signalからバッジを受け取りました！プロフィールに表示してSignalをサポートしていることを示しましょう。</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">また、</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">月次サポーターになることもできます。</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">プロフィールに表示する</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">このバッジを表示する</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">続ける</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">複数のバッジを持っている場合は、自分のプロフィールに表示するバッジを選ぶことができます。</string>
 
     <!-- Button label for creating a donation -->
+    <string name="ManageDonationsFragment__donate_to_signal">Signalへの寄付</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">その他</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">マイサポート</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">寄付の領収書</string>
+    <string name="ManageDonationsFragment__badges">バッジ</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">寄付についてのよくある質問</string>
     <!-- Preference heading for other ways to donate -->
+    <string name="ManageDonationsFragment__other_ways_to_give">その他の支援の方法</string>
     <!-- Preference label to launch badge gifting -->
+    <string name="ManageDonationsFragment__donate_for_a_friend">友達に代わって寄付する</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">寄付を確認できませんでした</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">%1$sの毎月の寄付を確認できませんでした。銀行アプリを確認して、iDEAL | Weroの決済を承認してください。</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">%1$sの都度の寄付を確認できませんでした。銀行アプリを確認して、iDEAL | Weroの決済を承認してください。</string>
 
+    <string name="Boost__enter_custom_amount">金額を入力してください</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">最小の寄付金額は%1$sです</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/月</string>
+    <string name="MySupportPreference__renews_s">更新 %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">処理しています…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">バッジを追加できませんでした。%1$s</string>
+    <string name="MySupportPreference__please_contact_support">サポートにお問い合わせください。</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">決済手続き中</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">%1$sの銀行振込が手続き中です。銀行振り込みの場合、完了するまで1～14日かかる場合があります。  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">詳しく見る</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">サブスクリプションを確認中…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collieをアップデートしてください</string>
@@ -5232,9 +5249,11 @@
     <string name="Subscription__get_a_s_badge">%1$sバッジを獲得しましょう</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">寄付のお手続き中です…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">定期的な%1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5253,8 +5272,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">寄付のお手続き中にエラーが発生しました</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">詳しく見る</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">寄付のお手続き中にエラーが発生しました。%1$s</string>
     <string name="DonationsErrors__your_payment">寄付のお手続きができずおらず、課金もされていません。もう一度お試しください。</string>
     <string name="DonationsErrors__still_processing">処理を継続しています</string>
     <string name="DonationsErrors__couldnt_add_badge">バッジを追加できませんでした</string>
@@ -5272,6 +5294,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">あなたの寄付はお手続きされましたが、Signalは寄付メッセージを送信できませんでした。サポートにお問い合わせください。</string>
     <string name="DonationsErrors__your_badge_could_not">あなたのアカウントにバッジを追加できませんでしたが、課金はされている可能性があります。サポートまでお問い合わせください。</string>
     <string name="DonationsErrors__your_payment_is_still">寄付のお手続きは完了していません。接続状況によっては数分かかる場合があります。</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">サブスクリプションを解除できませんでした</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">サブスクリプションを解除するには、インターネット接続が必要です。</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">お使いの端末がアプリ内での寄付に対応していないためバッジを獲得することはできませんが、当方のウェブサイトからの寄付が可能です。引き続きSignalのサポートをお願いいたします。</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">ネットワークエラー。インターネット接続を確認して再度試してください。</string>
     <string name="NetworkFailure__retry">再試行</string>
@@ -5280,6 +5304,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">このユーザーはSignalをアップグレードしていないため、寄付を受け取れません。</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">iDEAL | Weroによる寄付のお手続きができませんでした。別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$sに代わって寄付をする</string>
@@ -5477,12 +5502,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">%1$sまで有効</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">ファイルピッカーを開けませんでした</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">通知を有効にするには、Collieに通知を表示する権限を与える必要があります。</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">有効にする</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">これはSignalの公式かつ唯一のチャットです</string>
@@ -5490,19 +5509,33 @@
     <string name="ReleaseNotes__keep_up_to_date">ニュースやリリースノートで最新情報をチェックしてください</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">すべての活動</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">すべて</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">サブスクリプション</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">都度</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">友達の代わりにした寄付</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">友達に代わって寄付</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">寄付の種類</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">支払い日</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">領収書を共有</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Collieを再インストールすると、過去にした寄付の領収書を入手できなくなります。</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">寄付の領収書</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">寄付額</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Signalをサポートしていただきありがとうございます。皆様のご寄付は、オープンソースのプライバシー技術を通して表現の自由を守り、世界中の何百万人もの人々に安全なグローバルコミュニケーションを可能にするというミッションを推進する原動力となるものです。米国にお住まいの方は、この領収書を税務記録のために保管しておいてください。Signal Technology Foundationは、米国内国歳入法第501c3条に基づく非課税の非営利団体です。連邦税IDは82-4506840です。Signalは、寄付の対価としていかなるグッズもサービスも提供していません。</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">領収書なし</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6120,92 +6153,157 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">非営利が理念です</string>
     <!-- Continue button label -->
+    <string name="DonateToSignalFragment__continue">続ける</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">メッセージのやりとりをプライベートに保つためにご寄付をお願いします。Signalが独立性を保ち、広告なしで運営するためには皆様のご協力が必要です。</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">1件の寄付が手続き中です</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">銀行振り込みの場合、処理されるまで1～14日かかる場合があります。この決済が完了してから、再度、寄付のお手続きをしてください。</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">銀行振り込みの場合、処理されるまで1～14日かかる場合があります。この決済が完了してから、次の寄付をおこなってください。</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">寄付のお手続きは完了していません。接続状況によっては数分かかる場合があります。 この決済が完了してから、再度、寄付のお手続きをしてください。</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">寄付のお手続きは完了していません。接続状況によっては数分かかる場合があります。この決済が完了してから、次の寄付をおこなってください。</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">iDEAL | Weroによる寄付はお手続き中です。他の寄付を行う前に、銀行アプリを確認して支払いを承認してください。</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">寄付金額が高すぎます</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">銀行振り込みによる寄付金額は、最大%1$sです。金額を変えるか他の決済方法をお試し下さい。</string>
 
     <!-- Donation pill toggle monthly text -->
+    <string name="DonationPillToggle__monthly">毎月</string>
     <!-- Donation pill toggle one-time text -->
+    <string name="DonationPillToggle__one_time">都度</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Signalに %1$s円／月を寄付する</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">%1$sバッジを獲得しましょう</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Signalに %1$s円を寄付する</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="other">%2$d 日間%1$sバッジを獲得しましょう</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">銀行振替</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">クレジットカードまたはデビットカード</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">友達に代わって寄付する</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">寄付を確認するためにCollieを離れますか？</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">寄付を確認したら、Collieに戻って寄付の手続きを完了させてください。</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">%1$sに転送されます。寄付を確認したら、Collieに戻って寄付の手続きを完了させてください。</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">銀行振替</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">StripeがSignalへの寄付を処理します。Signalがお客様の個人情報を収集したり保存したりすることはありません。%1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">詳しく見る</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">同意する</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">続きを読む</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">リクエストを読み込めませんでした</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">銀行口座の情報、およびメールアドレスを入力してください。入力いただいたメールアドレスは、Stripeがお客様の寄付に関するお知らせをお送りするために使用されます。%1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">詳しく見る</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">銀行口座名義</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">メールアドレス</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">アカウント情報を確認する</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">%1$s／月を寄付する</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">%1$s を寄付する</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBANが短すぎます</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBANが長すぎます</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">この国コードはIBANを採用していません</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">IBANが無効です</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">3文字以上入力</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">無効なEメールアドレスです</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">お名前とメールアドレスを入力してください。入力いただいたメールアドレスは、Stripeがお客様の寄付に関するお知らせをお送りするために使用されます。%1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">口座情報を入力してください。Signalがお客様の個人情報を収集したり保存したりすることはありません。%1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">詳しく見る</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">銀行口座名義</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">メールアドレス</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">iDEAL | Weroを使った寄付手続きを確認してください</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">定期的な寄付を設定するには「続ける」をタップして、銀行で0.01ユーロの手数料がかかることをご確認ください。この手数料は自動的に返金され、毎月%1$sの寄付金がお口座から引き落とされます。</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">続行</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">アカウント情報を確認する</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">銀行取引明細書の上部に記載されたIBANをご確認ください。IBANは最大34文字で構成されています。銀行口座の名義と同一の氏名を入力してください。詳細については、銀行までお問い合わせください。</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">寄付の手続き中です</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">毎月の寄付の手続き中です。寄付が受領されると、 %1$s バッジがあなたのプロフィールに表示されます。</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">1回限りの寄付の手続き中です。寄付が受領されると、 %1$s バッジがあなたのプロフィールに表示されます。</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">銀行振り込みの場合、処理されるまで1～14日かかる場合があります。%1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">詳しく見る</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">完了</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">寄付を処理できませんでした</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">銀行振込の処理に問題が発生しています。課金はされていません。別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">もう一度試す</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">今はしない</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">寄付が完了しました</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">銀行振り込みが受領されました。このバッジをプロフィールに表示して、サポートしていることを示すことができます。</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">キャンセル中…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">連絡先が多すぎるため処理できません</string>
@@ -6236,6 +6334,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s さんから送金がありました</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">お客様の個人情報は保護されています</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signalは、寄付を受ける際に、お客様のいかなる個人情報も収集したり保存したりすることはありません。</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Signalでは寄付を受け取る決済処理にStripeを使用しています。Signalは、お客様から提供されたいかなる情報にもアクセスすることはありません。また保管・保存したりすることもありません。</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signalは、寄付からお客様のSignalアカウントを特定することはありません。特定はできない仕組みになっています。</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">ご支援ありがとうございます！</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6250,6 +6353,8 @@
     <string name="GroupStoryEducationSheet__next">次へ</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">寄付する</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">決済</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6464,7 +6569,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">管理者の承認を必要とする</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Signal 経由でリンクを共有する</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Collie 経由でリンクを共有する</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">リンクをコピーする</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6613,9 +6718,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">すべての設定が完了しています。今すぐバックアップを開始しましょう。</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">これにはしばらく時間がかかる可能性があります。バックアップ中でも、通常通りSignalを使用できます。</string>
+    <string name="BackupSetupCompleteBottomSheet__body">これにはしばらく時間がかかる可能性があります。バックアップ中でも、通常通りCollieを使用できます。</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Signalのストレージの最適化</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Collieのストレージの最適化</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">過去のメディアはオフロードされますが、バックアップからいつでもダウンロードできます。</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6633,7 +6738,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"バックアップを復元するには、新しいCollieをインストールしてください。その後アプリを開き、「バックアップを復元する」をタップしてバックアップファイルの場所を指定します。"</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">「Signalのストレージの最適化」がオンになっています。端末内バックアップのすべてのメディアを含めたい場合は、この設定をオフにしてください。</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">「Collieのストレージの最適化」がオンになっています。端末内バックアップのすべてのメディアを含めたい場合は、この設定をオフにしてください。</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">設定を表示</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6692,10 +6797,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s 全画面通知を許可する</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">毎月の寄付がキャンセルされました</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">毎月の定期的な寄付がキャンセルされました。%1$s \n\nバッジはプロフィールに表示されなくなります。%2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">詳しく見る</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">サブスクリプションを更新する</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">今はしない</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6717,7 +6827,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">無効な電話番号</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Signalへの招待</string>
+    <string name="FindByActivity__invite_to_signal">Collieへの招待</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">ユーザーネームが見つかりませんでした</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -6852,7 +6962,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">バックアップのサブスクリプションを有効化することができませんでした</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">エラーが発生し、バックアップを完了できませんでした。Signalが最新のバージョンであることをご確認の上もう一度お試しください。この問題が解決しない場合は、サポートにお問い合わせください。</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">エラーが発生し、バックアップを完了できませんでした。Collieが最新のバージョンであることをご確認の上もう一度お試しください。この問題が解決しない場合は、サポートにお問い合わせください。</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">エラーが発生し、バックアップを完了できませんでした。この問題が解決しない場合は、サポートにお問い合わせください。</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -6934,7 +7044,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">前回のバックアップは完了していません。ご利用中のスマートフォンがWi-Fiに接続されている事をご確認の上、「今すぐバックアップを実行する」をタップしてもう一度お試しください。</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">前回のバックアップは完了していません。Signalが最新のバージョンであることをご確認の上もう一度お試しください。</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">前回のバックアップは完了していません。Collieが最新のバージョンであることをご確認の上もう一度お試しください。</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">メッセージ数が保存容量の上限を超えています。いくつかのメッセージを削除して、もう一度お試しください。</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -6960,6 +7070,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -6986,34 +7097,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">詳しく見る</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">ご利用のスマートフォンは Google Play開発者サービスをサポートしていないため、Signalセキュアバックアップをサブスクリプションできません。サポートについては、スマートフォンの製造元にお問い合わせください。</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">チャット内の最大メッセージ件数</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">メッセージ履歴を消去する</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">選択した期間を超えた古いメッセージは完全に消去されます。</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">選択した最大件数を超えたメッセージは完全に消去されます。</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">リンク済み端末に制限を適用する</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">有効にすると、チャット内の最大メッセージ件数が制限を超えた際にリンク済み端末からも消去されます。</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collieストレージ</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collieのストレージの最適化</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">未使用のメディアはオフロードされますが、バックアップからいつでもダウンロードできます。</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">ストレージの最適化は、Signalセキュアバックアップの有料版でのみご利用いただけます。バックアップサブスクリプションはまだ処理中で、アクティブになっていません。あとでもう一度お試しください。</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">端末内バックアップからメディアが削除されます</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">「Signalのストレージを最適化」をオンにすると、端末上の以前のメディアはオフロードされます。オフロードされたメディアはいつでも再ダウンロードできますが、端末内バックアップからも削除されます。</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">有効にする</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7394,7 +7477,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">このキーは、端末内バックアップキーに置き換わります。</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">回復キーは64文字のコードで、Signalを再インストールした際には、このコードを使ってバックアップを復元することができます。</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">回復キーは64文字のコードで、Collieを再インストールした際には、このコードを使ってバックアップを復元することができます。</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">これは、端末内回復キーと同じです。</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7432,7 +7515,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">パスワードマネージャーが設定されていないか、使用しているパスワードマネージャーがサポートされていません。</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">以前、SignalのパスワードをGoogleパスワードマネージャーに保存しないことを選択しています。Googleパスワードマネージャーの設定で、「不承認のサイトとアプリ」からSignalを削除して、もう一度試してみてください。</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">以前、CollieのパスワードをGoogleパスワードマネージャーに保存しないことを選択しています。Googleパスワードマネージャーの設定で、「不承認のサイトとアプリ」からCollieを削除して、もう一度試してみてください。</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">設定へ</string>
     <!-- Action button label -->
@@ -7577,7 +7660,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Androidの、バックアップエクスポート時のネットワークエラーについて</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Collie Androidの、バックアップエクスポート時のネットワークエラーについて</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7607,7 +7690,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">引き続き、他の端末でアカウントの移行をおこなってください。</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">移行しようとした端末のバージョンが古すぎます。その端末でSignalをアップデートしてからもう一度お試しください。</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">移行しようとした端末のバージョンが古すぎます。その端末でCollieをアップデートしてからもう一度お試しください。</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">端末の準備をしましょう</string>
@@ -7652,6 +7735,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">プロキシ</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">寄付する</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7684,7 +7768,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">バックアップストレージがいっぱいです</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">バックアップストレージの上限に達しました。チャットやメディアのバックアップを続けるには、Signalの空き容量を増やしてください。</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">バックアップストレージの上限に達しました。チャットやメディアのバックアップを続けるには、Collieの空き容量を増やしてください。</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">バックアップに失敗しました</string>
     <!-- Notification body for when initial backup failed -->
@@ -8127,7 +8211,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">コピー</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Signalへの招待</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Collieへの招待</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">電話の連絡先に追加する</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8139,20 +8223,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">地図を開けませんでした</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">一緒にSignalに参加しましょう</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">一緒にCollieに参加しましょう</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">回復キーのリセット</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">回復キーをリセットすると、Signal Login用の新しいキーが作成されます。この操作が必要になるのは、第三者にあなたのキーを知られた場合だけです。</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">バックアップが有効になっている場合は、メディアを含めてバックアップを再度アップロードする必要があります。「Signalのストレージを最適化」をオンにしている場合は、まずオフロードされたメディアをダウンロードする必要があります。</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">バックアップが有効になっている場合は、メディアを含めてバックアップを再度アップロードする必要があります。「Collieのストレージを最適化」をオンにしている場合は、まずオフロードされたメディアをダウンロードする必要があります。</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">続行</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">新しいキーの作成上限回数に達しました。7日後に新しい回復キーを作成できるようになります。</string>
-
-    <string name="ConversationFragment__deleted_for_me">自分の分だけ消去しました</string>
 
     <!-- EOF -->
 </resources>

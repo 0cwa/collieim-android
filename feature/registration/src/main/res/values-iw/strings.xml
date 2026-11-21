@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">הפעלת הרשאות</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">כדי שתהיה אפשרות לשלוח הודעות לאנשים שאת.ה מכיר.ה, Signal תבקש את ההרשאות האלה. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">כדי שתהיה אפשרות לשלוח הודעות לאנשים שאת.ה מכיר.ה, Collie תבקש את ההרשאות האלה. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">לא עכשיו</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">יצירת קשר עם תמיכה</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">הרשמת Signal - קוד וידוא עבור Android</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">הרשמת Collie - קוד וידוא עבור Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">לא היה ניתן לשחזר את הגיבוי</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">הגרסה הזו של Signal לא יכולה לשחזר את הגיבוי שלך. כדאי לעדכן לגרסה האחרונה ולנסות שוב.</string>
+    <string name="RemoteRestoreScreen__update_latest">הגרסה הזו של Collie לא יכולה לשחזר את הגיבוי שלך. כדאי לעדכן לגרסה האחרונה ולנסות שוב.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">עדכן את Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">עדכן את Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">לא עכשיו</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">יצירת קשר עם התמיכה</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">כשל קבוע בשחזור גיבוי של Signal ב-Android.</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">כשל קבוע בשחזור גיבוי של Collie ב-Android.</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">חשבונך ננעל כדי להגן על פרטיותך ואבטחתך. לאחר %1$d ימים של אי־פעילות בחשבונך, אפשר להירשם שוב עם מספר טלפון זה ללא צורך ב־PIN שלך. כל התוכן יימחק.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">יש לפתוח את Signal במכשיר הישן</string>
+    <string name="QuickRestoreQRScreen__step_1">יש לפתוח את Collie במכשיר הישן</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">ללחוץ על סמל המצלמה </string>
     <!-- Step 3 to quick restore -->
@@ -430,7 +430,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">הכנס את ה־PIN שלך</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">צריך להזין את ה–PIN שיצרת כשהתקנת את Signal לראשונה</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">צריך להזין את ה–PIN שיצרת כשהתקנת את Collie לראשונה</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">הזנת מחדש את הקוד שכבר שימש לאימות מספר הטלפון שלך. יש להזין את ה–PIN הייחודי שבחרת בעבר עבור חשבון ה-Signal שלך.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -461,14 +461,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">יצירת קשר עם התמיכה</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">הרשמה אל Signal - עזרה עם PIN עבור Android</string>
+    <string name="PinEntryScreen__contact_support_email_subject">הרשמה אל Collie - עזרה עם PIN עבור Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">הפעלת התראות</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal רוצה לבקש הרשאת התראות. זה מאפשר למכשיר שלך להציג התראות כשמגיעות הודעות חדשות.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie רוצה לבקש הרשאת התראות. זה מאפשר למכשיר שלך להציג התראות כשמגיעות הודעות חדשות.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">לא עכשיו</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -504,9 +504,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">יש לסרוק את הקוד הזה כדי לקשר את החשבון שלך</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">פתח את Signal בטלפון שלך</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">פתח את Collie בטלפון שלך</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">ללחוץ על תמונת הפרופיל כדי לפתוח את הגדרות Signal</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">ללחוץ על תמונת הפרופיל כדי לפתוח את הגדרות Collie</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">ללחוץ על ״מכשירים מקושרים״ ו״קישור מכשיר חדש״</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -518,7 +518,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">יצירת קוד נכשלה</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">אין לך את Signal במכשיר אחר?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">אין לך את Collie במכשיר אחר?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">יצירת חשבון</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -540,7 +540,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">העברת החשבון שלך</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">כדי להעביר את החשבון שלך, יש לפתוח את Signal במכשיר Android הישן שלך ולבחור ״העברת חשבון״.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">כדי להעביר את החשבון שלך, יש לפתוח את Collie במכשיר Android הישן שלך ולבחור ״העברת חשבון״.</string>
     <string name="DeviceTransferInstructions__continue">המשך</string>
 
     <!-- Device transfer: Setup screen -->
@@ -551,11 +551,11 @@
     <string name="DeviceTransferSetup__numbers_match">כן, המספרים תואמים</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">המספרים אינם תואמים</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">בהמתנה לאימות במכשיר הישן שלך…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal צריכה גישה לשירותי מיקום כדי למצוא את המכשיר הישן שלך ולהתחבר אליו.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie צריכה גישה לשירותי מיקום כדי למצוא את המכשיר הישן שלך ולהתחבר אליו.</string>
     <string name="DeviceTransferSetup__grant_location_permission">מתן הרשאת גישה</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal צריכה גישה לשירותי מיקום כדי למצוא את המכשיר הישן שלך ולהתחבר אליו.</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie צריכה גישה לשירותי מיקום כדי למצוא את המכשיר הישן שלך ולהתחבר אליו.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">הפעל שירותי מיקום</string>
-    <string name="DeviceTransferSetup__wifi_required">צריך להפעיל Wi–Fi כדי לאפשר ל–Signal למצוא את המכשיר הישן שלך ולהתחבר אליו.</string>
+    <string name="DeviceTransferSetup__wifi_required">צריך להפעיל Wi–Fi כדי לאפשר ל–Collie למצוא את המכשיר הישן שלך ולהתחבר אליו.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">הפעל Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">מצטערים, נראה שהמכשיר שלך לא תומך ב–Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">לשחזר גיבוי במקום</string>
@@ -572,7 +572,7 @@
     <string name="DeviceTransferProgress__transferring_data">מעביר נתונים</string>
     <string name="DeviceTransferProgress__d_messages_so_far">%1$d הודעות עד כה</string>
     <string name="DeviceTransferProgress__unable_to_transfer">לא היה ניתן להעביר</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">לא ניתן להעביר מגרסה חדשה יותר של Signal.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">לא ניתן להעביר מגרסה חדשה יותר של Collie.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">יש נתונים שלא ניתן היה להעביר עקב מגבלת מסד נתונים.</string>
     <string name="DeviceTransferProgress__transfer_failed">ההעברה נכשלה. נא לנסות שוב.</string>
     <string name="DeviceTransferProgress__try_again">ניסיון חוזר</string>

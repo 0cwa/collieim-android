@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie se ažurira…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Još niste postavili lozinku!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">Onemogući lozinku?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Trajno će te otključati Collie i obavijesti o porukama.</string>
-    <string name="ApplicationPreferencesActivity_disable">Onemogući</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Pogreška prilikom povezivanja na poslužitelj!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Kreditna ili debitna kartica</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Unesite podatke o kartici. Signal ne prikuplja niti pohranjuje vaše osobne podatke.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Broj kartice</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">MM/GG</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Nevažeći broj kartice</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">Kartica je istekla</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">Kôd je prekratak</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">Kôd je predug</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Nevažeći kôd</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Nevažeći mjesec</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Potrebno je unijeti godinu</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Nevažeća godina</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">Doniraj %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Doniraj %1$s mjesečno</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Doniraj %1$s mjesečno</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">Jednokratno: %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Potvrda donacije u tijeku</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Obrada donacije u tijeku</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Blokirati i napustiti %1$s?</string>
@@ -350,7 +362,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s je izbrisao/la ovu poruku</string>
     <string name="ConversationItem_you_deleted_this_message">Izbrisali ste ovu poruku</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Administrator %1$s izbrisao je ovu poruku</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -459,7 +470,7 @@
     <string name="ConversationActivity_error_sending_media">Pogreška prilikom slanja medijskog sadržaja</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Signal više ne podržava slanje SMS poruka.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Collie više ne podržava slanje SMS poruka.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal više ne podržava slanje SMS poruka. Pozovite korisnika %1$s u Signal da bi vaš razgovor ostao ovdje.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -515,6 +526,8 @@
     <string name="ConversationFragment_deleting_messages">Brisanje poruka…</string>
     <string name="ConversationFragment_delete_for_me">Izbriši za mene</string>
     <string name="ConversationFragment_delete_for_everyone">Izbriši za sve</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Izbrisano za mene</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Izbrisati odabranu poruku?</item>
@@ -1149,7 +1162,7 @@
     <string name="ExpiredBuildReminder_update_now">Ažuriraj sada</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Signal više nije kompatibilan s ovim uređajem. Da biste ponovno koristili Signal, ažurirajte svoj uređaj na noviju verziju Androida ili prijeđite na noviji uređaj.</string>
+    <string name="DeprecatedSdkBanner_body">Collie više nije kompatibilan s ovim uređajem. Da biste ponovno koristili Collie, ažurirajte svoj uređaj na noviju verziju Androida ili prijeđite na noviji uređaj.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Ažuriraj Collie</string>
@@ -1537,9 +1550,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Ažurirajte Signal da biste koristili poveznice grupe</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Verzija Signala koju upotrebljavate ne podržava ovu poveznicu grupe. Ažurirajte na najnoviju verziju da biste se pridružili ovoj grupi putem poveznice.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Ažuriraj Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Ažurirajte Collie da biste koristili poveznice grupe</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Verzija Colliea koju upotrebljavate ne podržava ovu poveznicu grupe. Ažurirajte na najnoviju verziju da biste se pridružili ovoj grupi putem poveznice.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Ažuriraj Collie</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Poveznica grupe je nevažeća</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2209,7 +2222,7 @@
         <item quantity="many">Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, možete stvoriti novi PIN. Možete registrirati i koristiti svoj račun, ali ćete izgubiti neke spremljene postavke poput podataka o vašem profilu.</item>
         <item quantity="other">Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, možete stvoriti novi PIN. Možete registrirati i koristiti svoj račun, ali ćete izgubiti neke spremljene postavke poput podataka o vašem profilu.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Registracija Signala - Trebate pomoć s PIN-om za Android</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Registracija Colliea - Trebate pomoć s PIN-om za Android</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">Stvorite svoj PIN</string>
@@ -2301,7 +2314,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Drugi vas nisu čuli</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Mikrofon vam je bio isključen kad je Signal radio u pozadini. Da biste to popravili, dodirnite Postavke i omogućite pozadinsku aktivnost u postavkama baterije.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Mikrofon vam je bio isključen kad je Collie radio u pozadini. Da biste to popravili, dodirnite Postavke i omogućite pozadinsku aktivnost u postavkama baterije.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">Odobriti %1$d zahtjev?</item>
@@ -2863,7 +2876,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">Nema rezultata za \'%1$s\'</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Pošalji putem Signala</string>
+    <string name="StickerManagement_menu_send_signal_pack">Pošalji putem Colliea</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Poveznica</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -3103,8 +3116,6 @@
     <string name="KeyCachingService_lock">Zaključaj Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">Medijski zapis više nije dostupan.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Nije moguće reproducirati medijske zapise.</string>
@@ -3114,7 +3125,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Pogreška u sadržaju</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Pogreška pri brisanju poruke, poruka možda još uvijek postoji</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">Podijeli</string>
 
     <!-- MessageNotifier -->
@@ -3364,7 +3374,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Ponovno registrirajte uređaj</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Ovaj uređaj više nije povezan. Ponovno povežite Signal s vašim telefonom za daljnje korištenje aplikacije.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Ovaj uređaj više nije povezan. Ponovno povežite Collie s vašim telefonom za daljnje korištenje aplikacije.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">Ponovno poveži uređaj</string>
 
@@ -3373,7 +3383,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">Ažurirajte Signal da biste nastavili koristiti uslugu plaćanja. Vaše stanje računa možda nije ažurno.</string>
+    <string name="EnclaveFailureReminder_update_signal">Ažurirajte Collie da biste nastavili koristiti uslugu plaćanja. Vaše stanje računa možda nije ažurno.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Odgovoreno na povezanom uređaju.</string>
@@ -3711,18 +3721,6 @@
     <string name="EditProfileFragment__group_name">Naziv grupe</string>
     <string name="EditProfileFragment__group_description">Opis grupe</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Ažuriraj Collie</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Ova verzija Colliea je zastarjela. Ažurirajte je odmah da biste nastavili koristiti Collie.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">Ažuriraj</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Uređaj nije registriran</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Ovaj uređaj više nije registriran. Ponovno se registrirajte kako biste izvršili promjene na svom računu.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Ponovno registriraj</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Spremi</string>
@@ -3845,7 +3843,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Informacije o podršci</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Android zahtjev za podršku</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Android zahtjev za podršku</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Nije moguće učitati zapisnike</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Budite što detaljniji kako biste nam pomogli da razumijemo problem.</string>
@@ -3921,24 +3919,15 @@
     <string name="preferences__notifications">Obavijesti</string>
     <string name="preferences__led_color_unknown">Nepoznato</string>
     <string name="preferences__silent">Bez zvuka</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Privatnost</string>
+    <string name="preferences__donate_to_signal">Donirajte Collieu</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Priče</string>
     <string name="preferences__payments">Plaćanja</string>
     <string name="preferences__linked_devices">Povezani uređaji</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Pošalji zapisnik pogreške</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Nepročitani podsjetnici</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ako je omogućeno, Collie će pokušati zaobići cenzuru. Omogućite ovu značajku samo ako ste u mjestu gdje je Collie cenzuriran.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Proxy adresa</string>
     <string name="preferences_only_use_a_proxy_if">Koristite proxy samo ako niste u mogućnosti povezati se na Signal putem mobilne ili Wi-Fi mreže.</string>
     <string name="preferences_share">Podijeli</string>
@@ -3952,9 +3941,6 @@
     <string name="preferences_success">Uspješno</string>
     <string name="preferences_failed_to_connect">Neuspješno povezivanje</string>
     <string name="preferences_enter_proxy_address">Unesite proxy adresu</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Ako omogućite ovu postavku, Collie će pokušati automatski provjeriti šifriranje privatnih razgovora.</string>
 
 
     <!-- Internal only preferences -->
@@ -4160,6 +4146,8 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s u %2$s</string>
 
     <!-- SetCurrencyFragment -->
+    <string name="SetCurrencyFragment__set_currency">Postavite valutu</string>
+    <string name="SetCurrencyFragment__all_currencies">Sve valute</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -4336,9 +4324,6 @@
     <string name="reminder_cds_permanent_error_body">Signalova usluga otkrivanja privatnih kontakata ne može obraditi kontakte na vašem telefonu.</string>
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Saznajte više</string>
-
-    <!-- media_preview -->
-
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4522,15 +4507,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Nazovi me (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Ponovno pošalji kôd (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Registracija Mollya - Potvrdni kôd za Android</string>
+    <string name="RegistrationActivity_code_support_subject">Registracija Colliea - Potvrdni kôd za Android</string>
     <string name="RegistrationActivity_incorrect_code">Pogrešan kôd</string>
     <string name="BackupUtil_never">Nikada</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Nepoznato</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Odaberite tko može vidjeti vaš broj telefona i tko vas može kontaktirati putem njega na Collieu.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">Za korištenje zaključavanja zaslona postavite PIN, uzorak ili lozinku u postavkama zaključavanja uređaja.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Morate unijeti vaš PIN za Zaključavanje registracije</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">Vaš PIN mora imati najmanje %1$d znamenki ili znakova</string>
     <string name="RegistrationActivity_too_many_attempts">Previše pokušaja</string>
@@ -4563,11 +4544,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Ovo je povezani uređaj</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Otvorite Signal na svom glavnom uređaju za upravljanje postavkama računa.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Otvorite Collie na svom glavnom uređaju za upravljanje postavkama računa.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Brisanje podataka aplikacije</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Ovime ćete izbrisati sve podatke iz Signal aplikacije koji se nalaze na ovom uređaju.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Ovime ćete izbrisati sve podatke iz Collie aplikacije koji se nalaze na ovom uređaju.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Želite li izbrisati sve podatke?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -5093,7 +5074,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">Uredi broj</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Promjena Signal broja - pomoć u vezi PIN-a za Android (v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Promjena Collie broja - pomoć u vezi PIN-a za Android (v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PIN se ne podudara</string>
@@ -5262,7 +5243,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5590,7 +5570,13 @@
 
     <string name="ImageView__badge">Značka</string>
 
+    <string name="SubscribeFragment__cancel_subscription">Otkažite pretplatu</string>
+    <string name="SubscribeFragment__confirm_cancellation">Potvrditi otkazivanje?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Iznos vam neće biti ponovno naplaćen. Vaša će značka biti uklonjena s vašeg profila na kraju razdoblja naplate.</string>
+    <string name="SubscribeFragment__not_now">Ne sada</string>
+    <string name="SubscribeFragment__confirm">Potvrdi</string>
     <string name="SubscribeFragment__update_subscription">Nadogradnja pretplate</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Vaša pretplata je otkazana.</string>
     <string name="SubscribeFragment__update_subscription_question">Nadograditi pretplatu?</string>
     <string name="SubscribeFragment__update">Ažuriraj</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Danas će vam se naplatiti puni iznos pretplate (%1$s). Vaša nova pretplata obnavljat će se mjesečno.</string>
@@ -5602,35 +5588,66 @@
     <string name="Subscription__expires_s">Istječe %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Kao nezavisna neprofitna organizacija, Signal garantira privatnost vaših poruka i poziva. Bez oglasa, bez pratitelja i bez nadzora. Donirajte već danas i podržite Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Nakon donacije možete zakačiti značku podrške na svoj profil</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Vaša privatnost je naša misija</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal je neprofitna organizacija.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Hvala vam na podršci!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Osvojili ste značku donatora! Prikažite je na svom profilu i iskažite svoju podršku Signalu.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Možete i</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">postati mjesečni pretplatnik.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Prikaži bedž na svom profilu</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Istakni ovu značku</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Nastavi</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Kada imate više od jedne značke, možete odabrati koju želite istaknuti kako bi je drugi mogli vidjeti na vašem profilu.</string>
 
     <!-- Button label for creating a donation -->
+    <string name="ManageDonationsFragment__donate_to_signal">Donirajte Signalu</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">Više</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Moja podrška</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Potvrde o donacijama</string>
+    <string name="ManageDonationsFragment__badges">Značke</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Najčešća pitanja donatora</string>
     <!-- Preference heading for other ways to donate -->
+    <string name="ManageDonationsFragment__other_ways_to_give">Druge opcije doniranja</string>
     <!-- Preference label to launch badge gifting -->
+    <string name="ManageDonationsFragment__donate_for_a_friend">Donirajte u ime prijatelja</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Donaciju nije bilo moguće potvrditi</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Vašu donaciju od %1$s mjesečno nije bilo moguće potvrditi. Provjerite svoju aplikaciju mobilnog bankarstva kako biste odobrili plaćanje putem iDEAL | Wero platforme.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Vašu jednokratnu donaciju od %1$s nije bilo moguće potvrditi. Provjerite svoju aplikaciju mobilnog bankarstva kako biste odobrili plaćanje putem iDEAL | Wero platforme.</string>
 
+    <string name="Boost__enter_custom_amount">Unesi drugi iznos</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Najmanji iznos koji možete donirati je %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/mjesečno</string>
+    <string name="MySupportPreference__renews_s">Obnavlja se %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">Obrada transakcije…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Nije moguće dodati značku. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">Molimo Vas da kontaktirate podršku</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Potvrda plaćanja u tijeku</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">Čekamo potvrdu vaše uplate putem bankovnog transfera od %1$s. Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Saznajte više</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Provjera pretplate…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Ažuriraj Collie</string>
@@ -5667,9 +5684,11 @@
     <string name="Subscription__get_a_s_badge">Osvojite značku %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Obrada donacije u tijeku…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Obnavljajuća donacija %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5688,8 +5707,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Pogreška pri obradi donacije</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Promijenite način plaćanja ili se obratite svojoj banci za više informacija.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Saznajte više</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Pogreška pri obradi donacije. %1$s</string>
     <string name="DonationsErrors__your_payment">Vašu donaciju nije bilo moguće obraditi te vam račun nije terećen. Molimo, pokušajte ponovno.</string>
     <string name="DonationsErrors__still_processing">Obrada u tijeku</string>
     <string name="DonationsErrors__couldnt_add_badge">Nije moguće dodati značku</string>
@@ -5707,6 +5729,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Vaša donacija je obrađena, ali Signal nije mogao poslati vašu poruku uz donaciju. Molimo, kontaktirajte podršku.</string>
     <string name="DonationsErrors__your_badge_could_not">Vašu značku nije bilo moguće dodati na vaš profil, ali možda vam je naplaćena. Molimo kontaktirajte korisničku podršku.</string>
     <string name="DonationsErrors__your_payment_is_still">Vaša se donacija još uvijek obrađuje. Ovisno o brzini vaše mreže, to može potrajati nekoliko minuta.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Otkazivanje pretplate nije uspjelo</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Za otkazivanje pretplate potrebna je internetska veza.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Vaš uređaj ne podržava donacije unutar aplikacije, stoga se ne možete pretplatiti i osvojiti značku. I dalje možete podržati Signal donacijom na našoj internetskoj stranici.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Pogreška mreže. Provjerite vezu i pokušajte ponovno.</string>
     <string name="NetworkFailure__retry">Pokušajte ponovno</string>
@@ -5715,6 +5739,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Korisnik ne može primati donacije dok ne nadogradi aplikaciju Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Vašu donaciju putem platforme iDEAL | Wero nije bilo moguće obraditi. Promijenite način plaćanja ili se obratite svojoj banci za više informacija.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Donacija u ime korisnika %1$s</string>
@@ -5912,12 +5937,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Uključen do %1$s</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Otvaranje alata za odabir nije uspjelo.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Kako biste omogućili obavijesti, Collie treba dopuštenje za njihovo prikazivanje.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">Uključi</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ovo je službeni i jedini razgovor sa Signalom</string>
@@ -5925,19 +5944,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Budite u toku s novostima i bilješkama o novim verzijama aplikacije</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">Sve aktivnosti</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Sve</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Obnavljajuća</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">Jednokratno</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">U ime prijatelja</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Donacija u ime prijatelja</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Vrsta donacije</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Datum plaćanja</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Podijeli račun</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Ako ste ponovno instalirali Collie, potvrde o prijašnjim donacijama neće biti dostupne.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Potvrda o donaciji</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Količina</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Hvala što podržavate Signal. Vaš doprinos podržava našu misiju razvoja tehnologije otvorenog koda za zaštitu privatnosti, koja štiti slobodu izražavanja i omogućuje sigurnu globalnu komunikaciju milijunima ljudi širom svijeta. Ako imate prebivalište u Sjedinjenim Američkim Državama, sačuvajte ovu potvrdu za poreznu dokumentaciju. Signal Technology Foundation je neprofitna organizacija oslobođena plaćanja poreza u Sjedinjenim Američkim Državama prema odjeljku 501c3 Zakona o internim prihodima. Naš federalni porezni broj je 82-4506840. Signal nije dostavio nikakav proizvod niti pružio nikakvu uslugu u zamjenu za ovaj doprinos.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Nema računa</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6618,24 +6651,40 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Ponosno neprofitna organizacija</string>
     <!-- Continue button label -->
+    <string name="DonateToSignalFragment__continue">Nastavi</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Podržite privatnu razmjenu poruka donacijom kako bi Signal ostao nezavisan i bez oglasa.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Vaša donacija je na čekanju</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana. Prije ažuriranja pretplate pričekajte završetak transakcije.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana. Pričekajte završetak transakcije prije nego što izvršite novu donaciju.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Vaša se donacija još uvijek obrađuje. Ovisno o brzini vaše mreže, to može potrajati nekoliko minuta. Prije ažuriranja pretplate pričekajte završetak transakcije.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Vaša se donacija još uvijek obrađuje. Ovisno o brzini vaše mreže, to može potrajati nekoliko minuta. Pričekajte završetak transakcije prije nego što izvršite novu donaciju.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Vaša donacija putem platforme iDEAL | Wero još uvijek se obrađuje. Provjerite svoju aplikaciju mobilnog bankarstva kako biste odobrili plaćanje prije nego što izvršite novu donaciju.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Iznos donacije je previsok</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Moguće je poslati do %1$s putem bankovnog transfera. Pokušajte s nižim iznosom ili drugim načinom plaćanja.</string>
 
     <!-- Donation pill toggle monthly text -->
+    <string name="DonationPillToggle__monthly">Mjesečna donacija</string>
     <!-- Donation pill toggle one-time text -->
+    <string name="DonationPillToggle__one_time">Jednokratno</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Donirajte %1$s mjesečno Signalu</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Osvojite značku %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Donirajte %1$s Signalu</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Osvojite značku %1$s na %2$d dan</item>
@@ -6644,69 +6693,118 @@
         <item quantity="other">Osvojite značku %1$s na %2$d dana</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Bankovni transfer</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kreditna ili debitna kartica</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Donirajte u ime prijatelja</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Napustiti Collie radi potvrde plaćanja?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Nakon potvrde, vratite se na Collie kako bismo dovršili obradu vaše donacije.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Bit ćete preusmjereni na %1$s. Nakon potvrde, vratite se na Collie kako bismo dovršili obradu vaše donacije.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Bankovni transfer</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe obrađuje donacije u korist Signala. Signal ne prikuplja niti pohranjuje vaše osobne podatke. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Saznajte više</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Pristajem</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Pročitaj više</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Učitavanje naloga nije uspjelo</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Unesite svoje bankovne podatke i adresu e-pošte. Stripe će koristiti vašu adresu e-pošte za slanje ažuriranja o vašoj donaciji. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Saznajte više</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Vlasnik bankovnog računa</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">E-pošta</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Pronađi informacije o računu</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Doniraj %1$s mjesečno</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">Doniraj %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN je prekratak</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN je predug</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Navedeni državni kôd IBAN-a nije podržan</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">Navedeni IBAN nije važeći</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimalno 3 znaka</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Nevažeća adresa e-pošte</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Unesite svoje ime i adresu e-pošte. Stripe će koristiti vašu adresu e-pošte za slanje ažuriranja o vašoj donaciji. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Unesite svoje bankovne podatke. Signal ne prikuplja niti pohranjuje vaše osobne podatke. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Saznajte više</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Vlasnik bankovnog računa</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">E-pošta</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Potvrdite svoju donaciju putem platforme iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Da biste postavili svoju automatsku mjesečnu donaciju, dodirnite \"Nastavi\" i potvrdite naplatu u iznosu od 0,01 € u svojoj banci. Taj će vam iznos automatski biti vraćen, a omogućuje da se naplata vaše mjesečne donacije u iznosu od %1$s € izvrši s vašeg računa.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Nastavi</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Pronađite informacije o vašem računu</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Potražite svoj IBAN na vrhu bankovnog izvoda. IBAN se sastoji od maksimalno 34 znaka. Ime koje unesete mora odgovarati vašem punom imenu na vašem bankovnom računu. Za više informacija obratite se svojoj banci.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Potvrda donacije u tijeku</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Vaša mjesečna donacija je na čekanju. Moći ćete prikazati značku %1$s na vašem profilu kada zaprimimo vašu donaciju.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Vaša jednokratna donacija je na čekanju. Moći ćete prikazati značku %1$s na vašem profilu kada zaprimimo vašu donaciju.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Saznajte više</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Gotovo</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Donaciju nije bilo moguće obraditi</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Imamo problema s obradom vašeg bankovnog transfera. Vaš račun nije terećen. Promijenite način plaćanja ili se obratite svojoj banci za više informacija.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Pokušajte ponovno</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Ne sada</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Donacija je izvršena</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Vaša uplata putem bankovnog transfera je zaprimljena. Možete postaviti ovu značku na vaš profil kako biste pokazali vašu podršku.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">Otkazivanje…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Obrađeno je previše kontakata</string>
@@ -6740,6 +6838,11 @@
     <string name="PaymentMessageView_s_sent_you">Korisnik %1$s poslao vam je</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Vaši podaci su privatni</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal ne prikuplja niti pohranjuje vaše osobne podatke kada izvršite donaciju.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Kao procesor plaćanja za primanje vaših donacija koristimo Stripe. Ne pristupamo informacijama koje dijelite s njima, ne pohranjujemo ih niti spremamo.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal ne povezuje i ne može povezati vašu donaciju s vašim Signal računom.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Hvala vam na vašoj podršci!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6754,6 +6857,8 @@
     <string name="GroupStoryEducationSheet__next">Sljedeće</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Doniraj</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Plaćanje</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6977,7 +7082,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Zatraži odobrenje administratora</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Podijeli poveznicu putem Signala</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Podijeli poveznicu putem Colliea</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Kopiraj poveznicu</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -7132,9 +7237,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Sve je spremno. Započnite sigurnosno kopiranje.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Ovo bi moglo potrajati. Tijekom sigurnosnog kopiranja možete normalno koristiti Signal.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Ovo bi moglo potrajati. Tijekom sigurnosnog kopiranja možete normalno koristiti Collie.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimizirajte Signalovu pohranu</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimizirajte Collieovu pohranu</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">Nekorišteni medijski zapisi bit će premješteni, ali moguće ih je vratiti iz sigurnosne kopije u bilo kojem trenutku.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -7152,7 +7257,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Da biste preuzeli sigurnosnu kopiju, instalirajte novu verziju Colliea. Otvorite aplikaciju i dodirnite „Vrati iz sigurnosne kopije“, a zatim pronađite datoteku sigurnosne kopije."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Trenutno koristite optimizaciju Signalove pohrane. Ako želite da se svi medijski zapisi sigurnosno kopiraju na vašem uređaju, morate isključiti optimizaciju.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Trenutno koristite optimizaciju Collieove pohrane. Ako želite da se svi medijski zapisi sigurnosno kopiraju na vašem uređaju, morate isključiti optimizaciju.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Prikaži postavke</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -7211,10 +7316,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Dopustite obavijesti preko cijelog zaslona</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Mjesečna donacija je otkazana</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Vaša obnavljajuća mjesečna donacija je otkazana. %1$s\n\nVaša značka više se neće prikazivati na vašem profilu. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Saznajte više</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Obnovi pretplatu</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Ne sada</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7236,7 +7346,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Nevažeći broj telefona</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Pozovi u Signal</string>
+    <string name="FindByActivity__invite_to_signal">Pozovi u Collie</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">Korisničko ime nije pronađeno</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7380,7 +7490,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Nije moguće iskoristiti vašu pretplatu na sigurnosno kopiranje</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Došlo je do pogreške i sigurnosno kopiranje podataka nije dovršeno. Provjerite imate li najnoviju verziju Signal aplikacije i pokušajte ponovno. Ako se ovaj problem nastavi, obratite se korisničkoj podršci.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Došlo je do pogreške i sigurnosno kopiranje podataka nije dovršeno. Provjerite imate li najnoviju verziju Collie aplikacije i pokušajte ponovno. Ako se ovaj problem nastavi, obratite se korisničkoj podršci.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Došlo je do pogreške i sigurnosno kopiranje podataka nije dovršeno. Ako se ovaj problem nastavi, obratite se korisničkoj podršci.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7462,7 +7572,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Posljednje sigurnosno kopiranje podataka nije uspjelo. Provjerite je li vaš mobilni uređaj spojen na Wi-Fi i pokušajte ponovno dodirom na \"Izradi sigurnosnu kopiju sada\".</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Posljednje sigurnosno kopiranje podataka nije uspjelo. Provjerite imate li instaliranu najnoviju verziju Signala i pokušajte ponovno.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Posljednje sigurnosno kopiranje podataka nije uspjelo. Provjerite imate li instaliranu najnoviju verziju Colliea i pokušajte ponovno.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Broj poruka na vašem uređaju premašuje ograničenje pohrane. Izbrišite dio poruka i pokušajte ponovno.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7488,6 +7598,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7514,34 +7625,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Saznajte više</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Ne možete se pretplatiti na zaštićene sigurnosne kopije Signala jer vaš telefon ne podržava Google Play usluge. Obratite se proizvođaču telefona za pomoć.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Ograničenje broja poruka u razgovoru</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Brisanje povijesti poruka</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Poruke starije od odabranog vremenskog razdoblja bit će trajno izbrisane.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Poruke koje prelaze odabrana ograničenja bit će trajno izbrisane.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">Primijeni ograničenja na povezane uređaje</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Kada su omogućena, ograničenja broja poruka izbrisat će i poruke s povezanih uređaja.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collieova pohrana</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizirajte Collieovu pohranu</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Nekorišteni medijski zapisi bit će uklonjeni, ali moguće ih je vratiti iz sigurnosne kopije u bilo kojem trenutku.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Optimizacija pohrane dostupna je samo uz plaćenu pretplatu na zaštićeno sigurnosno kopiranje Signala. Vaša pretplata se trenutno obrađuje i još nije aktivna. Pokušajte ponovno kasnije.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Medijski zapisi bit će uklonjeni iz sigurnosne kopije na uređaju</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Optimizacija Signalove pohrane premjestit će vaše medijske zapise s vašeg uređaja. Datoteke je moguće ponovno preuzeti u bilo kojem trenutku. Također, stariji medijski zapisi bit će uklonjeni iz sigurnosne kopije na uređaju.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">Uključi</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7943,7 +8026,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Ovaj ključ će zamijeniti vaš ključ za sigurnosno kopiranje na uređaju.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Ključ za oporavak je 64-znamenkasti kôd koji vam omogućuje vraćanje sigurnosnih kopija kada ponovno instalirate Signal.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Ključ za oporavak je 64-znamenkasti kôd koji vam omogućuje vraćanje sigurnosnih kopija kada ponovno instalirate Collie.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Isti je kao i ključ za oporavak na vašem uređaju.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7981,7 +8064,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Nije postavljen upravitelj lozinki ili upravitelj lozinki koji koristite nije podržan.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Prethodno ste odabrali da ne želite spremati lozinke za Signal u Google upravitelju lozinki. U postavkama Google upravitelja lozinki uklonite Signal iz liste odbijenih web-mjesta i aplikacija i pokušajte ponovno.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Prethodno ste odabrali da ne želite spremati lozinke za Collie u Google upravitelju lozinki. U postavkama Google upravitelja lozinki uklonite Collie iz liste odbijenih web-mjesta i aplikacija i pokušajte ponovno.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Otvori postavke</string>
     <!-- Action button label -->
@@ -8132,7 +8215,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Došlo je do pogreške mreže prilikom prijenosa sigurnosne kopije za Signal Android</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Došlo je do pogreške mreže prilikom prijenosa sigurnosne kopije za Collie Android</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -8162,7 +8245,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Prijenos računa nastavit će se na drugom uređaju.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Operativni sustav uređaja koji prima prijenos nije ažuran. Ažurirajte Signal na tom uređaju i pokušajte ponovno.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Operativni sustav uređaja koji prima prijenos nije ažuran. Ažurirajte Collie na tom uređaju i pokušajte ponovno.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Priprema uređaja</string>
@@ -8207,6 +8290,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Doniraj</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -8239,7 +8323,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">Prostor za pohranu sigurnosne kopije je popunjen</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Dosegli ste ograničenje pohrane sigurnosnih kopija. Oslobodite prostor u Signalu kako biste mogli nastaviti sigurnosno kopirati razgovore i medijske zapise.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Dosegli ste ograničenje pohrane sigurnosnih kopija. Oslobodite prostor u Collieu kako biste mogli nastaviti sigurnosno kopirati razgovore i medijske zapise.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Sigurnosno kopiranje nije uspjelo</string>
     <!-- Notification body for when initial backup failed -->
@@ -8703,7 +8787,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Kopiraj</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Pozovi u Signal</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Pozovi u Collie</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">Dodaj u kontakte telefona</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8715,20 +8799,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Otvaranje karata nije uspjelo</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Pridruži mi se na Signalu</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Pridruži mi se na Collieu</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">Resetirajte svoj ključ za oporavak</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">Resetiranjem ključa za oporavak stvorit će se novi ključ za vaš Signal Login. Ovaj korak je potreban samo ako je netko drugi saznao vaš ključ.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Ako ste omogućili sigurnosno kopiranje, morat ćete ponovno prenijeti sigurnosnu kopiju, uključujući medijske zapise. Ako koristite optimizaciju Signal pohrane, najprije ćete morati preuzeti medijske zapise koje ste premjestili.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Ako ste omogućili sigurnosno kopiranje, morat ćete ponovno prenijeti sigurnosnu kopiju, uključujući medijske zapise. Ako koristite optimizaciju Collie pohrane, najprije ćete morati preuzeti medijske zapise koje ste premjestili.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Nastavi</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Iskoristili ste maksimalan broj novih ključeva koje možete stvoriti. Moći ćete stvoriti novi ključ za oporavak za 7 dana.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Izbrisano za mene</string>
 
     <!-- EOF -->
 </resources>

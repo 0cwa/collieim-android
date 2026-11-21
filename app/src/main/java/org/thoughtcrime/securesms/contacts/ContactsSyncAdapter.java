@@ -15,11 +15,11 @@ import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.SignalE164Util;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +46,7 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     if (KeyCachingService.isLocked()) {
       Log.i(TAG, "Scheduling directory refresh job at next startup.");
-      TextSecurePreferences.removeDirectoryRefreshTime(context);
+      PlainTextKeyValueStore.clearDirectoryRefreshTime();
       return;
     }
 

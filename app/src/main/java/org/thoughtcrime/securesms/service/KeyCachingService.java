@@ -31,23 +31,24 @@ import android.os.SystemClock;
 
 import androidx.core.app.NotificationCompat;
 
-import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.ServiceUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
+import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
 import org.signal.devicetransfer.TransferStatus;
 import org.signal.locale.AppLocale;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.DummyActivity;
 import org.thoughtcrime.securesms.MainActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
-import org.thoughtcrime.securesms.util.DynamicTheme;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.notifications.NotificationIds;
+import org.thoughtcrime.securesms.util.DynamicTheme;
 
 import java.util.concurrent.TimeUnit;
 
@@ -199,9 +200,9 @@ public class KeyCachingService extends Service {
 
   private void startTimeoutIfAppropriate() {
     if (!KeyCachingService.isLocked()
-        && TextSecurePreferences.isPassphraseLockEnabled(this)
-        && TextSecurePreferences.getPassphraseLockTrigger(this).isTimeoutEnabled()) {
-      long lockTimeoutSeconds = TextSecurePreferences.getPassphraseLockTimeout(this);
+        && PlainTextKeyValueStore.getPassphraseLockEnabled()
+        && SignalStore.molly().getPassphraseLockTrigger().isTimeoutEnabled()) {
+      long lockTimeoutSeconds = SignalStore.molly().getPassphraseLockTimeout();
       if (lockTimeoutSeconds > 0) {
         scheduleTimeout(lockTimeoutSeconds);
       } else {
@@ -238,7 +239,7 @@ public class KeyCachingService extends Service {
   }
 
   private void foregroundService() {
-    if (!TextSecurePreferences.isPassphraseLockEnabled(this)) {
+    if (!PlainTextKeyValueStore.getPassphraseLockEnabled()) {
       stopForeground(true);
       return;
     }

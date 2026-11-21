@@ -75,6 +75,9 @@ private fun Project.registerTranslationsTask(baseStringsFile: File): TaskProvide
     }
   }
   val rootDirProvider = provider { rootProject.rootDir }
+  // COLLIE: The brand and domain are properties so forks can reuse the task unchanged.
+  val brandProvider = providers.gradleProperty("mollyify.brand").orElse("Molly")
+  val domainProvider = providers.gradleProperty("mollyify.domain").orElse("molly.im")
 
   val task = tasks.register("updateTranslations") {
     group = "Molly"
@@ -94,6 +97,8 @@ private fun Project.registerTranslationsTask(baseStringsFile: File): TaskProvide
       val baseStringsFile = baseFileProvider.get()
       val translationFiles = translationFilesProvider.get()
       val rootDir = rootDirProvider.get()
+      val brand = brandProvider.get()
+      val domain = domainProvider.get()
 
       // Gather all string names containing "mollyify" attribute
       val (_, baseStrings) = XmlRes.parseStrings(baseStringsFile)
@@ -109,8 +114,9 @@ private fun Project.registerTranslationsTask(baseStringsFile: File): TaskProvide
       fun replaceSignalRefs(elem: Element): Boolean {
         val oldContent = elem.textContent
         elem.textContent = elem.textContent
-          .replace("signal.org", "molly.im")
-          .replace("Signal", "Molly")
+          .replace("signal.org", domain)
+          .replace("Signal", brand)
+          .replace(Regex("Molly(?!Socket)"), brand)
         return oldContent != elem.textContent
       }
 

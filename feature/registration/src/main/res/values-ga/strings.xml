@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Tabhair ceadanna</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Chun cabhrú leat teachtaireacht a sheoladh chuig daoine a bhfuil aithne agat orthu, iarrfaidh Signal na ceadanna sin. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Chun cabhrú leat teachtaireacht a sheoladh chuig daoine a bhfuil aithne agat orthu, iarrfaidh Collie na ceadanna sin. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Ní anois</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Déan Teagmháil leis an bhFoireann Tacaíochta</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Clárúchán Signal – Cód Deimhniúcháin ar Android</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Clárúchán Collie – Cód Deimhniúcháin ar Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Níorbh fhéidir an cúltaca seo a aischur</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Ní féidir leis an leagan seo de Signal do chúltaca a aischur. Nuashonraigh chuig an leagan is déanaí agus triail arís é.</string>
+    <string name="RemoteRestoreScreen__update_latest">Ní féidir leis an leagan seo de Collie do chúltaca a aischur. Nuashonraigh chuig an leagan is déanaí agus triail arís é.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Nuashonraigh Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Nuashonraigh Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Ní anois</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Déan teagmháil leis an bhfoireann tacaíochta</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Teip bhuan le haischur Chúltaca Signal Android</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Teip bhuan le haischur Chúltaca Collie Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Glasáladh do chuntas chun do phríobháideachas agus slándáil a chosaint. Tar éis %1$d lá neamhghníomhaíochta i do chuntas beidh tú in ann an uimhir ghutháin seo a athchlárú gan do UAP a bheith de dhíth ort. Scriosfar an t-ábhar ar fad atá ann.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Oscail Signal ar do sheanghléas</string>
+    <string name="QuickRestoreQRScreen__step_1">Oscail Collie ar do sheanghléas</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Tapáil deilbhín an cheamara </string>
     <!-- Step 3 to quick restore -->
@@ -431,7 +431,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Cuir isteach do UAP</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Cuir isteach an UAP a chruthaigh tú nuair a shuiteáil tú Signal den chéad uair</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Cuir isteach an UAP a chruthaigh tú nuair a shuiteáil tú Collie den chéad uair</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Chuir tú an cód isteach athuair, a úsáideadh cheana féin chun d\'uimhir ghutháin a fhíorú. Cuir isteach an UAP uathúil Signal a roghnaigh tú roimhe do do chuntas.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -463,14 +463,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Déan teagmháil leis an bhfoireann tacaíochta</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Clárúchán Signal – Cabhair de Dhíth le UAP ar Android</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Clárúchán Collie – Cabhair de Dhíth le UAP ar Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Ceadaigh Fógraí</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Ba mhaith le Signal an cead fógraí a iarraidh. Ceadaíonn sé sin do do ghléas foláirimh a thaispeáint ar theacht teachtaireachtaí nua.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Ba mhaith le Collie an cead fógraí a iarraidh. Ceadaíonn sé sin do do ghléas foláirimh a thaispeáint ar theacht teachtaireachtaí nua.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Ní anois</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -506,9 +506,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Scan an cód seo le do chuntas a nascadh</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Oscail Signal ar do ghuthán</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Oscail Collie ar do ghuthán</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Tapáil do phictiúr próifíle le Socruithe Signal a oscailt</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Tapáil do phictiúr próifíle le Socruithe Collie a oscailt</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Tapáil \"Gléasanna nasctha\" agus \"Nasc gléas nua\"</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -520,7 +520,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Theip ar ghiniúint cóid</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Nach bhfuil Signal agat ar ghléas eile?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Nach bhfuil Collie agat ar ghléas eile?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Cruthaigh cuntas</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -542,7 +542,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Aistrigh do chuntas</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Chun do chuntas a aistriú, oscail Signal ar do sheanghléas Android agus roghnaigh Aistrigh Cuntas.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Chun do chuntas a aistriú, oscail Collie ar do sheanghléas Android agus roghnaigh Aistrigh Cuntas.</string>
     <string name="DeviceTransferInstructions__continue">Lean ar aghaidh</string>
 
     <!-- Device transfer: Setup screen -->
@@ -553,11 +553,11 @@
     <string name="DeviceTransferSetup__numbers_match">Is ionann na huimhreacha</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Ní hionann na huimhreacha</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Ag fanacht le do sheanghléas fíorú…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Tá cead suímh ag teastáil ó Signal chun do sheanghléas a aimsiú agus ceangal leis.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Tá cead suímh ag teastáil ó Collie chun do sheanghléas a aimsiú agus ceangal leis.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Tabhair cead</string>
-    <string name="DeviceTransferSetup__location_services_required">Tá cumasú seirbhísí suímh ag teastáil ó Signal chun do sheanghléas a aimsiú agus ceangal leis.</string>
+    <string name="DeviceTransferSetup__location_services_required">Tá cumasú seirbhísí suímh ag teastáil ó Collie chun do sheanghléas a aimsiú agus ceangal leis.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Cas air seirbhísí suímh</string>
-    <string name="DeviceTransferSetup__wifi_required">Ní mór go mbeadh Wi-Fi casta air ionas gur féidir le Signal do sheanghléas a aimsiú agus ceangal leis.</string>
+    <string name="DeviceTransferSetup__wifi_required">Ní mór go mbeadh Wi-Fi casta air ionas gur féidir le Collie do sheanghléas a aimsiú agus ceangal leis.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Cas Wi-Fi air</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Ár leithscéal, is cosúil nach dtacaíonn do gléas le Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Aischuir cúltaca ina ionad sin</string>
@@ -574,7 +574,7 @@
     <string name="DeviceTransferProgress__transferring_data">Sonraí á n-aistriú</string>
     <string name="DeviceTransferProgress__d_messages_so_far">%1$d de theachtaireachtaí go nuige seo</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Ní féidir aistriú</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Ní féidir aistriú ó leagan níos nuaí de Signal.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Ní féidir aistriú ó leagan níos nuaí de Collie.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Níorbh fhéidir roinnt sonraí a aistriú de dheasca srian bunachar sonraí.</string>
     <string name="DeviceTransferProgress__transfer_failed">Theip ar an aistriú. Triail arís.</string>
     <string name="DeviceTransferProgress__try_again">Triail arís</string>

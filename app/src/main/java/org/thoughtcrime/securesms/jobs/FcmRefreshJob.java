@@ -30,8 +30,8 @@ import androidx.core.app.NotificationManagerCompat;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.PendingIntentFlags;
+import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException;
 import org.thoughtcrime.securesms.R;
@@ -121,38 +121,47 @@ public class FcmRefreshJob extends BaseJob {
     int result = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
     Log.i(TAG, "Play Services availability status: " + result);
 
-    if (result == ConnectionResult.SUCCESS) {
-      Optional<String> token = FcmUtil.getTokenWithoutAvailCheck(context);
-
-      if (token.isPresent()) {
-        cancelFcmFailureNotification(context);
-
-        String oldToken = SignalStore.account().getFcmToken();
-
-        if (!token.get().equals(oldToken)) {
-          int oldLength = oldToken != null ? oldToken.length() : -1;
-          Log.i(TAG, "Token changed. oldLength: " + oldLength + "  newLength: " + token.get().length());
-        } else {
-          Log.i(TAG, "Token didn't change.");
-        }
-
-        RequestResultUtil.successOrThrowNoError(SignalNetwork.accountApi().setFcmToken(token.get()));
-        SignalStore.account().setFcmToken(token.get());
-        if (oldToken == null) {
-          AppDependencies.resetNetwork(true);
-        }
-      } else {
-        throw new RetryLaterException(new IOException("Failed to retrieve a token."));
-      }
-    } else if (result == ConnectionResult.SERVICE_UPDATING) {
+    if (result == ConnectionResult.SERVICE_UPDATING) {
       throw new RetryLaterException();
-    } else {
+    }
+
+    if (result != ConnectionResult.SUCCESS) {
+      // MOLLY: Play Services unavailability does not necessarily invalidate the token with FCM.
+      // Preserve the server registration so FCM can recover; only stop using it locally until
+      // a later refresh re-registers it.
       SignalStore.account().invalidateFcmToken();
       notifyFcmFailure(result);
+      EventBus.getDefault().post(PushServiceEvent.INSTANCE);
+      return;
+    }
+
+    Optional<String> token = FcmUtil.getTokenWithoutAvailCheck(context);
+
+    if (token.isPresent()) {
+      cancelFcmFailureNotification(context);
+
+      String oldToken = SignalStore.account().getFcmToken();
+
+      if (!token.get().equals(oldToken)) {
+        int oldLength = oldToken != null ? oldToken.length() : -1;
+        Log.i(TAG, "Token changed. oldLength: " + oldLength + "  newLength: " + token.get().length());
+      } else {
+        Log.i(TAG, "Token didn't change.");
+      }
+
+      RequestResultUtil.successOrThrowNoError(SignalNetwork.accountApi().setFcmToken(token.get()));
+      SignalStore.account().setFcmToken(token.get());
+
+      if (oldToken == null) {
+        AppDependencies.resetNetwork(true);
+      }
+    } else {
+      throw new RetryLaterException(new IOException("Failed to retrieve a token."));
     }
 
     EventBus.getDefault().post(PushServiceEvent.INSTANCE);
   }
+
 
   @Override
   public void onFailure() {
@@ -177,6 +186,7 @@ public class FcmRefreshJob extends BaseJob {
     builder.setContentText(context.getString(R.string.GcmRefreshJob_switch_to_an_alternative_push_service_in_settings_notifications));
     builder.setTicker(context.getString(R.string.GcmRefreshJob_unable_to_register_with_Google_Play_Services));
     builder.setVibrate(new long[] {0, 1000});
+    builder.setOnlyAlertOnce(true);
     builder.setContentIntent(pendingIntent);
 
     ((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE))

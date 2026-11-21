@@ -42,6 +42,7 @@ import org.thoughtcrime.securesms.avatar.AvatarImage
 import org.thoughtcrime.securesms.events.CallParticipant
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.ringrtc.CameraState
+import org.signal.core.ui.R as CoreUiR
 
 private val textShadow = Shadow(
   color = Color(0f, 0f, 0f, 0.25f),
@@ -116,7 +117,7 @@ fun IncomingCallScreen(
         modifier = Modifier.padding(callTypePadding)
       ) {
         Icon(
-          painter = painterResource(R.drawable.ic_collie_notification_mask),
+          painter = painterResource(CoreUiR.drawable.ic_collie_notification_mask),
           contentDescription = null,
           modifier = Modifier.padding(end = 6.dp).size(15.dp)
         )

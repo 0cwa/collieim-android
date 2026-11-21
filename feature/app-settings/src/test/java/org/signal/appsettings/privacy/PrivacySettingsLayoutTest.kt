@@ -14,18 +14,28 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
+/** Stress-tests Molly's privacy screen, including Collie's inline network section. */
 class PrivacySettingsLayoutTest : SignalLayoutStressTest() {
 
   private val populated = PrivacySettingsState(
     blockedCount = 1234,
+    blockUnknown = true,
     readReceipts = true,
     typingIndicators = true,
     universalExpireTimer = 4.days,
-    screenLock = true,
-    screenLockTimeout = 6.days + 23.hours,
+    passphraseLock = true,
+    passphraseLockTriggerValues = setOf("timeout"),
+    passphraseLockTriggerOptions = listOf(
+      PassphraseLockTriggerOption("timeout", "After a period of inactivity"),
+      PassphraseLockTriggerOption("screen_off", "When the screen turns off")
+    ),
+    isPassphraseLockTimeoutEnabled = true,
+    passphraseLockTimeout = 6.days + 23.hours,
+    biometricScreenLock = true,
     screenSecurity = true,
     incognitoKeyboard = true,
-    paymentLock = true
+    networkConnectionStatus = PrivacySettingsState.NetworkConnectionStatus.Failed,
+    proxySummary = PrivacySettingsState.ProxySummary.Socks5("proxy.example.invalid", 9050)
   )
 
   @Test
@@ -39,33 +49,28 @@ class PrivacySettingsLayoutTest : SignalLayoutStressTest() {
   }
 
   @Test
-  fun `insecure device without a phone number`() = assertPassesLayoutChecks {
-    Screen(populated.copy(isDeviceSecure = false, hasPhoneNumber = false))
+  fun `without a phone number and with a forced secure window`() = assertPassesLayoutChecks {
+    Screen(populated.copy(hasPhoneNumber = false, screenSecurity = false, isScreenSecurityForced = true))
   }
 
   @Test
-  fun `legacy passphrase`() = assertPassesLayoutChecks {
-    Screen(populated.copy(isObsoletePassphraseEnabled = true, isObsoletePassphraseTimeoutEnabled = true, obsoletePassphraseTimeout = 30.minutes))
+  fun `checking the connection through a proxy`() = assertPassesLayoutChecks {
+    Screen(
+      populated.copy(
+        passphraseLockTimeout = 30.minutes,
+        networkConnectionStatus = PrivacySettingsState.NetworkConnectionStatus.Checking(throughProxy = true)
+      )
+    )
   }
 
   @Test
-  fun `confirming passphrase disable`() = assertPassesLayoutChecks {
-    Screen(populated.copy(isObsoletePassphraseEnabled = true, dialog = PrivacySettingsState.Dialog.ConfirmDisablePassphrase))
-  }
-
-  @Test
-  fun `picking a passphrase timeout`() = assertPassesLayoutChecks {
-    Screen(populated.copy(isObsoletePassphraseEnabled = true, dialog = PrivacySettingsState.Dialog.PassphraseTimeout))
-  }
-
-  @Test
-  fun `payment lock needs device security`() = assertPassesLayoutChecks {
-    Screen(populated.copy(isDeviceSecure = false, dialog = PrivacySettingsState.Dialog.PaymentLockNeedsDeviceSecurity))
+  fun `picking automatic lockdown triggers`() = assertPassesLayoutChecks {
+    Screen(populated.copy(dialog = PrivacySettingsState.Dialog.AutomaticLockdown))
   }
 
   @Test
   fun `showing a snackbar`() = assertPassesLayoutChecks {
-    Screen(populated.copy(snackbar = PrivacySettingsState.Snackbar.ScreenLockNeedsDeviceSecurity))
+    Screen(populated.copy(snackbar = PrivacySettingsState.Snackbar.BiometricEnrollmentRequired))
   }
 
   @Composable

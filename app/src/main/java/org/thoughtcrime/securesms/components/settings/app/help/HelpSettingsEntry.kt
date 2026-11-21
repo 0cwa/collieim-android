@@ -9,21 +9,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import im.molly.app.base.ApkInfo
 import org.signal.appsettings.help.HelpSettingsAction
+import org.signal.appsettings.help.HelpSettingsEvent
 import org.signal.appsettings.help.HelpSettingsScreen
 import org.signal.appsettings.help.HelpSettingsViewModel
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.core.ui.compose.CollectActions
 import org.signal.core.util.Util
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import im.molly.app.base.ApkInfo
-import org.signal.appsettings.help.HelpSettingsEvent
-import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.CommunicationActions
 
 /**
@@ -37,37 +37,32 @@ fun HelpSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit) 
   val websiteUrl = stringResource(R.string.website_url)
   val viewModel: HelpSettingsViewModel = viewModel {
     HelpSettingsViewModel(
+      getLogEnabled = { SignalStore.molly.logEnabled },
+      setLogEnabled = { SignalStore.molly.logEnabled = it },
       versionName = ApkInfo.versionName,
-      logEnabled = TextSecurePreferences.isLogEnabled(context),
       showAppUpdates = AppSettingsRepository.showAppUpdates(),
       parentEventEmitter = parentEventEmitter
     )
   }
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  fun setLogEnabled(enabled: Boolean) {
-    TextSecurePreferences.setLogEnabled(context, enabled)
-    Log.setLogging(enabled)
-    if (!enabled) Log.wipeLogs()
-    viewModel.onEvent(HelpSettingsEvent.LogEnabledSaved(enabled))
+  LifecycleResumeEffect(viewModel) {
+    viewModel.refresh()
+    onPauseOrDispose {}
   }
 
   CollectActions(viewModel.actions) { action ->
     when (action) {
       HelpSettingsAction.OpenWebsite -> CommunicationActions.openBrowserLink(context, websiteUrl)
-      is HelpSettingsAction.SetLogEnabled -> {
-        if (action.enabled) {
-          setLogEnabled(true)
-        } else {
-          MaterialAlertDialogBuilder(context)
-            .setMessage(R.string.HelpSettingsFragment_disable_and_delete_debug_log)
-            .setPositiveButton(android.R.string.ok) { _, _ -> setLogEnabled(false) }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-        }
-      }
       HelpSettingsAction.OpenSupportCenter -> CommunicationActions.openBrowserLink(context, supportCenterUrl)
       is HelpSettingsAction.CopyVersionToClipboard -> Util.copyToClipboard(context, action.versionName)
+      HelpSettingsAction.ConfirmDisableDebugLogging -> {
+        MaterialAlertDialogBuilder(context)
+          .setMessage(R.string.HelpSettingsFragment_disable_and_delete_debug_log)
+          .setPositiveButton(android.R.string.ok) { _, _ -> viewModel.onEvent(HelpSettingsEvent.DisableDebugLoggingConfirmed) }
+          .setNegativeButton(android.R.string.cancel, null)
+          .show()
+      }
       HelpSettingsAction.OpenTermsAndPrivacyPolicy -> CommunicationActions.openBrowserLink(context, termsAndPrivacyPolicyUrl)
     }
   }

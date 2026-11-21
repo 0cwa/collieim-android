@@ -5,11 +5,11 @@
 
 package org.signal.appsettings.appicon
 
+import android.widget.ImageView
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,14 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.core.graphics.drawable.toBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -50,6 +47,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import org.signal.appsettings.R
 import org.signal.appsettings.appSettingsScreen
 import org.signal.core.ui.compose.DayNightPreviews
@@ -80,6 +78,7 @@ object AppIconSelectionTestTags {
 @Composable
 fun AppIconSelectionScreen(
   state: AppIconSelectionState,
+  appIconMetadata: Map<AppIconPreset, AppIconMetadata>,
   onEvent: (AppIconSelectionEvent) -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -106,6 +105,7 @@ fun AppIconSelectionScreen(
       Spacer(modifier = Modifier.size(12.dp))
       IconGrid(
         selectedIcon = state.selectedIcon,
+        appIconMetadata = appIconMetadata,
         onEvent = onEvent,
         modifier = Modifier
           .fillMaxWidth()
@@ -116,12 +116,28 @@ fun AppIconSelectionScreen(
 
   when (val dialog = state.dialog) {
     AppIconSelectionState.Dialog.None -> Unit
-    is AppIconSelectionState.Dialog.ConfirmIconChange -> ChangeIconDialog(dialog.preset, onEvent)
+    is AppIconSelectionState.Dialog.ConfirmIconChange -> ChangeIconDialog(appIconMetadata.getValue(dialog.preset), onEvent)
   }
 }
 
+/** MOLLY: Upstream-compatible test entry point. */
+@VisibleForTesting(otherwise = VisibleForTesting.NONE)
 @Composable
-private fun ChangeIconDialog(pendingIcon: AppIconPreset, onEvent: (AppIconSelectionEvent) -> Unit) {
+internal fun AppIconSelectionScreen(
+  state: AppIconSelectionState,
+  onEvent: (AppIconSelectionEvent) -> Unit,
+  modifier: Modifier = Modifier
+) {
+  AppIconSelectionScreen(
+    state = state,
+    onEvent = onEvent,
+    modifier = modifier,
+    appIconMetadata = previewAppIconMetadata()
+  )
+}
+
+@Composable
+private fun ChangeIconDialog(metadata: AppIconMetadata, onEvent: (AppIconSelectionEvent) -> Unit) {
   AlertDialog(
     onDismissRequest = { onEvent(AppIconSelectionEvent.DialogDismissed) },
     confirmButton = {
@@ -141,11 +157,11 @@ private fun ChangeIconDialog(pendingIcon: AppIconPreset, onEvent: (AppIconSelect
       }
     },
     icon = {
-      AppIcon(preset = pendingIcon, isSelected = false, onClick = {})
+      AppIcon(metadata = metadata, isSelected = false, onClick = {})
     },
     title = {
       Text(
-        text = stringResource(R.string.preferences__app_icon_dialog_title, presetLabel(pendingIcon)),
+        text = stringResource(R.string.preferences__app_icon_dialog_title, metadata.label),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.headlineSmall
       )
@@ -166,8 +182,8 @@ private fun ChangeIconDialog(pendingIcon: AppIconPreset, onEvent: (AppIconSelect
  * rather than shrinking the labels.
  */
 @Composable
-private fun IconGrid(selectedIcon: AppIconPreset, onEvent: (AppIconSelectionEvent) -> Unit, modifier: Modifier = Modifier) {
-  val labelWidth = widestWord(AppIconPreset.entries.map { presetLabel(it) })
+private fun IconGrid(selectedIcon: AppIconPreset, appIconMetadata: Map<AppIconPreset, AppIconMetadata>, onEvent: (AppIconSelectionEvent) -> Unit,modifier: Modifier = Modifier) {
+  val labelWidth = widestWord(AppIconPreset.entries.map { appIconMetadata.getValue(it).label })
 
   BoxWithConstraints(modifier = modifier) {
     val cellWidth = maxOf(IconSize, labelWidth + LabelPadding * 2)
@@ -182,6 +198,7 @@ private fun IconGrid(selectedIcon: AppIconPreset, onEvent: (AppIconSelectionEven
           presets = presets,
           columnCount = columnCount,
           selectedIcon = selectedIcon,
+          appIconMetadata = appIconMetadata,
           onEvent = onEvent
         )
       }
@@ -207,13 +224,20 @@ private fun widestWord(labels: List<String>): Dp {
  * above it.
  */
 @Composable
-private fun IconRow(presets: List<AppIconPreset>, columnCount: Int, selectedIcon: AppIconPreset, onEvent: (AppIconSelectionEvent) -> Unit) {
+private fun IconRow(
+  presets: List<AppIconPreset>,
+  columnCount: Int,
+  selectedIcon: AppIconPreset,
+  appIconMetadata: Map<AppIconPreset, AppIconMetadata>,
+  onEvent: (AppIconSelectionEvent) -> Unit
+) {
   Row(modifier = Modifier.fillMaxWidth()) {
     presets.forEach { preset ->
       IconGridElement(
         preset = preset,
         isSelected = preset == selectedIcon,
         onClick = { onEvent(AppIconSelectionEvent.IconClicked(preset)) },
+        metadata = appIconMetadata.getValue(preset),
         modifier = Modifier
           .padding(vertical = 18.dp)
           .weight(1f)
@@ -231,7 +255,13 @@ private fun IconRow(presets: List<AppIconPreset>, columnCount: Int, selectedIcon
  * An individual icon inside the grid, including the border around the selected icon.
  */
 @Composable
-private fun IconGridElement(preset: AppIconPreset, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun IconGridElement(
+  preset: AppIconPreset,
+  isSelected: Boolean,
+  onClick: () -> Unit,
+  metadata: AppIconMetadata,
+  modifier: Modifier = Modifier
+) {
   Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally
@@ -240,11 +270,11 @@ private fun IconGridElement(preset: AppIconPreset, isSelected: Boolean, onClick:
     Box(
       modifier = if (isSelected) boxModifier.border(3.dp, MaterialTheme.colorScheme.onBackground, CircleShape) else boxModifier
     ) {
-      AppIcon(preset = preset, isSelected = isSelected, onClick = onClick, modifier = Modifier.align(Alignment.Center))
+      AppIcon(metadata = metadata, isSelected = isSelected, onClick = onClick, modifier = Modifier.align(Alignment.Center))
     }
     Spacer(modifier = Modifier.size(8.dp))
     Text(
-      text = presetLabel(preset),
+      text = metadata.label,
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -257,20 +287,26 @@ private fun IconGridElement(preset: AppIconPreset, isSelected: Boolean, onClick:
  * The icon itself, which shrinks when selected so the border fits around it.
  */
 @Composable
-private fun AppIcon(preset: AppIconPreset, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun AppIcon(metadata: AppIconMetadata, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
   val bitmapSize by animateFloatAsState(
     targetValue = if (isSelected) 48f else 64f,
     label = "Icon Size",
     animationSpec = tween(durationMillis = 150, easing = CubicBezierEasing(0.17f, 0.17f, 0f, 1f))
   )
 
-  val context = LocalContext.current
-  val icon = remember(context, preset) { preset.loadIcon(context).toBitmap().asImageBitmap() }
-  Image(
-    painter = BitmapPainter(icon),
-    contentDescription = presetLabel(preset),
+  // MOLLY: Launcher resources are adaptive icons (and may be legacy raster assets), not the vector-only previews upstream used.
+  AndroidView(
+    factory = { context ->
+      ImageView(context).apply {
+        scaleType = ImageView.ScaleType.FIT_XY
+      }
+    },
+    update = { imageView ->
+      imageView.setImageResource(metadata.iconResId)
+    },
     modifier = modifier
       .size(bitmapSize.dp)
+      .semantics { contentDescription = metadata.label }
       .graphicsLayer(
         shape = CircleShape,
         shadowElevation = if (isSelected) 4f else 8f,
@@ -311,13 +347,13 @@ private fun CaveatWarning(onClick: () -> Unit, modifier: Modifier = Modifier) {
   )
 }
 
-@Composable
-private fun presetLabel(preset: AppIconPreset): String {
-  if (preset.labelResId == null && LocalInspectionMode.current) {
-    return "Signal"
+private fun previewAppIconMetadata(): Map<AppIconPreset, AppIconMetadata> {
+  return AppIconPreset.entries.associateWith { preset ->
+    AppIconMetadata(
+      iconResId = android.R.drawable.sym_def_app_icon,
+      label = preset.name.lowercase().replaceFirstChar { it.uppercase() }
+    )
   }
-
-  return stringResource(preset.labelResId ?: LocalContext.current.applicationInfo.labelRes)
 }
 
 @PreviewWrapper(SignalPreviewWrapper::class)
@@ -326,6 +362,7 @@ private fun presetLabel(preset: AppIconPreset): String {
 private fun AppIconSelectionScreenPreview() {
   AppIconSelectionScreen(
     state = AppIconSelectionState(currentIcon = AppIconPreset.DEFAULT),
+    appIconMetadata = previewAppIconMetadata(),
     onEvent = {}
   )
 }
@@ -339,6 +376,7 @@ private fun AppIconSelectionScreenConfirmPreview() {
       currentIcon = AppIconPreset.DEFAULT,
       dialog = AppIconSelectionState.Dialog.ConfirmIconChange(AppIconPreset.WEATHER)
     ),
+    appIconMetadata = previewAppIconMetadata(),
     onEvent = {}
   )
 }

@@ -50,7 +50,7 @@ public class LocalBackupListener extends PersistentAlarmManagerListener {
   }
 
   public static long setNextBackupTimeToIntervalFromNow(@NonNull Context context) {
-    long nowPlusInterval = System.currentTimeMillis() + TextSecurePreferences.getBackupInternal(context);
+    long nowPlusInterval = System.currentTimeMillis() + SignalStore.molly().getBackupInterval();
 
     LocalDateTime nextInstant = LocalDateTime.ofInstant(Instant.ofEpochMilli(nowPlusInterval),
                                                         TimeZone.getDefault().toZoneId());

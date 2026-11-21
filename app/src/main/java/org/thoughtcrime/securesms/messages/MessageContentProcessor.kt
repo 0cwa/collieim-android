@@ -215,7 +215,7 @@ open class MessageContentProcessor(private val context: Context) {
       senderRecipient.isBlocked || when {
         senderRecipient.isSystemContact -> false
         senderRecipient.isProfileSharing -> false
-        !TextSecurePreferences.isBlockUnknownEnabled(AppDependencies.application) -> false
+        !SignalStore.molly.blockUnknownEnabled -> false
         RecipientUtil.isProfileSharedViaGroup(senderRecipient) -> false
         else -> true
       }

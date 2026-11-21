@@ -55,7 +55,6 @@ import org.thoughtcrime.securesms.components.TypingStatusSender
 import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
 import org.thoughtcrime.securesms.database.DatabaseObserver
 import org.thoughtcrime.securesms.database.PendingRetryReceiptCache
-import org.thoughtcrime.securesms.dependencies.AppDependencies.authWebSocket
 import org.thoughtcrime.securesms.groups.GroupsV2Authorization
 import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository
@@ -301,7 +300,7 @@ object AppDependencies {
   }
 
   private val _libsignalNetwork = resettableLazy {
-    provider.provideLibsignalNetwork(signalServiceNetworkAccess.getConfiguration(), networkModule.networkProxyState)
+    provider.provideLibsignalNetwork(signalServiceNetworkAccess.getConfiguration(), networkProxyState)
   }
 
   @JvmStatic
@@ -320,13 +319,20 @@ object AppDependencies {
   }
 
   private val _networkModule = resettableLazy {
-    NetworkDependenciesModule(application, provider, { authWebSocket }, { unauthWebSocket }, Supplier { libsignalNetwork })
+    NetworkDependenciesModule(application, provider, authWebSocket, unauthWebSocket, signalServiceNetworkAccess, networkProxyState, Supplier { libsignalNetwork })
   }
   private val networkModule by _networkModule
 
+  // MOLLY: signalServiceNetworkAccess and networkProxyState are moved out of NetworkDependenciesModule so that
+  // _libsignalNetwork's initializer has no path back to networkModule. Both are process-lifetime singleton.
+  private val _signalServiceNetworkAccess: SignalServiceNetworkAccess by lazy {
+    provider.provideSignalServiceNetworkAccess()
+  }
+
+  // COLLIE: A plain getter (not a delegated property) so tests can stub it like the other dependencies.
   @JvmStatic
   val signalServiceNetworkAccess: SignalServiceNetworkAccess
-    get() = networkModule.signalServiceNetworkAccess
+    get() = _signalServiceNetworkAccess
 
   @JvmStatic
   val protocolStore: SignalServiceDataStoreImpl
@@ -353,8 +359,7 @@ object AppDependencies {
     get() = networkModule.incomingMessageObserver
 
   @JvmStatic
-  val networkProxyState: NetworkProxyState
-    get() = networkModule.networkProxyState
+  val networkProxyState: NetworkProxyState = NetworkProxyState()
 
   @JvmStatic
   val groupsV2Authorization: GroupsV2Authorization
@@ -498,6 +503,10 @@ object AppDependencies {
   /**
    * Disconnects the websockets and throws out the network-dependent object graph. The websockets themselves survive:
    * they re-read their configuration through suppliers when they reconnect. See [authWebSocket].
+   *
+   * MOLLY: [signalServiceNetworkAccess] and [networkProxyState] also survive as process-lifetime singletons.
+   * [signalServiceNetworkAccess.getConfiguration] is evaluated on each call, so recreated modules still pick up
+   * configuration changes, and [networkProxyState] is re-seeded whenever [libsignalNetwork] is rebuilt.
    */
   @JvmStatic
   @JvmOverloads

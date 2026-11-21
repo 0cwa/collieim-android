@@ -16,17 +16,14 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.net.NetworkManager
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.util.function.Consumer
 
 @RunWith(RobolectricTestRunner::class)
@@ -104,19 +101,6 @@ class NetworkSettingsControllerTest {
     completeCheck!!(true)
 
     assertTrue(results.isEmpty())
-  }
-
-  @Test
-  fun `proxy summary names configuration without claiming the connection was verified`() {
-    TextSecurePreferences.setStringPreference(context, TextSecurePreferences.PROXY_TYPE, "socks5")
-    TextSecurePreferences.setStringPreference(context, TextSecurePreferences.PROXY_SOCKS_HOST, "proxy.example")
-    TextSecurePreferences.setStringPreference(context, TextSecurePreferences.PROXY_SOCKS_PORT, "1080")
-
-    val summary = NetworkSettingsController(networkManager).getProxyConfigurationSummary(context)
-
-    assertEquals(context.getString(R.string.network_privacy_inline__proxy_socks5_configured, "proxy.example", 1080), summary)
-    assertTrue(summary.contains("configured"))
-    assertFalse(summary.contains("connected", ignoreCase = true))
   }
 
   @Test

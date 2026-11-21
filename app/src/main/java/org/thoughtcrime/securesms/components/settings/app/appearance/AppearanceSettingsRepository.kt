@@ -20,24 +20,22 @@ import org.thoughtcrime.securesms.util.DynamicTheme
  */
 object AppearanceSettingsRepository {
 
-  fun getLanguage(): String = SignalStore.settings.language
+  fun getLanguage(): String = PlainTextKeyValueStore.language
 
   /** Stores the new language and restarts the app so it takes effect. */
   fun applyLanguage(language: String) {
-    SignalStore.settings.language = language
+    PlainTextKeyValueStore.language = language
     EmojiSearchIndexDownloadJob.scheduleImmediately()
     AppUtil.restart(AppDependencies.application)
   }
 
   fun getTheme(): AppearanceSettingsState.Theme = SignalStore.settings.theme.toAppearanceTheme()
 
-  fun setTheme(theme: AppearanceSettingsState.Theme, useDynamicColors: Boolean) {
-    SignalStore.settings.setTheme(theme.toSettingsTheme(), useDynamicColors)
+  fun setAppearance(theme: AppearanceSettingsState.Theme, dynamicColorsEnabled: Boolean) {
+    SignalStore.settings.setAppearance(theme.toSettingsTheme(), dynamicColorsEnabled)
   }
 
-  fun useDynamicColors(): Boolean = SignalStore.settings.isDynamicColorsEnabled
-
-  fun isDynamicColorsAvailable(): Boolean = DynamicTheme.isDynamicColorsAvailable()
+  fun isDynamicColorsEnabled(): Boolean = SignalStore.settings.isDynamicColorsEnabled
 
   fun getMessageFontSize(): Int = SignalStore.settings.messageFontSize
 
@@ -52,6 +50,8 @@ object AppearanceSettingsRepository {
   }
 
   fun isSystemThemeAvailable(): Boolean = DynamicTheme.systemThemeAvailable()
+
+  fun isDynamicColorsAvailable(): Boolean = DynamicTheme.isDynamicColorsAvailable()
 
   fun isAppIconSupported(): Boolean = Build.VERSION.SDK_INT >= 26
 }

@@ -23,7 +23,7 @@ class DataAndStorageSettingsFragment : ComposeFragment() {
   private fun navigateToScreen(route: AppSettingsRoute) {
     when (route) {
       AppSettingsRoute.DataAndStorageRoute.Storage -> findNavController().safeNavigate(R.id.action_dataAndStorageSettingsFragment_to_storagePreferenceFragment)
-      AppSettingsRoute.DataAndStorageRoute.Proxy -> findNavController().safeNavigate(R.id.action_direct_to_networkPreferenceFragment)
+      AppSettingsRoute.DataAndStorageRoute.Proxy -> findNavController().safeNavigate(R.id.action_dataAndStorageSettingsFragment_to_networkPreferenceFragment)
       else -> error("Unexpected route: ${route.javaClass.name}")
     }
   }

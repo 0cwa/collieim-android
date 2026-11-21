@@ -23,11 +23,14 @@ import org.signal.core.util.SleepTimer
 import org.signal.core.util.UptimeSleepTimer
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
+import org.signal.network.config.ProxyConfig
+import org.signal.network.config.SignalServiceConfiguration
 import org.signal.storage.keyvalue.isDecisionPending
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import im.molly.unifiedpush.health.PushHealthActions
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock
@@ -45,8 +48,7 @@ import org.thoughtcrime.securesms.messages.MessageDecryptor.FollowUpOperation
 import org.thoughtcrime.securesms.messages.protocol.BufferedProtocolStore
 import org.thoughtcrime.securesms.net.ConnectivityState
 import org.thoughtcrime.securesms.net.InternetConnectivityMonitor
-import org.thoughtcrime.securesms.net.configureProxy
-import org.thoughtcrime.securesms.net.resolveProxyConfig
+import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
 import org.thoughtcrime.securesms.recipients.RecipientIds
@@ -106,6 +108,9 @@ class IncomingMessageObserver(
     fun stopForegroundService(context: Context) {
       ForegroundService.stopIfRunning(context)
     }
+
+    private val networkConfiguration: SignalServiceConfiguration
+      get() = AppDependencies.signalServiceNetworkAccess.getConfiguration()
   }
 
   private val decryptionDrainedListeners: MutableList<Runnable> = CopyOnWriteArrayList()
@@ -125,15 +130,15 @@ class IncomingMessageObserver(
   @Volatile
   internal var beforeConnectionWaitForTesting: (() -> Unit)? = null
 
-  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts offline until the first report. */
+  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts as unknown (assumed online) until the first report, as in Signal and Molly. */
   @Volatile
-  private var internetConnection: ConnectivityState = ConnectivityState.OFFLINE
+  private var internetConnection: ConnectivityState = ConnectivityState.MONITORING_UNAVAILABLE
 
   private val internetConnectivityMonitor = InternetConnectivityMonitor(
     context = context,
     onConnectivityUpdated = { state ->
       internetConnection = state
-      if (state.isOnline) {
+      if (state.isAssumedOnline) {
         // Staying online through a transport swap only resets backoff; we rely on the OS to tear down sockets on the interface that went away.
         AppDependencies.libsignalNetwork.onNetworkChange()
         AppDependencies.signalServiceNetworkAccess.onNetworkChange()
@@ -147,16 +152,16 @@ class IncomingMessageObserver(
       notifyConnectionConditionsChanged()
     },
     onProxyChanged = {
-      // Initializing the network seeds proxy state before comparing it.
+      // Building the network seeds networkProxyState, so its placeholder can't read as a change.
       AppDependencies.libsignalNetwork
-      val proxyConfig = resolveProxyConfig()
-      val proxyChanged = AppDependencies.networkProxyState.update(proxyConfig)
-      if (proxyChanged) {
-        AppDependencies.libsignalNetwork.configureProxy(proxyConfig)
-        Log.i(TAG, "Proxy config changed, disconnecting websocket...")
-        decryptionDrained = false
-        authWebSocket.disconnect()
-        unauthWebSocket.disconnect()
+      val proxyConfig = ProxyConfig.resolve(
+        userProxy = Networking.proxy,
+        configuration = networkConfiguration,
+        targetUrl = BuildConfig.SIGNAL_URL
+      )
+      if (AppDependencies.networkProxyState.currentConfig != proxyConfig) {
+        Log.i(TAG, "Proxy config changed, resetting network...")
+        AppDependencies.resetNetwork(restartMessageObserver = true)
       }
     }
   )
@@ -270,7 +275,7 @@ class IncomingMessageObserver(
     val registered = SignalStore.account.isRegistered
     val unauthorizedReceived = SignalStore.account.isUnauthorizedReceived
     val pushAvailable = SignalStore.account.pushAvailable
-    val hasNetwork = internetConnection.isOnline
+    val hasNetwork = internetConnection.isAssumedOnline
     val hasProxy = AppDependencies.networkManager.isProxyEnabled
     val forceWebsocket = SignalStore.settings.forceWebsocketMode.isEnabled
     val websocketAlreadyOpen = isConnectionAvailable()
@@ -294,13 +299,13 @@ class IncomingMessageObserver(
   }
 
   private fun isConnectionAvailable(): Boolean {
-    val hasNetwork = internetConnection.isOnline
+    val hasNetwork = internetConnection.isAssumedOnline
     return !SignalStore.account.isUnauthorizedReceived && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.hasKeepAliveTokens() && hasNetwork))
   }
 
   /** Conditions are evaluated outside of [connectionLock] so notifiers never block on them. We only park if nothing signaled since the version we evaluated against. */
   private fun claimPendingUnifiedPushFetches(): List<UnifiedPushLifecycle.FetchAdmission> {
-    if (ClockSkewDetector.isDetected || !internetConnection.isOnline) return emptyList()
+    if (ClockSkewDetector.isDetected || !internetConnection.isAssumedOnline) return emptyList()
     return synchronized(UnifiedPushLifecycle.monitor) {
       UnifiedPushAccountTransition.claimPendingFetchAdmissionsLocked()
     }

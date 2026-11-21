@@ -15,7 +15,6 @@ import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.ScreenLockController;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
-import org.thoughtcrime.securesms.backup.proto.SharedPreference;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.lock.RegistrationLockReminders;
@@ -24,7 +23,6 @@ import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference;
 import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPreference;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,6 +30,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Collie compatibility shim for code that has not moved to Molly's stores yet.
+ *
+ * The keys Molly moved into {@link SignalStore#molly()} (log, updater, block unknown, backup interval and file count,
+ * proxy, network config seen, passphrase lock timeout and trigger) are read and written there, so there is one source
+ * of truth per setting. Pre-unlock keys share the SharedPreferences that
+ * {@link org.signal.storage.keyvalue.PlainTextKeyValueStore} wraps. Do not add new callers; use those stores.
+ */
 public class TextSecurePreferences {
 
   private static final String TAG = Log.tag(TextSecurePreferences.class);
@@ -162,90 +168,6 @@ public class TextSecurePreferences {
     setStringPreference(context, GOOGLE_MAP_TYPE, value);
   }
 
-  private static final String[] booleanPreferencesToBackupMolly = {
-      LOG_ENABLED,
-      UPDATE_APK_ENABLED,
-      UPDATE_APK_INCLUDE_BETA,
-      BLOCK_UNKNOWN,
-      BIOMETRIC_SCREEN_LOCK,
-      PASSPHRASE_LOCK_NOTIFICATIONS,
-      DYNAMIC_COLORS_ENABLED,
-  };
-
-  private static final String[] stringSetPreferencesToBackupMolly = {PASSPHRASE_LOCK_TRIGGER};
-
-  private static final String[] longPreferencesToBackupMolly = {PASSPHRASE_LOCK_TIMEOUT};
-
-  /** Only portable settings exported by Molly may be remapped from another application's file. */
-  public static boolean isRestorableMollyPreference(@NonNull SharedPreference preference) {
-    int valueCount = (preference.value_ != null ? 1 : 0) +
-                     (preference.booleanValue != null ? 1 : 0) +
-                     (preference.integerValue != null ? 1 : 0) +
-                     (preference.longValue != null ? 1 : 0) +
-                     (preference.isStringSetValue == Boolean.TRUE ? 1 : 0);
-
-    if (valueCount != 1 || (preference.isStringSetValue != Boolean.TRUE && !preference.stringSetValue.isEmpty())) {
-      return false;
-    }
-
-    if (Arrays.asList(booleanPreferencesToBackupMolly).contains(preference.key)) {
-      return preference.booleanValue != null;
-    }
-
-    if (Arrays.asList(stringSetPreferencesToBackupMolly).contains(preference.key)) {
-      return preference.isStringSetValue == Boolean.TRUE;
-    }
-
-    if (Arrays.asList(longPreferencesToBackupMolly).contains(preference.key)) {
-      // Historical Molly versions encoded the timeout as uint32; current versions use int64.
-      return preference.integerValue != null || (preference.longValue != null && preference.longValue >= 0);
-    }
-
-    return false;
-  }
-
-  public static long getPreferencesToSaveToBackupCount(@NonNull Context context) {
-    return getPreferencesToSaveToBackup(context).size();
-  }
-
-  /** Only Molly preferences still stored outside SignalStore belong in shared-preference backup records. */
-  public static List<SharedPreference> getPreferencesToSaveToBackup(@NonNull Context context) {
-    SharedPreferences      preferences  = getSharedPreferences(context);
-    List<SharedPreference> backupProtos = new ArrayList<>();
-    for (String booleanPreference : booleanPreferencesToBackupMolly) {
-      if (preferences.contains(booleanPreference)) {
-        backupProtos.add(new SharedPreference.Builder()
-                                             .file_(SecurePreferenceManager.getSecurePreferencesName())
-                                             .key(booleanPreference)
-                                             .booleanValue(preferences.getBoolean(booleanPreference, false))
-                                             .build());
-      }
-    }
-
-    for (String stringSetPreference : stringSetPreferencesToBackupMolly) {
-      if (preferences.contains(stringSetPreference)) {
-        backupProtos.add(new SharedPreference.Builder()
-                                             .file_(SecurePreferenceManager.getSecurePreferencesName())
-                                             .key(stringSetPreference)
-                                             .isStringSetValue(true)
-                                             .stringSetValue(new ArrayList<>(preferences.getStringSet(stringSetPreference, Collections.emptySet())))
-                                             .build());
-      }
-    }
-
-    for (String longPreference : longPreferencesToBackupMolly) {
-      if (preferences.contains(longPreference)) {
-        backupProtos.add(new SharedPreference.Builder()
-                                             .file_(SecurePreferenceManager.getSecurePreferencesName())
-                                             .key(longPreference)
-                                             .longValue(preferences.getLong(longPreference, 0))
-                                             .build());
-      }
-    }
-
-    return backupProtos;
-  }
-
   public static void onPostBackupRestore(@NonNull Context context) {
     // The process was started with the pre-restore preferences. Apply the restored lock without
     // requiring a restart or treating the ongoing restore as a successful biometric unlock.
@@ -255,12 +177,11 @@ public class TextSecurePreferences {
       NotificationChannels.getInstance().updateMessageVibrate(SignalStore.settings().isMessageVibrateEnabled());
     }
 
-    if (!isLogEnabled(context)) {
-      Log.setLogging(false);
-      Log.wipeLogs();
+    if (!SignalStore.molly().getLogEnabled()) {
+      Log.disableAndWipeLogs();
     }
 
-    if (isUpdateApkEnabled(context)) {
+    if (SignalStore.molly().getUpdateApkEnabled()) {
       ApkUpdateRefreshListener.scheduleIfAllowed(context);
     }
   }
@@ -274,13 +195,11 @@ public class TextSecurePreferences {
   }
 
   public static PassphraseLockTriggerPreference getPassphraseLockTrigger(@NonNull Context context) {
-    return new PassphraseLockTriggerPreference(getStringSetPreference(context,
-            PASSPHRASE_LOCK_TRIGGER,
-            new HashSet<>(Arrays.asList(context.getResources().getStringArray(R.array.pref_passphrase_lock_trigger_default)))));
+    return SignalStore.molly().getPassphraseLockTrigger();
   }
 
   public static long getPassphraseLockTimeout(@NonNull Context context) {
-    return getLongPreference(context, PASSPHRASE_LOCK_TIMEOUT, 0);
+    return SignalStore.molly().getPassphraseLockTimeout();
   }
 
   public static boolean isPassphraseLockNotificationsEnabled(@NonNull Context context) {
@@ -300,23 +219,23 @@ public class TextSecurePreferences {
   }
 
   public static void setHasSeenNetworkConfig(Context context, boolean value) {
-    setBooleanPreference(context, NETWORK_CONFIG_SEEN, value);
+    SignalStore.molly().setHasSeenNetworkConfig(value);
   }
 
   public static boolean hasSeenNetworkConfig(Context context) {
-    return getBooleanPreference(context, NETWORK_CONFIG_SEEN, true);
+    return SignalStore.molly().getHasSeenNetworkConfig();
   }
 
   public static ProxyType getProxyType(@NonNull Context context) {
-    return ProxyType.fromCode(getStringPreference(context, PROXY_TYPE, null));
+    return SignalStore.molly().getProxyType();
   }
 
   public static String getProxySocksHost(@NonNull Context context) {
-    return getStringPreference(context, PROXY_SOCKS_HOST, "localhost");
+    return SignalStore.molly().getProxySocksHost();
   }
 
   public static int getProxySocksPort(@NonNull Context context) {
-    return Integer.parseInt(getStringPreference(context, PROXY_SOCKS_PORT, "9050"));
+    return Integer.parseInt(SignalStore.molly().getProxySocksPort());
   }
 
   public static boolean isBiometricScreenLockEnabled(@NonNull Context context) {
@@ -400,19 +319,19 @@ public class TextSecurePreferences {
   }
 
   public static void setBackupInternal(@NonNull Context context, long value) {
-    setLongPreference(context, BACKUP_INTERVAL, value);
+    SignalStore.molly().setBackupInterval(value);
   }
 
   public static long getBackupInternal(@NonNull Context context) {
-    return getLongPreference(context, BACKUP_INTERVAL, TimeUnit.DAYS.toMillis(1));
+    return SignalStore.molly().getBackupInterval();
   }
 
   public static void setBackupMaxFiles(@NonNull Context context, int value) {
-    setIntegerPrefrence(context, BACKUP_MAX_FILES, value);
+    SignalStore.molly().setBackupMaxFiles(value);
   }
 
   public static int getBackupMaxFiles(@NonNull Context context) {
-    return getIntegerPreference(context, BACKUP_MAX_FILES, 2);
+    return SignalStore.molly().getBackupMaxFiles();
   }
 
   public static boolean getNavbarShowCalls(@NonNull Context context) {
@@ -488,11 +407,11 @@ public class TextSecurePreferences {
   }
 
   public static boolean isBlockUnknownEnabled(@NonNull Context context) {
-    return getBooleanPreference(context, BLOCK_UNKNOWN, false);
+    return SignalStore.molly().getBlockUnknownEnabled();
   }
 
   public static void setBlockUnknownEnabled(@NonNull Context context, boolean value) {
-    setBooleanPreference(context, BLOCK_UNKNOWN, value);
+    SignalStore.molly().setBlockUnknownEnabled(value);
   }
 
   /**
@@ -609,19 +528,19 @@ public class TextSecurePreferences {
   }
 
   public static boolean isUpdateApkEnabled(@NonNull Context context) {
-    return getBooleanPreference(context, UPDATE_APK_ENABLED, BuildConfig.MANAGE_COLLIE_UPDATES);
+    return SignalStore.molly().getUpdateApkEnabled();
   }
 
   public static void setUpdateApkEnabled(@NonNull Context context, boolean value) {
-    setBooleanPreference(context, UPDATE_APK_ENABLED, value);
+    SignalStore.molly().setUpdateApkEnabled(value);
   }
 
   public static boolean isUpdateApkIncludeBetaEnabled(@NonNull Context context) {
-    return getBooleanPreference(context, UPDATE_APK_INCLUDE_BETA, false);
+    return SignalStore.molly().getUpdateApkIncludeBetaEnabled();
   }
 
   public static void setUpdateApkIncludeBetaEnabled(@NonNull Context context, boolean value) {
-    setBooleanPreference(context, UPDATE_APK_INCLUDE_BETA, value);
+    SignalStore.molly().setUpdateApkIncludeBetaEnabled(value);
   }
 
   @Deprecated
@@ -808,11 +727,11 @@ public class TextSecurePreferences {
   }
 
   public static void setLogEnabled(Context context, boolean enabled) {
-    setBooleanPreference(context, LOG_ENABLED, enabled);
+    SignalStore.molly().setLogEnabled(enabled);
   }
 
   public static boolean isLogEnabled(Context context) {
-    return getBooleanPreference(context, LOG_ENABLED, true);
+    return SignalStore.molly().getLogEnabled();
   }
 
   public static void setLogEncryptedSecret(Context context, String base64Secret) {

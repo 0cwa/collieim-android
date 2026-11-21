@@ -13,15 +13,17 @@ package org.signal.appsettings.help
  */
 sealed interface HelpSettingsAction {
 
+  /** Open Molly's website in the browser. */
   data object OpenWebsite : HelpSettingsAction
-  data class SetLogEnabled(val enabled: Boolean) : HelpSettingsAction
-
 
   /** Open the support center in the browser. */
   data object OpenSupportCenter : HelpSettingsAction
 
   /** Copy [versionName] to the clipboard. */
   data class CopyVersionToClipboard(val versionName: String) : HelpSettingsAction
+
+  /** Ask the user to confirm disabling logging and deleting the existing log. */
+  data object ConfirmDisableDebugLogging : HelpSettingsAction
 
   /** Open the terms and privacy policy in the browser. */
   data object OpenTermsAndPrivacyPolicy : HelpSettingsAction

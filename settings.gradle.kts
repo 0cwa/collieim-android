@@ -44,19 +44,6 @@ dependencyResolutionManagement {
       }
     }
     maven {
-      url = uri("https://dl.cloudsmith.io/public/mollyim/ringrtc/maven/")
-      content {
-        includeModule("im.molly", "ringrtc-android")
-      }
-    }
-    maven {
-      url = uri("https://dl.cloudsmith.io/public/mollyim/libsignal/maven/")
-      content {
-        includeModule("im.molly", "libsignal-client")
-        includeModule("im.molly", "libsignal-android")
-      }
-    }
-    maven {
       url = uri("https://raw.githubusercontent.com/signalapp/maven/master/sqlcipher/release/")
       content {
         includeModule("org.signal", "sqlcipher-android")
@@ -77,6 +64,10 @@ dependencyResolutionManagement {
     }
     create("lintLibs") {
       from(files("gradle/lint-libs.versions.toml"))
+    }
+    // MOLLY: Play Services compatibility reference versions.
+    create("playServices") {
+      from(files("core/gms/play-services.versions.toml"))
     }
   }
 }

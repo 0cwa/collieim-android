@@ -179,6 +179,6 @@ class WelcomeScreenViewModelTest {
     hasPermissions: Boolean = true,
     requiredLinkedDevicePermission: String? = null
   ): WelcomeScreenViewModel {
-    return WelcomeScreenViewModel(mockRepository, MutableStateFlow(parentState), parentEventEmitter, hasPermissions = { hasPermissions }, getRequiredLinkedDevicePermission = { requiredLinkedDevicePermission })
+    return WelcomeScreenViewModel(mockRepository, MutableStateFlow(parentState), parentEventEmitter, hasPermissions = { hasPermissions }, getRequiredLinkedDevicePermission = { requiredLinkedDevicePermission }, enableNetwork = { })
   }
 }

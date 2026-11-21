@@ -9,6 +9,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -35,9 +37,12 @@ class HelpSettingsViewModelTest {
   private val testDispatcher = UnconfinedTestDispatcher()
   private val navigationEvents = mutableListOf<AppSettingsNavigationEvent>()
 
+  private var logEnabled = false
+
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
+    logEnabled = false
   }
 
   @After
@@ -72,6 +77,55 @@ class HelpSettingsViewModelTest {
     HelpSettingsEvent.LicensesClicked,
     AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.HelpRoute.Licenses)
   )
+
+  @Test
+  fun `WebsiteClicked opens Molly's website`() = assertEventEmits(HelpSettingsEvent.WebsiteClicked, HelpSettingsAction.OpenWebsite)
+
+  @Test
+  fun `VersionClicked opens app updates when this build has them`() = runTest(testDispatcher) {
+    val viewModel = createViewModel(showAppUpdates = true)
+
+    viewModel.onEvent(HelpSettingsEvent.VersionClicked)
+
+    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AppUpdates))
+  }
+
+  @Test
+  fun `VersionClicked does nothing without app updates`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    viewModel.onEvent(HelpSettingsEvent.VersionClicked)
+
+    assertThat(navigationEvents).isEmpty()
+    assertThat(actions).isEmpty()
+  }
+
+  @Test
+  fun `enabling logging persists and exposes the choice`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(HelpSettingsEvent.DebugLoggingChanged(true))
+
+    assertThat(logEnabled).isTrue()
+    assertThat(viewModel.state.value.logEnabled).isTrue()
+  }
+
+  @Test
+  fun `disabling logging requires confirmation`() = assertEventEmits(HelpSettingsEvent.DebugLoggingChanged(false), HelpSettingsAction.ConfirmDisableDebugLogging)
+
+  @Test
+  fun `disabling logging persists only after confirmation`() = runTest(testDispatcher) {
+    logEnabled = true
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(HelpSettingsEvent.DebugLoggingChanged(false))
+    assertThat(logEnabled).isTrue()
+
+    viewModel.onEvent(HelpSettingsEvent.DisableDebugLoggingConfirmed)
+    assertThat(logEnabled).isFalse()
+    assertThat(viewModel.state.value.logEnabled).isFalse()
+  }
 
   @Test
   fun `SupportCenterClicked opens the support center`() = assertEventEmits(HelpSettingsEvent.SupportCenterClicked, HelpSettingsAction.OpenSupportCenter)
@@ -114,7 +168,13 @@ class HelpSettingsViewModelTest {
     assertThat(actions).isEmpty()
   }
 
-  private fun createViewModel(): HelpSettingsViewModel = HelpSettingsViewModel(versionName = VERSION_NAME, parentEventEmitter = { navigationEvents += it })
+  private fun createViewModel(showAppUpdates: Boolean = false): HelpSettingsViewModel = HelpSettingsViewModel(
+    getLogEnabled = { logEnabled },
+    setLogEnabled = { logEnabled = it },
+    versionName = VERSION_NAME,
+    showAppUpdates = showAppUpdates,
+    parentEventEmitter = { navigationEvents += it }
+  )
 
   private fun TestScope.collectActions(actions: Flow<HelpSettingsAction>): List<HelpSettingsAction> {
     val collected = mutableListOf<HelpSettingsAction>()

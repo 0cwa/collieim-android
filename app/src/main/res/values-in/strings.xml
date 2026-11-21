@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie sedang diperbarui …</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Anda belum mengatur frasa sandi!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">Nonaktifkan frasa sandi?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tindakan ini akan secara permanen mengaktifkan Collie dan notifikasi pesan.</string>
-    <string name="ApplicationPreferencesActivity_disable">Nonaktifkan</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Gagal terhubung ke server!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Kartu kredit atau debit</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Masukkan detail kartu Anda. Signal tidak mengumpulkan atau menyimpan informasi pribadi Anda.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Nomor kartu</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Nomor kartu tidak valid</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">Kartu telah kedaluwarsa</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">Kode terlalu pendek</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">Kode terlalu panjang</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Kode tidak valid</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Bulan tidak valid</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Tahun wajib diisi</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Tahun tidak valid</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">Donasi %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Donasi %1$s/bulan</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Donasi %1$s/bulan</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">Satu kali %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Donasi tertunda</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Donasi sedang diproses</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Blokir dan keluar dari %1$s?</string>
@@ -344,7 +356,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s menghapus pesan ini</string>
     <string name="ConversationItem_you_deleted_this_message">Anda menghapus pesan ini</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Admin %1$s menghapus pesan ini</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -447,7 +458,7 @@
     <string name="ConversationActivity_error_sending_media">Gagal mengirim media</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Pengiriman pesan SMS tidak lagi didukung di Signal.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Pengiriman pesan SMS tidak lagi didukung di Collie.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Pengiriman pesan SMS tidak lagi didukung di Signal. Undang %1$s ke Signal untuk menyimpan percakapan di sini.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -494,6 +505,8 @@
     <string name="ConversationFragment_deleting_messages">Menghapus pesan …</string>
     <string name="ConversationFragment_delete_for_me">Hapus untuk saya</string>
     <string name="ConversationFragment_delete_for_everyone">Hapus untuk semua</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Hapus untuk saya</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="other">Hapus pesan terpilih?</item>
@@ -1068,7 +1081,7 @@
     <string name="ExpiredBuildReminder_update_now">Perbarui sekarang</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Signal sudah tidak berfungsi di perangkat ini. Untuk kembali menggunakan Signal, perbarui Android ke versi yang lebih baru atau ganti ke perangkat dengan versi Android lebih baru.</string>
+    <string name="DeprecatedSdkBanner_body">Collie sudah tidak berfungsi di perangkat ini. Untuk kembali menggunakan Collie, perbarui Android ke versi yang lebih baru atau ganti ke perangkat dengan versi Android lebih baru.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Perbarui Collie</string>
@@ -1396,9 +1409,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Perbarui Signal untuk menggunakan tautan grup</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Versi Signal Anda tidak mendukung tautan grup ini. Perbarui ke versi terbaru untuk bergabung dengan grup ini.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Perbarui Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Perbarui Collie untuk menggunakan tautan grup</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Versi Collie Anda tidak mendukung tautan grup ini. Perbarui ke versi terbaru untuk bergabung dengan grup ini.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Perbarui Collie</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Tautan grup tidak valid</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2002,7 +2015,7 @@
     <plurals name="PinRestoreEntryFragment_you_have_d_attempt_remaining">
         <item quantity="other">Anda masih dapat mencoba %1$dx lagi. Jika upaya coba sudah habis, silakan buat PIN baru. Anda dapat melakukan pendaftaran dan menggunakan akun Anda namun Anda akan kehilangan pengaturan yang disimpan seperti informasi profil.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Pendaftaran Signal - Perlu Bantuan mengenai PIN untuk Android</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Pendaftaran Collie - Perlu Bantuan mengenai PIN untuk Android</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">Buat PIN Anda</string>
@@ -2094,7 +2107,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Orang lain tidak dapat mendengar Anda</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Mikrofon Anda disenyapkan saat Signal berjalan di latar belakang. Untuk memperbaikinya, ketuk Pengaturan lalu aktifkan aktivitas latar belakang di pengaturan \"Baterai\".</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Mikrofon Anda disenyapkan saat Collie berjalan di latar belakang. Untuk memperbaikinya, ketuk Pengaturan lalu aktifkan aktivitas latar belakang di pengaturan \"Baterai\".</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="other">Setujui %1$d permintaan?</item>
@@ -2575,7 +2588,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">Tidak ditemukan hasil untuk \'%1$s\'</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Kirim via Signal</string>
+    <string name="StickerManagement_menu_send_signal_pack">Kirim via Collie</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Tautan</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2812,8 +2825,6 @@
     <string name="KeyCachingService_lock">Kunci Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">Media tidak tersedia.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Tidak dapat memutar media.</string>
@@ -2823,7 +2834,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Kesalahan Media</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Eror Saat Menghapus Pesan, Pesan Mungkin Masih Ada</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">Bagikan</string>
 
     <!-- MessageNotifier -->
@@ -3052,7 +3062,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Daftarkan Ulang Perangkat</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Perangkat ini sudah tidak terhubung. Hubungkan ulang Signal dengan ponsel Anda agar bisa lanjut berkirim pesan.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Perangkat ini sudah tidak terhubung. Hubungkan ulang Collie dengan ponsel Anda agar bisa lanjut berkirim pesan.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">Hubungkan Ulang Perangkat</string>
 
@@ -3061,7 +3071,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">Perbarui Signal untuk terus menggunakan pembayaran. Saldo Anda mungkin belum diperbarui.</string>
+    <string name="EnclaveFailureReminder_update_signal">Perbarui Collie untuk terus menggunakan pembayaran. Saldo Anda mungkin belum diperbarui.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Dijawab dari perangkat terhubung.</string>
@@ -3378,18 +3388,6 @@
     <string name="EditProfileFragment__group_name">Nama grup</string>
     <string name="EditProfileFragment__group_description">Deskripsi grup</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Perbarui Collie</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Versi Collie ini sudah kedaluwarsa. Perbarui sekarang untuk terus menggunakan Collie.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">Perbarui</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Perangkat tidak terdaftar</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Perangkat ini sudah tidak terdaftar. Silakan daftar ulang untuk membuat perubahan pada akun Anda.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Daftar ulang</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Simpan</string>
@@ -3512,7 +3510,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Informasi Bantuan</string>
-    <string name="HelpFragment__signal_android_support_request">Permintaan Bantuan Signal Android</string>
+    <string name="HelpFragment__signal_android_support_request">Permintaan Bantuan Collie Android</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Gagal mengunggah catatan</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Mohon jelaskan sedeskriptif mungkin untuk membantu kami memahami permasalahannya.</string>
@@ -3566,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikasi asisten AI seperti Gemini dapat memindai konten Collie Anda. Untuk mencegahnya, fitur keamanan layar telah diaktifkan. Tindakan ini juga akan menonaktifkan fitur tangkapan layar.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikasi asisten AI seperti Gemini dapat memindai konten Signal Anda. Untuk mencegahnya, fitur keamanan layar telah diaktifkan. Tindakan ini juga akan menonaktifkan fitur tangkapan layar.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Keamanan layar diaktifkan</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3574,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Nonaktifkan keamanan layar?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Jika dinonaktifkan, hal ini memungkinkan asisten AI seperti Google Gemini memindai konten Collie dan menggunakannya untuk fitur yang mungkin tidak bersifat privat.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Jika dinonaktifkan, hal ini memungkinkan asisten AI seperti Google Gemini memindai konten Signal dan menggunakannya untuk fitur yang mungkin tidak bersifat privat.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Nonaktifkan</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3582,24 +3580,15 @@
     <string name="preferences__notifications">Notifikasi</string>
     <string name="preferences__led_color_unknown">Tidak dikenal</string>
     <string name="preferences__silent">Diam</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Privasi</string>
+    <string name="preferences__donate_to_signal">Donasi ke Collie</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Cerita</string>
     <string name="preferences__payments">Pembayaran</string>
     <string name="preferences__linked_devices">Perangkat terhubung</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Kirim log awakutu</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Pengingat pesan belum dibaca</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Jika diaktifkan, Collie akan menggagalkan penyensoran. Jangan nonaktifkan fitur ini kecuali Anda berada di lokasi di mana Collie disensor.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Alamat proksi</string>
     <string name="preferences_only_use_a_proxy_if">Gunakan proksi hanya ketika Anda tidak dapat tersambung ke Signal menggunakan data seluler atau Wi-Fi.</string>
     <string name="preferences_share">Bagikan</string>
@@ -3613,9 +3602,6 @@
     <string name="preferences_success">Sukses</string>
     <string name="preferences_failed_to_connect">Gagal menyambungkan</string>
     <string name="preferences_enter_proxy_address">Masukkan alamat proxy</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Jika diaktifkan, Collie akan mencoba proses verifikasi enkripsi chat 1:1 secara otomatis.</string>
 
 
     <!-- Internal only preferences -->
@@ -3821,6 +3807,8 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s pada %2$s</string>
 
     <!-- SetCurrencyFragment -->
+    <string name="SetCurrencyFragment__set_currency">Atur Mata Uang</string>
+    <string name="SetCurrencyFragment__all_currencies">Semua Mata Uang</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -3992,9 +3980,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Selengkapnya</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">Pratinjau media</string>
@@ -4156,15 +4141,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Panggil saya (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Kirim Kode Lagi (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Pendaftaran Molly - Kode Verifikasi untuk Android</string>
+    <string name="RegistrationActivity_code_support_subject">Pendaftaran Collie - Kode Verifikasi untuk Android</string>
     <string name="RegistrationActivity_incorrect_code">Kode Salah</string>
     <string name="BackupUtil_never">Tidak pernah</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Tidak dikenal</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Pilih siapa yang bisa melihat nomor telepon Anda dan siapa yang bisa menghubungi Anda di Collie dengan nomor tersebut.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">Untuk menggunakan kunci layar, tetapkan PIN, pola, atau kata sandi di perangkat ini.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Anda harus memasukkan PIN Kunci Pendaftaran Anda</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">PIN Anda harus terdiri dari minimal %1$d digit atau karakter</string>
     <string name="RegistrationActivity_too_many_attempts">Terlalu banyak mencoba</string>
@@ -4197,11 +4178,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Ini perangkat terhubung</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Untuk mengelola pengaturan akun, buka Signal di perangkat utama Anda.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Untuk mengelola pengaturan akun, buka Collie di perangkat utama Anda.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Hapus data aplikasi</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Tindakan ini akan menghapus semua data dari aplikasi Signal di perangkat ini.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Tindakan ini akan menghapus semua data dari aplikasi Collie di perangkat ini.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Hapus data aplikasi?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4691,7 +4672,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">Edit nomor</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Penggantian Nomor Signal - Butuh bantuan mengenai PIN untuk Android (v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Penggantian Nomor Collie - Butuh bantuan mengenai PIN untuk Android (v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PIN tidak cocok</string>
@@ -4851,7 +4832,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5155,7 +5135,13 @@
 
     <string name="ImageView__badge">Lencana</string>
 
+    <string name="SubscribeFragment__cancel_subscription">Batalkan Langganan</string>
+    <string name="SubscribeFragment__confirm_cancellation">Konfirmasi Pembatalan?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Anda tidak akan dikenakan biaya lagi. Lencana Anda akan dihapus dari profil Anda pada akhir periode penagihan.</string>
+    <string name="SubscribeFragment__not_now">Nanti saja</string>
+    <string name="SubscribeFragment__confirm">Konfirmasi</string>
     <string name="SubscribeFragment__update_subscription">Perbarui Langganan</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Langganan Anda telah dibatalkan.</string>
     <string name="SubscribeFragment__update_subscription_question">Perbarui langganan?</string>
     <string name="SubscribeFragment__update">Perbarui</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Anda akan dikenakan biaya penuh (%1$s) harga langganan yang baru hari ini. Langganan Anda akan diperpanjang setiap bulan.</string>
@@ -5167,35 +5153,66 @@
     <string name="Subscription__expires_s">Kedaluwarsa %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Dengan status nirlaba dan independen, Signal berkomitmen menyediakan layanan perpesanan dan panggilan privat. Tanpa iklan, tanpa pelacak, tanpa pengawasan. Beri donasi sekarang untuk mendukung Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Dapatkan lencana opsional di profil setelah berdonasi</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Privasi Anda adalah misi kami</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal berstatus nirlaba.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Terima kasih untuk Dukungan Anda!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Anda telah mendapatkan lencana donor dari Signal! Tampilkan di profil untuk menunjukkan dukungan Anda.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Anda juga dapat</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">menjadi Penyokong bulanan.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Tampilkan di Profil</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Buat lencana unggulan</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Lanjutkan</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Jika punya lebih dari satu lencana, Anda dapat memilih salah satu untuk ditampilkan di profil Anda.</string>
 
     <!-- Button label for creating a donation -->
+    <string name="ManageDonationsFragment__donate_to_signal">Donasi ke Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">Selanjutnya</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Dukungan saya</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Struk donasi</string>
+    <string name="ManageDonationsFragment__badges">Lencana</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Pertanyaan Umum tentang Donatur</string>
     <!-- Preference heading for other ways to donate -->
+    <string name="ManageDonationsFragment__other_ways_to_give">Cara lain untuk memberi</string>
     <!-- Preference label to launch badge gifting -->
+    <string name="ManageDonationsFragment__donate_for_a_friend">Donasi untuk teman</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Tidak dapat mengonfirmasi donasi</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Donasi Anda sebesar %1$s/bulan tidak bisa dikonfirmasi. Cek aplikasi perbankan untuk menyetujui pembayaran iDEAL | Wero Anda.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Donasi satu kali Anda sebesar %1$s tidak bisa dikonfirmasi. Cek aplikasi perbankan untuk menyetujui pembayaran iDEAL | Wero Anda.</string>
 
+    <string name="Boost__enter_custom_amount">Masukkan Jumlah Kustom</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Jumlah minimal donasi yang dapat diberikan adalah %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/bulan</string>
+    <string name="MySupportPreference__renews_s">Ditagih lagi %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">Memproses transaksi …</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Tidak dapat menambahkan lencana. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">Mohon hubungi bantuan.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Pembayaran tertunda</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">Transfer bank Anda sebesar %1$s tertunda. Proses transfer biasanya perlu waktu 1 sampai 14 hari kerja untuk diselesaikan.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Pelajari selengkapnya</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Memeriksa langganan …</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Perbarui Collie</string>
@@ -5232,9 +5249,11 @@
     <string name="Subscription__get_a_s_badge">Dapatkan lencana %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Memproses donasi …</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Berulang %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5253,8 +5272,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Gagal memproses donasi</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Pelajari selengkapnya</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Gagal memproses donasi. %1$s</string>
     <string name="DonationsErrors__your_payment">Donasi tidak dapat diproses dan saldo Anda belum terpotong. Silakan coba lagi.</string>
     <string name="DonationsErrors__still_processing">Masih memproses</string>
     <string name="DonationsErrors__couldnt_add_badge">Tidak dapat menambahkan lencana</string>
@@ -5272,6 +5294,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Donasi telah diproses, tetapi Signal tidak dapat mengirimkan pesan donasi Anda. Mohon hubungi bantuan.</string>
     <string name="DonationsErrors__your_badge_could_not">Lencana Anda tidak dapat ditambahkan ke akun Anda, tetapi Anda mungkin telah dikenakan biaya. Harap hubungi bagian dukungan.</string>
     <string name="DonationsErrors__your_payment_is_still">Donasi Anda sedang diproses. Ini dapat memakan waktu beberapa menit tergantung koneksi Anda.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Gagal membatalkan langganan</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Pembatalan langganan memerlukan koneksi internet.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Perangkat Anda tidak mendukung donasi dalam aplikasi, jadi Anda tidak bisa berlangganan untuk dapat lencana. Anda tetap bisa mendukung Signal dengan berdonasi lewat situs web kami.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Galat jaringan. Periksa koneksi Anda dan coba lagi.</string>
     <string name="NetworkFailure__retry">Coba lagi</string>
@@ -5280,6 +5304,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Pengguna ini tidak dapat menerima donasi sampai dia mengupgrade Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Donasi iDEAL | Wero Anda tidak bisa diproses. Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Donasi atas nama %1$s</string>
@@ -5477,12 +5502,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Nyalakan sampai %1$s</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Gagal membuka pemilih dering.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Untuk mengaktifkan notifikasi, Collie memerlukan izin untuk menampilkannya.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">Aktifkan</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ini chat resmi dan satu-satunya dari Signal</string>
@@ -5490,19 +5509,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Ikuti terus berita dan catatan rilisan terbaru kami</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">Semua aktivitas</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Semua</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Berulang</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">Sekali saja</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Untuk teman</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Donasi untuk teman</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Tipe donasi</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Tanggal dibayar</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Bagikan resi</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Jika Anda telah menginstal ulang Collie, resi dari donasi sebelumnya tidak akan tersedia.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Resi donasi</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Jumlah</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Terima kasih telah mendukung Signal. Kontribusi Anda membantu misi kami untuk melindungi kebebasan berekspresi dan memungkinkan komunikasi yang aman bagi jutaan pengguna di seluruh dunia, lewat dukungan teknologi privasi sumber terbuka. Jika Anda warga Amerika Serikat, harap simpan resi ini untuk pencatatan pajak. Signal Technology Foundation adalah organisasi nirlaba bebas pajak di Amerika Serikat menurut pasal 501c3 Internal Revenue Code (IRC). Federal Tax ID kami 82-4506840. Signal tidak menyediakan barang atau layanan apa pun sebagai kompensasi atas kontribusi ini.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Tidak ada resi</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6120,92 +6153,157 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Bangga Berstatus Nirlaba</string>
     <!-- Continue button label -->
+    <string name="DonateToSignalFragment__continue">Lanjutkan</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Beri donasi untuk mendukung perpesanan privat. Bantu Signal tetap independen dan bebas iklan.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Anda memiliki donasi yang tertunda</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Proses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja. Harap tunggu hingga pembayaran ini selesai sebelum memperbarui langganan Anda.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Proses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja. Harap tunggu hingga pembayaran ini selesai sebelum memberikan donasi lagi.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Donasi Anda sedang diproses. Ini dapat memakan waktu beberapa menit tergantung koneksi Anda. Harap tunggu hingga pembayaran ini selesai sebelum memperbarui langganan Anda.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Donasi Anda sedang diproses. Ini dapat memakan waktu beberapa menit tergantung koneksi Anda. Harap tunggu hingga pembayaran ini selesai sebelum memberikan donasi lagi.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Donasi Anda via iDEAL | Wero masih diproses. Cek aplikasi perbankan Anda untuk menyetujui pembayaran sebelum memberikan donasi lagi.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Jumlah donasi terlalu banyak</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Anda bisa kirim maksimal %1$s via transfer bank. Coba jumlah lain atau metode pembayaran berbeda.</string>
 
     <!-- Donation pill toggle monthly text -->
+    <string name="DonationPillToggle__monthly">Bulanan</string>
     <!-- Donation pill toggle one-time text -->
+    <string name="DonationPillToggle__one_time">Sekali saja</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Donasi %1$s/bulan ke Signal</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Dapatkan lencana %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Donasi %1$s ke Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="other">Dapatkan lencana %1$s untuk %2$d hari</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Transfer bank</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kartu kredit atau debit</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Donasi untuk teman</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Keluar dari Collie untuk mengonfirmasi donasi?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Saat dikonfirmasi, kembali ke Collie untuk menyelesaikan proses donasi Anda.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Anda akan dialihkan ke %1$s. Saat dikonfirmasi, kembali ke Collie untuk menyelesaikan proses donasi Anda.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Transfer Bank</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe memproses donasi yang diberikan ke Signal. Signal tidak mengumpulkan atau menyimpan informasi pribadi Anda. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Pelajari selengkapnya</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Setuju</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Baca lebih lanjut</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Gagal memuat permintaan</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Masukkan detail bank dan email Anda. Stripe menggunakan email ini untuk mengirimkan info terbaru tentang donasi Anda. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Pelajari selengkapnya</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Nama di rekening bank</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">Surel</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Temukan informasi rekening</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Donasi %1$s/bulan</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">Donasi %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN terlalu pendek</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN terlalu panjang</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Kode negara IBAN tidak didukung</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">IBAN tidak valid</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimal 3 karakter</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Alamat email salah</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Masukkan nama dan alamat email Anda. Stripe menggunakan email ini untuk mengirimkan info terbaru tentang donasi Anda. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Masukkan detail bank Anda. Signal tidak mengumpulkan atau menyimpan informasi pribadi Anda. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Pelajari selengkapnya</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Nama di rekening bank</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">Surel</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Konfirmasi donasi Anda dengan iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Untuk atur donasi berulang, ketuk lanjutkan untuk konfirmasi biaya €0,01 di bank Anda. Dengan begitu, Anda akan otomatis menerima pengembalian dana dan donasi %1$s/bulan bisa ditarik dari rekening Anda.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Lanjutkan</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Temukan informasi rekening Anda</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Temukan IBAN di bagian atas laporan bank Anda. IBAN memuat hingga 34 karakter. Nama yang dimasukkan harus sesuai dengan nama lengkap di rekening bank. Hubungi bank untuk informasi lebih lanjut.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Donasi tertunda</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Donasi bulanan Anda tertunda. Anda dapat menampilkan lencana %1$s di profil saat donasi telah diterima.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Donasi satu-kali Anda tertunda. Anda dapat menampilkan lencana %1$s di profil saat donasi telah diterima.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Proses transfer bank biasanya perlu waktu 1 sampai 14 hari kerja. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Pelajari selengkapnya</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Selesai</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Donasi tidak dapat diproses</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Kami mengalami masalah saat memproses transfer bank. Anda belum dikenakan tagihan. Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Coba lagi</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Tidak sekarang</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Donasi Selesai</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Transfer bank Anda telah diterima. Jika ingin, Anda bisa menampilkan lencana ini di profil untuk menunjukkan dukungan Anda.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">Membatalkan …</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Terlalu banyak daftar kontak yang telah diproses</string>
@@ -6236,6 +6334,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s mengirimi Anda</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Informasi Anda bersifat pribadi</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal tidak mengumpulkan atau menyimpan informasi pribadi saat Anda memberikan donasi.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Kami menggunakan Stripe sebagai pemroses pembayaran donasi Anda. Kami tidak mengakses, menahan, atau menyimpan informasi apa pun yang Anda berikan kepada mereka.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal tidak dan tidak dapat menghubungkan donasi Anda ke akun Signal Anda.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Terima kasih untuk dukungan Anda!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6250,6 +6353,8 @@
     <string name="GroupStoryEducationSheet__next">Berikutnya</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Donasi</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Pembayaran</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6464,7 +6569,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Perlu persetujuan admin</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Bagikan tautan via Signal</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Bagikan tautan via Collie</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Salin tautan</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6613,9 +6718,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Semua sudah siap. Mulai pencadangan sekarang.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Ini mungkin memerlukan waktu cukup lama. Anda dapat menggunakan Signal seperti biasa selama proses pencadangan berlangsung.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Ini mungkin memerlukan waktu cukup lama. Anda dapat menggunakan Collie seperti biasa selama proses pencadangan berlangsung.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimalkan penyimpanan Signal</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimalkan penyimpanan Collie</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">Media yang lebih lama akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6633,7 +6738,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Silakan instal ulang Collie untuk memulihkan cadangan. Buka aplikasinya dan ketuk \"Pulihkan cadangan\", lalu temukan file cadangannya."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Anda mengaktifkan \"Optimalkan penyimpanan Signal\". Jika ingin menyertakan semua media dalam cadangan di perangkat, nonaktifkan pengaturan ini.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Anda mengaktifkan \"Optimalkan penyimpanan Collie\". Jika ingin menyertakan semua media dalam cadangan di perangkat, nonaktifkan pengaturan ini.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Lihat pengaturan</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6692,10 +6797,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Izinkan notifikasi layar penuh</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Donasi bulanan dibatalkan</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Donasi bulanan berulang Anda telah dibatalkan. %1$s\n\nLencana Anda tidak akan ditampilkan lagi di profil. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Pelajari selengkapnya</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Perpanjang langganan</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Tidak sekarang</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6717,7 +6827,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Nomor Telepon Tidak Valid</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Undang ke Signal</string>
+    <string name="FindByActivity__invite_to_signal">Undang ke Collie</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">Nama pengguna tidak ditemukan</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -6852,7 +6962,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Tidak bisa me-redeem langganan pencadangan</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Terjadi kesalahan dan pencadangan Anda tidak dapat diselesaikan. Pastikan Anda menggunakan Signal versi terbaru dan coba lagi. Jika masalah ini berlanjut, hubungi tim dukungan.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Terjadi kesalahan dan pencadangan Anda tidak dapat diselesaikan. Pastikan Anda menggunakan Collie versi terbaru dan coba lagi. Jika masalah ini berlanjut, hubungi tim dukungan.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Terjadi kesalahan dan pencadangan Anda tidak dapat diselesaikan. Jika masalah ini berlanjut, hubungi tim dukungan.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -6934,7 +7044,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Pencadangan terakhir Anda tidak dapat diselesaikan. Pastikan ponsel terhubung ke Wi-Fi dan ketuk \"Cadangkan sekarang\" untuk mencoba lagi.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Pencadangan terakhir Anda tidak dapat diselesaikan. Pastikan Anda menggunakan Signal versi terbaru dan coba lagi.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Pencadangan terakhir Anda tidak dapat diselesaikan. Pastikan Anda menggunakan Collie versi terbaru dan coba lagi.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Jumlah pesan Anda telah melebihi batas penyimpanan. Hapus sebagian pesan dan coba lagi.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -6960,6 +7070,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -6986,34 +7097,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Pelajari selengkapnya</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Anda tidak dapat berlangganan Signal Secure Backups karena ponsel Anda tidak mendukung layanan Google Play. Hubungi produsen ponsel untuk mendapatkan bantuan.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Batas pesan</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Hapus riwayat pesan</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Pesan yang sudah melewati batas waktu yang dipilih akan dihapus permanen.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Pesan yang melebihi batas panjang obrolan yang dipilih akan dihapus permanen.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">Terapkan batas untuk perangkat terhubung</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Jika diaktifkan, batas pesan juga akan menghapus pesan di perangkat terhubung.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Penyimpanan Collie</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalkan penyimpanan Collie</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Media yang tidak digunakan akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Pengoptimalan penyimpanan hanya dapat dimanfaatkan saat paket berbayar Signal Secure Backups aktif. Langganan pencadangan Anda masih diproses dan belum aktif. Coba lagi nanti.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media akan dihapus dari cadangan di perangkat Anda</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Mengaktifkan \"Optimalkan penyimpanan Signal\" akan meng-offload media lama dari perangkat Anda. Anda dapat mengunduhnya kembali kapan saja. Media lama juga akan dihapus dari cadangan di perangkat Anda.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">Aktifkan</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7394,7 +7477,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Kunci ini akan menggantikan kunci untuk cadangan di perangkat Anda.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Kunci pemulihan adalah kode 64 karakter yang memungkinkan Anda memulihkan data cadangan saat menginstal ulang Signal.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Kunci pemulihan adalah kode 64 karakter yang memungkinkan Anda memulihkan data cadangan saat menginstal ulang Collie.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Kunci ini sama seperti kunci pemulihan di perangkat.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7432,7 +7515,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Pengelola kata sandi belum dikonfigurasi, atau pengelola kata sandi yang Anda gunakan tidak didukung.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Sebelum ini, Anda memutuskan agar kata sandi Signal tak disimpan di Pengelola Sandi Google. Di pengaturan Pengelola Sandi Google, hapus Signal dari \"Situs dan aplikasi yang ditolak\", baru coba lagi.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Sebelum ini, Anda memutuskan agar kata sandi Collie tak disimpan di Pengelola Sandi Google. Di pengaturan Pengelola Sandi Google, hapus Collie dari \"Situs dan aplikasi yang ditolak\", baru coba lagi.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Buka pengaturan</string>
     <!-- Action button label -->
@@ -7577,7 +7660,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Terjadi kesalahan jaringan saat mengekspor Cadangan Signal Android</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Terjadi kesalahan jaringan saat mengekspor Cadangan Collie Android</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7607,7 +7690,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Lanjut transfer akun Anda di perangkat yang lain.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Perangkat yang menjadi tujuan transfer Anda perlu diperbarui. Perbarui Signal di perangkat tersebut dan coba lagi.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Perangkat yang menjadi tujuan transfer Anda perlu diperbarui. Perbarui Collie di perangkat tersebut dan coba lagi.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Menyiapkan perangkat Anda</string>
@@ -7652,6 +7735,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Donasi</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7684,7 +7768,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">Kapasitas cadangan telah penuh</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Anda telah mencapai batas penyimpanan cadangan. Hapus beberapa file untuk mengosongkan ruang penyimpanan di Signal agar dapat terus mencadangkan chat dan media.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Anda telah mencapai batas penyimpanan cadangan. Hapus beberapa file untuk mengosongkan ruang penyimpanan di Collie agar dapat terus mencadangkan chat dan media.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Pencadangan gagal</string>
     <!-- Notification body for when initial backup failed -->
@@ -8127,7 +8211,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Salin</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Undang ke Signal</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Undang ke Collie</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">Tambahkan ke kontak ponsel</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8139,20 +8223,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Tidak bisa membuka peta</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Yuk gabung di Signal</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Yuk gabung di Collie</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">Reset kunci pemulihan Anda</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">Jika Anda mereset kunci pemulihan, kunci baru akan dibuat untuk Signal Login Anda. Ini hanya diperlukan jika orang lain mengetahui kunci Anda.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Jika cadangan diaktifkan, Anda harus mengunggah ulang cadangan Anda, termasuk media. Jika opsi \"Optimalkan penyimpanan Signal\" aktif, Anda harus mengunduh media yang di-offload terlebih dahulu.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Jika cadangan diaktifkan, Anda harus mengunggah ulang cadangan Anda, termasuk media. Jika opsi \"Optimalkan penyimpanan Collie\" aktif, Anda harus mengunduh media yang di-offload terlebih dahulu.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Lanjut</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Kesempatan Anda untuk membuat kunci baru telah habis. Anda bisa membuat kunci pemulihan baru setelah 7 hari.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Hapus untuk saya</string>
 
     <!-- EOF -->
 </resources>

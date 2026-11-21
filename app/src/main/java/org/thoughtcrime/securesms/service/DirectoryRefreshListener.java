@@ -6,6 +6,7 @@ import android.content.Context;
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,7 @@ public class DirectoryRefreshListener extends PersistentAlarmManagerListener {
 
   @Override
   protected long getNextScheduledExecutionTime(Context context) {
-    return SignalStore.misc().getDirectoryRefreshTime();
+    return PlainTextKeyValueStore.getDirectoryRefreshTime();
   }
 
   @Override
@@ -30,10 +31,10 @@ public class DirectoryRefreshListener extends PersistentAlarmManagerListener {
                          SignalStore.misc().getCdsBlockedUtil());
     } else {
       newTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(RemoteConfig.cdsRefreshIntervalSeconds());
-      SignalStore.misc().setDirectoryRefreshTime(newTime);
+      PlainTextKeyValueStore.setDirectoryRefreshTime(newTime);
     }
 
-    SignalStore.misc().setDirectoryRefreshTime(newTime);
+    PlainTextKeyValueStore.setDirectoryRefreshTime(newTime);
 
     return newTime;
   }

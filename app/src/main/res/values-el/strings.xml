@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Το Collie αναβαθμίζεται…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Δεν έχεις ορίσει ακόμα συνθηματικό!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">Απενεργοποίηση συνθηματικού;</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Αυτό θα ξεκλειδώσει μόνιμα το Collie και τις ειδοποιήσεις μηνυμάτων.</string>
-    <string name="ApplicationPreferencesActivity_disable">Απενεργοποίηση</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Σφάλμα κατά τη σύνδεση με τον διακομιστή!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Πιστωτική ή χρεωστική κάρτα</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Πρόσθεσε τα στοιχεία της κάρτας σου. Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Αριθμός κάρτας</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">ΜΜ/ΕΕ</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Μη έγκυρος αριθμός κάρτας</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">Η κάρτα έχει λήξει</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">Ο κωδικός είναι πολύ μικρός</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">Ο κωδικός είναι πολύ μεγάλος</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Μη έγκυρος κωδικός</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Μη έγκυρος μήνας</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Απαιτείται έτος</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Μη έγκυρο έτος</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">Δωρεά %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Δωρεά %1$s/μήνα</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Δωρεά %1$s/μήνα</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">Μία φορά %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Η δωρεά εκκρεμεί</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Γίνεται επεξεργασία της δωρεάς</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Αποκλεισμός και αποχώρηση από %1$s;</string>
@@ -346,7 +358,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">Ο χρήστης %1$s διέγραψε αυτό το μήνυμα</string>
     <string name="ConversationItem_you_deleted_this_message">Διέγραψες αυτό το μήνυμα</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Ο διαχειριστής %1$s διέγραψε αυτό το μήνυμα</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -451,7 +462,7 @@
     <string name="ConversationActivity_error_sending_media">Σφάλμα στην αποστολή πολυμέσων</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Η ανταλλαγή μηνυμάτων SMS δεν υποστηρίζεται πλέον στο Signal.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Η ανταλλαγή μηνυμάτων SMS δεν υποστηρίζεται πλέον στο Collie.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Η ανταλλαγή μηνυμάτων SMS δεν υποστηρίζεται πλέον στο Signal. Προσκάλεσε τον χρήστη %1$s στο Signal για να κρατήσεις εδώ τη συνομιλία.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -501,6 +512,8 @@
     <string name="ConversationFragment_deleting_messages">Διαγραφή μηνυμάτων…</string>
     <string name="ConversationFragment_delete_for_me">Διαγραφή για μένα</string>
     <string name="ConversationFragment_delete_for_everyone">Διαγραφή για όλους</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Έγινε διαγραφή για μένα</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Διαγραφή επιλεγμένου μηνύματος;</item>
@@ -1095,7 +1108,7 @@
     <string name="ExpiredBuildReminder_update_now">Αναβάθμιση τώρα</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Η Signal δεν λειτουργεί πλέον σε αυτή τη συσκευή. Για να χρησιμοποιήσεις πάλι τη Signal, ενημέρωσε τη συσκευή σου με μια νεότερη έκδοση Android ή συνδέσου σε μια νεότερη συσκευή.</string>
+    <string name="DeprecatedSdkBanner_body">Η Collie δεν λειτουργεί πλέον σε αυτή τη συσκευή. Για να χρησιμοποιήσεις πάλι τη Collie, ενημέρωσε τη συσκευή σου με μια νεότερη έκδοση Android ή συνδέσου σε μια νεότερη συσκευή.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Αναβάθμισε το Collie</string>
@@ -1443,9 +1456,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Αναβάθμσε το Signal για να χρησιμοποιήσεις συνδέσμους ομαδών.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Η έκδοση Signal που χρησιμοποιείς δεν υποστηρίζει αυτό τον σύνδεσμο ομάδας. Αναβάθμισε στη πιο πρόσφατη έκδοση για να μπεις στην ομάδα μέσω του συνδέσμου.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Αναβάθμιση του Signal</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Αναβάθμσε το Collie για να χρησιμοποιήσεις συνδέσμους ομαδών.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Η έκδοση Collie που χρησιμοποιείς δεν υποστηρίζει αυτό τον σύνδεσμο ομάδας. Αναβάθμισε στη πιο πρόσφατη έκδοση για να μπεις στην ομάδα μέσω του συνδέσμου.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Αναβάθμιση του Collie</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">Ο σύνδεσμος ομάδας δεν είναι έγκυρος</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2071,7 +2084,7 @@
         <item quantity="one">Έχεις ακόμα %1$d προσπάθεια. Αν τις εξαντλήσεις, θα πρέπει να δημιουργήσεις ένα νέο PIN. Θα έχεις τη δυνατότητα να εγγραφτείς και να χρησιμοποιήσεις τον λογαριασμό σου, αλλά θα χάσεις κάποιες αποθηκευμένες ρυθμίσεις όπως οι πληροφορίες προφίλ σου.</item>
         <item quantity="other">Έχεις ακόμα %1$d προσπάθειες. Αν τις εξαντλήσεις, θα πρέπει να δημιουργήσεις ένα νέο PIN. Θα έχεις τη δυνατότητα να εγγραφτείς και να χρησιμοποιήσεις τον λογαριασμό σου, αλλά θα χάσεις κάποιες αποθηκευμένες ρυθμίσεις όπως οι πληροφορίες προφίλ σου.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Εγγραφή στο Signal - Βοήθεια με το PIN σε Android</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Εγγραφή στο Collie - Βοήθεια με το PIN σε Android</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">Δημιούργησε το PIN σου</string>
@@ -2163,7 +2176,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Δεν μπορούσαν να σε ακούσουν</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Το μικρόφωνό σου ήταν σε σίγαση ενώ η εφαρμογή Signal λειτουργούσε στο παρασκήνιο. Για να το διορθώσεις, πάτα στις Ρυθμίσεις και ενεργοποίησε τη δραστηριότητα στο υπόβαθρο στις ρυθμίσεις Μπαταρίας.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Το μικρόφωνό σου ήταν σε σίγαση ενώ η εφαρμογή Collie λειτουργούσε στο παρασκήνιο. Για να το διορθώσεις, πάτα στις Ρυθμίσεις και ενεργοποίησε τη δραστηριότητα στο υπόβαθρο στις ρυθμίσεις Μπαταρίας.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">Έγκριση %1$d αιτήματος;</item>
@@ -2671,7 +2684,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">Δε βρέθηκαν αποτελέσματα για \"%1$s\"</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Κοινοποίηση μέσω Signal</string>
+    <string name="StickerManagement_menu_send_signal_pack">Κοινοποίηση μέσω Collie</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Σύνδεσμος</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2909,8 +2922,6 @@
     <string name="KeyCachingService_lock">Κλείδωμα του Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">Το πολυμέσο δεν είναι πια διαθέσιμο.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Μη δυνατότητα αναπαραγωγής πολυμέσων.</string>
@@ -2920,7 +2931,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Σφάλμα πολυμέσων</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Σφάλμα κατά τη διαγραφή του μηνύματος, το μήνυμα μπορεί να υπάρχει ακόμα</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">Μοιράσου</string>
 
     <!-- MessageNotifier -->
@@ -3156,7 +3166,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Επανεγγραφή συσκευής</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Αυτή η συσκευή δεν είναι πια συνδεδεμένη. Σύνδεσε ξανά το Signal στο τηλέφωνό σου για να συνεχίσεις να στέλνεις μηνύματα.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Αυτή η συσκευή δεν είναι πια συνδεδεμένη. Σύνδεσε ξανά το Collie στο τηλέφωνό σου για να συνεχίσεις να στέλνεις μηνύματα.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">Σύνδεση συσκευής ξανά</string>
 
@@ -3165,7 +3175,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">Ενημερώστε το Signal για να συνεχίσεις να χρησιμοποιείς πληρωμές. Το υπόλοιπό σου ενδέχεται να μην είναι ενημερωμένο.</string>
+    <string name="EnclaveFailureReminder_update_signal">Ενημερώστε το Collie για να συνεχίσεις να χρησιμοποιείς πληρωμές. Το υπόλοιπό σου ενδέχεται να μην είναι ενημερωμένο.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Απαντήθηκε από συνδεμένη συσκευή.</string>
@@ -3489,18 +3499,6 @@
     <string name="EditProfileFragment__group_name">Όνομα ομάδας</string>
     <string name="EditProfileFragment__group_description">Περιγραφή ομάδας</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Αναβάθμιση του Collie</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Αυτή η έκδοση Collie έχει λήξει. Αναβάθμισε τώρα για να συνεχίσεις να χρησιμοποιείς το Collie.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">Ενημέρωση</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Η συσκευή δεν είναι καταχωρημένη</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Αυτή η συσκευή δεν είναι πλέον καταχωρημένη. Κάνε επανεγγραφή για να κάνεις αλλαγές στον λογαριασμό σου.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Επανεγγραφή</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Αποθήκευση</string>
@@ -3623,7 +3621,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Πληροφορίες υποστήριξης</string>
-    <string name="HelpFragment__signal_android_support_request">Αίτημα υποστήριξης Signal Android</string>
+    <string name="HelpFragment__signal_android_support_request">Αίτημα υποστήριξης Collie Android</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Δεν μπόρεσαν να ανέβουν τα αρχεία καταγραφής</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Παρακαλούμε να είσαι όσο γίνεται πιο περιγραφικός/ή για να μας βοηθήσεις να καταλάβουμε το πρόβλημα.</string>
@@ -3679,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Εφαρμογές βοηθών AI, όπως το Gemini, μπορούν να σαρώνουν το περιεχόμενο του Collie. Για να αποτραπεί αυτό, έχει ενεργοποιηθεί η ασφάλεια οθόνης. Αυτό θα απενεργοποιήσει και τα στιγμιότυπα οθόνης.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Εφαρμογές βοηθών AI, όπως το Gemini, μπορούν να σαρώνουν το περιεχόμενο του Signal. Για να αποτραπεί αυτό, έχει ενεργοποιηθεί η ασφάλεια οθόνης. Αυτό θα απενεργοποιήσει και τα στιγμιότυπα οθόνης.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Η ασφάλεια οθόνης είναι ενεργοποιημένη</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3687,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Απενεργοποίηση ασφάλειας οθόνης;</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Αν το απενεργοποιήσεις, βοηθοί AI όπως το Google Gemini ενδέχεται να αποκτήσουν πρόσβαση στο περιεχόμενο του Collie και να το χρησιμοποιούν για λειτουργίες που μπορεί να μην διασφαλίζουν το απόρρητό σου.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Αν το απενεργοποιήσεις, βοηθοί AI όπως το Google Gemini ενδέχεται να αποκτήσουν πρόσβαση στο περιεχόμενο του Signal και να το χρησιμοποιούν για λειτουργίες που μπορεί να μην διασφαλίζουν το απόρρητό σου.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Απενεργοποίηση</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3695,24 +3693,15 @@
     <string name="preferences__notifications">Ειδοποιήσεις</string>
     <string name="preferences__led_color_unknown">Άγνωστο</string>
     <string name="preferences__silent">Σε σίγαση</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Ιδιωτικότητα</string>
+    <string name="preferences__donate_to_signal">Κάνε μια δωρεά στο Collie</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Ιστορίες</string>
     <string name="preferences__payments">Πληρωμές</string>
     <string name="preferences__linked_devices">Συνδεμένες συσκευές</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Αποστολή αρχείου συμβάντων αποσφαλμάτωσης</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Μη αναγνωσμένες υπενθυμίσεις</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Αν είναι ενεργοποιημένο, το Collie θα προσπαθήσει να παρακάμψει την λογοκρισία. Μην ενεργοποιήσεις αυτή την επιλογή εκτός και αν βρίσκεσαι σε περιοχή όπου το Collie έχει λογοκριθεί/μπλοκαριστεί.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Διεύθυνση proxy</string>
     <string name="preferences_only_use_a_proxy_if">Χρησιμοποίησε proxy μόνο αν δεν μπορείς να συνδεθείς στο Signal από δεδομένα κινητής ή Wi-Fi.</string>
     <string name="preferences_share">Μοιράσου</string>
@@ -3726,9 +3715,6 @@
     <string name="preferences_success">Επιτυχία</string>
     <string name="preferences_failed_to_connect">Αποτυχία σύνδεσης</string>
     <string name="preferences_enter_proxy_address">Εισαγωγή διεύθυνσης proxy</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Όταν είναι ενεργοποιημένο, το Collie θα επιχειρήσει να επαληθεύσει αυτόματα την κρυπτογράφηση των προσωπικών συνομιλιών.</string>
 
 
     <!-- Internal only preferences -->
@@ -3934,6 +3920,8 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s στις %2$s</string>
 
     <!-- SetCurrencyFragment -->
+    <string name="SetCurrencyFragment__set_currency">Ορισμός νομίσματος</string>
+    <string name="SetCurrencyFragment__all_currencies">Όλα τα νομίσματα</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -4107,9 +4095,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Μάθε περισσότερα</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">Προεπισκόπιση</string>
@@ -4278,15 +4263,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Κάλεσέ με (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Επαναποστολή κωδικού σε(%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Εγγραφή Molly - Κωδικός επαλήθευσης για Android</string>
+    <string name="RegistrationActivity_code_support_subject">Εγγραφή Collie - Κωδικός επαλήθευσης για Android</string>
     <string name="RegistrationActivity_incorrect_code">Λάθος κωδικός</string>
     <string name="BackupUtil_never">Ποτέ</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Άγνωστο</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Επίλεξε ποια άτομα μπορούν να δουν τον αριθμό τηλεφώνου σου και ποια μπορούν να τον χρησιμοποιήσουν για να επικοινωνήσουν μαζί σου στο Collie.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">Για να χρησιμοποιήσεις το κλείδωμα οθόνης, όρισε ένα PIN, μοτίβο ή κωδικό πρόσβασης σε αυτήν τη συσκευή.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Πρέπει να εισάγεις το PIN Κλειδώματος εγγραφής σου</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">Το PIN έχει τουλάχιστον %1$d ψηφία ή χαρακτήρες</string>
     <string name="RegistrationActivity_too_many_attempts">Υπερβολικά πολλές προσπάθειες</string>
@@ -4319,11 +4300,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Αυτή είναι μία συνδεδεμένη συσκευή</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Για να διαχειριστείς τις ρυθμίσεις του λογαριασμού σου, άνοιξε την εφαρμογή Signal στην κύρια συσκευή σου.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Για να διαχειριστείς τις ρυθμίσεις του λογαριασμού σου, άνοιξε την εφαρμογή Collie στην κύρια συσκευή σου.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Διαγραφή δεδομένων εφαρμογής</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Αυτή η ενέργεια θα διαγράψει όλα τα δεδομένα από την εφαρμογή Signal σε αυτή τη συσκευή.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Αυτή η ενέργεια θα διαγράψει όλα τα δεδομένα από την εφαρμογή Collie σε αυτή τη συσκευή.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Διαγραφή δεδομένων εφαρμογής;</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4825,7 +4806,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">Επεξεργασία αριθμού</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal Αλλαγή Αριθμού - Βοήθεια με το PIN για Android (v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie Αλλαγή Αριθμού - Βοήθεια με το PIN για Android (v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">Τα PIN δεν ταιριάζουν</string>
@@ -4988,7 +4969,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5300,7 +5280,13 @@
 
     <string name="ImageView__badge">Σήμα</string>
 
+    <string name="SubscribeFragment__cancel_subscription">Ακύρωση συνδρομής</string>
+    <string name="SubscribeFragment__confirm_cancellation">Επιβεβαίωση ακύρωσης;</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Δεν θα χρεωθείς ξανά. Το σήμα σου θα αφαιρεθεί από το προφίλ σου στο τέλος της περιόδου για την οποία έχεις χρεωθεί.</string>
+    <string name="SubscribeFragment__not_now">Όχι τώρα</string>
+    <string name="SubscribeFragment__confirm">Επιβεβαίωση</string>
     <string name="SubscribeFragment__update_subscription">Ανανέωση συνδρομής</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Η συνδρομή σου ακυρώθηκε.</string>
     <string name="SubscribeFragment__update_subscription_question">Ανανέωση συνδρομής;</string>
     <string name="SubscribeFragment__update">Ενημέρωση</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Θα χρεωθείς το πλήρες ποσό (%1$s) της τιμής νέας συνδρομής σήμερα. Η συνδρομή σου θα ανανεώνεται μηνιαία.</string>
@@ -5312,35 +5298,66 @@
     <string name="Subscription__expires_s">Λήγει στις %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Ως ανεξάρτητος μη κερδοσκοπικός οργανισμός, το Signal έχει δεσμευτεί για ιδιωτικά μηνύματα και κλήσεις. Χωρίς διαφημίσεις, παρακολούθηση, επιτήρηση. Κάνε σήμερα μια δωρεά για να στηρίξεις το Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Απόκτησε ένα προαιρετικό σήμα στο προφίλ σου όταν κάνεις δωρεά</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Η ιδιωτικότητά σου είναι η αποστολή μας</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Το Signal είναι ένας μη κερδοσκοπικός οργανισμός.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Ευχαριστούμε για την υποστήριξη!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Κέρδισες σήμα δωρεάς από το Signal! Πρόσθεσέ το στο προφίλ σου για να δείξεις την υποστήριξή σου.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Μπορείς επίσης</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">Να γίνεις μηνιαίος υποστηρικτής/τρια.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Εμφάνιση στο προφίλ</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Να γίνει το βασικό σήμα</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Συνέχεια</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Όταν έχεις πάνω από ένα σήματα, μπορείς να επιλέξεις ποιο μπορούν να δουν τα άλλα άτομα στο προφίλ σου.</string>
 
     <!-- Button label for creating a donation -->
+    <string name="ManageDonationsFragment__donate_to_signal">Κάνε μια δωρεά στο Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">Περισσότερα</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Η υποστήριξή μου</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Αποδείξεις δωρεών</string>
+    <string name="ManageDonationsFragment__badges">Σήματα</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Συχνές ερωτήσεις για δωρεές</string>
     <!-- Preference heading for other ways to donate -->
+    <string name="ManageDonationsFragment__other_ways_to_give">Άλλοι τρόποι δωρεάς</string>
     <!-- Preference label to launch badge gifting -->
+    <string name="ManageDonationsFragment__donate_for_a_friend">Κάνε δωρεά για έναν φίλο ή φίλη</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Δεν ήταν δυνατή η επιβεβαίωση της δωρεάς</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Δεν ήταν δυνατή η επιβεβαίωση της δωρεάς σου για %1$s/μήνα. Έλεγξε την τραπεζική σου εφαρμογή για να εγκρίνεις την πληρωμή σου στην iDEAL | Wero.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Δεν ήταν δυνατή η επιβεβαίωση της μεμονωμένης δωρεάς σου των %1$s . Έλεγξε την τραπεζική σου εφαρμογή για να εγκρίνεις την πληρωμή σου στην iDEAL | Wero.</string>
 
+    <string name="Boost__enter_custom_amount">Εισαγωγή προσαρμοσμένου ποσού</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Το ελάχιστο ποσό που μπορείς να κάνεις δωρεά είναι %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/μήνα</string>
+    <string name="MySupportPreference__renews_s">Ανανεώνεται %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">Επεξεργασία συναλλαγής…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Αδυναμία προσθήκης σήματος. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">Παρακαλώ επικοινώνησε με την υποστήριξη.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Η πληρωμή εκκρεμεί</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">Η τραπεζική μεταφορά %1$s εκκρεμεί. Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να ολοκληρωθούν.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Μάθε περισσότερα</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Έλεγχος συνδρομής…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Αναβάθμιση του Collie</string>
@@ -5377,9 +5394,11 @@
     <string name="Subscription__get_a_s_badge">Πάρε ένα σήμα %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Επεξεργασία δωρεάς…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">Επαναλαμβανόμενο %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5398,8 +5417,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Σφάλμα κατά την επεξεργασία της δωρεάς</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Μάθε περισσότερα</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Σφάλμα κατά την επεξεργασία της δωρεάς. %1$s</string>
     <string name="DonationsErrors__your_payment">Δεν ήταν δυνατή η επεξεργασία της δωρεάς σου και δεν έχεις χρεωθεί. Δοκίμασε ξανά.</string>
     <string name="DonationsErrors__still_processing">Ακόμα επεξεργάζεται</string>
     <string name="DonationsErrors__couldnt_add_badge">Αδυναμία προσθήκης σήματος</string>
@@ -5417,6 +5439,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Έγινε επεξεργασία της δωρεάς σου από τη Signal, αλλά δεν καταφέραμε να στείλουμε το μήνυμα της δωρεάς. Επικοινώνησε με την υποστήριξη.</string>
     <string name="DonationsErrors__your_badge_could_not">Το σήμα σου δεν ήταν δυνατό να προστεθεί στον λογαριασμό σου, αλλά ενδέχεται να έχεις χρεωθεί. Επικοινώνησε με την υποστήριξη.</string>
     <string name="DonationsErrors__your_payment_is_still">Η δωρεά σου είναι ακόμη σε επεξεργασία. Μπορεί να διαρκέσει μερικά λεπτά, ανάλογα με τη σύνδεσή σου.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Αποτυχία ακύρωσης συνδρομής</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Πρέπει να υπάρχει σύνδεση στο διαδίκτυο για την ακύρωση της συνδρομής.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Η συσκευή σου δεν υποστηρίζει δωρεές μέσω εφαρμογής, οπότε δεν μπορείς να γίνεις συνδρομητής για να λάβεις σήμα. Μπορείς όμως να υποστηρίξεις το Signal κάνοντας μια δωρεά στην ιστοσελίδα μας.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Σφάλμα δικτύου. Έλεγξε τη σύνδεσή σου και ξαναπροσπάθησε.</string>
     <string name="NetworkFailure__retry">Επανάληψη</string>
@@ -5425,6 +5449,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Ο χρήστης δεν μπορεί να λάβει δωρεές μέχρι να αναβαθμίσει τη Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Δεν ήταν δυνατή η επεξεργασία της δωρεάς σου στην iDEAL | Wero. Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Δωρεά εκ μέρους του χρήστη %1$s</string>
@@ -5622,12 +5647,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Ενεργό μέχρι %1$s</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Αποτυχία ανοίγματος επιλογέα.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Για να ενεργοποιήσεις τις ειδοποιήσεις, το Collie χρειάζεται άδεια για να τις εμφανίσει.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">Ενεργοποίηση</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Αυτή είναι η επίσημη και μοναδική συνομιλία από το Signal</string>
@@ -5635,19 +5654,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Μην χάσεις ξανά τα νέα και τις σημειώσεις έκδοσης</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">Όλη η δραστηριότητα</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Όλοι/ες</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Επαναλαμβανόμενη</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">Μια φορά</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Για ένα φιλαράκι</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Δωρεά για φίλους</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Τύπος δωρεάς</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Ημερομηνία πληρωμής</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Διαμοιρασμός απόδειξης</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Αν έχεις επανεγκαταστήσει το Collie, οι αποδείξεις από προηγούμενες δωρεές δεν θα είναι διαθέσιμες.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Απόδειξη δωρεάς</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Ποσό</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Σε ευχαριστούμε που στηρίζεις το Signal. Η συνεισφορά σου βοηθά στην ανάπτυξη της τεχνολογίας απορρήτου ανοιχτού κώδικα, που προστατεύει την ελευθερία της έκφρασης και δίνει τη δυνατότητα ασφαλών διεθνών επικοινωνιών για εκατομμύρια ανθρώπους σε όλο τον κόσμο. Αν είσαι κάτοικος των Ηνωμένων Πολιτειών, παρακαλούμε κράτα αυτή την απόδειξη για τα φορολογικά σου αρχεία. Το Signal Technology Foundation είναι ένας μη κερδοσκοπικός οργανισμός στις Ηνωμένες Πολιτείες, που έχει φοροαπαλλαγή σύμφωνα με την ενότητα 501c3 του Internal Revenue Code. Το Federal Tax ID μας είναι 82-4506840. Το Signal δεν παρείχε κανένα αγαθό ή υπηρεσία ως αντάλλαγμα για αυτή τη συνεισφορά.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Χωρίς παραλήπτες</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6286,93 +6319,158 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Με υπερηφάνεια, μη κερδοσκοπικός οργανισμός</string>
     <!-- Continue button label -->
+    <string name="DonateToSignalFragment__continue">Συνέχεια</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Κάνε μια δωρεά για να υποστηρίξεις την ιδιωτική ανταλλαγή μηνυμάτων. Βοήθησε να διατηρήσουμε το Signal ανεξάρτητο και χωρίς διαφημίσεις.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Μια δωρεά σου εκκρεμεί</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να διεκπεραιωθούν. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού ενημερώσεις τη συνδρομή σου.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να διεκπεραιωθούν. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού κάνεις άλλη δωρεά.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Η δωρεά σου είναι ακόμη σε επεξεργασία. Μπορεί να διαρκέσει μερικά λεπτά, ανάλογα με τη σύνδεσή σου. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού ενημερώσεις τη συνδρομή σου.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Η δωρεά σου είναι ακόμη σε επεξεργασία. Μπορεί να διαρκέσει μερικά λεπτά, ανάλογα με τη σύνδεσή σου. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού κάνεις άλλη δωρεά.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Η δωρεά σου iDEAL | Wero βρίσκεται ακόμη υπό επεξεργασία. Έλεγξε την τραπεζική σου εφαρμογή για να εγκρίνεις την πληρωμή σου πριν κάνεις άλλη δωρεά.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Το ποσό της δωρεάς είναι πολύ υψηλό</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Μπορείς να στείλεις έως και %1$s μέσω τραπεζικής μεταφοράς. Δοκίμασε διαφορετικό ποσό ή διαφορετικό τρόπο πληρωμής.</string>
 
     <!-- Donation pill toggle monthly text -->
+    <string name="DonationPillToggle__monthly">Μηνιαία</string>
     <!-- Donation pill toggle one-time text -->
+    <string name="DonationPillToggle__one_time">Μια φορά</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Κάνε μια δωρεά %1$s/μήνα στο Signal</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Πάρε ένα σήμα %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Κάνε μια δωρεά %1$s στο Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Πάρε ένα σήμα %1$s για %2$d μέρα</item>
         <item quantity="other">Πάρε ένα σήμα %1$s για %2$d μέρες</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Τραπεζική μεταφορά</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Πιστωτική ή χρεωστική κάρτα</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Κάνε δωρεά για έναν φίλο ή φίλη</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Αποχώρηση από το Collie για επιβεβαίωση δωρεάς;</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Μόλις επιβεβαιωθεί, έλα πάλι στο Collie για να ολοκληρώσεις την επεξεργασία της δωρεάς σου.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Θα μεταβείς στο %1$s. Μόλις επιβεβαιωθεί, έλα πάλι στο Collie για να ολοκληρώσεις την επεξεργασία της δωρεάς σου.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Τραπεζική μεταφορά</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Η Stripe επεξεργάζεται τις δωρεές που γίνονται στο Signal. Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Μάθε περισσότερα</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Αποδοχή</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">Δες περισσότερα</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Αποτυχία φόρτωσης εντολής</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Γράψε τα τραπεζικά στοιχεία και το email σου. Η Stripe χρησιμοποιεί αυτό το email για να σου στέλνει ενημερώσεις σχετικά με τη δωρεά σου. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Μάθε περισσότερα</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Όνομα σε τραπεζικό λογαριασμό</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">Email</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Εύρεση στοιχείων λογαριασμού</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Δωρεά %1$s/μήνα</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">Δωρεά %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">Το IBAN είναι πολύ μικρό</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">Το IBAN είναι πολύ μεγάλο</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Ο κωδικός χώρας IBAN δεν υποστηρίζεται</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">Μη έγκυρο IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Τουλάχιστον 3 χαρακτήρες</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Μη έγκυρη διεύθυνση e-mail</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Συμπλήρωσε το όνομά σου και το email σου. Η Stripe χρησιμοποιεί αυτό το email για να σου στέλνει ενημερώσεις σχετικά με τη δωρεά σου. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Γράψε τα τραπεζικά σου στοιχεία. Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Μάθε περισσότερα</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Όνομα σε τραπεζικό λογαριασμό</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Επιβεβαίωσε τη δωρεά σου με την iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Για να ρυθμίσεις την επαναλαμβανόμενη δωρεά σου, πάτα \"Συνέχεια\" για να επιβεβαιώσεις μια χρέωση 0,01 € στην τράπεζά σου. Το ποσό θα επιστραφεί αυτόματα και θα επιτρέψει τη χρέωση της δωρεάς σου για %1$s/μήνα από τον λογαριασμό σου.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Συνέχεια</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Βρες τα στοιχεία του λογαριασμού σου</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Αναζήτησε το ΙΒΑΝ στο επάνω μέρος του τραπεζικού λογαριασμού σου. Οι αριθμοί IBAN περιέχουν έως 34 χαρακτήρες. Το όνομα που γράφεις θα πρέπει να ταιριάζει με το πλήρες όνομά σου στον τραπεζικό σου λογαριασμό. Επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Η δωρεά εκκρεμεί</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Η μηνιαία δωρεά σου εκκρεμεί. Θα μπορείς να εμφανίσεις το σήμα %1$s στο προφίλ σου όταν λάβουμε τη δωρεά σου.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Η μεμονωμένη δωρεά σου εκκρεμεί. Θα μπορείς να εμφανίσεις το σήμα %1$s στο προφίλ σου όταν λάβουμε τη δωρεά σου.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να διεκπεραιωθούν. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Μάθε περισσότερα</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Τέλος</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Δεν ήταν δυνατή η επεξεργασία της δωρεάς</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Αντιμετωπίζουμε πρόβλημα με την επεξεργασία της τραπεζικής σου μεταφοράς. Δεν έχεις χρεωθεί. Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Ξαναπροσπάθησε</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Όχι τώρα</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Η δωρεά ολοκληρώθηκε</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Λάβαμε την τραπεζική σου μεταφορά. Μπορείς να επιλέξεις να εμφανίζεται αυτό το σήμα στο προφίλ σου για να δείξεις την υποστήριξή σου.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">Ακύρωση…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Έγινε επεξεργασία πάρα πολλών επαφών</string>
@@ -6404,6 +6502,11 @@
     <string name="PaymentMessageView_s_sent_you">Ο χρήστης %1$s σου έστειλε</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Τα στοιχεία σου είναι ιδιωτικά</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου όταν κάνεις δωρεά.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Χρησιμοποιούμε τη Stripe για την επεξεργασία πληρωμών, ώστε να λαμβάνουμε τις δωρεές μας. Δεν επεξεργαζόμαστε ούτε αποθηκεύουμε κανένα από τα στοιχεία που της παρέχεις.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Το Signal δεν μπορεί να συνδέσει τη δωρεά με τον λογαριασμό σου στο Signal.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Ευχαριστούμε για την υποστήριξή σου!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6418,6 +6521,8 @@
     <string name="GroupStoryEducationSheet__next">Επόμενο</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Δωρεά</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Πληρωμή</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6635,7 +6740,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Απαιτείται έγκριση διαχειριστή</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Κοινοποίηση συνδέσμου μέσω Signal</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Κοινοποίηση συνδέσμου μέσω Collie</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Αντιγραφή συνδέσμου</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6786,9 +6891,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Είσαι εντάξει. Ξεκίνα τη δημιουργία αντιγράφων ασφαλείας τώρα.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Αυτό μπορεί να διαρκέσει λίγο. Μπορείς να χρησιμοποιήσεις κανονικά το Signal κατά τη δημιουργία αντιγράφων ασφαλείας.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Αυτό μπορεί να διαρκέσει λίγο. Μπορείς να χρησιμοποιήσεις κανονικά το Collie κατά τη δημιουργία αντιγράφων ασφαλείας.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Βελτιστοποίηση χώρου αποθήκευσης Signal</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Βελτιστοποίηση χώρου αποθήκευσης Collie</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">Ο φόρτος των παλαιότερων πολυμέσων θα μειωθεί, αλλά μπορούν να ληφθούν από το αντίγραφο ασφαλείας σου ανά πάσα στιγμή.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6806,7 +6911,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Για να ανακτήσεις ένα αντίγραφο ασφαλείας, εγκατάστησε από την αρχή το Collie. Άνοιξε την εφαρμογή, πάτα \"Επαναφορά αντίγραφου ασφαλείας\" και εντόπισε τον φάκελο αντιγράφου ασφαλείας."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Έχεις ενεργοποιήσει την επιλογή «Βελτιστοποίηση αποθηκευτικού χώρου Signal». Αν θέλεις να συμπεριλάβεις όλα τα αρχεία πολυμέσων στα αντίγραφο ασφαλείας της συσκευής σου, απενεργοποίησε τη ρύθμιση.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Έχεις ενεργοποιήσει την επιλογή «Βελτιστοποίηση αποθηκευτικού χώρου Collie». Αν θέλεις να συμπεριλάβεις όλα τα αρχεία πολυμέσων στα αντίγραφο ασφαλείας της συσκευής σου, απενεργοποίησε τη ρύθμιση.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Προβολή ρύθμισης</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6865,10 +6970,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Να επιτρέπονται οι ειδοποιήσεις σε πλήρη οθόνη</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Η μηνιαία δωρεά ακυρώθηκε</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">Η τρέχουσα μηνιαία δωρεά σου ακυρώθηκε. %1$s\n\nΤο σήμα σου δεν εμφανίζεται πλέον στο προφίλ σου. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Μάθε περισσότερα</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Ανανέωση συνδρομής</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Όχι τώρα</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6890,7 +7000,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Μη έγκυρος αριθμός τηλεφώνου</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Πρόσκληση στο Signal</string>
+    <string name="FindByActivity__invite_to_signal">Πρόσκληση στο Collie</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">Το όνομα χρήστη δε βρέθηκε</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7028,7 +7138,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Δεν ήταν δυνατή η εξαργύρωση της συνδρομής σου για δημιουργία αντιγράφων ασφαλείας</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Παρουσιάστηκε σφάλμα και η δημιουργία αντιγράφων ασφαλείας δεν ήταν δυνατό να ολοκληρωθεί. Βεβαιώσου ότι έχεις την τελευταία έκδοση του Signal και δοκίμασε ξανά. Εάν το πρόβλημα παραμένει, επικοινώνησε με την υποστήριξη.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Παρουσιάστηκε σφάλμα και η δημιουργία αντιγράφων ασφαλείας δεν ήταν δυνατό να ολοκληρωθεί. Βεβαιώσου ότι έχεις την τελευταία έκδοση του Collie και δοκίμασε ξανά. Εάν το πρόβλημα παραμένει, επικοινώνησε με την υποστήριξη.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Παρουσιάστηκε σφάλμα και η δημιουργία αντιγράφων ασφαλείας δεν ήταν δυνατό να ολοκληρωθεί. Εάν το πρόβλημα παραμένει, επικοινώνησε με την υποστήριξη.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7110,7 +7220,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Δεν ήταν δυνατή η ολοκλήρωση του τελευταίου αντιγράφου ασφαλείας. Βεβαιώσου ότι η συσκευή σου είναι συνδεδεμένη σε Wi-Fi και πάτα \"Δημιουργία αντιγράφων ασφαλείας τώρα\" για να προσπαθήσεις ξανά.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Δεν ήταν δυνατή η ολοκλήρωση του τελευταίου αντιγράφου ασφαλείας. Βεβαιώσου ότι έχεις την τελευταία έκδοση του Signal και δοκίμασε ξανά.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Δεν ήταν δυνατή η ολοκλήρωση του τελευταίου αντιγράφου ασφαλείας. Βεβαιώσου ότι έχεις την τελευταία έκδοση του Collie και δοκίμασε ξανά.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Ο αριθμός των μηνυμάτων που έχεις υπερβαίνει το όριο αποθήκευσης. Διάγραψε ορισμένα μηνύματα και δοκίμασε ξανά.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7136,6 +7246,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7162,34 +7273,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Μάθε περισσότερα</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Δεν μπορείς να εγγραφείς στα ασφαλή αντίγραφα Signal επειδή το τηλέφωνό σου δεν υποστηρίζει τις υπηρεσίες Google Play. Επικοινώνησε με τον κατασκευαστή του τηλεφώνου για βοήθεια.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Όρια συνομιλίας</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Διαγραφή ιστορικού μηνυμάτων</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Τα μηνύματα που είναι παλαιότερα από τον επιλεγμένο χρόνο θα διαγραφούν οριστικά.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Τα μηνύματα που υπερβαίνουν το επιλεγμένο μέγεθος θα διαγραφούν οριστικά.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">Εφαρμογή ορίων σε συνδεδεμένες συσκευές</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Όταν η επιλογή είναι ενεργοποιημένη, τα όρια συνομιλίας θα διαγράφουν επίσης μηνύματα από τις συνδεδεμένες συσκευές σου.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Αποθηκευτικός χώρος Collie</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Βελτιστοποίηση χώρου αποθήκευσης Collie</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Ο φόρτος των αχρησιμοποίητων πολυμέσων θα μειωθεί, αλλά μπορούν να ληφθούν από το αντίγραφο ασφαλείας σου ανά πάσα στιγμή.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Η βελτιστοποίηση αποθηκευτικού χώρου μπορεί να χρησιμοποιηθεί μόνο με την πληρωμένη βαθμίδα των αντιγράφων ασφαλείας Signal Secure Backups. Η συνδρομή για αντίγραφα ασφαλείας βρίσκεται ακόμη υπό επεξεργασία και δεν είναι ακόμη ενεργή. Δοκίμασε αργότερα.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Τα αρχεία πολυμέσων θα διαγραφούν από το αντίγραφο ασφαλείας που βρίσκεται στη συσκευή σου</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Η ενεργοποίηση της επιλογής «Βελτιστοποίηση αποθηκευτικού χώρου Signal» θα διαγράψει τα παλιά αρχεία πολυμέσων από τη συσκευή σου. Μπορείς να τα κατεβάσεις ξανά ανά πάσα στιγμή. Επίσης, θα διαγράψει τα παλιά αρχεία πολυμέσων από το αντίγραφο ασφαλείας στη συσκευή σου.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">Ενεργοποίηση</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7577,7 +7660,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Αυτό το κλειδί θα αντικαταστήσει το κλειδί για τα αντίγραφα ασφαλείας στη συσκευή σου.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Το κλειδί ανάκτησής σου είναι ένας κωδικός 64 χαρακτήρων που σου επιτρέπει να επαναφέρεις τα αντίγραφα ασφαλείας σου κατά την επανεγκατάσταση του Signal.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">Το κλειδί ανάκτησής σου είναι ένας κωδικός 64 χαρακτήρων που σου επιτρέπει να επαναφέρεις τα αντίγραφα ασφαλείας σου κατά την επανεγκατάσταση του Collie.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Αυτό είναι το ίδιο με το κλειδί ανάκτησης στη συσκευή σου.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7615,7 +7698,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Δεν έχεις ορίσει διαχειριστή κωδικών πρόσβασης ή ο διαχειριστής κωδικών πρόσβασης που χρησιμοποιείς δεν υποστηρίζεται.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Eπέλεξες προηγουμένως να μην αποθηκεύεις κωδικούς πρόσβασης για το Signal στο Google Password Manager. Στις ρυθμίσεις του Google Password Manager, κατάργησε το Signal από το \"Declined sites and apps\" και δοκίμασε ξανά.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Eπέλεξες προηγουμένως να μην αποθηκεύεις κωδικούς πρόσβασης για το Collie στο Google Password Manager. Στις ρυθμίσεις του Google Password Manager, κατάργησε το Collie από το \"Declined sites and apps\" και δοκίμασε ξανά.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Πήγαινε στις ρυθμίσεις</string>
     <!-- Action button label -->
@@ -7762,7 +7845,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Σφάλμα δικτύου κατά την εξαγωγή Αντιγράφων ασφαλείας Signal Android</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Σφάλμα δικτύου κατά την εξαγωγή Αντιγράφων ασφαλείας Collie Android</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7792,7 +7875,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Συνέχισε τη μεταφορά του λογαριασμού σου στην άλλη σου συσκευή.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Η συσκευή που προσπαθείς να μεταφέρεις δεν είναι συμβατή. Ενημέρωσε το Signal σε αυτή τη συσκευή και δοκίμασε ξανά.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Η συσκευή που προσπαθείς να μεταφέρεις δεν είναι συμβατή. Ενημέρωσε το Collie σε αυτή τη συσκευή και δοκίμασε ξανά.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Προετοιμασία της συσκευής σου</string>
@@ -7837,6 +7920,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Δωρεά</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7869,7 +7953,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">Ο αποθηκευτικός χώρος αντιγράφων ασφαλείας είναι πλήρης</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Έχεις φτάσει το όριο του αποθηκευτικού χώρου αντιγράφων ασφαλείας. Απελευθέρωσε χώρο στο Signal για να συνεχίσεις να δημιουργείς αντίγραφα ασφαλείας των συνομιλιών και των πολυμέσων.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Έχεις φτάσει το όριο του αποθηκευτικού χώρου αντιγράφων ασφαλείας. Απελευθέρωσε χώρο στο Collie για να συνεχίσεις να δημιουργείς αντίγραφα ασφαλείας των συνομιλιών και των πολυμέσων.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Η δημιουργία αντίγραφου ασφαλείας απέτυχε</string>
     <!-- Notification body for when initial backup failed -->
@@ -8319,7 +8403,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Αντιγραφή</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Πρόσκληση στο Signal</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Πρόσκληση στο Collie</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">Προσθήκη στις επαφές τηλεφώνου</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8331,20 +8415,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Δεν ήταν δυνατό το άνοιγμα των χαρτών</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Έλα κι εσύ στο Signal</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Έλα κι εσύ στο Collie</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">Επαναφορά κλειδιού ανάκτησης</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">Η επαναφορά ενός κλειδιού ανάκτησης θα δημιουργήσει ένα νέο κλειδί για το Signal Login. Αυτό είναι απαραίτητο μόνο εάν κάποιος άλλος γνωρίζει το κλειδί σου.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Εάν τα αντίγραφα ασφαλείας είναι ενεργοποιημένα, θα πρέπει να ανεβάσεις ξανά το αντίγραφο ασφαλείας σου, συμπεριλαμβανομένων των πολυμέσων. Αν χρησιμοποιείς τη \"Βελτιστοποίηση αποθηκευτικού χώρου Signal\" θα πρέπει να πραγματοποιήσεις πρώτα λήψη των πολυμέσων που αφαιρέθηκαν.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Εάν τα αντίγραφα ασφαλείας είναι ενεργοποιημένα, θα πρέπει να ανεβάσεις ξανά το αντίγραφο ασφαλείας σου, συμπεριλαμβανομένων των πολυμέσων. Αν χρησιμοποιείς τη \"Βελτιστοποίηση αποθηκευτικού χώρου Collie\" θα πρέπει να πραγματοποιήσεις πρώτα λήψη των πολυμέσων που αφαιρέθηκαν.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Συνέχεια</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Έχεις εξαντλήσει τον αριθμό των νέων κλειδιών που μπορείς να δημιουργήσεις. Θα μπορείς να δημιουργήσεις ένα νέο κλειδί ανάκτησης σε 7 ημέρες.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Έγινε διαγραφή για μένα</string>
 
     <!-- EOF -->
 </resources>

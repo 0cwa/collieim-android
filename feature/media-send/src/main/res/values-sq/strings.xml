@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Shko te kamera</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal ka nevojë për leje që të shfaqë foto dhe video</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie ka nevojë për leje që të shfaqë foto dhe video</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Lejo aksesin</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Nuk u gjet asnjë foto ose video. Signal ka lejehyrje vetëm te fotot dhe videot që ke zgjedhur.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Nuk u gjet asnjë foto ose video. Collie ka lejehyrje vetëm te fotot dhe videot që ke zgjedhur.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal ka lejehyrje të kufizuar te fotot ose videot</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie ka lejehyrje të kufizuar te fotot ose videot</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Menaxho</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Për të shfaqur foto dhe video:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Signal ka nevojë për lejehyrje për të shfaqur fotot dhe videot.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Collie ka nevojë për lejehyrje për të shfaqur fotot dhe videot.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Foto</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d artikuj u vendosën në cilësi standarde</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Për të ruajtur gjëra në depozitë të jashtme, Signal kërkon leje Depozitimi, por kjo i është mohuar. Ju lutemi, kaloni te parametrat e aplikacionit, përzgjidhni \"Leje\", dhe aktivizoni \"Depozitim\".</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Për të ruajtur gjëra në depozitë të jashtme, Collie kërkon leje Depozitimi, por kjo i është mohuar. Ju lutemi, kaloni te parametrat e aplikacionit, përzgjidhni \"Leje\", dhe aktivizoni \"Depozitim\".</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Videoja do të dërgohet pa zë</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Nuk mund të transferohet llogaria</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Pajisja në të cilën po transferon të dhënat është version i vjetër. Përditëso Signal në atë pajisje dhe provo sërish.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Pajisja në të cilën po transferon të dhënat është version i vjetër. Përditëso Collie në atë pajisje dhe provo sërish.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

@@ -34,9 +34,11 @@ import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.backup.proto.KeyValue
 import org.thoughtcrime.securesms.backup.proto.SharedPreference
+import org.thoughtcrime.securesms.keyvalue.MollyValues
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
+import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPreference
 import org.thoughtcrime.securesms.testutil.DirectExecutor
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
@@ -139,7 +141,8 @@ class MollyBackupPreferencesTest {
       .integerValue(-1)
       .build()
     FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(oldTimeout.encode()), keyValueStorage)
-    assertEquals(0xffff_ffffL, TextSecurePreferences.getPassphraseLockTimeout(context))
+    // Molly: uint32 timeout records from old exporters always carried 0, so they never replace the MollyValues timeout.
+    assertEquals(Int.MAX_VALUE.toLong() + 120L, TextSecurePreferences.getPassphraseLockTimeout(context))
   }
 
   @Test
@@ -171,9 +174,10 @@ class MollyBackupPreferencesTest {
   fun `malformed Molly setting values cannot replace valid security preferences`() {
     preferences.edit()
       .putBoolean(TextSecurePreferences.BIOMETRIC_SCREEN_LOCK, true)
-      .putLong(TextSecurePreferences.PASSPHRASE_LOCK_TIMEOUT, 60L)
-      .putStringSet(TextSecurePreferences.PASSPHRASE_LOCK_TRIGGER, setOf("timeout"))
       .commit()
+    // The lock timeout and triggers live in MollyValues since the Molly 8.34 merge.
+    SignalStore.molly.passphraseLockTimeout = 60L
+    SignalStore.molly.passphraseLockTrigger = PassphraseLockTriggerPreference(setOf("timeout"))
     val before = preferences.all.toMap()
     val records = listOf(
       SharedPreference.Builder().file_("im.molly.app").key(TextSecurePreferences.BIOMETRIC_SCREEN_LOCK).value_("false").build(),
@@ -190,6 +194,7 @@ class MollyBackupPreferencesTest {
     assertEquals(before, preferences.all)
     assertTrue(TextSecurePreferences.isBiometricScreenLockEnabled(context))
     assertEquals(60L, TextSecurePreferences.getPassphraseLockTimeout(context))
+    assertEquals(setOf("timeout"), TextSecurePreferences.getPassphraseLockTrigger(context).triggers)
   }
 
   @Test
@@ -226,40 +231,48 @@ class MollyBackupPreferencesTest {
 
   @Test
   fun `Molly preferences round trip through the wire format without truncating long timeouts`() {
+    // The lock timeout and triggers live in MollyValues and travel as KeyValue frames; dynamic colours stay a
+    // preference record because they are needed before unlock.
     val timeout = Int.MAX_VALUE.toLong() + 120L
-    preferences.edit()
-      .putLong(TextSecurePreferences.PASSPHRASE_LOCK_TIMEOUT, timeout)
-      .putBoolean(TextSecurePreferences.DYNAMIC_COLORS_ENABLED, true)
-      .putStringSet(TextSecurePreferences.PASSPHRASE_LOCK_TRIGGER, setOf("screen_off", "background"))
-      .commit()
+    SignalStore.molly.passphraseLockTimeout = timeout
+    SignalStore.molly.passphraseLockTrigger = PassphraseLockTriggerPreference(setOf("screen_off", "background"))
+    PlainTextKeyValueStore.isDynamicColorsEnabled = true
 
-    val records = TextSecurePreferences.getPreferencesToSaveToBackup(context)
-    assertEquals(records.size.toLong(), TextSecurePreferences.getPreferencesToSaveToBackupCount(context))
-    val timeoutRecord = records.single { it.key == TextSecurePreferences.PASSPHRASE_LOCK_TIMEOUT }
-    assertEquals(timeout, timeoutRecord.longValue!!)
-    assertNull(timeoutRecord.integerValue)
+    assertTrue(SignalStore.keysToIncludeInBackup.contains(MollyValues.PASSPHRASE_LOCK_TIMEOUT))
+    assertTrue(SignalStore.keysToIncludeInBackup.contains(MollyValues.PASSPHRASE_LOCK_TRIGGER))
+    val exported = keyValueStorage.getDataSet()
+    val timeoutFrame = KeyValue.Builder().key(MollyValues.PASSPHRASE_LOCK_TIMEOUT).longValue(exported.getLong(MollyValues.PASSPHRASE_LOCK_TIMEOUT, 0)).build()
+    val triggerFrame = KeyValue.Builder().key(MollyValues.PASSPHRASE_LOCK_TRIGGER).blobValue(okio.ByteString.of(*exported.getBlob(MollyValues.PASSPHRASE_LOCK_TRIGGER, null)!!)).build()
+    val records = FullBackupExporter.getPlainTextPreferencesToSaveToBackup()
+    assertTrue(records.single { it.key == PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED }.booleanValue!!)
 
     preferences.edit().clear().commit()
+    keyValueStorage = MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet())
+    SignalStore.testInject(SignalStore(context, KeyValueStore(keyValueStorage, DirectExecutor())))
     records.forEach { record ->
       FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(record.encode()), keyValueStorage)
     }
+    FullBackupImporter.processKeyValue(KeyValue.ADAPTER.decode(timeoutFrame.encode()), keyValueStorage)
+    FullBackupImporter.processKeyValue(KeyValue.ADAPTER.decode(triggerFrame.encode()), keyValueStorage)
+    SignalStore.onPostBackupRestore()
 
     assertEquals(timeout, TextSecurePreferences.getPassphraseLockTimeout(context))
+    assertEquals(setOf("screen_off", "background"), TextSecurePreferences.getPassphraseLockTrigger(context).triggers)
     assertTrue(TextSecurePreferences.isDynamicColorsEnabled(context))
-    assertEquals(setOf("screen_off", "background"), preferences.getStringSet(TextSecurePreferences.PASSPHRASE_LOCK_TRIGGER, emptySet()))
   }
 
   @Test
-  fun `historical integer timeout records restore with the long type expected by Molly`() {
+  fun `historical integer timeout records do not replace the MollyValues timeout`() {
     val record = SharedPreference.Builder()
       .file_(SecurePreferenceManager.getSecurePreferencesName())
       .key(TextSecurePreferences.PASSPHRASE_LOCK_TIMEOUT)
       .integerValue(-1)
       .build()
 
+    SignalStore.molly.passphraseLockTimeout = 300L
     FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(record.encode()), keyValueStorage)
 
-    assertEquals(0xffff_ffffL, TextSecurePreferences.getPassphraseLockTimeout(context))
+    assertEquals(300L, TextSecurePreferences.getPassphraseLockTimeout(context))
   }
 
   @Test
@@ -334,11 +347,13 @@ class MollyBackupPreferencesTest {
       .putString("pref_theme", "light")
       .putStringSet("pref_media_download_mobile", setOf("video"))
       .putBoolean(TextSecurePreferences.LOG_ENABLED, false)
+      .putBoolean(PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED, true)
       .commit()
 
-    val records = TextSecurePreferences.getPreferencesToSaveToBackup(context)
+    val records = FullBackupExporter.getPlainTextPreferencesToSaveToBackup()
 
-    assertEquals(listOf(TextSecurePreferences.LOG_ENABLED), records.map { it.key })
-    assertFalse(records.single().booleanValue!!)
+    // Only the pre-unlock settings without a SignalStore mirror are exported as preference records.
+    assertEquals(listOf(PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED), records.map { it.key })
+    assertTrue(records.single().booleanValue!!)
   }
 }

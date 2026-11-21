@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Open de camera</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal heeft toestemming nodig om je afbeeldingen en video\'s te kunnen weergeven</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie heeft toestemming nodig om je afbeeldingen en video\'s te kunnen weergeven</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Toegang geven</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Geen foto\'s of video\'s gevonden. Signal heeft alleen toegang tot geselecteerde foto\'s en video\'s.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Geen foto\'s of video\'s gevonden. Collie heeft alleen toegang tot geselecteerde foto\'s en video\'s.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal heeft beperkte toegang tot foto\'s of video\'s</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie heeft beperkte toegang tot foto\'s of video\'s</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Beheren</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Om afbeeldingen en video\'s weer te geven:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Signal heeft toegang nodig om je foto\'s en video\'s te kunnen weergeven.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Collie heeft toegang nodig om je foto\'s en video\'s te kunnen weergeven.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Foto</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d items ingesteld op standaardkwaliteit</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Signal heeft toegang tot de opslagruimte nodig om iets te kunnen opslaan, maar je hebt dit geweigerd. Ga naar de app-instellingen in je telefooninstellingen, tik op ‘Machtigingen’ en schakel ‘Opslagruimte’ in.</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Collie heeft toegang tot de opslagruimte nodig om iets te kunnen opslaan, maar je hebt dit geweigerd. Ga naar de app-instellingen in je telefooninstellingen, tik op ‘Machtigingen’ en schakel ‘Opslagruimte’ in.</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Video wordt zonder audio verstuurd</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Kan account niet overzetten</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Het apparaat waarnaar je gegevens overzet, is verouderd. Werk Signal op dat apparaat bij en probeer het opnieuw.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Het apparaat waarnaar je gegevens overzet, is verouderd. Werk Collie op dat apparaat bij en probeer het opnieuw.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

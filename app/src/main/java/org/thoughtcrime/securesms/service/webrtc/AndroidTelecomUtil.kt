@@ -219,6 +219,7 @@ object AndroidTelecomUtil {
     if (RemoteConfig.internalUser) {
       return SignalStore.internal.callingUseTelecom
     }
-    return false
+
+    return RingRtcDynamicConfiguration.isTelecomAllowedForDevice()
   }
 }

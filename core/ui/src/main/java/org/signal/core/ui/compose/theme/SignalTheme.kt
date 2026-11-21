@@ -149,6 +149,7 @@ private val lightExtendedColors = ExtendedColors(
   neutralFill = Color(0x1A000000),
   colorOnCustom = Color(0xFFFFFFFF),
   colorOnCustomVariant = Color(0xB3FFFFFF),
+  // MOLLY: Molly palette values (theme attributes stay the single theming source); Collie colours
   colorSurface1 = Color(0xFFFFF4E5),
   colorSurface2 = Color(0xFFFFF0DE),
   colorSurface3 = Color(0xFFFCE9D0),
@@ -180,6 +181,7 @@ private val darkExtendedColors = ExtendedColors(
   neutralFill = Color(0x33FFFFFF),
   colorOnCustom = Color(0xFFFFFFFF),
   colorOnCustomVariant = Color(0x18FFFFFF),
+  // MOLLY: Molly palette values (theme attributes stay the single theming source); Collie colours
   colorSurface1 = Color(0xFF2C1911),
   colorSurface2 = Color(0xFF342017),
   colorSurface3 = Color(0xFF3D241A),

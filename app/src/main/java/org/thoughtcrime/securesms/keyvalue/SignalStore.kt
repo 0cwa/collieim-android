@@ -63,6 +63,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val backupValues = BackupValues(store, context)
   val unifiedPushValues = UnifiedPushValues(store)
   val labsValues = LabsValues(store) { RemoteConfig.internalUser }
+  val mollyValues = MollyValues(store, context)
 
   init {
     SignalStoreChangeListeners.register(this)
@@ -70,7 +71,14 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
 
   companion object {
 
+    @Volatile
     private var instance: SignalStore? = null
+
+    /** MOLLY: Whether the store is available for reads. Remains true when the app is re-locked. */
+    @JvmStatic
+    @get:JvmName("isInitialized")
+    val isInitialized: Boolean
+      get() = instance != null
 
     @JvmStatic
     fun init(context: Application) {
@@ -114,6 +122,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
       backup.onFirstEverAppLaunch()
       unifiedpush.onFirstEverAppLaunch()
       labs.onFirstEverAppLaunch()
+      molly.onFirstEverAppLaunch()
     }
 
     @JvmStatic
@@ -147,7 +156,8 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
           apkUpdate.keysToIncludeInBackup +
           backup.keysToIncludeInBackup +
           unifiedpush.keysToIncludeInBackup +
-          labs.keysToIncludeInBackup
+          labs.keysToIncludeInBackup +
+          molly.keysToIncludeInBackup
       }
 
     /**
@@ -173,6 +183,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     @JvmStatic
     fun onPostBackupRestore() {
       instance!!.store.resetCache()
+      instance!!.settingsValues.onPostBackupRestore()
     }
 
     @JvmStatic
@@ -318,9 +329,15 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     val labs: LabsValues
       get() = instance!!.labsValues
 
+    @JvmStatic
+    @get:JvmName("molly")
+    val molly: MollyValues
+      get() = instance!!.mollyValues
+
     val groupsV2AciAuthorizationCache: GroupsV2AuthorizationSignalStoreCache
       get() = GroupsV2AuthorizationSignalStoreCache.createAciCache(instance!!.store)
 
+    @JvmStatic
     fun getPreferenceDataStore(): PreferenceDataStore {
       return SignalPreferenceDataStore(instance!!.store)
     }

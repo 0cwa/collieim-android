@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie 업데이트 중…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">아직 암호 문구가 설정되지 않았어요.</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">암호 문구 사용을 비활성화할까요?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Collie이 잠금 해제되어 메시지 알림이 표시됩니다.</string>
-    <string name="ApplicationPreferencesActivity_disable">비활성화하기</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">서버에 연결할 수 없습니다</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">신용카드 또는 체크카드</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">카드 세부 정보를 입력하세요. Signal은 개인정보를 수집하거나 저장하지 않습니다.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">카드 번호</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">MM/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">잘못된 카드 번호입니다.</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">만료된 카드입니다.</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">코드가 너무 짧습니다.</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">코드 자릿수 초과</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">잘못된 코드입니다.</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">잘못된 월입니다.</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">연도를 입력하세요.</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">잘못된 연도입니다.</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">%1$s 후원하기</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">월 %1$s 후원하기</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">월 %1$s 후원하기</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">1회 %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">후원 대기 중</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">후원 처리 중</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$s 그룹을 차단하고 나갈까요?</string>
@@ -344,7 +356,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s 님이 이 메시지를 삭제했습니다.</string>
     <string name="ConversationItem_you_deleted_this_message">내가 이 메시지를 삭제했습니다.</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">관리자 %1$s 님이 메시지를 삭제했습니다.</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -447,7 +458,7 @@
     <string name="ConversationActivity_error_sending_media">미디어 전송 오류</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Signal에서 더 이상 SMS 메시지를 지원하지 않습니다.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">Collie에서 더 이상 SMS 메시지를 지원하지 않습니다.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal에서 더 이상 SMS 메시지를 지원하지 않습니다. %1$s 님을 Signal로 초대하여 대화를 이어가세요.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -494,6 +505,8 @@
     <string name="ConversationFragment_deleting_messages">메시지 삭제 중…</string>
     <string name="ConversationFragment_delete_for_me">나에게서 삭제</string>
     <string name="ConversationFragment_delete_for_everyone">모두에게서 삭제</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">나에게만 삭제됨</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="other">선택한 메시지를 삭제할까요?</item>
@@ -1068,7 +1081,7 @@
     <string name="ExpiredBuildReminder_update_now">지금 업데이트하세요</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">Signal이 이 기기에서는 더 이상 작동하지 않습니다. Signal을 다시 사용하려면 기기를 최신 Android 버전으로 업데이트하거나 최신 기기로 업데이트하세요.</string>
+    <string name="DeprecatedSdkBanner_body">Collie이 이 기기에서는 더 이상 작동하지 않습니다. Collie을 다시 사용하려면 기기를 최신 Android 버전으로 업데이트하거나 최신 기기로 업데이트하세요.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Collie 업데이트</string>
@@ -1396,9 +1409,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">그룹 링크를 사용하려면 Signal을 업데이트하세요</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">사용 중인 Signal 버전에서는 이 그룹 링크를 지원하지 않습니다. 링크를 통해 그룹에 가입하려면 최신 버전으로 업데이트하세요.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signal 업데이트</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">그룹 링크를 사용하려면 Collie을 업데이트하세요</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">사용 중인 Collie 버전에서는 이 그룹 링크를 지원하지 않습니다. 링크를 통해 그룹에 가입하려면 최신 버전으로 업데이트하세요.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Collie 업데이트</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">그룹 링크가 유효하지 않습니다.</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2002,7 +2015,7 @@
     <plurals name="PinRestoreEntryFragment_you_have_d_attempt_remaining">
         <item quantity="other">입력 가능한 횟수가 %1$d회 남았습니다. 남은 횟수를 모두 사용하면 PIN을 새로 만들어야 합니다. 이 경우 계정 등록 및 사용은 가능하지만, 프로필 정보 등 저장된 일부 설정은 삭제됩니다.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal 등록 - Android용 PIN 설정과 관련해 도움이 필요합니다</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie 등록 - Android용 PIN 설정과 관련해 도움이 필요합니다</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">PIN을 생성하세요</string>
@@ -2094,7 +2107,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">상대방이 내 소리를 들을 수 없어요</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Signal이 백그라운드에서 실행되는 동안 마이크가 차단되었습니다. 이 문제를 해결하려면 여기를 눌러 \'배터리\' 설정에서 백그라운드 활동을 활성화하세요.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">Collie이 백그라운드에서 실행되는 동안 마이크가 차단되었습니다. 이 문제를 해결하려면 여기를 눌러 \'배터리\' 설정에서 백그라운드 활동을 활성화하세요.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="other">요청 %1$d개를 승인할까요?</item>
@@ -2575,7 +2588,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">\'%1$s\'에 대한 검색 결과 없음</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Signal로 링크 전송하기</string>
+    <string name="StickerManagement_menu_send_signal_pack">Collie로 링크 전송하기</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">링크</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2812,8 +2825,6 @@
     <string name="KeyCachingService_lock">Collie 잠금 걸기</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">미디어를 더 이상 이용할 수 없습니다.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">미디어를 재생할 수 없습니다.</string>
@@ -2823,7 +2834,6 @@
     <string name="MediaPreviewFragment_edit_media_error">미디어 오류</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">메시지 삭제 오류: 메시지가 여전히 남아있을 수 있습니다</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">공유</string>
 
     <!-- MessageNotifier -->
@@ -3052,7 +3062,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">기기 다시 등록하기</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">이 기기는 연동이 해제되었습니다. 메시지를 계속 이용하려면 Signal에 휴대폰을 다시 연동하세요.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">이 기기는 연동이 해제되었습니다. 메시지를 계속 이용하려면 Collie에 휴대폰을 다시 연동하세요.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">기기 다시 연동</string>
 
@@ -3061,7 +3071,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">결제 기능을 계속 이용하려면 Signal을 업데이트해 주세요. 현재 표시된 잔액이 최신 상태가 아닐 수 있습니다.</string>
+    <string name="EnclaveFailureReminder_update_signal">결제 기능을 계속 이용하려면 Collie을 업데이트해 주세요. 현재 표시된 잔액이 최신 상태가 아닐 수 있습니다.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">연동 기기에서 응답했습니다.</string>
@@ -3378,18 +3388,6 @@
     <string name="EditProfileFragment__group_name">그룹 이름</string>
     <string name="EditProfileFragment__group_description">그룹 설명</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Collie 업데이트</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">이 Collie 버전은 만료되었습니다. Collie을 계속 사용하려면 지금 업데이트하세요.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">업데이트</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">등록되지 않은 기기입니다</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">기기가 등록 해제되었습니다. 계정을 변경하려면 다시 등록하세요.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">다시 등록하기</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">저장</string>
@@ -3512,7 +3510,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">지원 정보</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Android 지원 요청</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Android 지원 요청</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">로그를 업로드하지 못했습니다</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">원인 파악을 위해 문제 상황을 최대한 상세히 기록해 주세요.</string>
@@ -3566,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini와 같은 AI 어시스턴트 앱이 Collie 화면의 내용을 스캔할 수 있어, 이를 방지하기 위해 화면 보안이 활성화되었습니다. 이에 따라 스크린샷 기능도 함께 차단됩니다.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini와 같은 AI 어시스턴트 앱이 Signal 화면의 내용을 스캔할 수 있어, 이를 방지하기 위해 화면 보안이 활성화되었습니다. 이에 따라 스크린샷 기능도 함께 차단됩니다.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">화면 보안 켜짐</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3574,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">화면 보안을 끌까요?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">이 설정을 끄면 Google Gemini 등의 AI 어시스턴트가 Collie 화면을 스캔하여 개인정보가 보호되지 않는 기능에 사용할 위험이 있습니다.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">이 설정을 끄면 Google Gemini 등의 AI 어시스턴트가 Signal 화면을 스캔하여 개인정보가 보호되지 않는 기능에 사용할 위험이 있습니다.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">끄기</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3582,24 +3580,15 @@
     <string name="preferences__notifications">알림</string>
     <string name="preferences__led_color_unknown">알 수 없음</string>
     <string name="preferences__silent">무음</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">개인정보 보호</string>
+    <string name="preferences__donate_to_signal">Collie 후원하기</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">스토리</string>
     <string name="preferences__payments">결제</string>
     <string name="preferences__linked_devices">연동 기기</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">디버그 로그 제출</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">읽지 않은 메시지 알림</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">이 기능을 활성화하면 Collie이 검열을 우회하려고 시도합니다. Collie이 차단된 지역에 있는 경우에만 이 기능을 사용하세요.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">프록시 주소</string>
     <string name="preferences_only_use_a_proxy_if">모바일 데이터 또는 Wi-Fi에서 Signal에 연결할 수 없는 경우에만 프록시를 사용하세요.</string>
     <string name="preferences_share">공유</string>
@@ -3613,9 +3602,6 @@
     <string name="preferences_success">성공</string>
     <string name="preferences_failed_to_connect">연결 실패함</string>
     <string name="preferences_enter_proxy_address">프록시 주소 입력하기</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">이 기능을 활성화하면 Collie이 1:1 대화의 암호화를 자동으로 인증하려고 시도합니다.</string>
 
 
     <!-- Internal only preferences -->
@@ -3821,6 +3807,8 @@
     <string name="CurrencyAmountFormatter_s_at_s">%2$s, %1$s</string>
 
     <!-- SetCurrencyFragment -->
+    <string name="SetCurrencyFragment__set_currency">통화 설정</string>
+    <string name="SetCurrencyFragment__all_currencies">모든 통화</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -3992,9 +3980,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">자세히 알아보기</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">미디어 미리보기</string>
@@ -4156,15 +4141,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">전화로 받기(%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">코드 다시 보내기(%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Molly 등록 - Android용 인증 코드</string>
+    <string name="RegistrationActivity_code_support_subject">Collie 등록 - Android용 인증 코드</string>
     <string name="RegistrationActivity_incorrect_code">올바르지 않은 코드</string>
     <string name="BackupUtil_never">없음</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">알 수 없음</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">내 전화번호를 볼 수 있고, Collie에서 내 전화번호로 나한테 연락할 수 있는 사람을 선택하세요.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">화면 잠금을 사용하려면 이 기기에서 PIN, 패턴, 또는 암호를 설정하세요.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">등록 잠금 번호를 입력해야 합니다.</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">PIN은 최소 %1$d자여야 합니다.</string>
     <string name="RegistrationActivity_too_many_attempts">시도 횟수를 초과했습니다</string>
@@ -4197,11 +4178,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">이 기기는 연동 기기입니다</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">계정 설정을 관리하려면 기본 사용 기기에서 Signal을 열어 주세요.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">계정 설정을 관리하려면 기본 사용 기기에서 Collie을 열어 주세요.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">앱 데이터 삭제</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">기기에 저장된 Signal 앱의 모든 데이터가 삭제됩니다.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">기기에 저장된 Collie 앱의 모든 데이터가 삭제됩니다.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">앱 데이터를 삭제할까요?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4691,7 +4672,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">전화번호 수정</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal 번호 변경 - Android용 PIN에 대한 도움이 필요합니다(v2 PIN)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie 번호 변경 - Android용 PIN에 대한 도움이 필요합니다(v2 PIN)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PIN이 일치하지 않음</string>
@@ -4851,7 +4832,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5155,7 +5135,13 @@
 
     <string name="ImageView__badge">배지</string>
 
+    <string name="SubscribeFragment__cancel_subscription">구독 취소</string>
+    <string name="SubscribeFragment__confirm_cancellation">정말 취소할까요?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">앞으로 요금은 청구되지 않습니다. 현재 결제 주기가 끝나면 프로필에서 배지가 삭제됩니다.</string>
+    <string name="SubscribeFragment__not_now">나중에</string>
+    <string name="SubscribeFragment__confirm">확인</string>
     <string name="SubscribeFragment__update_subscription">구독 업데이트</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">구독을 취소했습니다.</string>
     <string name="SubscribeFragment__update_subscription_question">구독을 업데이트할까요?</string>
     <string name="SubscribeFragment__update">업데이트</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">오늘 새 구독 요금의 전체 금액(%1$s)이 청구됩니다. 구독은 매월 갱신됩니다.</string>
@@ -5167,35 +5153,66 @@
     <string name="Subscription__expires_s">%1$s 만료</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Signal은 독립적인 비영리단체로, 메시지와 통화의 프라이버시 보호를 핵심 가치로 삼고 있습니다. 광고도, 추적도, 감시도 없습니다. Signal의 사명을 지지하신다면 지금 후원해 보세요.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">후원하면 프로필에 표시되는 배지를 받을 수 있어요.</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">개인정보 보호는 Signal의 사명입니다.</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal은 비영리단체입니다.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">후원에 감사드립니다!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Signal에서 후원자 배지를 받았어요! 프로필에 표시하여 Signal을 응원하는 마음을 표현해 보세요.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">다른 기여 방법을 찾으신다면</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">월 정기후원 옵션을 살펴보세요.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">프로필에 표시</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">프로필 배지 등록</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">계속</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">배지가 여러 개 있는 경우 프로필에 표시하고 싶은 배지를 선택하여 등록할 수 있습니다.</string>
 
     <!-- Button label for creating a donation -->
+    <string name="ManageDonationsFragment__donate_to_signal">Signal 후원하기</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">더 보기</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">후원 표시</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">후원 영수증</string>
+    <string name="ManageDonationsFragment__badges">배지</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">후원자 FAQ</string>
     <!-- Preference heading for other ways to donate -->
+    <string name="ManageDonationsFragment__other_ways_to_give">다른 기여 방법</string>
     <!-- Preference label to launch badge gifting -->
+    <string name="ManageDonationsFragment__donate_for_a_friend">친구를 대신해 후원하세요.</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">후원 확인 실패</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">월 %1$s 정기후원을 확인하지 못했습니다. 은행 앱을 확인하여 iDEAL | Wero 결제를 승인해 주세요.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">%1$s 일회성 후원을 확인하지 못했습니다. 은행 앱을 확인하여 iDEAL | Wero 결제를 승인해 주세요.</string>
 
+    <string name="Boost__enter_custom_amount">직접 금액 입력하기</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">후원할 수 있는 최소 금액은 %1$s입니다.</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/월</string>
+    <string name="MySupportPreference__renews_s">%1$s 갱신</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">거래 처리 중…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">배지를 추가하지 못했습니다. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">고객 지원팀으로 문의하세요.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">결제 대기 중</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">%1$s의 계좌 이체가 대기 중입니다. 계좌 이체를 완료하는 데 영업일 기준 1~14일이 걸릴 수 있습니다.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">자세히 알아보기</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">구독을 확인하는 중…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collie 업데이트</string>
@@ -5232,9 +5249,11 @@
     <string name="Subscription__get_a_s_badge">%1$s 배지 받기</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">후원을 처리하고 있어요</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">정기후원 %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5253,8 +5272,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">후원을 처리하는 중 오류가 발생했어요</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">다른 결제 수단을 시도하거나 은행에 자세한 정보를 문의하세요.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">자세히 알아보기</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">후원을 처리하는 중 오류가 발생했어요. %1$s</string>
     <string name="DonationsErrors__your_payment">후원을 처리할 수 없어 요금이 청구되지 않았습니다. 다시 시도해 주세요.</string>
     <string name="DonationsErrors__still_processing">아직 처리 중</string>
     <string name="DonationsErrors__couldnt_add_badge">배지 추가 실패</string>
@@ -5272,6 +5294,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">후원금이 처리되었으나 Signal에서 후원 메시지를 보내지 못했습니다. 고객 지원팀으로 문의해 주세요.</string>
     <string name="DonationsErrors__your_badge_could_not">배지를 계정에 추가하지 못했지만 요금이 청구됐을 수 있습니다. 고객 지원팀으로 문의해 주세요.</string>
     <string name="DonationsErrors__your_payment_is_still">후원금을 아직 처리하는 중입니다. 연결에 따라 몇 분이 소요될 수 있습니다.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">구독 취소 실패</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">구독을 취소하려면 인터넷 연결이 필요합니다.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">이 기기는 앱 내 기부를 지원하지 않아 프로필 배지를 받을 수 없습니다. 대신 웹사이트에서 기부하여 Signal을 후원하는 방법도 있으니 참고해 주세요.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">네트워크 오류. 연결을 확인하고 다시 시도하세요.</string>
     <string name="NetworkFailure__retry">재시도</string>
@@ -5280,6 +5304,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">상대방이 Signal 앱을 최신 버전으로 업데이트해야 후원금을 보낼 수 있습니다.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">iDEAL | Wero 후원을 처리하지 못했습니다. 다른 결제 수단을 시도하거나 은행에 자세한 정보를 문의해 주세요.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s 님을 대신해 후원했어요</string>
@@ -5477,12 +5502,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">%1$s까지 켜짐</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">선택창을 열지 못했습니다.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">알림을 사용하려면 Collie에 알림을 표시할 권한을 부여해야 합니다.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">켜기</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Signal이 운영하는 유일한 공식 채널입니다.</string>
@@ -5490,19 +5509,33 @@
     <string name="ReleaseNotes__keep_up_to_date">최신 소식과 릴리스 노트를 확인하세요</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">모든 활동</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">전체</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">정기후원</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">일회성 후원</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">친구 대신 후원</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">친구 대신 후원</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">후원 종류</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">결제일</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">영수증 공유</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Collie을 다시 설치했다면 이전 후원 영수증은 사용할 수 없습니다.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">후원 영수증</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">금액</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Signal을 후원해 주셔서 감사합니다. 회원님의 후원금은 오픈소스 프라이버시 기술을 통해 표현의 자유를 보호하고, 안전한 글로벌 커뮤니케이션을 제공하려는 Signal의 사명을 실현하는 데 사용됩니다. 미국 거주자의 경우 세금 신고에 사용할 수 있도록 본 영수증을 보관해 주세요. Signal은 미국 내국세법 501c3조에 의거하여 세금 공제를 받을 수 있는 비영리 기관입니다. Signal 연방세 ID는 82-4506840입니다. Signal은 본 후원금에 대한 대가로 어떠한 물품이나 서비스도 제공하지 않습니다.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">영수증 없음</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6120,92 +6153,157 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">비영리의 원칙을 지킵니다</string>
     <!-- Continue button label -->
+    <string name="DonateToSignalFragment__continue">계속</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Signal을 후원해 주시면 개인정보가 보호되는 메시지 서비스와 광고 없는 환경, 독립적인 운영을 지켜나갈 수 있습니다.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">아직 완료되지 않은 후원이 있어요</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 이 결제가 완료될 때까지 기다렸다가 구독을 업데이트해 주세요.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 완료될 때까지 기다리신 후, 추가 후원을 진행해 주세요.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">아직 후원을 처리하는 중입니다. 연결 상태에 따라 몇 분이 소요될 수 있습니다. 구독을 업데이트하시려면 결제 처리가 완료되고 나서 진행해 주세요.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">아직 후원을 처리하는 중입니다. 연결 상태에 따라 몇 분이 소요될 수 있습니다. 추가 후원을 하시려면 결제 처리가 완료되고 나서 진행해 주세요.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">iDEAL | Wero 후원을 아직 처리 중입니다. 추가 후원을 하시려면 은행 앱에서 해당 결제를 승인한 후 진행해 주세요.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">후원금이 한도 금액을 초과했어요</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">계좌 이체를 통해 보낼 수 있는 최대 금액은 %1$s입니다. 다른 금액이나 다른 결제 방법으로 시도해 주세요.</string>
 
     <!-- Donation pill toggle monthly text -->
+    <string name="DonationPillToggle__monthly">월 정기후원</string>
     <!-- Donation pill toggle one-time text -->
+    <string name="DonationPillToggle__one_time">일회성 후원</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Signal에 매달 %1$s 후원</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">%1$s 배지 받기</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Signal에 %1$s 후원</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="other">%2$d일 동안 %1$s 배지를 달아보세요</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">계좌 이체</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">신용카드 또는 체크카드</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">친구를 대신해 후원하세요</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">후원 확인을 위해 Collie에서 나가시겠어요?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">확인이 완료되면 Collie로 돌아와 후원을 마무리해 주세요.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">%1$s 앱으로 이동합니다. 확인이 완료되면 Collie로 돌아와 후원을 마무리해 주세요.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">계좌 이체</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Signal에 대한 후원금 결제는 Stripe를 통해 처리됩니다. Signal은 개인정보를 수집하거나 저장하지 않습니다. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">자세히 알아보기</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">동의</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">더 보기</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">명령 로드 실패</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">은행 정보와 이메일을 입력해 주세요. Stripe에서 후원 관련 업데이트를 이메일로 보내드립니다. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">자세히 알아보기</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">예금주 이름</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">이메일</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">계좌 정보 찾기</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">월 %1$s 정기후원</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">%1$s 후원</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN 자릿수가 부족합니다.</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN 자릿수를 초과했습니다.</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN 국가 코드가 지원되지 않습니다.</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">유효하지 않은 IBAN입니다.</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">최소 3자 이상을 입력해 주세요</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">잘못된 이메일 주소입니다.</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">이름과 이메일을 입력하세요. Stripe에서 후원 관련 업데이트를 이메일로 보내드립니다. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">은행 세부 정보를 입력하세요. Signal은 개인정보를 수집하거나 저장하지 않습니다. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">자세히 알아보기</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">예금주 이름</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">이메일</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">iDEAL | Wero를 통한 후원 확인 요청</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">정기후원을 설정하려면 \'계속\'을 탭하여 은행을 통해 €0,01 청구를 확인해 주세요. 확인이 완료되면 청구 금액은 자동으로 환불되며, 내 계좌에서 월 %1$s 정기후원이 승인됩니다.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">계속</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">계좌 정보 찾기</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">은행 입출금 내역서 상단에 있는 IBAN을 확인해 보세요. IBAN은 최대 34자로 구성됩니다. 입력한 이름은 은행 계좌상의 전체 실명과 일치해야 합니다. 더 자세한 정보는 은행에 문의하세요.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">후원 처리 대기 중</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">월 정기후원이 대기 중입니다. 후원이 완료되면 프로필에 %1$s 배지를 표시할 수 있습니다.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">일회성 후원이 처리 대기 중입니다. 후원이 완료되면 프로필에 %1$s 배지를 표시할 수 있어요.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">자세히 알아보기</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">확인</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">후원을 처리하지 못했어요</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">계좌 이체를 진행하는 중에 문제가 발생했습니다. 요금은 청구되지 않았습니다. 다른 결제 수단을 시도하거나 은행에 자세한 정보를 문의하세요.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">다시 시도해 주세요.</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">나중에</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">후원 완료</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">계좌 이체가 완료되었습니다. 후원 사실을 알리고 싶다면 프로필에 이 배지를 표시해 보세요.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">취소하는 중…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">연락처 처리 한도 초과</string>
@@ -6236,6 +6334,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s 님이 보냄</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">개인정보는 비공개로 유지됩니다.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal은 후원 시 사용자의 개인정보를 수집하거나 저장하지 않습니다.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">후원금 결제는 Stripe를 통해 처리됩니다. Signal은 사용자가 Stripe에 제공하는 어떠한 정보에도 액세스하지 않으며, 이를 보관 또는 저장하지 않습니다.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">또한 후원 내역을 Signal 계정과 연결할 수 없으며, 실제로도 연결되지 않습니다.\n\n</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">소중한 응원에 감사드립니다!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6250,6 +6353,8 @@
     <string name="GroupStoryEducationSheet__next">다음</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">후원하기</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">결제</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6464,7 +6569,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">관리자 승인 필요</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Signal을 통해 링크 공유</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Collie을 통해 링크 공유</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">링크 복사</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6613,9 +6718,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">준비 완료! 지금 백업을 시작하세요.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">완료하는 데 다소 시간이 걸릴 수 있어요. 백업하는 동안에도 Signal은 정상적으로 사용할 수 있습니다.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">완료하는 데 다소 시간이 걸릴 수 있어요. 백업하는 동안에도 Collie은 정상적으로 사용할 수 있습니다.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Signal 저장 공간 최적화</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Collie 저장 공간 최적화</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">오래된 미디어 파일은 오프로드되지만, 언제든지 백업에서 다운로드할 수 있습니다.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6633,7 +6738,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"백업을 복원하려면 Collie을 다시 설치해 주세요. 설치한 후에는 앱을 열고 \'백업 복원\'을 탭한 다음, 백업 폴더를 확인하세요."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">\"Signal 저장 공간 최적화\" 기능이 켜져 있습니다. 기기 백업에 모든 미디어를 포함하려면 이 설정을 끄세요.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">\"Collie 저장 공간 최적화\" 기능이 켜져 있습니다. 기기 백업에 모든 미디어를 포함하려면 이 설정을 끄세요.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">설정 보기</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6692,10 +6797,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s 전체 화면 알림을 허용합니다.</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">월 정기후원이 취소되었어요</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">월 정기후원이 취소되었습니다. %1$s\n\n배지가 더는 프로필에 표시되지 않습니다. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">자세히 알아보기</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">구독 갱신</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">나중에</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6717,7 +6827,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">전화번호가 올바르지 않습니다</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Signal로 초대하기</string>
+    <string name="FindByActivity__invite_to_signal">Collie로 초대하기</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">사용자 이름을 찾을 수 없음</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -6852,7 +6962,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">백업 구독을 사용하지 못했습니다</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">오류가 발생하여 백업을 완료하지 못했습니다. 최신 버전 Signal을 사용 중인지 확인하고 다시 시도하세요. 문제가 계속되면 지원팀에 연락해 주세요.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">오류가 발생하여 백업을 완료하지 못했습니다. 최신 버전 Collie을 사용 중인지 확인하고 다시 시도하세요. 문제가 계속되면 지원팀에 연락해 주세요.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">오류가 발생하여 백업을 완료하지 못했습니다. 문제가 계속되면 지원팀에 연락해 주세요.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -6934,7 +7044,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">마지막 백업을 완료하지 못했습니다. 휴대폰이 Wi-Fi에 연결되어 있는지 확인하고 \'지금 백업\'을 탭하여 다시 시도하세요.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">마지막 백업을 완료하지 못했습니다. 최신 버전 Signal을 사용 중인지 확인하고 다시 시도하세요.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">마지막 백업을 완료하지 못했습니다. 최신 버전 Collie을 사용 중인지 확인하고 다시 시도하세요.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">보유한 메시지 수가 저장 용량 한도를 초과했습니다. 일부 메시지를 삭제하고 다시 시도하세요.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -6960,6 +7070,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -6986,34 +7097,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">자세히 알아보기</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">휴대전화에서 Google Play 서비스를 지원하지 않아 Signal 안전 백업을 구독할 수 없습니다. 자세한 내용은 해당 휴대전화 제조사에 문의해 주세요.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">대화 한도</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">메시지 기록 삭제</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">선택한 기간보다 오래된 메시지를 영구 삭제합니다.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">선택한 길이를 초과하는 메시지를 영구 삭제합니다.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">연동된 기기에 제한 적용</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">대화 제한을 설정하면 연동된 기기에서도 메시지가 삭제됩니다.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collie 저장 공간</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie 저장 공간 최적화</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">사용하지 않는 미디어는 오프로드되지만, 언제든지 백업에서 다시 다운로드할 수 있습니다.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">저장 공간 최적화는 유료 Signal 안전한 백업에서만 사용할 수 있습니다. 백업 구독은 아직 처리 중이며 활성화되지 않았습니다. 나중에 다시 시도해 주세요.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">기기 백업에서 미디어가 제외됩니다.</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal 저장 공간 최적화\" 기능을 켜면 오래된 미디어가 기기에서 오프로드됩니다. 오프로드된 미디어는 언제든 다시 다운로드할 수 있습니다. 또한, 기기 백업에서도 오래된 미디어가 제외됩니다.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">켜기</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7394,7 +7477,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">이 키는 기존의 기기 백업 키를 대체합니다.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">복구 키는 Signal을 다시 설치할 경우 백업을 복원하는 데 사용할 수 있는 64자리 코드입니다.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">복구 키는 Collie을 다시 설치할 경우 백업을 복원하는 데 사용할 수 있는 64자리 코드입니다.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">이 키는 기존의 기기 복구 키와 동일합니다.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7432,7 +7515,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">비밀번호 관리자를 설정하지 않았거나, 사용 중인 비밀번호 관리자가 지원되지 않습니다.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">이전에 Google 비밀번호 관리자에 Signal 비밀번호를 저장하지 않도록 설정했습니다. Google 비밀번호 관리자 설정의 \'거부된 사이트 및 앱\'에서 Signal을 삭제한 후 다시 시도하세요.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">이전에 Google 비밀번호 관리자에 Collie 비밀번호를 저장하지 않도록 설정했습니다. Google 비밀번호 관리자 설정의 \'거부된 사이트 및 앱\'에서 Collie을 삭제한 후 다시 시도하세요.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">설정으로 이동</string>
     <!-- Action button label -->
@@ -7577,7 +7660,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android 백업 내보내기 네트워크 오류</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Collie Android 백업 내보내기 네트워크 오류</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7607,7 +7690,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">다른 기기에서 계정 이전을 계속 진행해 주세요.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">데이터를 이전 받을 기기의 버전이 오래되었습니다. 기기의 Signal 앱을 업데이트한 후 다시 시도해 주세요.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">데이터를 이전 받을 기기의 버전이 오래되었습니다. 기기의 Collie 앱을 업데이트한 후 다시 시도해 주세요.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">기기 준비하기</string>
@@ -7652,6 +7735,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">프록시</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">후원</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7684,7 +7768,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">백업 저장 용량 부족</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">백업 저장 용량이 한도에 도달했습니다. 채팅과 미디어를 계속 백업하려면 Signal에 사용 가능한 공간을 확보하세요.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">백업 저장 용량이 한도에 도달했습니다. 채팅과 미디어를 계속 백업하려면 Collie에 사용 가능한 공간을 확보하세요.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">백업 실패</string>
     <!-- Notification body for when initial backup failed -->
@@ -8127,7 +8211,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">복사</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Signal로 초대하기</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Collie로 초대하기</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">휴대폰 연락처에 추가</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8139,20 +8223,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">지도 앱을 열 수 없음</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Signal에서 함께 대화해요</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Collie에서 함께 대화해요</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">복구 키 재설정하기</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">복구 키를 재설정하면 Signal Login을 위한 새로운 키가 생성됩니다. 이 작업은 다른 사람에게 기존 키가 노출되었을 때만 권장됩니다.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">백업 기능이 활성화되어 있는 경우 미디어와 백업 파일을 다시 업로드해야 합니다. \'Signal 저장 공간 최적화\'를 사용 중이라면 오프로드된 미디어를 먼저 다운로드해야 합니다.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">백업 기능이 활성화되어 있는 경우 미디어와 백업 파일을 다시 업로드해야 합니다. \'Collie 저장 공간 최적화\'를 사용 중이라면 오프로드된 미디어를 먼저 다운로드해야 합니다.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">계속</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">생성할 수 있는 새 키의 개수를 모두 소진했습니다. 새 복구 키는 7일 후에 만들 수 있습니다.</string>
-
-    <string name="ConversationFragment__deleted_for_me">나에게만 삭제됨</string>
 
     <!-- EOF -->
 </resources>

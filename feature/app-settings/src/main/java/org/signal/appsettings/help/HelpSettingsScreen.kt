@@ -34,10 +34,12 @@ import org.signal.core.ui.R as CoreUiR
 @VisibleForTesting
 object HelpSettingsTestTags {
   const val SCROLLER = "scroller"
+  const val ROW_WEBSITE = "row-website"
   const val ROW_SUPPORT_CENTER = "row-support-center"
   const val ROW_CONTACT_US = "row-contact-us"
   const val ROW_VERSION = "row-version"
   const val ROW_APP_UPDATES = "row-app-updates"
+  const val ROW_DEBUG_LOGGING = "row-debug-logging"
   const val ROW_DEBUG_LOG = "row-debug-log"
   const val ROW_LICENSES = "row-licenses"
   const val ROW_TERMS_AND_PRIVACY_POLICY = "row-terms-and-privacy-policy"
@@ -74,7 +76,8 @@ fun HelpSettingsScreen(
         Rows.LinkRow(
           text = stringResource(R.string.HelpSettingsFragment__molly_im_website),
           icon = ImageVector.vectorResource(CoreUiR.drawable.symbol_open_20),
-          onClick = { onEvent(HelpSettingsEvent.WebsiteClicked) }
+          onClick = { onEvent(HelpSettingsEvent.WebsiteClicked) },
+          modifier = Modifier.testTag(HelpSettingsTestTags.ROW_WEBSITE)
         )
       }
 
@@ -124,7 +127,8 @@ fun HelpSettingsScreen(
         Rows.ToggleRow(
           checked = state.logEnabled,
           text = stringResource(R.string.preferences__enable_debug_log),
-          onCheckChanged = { onEvent(HelpSettingsEvent.LogEnabledChanged(it)) }
+          onCheckChanged = { onEvent(HelpSettingsEvent.DebugLoggingChanged(it)) },
+          modifier = Modifier.testTag(HelpSettingsTestTags.ROW_DEBUG_LOGGING)
         )
       }
 

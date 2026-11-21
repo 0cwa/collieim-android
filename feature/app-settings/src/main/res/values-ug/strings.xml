@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">ھېساباتنى قايتا تىزىملىتىش</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Signal نى يېڭىلا</string>
+    <string name="preferences_account_update_signal">Collie نى يېڭىلا</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">ھەممە سانلىق مەلۇماتنى ئۆچۈر</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">دوكلات ھاسىللاۋاتىدۇ…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">دوكلاتىڭىز چىقىرىلىدىغان ۋاقىتتىلا ھاسىللىنىدىغان بولۇپ، ئۇنى Signal ئۈسكۈنىڭىزدە ساقلىمايدۇ.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">دوكلاتىڭىز چىقىرىلىدىغان ۋاقىتتىلا ھاسىللىنىدىغان بولۇپ، ئۇنى Collie ئۈسكۈنىڭىزدە ساقلىمايدۇ.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -595,7 +595,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">سىز تېخى ئىم ئىبارىسى بېكىتمىدىڭىز!</string>
     <string name="ApplicationPreferencesActivity_disable">چەكلە</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">ئىم ئىبارىسى چەكلەمدۇ؟</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">بۇ Signal ۋە ئۇچۇر ئۇقتۇرۇش قۇلۇپىنى مەڭگۈ ئوچۇق قويىدۇ.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">بۇ Collie ۋە ئۇچۇر ئۇقتۇرۇش قۇلۇپىنى مەڭگۈ ئوچۇق قويىدۇ.</string>
     <string name="PrivacySettingsFragment__app_security">ئەپ بىخەتەرلىكى</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">خاتىرىلەش تىزىملىكى ۋە ئەپ ئىچىدە ئېكران كەسمە رەسىمگە ئېلىشنى چەكلەيدۇ</string>
@@ -640,7 +640,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">بۇ تەڭشەككە كاپالەتلىك قىلغىلى بولمايدۇ، ھەرپتاختىڭىز ئۇنىڭغا پەرۋا قىلماسلىقى مۇمكىن.</string>
     <string name="preferences__typing_indicators">بېسىۋاتىدۇ كۆرسەتكۈچى</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">تېلېفون نومۇرىڭىزنى كۆرسە بولىدىغان كىشىلەرنى ۋە تېلېفون نومۇرىڭىز ئارقىلىق سىز بىلەن Signal دا ئالاقىلاشسا بولىدىغان كىشىلەرنى تاللاڭ.</string>
+    <string name="preferences_app_protection__choose_who_can_see">تېلېفون نومۇرىڭىزنى كۆرسە بولىدىغان كىشىلەرنى ۋە تېلېفون نومۇرىڭىز ئارقىلىق سىز بىلەن Collie دا ئالاقىلاشسا بولىدىغان كىشىلەرنى تاللاڭ.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">چىقىملار</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -656,7 +656,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">ھازىر ئەمەس</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal </string>
+    <string name="PrivacySettingsScreen__signal">Collie </string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">تەپسىلاتى</string>
 
@@ -682,6 +682,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">زاپاسلاش مۇشتەرىلىكىڭىزنى ئەسلىگە كەلتۈرەلمىدى</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">‫Collie غا ئىئانە قىلىڭ</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">ئىچكى مايىللىقلار</string>
     <!-- App settings row that opens linked devices -->
@@ -867,9 +868,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">ئارخىپىڭىز ۋە ئۇنىڭغا كىرگۈزگەن ئۆزگەرتىشلىرىڭىزنى سىز ئۇچۇرلاشقانلار، ئالاقىداشلار ۋە گۇرۇپپىلار كۆرەلەيدۇ.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Signal نى يېڭىلا</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie نى يېڭىلا</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Signalنىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. Signal نى داۋاملىق ئىشلىتىش ئۈچۈن دەرھال يېڭىلاڭ.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Collieنىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. Collie نى داۋاملىق ئىشلىتىش ئۈچۈن دەرھال يېڭىلاڭ.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">يېڭىلا</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -925,8 +926,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">تاقا</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signal نى قوللاپ ئارخىپىڭىزدا كۆرۈنىدىغان ئىزنەكلەرگە ئېرىشىڭ.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal خۇددى سىزگە ئوخشاش كىشىلەرلا قوللايدىغان، ئېلان بەرگۈچىسى ياكى مەبلەغ سالغۇچىسى يوق، پايدا ئالمايدىغان ئەپ.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">قۇۋۋەتلىگۈچى بولۇڭ</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1006,19 +1010,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">بۇ ئىشلەتكۈچى تېپىلالمىدى.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR كودىنى سايىلەش ئۈچۈن، Signal نىڭ كامېرانى زىيارەت قىلىشىغا رۇخسەت قىلىڭ.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR كودىنى سايىلەش ئۈچۈن، Collie نىڭ كامېرانى زىيارەت قىلىشىغا رۇخسەت قىلىڭ.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">ئىشلىتىشكە رۇخسەت</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">QR كودىنى سايىلەش ئۈچۈن Signal كامېرا ئىجازىتىنى تەلەپ قىلىدۇ</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">QR كودىنى سايىلەش ئۈچۈن Collie كامېرا ئىجازىتىنى تەلەپ قىلىدۇ</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">ساقلىغۇچ</string>
     <string name="preferences_storage__storage_usage">ساقلىغۇچ ئىشلىتىلىشى</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal ساقلاش بوشلۇقى</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie ساقلاش بوشلۇقى</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal ساقلاش بوشلىقىنى ئەلالاشتۇرۇش</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie ساقلاش بوشلىقىنى ئەلالاشتۇرۇش</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">ئىشلىتىلمىگەن مېدىيا چۈشۈرۋېتىلىدۇ، ئەمما زاپاسلىغان ئورۇندىن خالىغان ۋاقىتتا چۈشۈرەلەيسىز.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1044,7 +1048,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">مېدىيا سىزنىڭ ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">«Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى ئېچىپ قويسىڭىز، ئۇ كونا مېديارىڭىزنى ئۈسكىنىڭىزدىن ۋاقىتلىق چۈشۈرۈۋېتىدۇ. سىز ئۇنى ھەرقانداق ۋاقىتتا قايتا يۈكلىيەلەيسىز. ھەمدە بۇ سىزنىڭ كونا مېدىيارىڭىزنى ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">«Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى ئېچىپ قويسىڭىز، ئۇ كونا مېديارىڭىزنى ئۈسكىنىڭىزدىن ۋاقىتلىق چۈشۈرۈۋېتىدۇ. سىز ئۇنى ھەرقانداق ۋاقىتتا قايتا يۈكلىيەلەيسىز. ھەمدە بۇ سىزنىڭ كونا مېدىيارىڭىزنى ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">ئېچىش</string>
 
@@ -1173,7 +1177,7 @@
     <string name="preferences_communication__category_censorship_circumvention">تەكشۈرۈشتىن دالدىلىنىش</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">تەكشۈرۈشتىن دالدىلىنىش</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ئەگەر قوزغىتىلسا، Signal تەكشۈرۈشتىن دالدىلىنىشنى سىنايدۇ. Signal سىز تۇرۇۋاتقان جايدا تەكشۈرۈلمىسە بۇ ئىقتىدارنى قوزغاتماڭ.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ئەگەر قوزغىتىلسا، Collie تەكشۈرۈشتىن دالدىلىنىشنى سىنايدۇ. Collie سىز تۇرۇۋاتقان جايدا تەكشۈرۈلمىسە بۇ ئىقتىدارنى قوزغاتماڭ.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">تەكشۈرۈشتىن دالدىلىنىش ھېساباتىڭىزدىكى تېلېفون نومۇرىغا ئاساسەن ئاكتىپلىنىدۇ.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1190,7 +1194,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">ئاپتوماتىك ئاچقۇچ دەلىللەش</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">قوزغىتىلغاندا، Signal، ئىككى كىشى ئوتتۇرىسىدىكى(1:1) سۆھبەتلىرىنىڭ شىفىرلىنىشىنى ئاپتوماتىك دەلىللەشنى سىنايدۇ.</string>
+    <string name="preferences_automatic_key_verification_body">قوزغىتىلغاندا، Collie، ئىككى كىشى ئوتتۇرىسىدىكى(1:1) سۆھبەتلىرىنىڭ شىفىرلىنىشىنى ئاپتوماتىك دەلىللەشنى سىنايدۇ.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

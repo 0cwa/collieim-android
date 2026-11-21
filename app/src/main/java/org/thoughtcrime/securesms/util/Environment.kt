@@ -12,11 +12,8 @@ object Environment {
   var IS_INSTRUMENTATION: Boolean = false
 
   fun isInternal(): Boolean {
-    return IS_STAGING || BuildConfig.DEBUG || BuildConfig.FORCE_INTERNAL_USER_FLAG
+    return !IS_INSTRUMENTATION && (IS_STAGING || BuildConfig.DEBUG || BuildConfig.FORCE_INTERNAL_USER_FLAG)
   }
-
-  @JvmField
-  val USE_NEW_REGISTRATION: Boolean = true
 
   @JvmField
   val IS_LINK_AND_SYNC_AVAILABLE: Boolean = true

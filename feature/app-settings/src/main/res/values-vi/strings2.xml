@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_icon_label_zen">Thiền</string>
-    <string name="app_icon_label_moon">Mặt trăng</string>
-    <string name="app_icon_label_music">Âm nhạc</string>
-    <string name="preferences_appearance__navigation_bar">Thanh điều hướng</string>
     <string name="preferences_appearance__dynamic_colors">Màu linh động</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Sử dụng màu của hệ thống cho giao diện ứng dụng</string>
-<string name="preferences__enable_debug_log">Bật chế độ ghi lỗi</string>
+    <string name="preferences__enable_debug_log">Bật chế độ ghi lỗi</string>
+    <string name="preferences__network">Mạng</string>
     <string name="HelpSettingsFragment__molly_im_website">Trang chủ Collie.im</string>
-    <string name="preferences__autoupdate_molly">Tự động cập nhật Collie</string>
-    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Kiểm tra định kỳ và hỏi để cài đặt các bản cập nhật mới</string>
-    <string name="preferences__include_beta_updates">Bảo gồm các bản cập nhật beta</string>
-    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Các phiên bản beta chỉ nên được dùng cho mục đính thử nghiệm và có thể phát sinh lỗi</string>
+    <string name="preferences__block_unknown">Chặn liên lạc không xác định</string>
+    <string name="preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts">Chặn người dùng bạn chưa bao giờ liên lạc và chưa lưu trong danh sách liên lạc.</string>
+    <string name="preferences__passphrase_lock">Mã hoá dữ liệu</string>
+    <string name="preferences__protect_molly_database_with_a_passphrase">Bảo vệ dữ liệu của Collie với một cụm mật khẩu</string>
+    <string name="preferences__automatic_lockdown">Tự động khoá</string>
+    <string name="preferences__device_lock_timeout">Thời gian khoá sau khi khoá màn hình</string>
+    <string name="PrivacySettingsFragment_data_at_rest">Dữ liệu trong trạng thái nghỉ</string>
+    <string name="AppProtectionPreferenceFragment_instant">Ngay lập tức</string>
+    <string name="PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition">Khoá Collie và chỉ cho phép truy cập với khoá vân tay hoặc khoá khuôn mặt</string>
+    <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">Tính năng sinh trắc không có sẵn trên thiết bị này</string>
+    <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">Hãy thiết lập sinh trắc học trong cài đặt Android trước</string>
+    <!-- Collie -->
+    <string name="preferences_appearance__navigation_bar">Thanh điều hướng</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Để cập nhật, kiểm tra cửa hành ứng dụng của bạn. Phiên bản này không bảo gồm trình cập nhật.</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Kiểm tra cập nhật</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">Lần cuối kiểm tra: %s</string>
+    <string name="preferences_network__check_connection">Kiểm tra kết nối</string>
 </resources>

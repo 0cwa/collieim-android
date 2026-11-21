@@ -244,7 +244,7 @@ class IndividualSettingsViewModel(
         linkedDeviceCountJob?.cancel()
         val generation = ++linkedDeviceCountGeneration
 
-        _state.update { it.applyRecipient(recipient).copy(linkedDeviceCount = null) }
+        _state.update { it.applyRecipient(recipient).copy(linkedDevicesCount = null) }
 
         if (
           kind == ConversationSettingsKind.INDIVIDUAL &&
@@ -254,9 +254,9 @@ class IndividualSettingsViewModel(
           !recipient.isReleaseNotes
         ) {
           linkedDeviceCountJob = viewModelScope.launch {
-            val linkedDeviceCount = repository.getLinkedDeviceCount(recipient)
+            val linkedDevicesCount = repository.getLinkedDevicesCount(recipient)
             if (generation == linkedDeviceCountGeneration) {
-              _state.update { it.copy(linkedDeviceCount = linkedDeviceCount) }
+              _state.update { it.copy(linkedDevicesCount = linkedDevicesCount) }
             }
           }
         }

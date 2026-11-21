@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">A Collie frissít…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Még nem állítottál be jelmondatot!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">Jelmondat letiltása?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Ez véglegesen fel fogja oldani a Colliet és az üzenet értesítéseket.</string>
-    <string name="ApplicationPreferencesActivity_disable">Letiltás</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Hiba történt a kiszolgálóhoz történő kapcsolódás során!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">Hitel- vagy betéti kártya</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">Add meg a kártyaadataidat! A Signal nem gyűjti és nem tárolja a személyes adataidat.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">Kártyaszám</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">HH/ÉÉ</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">Érvénytelen kártyaszám</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">A kártya lejárt</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">A kód túl rövid</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">A kód túl hosszú</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">Érvénytelen kód</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">Érvénytelen hónap</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">Év megadása kötelező</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">Érvénytelen év</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">%1$s adományozása</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">Adományozz %1$s/hónap összeget</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">Adományozz %1$s/hónap összeget</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">Egyszeri %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">Adomány függőben</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">Adomány feldolgozás alatt</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$s letiltása és kilépés?</string>
@@ -346,7 +358,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s törölte ezt az üzenetet</string>
     <string name="ConversationItem_you_deleted_this_message">Törölted ezt az üzenetet</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">%1$s adminisztrátor törölte ezt az üzenetet</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -451,7 +462,7 @@
     <string name="ConversationActivity_error_sending_media">Hiba történt a médiafájl küldése során</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">A Signal már nem támogatja az SMS-ek küldését.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">A Collie már nem támogatja az SMS-ek küldését.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">A Signal már nem támogatja az SMS-ek küldését. Hívd meg %1$s ismerősöd a Signal-szolgáltatásba, és beszélgessetek itt.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -501,6 +512,8 @@
     <string name="ConversationFragment_deleting_messages">Üzenetek törlése…</string>
     <string name="ConversationFragment_delete_for_me">Törlés számomra</string>
     <string name="ConversationFragment_delete_for_everyone">Törlés mindenki számára</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Törlés számomra</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Kiválasztott üzenet törlése?</item>
@@ -1095,7 +1108,7 @@
     <string name="ExpiredBuildReminder_update_now">Frissítés most</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">A Signal már nem működik ezen az eszközön. A Signal ismételt használatához frissítsd az eszközöd az Android újabb verziójára, vagy válts egy újabb eszközre.</string>
+    <string name="DeprecatedSdkBanner_body">A Collie már nem működik ezen az eszközön. A Collie ismételt használatához frissítsd az eszközöd az Android újabb verziójára, vagy válts egy újabb eszközre.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Collie frissítése</string>
@@ -1443,9 +1456,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Frissítsd a Signalt a csoporthivatkozások használatához</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Ez a Signal verzió nem támogatja a csoporthivatkozásokat. Frissíts a legújabb verzióra, hogy a hivatkozás használatával csatlakozhass ehhez a csoporthoz.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signal frissítése</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">Frissítsd a Colliet a csoporthivatkozások használatához</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">Ez a Collie verzió nem támogatja a csoporthivatkozásokat. Frissíts a legújabb verzióra, hogy a hivatkozás használatával csatlakozhass ehhez a csoporthoz.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Collie frissítése</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">A csoporthivatkozás érvénytelen</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2071,7 +2084,7 @@
         <item quantity="one">Már csak %1$d próbálkozásod maradt. Ha kifogysz belőlük, lehetőséged lesz új PIN létrehozására. Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profilinformációid elvesznek.</item>
         <item quantity="other">Még %1$d próbálkozásod maradt. Ha kifogysz belőlük, lehetőséged lesz új PIN létrehozására. Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal regisztráció - Segítségkérés a PIN kód használatához Androidon</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie regisztráció - Segítségkérés a PIN kód használatához Androidon</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">PIN létrehozása</string>
@@ -2163,7 +2176,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">Mások nem hallottak téged</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">A mikrofonod némítva volt, miközben a Signal futott a háttérben. A probléma megoldásához koppints a Beállítások elemre, és engedélyezd a háttértevékenységet az „Akkumulátor” menüpontban a Beállításokban.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">A mikrofonod némítva volt, miközben a Collie futott a háttérben. A probléma megoldásához koppints a Beállítások elemre, és engedélyezd a háttértevékenységet az „Akkumulátor” menüpontban a Beállításokban.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">Jóváhagysz %1$d kérést?</item>
@@ -2671,7 +2684,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">Nincs találat a \'%1$s\' kifejezésre</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Küldés a Signalon keresztül</string>
+    <string name="StickerManagement_menu_send_signal_pack">Küldés a Collieon keresztül</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">Link</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2909,8 +2922,6 @@
     <string name="KeyCachingService_lock">Collie zárolása</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">A médiafájl már nem érhető el</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Nem lehet lejátszani a médiát.</string>
@@ -2920,7 +2931,6 @@
     <string name="MediaPreviewFragment_edit_media_error">Médiahiba</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Hiba az üzenet törlése során, az üzenet továbbra is létezhet</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">Megosztás</string>
 
     <!-- MessageNotifier -->
@@ -3156,7 +3166,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Regisztráld újra az eszközt</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Az eszköz társítása megszűnt. Az üzenetküldés és -fogadás folytatásához társítsd újra a Signalt a telefonoddal.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">Az eszköz társítása megszűnt. Az üzenetküldés és -fogadás folytatásához társítsd újra a Colliet a telefonoddal.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">Eszköz újbóli társítása</string>
 
@@ -3165,7 +3175,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">A fizetések további használatához frissítsd a Signalt. Előfordulhat, hogy az egyenleged nem naprakész.</string>
+    <string name="EnclaveFailureReminder_update_signal">A fizetések további használatához frissítsd a Colliet. Előfordulhat, hogy az egyenleged nem naprakész.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Fogadva egy társított eszközön.</string>
@@ -3489,18 +3499,6 @@
     <string name="EditProfileFragment__group_name">Csoport neve</string>
     <string name="EditProfileFragment__group_description">Csoportleírás</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Collie frissítése</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">A Collie jelenlegi verziója lejárt. A Collie használatának folytatásához frissítsd most.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">Frissítés</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">Az eszköz nincs regisztrálva</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">Ez az eszköz már nincs regisztrálva. Regisztráld újra, ha módosítani szeretnéd a fiókod.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Újraregisztrálás</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Mentés</string>
@@ -3623,7 +3621,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">Támogatás információ</string>
-    <string name="HelpFragment__signal_android_support_request">Signal Android támogatási kérés</string>
+    <string name="HelpFragment__signal_android_support_request">Collie Android támogatási kérés</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">Nem sikerült feltölteni a naplót</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">Hogy megérthessük a problémát, fogalmazz olyan pontosan, amennyire csak lehetséges!</string>
@@ -3679,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Az olyan MI asszisztens alkalmazások, mint a Gemini, képesek beolvasni a Collie tartalmát. Ennek megakadályozása érdekében a képernyővédelem bekapcsolásra került. Ez a képernyőfelvételek készítését is megakadályozza.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Az olyan MI asszisztens alkalmazások, mint a Gemini, képesek beolvasni a Signal tartalmát. Ennek megakadályozása érdekében a képernyővédelem bekapcsolásra került. Ez a képernyőfelvételek készítését is megakadályozza.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">A Biztonságos képernyő engedélyezve van</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3687,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Biztonságos képernyő kikapcsolva?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Ha ki van kapcsolva, lehetővé teheti az MI által támogatott asszisztensek, például a Google Gemini számára, hogy beolvassák a Collie tartalmát, és olyan funkciókhoz használják fel, amelyek nem feltétlenül privátak.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Ha ki van kapcsolva, lehetővé teheti az MI által támogatott asszisztensek, például a Google Gemini számára, hogy beolvassák a Signal tartalmát, és olyan funkciókhoz használják fel, amelyek nem feltétlenül privátak.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Kikapcsolás</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3695,24 +3693,15 @@
     <string name="preferences__notifications">Értesítések</string>
     <string name="preferences__led_color_unknown">Ismeretlen</string>
     <string name="preferences__silent">Csendes</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">Adatvédelem</string>
+    <string name="preferences__donate_to_signal">Adomány a Collie számára</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Történetek</string>
     <string name="preferences__payments">Fizetések</string>
     <string name="preferences__linked_devices">Társított eszközök</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">Hibakeresési napló küldése</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Olvasatlan emlékeztetők</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ha engedélyezed, a Collie megpróbálja megkerülni a cenzúrát. Ne engedélyezd ezt a funkciót, ha tartózkodási helyeden nem cenzúrázzák a Colliet!</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">Proxy cím</string>
     <string name="preferences_only_use_a_proxy_if">Proxy használata csak abban az esetben, ha nem lehet a Signalhoz csatlakozni se mobilnet, se Wi-Fi használatával.</string>
     <string name="preferences_share">Megosztás</string>
@@ -3726,9 +3715,6 @@
     <string name="preferences_success">Siker</string>
     <string name="preferences_failed_to_connect">Sikertelen kapcsolódás</string>
     <string name="preferences_enter_proxy_address">Proxy cím megadása</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Ha engedélyezve van, a Collie megpróbálja automatikusan ellenőrizni az egyéni csevegések titkosítását.</string>
 
 
     <!-- Internal only preferences -->
@@ -3934,6 +3920,8 @@
     <string name="CurrencyAmountFormatter_s_at_s">%1$s %2$s áron</string>
 
     <!-- SetCurrencyFragment -->
+    <string name="SetCurrencyFragment__set_currency">Pénznem beállítása</string>
+    <string name="SetCurrencyFragment__all_currencies">Összes pénznem</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -4107,9 +4095,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Tudj meg többet!</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">Médiafájl előnézete</string>
@@ -4278,15 +4263,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Hívjon (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Kód újraküldése (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Molly regisztráció - megerősítő kód Androidhoz</string>
+    <string name="RegistrationActivity_code_support_subject">Collie regisztráció - megerősítő kód Androidhoz</string>
     <string name="RegistrationActivity_incorrect_code">Helytelen kód</string>
     <string name="BackupUtil_never">Soha</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Ismeretlen</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Válaszd ki, hogy ki láthatja a telefonszámod, és ki léphet kapcsolatba veled a Collieon keresztül.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">A képernyőzár használatához állíts be egy PIN-kódot, mintát vagy jelszót ezen az eszközön.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Meg kell adnod a regisztrációs zár PIN kódodat</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">A PIN kódnak legalább %1$d számjegyből vagy karakterből kell állnia.</string>
     <string name="RegistrationActivity_too_many_attempts">Túl sok próbálkozás</string>
@@ -4319,11 +4300,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">Ez egy kapcsolt eszköz</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Fiókbeállításaid kezeléséhez nyisd meg a Signal alkalmazást az elsődleges eszközödön.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">Fiókbeállításaid kezeléséhez nyisd meg a Collie alkalmazást az elsődleges eszközödön.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">Alkalmazásadatok törlése</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Ez az összes adatot eltávolítja a Signal alkalmazásból ezen az eszközön.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">Ez az összes adatot eltávolítja a Collie alkalmazásból ezen az eszközön.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">Alkalmazásadatok törlése?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4825,7 +4806,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">Szám szerkesztése</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal telefonszám csere - Segítség PIN (v2) témában (Android)</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie telefonszám csere - Segítség PIN (v2) témában (Android)</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">A PIN kódok nem egyeznek.</string>
@@ -4988,7 +4969,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5300,7 +5280,13 @@
 
     <string name="ImageView__badge">Jelvény</string>
 
+    <string name="SubscribeFragment__cancel_subscription">Előfizetés megszüntetése</string>
+    <string name="SubscribeFragment__confirm_cancellation">Biztosan megszünteted?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">Nem vonunk le több adományt a jövőben. Jelvényed a számlázási ciklus végig megmarad.</string>
+    <string name="SubscribeFragment__not_now">Később</string>
+    <string name="SubscribeFragment__confirm">Megerősítés</string>
     <string name="SubscribeFragment__update_subscription">Előfizetés módosítása</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Előfizetésed megszüntettük.</string>
     <string name="SubscribeFragment__update_subscription_question">Frissíted előfizetésed?</string>
     <string name="SubscribeFragment__update">Frissítés</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Az új előfizetési díj teljes összege (%1$s) ma kerül levonásra. Az új előfizetésed havonta fog megújulni.</string>
@@ -5312,35 +5298,66 @@
     <string name="Subscription__expires_s">%1$s dátummal lejár</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Független nonprofit szervezetként a Signal elkötelezett a privát üzenetek és hívások iránt. Nincsenek hirdetések, nincsenek nyomkövetők és nincs megfigyelés. Adományozz még ma, és támogasd a Signalt!</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Szerezz opcionális jelvényt a profilodra, amikor adományozol</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Az adataid védelme a küldetésünk</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">A Signal egy nonprofit szervezet. .</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Köszönjük a támogatásodat!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Kaptál egy adományozói jelvényt a Signaltól! Tedd ki a profilodra, és mutasd meg, hogy te is adományoztál!</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">De ezen kívül</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">havi Fenntartóvá is válhatsz.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Megjelenítés profilképen</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Jelvény kitűzése</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Folytatás</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Ha egynél több jelvényed van, kiválaszthatod, hogy melyiket tűzöd ki a profilképedre.</string>
 
     <!-- Button label for creating a donation -->
+    <string name="ManageDonationsFragment__donate_to_signal">Adomány a Signal számára</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">Tovább</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">Támogatásaim</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">Adományt igazoló nyugták</string>
+    <string name="ManageDonationsFragment__badges">Jelvények</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">Adományozás GYIK</string>
     <!-- Preference heading for other ways to donate -->
+    <string name="ManageDonationsFragment__other_ways_to_give">Az adományozás egyéb módjai</string>
     <!-- Preference label to launch badge gifting -->
+    <string name="ManageDonationsFragment__donate_for_a_friend">Adomány egy ismerősnek</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">Nem sikerült megerősíteni az adományt</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">%1$s/hó adományodat nem sikerült megerősíteni. Az iDEAL | Wero-fizetés jóváhagyásához ellenőrizd a banki alkalmazást.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Nem sikerült megerősíteni egyszeri %1$s adományodat. Az iDEAL | Wero-fizetés jóváhagyásához ellenőrizd a banki alkalmazást.</string>
 
+    <string name="Boost__enter_custom_amount">Egyedi összeg megadása</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">A minimális adomány összege: %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/hó</string>
+    <string name="MySupportPreference__renews_s">Megújul ekkor: %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">Tranzakció folyamatban…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">Jelvény hozzáadása sikertelen. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">Kérjük vedd fel a kapcsolatot a Támogatási Központtal!</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">Fizetés függőben</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">%1$s összegű banki átutalásod függőben van. A banki átutalások teljesítése 1–14 munkanapot vehet igénybe.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">Tudj meg többet</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">Előfizetés ellenőrzése…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collie frissítése</string>
@@ -5377,9 +5394,11 @@
     <string name="Subscription__get_a_s_badge">Szerezz egy %1$s jelvényt</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">Adomány feldolgozása…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">%1$d ismétlődő</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5398,8 +5417,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Hiba történt az adomány feldolgozása közben</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">Próbáld újra egy másik fizetési eszközzel, vagy keresd fel bankodat további információért!</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">Tudj meg többet</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">Hiba történt az adomány feldolgozása közben. %1$s</string>
     <string name="DonationsErrors__your_payment">Az adományod feldolgozása sikertelen, nem került összeg levonásra. Próbáld újra!</string>
     <string name="DonationsErrors__still_processing">Még dolgozunk</string>
     <string name="DonationsErrors__couldnt_add_badge">Jelvény hozzáadása sikertelen.</string>
@@ -5417,6 +5439,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">A fizetésedet feldolgoztuk, de a Signal nem tudta elküldeni az adományhoz tartozó üzenetet. Kérjük, vedd fel a kapcsolatot a Támogatási Központtal!</string>
     <string name="DonationsErrors__your_badge_could_not">Nem tudtuk a jelvényed a fiókodhoz rendelni, pedig elképzelhető, hogy a fizetés sikeres volt. Kérjük, vedd fel a kapcsolatot az Ügyfélszolgálattal!</string>
     <string name="DonationsErrors__your_payment_is_still">Az adományod feldolgozása még folyamatban van. Ez a kapcsolattól függően néhány percig is eltarthat.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">Előfizetés törlése sikertelen</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Az előfizetés törlése internetkapcsolatot igényel.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Az eszközöd nem támogatja az alkalmazáson belüli adományozást, így nem tudsz előfizetést indítani jelvény elnyeréséért. Alternatívaként továbbra is adományozhatsz a Signal számára a weboldalunkon.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Hálózati hiba. Ellenőrizd a hálózati kapcsolatot és próbáld újra!</string>
     <string name="NetworkFailure__retry">Újra</string>
@@ -5425,6 +5449,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">A felhasználó nem fogadhat adományokat, amíg nem frissíti a Signalt.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Az iDEAL | Wero-adományodat nem sikerült feldolgozni. Próbáld újra egy másik fizetési móddal, vagy keresd fel a bankodat további információért!</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Adomány %1$s nevében</string>
@@ -5622,12 +5647,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Bekapcsolva eddig: %1$s</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">Sikertelen tallózás.</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Az értesítések engedélyezéséhez a Collienak engedélyre van szüksége azok megjelenítéséhez.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">Bekapcsolás</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ez a hivatalos és egyetlen Signal chat</string>
@@ -5635,19 +5654,33 @@
     <string name="ReleaseNotes__keep_up_to_date">Legyél naprakész a hírekkel és a frissítésekkel kapcsolatban</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">Minden tevékenység</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">Összes</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">Rendszeres</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">Egyszeri</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">Egy ismerősnek</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">Adomány egy ismerősnek</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">Adomány típusa</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">Fizetés dátuma</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">Nyugta megosztása</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">Ha újratelepítetted a Colliet, korábbi adományaid nyugtái nem lesznek elérhetők.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">Adomány nyugta</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">Összeg</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Köszönjük, hogy támogatod a Signalt! Adományoddal hozzájárulsz a szabad véleménynyilvánítást és milliók számára biztonságos kommunikációt biztosító, nyílt forrású adatvédelmi technológiák fejlesztéséhez. Ha az Egyesült Államokban adózol, kérjük, őrizd meg ezt a nyugtát adóbevallásodhoz. A Signal Technology Foundation egy adómentes, nonprofit szervezet, amely az USA területén az 501c3 Internal Revenue Code hatálya alá tartozik. Federal Tax ID: 82-4506840. A Signal semmilyen terméket vagy szolgáltatást nem nyújtott e hozzájárulás fejében.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">Nincsenek nyugták</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6286,93 +6319,158 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">Büszkén nonprofit</string>
     <!-- Continue button label -->
+    <string name="DonateToSignalFragment__continue">Folytatás</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">Adományozz és támogasd a privát üzeneteket. Tartsd meg a Signal függetlenségét és hirdetésmentességét.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">Van egy függőben lévő adományod</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">A banki átutalások feldolgozása 1–14 munkanapot vehet igénybe. Mielőtt frissíted az előfizetésedet, kérjük, várd meg, amíg a fizetés teljesül.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">A banki átutalások feldolgozása 1–14 munkanapot vehet igénybe. Mielőtt újra adományoznál, kérjük, várd meg, amíg a fizetés teljesül.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Az adományod feldolgozása még folyamatban van. Ez a kapcsolattól függően néhány percig is eltarthat. Mielőtt frissíted az előfizetésedet, kérjük, várd meg, amíg a fizetés teljesül.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Az adományod feldolgozása még folyamatban van. Ez a kapcsolattól függően néhány percig is eltarthat. Mielőtt újra adományoznál, kérjük, várd meg, amíg a fizetés teljesül.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">iDEAL | Wero-adományod feldolgozása még folyamatban van. Még mielőtt újabb adományt adnál, a fizetés jóváhagyásához ellenőrizd a banki alkalmazást.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">Az adomány összege túl magas</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Legfeljebb %1$s összeget küldhetsz banki átutalással. Próbálkozz másik összeggel vagy fizetési móddal.</string>
 
     <!-- Donation pill toggle monthly text -->
+    <string name="DonationPillToggle__monthly">Havi</string>
     <!-- Donation pill toggle one-time text -->
+    <string name="DonationPillToggle__one_time">Egyszeri</string>
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Adományozz %1$s összeget havonta a Signalnak</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Szerezz egy %1$s jelvényt</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Adományozz %1$s összeget a Signalnak</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Szerezz %1$s jelvényt %2$d napra</item>
         <item quantity="other">Szerezz %1$s jelvényt %2$d napra</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">Banki átutalás</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Hitel- vagy betéti kártya</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Adomány egy ismerősnek</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Kilépsz a Collieból az adomány megerősítéséhez?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">A megerősítést követően térj vissza a Colliehoz, hogy véglegesítsd az adomány feldolgozását.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Átirányításra kerülsz a(z) %1$s oldalra. A megerősítést követően térj vissza a Colliehoz, hogy véglegesítsd az adomány feldolgozását.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">Banki átutalás</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">A Stripe feldolgozza a Signalnak adott adományokat. A Signal nem gyűjti és nem tárolja a személyes adataidat. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">Tudj meg többet</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">Elfogad</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">További információk</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">Nem sikerült betölteni a megbízást</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">Add meg a banki adataidat és az e-mail-címedet. A Stripe ezt az e-mailt használja fel arra, hogy frissítéseket küldjön neked az adományoddal kapcsolatban. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">Tudj meg többet</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">Név a bankszámlán</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">Email</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">Fiókadatok megkeresése</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">Adományozz %1$s/hónap összeget</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">%1$s adományozása</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">Az IBAN túl rövid</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">Az IBAN túl hosszú</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Az IBAN-országkód nem támogatott</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">Érvénytelen IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimum 3 karakter</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">Érvénytelen e-mail-cím</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">Add meg a nevedet és az e-mail-címedet. A Stripe ezt az e-mailt használja fel arra, hogy frissítéseket küldjön neked az adományoddal kapcsolatban. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Add meg a banki adataid. A Signal nem gyűjti és nem tárolja a személyes adataidat. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">Tudj meg többet</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">Név a bankszámlán</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Erősítsd meg az adományodat az iDEAL | Weróval</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Az ismétlődő adományozás beállításához koppints a Tovább gombra és erősítsd meg a 0,01 € összegű terhelést a bankodnál. Ez automatikusan visszatérítésre kerül, és lehetővé teszi, hogy a havi %1$s adományodat levonják a számládról.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">Tovább</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">Keresd meg a fiókadataidat</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">Keresd meg az IBAN-számod a bankszámlakivonat tetején. Az IBAN-számok legfeljebb 34 karaktert tartalmazhatnak. A megadott névnek meg kell egyeznie a bankszámládon szereplő teljes névvel. További információért fordulj a bankodhoz.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">Adomány függőben</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Havi adományod függőben van. Amikor az adományod megérkezik, megjelenítheted a(z) %1$s jelvényt a profilodban.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Egyszeri adományod függőben van. Amikor az adományod megérkezik, megjelenítheted a(z) %1$s jelvényt a profilodban.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">A banki átutalások feldolgozása 1–14 munkanapot vehet igénybe. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">Tudj meg többet</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">Kész</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Az adományt nem sikerült feldolgozni</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">Problémába ütköztünk a banki átutalás feldolgozása során. A számládat nem terhelték meg. Próbáld újra egy másik fizetési móddal, vagy keresd fel a bankodat további információért!</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">Újrapróbálkozás</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">Később</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">Az adományozás kész</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Banki átutalásod megérkezett. Dönthetsz úgy, hogy megjeleníted ezt a jelvényt a profilodban, hogy jelezd a támogatásod.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">Törlés…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Túl sok névjegy lett feldolgozva</string>
@@ -6404,6 +6502,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s küldött neked</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Az adataid privátak</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">A Signal nem gyűjti és nem tárolja a személyes adataidat, amikor adományozol.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">A Stripe-ot használjuk fizetésfeldolgozóként az adományok fogadására. Nem férünk hozzá, nem tárolunk és nem mentünk el semmilyen információt, amelyet megadsz számukra.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">A Signal nem fogja és nem is tudja összekapcsolni az adományod a Signal-fiókoddal.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">Köszönjük a támogatásod!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6418,6 +6521,8 @@
     <string name="GroupStoryEducationSheet__next">Tovább</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">Adományozás</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">Kifizetés</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6635,7 +6740,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">Adminisztrátori jóváhagyás szükséges</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Hivatkozás megosztása a Signalon keresztül</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Hivatkozás megosztása a Collieon keresztül</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">Hivatkozás másolása</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6786,9 +6891,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">Kész is vagy! Kezdd el a biztonsági mentést most.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">Ez eltarthat egy ideig. A Signalt a szokásos módon használhatod biztonsági mentés közben.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">Ez eltarthat egy ideig. A Colliet a szokásos módon használhatod biztonsági mentés közben.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimalizáld a Signal-tárhelyedet</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Optimalizáld a Collie-tárhelyedet</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">A régi médiafájlokat a rendszer eltávolítja, de bármikor letöltheted őket a biztonsági másolatból.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6806,7 +6911,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Egy biztonsági mentés visszaállításához először is telepítsd a Colliet! Nyisd meg az alkalmazást, koppints a Biztonsági mentés visszaállítása opcióra, majd keresd ki a biztonsági mentést tartalmazó mappát!"</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Be van kapcsolva a „Signal tárhely-optimalizálás” beállítás. Ha az összes médiafájlt bele szeretnéd foglalni az eszközön lévő biztonsági mentésbe, kapcsold ki a beállítást.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Be van kapcsolva a „Collie tárhely-optimalizálás” beállítás. Ha az összes médiafájlt bele szeretnéd foglalni az eszközön lévő biztonsági mentésbe, kapcsold ki a beállítást.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">Beállítások megtekintése</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6865,10 +6970,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Teljes képernyős értesítések engedélyezése</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">Havi adományozás törölve</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">A rendszeres havi adományod törlésre került. %1$s\n\nA jelvényed már nem látható a profilodon. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">Tudj meg többet</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">Előfizetés megújítása</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">Később</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6890,7 +7000,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">Hibás telefonszám</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Meghívás a Signalra</string>
+    <string name="FindByActivity__invite_to_signal">Meghívás a Colliera</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">A felhasználónév nem található</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7028,7 +7138,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">Nem sikerült aktiválni a biztonsági mentésre vonatkozó előfizetésedet</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">Hiba történt, és a biztonsági mentést nem lehetett befejezni. Frissíts a legújabb Signal verzióra és próbáld újra! Ha a probléma továbbra is fennáll, fordulj az ügyfélszolgálathoz.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">Hiba történt, és a biztonsági mentést nem lehetett befejezni. Frissíts a legújabb Collie verzióra és próbáld újra! Ha a probléma továbbra is fennáll, fordulj az ügyfélszolgálathoz.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">Hiba történt, és a biztonsági mentést nem lehetett befejezni. Ha a probléma továbbra is fennáll, fordulj az ügyfélszolgálathoz.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7110,7 +7220,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">Az utolsó biztonsági mentést nem lehetett befejezni. Győződj meg róla, hogy a telefonod csatlakozik a wifihez, és az újrapróbálkozáshoz koppints a Biztonsági mentés most lehetőségre.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">Az utolsó biztonsági mentést nem lehetett befejezni. Frissíts a legújabb Signal verzióra és próbáld újra!</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">Az utolsó biztonsági mentést nem lehetett befejezni. Frissíts a legújabb Collie verzióra és próbáld újra!</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">Az üzeneteid száma meghaladja a tárhelykorlátot. Törölj néhány üzenetet, és próbáld újra.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7136,6 +7246,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7162,34 +7273,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">Tudj meg többet</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Nem tudsz feliratkozni a Signal biztonsági mentéseire, mert a telefonod nem támogatja a Google Play-szolgáltatásokat. Segítségért fordulj a telefon gyártójához.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">A csevegés hosszának korlátja</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">Üzenetelőzmények törlése</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">A kiválasztott időpontnál régebbi üzenetek véglegesen törlődnek.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">A megadott hosszúságot meghaladó üzenetek véglegesen törlődnek.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">Korlátozások alkalmazása a kapcsolt eszközökre</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">Ha engedélyezve van, a csevegési korlátok a kapcsolt eszközökről is törlik az üzeneteket.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collie tárhely</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizáld a Collie-tárhelyedet</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">A fel nem használt médiafájlokat a rendszer eltávolítja, de bármikor letöltheted őket a biztonsági másolatból.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">A tárhely-optimalizálás csak a díj ellenében igénybe vehető Signal biztonsági mentésekkel használható. Biztonsági mentésre vonatkozó előfizetésed még feldolgozás alatt áll, és még nem aktív. Kérjük, próbáld újra később.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">A médiafájlok eltávolításra kerülnek az eszközön lévő biztonsági mentésből.</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">A „Signal tárhely-optimalizálás” funkció bekapcsolásával a régi médiafájlok áthelyezésre kerülnek az eszközről. Bármikor újra letöltheted. A régi médiafájlokat is eltávolítod az eszközön lévő biztonsági mentésből.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">Bekapcsolás</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7577,7 +7660,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">Ez a kulcs lecseréli az eszközön tárolt biztonsági mentés kulcsát.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">A helyreállítási kulcs egy 64 karakteres kód, amely lehetővé teszi a biztonsági másolatok visszaállítását a Signal újratelepítésekor.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">A helyreállítási kulcs egy 64 karakteres kód, amely lehetővé teszi a biztonsági másolatok visszaállítását a Collie újratelepítésekor.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">Ez ugyanaz, mint az eszközön tárolt helyreállítási kulcs.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7615,7 +7698,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">Nincs beállítva jelszókezelő, vagy a használt jelszókezelő nem támogatott.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Korábban úgy döntöttél, hogy nem mented a Signal jelszavaidat a Google Jelszókezelőbe. A Google Jelszókezelő beállításaiban távolítsd el a Signal elemet az „Elutasított webhelyek és alkalmazások” közül, és próbáld újra.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">Korábban úgy döntöttél, hogy nem mented a Collie jelszavaidat a Google Jelszókezelőbe. A Google Jelszókezelő beállításaiban távolítsd el a Collie elemet az „Elutasított webhelyek és alkalmazások” közül, és próbáld újra.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">Ugrás a Beállításokhoz</string>
     <!-- Action button label -->
@@ -7762,7 +7845,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android biztonsági mentés visszaállítási hálózati hiba</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Collie Android biztonsági mentés visszaállítási hálózati hiba</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7792,7 +7875,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">Folytasd a fiókod átvitelét a másik eszközödön.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Az áthelyezésre használt eszköz elavult. Frissítsd a Signalt az adott eszközön, és próbáld újra!</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">Az áthelyezésre használt eszköz elavult. Frissítsd a Colliet az adott eszközön, és próbáld újra!</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">Az eszköz előkészítése</string>
@@ -7837,6 +7920,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">Adományozás</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7869,7 +7953,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">A biztonsági mentések tárhelye megtelt</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">Elérted a biztonsági mentések tárhelykorlátját. A csevegések és médiafájlok biztonsági mentésének folytatásához szabadíts fel tárhelyet a Signalban.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">Elérted a biztonsági mentések tárhelykorlátját. A csevegések és médiafájlok biztonsági mentésének folytatásához szabadíts fel tárhelyet a Collieban.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">Sikertelen biztonsági mentés</string>
     <!-- Notification body for when initial backup failed -->
@@ -8319,7 +8403,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">Másolás</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Meghívás a Signalra</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Meghívás a Colliera</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">Hozzáadás a telefonos névjegyekhez</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8331,20 +8415,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">Nem sikerült megnyitni a Térképet</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Csatlakozz hozzám a Signalon</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Csatlakozz hozzám a Collieon</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">Állítsd helyre a helyreállítási kulcsod</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">A helyreállítási kulcs visszaállítása új kulcsot hoz létre a Signal Loginhoz. Erre csak akkor van szükség, ha valaki más is ismeri a kulcsodat.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Ha a biztonsági mentések engedélyezve vannak, újra fel kell töltened a biztonsági mentést, beleértve a médiafájlokat is. Ha a „Signal-tárhely optimalizálása” funkciót használod, először le kell töltened az áthelyezett médiatartalmakat.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">Ha a biztonsági mentések engedélyezve vannak, újra fel kell töltened a biztonsági mentést, beleértve a médiafájlokat is. Ha a „Collie-tárhely optimalizálása” funkciót használod, először le kell töltened az áthelyezett médiatartalmakat.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">Folytatás</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Kimerítetted a létrehozható új kulcsok maximális számát. Hét nap múlva hozhatsz létre új helyreállítási kulcsot.</string>
-
-    <string name="ConversationFragment__deleted_for_me">Törlés számomra</string>
 
     <!-- EOF -->
 </resources>

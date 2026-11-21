@@ -8,7 +8,6 @@ import android.os.Process
 import androidx.navigation.NavDirections
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.UsernameEditMode
-import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.getParcelableExtraCompat
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig

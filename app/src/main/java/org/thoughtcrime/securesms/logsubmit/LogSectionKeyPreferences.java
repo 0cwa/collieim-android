@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import org.signal.core.models.storage.KeepMessagesDuration;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.signal.core.util.Util;
 
 final class LogSectionKeyPreferences implements LogSection {
@@ -19,10 +19,10 @@ final class LogSectionKeyPreferences implements LogSection {
 
   @Override
   public @NonNull CharSequence getContent(@NonNull Context context) {
-    return new StringBuilder().append("Screen Lock              : ").append(TextSecurePreferences.isBiometricScreenLockEnabled(context)).append("\n")
-                              .append("Passphrase Lock          : ").append(TextSecurePreferences.isPassphraseLockEnabled(context)).append("\n")
-                              .append("Lock Trigger             : ").append(TextSecurePreferences.getPassphraseLockTrigger(context)).append("\n")
-                              .append("Lock Timeout             : ").append(TextSecurePreferences.getPassphraseLockTimeout(context)).append("\n")
+    return new StringBuilder().append("Biometric Screen Lock    : ").append(PlainTextKeyValueStore.getBiometricScreenLockEnabled()).append("\n")
+                              .append("Passphrase Lock          : ").append(PlainTextKeyValueStore.getPassphraseLockEnabled()).append("\n")
+                              .append("Lock Trigger             : ").append(SignalStore.molly().getPassphraseLockTrigger()).append("\n")
+                              .append("Lock Timeout             : ").append(SignalStore.molly().getPassphraseLockTimeout()).append("\n")
                               .append("Prefer Contact Photos    : ").append(SignalStore.settings().isPreferSystemContactPhotos()).append("\n")
                               .append("Call Data Mode           : ").append(SignalStore.settings().getCallDataMode()).append("\n")
                               .append("Media Quality            : ").append(SignalStore.settings().getSentMediaQuality()).append("\n")

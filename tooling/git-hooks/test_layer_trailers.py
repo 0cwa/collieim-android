@@ -331,6 +331,23 @@ class LayerTrailerTests(RepositoryTest):
         self.assertNotEqual(enforced.returncode, 0)
         self.assertIn("2 feature layers (relay, setup)", enforced.stderr)
 
+    def test_pr_into_another_branch_skips_commits_already_on_main(self):
+        self.add_catalog()
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()  # The Beta branch.
+        self.git("switch", "--quiet", "-c", "main-tip")
+        self.commit("Setup change on main\n\nLayer: setup\n")
+        self.commit("Main commit from before the trailer rule\n")
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD")
+        self.git("switch", "--quiet", "--detach", self.base)
+        self.commit("Relay change on the Beta branch\n\nLayer: relay\n")
+        self.git("merge", "--quiet", "--no-ff", "--no-edit", "main-tip")
+        result = self.check_pr(202)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Skipped 2 commits already on main.", result.stdout)
+        self.assertIn("feature layer: relay.", result.stdout)
+        self.commit("Beta commit without a trailer\n")
+        self.assertNotEqual(self.check_pr(202).returncode, 0)
+
     def test_range_without_catalog_checks_only_the_format(self):
         self.commit("Change\n\nLayer: anything-new\n")
         self.assertEqual(self.check_pr(300).returncode, 0)

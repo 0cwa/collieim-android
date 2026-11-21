@@ -181,7 +181,6 @@ osmdroid-android = "org.osmdroid:osmdroid-android:6.1.20"
 
 # Third Party
 signal-android-database-sqlcipher = "net.zetetic:sqlcipher-android:4.17.0"
-greenrobot-eventbus = "org.greenrobot:eventbus:3.0.0"
 jackson-core = "com.fasterxml.jackson.core:jackson-databind:2.17.3"
 jackson-module-kotlin = "com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0"
 jazzer-junit = "com.code-intelligence:jazzer-junit:0.30.0"

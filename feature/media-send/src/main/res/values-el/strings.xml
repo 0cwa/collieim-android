@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Μετάβαση στην κάμερα</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Το Signal χρειάζεται άδεια για να εμφανίσει τις φωτογραφίες και τα βίντεό σου</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Το Collie χρειάζεται άδεια για να εμφανίσει τις φωτογραφίες και τα βίντεό σου</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Να δοθεί πρόσβαση</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Δεν βρέθηκαν φωτογραφίες ή βίντεο. Το Signal έχει πρόσβαση μόνο σε φωτογραφίες και βίντεο που έχεις επιλέξει.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Δεν βρέθηκαν φωτογραφίες ή βίντεο. Το Collie έχει πρόσβαση μόνο σε φωτογραφίες και βίντεο που έχεις επιλέξει.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Το Signal έχει περιορισμένη πρόσβαση σε φωτογραφίες ή βίντεο</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Το Collie έχει περιορισμένη πρόσβαση σε φωτογραφίες ή βίντεο</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Διαχείριση</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Για την προβολή φωτογραφιών και βίντεο:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Το Signal χρειάζεται πρόσβαση για να εμφανίσει τις φωτογραφίες και τα βίντεό σου.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Το Collie χρειάζεται πρόσβαση για να εμφανίσει τις φωτογραφίες και τα βίντεό σου.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Φωτογραφία</string>
@@ -210,7 +210,7 @@
         <item quantity="other">Ρύθμιση %1$d αντικειμένων σε τυπική ποιότητα</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Το Signal χρειάζεται τα δικαιώματα Αποθηκευτικού Χώρου για αποθήκευση στην εξωτερική μνήμη, αλλά αυτά δεν έχουν δοθεί μόνιμα. Πήγαινε στις ρυθμίσεις εφαρμογών, επίλεξε τα \"Δικαιώματα\", και ενεργοποίησε το \"Αποθηκευτικός Χώρος\".</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Το Collie χρειάζεται τα δικαιώματα Αποθηκευτικού Χώρου για αποθήκευση στην εξωτερική μνήμη, αλλά αυτά δεν έχουν δοθεί μόνιμα. Πήγαινε στις ρυθμίσεις εφαρμογών, επίλεξε τα \"Δικαιώματα\", και ενεργοποίησε το \"Αποθηκευτικός Χώρος\".</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Το βίντεο θα σταλεί χωρίς ήχο</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Δεν είναι δυνατή η μεταφορά λογαριασμού</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Η συσκευή που προσπαθείς να μεταφέρεις δεν είναι συμβατή. Ενημέρωσε το Signal σε αυτή τη συσκευή και δοκίμασε ξανά.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Η συσκευή που προσπαθείς να μεταφέρεις δεν είναι συμβατή. Ενημέρωσε το Collie σε αυτή τη συσκευή και δοκίμασε ξανά.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

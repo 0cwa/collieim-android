@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">계정 다시 등록</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Signal 업데이트</string>
+    <string name="preferences_account_update_signal">Collie 업데이트</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">모든 데이터 삭제</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -595,7 +595,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">아직 암호 문구가 설정되지 않았어요.</string>
     <string name="ApplicationPreferencesActivity_disable">비활성화하기</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">암호 문구 사용을 비활성화할까요?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Signal이 잠금 해제되어 메시지 알림이 표시됩니다.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Collie이 잠금 해제되어 메시지 알림이 표시됩니다.</string>
     <string name="PrivacySettingsFragment__app_security">앱 보안</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">최근 사용 목록과 앱 내 스크린샷 차단</string>
@@ -640,7 +640,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">설정이 항상 적용되지는 않으며, 일부 키보드에서는 이 설정이 무시될 수 있습니다.</string>
     <string name="preferences__typing_indicators">메시지 입력 중 표시</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">내 전화번호를 볼 수 있고, Signal에서 내 전화번호로 나한테 연락할 수 있는 사람을 선택하세요.</string>
+    <string name="preferences_app_protection__choose_who_can_see">내 전화번호를 볼 수 있고, Collie에서 내 전화번호로 나한테 연락할 수 있는 사람을 선택하세요.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">송금</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -656,7 +656,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">나중에</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">자세히 알아보기</string>
 
@@ -682,6 +682,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">백업 구독을 사용하지 못했습니다</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Collie 후원하기</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">내부 기본 설정</string>
     <!-- App settings row that opens linked devices -->
@@ -867,9 +868,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">프로필과 프로필 변경 사항은 메시지를 주고받는 상대와 연락처, 그룹에 표시됩니다.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Signal 업데이트</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie 업데이트</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">이 Signal 버전은 만료되었습니다. Signal을 계속 사용하려면 지금 업데이트하세요.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">이 Collie 버전은 만료되었습니다. Collie을 계속 사용하려면 지금 업데이트하세요.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">업데이트</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -925,8 +926,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">닫기</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signal을 후원하고 프로필 배지를 받으세요.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal은 광고주나 투자자 없이 오로지 사용자의 기여로 운영되는 비영리 단체입니다.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">후원자 되기</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1006,19 +1010,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">이 사용자를 찾을 수 없습니다.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR 코드를 스캔하려면 Signal에 카메라 접근을 허용해 주세요.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR 코드를 스캔하려면 Collie에 카메라 접근을 허용해 주세요.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">권한 허용</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">QR 코드를 스캔하려면 Signal에 카메라 접근 권한이 필요합니다.</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">QR 코드를 스캔하려면 Collie에 카메라 접근 권한이 필요합니다.</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">저장 공간</string>
     <string name="preferences_storage__storage_usage">저장 공간 사용</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal 저장 공간</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie 저장 공간</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal 저장 공간 최적화</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie 저장 공간 최적화</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">사용하지 않는 미디어는 오프로드되지만, 언제든지 백업에서 다시 다운로드할 수 있습니다.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1044,7 +1048,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">기기 백업에서 미디어가 제외됩니다.</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal 저장 공간 최적화\" 기능을 켜면 오래된 미디어가 기기에서 오프로드됩니다. 오프로드된 미디어는 언제든 다시 다운로드할 수 있습니다. 또한, 기기 백업에서도 오래된 미디어가 제외됩니다.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Collie 저장 공간 최적화\" 기능을 켜면 오래된 미디어가 기기에서 오프로드됩니다. 오프로드된 미디어는 언제든 다시 다운로드할 수 있습니다. 또한, 기기 백업에서도 오래된 미디어가 제외됩니다.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">켜기</string>
 
@@ -1074,7 +1078,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">선택창을 열지 못했습니다.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">알림을 사용하려면 Signal에 알림을 표시할 권한을 부여해야 합니다.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">알림을 사용하려면 Collie에 알림을 표시할 권한을 부여해야 합니다.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">켜기</string>
     <string name="NotificationsSettingsFragment__calls">전화</string>
@@ -1173,7 +1177,7 @@
     <string name="preferences_communication__category_censorship_circumvention">검열 우회</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">검열 우회</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">이 기능을 활성화하면 Signal이 검열을 우회하려고 시도합니다. Signal이 차단된 지역에 있는 경우에만 이 기능을 사용하세요.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">이 기능을 활성화하면 Collie이 검열을 우회하려고 시도합니다. Collie이 차단된 지역에 있는 경우에만 이 기능을 사용하세요.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">계정의 전화번호를 기반으로 검열 우회 기능이 활성화되었습니다.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1190,7 +1194,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">자동 키 인증</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">이 기능을 활성화하면 Signal이 1:1 대화의 암호화를 자동으로 인증하려고 시도합니다.</string>
+    <string name="preferences_automatic_key_verification_body">이 기능을 활성화하면 Collie이 1:1 대화의 암호화를 자동으로 인증하려고 시도합니다.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

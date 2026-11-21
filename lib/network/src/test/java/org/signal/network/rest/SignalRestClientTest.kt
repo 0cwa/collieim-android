@@ -38,7 +38,6 @@ import org.signal.network.rest.RequestSpec.Method
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.ProxySelector
-import java.util.Optional
 import java.util.Random
 import javax.net.SocketFactory
 import java.util.concurrent.CountDownLatch

@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">اجازتیں منظور کریں</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">آپ کے جاننے والے لوگوں کو میسج کرنے میں آپ کی مدد کے لیے، Signal ان اجازتوں کی درخواست کرے گا۔ </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">آپ کے جاننے والے لوگوں کو میسج کرنے میں آپ کی مدد کے لیے، Collie ان اجازتوں کی درخواست کرے گا۔ </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">ابھی نہیں</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">سپورٹ سے رابطہ کریں</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal رجسٹریشن- Android کے لیے تصدیقی کوڈ درج کریں</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie رجسٹریشن- Android کے لیے تصدیقی کوڈ درج کریں</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">اس بیک اپ کو بحال نہیں کیا جا سکا</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Signal کا یہ ورژن آپ کا بیک اپ بحال نہیں کر سکتا۔ جدید ورژن پر اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="RemoteRestoreScreen__update_latest">Collie کا یہ ورژن آپ کا بیک اپ بحال نہیں کر سکتا۔ جدید ورژن پر اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signal اپ ڈیٹ کریں</string>
+    <string name="RemoteRestoreScreen__update_signal">Collie اپ ڈیٹ کریں</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">ابھی نہیں</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">سپورٹ سے رابطہ کریں</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android کے مستقل بیک اپ کو ری اسٹور کرنے میں ناکامی</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android کے مستقل بیک اپ کو ری اسٹور کرنے میں ناکامی</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">آپ کی نجی معلومات کی حفاظتی اور حفاظت کے لیئے آپ کا اکاؤنٹ مقفل کردیا گیا ہے۔ آپ کے اکاؤنٹ میں %1$dدن غیر فعال ہونے کے بعد آپ اپنے فون کی ضرورت کے بغیر اس فون نمبر کو دوبارہ رجسٹر کرسکیں گے۔ تمام مشمولات کو حذف کردیا جائے گا۔</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">اپنی پرانی ڈیوائس پر Signal کھولیں</string>
+    <string name="QuickRestoreQRScreen__step_1">اپنی پرانی ڈیوائس پر Collie کھولیں</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">کیمرہ آئیکن پر ٹیپ کریں </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">اپنا پن داخل کریں</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">وہ پن درج کریں جو آپ نے پہلی مرتبہ Signal انسٹال کرنے پر تخلیق کی تھی</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">وہ پن درج کریں جو آپ نے پہلی مرتبہ Collie انسٹال کرنے پر تخلیق کی تھی</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">آپ نے وہ کوڈ دوبارہ درج کیا ہے جو پہلے ہی آپ کے فون نمبر کی تصدیق کے لیے استعمال کر لیا گیا تھا۔ وہ منفرد Signal کا پِن درج کریں جو آپ نے پچھلی مرتبہ اپنے اکاؤنٹ کے لیے منتخب کیا تھا۔</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">سپورٹ سے رابطہ کریں</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal اندراج - Android کے لئے PIN کے ساتھ مدد کی ضرورت ہے</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie اندراج - Android کے لئے PIN کے ساتھ مدد کی ضرورت ہے</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">اطلاعات کی اجازت دیں</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal اطلاعات کی اجازت کی درخواست کرنا چاہے گا۔ یہ آپ کی ڈیوائس کو نئے میسجز آنے پر الرٹس دکھانے کی اجازت دیتا ہے۔</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie اطلاعات کی اجازت کی درخواست کرنا چاہے گا۔ یہ آپ کی ڈیوائس کو نئے میسجز آنے پر الرٹس دکھانے کی اجازت دیتا ہے۔</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">ابھی نہیں</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">اپنے اکاؤنٹ کو لنک کرنے کے لیے اس کوڈ کو اسکین کریں</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">اپنے فون پر Signal کھولیں</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">اپنے فون پر Collie کھولیں</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Signal کی سیٹنگز کھولنے کے لیے اپنی پروفائل کی تصویر پر ٹیپ کریں</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Collie کی سیٹنگز کھولنے کے لیے اپنی پروفائل کی تصویر پر ٹیپ کریں</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">\"لنک کردہ ڈیوائسز\" اور \"نئی ڈیوائس کو لنک کریں\" پر ٹیپ کریں</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">کوڈ تخلیق کرنے میں ناکامی</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">دوسری ڈیوائس پر Signal موجود نہیں ہے؟</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">دوسری ڈیوائس پر Collie موجود نہیں ہے؟</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">اکاؤنٹ بنائیں</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -536,7 +536,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">اپنا اکاؤنٹ ٹرانسفر کریں</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">اپنا اکاؤنٹ ٹرانسفر کرنے کے لیے، اپنے پرانی Android ڈیوائس پر Signal کھولیں اور اکاؤنٹ ٹرانسفر کریں منتخب کریں۔</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">اپنا اکاؤنٹ ٹرانسفر کرنے کے لیے، اپنے پرانی Android ڈیوائس پر Collie کھولیں اور اکاؤنٹ ٹرانسفر کریں منتخب کریں۔</string>
     <string name="DeviceTransferInstructions__continue">جاری رکھیں</string>
 
     <!-- Device transfer: Setup screen -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">ہاں، نمبرز مطابقت رکھتے ہیں</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">نمبر مماثل نہیں ہیں</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">آپ کی پرانی ڈیوائس کی تصدیق کا انتظار کیا جا رہا ہے…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal کو آپ کی پرانی ڈیوائس تلاش کرنے اور کنیکٹ کرنے کے لیے مقام کی اجازت درکار ہے۔</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie کو آپ کی پرانی ڈیوائس تلاش کرنے اور کنیکٹ کرنے کے لیے مقام کی اجازت درکار ہے۔</string>
     <string name="DeviceTransferSetup__grant_location_permission">اجازت دیں</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal کے لیے مقام کی سروسز فعال کرنے کی ضرورت ہوتی ہے تاکہ وہ آپ کی پرانی ڈیوائس تلاش کر سکے اور اس سے کنیکٹ ہو سکے۔</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie کے لیے مقام کی سروسز فعال کرنے کی ضرورت ہوتی ہے تاکہ وہ آپ کی پرانی ڈیوائس تلاش کر سکے اور اس سے کنیکٹ ہو سکے۔</string>
     <string name="DeviceTransferSetup__turn_on_location_services">مقام کی خدمات کو آن کریں</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal کے لیے Wi-Fi آن ہونا ضروری ہے تاکہ وہ آپ کی پرانی ڈیوائس کو تلاش کر سکے اور اس سے کنیکٹ ہو سکے۔</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie کے لیے Wi-Fi آن ہونا ضروری ہے تاکہ وہ آپ کی پرانی ڈیوائس کو تلاش کر سکے اور اس سے کنیکٹ ہو سکے۔</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Wi-Fi آن کریں</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">معاف کیجیے، ایسا لگتا ہے کہ آپ کی ڈیوائس Wi-Fi Direct کو سپورٹ نہیں کرتی۔</string>
     <string name="DeviceTransferSetup__restore_a_backup">اس کے بجائے بیک اپ ری اسٹور کریں</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">ڈیٹا کی منتقلی</string>
     <string name="DeviceTransferProgress__d_messages_so_far">%1$dپیغامات بہت دور ہیں</string>
     <string name="DeviceTransferProgress__unable_to_transfer">منتقلی کرنے سے قاصر ہے</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Signal کے نئے ورژن سے ٹرانسفر نہیں کیا جا سکتا۔</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Collie کے نئے ورژن سے ٹرانسفر نہیں کیا جا سکتا۔</string>
     <string name="DeviceTransferProgress__failure_foreign_key">ڈیٹا بیس کی پابندی کی وجہ سے کچھ ڈیٹا ٹرانسفر نہیں کیا جا سکا۔</string>
     <string name="DeviceTransferProgress__transfer_failed">ٹرانسفر ناکام ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</string>
     <string name="DeviceTransferProgress__try_again">دوبارہ کوشش کریں</string>

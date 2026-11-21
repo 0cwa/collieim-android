@@ -15,6 +15,8 @@ import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.LegacySharedPrefs
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
+import org.signal.storage.keyvalue.nullableLongValue
 import org.signal.storage.keyvalue.SignalStoreValues
 import org.signal.storage.keyvalue.booleanValue
 import org.signal.storage.keyvalue.integerValue
@@ -28,7 +30,6 @@ import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPrefere
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.SingleLiveEvent
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.util.Arrays
 import java.util.Random
 import kotlin.math.abs
@@ -53,7 +54,6 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     const val THREAD_TRIM_ENABLED = "pref_trim_threads"
 
     const val LANGUAGE = "settings.language"
-    private const val MOLLY_NOTIFICATION_METHOD = "molly.notificationMethod"
     const val THEME = "settings.theme"
     const val MESSAGE_FONT_SIZE = "settings.message.font.size"
     const val PREFER_SYSTEM_EMOJI = "settings.use.system.emoji"
@@ -63,8 +63,6 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     const val BACKUPS_SCHEDULE_MINUTE = "settings.backups.schedule.minute"
     const val SIGNAL_BACKUPS_SCHEDULE_HOUR = "settings.signal.backups.schedule.hour"
     const val SIGNAL_BACKUPS_SCHEDULE_MINUTE = "settings.signal.backups.schedule.minute"
-    const val SMS_DELIVERY_REPORTS_ENABLED = "settings.sms.delivery.reports.enabled"
-    const val WIFI_CALLING_COMPATIBILITY_MODE_ENABLED = "settings.wifi.calling.compatibility.mode.enabled"
     const val MESSAGE_NOTIFICATIONS_ENABLED = "settings.message.notifications.enabled"
     const val MESSAGE_NOTIFICATION_SOUND = "settings.message.notifications.sound"
     const val MESSAGE_VIBRATE_ENABLED = "settings.message.vibrate.enabled"
@@ -91,8 +89,10 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     private const val KEEP_MUTED_CHATS_ARCHIVED = "settings.keepMutedChatsArchived"
     private const val USE_COMPACT_NAVIGATION_BAR = "settings.useCompactNavigationBar"
     private const val THREAD_TRIM_SYNC_TO_LINKED_DEVICES = "settings.storage.syncThreadTrimDeletes"
+    private const val SCREEN_LOCK_TIMEOUT_MINUTES_SYNCED = "settings.screen.lock.timeout.minutes.synced"
     private const val AUTOMATIC_VERIFICATION_ENABLED = "settings.automatic.verification.enabled"
     private const val FORCE_WEBSOCKET_MODE = "settings.force.websocket.mode.2"
+    private const val MOLLY_NOTIFICATION_METHOD = "molly.notificationMethod"
     private const val MESSAGE_LED_BLINK_PATTERN_CUSTOM = "settings.message.led.blink.custom"
     private const val MESSAGE_NOTIFICATION_PRIORITY = "settings.message.notification.priority"
     private const val MEDIA_KEYBOARD_MODE = "settings.media.keyboard.mode"
@@ -134,16 +134,7 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     if (!store.containsKey(SIGNAL_BACKUPS_SCHEDULE_HOUR)) {
       initSignalBackupsSchedule()
     }
-    // Mirror the restored values needed by the UI while the encrypted database is locked.
-    if (store.containsKey(THEME)) {
-      setTheme(Theme.deserialize(getString(THEME, "system") ?: "system"), isDynamicColorsEnabled)
-    }
-    if (store.containsKey(PREFER_SYSTEM_EMOJI)) {
-      isPreferSystemEmoji = getBoolean(PREFER_SYSTEM_EMOJI, false)
-    }
-    if (store.containsKey(LANGUAGE)) {
-      language = getString(LANGUAGE, "zz") ?: "zz"
-    }
+    syncBootstrapPreferencesFromStore()
   }
 
   override val keysToIncludeInBackup: List<String>
@@ -242,26 +233,40 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     }
 
   var theme: Theme
-    get() = Theme.deserialize(TextSecurePreferences.getTheme(context))
-    set(value) = setTheme(value, isDynamicColorsEnabled)
+    // MOLLY: Theme selection reads plaintext preferences before SignalStore is available.
+    get() = Theme.deserialize(PlainTextKeyValueStore.theme)
+    set(value) {
+      setAppearance(value, isDynamicColorsEnabled)
+    }
 
-  fun setTheme(theme: Theme, useDynamicColors: Boolean) {
-    putString(THEME, theme.serialize())
-    TextSecurePreferences.setTheme(context, theme.serialize())
-    TextSecurePreferences.setDynamicColorsEnabled(context, useDynamicColors)
-    configurationSettingChanged.postValue(THEME)
-  }
-
-  val isDynamicColorsEnabled: Boolean
-    get() = TextSecurePreferences.isDynamicColorsEnabled(context)
+  /** Collie name for [setAppearance], kept for existing callers. */
+  fun setTheme(theme: Theme, useDynamicColors: Boolean) = setAppearance(theme, useDynamicColors)
 
   var language: String
-    get() = TextSecurePreferences.getLanguage(context)
+    // Read and store the value in shared prefs too so it can be read back when the app is locked
+    get() = PlainTextKeyValueStore.language
     set(value) {
       putString(LANGUAGE, value)
-      TextSecurePreferences.setLanguage(context, value)
+      PlainTextKeyValueStore.language = value
       configurationSettingChanged.postValue(LANGUAGE)
     }
+
+  var isDynamicColorsEnabled: Boolean
+    get() = PlainTextKeyValueStore.isDynamicColorsEnabled
+    set(value) {
+      setAppearance(theme, value)
+    }
+
+  /**
+   * MOLLY: Also store theme in SignalStore so FullBackupExporter includes it in V1 full backups. Dynamic colors use their
+   * own preference-based backup record instead. Notify activities after both plaintext values have been updated.
+   */
+  fun setAppearance(theme: Theme, dynamicColorsEnabled: Boolean) {
+    putString(THEME, theme.serialize())
+    PlainTextKeyValueStore.theme = theme.serialize()
+    PlainTextKeyValueStore.isDynamicColorsEnabled = dynamicColorsEnabled
+    configurationSettingChanged.postValue(THEME)
+  }
 
   var messageFontSize: Int by integerValue(MESSAGE_FONT_SIZE, 16)
 
@@ -283,10 +288,11 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
   }
 
   var isPreferSystemEmoji: Boolean
-    get() = TextSecurePreferences.isSystemEmojiPreferred(context)
+    // MOLLY: Read and store the value in shared prefs too so it can be read back when the app is locked
+    get() = PlainTextKeyValueStore.isSystemEmojiPreferred
     set(value) {
       putBoolean(PREFER_SYSTEM_EMOJI, value)
-      TextSecurePreferences.setSystemEmojiPreferred(context, value)
+      PlainTextKeyValueStore.isSystemEmojiPreferred = value
     }
 
   var isEnterKeySends: Boolean by booleanValue(ENTER_KEY_SENDS, false)
@@ -337,10 +343,6 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
 
   var localBackupNextTime: Long by longValue(LOCAL_BACKUP_NEXT_TIME, -1)
 
-  var isSmsDeliveryReportsEnabled: Boolean by booleanValue(SMS_DELIVERY_REPORTS_ENABLED, false)
-
-  var isWifiCallingCompatibilityModeEnabled: Boolean by booleanValue(WIFI_CALLING_COMPATIBILITY_MODE_ENABLED, false)
-
   var isMessageNotificationsEnabled: Boolean by booleanValue(MESSAGE_NOTIFICATIONS_ENABLED, true)
 
   var messageNotificationSound: Uri
@@ -373,7 +375,7 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
   var messageNotificationPriority: Int by integerValue(MESSAGE_NOTIFICATION_PRIORITY, NotificationCompat.PRIORITY_HIGH)
 
   var messageNotificationsPrivacy: NotificationPrivacyPreference
-    get() = NotificationPrivacyPreference(getString(MESSAGE_NOTIFICATION_PRIVACY, "all"))
+    get() = NotificationPrivacyPreference(getString(MESSAGE_NOTIFICATION_PRIVACY, "none"))
     set(value) {
       putString(MESSAGE_NOTIFICATION_PRIVACY, value.toString())
     }
@@ -447,10 +449,8 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
 
   var useCompactNavigationBar: Boolean by booleanValue(USE_COMPACT_NAVIGATION_BAR, false)
 
-
-
-
-
+  /** MOLLY: For Signal compatibility only. */
+  var syncedScreenLockTimeoutMinutes: Long? by nullableLongValue(SCREEN_LOCK_TIMEOUT_MINUTES_SYNCED, null)
 
   var isScreenSecurityEnabled: Boolean by booleanValue(SCREEN_SECURITY_ENABLED, true)
 
@@ -490,6 +490,7 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
       putInteger(FORCE_WEBSOCKET_MODE, value.serialize())
     }
 
+  /** MOLLY: FCM/Websocket/UnifiedPush delivery choice. Defaults to FCM, or Websocket when Google services are absent. */
   var preferredNotificationMethod: NotificationDeliveryMethod
     get() {
       val method = if (store.containsKey(MOLLY_NOTIFICATION_METHOD)) {
@@ -570,8 +571,6 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
       "pref_system_emoji" -> preference.booleanValue?.let { dataSet.putBoolean(PREFER_SYSTEM_EMOJI, it) }
       "pref_enter_sends" -> preference.booleanValue?.let { dataSet.putBoolean(ENTER_KEY_SENDS, it) }
       "pref_backup_enabled" -> preference.booleanValue?.let { dataSet.putBoolean(BACKUPS_ENABLED, it) }
-      "pref_delivery_report_sms" -> preference.booleanValue?.let { dataSet.putBoolean(SMS_DELIVERY_REPORTS_ENABLED, it) }
-      "pref_wifi_sms" -> preference.booleanValue?.let { dataSet.putBoolean(WIFI_CALLING_COMPATIBILITY_MODE_ENABLED, it) }
       "pref_key_enable_notifications" -> preference.booleanValue?.let { dataSet.putBoolean(MESSAGE_NOTIFICATIONS_ENABLED, it) }
       "pref_key_vibrate" -> preference.booleanValue?.let { dataSet.putBoolean(MESSAGE_VIBRATE_ENABLED, it) }
       "pref_led_color" -> preference.value_?.let { dataSet.putString(MESSAGE_LED_COLOR, it) }
@@ -605,6 +604,27 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     return dataSet.takeIf { it.values.isNotEmpty() }
   }
 
+  /** MOLLY: V1 imports update SignalStore directly, so restored appearance values must be copied to their pre-unlock mirrors. */
+  fun onPostBackupRestore() {
+    syncBootstrapPreferencesFromStore()
+  }
+
+  /**
+   * MOLLY: V1 imports can update SignalStore directly, including during registration. Copy restored settings into the
+   * plaintext preferences needed before the next unlock.
+   */
+  private fun syncBootstrapPreferencesFromStore() {
+    if (store.containsKey(THEME)) {
+      theme = Theme.deserialize(getString(THEME, Theme.LIGHT.serialize()) ?: Theme.LIGHT.serialize())
+    }
+    if (store.containsKey(PREFER_SYSTEM_EMOJI)) {
+      isPreferSystemEmoji = getBoolean(PREFER_SYSTEM_EMOJI, false)
+    }
+    if (store.containsKey(LANGUAGE)) {
+      language = getString(LANGUAGE, "zz") ?: "zz"
+    }
+  }
+
   /**
    * These settings used to live in shared prefs. Some of them were already mirrored into this store, but with a shared-prefs read as
    * their default, so for those we only migrate the ones this store doesn't already have a value for.
@@ -618,25 +638,19 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
       writer.putString(LANGUAGE, LegacySharedPrefs.getString(context, "pref_language", "zz"))
     }
     if (!store.containsKey(THEME)) {
-      writer.putString(THEME, LegacySharedPrefs.getString(context, "pref_theme", if (DynamicTheme.systemThemeAvailable()) "system" else "light"))
+      writer.putString(THEME, LegacySharedPrefs.getString(context, PlainTextKeyValueStore.THEME, if (DynamicTheme.systemThemeAvailable()) "system" else "light"))
     }
     if (!store.containsKey(MESSAGE_FONT_SIZE)) {
       writer.putInteger(MESSAGE_FONT_SIZE, LegacySharedPrefs.getIntegerFromString(context, "pref_message_body_text_size", 16))
     }
     if (!store.containsKey(PREFER_SYSTEM_EMOJI)) {
-      writer.putBoolean(PREFER_SYSTEM_EMOJI, LegacySharedPrefs.getBoolean(context, "pref_system_emoji", false))
+      writer.putBoolean(PREFER_SYSTEM_EMOJI, LegacySharedPrefs.getBoolean(context, PlainTextKeyValueStore.SYSTEM_EMOJI_PREFERRED, false))
     }
     if (!store.containsKey(ENTER_KEY_SENDS)) {
       writer.putBoolean(ENTER_KEY_SENDS, LegacySharedPrefs.getBoolean(context, "pref_enter_sends", false))
     }
     if (!store.containsKey(BACKUPS_ENABLED)) {
       writer.putBoolean(BACKUPS_ENABLED, LegacySharedPrefs.getBoolean(context, "pref_backup_enabled", false))
-    }
-    if (!store.containsKey(SMS_DELIVERY_REPORTS_ENABLED)) {
-      writer.putBoolean(SMS_DELIVERY_REPORTS_ENABLED, LegacySharedPrefs.getBoolean(context, "pref_delivery_report_sms", false))
-    }
-    if (!store.containsKey(WIFI_CALLING_COMPATIBILITY_MODE_ENABLED)) {
-      writer.putBoolean(WIFI_CALLING_COMPATIBILITY_MODE_ENABLED, LegacySharedPrefs.getBoolean(context, "pref_wifi_sms", false))
     }
     if (!store.containsKey(MESSAGE_NOTIFICATIONS_ENABLED)) {
       writer.putBoolean(MESSAGE_NOTIFICATIONS_ENABLED, LegacySharedPrefs.getBoolean(context, "pref_key_enable_notifications", true))
@@ -708,25 +722,6 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     writer.commit()
   }
 
-  enum class NotificationDeliveryMethod {
-    FCM, WEBSOCKET, UNIFIEDPUSH;
-
-    fun serialize(): String = name
-
-    @get:StringRes
-    val stringId: Int
-      get() = when (this) {
-        FCM -> R.string.NotificationDeliveryMethod__fcm
-        WEBSOCKET -> R.string.NotificationDeliveryMethod__websocket
-        UNIFIEDPUSH -> R.string.NotificationDeliveryMethod__unifiedpush
-      }
-
-    companion object {
-      @JvmStatic
-      fun deserialize(value: String): NotificationDeliveryMethod = valueOf(value)
-    }
-  }
-
   enum class CensorshipCircumventionEnabled(private val value: Int) {
     DEFAULT(0),
     ENABLED(1),
@@ -794,6 +789,30 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
       @JvmStatic
       fun deserialize(value: Int): UnreadBadgeType {
         return entries.firstOrNull { it.value == value } ?: throw IllegalArgumentException("Bad value: $value")
+      }
+    }
+  }
+
+  /** MOLLY: The delivery method the user picked for their notifications. Persisted by name, never rename. */
+  enum class NotificationDeliveryMethod {
+    FCM,
+    WEBSOCKET,
+    UNIFIEDPUSH;
+
+    fun serialize(): String = name
+
+    @get:StringRes
+    val stringId: Int
+      get() = when (this) {
+        FCM -> R.string.NotificationDeliveryMethod__fcm
+        WEBSOCKET -> R.string.NotificationDeliveryMethod__websocket
+        UNIFIEDPUSH -> R.string.NotificationDeliveryMethod__unifiedpush
+      }
+
+    companion object {
+      @JvmStatic
+      fun deserialize(value: String): NotificationDeliveryMethod {
+        return valueOf(value)
       }
     }
   }

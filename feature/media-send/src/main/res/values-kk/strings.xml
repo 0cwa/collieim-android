@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Камераға өту</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal фотосуреттер мен видеоларды көрсету үшін рұқсат сұрайды</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie фотосуреттер мен видеоларды көрсету үшін рұқсат сұрайды</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Пайдалануға рұқсат беру</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Фотосуреттер немесе бейнелер табылмады. Signal сіз таңдаған фотосуреттерді және бейнелерді қолдана алады.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Фотосуреттер немесе бейнелер табылмады. Collie сіз таңдаған фотосуреттерді және бейнелерді қолдана алады.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal қолданбасының фотосуреттерге немесе бейнелерге кіру рұқсаты шектелген</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie қолданбасының фотосуреттерге немесе бейнелерге кіру рұқсаты шектелген</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Басқару</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Фотосуреттер мен видеоларды көрсету үшін:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Фотосуреттеріңіз бен бейнелеріңізді көрсету үшін Signal қолданбасына рұқсат керек.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Фотосуреттеріңіз бен бейнелеріңізді көрсету үшін Collie қолданбасына рұқсат керек.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Фотосурет</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d элемент стандартты сапа параметріне орнатылды</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Сыртқы жадқа сақтау үшін Signal қолданбасына Жадты пайдалануға рұқсат керек, бірақ параметрлерде оны пайдалануға рұқсат берілмеген. Қолданба параметрлеріне кіріп, \"Рұқсаттар\" опциясын таңдаңыз да, \"Жад\" функциясын қосыңыз.</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Сыртқы жадқа сақтау үшін Collie қолданбасына Жадты пайдалануға рұқсат керек, бірақ параметрлерде оны пайдалануға рұқсат берілмеген. Қолданба параметрлеріне кіріп, \"Рұқсаттар\" опциясын таңдаңыз да, \"Жад\" функциясын қосыңыз.</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Бейне аудиосыз жіберіледі</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Аккаунтты тасымалдау мүмкін емес</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Аккаунт тасымалданатын құрылғыңыз ескірген. Сол құрылғыдағы Signal-ды жаңартып, қайталап көріңіз.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Аккаунт тасымалданатын құрылғыңыз ескірген. Сол құрылғыдағы Collie-ды жаңартып, қайталап көріңіз.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

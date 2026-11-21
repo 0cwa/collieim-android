@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">ခွင့်ပြုချက်များ ပေးရန်</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">သင် သိရှိသောသူများထံသို့ မက်ဆေ့ချ်ပို့ရန်အတွက် ကူညီပေးရန် Signal သည် ထိုခွင့်ပြုချက်များကို တောင်းခံပါမည်။ </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">သင် သိရှိသောသူများထံသို့ မက်ဆေ့ချ်ပို့ရန်အတွက် ကူညီပေးရန် Collie သည် ထိုခွင့်ပြုချက်များကို တောင်းခံပါမည်။ </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">ယခု မလုပ်သေးပါ</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">ပံ့ပိုးမှုစင်တာသို့ ဆက်သွယ်ရန်</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal မှတ်ပုံတင်ခြင်း - Android အတွက် အတည်ပြုကုဒ်</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie မှတ်ပုံတင်ခြင်း - Android အတွက် အတည်ပြုကုဒ်</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">ဤဘက်ခ်အပ်ကို ပြန်လည်ရယူ၍မရပါ</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">ဤ Signal ဗားရှင်းသည် သင့်ဘက်ခ်အပ်ကို ပြန်လည်ရယူ၍မရပါ။ နောက်ဆုံးဗားရှင်းအထိ အပ်ဒိတ်လုပ်ပြီး ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="RemoteRestoreScreen__update_latest">ဤ Collie ဗားရှင်းသည် သင့်ဘက်ခ်အပ်ကို ပြန်လည်ရယူ၍မရပါ။ နောက်ဆုံးဗားရှင်းအထိ အပ်ဒိတ်လုပ်ပြီး ထပ်စမ်းကြည့်ပါ။</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signal ကို အပ်ဒိတ်လုပ်ပါ။</string>
+    <string name="RemoteRestoreScreen__update_signal">Collie ကို အပ်ဒိတ်လုပ်ပါ။</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">ယခု မလုပ်သေးပါ</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">ပံ့ပိုးရေးသို့ ဆက်သွယ်ရန်</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android ဘက်ခ်အပ် ပြန်လည်ရယူခြင်းဆိုင်ရာ အမြဲတမ်း ချို့ယွင်းချက်</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android ဘက်ခ်အပ် ပြန်လည်ရယူခြင်းဆိုင်ရာ အမြဲတမ်း ချို့ယွင်းချက်</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">သင့်ကိုယ်ပိုင်အချက်အလက် လုံခြုံရေးအတွက် သင့်အကောင့်ကို ပိတ်လိုက်ပါပြီ။ အသုံးပြုမှုမရှိဘဲ %1$d ရက်အကြာတွင် ပင်နံပါတ်မလိုဘဲ သင့်ဖုန်းနံပါတ်ဖြင့် ပြန်လည် စာရင်းသွင်းနိုင်ပါမည်။ သို့သော် အကောင့်ထဲရှိ အကြောင်းအရာများအားလုံး ဖျက်သိမ်းသွားပါမည်။</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">သင့်စက်အဟောင်းတွင် Signal ကိုဖွင့်ပါ</string>
+    <string name="QuickRestoreQRScreen__step_1">သင့်စက်အဟောင်းတွင် Collie ကိုဖွင့်ပါ</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">ကင်မရာအိုင်ကွန်ကို နှိပ်ပါ </string>
     <!-- Step 3 to quick restore -->
@@ -427,7 +427,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">သင်၏ PIN နံပါတ်ကို ထည့်ပါ</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Signal ကို ပထမဆုံးထည့်သွင်းစဥ်က ဖန်တီးခဲ့သည့် PIN ကို ရိုက်ထည့်ပါ။</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Collie ကို ပထမဆုံးထည့်သွင်းစဥ်က ဖန်တီးခဲ့သည့် PIN ကို ရိုက်ထည့်ပါ။</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">သင့်ဖုန်းနံပါတ်ကို အတည်ပြုရန် အသုံးပြုပြီးသား ကုဒ်ကို ထပ်မံထည့်သွင်းထားပါသည်။ သင့်အကောင့်အတွက် ယခင်ရွေးချယ်ထားသော သီးသန့် Signal PIN ကို ထည့်သွင်းပါ။</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -455,14 +455,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">ပံ့ပိုးရေးသို့ ဆက်သွယ်ရန်</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal မှတ်ပုံတင်ခြင်း - Android တွင် PIN နှင့် ပါတ်သက်သော အကူအညီရယူလိုပါသည်</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie မှတ်ပုံတင်ခြင်း - Android တွင် PIN နှင့် ပါတ်သက်သော အကူအညီရယူလိုပါသည်</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">အသိပေးချက်များကို ခွင့်ပြုရန်</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal မှ အသိပေးချက်များအား ခွင့်ပြုချက် တောင်းခံလိုပါသည်။ ၎င်းသည် မက်ဆေ့ချ်အသစ်များ ရောက်ရှိသည့်အခါ သင့်စက်ပေါ်တွင် အသိပေးချက်များကို ပြသနိုင်စေပါသည်။</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie မှ အသိပေးချက်များအား ခွင့်ပြုချက် တောင်းခံလိုပါသည်။ ၎င်းသည် မက်ဆေ့ချ်အသစ်များ ရောက်ရှိသည့်အခါ သင့်စက်ပေါ်တွင် အသိပေးချက်များကို ပြသနိုင်စေပါသည်။</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">ယခု မလုပ်သေးပါ</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -498,9 +498,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">သင့်အကောင့်ကို ချိတ်ဆက်ရန် ဤကုဒ်ကို စကင်န်ဖတ်ပါ</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">သင့်ဖုန်းတွင် Signal ကို ဖွင့်ရန်</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">သင့်ဖုန်းတွင် Collie ကို ဖွင့်ရန်</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Signal ဆက်တင်ကိုဖွင့်ရန် သင့်ပရိုဖိုင်ပုံကို နှိပ်ပါ</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Collie ဆက်တင်ကိုဖွင့်ရန် သင့်ပရိုဖိုင်ပုံကို နှိပ်ပါ</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">\"ချိတ်ထားသည့် စက်များ\" နှင့် \"စက်အသစ် ချိတ်ဆက်ရန်\" ကို နှိပ်ပါ</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -512,7 +512,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">ကုဒ်ထုတ်ပေးခြင်း မအောင်မြင်ပါ</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">အခြားစက်တွင် Signal မရှိဘူးလား။</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">အခြားစက်တွင် Collie မရှိဘူးလား။</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">အကောင့် ဖန်တီးရန်</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -534,7 +534,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">သင့်အကောင့်ကို လွှဲပြောင်းပါ</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">သင့်အကောင့်ကို လွှဲပြောင်းရန်အတွက် သင့် Android စက်ဟောင်းတွင် Signal ကိုဖွင့်ပြီး အကောင့်လွှဲပြောင်းရန် ကို ရွေးချယ်ပါ။</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">သင့်အကောင့်ကို လွှဲပြောင်းရန်အတွက် သင့် Android စက်ဟောင်းတွင် Collie ကိုဖွင့်ပြီး အကောင့်လွှဲပြောင်းရန် ကို ရွေးချယ်ပါ။</string>
     <string name="DeviceTransferInstructions__continue">ရှေ့ဆက်ပါ</string>
 
     <!-- Device transfer: Setup screen -->
@@ -545,11 +545,11 @@
     <string name="DeviceTransferSetup__numbers_match">နံပါတ်များ ကိုက်ညီပါသည်</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">နံပါတ်များ မကိုက်ညီပါ</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">သင့်စက်အဟောင်းကို အတည်ပြုရန် စောင့်ဆိုင်းနေသည်…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal သည် သင့်စက်အဟောင်းဖြင့် ရှာဖွေချိတ်ဆက်ရန် တည်နေရာခွင့်ပြုချက် လိုအပ်ပါသည်။</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie သည် သင့်စက်အဟောင်းဖြင့် ရှာဖွေချိတ်ဆက်ရန် တည်နေရာခွင့်ပြုချက် လိုအပ်ပါသည်။</string>
     <string name="DeviceTransferSetup__grant_location_permission">ခွင့်ပြုချက်ပေးသည်</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal သည် သင့်စက်အဟောင်းဖြင့် ရှာဖွေချိတ်ဆက်ရန် တည်နေရာဝန်ဆောင်မှုများ ဖွင့်ထားရန် လိုအပ်ပါသည်။</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie သည် သင့်စက်အဟောင်းဖြင့် ရှာဖွေချိတ်ဆက်ရန် တည်နေရာဝန်ဆောင်မှုများ ဖွင့်ထားရန် လိုအပ်ပါသည်။</string>
     <string name="DeviceTransferSetup__turn_on_location_services">တည်နေရာဝန်ဆောင်မှုများ ဖွင့်မည်</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal သည် သင့်စက်ဟောင်းဖြင့် ရှာဖွေချိတ်ဆက်ရန် Wi-Fi ဖွင့်ထားရန် လိုအပ်ပါသည်။</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie သည် သင့်စက်ဟောင်းဖြင့် ရှာဖွေချိတ်ဆက်ရန် Wi-Fi ဖွင့်ထားရန် လိုအပ်ပါသည်။</string>
     <string name="DeviceTransferSetup__turn_on_wifi">ဝိုင်ဖိုင်ဖွင့်မည်</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">ဝမ်းနည်းပါသည်။ သင့်စက်သည် Wi-Fi Direct ကို ပံ့ပိုးပုံမရပါ။</string>
     <string name="DeviceTransferSetup__restore_a_backup">ဘက်ခ်အပ်ကို ပြန်လည်ရယူပါ</string>
@@ -566,7 +566,7 @@
     <string name="DeviceTransferProgress__transferring_data">ဒေတာများ လွှဲပြောင်းနေပါသည်</string>
     <string name="DeviceTransferProgress__d_messages_so_far">လက်ရှိအချိန်အထိ မက်ဆေ့ချ် %1$d စောင်</string>
     <string name="DeviceTransferProgress__unable_to_transfer">လွှဲပြောင်း၍ မရပါ</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Signal ဗားရှင်းအသစ်မှ မလွှဲပြောင်းနိုင်ပါ။</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Collie ဗားရှင်းအသစ်မှ မလွှဲပြောင်းနိုင်ပါ။</string>
     <string name="DeviceTransferProgress__failure_foreign_key">ဒေတာဘေ့စ်ကန့်သတ်ချက်ကြောင့် ဒေတာအချို့ကို လွှဲပြောင်း၍မရပါ။</string>
     <string name="DeviceTransferProgress__transfer_failed">လွှဲပြောင်းမှု မအောင်မြင်ပါ။ ထပ်ကြိုးစားကြည့်ပါ။</string>
     <string name="DeviceTransferProgress__try_again">ထပ်မံကြိုးစားမည်</string>

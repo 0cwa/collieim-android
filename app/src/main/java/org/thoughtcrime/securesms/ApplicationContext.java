@@ -113,7 +113,6 @@ import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger;
 import org.thoughtcrime.securesms.logging.PersistentLogger;
 import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogActivity;
 import org.thoughtcrime.securesms.messageprocessingalarm.RoutineMessageFetchReceiver;
-import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.mms.SignalGlideModule;
 import org.thoughtcrime.securesms.net.NetworkManager;
@@ -147,7 +146,6 @@ import org.thoughtcrime.securesms.util.ProcessExitReasonTracker;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
 import org.thoughtcrime.securesms.util.SqlCipherLogTarget;
-import org.thoughtcrime.securesms.util.SupportEmailUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.signal.locale.AppLocale;
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket;
@@ -204,7 +202,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
     SqlCipherLibraryLoader.load();
     DynamicTheme.setDefaultDayNightMode(this);
-    ScreenLockController.enableAutoLock(TextSecurePreferences.isBiometricScreenLockEnabled(this));
+    ScreenLockController.enableAutoLock(PlainTextKeyValueStore.getBiometricScreenLockEnabled());
     AppDependencies.installDependencyProviders();
 
     initializePassphraseLock();
@@ -404,7 +402,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
     boolean hadActiveNotifications = messageNotifier.clearNotifications(this);
 
     if (hadActiveNotifications && keyExpired && SignalStore.account().isPushAvailable() &&
-        TextSecurePreferences.isPassphraseLockNotificationsEnabled(this) ) {
+        PlainTextKeyValueStore.getLockNotificationsEnabled() ) {
       Log.d(TAG, "Replacing active notifications with may-have-messages notification");
       FcmFetchManager.postMayHaveMessagesNotification(this);
     }
@@ -450,7 +448,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
     if (locked) {
       Log.initialize(AndroidLogger.INSTANCE);
     } else {
-      boolean enableLogging = TextSecurePreferences.isLogEnabled(this);
+      boolean enableLogging = SignalStore.molly().getLogEnabled();
       boolean alwaysRedact  = !BuildConfig.DEBUG;
       Log.configure(RemoteConfig::internalUser, enableLogging, alwaysRedact, AndroidLogger.INSTANCE, PersistentLogger.getInstance(this));
 
@@ -513,10 +511,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
       try {
         KeyCachingService.setMasterSecret(MasterSecretUtil.getMasterSecret(this,
                 MasterSecretUtil.getUnencryptedPassphrase()));
-        TextSecurePreferences.setPassphraseLockEnabled(this, false);
+        PlainTextKeyValueStore.setPassphraseLockEnabled(false);
         onUnlock();
       } catch (InvalidPassphraseException | UnrecoverableKeyException e) {
-        TextSecurePreferences.setPassphraseLockEnabled(this, true);
+        PlainTextKeyValueStore.setPassphraseLockEnabled(true);
       }
     }
   }
@@ -533,10 +531,16 @@ public class ApplicationContext extends Application implements AppForegroundObse
       Log.i(TAG, "Initializing AppDependencies.");
       AppDependencies.init(new ApplicationDependencyProvider(this));
     }
-    AppForegroundObserver.begin();
     ClockSkewDetector.beginObserving(this);
 
     initializeRegistrationDependencies();
+
+    // MOLLY: Keep AppForegroundObserver.begin() at the end of the AppDependencies initialization.
+    //
+    // Upstream builds the dependency graph during `onCreate`, i.e. always before the process can be
+    // considered foregrounded. We may instead build it after the Passphrase activity, while the
+    // process is already in the foreground.
+    AppForegroundObserver.begin();
   }
 
   private void initializeRemoteConfigDependencies() {
@@ -555,6 +559,11 @@ public class ApplicationContext extends Application implements AppForegroundObse
         null,
         context -> {
           context.startActivity(new Intent(context, SubmitDebugLogActivity.class));
+          return Unit.INSTANCE;
+        },
+        () -> {
+          SignalStore.molly().setHasSeenNetworkConfig(true);
+          AppDependencies.getNetworkManager().setNetworkEnabled(true);
           return Unit.INSTANCE;
         },
         context -> {
@@ -591,16 +600,16 @@ public class ApplicationContext extends Application implements AppForegroundObse
   private void initializeNetworkSettings() {
     NetworkManager nm = AppDependencies.getNetworkManager();
 
-    nm.setProxyChoice(TextSecurePreferences.getProxyType(this));
-    nm.setProxySocksHost(TextSecurePreferences.getProxySocksHost(this));
-    nm.setProxySocksPort(TextSecurePreferences.getProxySocksPort(this));
+    nm.setProxyChoice(SignalStore.molly().getProxyType());
+    nm.setProxySocksHost(SignalStore.molly().getProxySocksHost());
+    nm.setProxySocksPort(Integer.parseInt(SignalStore.molly().getProxySocksPort()));
     nm.applyProxyConfig();
 
-    if (TextSecurePreferences.getFirstInstallVersion(this) != -1) {
-      nm.setNetworkEnabled(TextSecurePreferences.hasSeenNetworkConfig(this));
+    if (SignalStore.misc().getFirstInstallVersion() != -1) {
+      nm.setNetworkEnabled(SignalStore.molly().getHasSeenNetworkConfig());
     } else {
       Log.i(TAG, "Network will be disabled until registration begins");
-      TextSecurePreferences.setHasSeenNetworkConfig(this, false);
+      SignalStore.molly().setHasSeenNetworkConfig(false);
     }
   }
 
@@ -649,8 +658,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
       long now         = System.currentTimeMillis();
 
       // MOLLY: Token may have been invalidated while the app was locked
-      if (TextSecurePreferences.shouldRefreshFcmToken(this)) {
-        TextSecurePreferences.setShouldRefreshFcmToken(this, false);
+      if (PlainTextKeyValueStore.getShouldRefreshFcmToken()) {
+        PlainTextKeyValueStore.setShouldRefreshFcmToken(false);
         nextSetTime = now;
       }
 
@@ -720,7 +729,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
     AnalyzeDatabaseAlarmListener.schedule(this);
     ArchiveCredentialRefreshListener.schedule(this);
 
-    if (TextSecurePreferences.isUpdateApkEnabled(this)) {
+    if (SignalStore.molly().getUpdateApkEnabled()) {
       ApkUpdateRefreshListener.scheduleIfAllowed(this);
     }
   }
@@ -822,6 +831,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
   @Override
   protected void attachBaseContext(Context base) {
     PlainTextKeyValueStore.init(org.thoughtcrime.securesms.util.SecurePreferenceManager.getSecurePreferences(base), BuildConfig.VERSION_CODE);
+    // MOLLY: Never create a replacement database secret for an install that already has an encrypted database.
+    DatabaseSecretProvider.setExistingDatabaseCheck(context -> {
+      return SignalDatabase.databaseFileExists(context) || org.signal.storage.keyvalue.KeyValueDatabase.exists(context);
+    });
     AppLocale.initialize(base, BuildConfig.LANGUAGES, PlainTextKeyValueStore::getLanguage);
     super.attachBaseContext(base);
   }

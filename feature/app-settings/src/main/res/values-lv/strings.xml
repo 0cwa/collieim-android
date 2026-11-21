@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Atkārtoti reģistrēt kontu</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Atjaunināt Signal</string>
+    <string name="preferences_account_update_signal">Atjaunināt Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Dzēst visus datus</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Notiek pārskata izveidošana…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Pārskats tiek izveidots tikai eksportēšanas laikā, un Signal to nesaglabā jūsu ierīcē.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Pārskats tiek izveidots tikai eksportēšanas laikā, un Collie to nesaglabā jūsu ierīcē.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -597,7 +597,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Jūs vēl neesat iestatījuši paroles frāzi!</string>
     <string name="ApplicationPreferencesActivity_disable">Atspējot</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Atspējot paroles frāzi?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Šī opcija pastāvīgi atbloķēs Signal un jaunu ziņojumu paziņojumus.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Šī opcija pastāvīgi atbloķēs Collie un jaunu ziņojumu paziņojumus.</string>
     <string name="PrivacySettingsFragment__app_security">Lietotnes aizsardzība</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Bloķēt ekrānuzņēmumus pēdējo sarunu sarakstā un pašā lietotnē</string>
@@ -644,7 +644,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Šis iestatījums nesniedz nekādas garantijas, un tastatūra to var ignorēt.</string>
     <string name="preferences__typing_indicators">Rakstīšanas indikatori</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Izvēlieties, kas var redzēt jūsu tālruņa numuru un kas var ar jums sazināties lietotnē Signal, izmantojot to.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Izvēlieties, kas var redzēt jūsu tālruņa numuru un kas var ar jums sazināties lietotnē Collie, izmantojot to.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Maksājumi</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -660,7 +660,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Ne tagad</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Uzzināt vairāk</string>
 
@@ -686,6 +686,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Neizdevās izmantot jūsu rezerves kopiju abonementu</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Ziedot Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Iekšējās preferences</string>
     <!-- App settings row that opens linked devices -->
@@ -875,9 +876,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Jūsu profilu un tā izmaiņas redzēs lietotāji, kuriem nosūtīsiet ziņas, kā arī jūsu kontakti un grupas.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Atjaunināt Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Atjaunināt Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Šī Signal versija ir novecojusi. Atjauniniet to, lai turpinātu izmantot Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Šī Collie versija ir novecojusi. Atjauniniet to, lai turpinātu izmantot Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizēt</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -933,8 +934,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Aizvērt</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Iegūstiet nozīmītessavam profilam, atbalstot Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal irr bezpeļņas organizācija bez reklāmdevējiem vai investoriem, kuru uztur tikai cilvēki kā jūs.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Kļūstiet par Uzturētāju</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1014,19 +1018,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Nevarēja atrast šo lietotāju.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Lai skenētu QR kodu, atļaujiet Signal piekļuvi kamerai.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Lai skenētu QR kodu, atļaujiet Collie piekļuvi kamerai.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Atļaut piekļuvi</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Lai varētu skenēt QR kodus, Signal ir nepieciešama piekļuve kamerai</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Lai varētu skenēt QR kodus, Collie ir nepieciešama piekļuve kamerai</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Krātuve</string>
     <string name="preferences_storage__storage_usage">Krātuves lietojums</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal krātuve</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie krātuve</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizēt Signal krātuvi</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizēt Collie krātuvi</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Neizmantotās multivides lejupielāde tiks atcelta, taču to jebkurā brīdī var lejupielādēt no rezerves kopijas.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1052,7 +1056,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Multivide tiks dzēsta no jūsu ierīces rezerves kopijas</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Ieslēdzot funkciju \"Optimizēt Signal krātuvi\", vecā multivide no jūsu ierīces tiks pārlikta. Varat to lejupielādēt vēlreiz jebkurā laikā. Tāpat tiks dzēsta arī vecā multivide no jūsu ierīces rezerves kopijas.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Ieslēdzot funkciju \"Optimizēt Collie krātuvi\", vecā multivide no jūsu ierīces tiks pārlikta. Varat to lejupielādēt vēlreiz jebkurā laikā. Tāpat tiks dzēsta arī vecā multivide no jūsu ierīces rezerves kopijas.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Ieslēgt</string>
 
@@ -1082,7 +1086,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Neizdevās atvērt atlasītāju.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Lai iespējotu paziņojumus, Signal ir nepieciešama atļauja tos rādīt.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Lai iespējotu paziņojumus, Collie ir nepieciešama atļauja tos rādīt.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Ieslēgt</string>
     <string name="NotificationsSettingsFragment__calls">Zvani</string>
@@ -1181,7 +1185,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Cenzūras apiešana</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Cenzūras apiešana</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ja šī funkcija ir iespējota, Signal mēģinās apiet cenzūru. Neieslēdziet šo funkciju, ja atrodaties vietā, kur Signal tiek cenzēta.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ja šī funkcija ir iespējota, Collie mēģinās apiet cenzūru. Neieslēdziet šo funkciju, ja atrodaties vietā, kur Collie tiek cenzēta.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Cenzūras apiešana ir aktivizēta, pamatojoties uz jūsu konta tālruņa numuru.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1198,7 +1202,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automātiskā atslēgas verifikācija</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Pēc tās iespējošanas Signal mēģinās automātiski verificēt 1:1 sarunu šifrēšanu.</string>
+    <string name="preferences_automatic_key_verification_body">Pēc tās iespējošanas Collie mēģinās automātiski verificēt 1:1 sarunu šifrēšanu.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

@@ -398,8 +398,10 @@ class MediaViewerScreenTest {
     dismissState: DragToDismissState = DragToDismissState()
   ) {
     composeTestRule.setContent {
-      // Molly's video controls require a Material theme in the Robolectric activity.
+      // The video page inflates VideoPlayer's XML, whose theme attributes come from Material3. The bare
+      // test activity theme is a framework one, so wrap the context that the AndroidView receives.
       val themedContext = ContextThemeWrapper(LocalContext.current, com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar)
+
       CompositionLocalProvider(LocalContext provides themedContext) {
         MediaViewerScreen(
           state = state,

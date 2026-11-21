@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.signal.billing.BillingFactory;
 import org.signal.core.models.ServiceId.ACI;
 import org.signal.core.models.ServiceId.PNI;
-import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.ByteUnit;
 import org.signal.core.util.SleepTimer;
 import org.signal.core.util.ThreadUtil;
@@ -103,7 +102,6 @@ import org.thoughtcrime.securesms.messages.AppMessageSendDependencies;
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
 import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor;
 import org.thoughtcrime.securesms.net.NetworkManager;
-import org.thoughtcrime.securesms.net.NetworkProxyKt;
 import org.thoughtcrime.securesms.net.Networking;
 import org.thoughtcrime.securesms.net.SignalWebSocketHealthMonitor;
 import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
@@ -384,8 +382,8 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
     Network network = new Network(BuildConfig.LIBSIGNAL_NET_ENV, StandardUserAgentInterceptor.USER_AGENT, RemoteConfig.getLibsignalConfigs(), Network.BuildVariant.PRODUCTION);
     LibSignalNetworkExtensions.applyConfiguration(network, config);
 
-    ProxyConfig proxyConfig = NetworkProxyKt.resolveProxyConfig();
-    NetworkProxyKt.configureProxy(network, proxyConfig);
+    ProxyConfig proxyConfig = ProxyConfig.resolve(Networking.getProxy(), config, BuildConfig.SIGNAL_URL);
+    LibSignalNetworkExtensions.configureProxy(network, proxyConfig);
     proxyState.update(proxyConfig);
 
     return network;
@@ -445,9 +443,10 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
                                                                                                   () -> !SignalStore.misc().isClientDeprecated() && SignalStore.account().isRegistered() && !SignalStore.account().isUnauthorizedReceived() && !DeviceTransferBlockingInterceptor.getInstance().isBlockingNetwork() && !Environment.IS_INSTRUMENTATION,
                                                                                                   sleepTimer,
                                                                                                   TimeUnit.SECONDS.toMillis(30));
-    if (AppForegroundObserver.isForegrounded()) {
-      webSocket.registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
-    }
+    // MOLLY: Do not connect from the provider. Whether the websocket is kept open in the foreground is
+    // owned by the lifecycle layer: ApplicationContext.onStartUnlock/onStopUnlock register/remove
+    // FOREGROUND_KEEPALIVE on both websockets, and AppForegroundObserver.addListener replays the current
+    // state to late subscribers.
 
     healthMonitor.monitor(webSocket);
 
@@ -472,9 +471,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
                                                                                                       () -> !SignalStore.misc().isClientDeprecated() && !DeviceTransferBlockingInterceptor.getInstance().isBlockingNetwork() && !Environment.IS_INSTRUMENTATION,
                                                                                                       sleepTimer,
                                                                                                       TimeUnit.SECONDS.toMillis(30));
-    if (AppForegroundObserver.isForegrounded()) {
-      webSocket.registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE);
-    }
+    // MOLLY: See provideAuthWebSocket: no construction-time connection here either.
 
     healthMonitor.monitor(webSocket);
     return webSocket;

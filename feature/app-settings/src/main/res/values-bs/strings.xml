@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Ponovo registrirajte račun</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Ažurirajte Signal</string>
+    <string name="preferences_account_update_signal">Ažurirajte Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Izbriši sve podatke</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Generiranje izvještaja…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Vaš izvještaj se generira samo u trenutku izvoza i Signal ga ne pohranjuje na vašem uređaju.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Vaš izvještaj se generira samo u trenutku izvoza i Collie ga ne pohranjuje na vašem uređaju.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -568,7 +568,7 @@
     <!-- Description for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_description">Collie će se morati zatvoriti da promijenite ikonu i naziv aplikacije. Obavijesti će uvijek prikazivati zadanu ikonu i ime Colliea.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Odaberite ikonu i naziv aplikacije koji će biti vidljivi na početnom ekranu vašeg telefona i ladici za aplikacije. Obavijesti će uvijek prikazivati zadanu ikonu i ime Colliea. Saznaj više</string>
+    <string name="preferences__app_icon_warning_learn_more">Odaberite ikonu i naziv aplikacije koji će biti vidljivi na početnom ekranu vašeg telefona i ladici za aplikacije. Obavijesti će uvijek prikazivati zadanu ikonu i ime Colliea. Saznaj  više</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Saznaj  više</string>
 
@@ -598,7 +598,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Još niste zadali lozinku!</string>
     <string name="ApplicationPreferencesActivity_disable">Onemogući</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Isključiti lozinku?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Ovo će trajno otključati Signal i obavještenja o porukama.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Ovo će trajno otključati Collie i obavještenja o porukama.</string>
     <string name="PrivacySettingsFragment__app_security">Sigurnost aplikacije</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Onemogući snimku zaslona u popisu nedavnih razgovora i unutar aplikacije</string>
@@ -646,7 +646,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Ovo podešavanje ipak nije garancija i tastatura ga može ignorisati.</string>
     <string name="preferences__typing_indicators">Indikatori kucanja</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Odaberite ko može vidjeti vaš broj telefona i ko vas može kontaktirati na Signalu pomoću njega.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Odaberite ko može vidjeti vaš broj telefona i ko vas može kontaktirati na Collieu pomoću njega.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Plaćanja</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -662,7 +662,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Ne sada</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Saznaj više</string>
 
@@ -688,6 +688,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Nije moguće iskoristiti vašu pretplatu na sigurnosne kopije</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Donirajte za Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Interne postavke</string>
     <!-- App settings row that opens linked devices -->
@@ -879,9 +880,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Vaš profil i promjene na njemu će biti vidljivi osobama kojima pošaljete poruku, kontaktima i grupama.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Ažurirajte Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Ažurirajte Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Ova verzija Signala je istekla. Ažurirajte sada da nastavite koristiti Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Ova verzija Colliea je istekla. Ažurirajte sada da nastavite koristiti Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Ažuriraj</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -937,8 +938,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Zatvori</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Nabavite značke za svoj profil podržavši Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal je neprofitna organizacija iza koje ne stoje oglašivači i investitori već je održavaju ljudi poput Vas.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Postanite pokrovitelj</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1018,19 +1022,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Ovaj korisnik nije pronađen.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Da skenirate QR kȏd, dozvolite Signalu pristup kameri.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Da skenirate QR kȏd, dozvolite Collieu pristup kameri.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Dozvoli pristup</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signalu treba pristup kameri za skeniranje QR kodova</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collieu treba pristup kameri za skeniranje QR kodova</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Memorija</string>
     <string name="preferences_storage__storage_usage">Korištenje memorije</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Pohrana Signala</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Pohrana Colliea</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizirajte pohranu Signala</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizirajte pohranu Colliea</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Neiskorišteni medijski sadržaji će biti uklonjeni, ali se mogu preuzeti iz vaše sigurnosne kopije u bilo koje vrijeme.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1056,7 +1060,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Medijski sadržaji će biti uklonjeni iz sigurnosne kopije na uređaju</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Uključivanjem opcije \"Optimiziraj pohranu Signala\" stari medijski sadržaji bit će uklonjeni s uređaja. Možete ih ponovo preuzeti u bilo kojem trenutku. Time će se stari medijski sadržaji ukloniti i iz sigurnosne kopije na uređaju.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Uključivanjem opcije \"Optimiziraj pohranu Colliea\" stari medijski sadržaji bit će uklonjeni s uređaja. Možete ih ponovo preuzeti u bilo kojem trenutku. Time će se stari medijski sadržaji ukloniti i iz sigurnosne kopije na uređaju.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Uključi</string>
 
@@ -1086,7 +1090,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Neuspjelo otvaranje birača.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Da bi omogućio obavještenja, Signal treba dozvolu da ih prikaže.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Da bi omogućio obavještenja, Collie treba dozvolu da ih prikaže.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Uključi</string>
     <string name="NotificationsSettingsFragment__calls">Pozivi</string>
@@ -1185,7 +1189,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Zaobilazak cenzure</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Zaobilazak cenzure</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ako je omogućeno, Signal će pokušati zaobići cenzuru. Nemojte omogućiti ovu funkciju osim ako niste na mjestu gdje je Signal cenzuriran.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ako je omogućeno, Collie će pokušati zaobići cenzuru. Nemojte omogućiti ovu funkciju osim ako niste na mjestu gdje je Collie cenzuriran.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Zaobilazak cenzure je aktiviran na temelju telefonskog broja vašeg računa.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1202,7 +1206,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatska verifikacija ključa</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Kada je omogućeno, Signal će pokušati automatski potvrditi šifriranje chatova jedan na jedan.</string>
+    <string name="preferences_automatic_key_verification_body">Kada je omogućeno, Collie će pokušati automatski potvrditi šifriranje chatova jedan na jedan.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

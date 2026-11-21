@@ -7,15 +7,15 @@ package org.signal.network.config
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import org.junit.Test
 import okhttp3.Dns
-import javax.net.SocketFactory
+import org.junit.Test
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.ProxySelector
 import java.net.SocketAddress
 import java.net.URI
+import javax.net.SocketFactory
 
 class ProxyConfigTest {
 
@@ -25,95 +25,93 @@ class ProxyConfigTest {
 
   @Test
   fun `resolve returns Direct when there is no system proxy`() {
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(Proxy.NO_PROXY))
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(Proxy.NO_PROXY))
     assertThat(config).isEqualTo(ProxyConfig.Direct)
   }
 
   @Test
-  fun `resolve returns Direct for a loopback (PAC) proxy by hostname`() {
+  fun `resolve maps a loopback (PAC) proxy by hostname`() {
     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("localhost", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
-    assertThat(config).isEqualTo(ProxyConfig.Direct)
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "localhost", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   @Test
-  fun `resolve returns Direct for an unresolved loopback (PAC) proxy by ipv4`() {
+  fun `resolve maps an unresolved loopback (PAC) proxy by ipv4`() {
     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("127.0.0.1", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
-    assertThat(config).isEqualTo(ProxyConfig.Direct)
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "127.0.0.1", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   @Test
-  fun `resolve returns Direct for an unresolved loopback (PAC) proxy by ipv6`() {
+  fun `resolve maps an unresolved loopback (PAC) proxy by ipv6`() {
     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("[::1]", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
-    assertThat(config).isEqualTo(ProxyConfig.Direct)
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "[::1]", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   @Test
-  fun `resolve returns Direct for a resolved loopback (PAC) proxy`() {
+  fun `resolve maps a resolved loopback (PAC) proxy`() {
     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("127.0.0.1", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
-    assertThat(config).isEqualTo(ProxyConfig.Direct)
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "127.0.0.1", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   @Test
   fun `resolve maps a non-loopback numeric system proxy`() {
     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("10.0.0.1", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "10.0.0.1", 8080))
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "10.0.0.1", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   @Test
   fun `resolve maps a manual http system proxy`() {
     val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080))
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(proxy))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   @Test
-  fun `resolve prefers a user SOCKS proxy with remote DNS over the system proxy`() {
+  fun `resolve prefers a user proxy over the system proxy`() {
+    val user = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("127.0.0.1", 9050))
     val system = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(system), userProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("localhost", 9050)))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS, "localhost", 9050, ProxyConfig.ProxySource.USER))
+    val config = ProxyConfig.resolve(
+      userProxy = user,
+      configuration = configuration(censored = false),
+      targetUrl = TARGET_URL,
+      proxySelector = StubProxySelector(system)
+    )
+    assertThat(config).isEqualTo(
+      ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS, "127.0.0.1", 9050, ProxyConfig.ProxySource.USER)
+    )
+  }
+
+  @Test
+  fun `resolve maps a user http proxy`() {
+    val user = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
+    val config = ProxyConfig.resolve(
+      userProxy = user,
+      configuration = configuration(censored = false),
+      targetUrl = TARGET_URL,
+      proxySelector = StubProxySelector(Proxy.NO_PROXY)
+    )
+    assertThat(config).isEqualTo(
+      ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080, ProxyConfig.ProxySource.USER)
+    )
   }
 
   @Test
   fun `resolve ignores the system proxy when the configuration is censored`() {
     val system = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = true), TARGET_URL, StubProxySelector(system))
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = true), TARGET_URL, StubProxySelector(system))
     assertThat(config).isEqualTo(ProxyConfig.Direct)
   }
 
   @Test
   fun `resolve uses the system proxy when the configuration is not censored`() {
     val system = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(system))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080))
-  }
-
-  @Test
-  fun `resolve preserves a user proxy when censorship circumvention is enabled`() {
-    val system = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = true), TARGET_URL, StubProxySelector(system), userProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("localhost", 9050)))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS, "localhost", 9050, ProxyConfig.ProxySource.USER))
-  }
-
-  @Test
-  fun `system SOCKS proxy uses local DNS`() {
-    val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("localhost", 1080))
-    assertThat(ProxyConfig.fromProxy(proxy, ProxyConfig.ProxySource.SYSTEM))
-      .isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS, "localhost", 1080))
-  }
-
-  @Test
-  fun `proxy source changes restart native connections`() {
-    val state = NetworkProxyState()
-    val system = ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080)
-    assertThat(state.update(system)).isEqualTo(true)
-    assertThat(state.update(system)).isEqualTo(false)
-    assertThat(state.update(system.copy(source = ProxyConfig.ProxySource.USER))).isEqualTo(true)
-    assertThat(state.update(ProxyConfig.Direct)).isEqualTo(true)
+    val config = ProxyConfig.resolve(Proxy.NO_PROXY, configuration(censored = false), TARGET_URL, StubProxySelector(system))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080, ProxyConfig.ProxySource.SYSTEM))
   }
 
   private fun configuration(censored: Boolean): SignalServiceConfiguration {
@@ -124,9 +122,9 @@ class ProxyConfigTest {
       signalCdsiUrls = emptyArray(),
       signalSvr2Urls = emptyArray(),
       networkInterceptors = emptyList(),
-      dns = Dns.SYSTEM,
       socketFactory = SocketFactory.getDefault(),
-      proxySelector = StubProxySelector(Proxy.NO_PROXY),
+      proxySelector = ProxySelector.getDefault(),
+      dns = Dns.SYSTEM,
       zkGroupServerPublicParams = ByteArray(0),
       genericServerPublicParams = ByteArray(0),
       backupServerPublicParams = ByteArray(0),

@@ -25,7 +25,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Re-register account</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Update Signal</string>
+    <string mollyify="true" name="preferences_account_update_signal">Update Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Delete all data</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -175,7 +175,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Generating report…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Your report is generated only at the time of export and is not stored by Signal on your device.</string>
+    <string mollyify="true" name="ExportAccountDataFragment__report_not_stored_disclaimer">Your report is generated only at the time of export and is not stored by Collie on your device.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -509,7 +509,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Use screen lock</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device" mollyify="true">Your Android device lock settings will be required to unlock Collie when you leave or switch apps. When locked, notification previews will not show message content.</string>
+    <string mollyify="true" name="ScreenLockSettingsFragment__your_android_device">Your Android device lock settings will be required to unlock Collie when you leave or switch apps. When locked, notification previews will not show message content.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Start screen lock</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +521,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Custom time</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock" mollyify="true">Use Collie screen lock</string>
+    <string mollyify="true" name="ScreenLockSettingsFragment__use_signal_screen_lock">Use Collie screen lock</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock" mollyify="true">Turn off Collie screen lock</string>
+    <string mollyify="true" name="ScreenLockSettingsFragment__turn_off_signal_lock">Turn off Collie screen lock</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Help</string>
@@ -536,7 +536,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Licenses</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Terms &amp; Privacy Policy</string>
-    <string name="HelpFragment__copyright_signal_messenger" mollyify="true">Copyright Collie Messenger</string>
+    <string mollyify="true" name="HelpFragment__copyright_signal_messenger">Copyright Collie Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Licensed under the GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal is a 501c3 nonprofit</string>
@@ -545,7 +545,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">App icons and names are visible on the home screen and app drawer.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning" mollyify="true">Notifications will always display the default Collie icon and name.</string>
+    <string mollyify="true" name="preferences__app_icon_notification_warning">Notifications will always display the default Collie icon and name.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Graphic illustrating where the replacement app icon will be visible.</string>
 
@@ -565,9 +565,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Change app icon and name to \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description" mollyify="true">Collie will need to close to change the app icon and name. Notifications will always display the default Collie icon and name.</string>
+    <string mollyify="true" name="preferences__app_icon_dialog_description">Collie will need to close to change the app icon and name. Notifications will always display the default Collie icon and name.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more" mollyify="true">Select an app icon and name, which will be visible on your phone\'s home screen and app drawer. Notifications will always display the default Collie icon and name. Learn\u00A0more</string>
+    <string mollyify="true" name="preferences__app_icon_warning_learn_more">Select an app icon and name, which will be visible on your phone\'s home screen and app drawer. Notifications will always display the default Collie icon and name. Learn\u00A0more</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Learn\u00A0more</string>
 
@@ -597,7 +597,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">You haven\'t set a passphrase yet!</string>
     <string name="ApplicationPreferencesActivity_disable">Disable</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Disable passphrase?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">This will permanently unlock Signal and message notifications.</string>
+    <string mollyify="true" name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">This will permanently unlock Collie and message notifications.</string>
     <string name="PrivacySettingsFragment__app_security">App security</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Block screenshots in the recents list and inside the app</string>
@@ -643,7 +643,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">This setting is not a guarantee, and your keyboard may ignore it.</string>
     <string name="preferences__typing_indicators">Typing indicators</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Choose who can see your phone number and who can contact you on Signal with it.</string>
+    <string mollyify="true" name="preferences_app_protection__choose_who_can_see">Choose who can see your phone number and who can contact you on Collie with it.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Payments</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -659,7 +659,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Not Now</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string mollyify="true" name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Learn more</string>
 
@@ -685,6 +685,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Couldn\'t redeem your backups subscription</string>
     <!-- App settings row that opens donations -->
+    <string mollyify="true" name="AppSettingsScreen__donate_to_signal">Donate to Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Internal Preferences</string>
     <!-- App settings row that opens linked devices -->
@@ -872,9 +873,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Your profile and changes to it will be visible to people you message, contacts, and groups.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Update Signal</string>
+    <string mollyify="true" name="EditProfileFragment_deprecated_dialog_title">Update Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">This version of Signal has expired. Update now to continue using Signal.</string>
+    <string mollyify="true" name="EditProfileFragment_deprecated_dialog_body">This version of Collie has expired. Update now to continue using Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Update</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -930,8 +931,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Close</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Get badges for your profile by supporting Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal is a nonprofit with no advertisers or investors, supported only by people like you.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Become a Sustainer</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1011,19 +1015,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">This user could not be found.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">To scan a QR code, allow Signal access to the camera.</string>
+    <string mollyify="true" name="UsernameLinkSettingsScreen__allow_camera_to_scan">To scan a QR code, allow Collie access to the camera.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Allow access</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal needs camera access to scan QR codes</string>
+    <string mollyify="true" name="UsernameLinkSettingsScreen__camera_needed">Collie needs camera access to scan QR codes</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Storage</string>
     <string name="preferences_storage__storage_usage">Storage usage</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal storage</string>
+    <string mollyify="true" name="ManageStorageSettingsFragment__on_device_storage">Collie storage</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimize Signal storage</string>
+    <string mollyify="true" name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimize Collie storage</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Unused media will be offloaded, but can be downloaded from your backup anytime.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1049,7 +1053,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string mollyify="true" name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Collie storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Turn on</string>
 
@@ -1079,7 +1083,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Failed to open picker.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">To enable notifications, Signal needs permission to display them.</string>
+    <string mollyify="true" name="NotificationSettingsFragment__to_enable_notifications">To enable notifications, Collie needs permission to display them.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Turn on</string>
     <string name="NotificationsSettingsFragment__calls">Calls</string>
@@ -1178,7 +1182,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Censorship circumvention</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Censorship circumvention</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.</string>
+    <string mollyify="true" name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">If enabled, Collie will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Collie is censored.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Censorship circumvention has been activated based on your account\'s phone number.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1195,7 +1199,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatic key verification</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.</string>
+    <string mollyify="true" name="preferences_automatic_key_verification_body">When enabled, Collie will attempt to automatically verify the encryption of 1:1 chats.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

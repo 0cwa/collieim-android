@@ -159,6 +159,7 @@ class RegistrationEndToEndTest {
         webAuthnRelyingPartyId = WEBAUTHN_RELYING_PARTY_ID,
         sensitiveLogger = null,
         debugLogCallback = null,
+        networkEnableCallback = {},
         proxyConfigCallback = null,
         contactSupportController = null
       )

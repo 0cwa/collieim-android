@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">अकाऊंट पुन्हा नाेंदणी करा</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Signal अद्यतनित करा</string>
+    <string name="preferences_account_update_signal">Collie अद्यतनित करा</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">सर्व डेटा हटवा</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">रिपोर्ट तयार करत आहे…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">आपला रिपोर्ट फक्त एक्स्पोर्ट करण्याच्या वेळी तयार केला जाईल आणि तो Signal द्वारे आपल्या डिव्हाईसवर स्टोअर केला जाणार नाही.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">आपला रिपोर्ट फक्त एक्स्पोर्ट करण्याच्या वेळी तयार केला जाईल आणि तो Collie द्वारे आपल्या डिव्हाईसवर स्टोअर केला जाणार नाही.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -535,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">परवाने</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">अटी आणि गोपनीयता धोरण</string>
-    <string name="HelpFragment__copyright_signal_messenger">कॉपीराईट Molly संदेशक</string>
+    <string name="HelpFragment__copyright_signal_messenger">कॉपीराईट Collie संदेशक</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 खाली परवानाधारक</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal एक ना-नफा संस्था आहे</string>
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">आपण अजून पासफ्रेझ ठेवले नाही!</string>
     <string name="ApplicationPreferencesActivity_disable">अक्षम करा</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">पासफ्रेझ अक्षम करायचे?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">हे Signal आणि संदेश सूचना कायमचे अनलॉक करेल.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">हे Collie आणि संदेश सूचना कायमचे अनलॉक करेल.</string>
     <string name="PrivacySettingsFragment__app_security">अॅप सुरक्षा</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">अलीकडील यादीमध्ये आणि अ‍ॅपच्या आत स्क्रीनशॉट अवरोधित करा</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">ही सेटिंग गॅरंटी नाही, आणि आपला कीबोर्ड त्याकडे दुर्लक्ष करू शकतो.</string>
     <string name="preferences__typing_indicators">टाईपिंग निर्देशक</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">आपला फोन नंबर कोण पाहू शकते आणि त्याच्यासह Signal वर आपणाला कोण संपर्क करू शकते ते निवडा.</string>
+    <string name="preferences_app_protection__choose_who_can_see">आपला फोन नंबर कोण पाहू शकते आणि त्याच्यासह Collie वर आपणाला कोण संपर्क करू शकते ते निवडा.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">पेमेंट</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">आता नाही</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">अधिक जाणून घ्या</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">तुमचे बॅकअप सदस्यत्व रिडीम करता आले नाही</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Collie ला देणगी द्या</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">अंतर्गत प्राधान्ये</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">आपले प्रोफाइल आणि त्यामधील बदल आपण संदेश करता असे लोक, संपर्क आणि ग्रुप्स ना दृश्यमान असतील.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Signal अद्यतनित करा</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie अद्यतनित करा</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Signal ची ही आवृत्ती कालबाह्य झाली आहे. Signal वापरणे पुढे सुरु ठेवण्यासाठी आता अपडेट करा.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Collie ची ही आवृत्ती कालबाह्य झाली आहे. Collie वापरणे पुढे सुरु ठेवण्यासाठी आता अपडेट करा.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">अद्यतन</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">बंद करा</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signal ला समर्थन करून आपल्या प्रोफाइलसाठी बॅज मिळवा.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal ही जाहिरातदार किंवा गुंतवणूकदार नसलेली विना-नफा संस्था आहे, केवळ आपल्यासारख्या लोकांकडून समर्थित आहे.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">सस्टेनर बना</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,19 +1014,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">हा वापरकर्ता शोधला जाऊ शकत नाही.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR कोड स्कॅन, कॅमेरा ॲक्सेस करण्याची Signal ला अनुमती द्या.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR कोड स्कॅन, कॅमेरा ॲक्सेस करण्याची Collie ला अनुमती द्या.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">अॅक्सेस अनुमती द्या</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal ला QR कोड स्कॅन करण्याच्या ॲक्सेसची गरज आहे</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie ला QR कोड स्कॅन करण्याच्या ॲक्सेसची गरज आहे</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">संचयन</string>
     <string name="preferences_storage__storage_usage">संचयन वापर</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal साठवण</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie साठवण</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal साठवणीचा परिपूर्ण वापर करा</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie साठवणीचा परिपूर्ण वापर करा</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">न वापरलेला मिडीया ऑफलोड केला जाईल, परंतु त्याला आपल्या बॅकअप मधून कधीही डाउनलोड केले जाऊ शकते.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1048,7 +1052,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">तुमच्या डिव्हाईसवरील बॅकअपमधून मीडिया काढून टाकला जाईल</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal साठवण ऑप्टिमाईझ करा\" चालू केल्यावर तुमच्या डिव्हाईसवरील जुना मीडिया ऑफलोड होईल. तुम्ही परत केव्हाही तो डाऊनलोड करू शकता. हा तुमच्या डिव्हाईसवरील बॅकअपमधूनही जुना मीडिया हटवून टाकेल.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Collie साठवण ऑप्टिमाईझ करा\" चालू केल्यावर तुमच्या डिव्हाईसवरील जुना मीडिया ऑफलोड होईल. तुम्ही परत केव्हाही तो डाऊनलोड करू शकता. हा तुमच्या डिव्हाईसवरील बॅकअपमधूनही जुना मीडिया हटवून टाकेल.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">चालू करा</string>
 
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">पिकर उघडण्यात अयशस्वी.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">अधिसूचना सक्षम करण्यास, Signal ला त्यांना प्रदर्शित करण्याच्या परवानगीची गरज आहे.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">अधिसूचना सक्षम करण्यास, Collie ला त्यांना प्रदर्शित करण्याच्या परवानगीची गरज आहे.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">चालू करा</string>
     <string name="NotificationsSettingsFragment__calls">कॉल</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">सेंसॉरशिप सर्कंवेंशन</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">सेंसॉरशिप सर्कंवेंशन</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">जर सक्षम केले, तर Signal सेंसॉरशिप सर्कंमवेंट करण्याचा प्रयत्न करेल. आपण Signal सेंसॉर केलेल्या स्थानावर असल्याखेरीज हे वैशिष्ट्य सक्षम करू नये.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">जर सक्षम केले, तर Collie सेंसॉरशिप सर्कंमवेंट करण्याचा प्रयत्न करेल. आपण Collie सेंसॉर केलेल्या स्थानावर असल्याखेरीज हे वैशिष्ट्य सक्षम करू नये.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">आपल्या खात्याच्या फोन नंबरच्या आधारावर सेंसॉरशिप सर्कंवेंशन सक्रिय केले गेले आहे.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">स्वयंचलित की पडताळणी</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">सक्रिय केल्यावर Signal आपोआप 1:1 चॅट्सच्या एन्क्रिप्शनची पडताळणी करेल.</string>
+    <string name="preferences_automatic_key_verification_body">सक्रिय केल्यावर Collie आपोआप 1:1 चॅट्सच्या एन्क्रिप्शनची पडताळणी करेल.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

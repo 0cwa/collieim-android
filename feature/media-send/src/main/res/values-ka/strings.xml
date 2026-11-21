@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">კამერაზე გადასვლა</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">შენი ფოტოებისა და ვიდეოების საჩვენებლად Signal-ს ნებართვა სჭირდება</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">შენი ფოტოებისა და ვიდეოების საჩვენებლად Collie-ს ნებართვა სჭირდება</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">წვდომის მიცემა</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">ფოტოები და ვიდეოები ვერ მოიძებნა. Signal-ს მხოლოდ იმ ფოტოებსა და ვიდეოებზე აქვს წვდომა, რომლებიც შენ აირჩიე.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">ფოტოები და ვიდეოები ვერ მოიძებნა. Collie-ს მხოლოდ იმ ფოტოებსა და ვიდეოებზე აქვს წვდომა, რომლებიც შენ აირჩიე.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal-ს ფოტოებსა და ვიდეოებზე შეზღუდული წვდომა აქვს</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie-ს ფოტოებსა და ვიდეოებზე შეზღუდული წვდომა აქვს</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">მართვა</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">ფოტოებისა და ვიდეოების საჩვენებლად:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Signal-ს წვდომა მხოლოდ შენი ფოტოებისა და ვიდეოების საჩვენებლად სჭირდება.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Collie-ს წვდომა მხოლოდ შენი ფოტოებისა და ვიდეოების საჩვენებლად სჭირდება.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">ფოტო</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d ელემენტი სტანდარტულ ხარისხზეა დაყენებული</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">გარე მეხსიერებაში შესანახად Signal-ს შენახვის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „შენახვა“.</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">გარე მეხსიერებაში შესანახად Collie-ს შენახვის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „შენახვა“.</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">ვიდეო ხმის გარეშე გაიგზავნება</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">ანგარიშის გადატანა შეუძლებელია</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">მოწყობილობა, რომელზე გადატანასაც ცდილობ, მოძველებულია. განაახლე Signal-ი იმ მოწყობილობაზე და თავიდან სცადე.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">მოწყობილობა, რომელზე გადატანასაც ცდილობ, მოძველებულია. განაახლე Collie-ი იმ მოწყობილობაზე და თავიდან სცადე.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

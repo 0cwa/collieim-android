@@ -231,10 +231,13 @@ public class PushServiceSocket {
     this.credentialsProvider       = credentialsProvider;
     this.signalAgent               = signalAgent;
     this.automaticNetworkRetry     = automaticNetworkRetry;
+    // MOLLY: every holder is built with the fork's socket factory, proxy selector and DNS, so a configured proxy is the
+    // route for service, CDN and storage requests alike. Upstream's direct-route preference switches between two sets of
+    // equally proxied holders, it does not bypass the proxy.
     this.serviceClients            = createServiceConnectionHolders(configuration.getSignalServiceUrls(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
     this.cdnClientsMap             = createCdnClientsMap(configuration.getSignalCdnUrlMap(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
     this.storageClients            = createConnectionHolders(configuration.getSignalStorageUrls(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
-    // Both route sets still honor the user's explicit socket/proxy/DNS configuration.
+    // Share the existing holders when there is no separate uncensored configuration, rather than building a second set.
     this.directCdnClientsMap       = uncensoredConfiguration != configuration ? createCdnClientsMap(uncensoredConfiguration.getSignalCdnUrlMap(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getSocketFactory(), uncensoredConfiguration.getProxySelector(), uncensoredConfiguration.getDns()) : this.cdnClientsMap;
     this.directStorageClients      = uncensoredConfiguration != configuration ? createConnectionHolders(uncensoredConfiguration.getSignalStorageUrls(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getSocketFactory(), uncensoredConfiguration.getProxySelector(), uncensoredConfiguration.getDns()) : this.storageClients;
     this.preferDirectRoute         = preferDirectRoute;

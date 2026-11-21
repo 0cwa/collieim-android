@@ -526,6 +526,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
         repository = registrationRepository,
         parentState = registrationViewModel.state,
         parentEventEmitter = registrationViewModel::onEvent,
+        enableNetwork = RegistrationDependencies.get().networkEnableCallback,
         hasPermissions = { RegistrationPermissions.hasAllRequiredPermissions(context) },
         getRequiredLinkedDevicePermission = { registrationViewModel.getRequiredLinkedDevicePermission() }
       )
@@ -534,6 +535,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     CollectActions(viewModel.actions) { action ->
       when (action) {
         WelcomeScreenActions.ViewTermsAndPrivacy -> openUrl(context, termsAndPrivacyUrl)
+        WelcomeScreenActions.ViewProxySettings -> RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
       }
     }
 

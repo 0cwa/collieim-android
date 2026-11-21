@@ -30,6 +30,9 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   data object Empty : AppSettingsRoute
 
   @Serializable
+  data object NetworkRoute : AppSettingsRoute
+
+  @Serializable
   @Parcelize
   sealed interface AccountRoute : AppSettingsRoute {
     @Serializable
@@ -195,6 +198,8 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object NotificationProfiles : NotificationsRoute
+
+    // MOLLY: UnifiedPush delivery setting and the no-Google Play services problem route
     @Serializable
     data object UnifiedPushSettings : NotificationsRoute
 
@@ -291,9 +296,6 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object PhoneNumberPrivacy : PrivacyRoute
-
-    @Serializable
-    data object ScreenLock : PrivacyRoute
   }
 
   @Serializable

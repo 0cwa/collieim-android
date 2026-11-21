@@ -22,7 +22,7 @@ fun Network.applyConfiguration(config: SignalServiceConfiguration) {
 /**
  * Configures the [Network] instance with the given proxy settings.
  *
- * User-configured proxies: configuration errors mark the proxy as invalid, causing future connections to
+ * User Proxies: configuration errors mark the proxy as invalid, causing future connections to
  * fail until the proxy setting is changed. These are explicitly configured by the user in the app
  * and must be respected.
  *
@@ -39,14 +39,10 @@ fun Network.configureProxy(config: ProxyConfig) {
 
     is ProxyConfig.ProxyAddress -> {
       try {
-        when (config.scheme) {
-          ProxyConfig.ProxyScheme.TLS -> setProxy(config.host, config.port)
-          ProxyConfig.ProxyScheme.HTTP,
-          ProxyConfig.ProxyScheme.SOCKS,
-          ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS -> setProxy(config.scheme.value, config.host, config.port, null, null)
-        }
+        setProxy(config.scheme.value, config.host, config.port, null, null)
         Log.i(TAG, "Proxy configured: ${config.scheme}/${config.port}")
       } catch (e: IOException) {
+        // MOLLY: a user proxy must never degrade into a direct connection; a system proxy may.
         when (config.source) {
           ProxyConfig.ProxySource.USER -> {
             Log.e(TAG, "Invalid ${config.scheme} proxy config! Failing connections until changed.", e)

@@ -20,6 +20,7 @@
             android:maxLines="1"
             android:textAlignment="viewStart"
             android:textAppearance="@style/Signal.Text.LabelSmall"
+            android:textColor="?attr/signal_text_secondary"
             android:textStyle="normal"
             android:visibility="gone"
             tools:text="Recording 2026-10-01.mp3"

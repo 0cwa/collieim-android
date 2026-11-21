@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="preferences__enable_debug_log">啟用除錯日誌</string>
-    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">定期檢查新版本並要求安裝它們</string>
-    <string name="preferences__autoupdate_molly">自動更新Collie</string>
+    <string name="preferences__network">網絡</string>
+    <string name="preferences__passphrase_lock">資料庫加密</string>
+    <string name="preferences__protect_molly_database_with_a_passphrase">用密碼保護 Collie 資料庫</string>
+    <string name="preferences__automatic_lockdown">自動鎖定</string>
+    <string name="preferences__device_lock_timeout">裝置鎖定超時</string>
+    <string name="AppProtectionPreferenceFragment_instant">即刻</string>
 </resources>

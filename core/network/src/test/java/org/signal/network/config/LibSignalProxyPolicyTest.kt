@@ -30,7 +30,7 @@ class LibSignalProxyPolicyTest {
     val network = mockk<Network>(relaxed = true)
     every { network.setProxy("http", "proxy.example.com", 8080, null, null) } throws IOException("Invalid proxy")
 
-    network.configureProxy(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080))
+    network.configureProxy(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080, ProxyConfig.ProxySource.SYSTEM))
 
     verify(exactly = 1) { network.clearProxy() }
     verify(exactly = 0) { network.setInvalidProxy() }

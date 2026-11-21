@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Opětovná registrace účtu</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Aktualizovat Signal</string>
+    <string name="preferences_account_update_signal">Aktualizovat Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Smazat všechna data</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Generování přehledu…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Váš přehled se generuje v okamžiku exportu a Signal jej neukládá do vašeho zařízení.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Váš přehled se generuje v okamžiku exportu a Collie jej neukládá do vašeho zařízení.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -598,7 +598,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Zatím nemáte nastavenou přístupovou frázi!</string>
     <string name="ApplicationPreferencesActivity_disable">Vypnout</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Vypnout přístupovou frázi?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tímto trvale odemknete Signal a oznámení zpráv.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tímto trvale odemknete Collie a oznámení zpráv.</string>
     <string name="PrivacySettingsFragment__app_security">Zabezpečení aplikace</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Blokovat snímky obrazovky v seznamu posledních položek a uvnitř aplikace</string>
@@ -646,7 +646,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Toto nastavení není zaručené a klávesnice ho může ignorovat.</string>
     <string name="preferences__typing_indicators">Ukazatele psaní</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Zvolte si, kdo uvidí vaše telefonní číslo a kdo vás pomocí něj může v aplikaci Signal kontaktovat.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Zvolte si, kdo uvidí vaše telefonní číslo a kdo vás pomocí něj může v aplikaci Collie kontaktovat.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Platby</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -662,7 +662,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Nyní ne</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Zjistit více</string>
 
@@ -688,6 +688,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Vaše předplatné pro zálohování se nepodařilo obnovit</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Přispějte na Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Interní předvolby</string>
     <!-- App settings row that opens linked devices -->
@@ -879,9 +880,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Váš profil a změny v něm budou viditelné lidem, se kterými si píšete, které máte v kontaktech, a vašim skupinám.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Aktualizovat Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Aktualizovat Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Platnost této verze aplikace Signal vypršela. Aktualizujte ji, ať můžete Signal dál používat.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Platnost této verze aplikace Collie vypršela. Aktualizujte ji, ať můžete Collie dál používat.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizovat</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -937,8 +938,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Zavřít</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Získejte odznaky pro svůj profil tím, že podpoříte Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal je nezisková organizace fungující bez reklam a investorů, kterou podporují pouze lidé jako vy.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Staňte se podporovatelem</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1018,19 +1022,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Tohoto uživatele se nepodařilo najít.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Chcete-li naskenovat QR kód, povolte aplikaci Signal přístup k fotoaparátu.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Chcete-li naskenovat QR kód, povolte aplikaci Collie přístup k fotoaparátu.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Povolit přístup</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal potřebuje přístup k fotoaparátu, aby mohl skenovat QR kódy</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie potřebuje přístup k fotoaparátu, aby mohl skenovat QR kódy</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Úložiště</string>
     <string name="preferences_storage__storage_usage">Využití úložiště</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Úložiště Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Úložiště Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizovat úložiště Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizovat úložiště Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Nepoužívaná média se odloží, ale můžete si je kdykoli stáhnout ze zálohy.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1086,7 +1090,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Nepodařilo se otevřít výběr.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Aby bylo možné oznámení zapnout, Signal potřebuje povolení k jejich zobrazování.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Aby bylo možné oznámení zapnout, Collie potřebuje povolení k jejich zobrazování.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Zapnout</string>
     <string name="NotificationsSettingsFragment__calls">Volání</string>
@@ -1185,7 +1189,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Obcházení cenzury</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Obcházení cenzury</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Pokud tuto funkci zapnete, Signal se pokusí obejít cenzuru. Zapínejte ji pouze v místech, kde je Signal cenzurován.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Pokud tuto funkci zapnete, Collie se pokusí obejít cenzuru. Zapínejte ji pouze v místech, kde je Collie cenzurován.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Obcházení cenzury bylo aktivováno na základě vašeho telefonního čísla.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1202,7 +1206,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatické ověření klíče</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Pokud tuto funkci zapnete, Signal se pokusí automaticky ověřovat šifrování soukromých chatů.</string>
+    <string name="preferences_automatic_key_verification_body">Pokud tuto funkci zapnete, Collie se pokusí automaticky ověřovat šifrování soukromých chatů.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

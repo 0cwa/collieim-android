@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -67,7 +66,7 @@ fun ConversationHeader(
   modifier: Modifier = Modifier,
   storyViewState: StoryViewState = StoryViewState.NONE,
   subhead: String? = null,
-  linkedDeviceCount: Int? = null,
+  subheadExtra: String? = null,
   showVerifiedBadge: Boolean = false,
   showSystemContactBadge: Boolean = false,
   onAvatarClick: () -> Unit = {},
@@ -108,20 +107,16 @@ fun ConversationHeader(
           modifier = Modifier.padding(top = 8.dp)
         )
       }
-      if (linkedDeviceCount != null) {
+
+      if (!subheadExtra.isNullOrBlank()) {
         Text(
-          text = if (linkedDeviceCount > 0) {
-            pluralStringResource(R.plurals.BioTextPreference_n_linked_devices, linkedDeviceCount, linkedDeviceCount)
-          } else {
-            stringResource(R.string.BioTextPreference_no_linked_devices)
-          },
+          text = subheadExtra,
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           textAlign = TextAlign.Center,
           modifier = Modifier.padding(top = 8.dp)
         )
       }
-
     }
   }
 }

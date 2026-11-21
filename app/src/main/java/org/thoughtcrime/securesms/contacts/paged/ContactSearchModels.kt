@@ -44,8 +44,8 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import org.signal.core.ui.compose.FastScrollCharacterProvider
-import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.compose.theme.colorAttribute
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.BreakIteratorCompat
 import org.signal.core.util.requireDrawable

@@ -39,7 +39,7 @@ import org.thoughtcrime.securesms.testing.CoroutineDispatcherRule
 class BackupsSettingsViewModelTest {
 
   private val testDispatcher = UnconfinedTestDispatcher()
-  private val backupState = MutableStateFlow<BackupState>(BackupState.None(featureSupported = true))
+  private val backupState = MutableStateFlow<BackupState>(BackupState.None)
   private val parentEvents = mutableListOf<AppSettingsNavigationEvent>()
 
   @get:Rule
@@ -110,7 +110,7 @@ class BackupsSettingsViewModelTest {
 
   @Test
   fun `BackupsRowClicked in an error state does nothing`() = runTest(testDispatcher) {
-    backupState.value = BackupState.Error(BackupState.None(featureSupported = true))
+    backupState.value = BackupState.Error(BackupState.None)
     val viewModel = createViewModel()
     val actions = collectActions(viewModel)
 

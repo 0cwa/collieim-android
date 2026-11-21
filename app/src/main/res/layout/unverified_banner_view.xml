@@ -31,16 +31,16 @@
         tools:text="Your safety number with Jules Bonnot has changed and is no longer verified" />
 
     <ImageButton
-        android:id="@+id/cancel"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="2dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:contentDescription="@string/DefaultBanner__cancel"
-        android:focusable="true"
-        android:nextFocusLeft="@+id/container"
-        android:nextFocusRight="@+id/container"
-        android:src="@drawable/ic_x_24"
-        app:tint="?attr/signal_icon_tint_primary" />
+            android:id="@+id/cancel"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="2dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:focusable="true"
+            android:nextFocusLeft="@+id/container"
+            android:nextFocusRight="@+id/container"
+            android:src="@drawable/ic_x_24"
+            app:tint="?attr/signal_icon_tint_primary"
+            android:contentDescription="@string/DefaultBanner__cancel"/>
 
 </LinearLayout>

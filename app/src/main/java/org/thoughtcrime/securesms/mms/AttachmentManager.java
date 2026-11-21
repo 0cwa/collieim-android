@@ -58,8 +58,6 @@ import org.thoughtcrime.securesms.conversation.MessageSendType;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.maps.PlacePickerActivity;
-import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
-import org.thoughtcrime.securesms.mediapreview.MediaPreviewCache;
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
@@ -67,7 +65,6 @@ import org.thoughtcrime.securesms.util.MediaUtil;
 import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;

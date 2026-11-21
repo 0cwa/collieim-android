@@ -24,6 +24,7 @@ import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
 import org.signal.storage.keyvalue.KeyValueDataSet;
 import org.signal.storage.keyvalue.KeyValueDatabase;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.backup.proto.KeyValue;
 import org.thoughtcrime.securesms.backup.proto.SqlStatement;
 import org.thoughtcrime.securesms.database.AttachmentTable;
@@ -51,7 +52,7 @@ import org.thoughtcrime.securesms.database.model.AvatarPickerDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.SecurePreferenceManager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -198,13 +199,13 @@ public class FullBackupExporter extends FullBackupBase {
         stopwatch.split("table::" + table);
       }
 
-      for (SharedPreference preference : TextSecurePreferences.getPreferencesToSaveToBackup(context)) {
+      for (SharedPreference preference : getPlainTextPreferencesToSaveToBackup()) {
         throwIfCanceled(cancellationSignal);
         EventBus.getDefault().post(new BackupEvent(BackupEvent.Type.PROGRESS, ++count, estimatedCount));
         outputStream.write(preference);
       }
 
-      stopwatch.split("molly_preferences");
+      stopwatch.split("molly_bootstrap_prefs");
 
       count = exportKeyValues(outputStream, SignalStore.getKeysToIncludeInBackup(), count, estimatedCount, cancellationSignal);
 
@@ -250,7 +251,7 @@ public class FullBackupExporter extends FullBackupBase {
     }
 
     count += IDENTITY_KEY_BACKUP_RECORD_COUNT;
-    count += TextSecurePreferences.getPreferencesToSaveToBackupCount(context);
+    count += getPlainTextPreferencesToSaveToBackup().size();
 
     KeyValueDataSet dataSet = KeyValueDatabase.getInstance(AppDependencies.getApplication())
                                               .getDataSet();
@@ -596,6 +597,35 @@ public class FullBackupExporter extends FullBackupBase {
     return count;
   }
 
+  /**
+   * MOLLY: Settings without a V1 SignalStore mirror keep their preference-based backup records. Dynamic colors use
+   * this path deliberately. The records are built here because Signal 8.36 moved {@link PlainTextKeyValueStore} to
+   * lib/storage, which cannot see the backup protos.
+   */
+  public static @NonNull List<SharedPreference> getPlainTextPreferencesToSaveToBackup() {
+    String                 file    = SecurePreferenceManager.getSecurePreferencesName();
+    List<SharedPreference> records = new ArrayList<>();
+
+    for (Map.Entry<String, Boolean> entry : PlainTextKeyValueStore.getBooleanValuesToBackup().entrySet()) {
+      records.add(new SharedPreference.Builder()
+                                      .file_(file)
+                                      .key(entry.getKey())
+                                      .booleanValue(entry.getValue())
+                                      .build());
+    }
+
+    String language = PlainTextKeyValueStore.getLanguageToBackup();
+    if (language != null) {
+      records.add(new SharedPreference.Builder()
+                                      .file_(file)
+                                      .key(PlainTextKeyValueStore.LANGUAGE)
+                                      .value_(language)
+                                      .build());
+    }
+
+    return records;
+  }
+
   @VisibleForTesting
   static boolean isNonExpiringMessage(@NonNull SQLiteDatabase db, @NonNull Cursor cursor) {
     return isNonExpiringMessage(db,
@@ -632,7 +662,8 @@ public class FullBackupExporter extends FullBackupBase {
       }
     }
 
-    // Molly excludes every message whose disappearing-message timer has started, regardless of time remaining.
+    // MOLLY: Exclude any message whose expire timer has started regardless of remaining time,
+    // which is stricter than upstream's one-day threshold. The revision walk above is upstream's.
     return expiresIn <= 0 || expireStarted <= 0;
   }
 

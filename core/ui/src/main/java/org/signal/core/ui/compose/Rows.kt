@@ -171,9 +171,10 @@ object Rows {
     selectedValue: String,
     onSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
+    // MOLLY: trailing icon used by the UnifiedPush notification-delivery row
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
-    requireConfirmation: Boolean = false,
-    trailingIcon: (@Composable RowScope.() -> Unit)? = null
+    requireConfirmation: Boolean = false
   ) {
     RadioListRow(
       text = { selectedIndex ->
@@ -194,9 +195,9 @@ object Rows {
       selectedValue = selectedValue,
       onSelected = onSelected,
       modifier = modifier,
+      trailingIcon = trailingIcon,
       enabled = enabled,
-      requireConfirmation = requireConfirmation,
-      trailingIcon = trailingIcon
+      requireConfirmation = requireConfirmation
     )
   }
 
@@ -213,9 +214,10 @@ object Rows {
     selectedValue: String,
     onSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
+    // MOLLY: trailing icon used by the UnifiedPush notification-delivery row
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
-    requireConfirmation: Boolean = false,
-    trailingIcon: (@Composable RowScope.() -> Unit)? = null
+    requireConfirmation: Boolean = false
   ) {
     val selectedIndex = values.indexOf(selectedValue)
     var displayDialog by remember { mutableStateOf(false) }

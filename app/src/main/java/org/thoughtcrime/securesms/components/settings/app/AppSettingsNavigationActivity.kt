@@ -100,11 +100,6 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity() {
       finish()
       return
     }
-    if (savedInstanceState == null && (startRoute == AppSettingsRoute.PrivacyRoute.Privacy || startRoute == AppSettingsRoute.PrivacyRoute.ScreenLock)) {
-      startActivity(AppSettingsActivity.privacy(this))
-      finish()
-      return
-    }
     if (savedInstanceState == null && startRoute != null && startRoute != AppSettingsRoute.Empty) {
       router.openDirectly(startRoute)
     }
@@ -154,7 +149,6 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity() {
       is AppSettingsRoute.NotificationsRoute.PlayServicesProblem -> AppSettingsActivity.playServicesProblem(this, route.errorCode)
       AppSettingsRoute.DataAndStorageRoute.Proxy -> AppSettingsActivity.proxy(this)
       AppSettingsRoute.DataAndStorageRoute.DataAndStorage -> AppSettingsActivity.manageStorage(this)
-      AppSettingsRoute.PrivacyRoute.Privacy, AppSettingsRoute.PrivacyRoute.ScreenLock -> AppSettingsActivity.privacy(this)
       AppSettingsRoute.LinkDeviceRoute.LinkDevice -> AppSettingsActivity.linkedDevices(this)
       AppSettingsRoute.Payments -> return true
       AppSettingsRoute.AppearanceRoute.Wallpaper -> ChatWallpaperActivity.createIntent(this)

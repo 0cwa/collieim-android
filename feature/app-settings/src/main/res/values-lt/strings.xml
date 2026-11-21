@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Iš naujo registruoti paskyrą</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Atnaujinti Signal</string>
+    <string name="preferences_account_update_signal">Atnaujinti Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Ištrinti visus duomenis</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Generuojama ataskaita…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Tavo ataskaita generuojama tik eksportavimo metu, „Signal“ jos nesaugo tavo įrenginyje.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Tavo ataskaita generuojama tik eksportavimo metu, „Collie“ jos nesaugo tavo įrenginyje.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -537,7 +537,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Licencijos</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Sąlygos ir Privatumo politika</string>
-    <string name="HelpFragment__copyright_signal_messenger">Autorių teisės Molly pokalbių programėlė</string>
+    <string name="HelpFragment__copyright_signal_messenger">Autorių teisės Collie pokalbių programėlė</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Licencijuota pagal GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">„Signal“ yra ne pelno organizacija</string>
@@ -598,7 +598,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Jūs dar nesate nustatę slaptafrazės!</string>
     <string name="ApplicationPreferencesActivity_disable">Išjungti</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Išjungti slaptafrazę?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tai visiems laikams atrakins Signal ir žinučių pranešimus.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tai visiems laikams atrakins Collie ir žinučių pranešimus.</string>
     <string name="PrivacySettingsFragment__app_security">Programėlės saugumas</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Blokuoti ekrano kopijas paskiausiųjų sąraše ir programėlėje</string>
@@ -646,7 +646,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Šis nustatymas nieko negarantuoja ir jūsų klaviatūra gali jo nepaisyti.</string>
     <string name="preferences__typing_indicators">Rašymo indikatoriai</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Pasirink, kas gali matyti tavo telefono numerį, ir kas gali juo su tavimi susisiekti per „Signal“.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Pasirink, kas gali matyti tavo telefono numerį, ir kas gali juo su tavimi susisiekti per „Collie“.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Mokėjimai</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -662,7 +662,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Ne dabar</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Sužinoti daugiau</string>
 
@@ -688,6 +688,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Nepavyko panaudoti jūsų atsarginių kopijų prenumeratos</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Paremk „Collie“</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Vidinės nuostatos</string>
     <!-- App settings row that opens linked devices -->
@@ -879,9 +880,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Tavo profilis ir jo pakeitimai bus matomi tavo adresatams, grupėms ir tiems, kam siunti žinutes.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Atnaujinti Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Atnaujinti Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Ši „Signal“ versija nebegalioja. Atnaujink programėlę dabar ir naudokis toliau.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Ši „Collie“ versija nebegalioja. Atnaujink programėlę dabar ir naudokis toliau.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Atnaujinti</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -937,8 +938,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Užverti</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Gauk ženklelių savo profiliui už paramą „Signal“.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal yra pelno nesiekianti organizacija, kuri neturi reklamuotojų ar investuotojų ir, kuri yra palaikoma tik tokių žmonių, kaip jūs.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Tapkite rėmėju</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1018,19 +1022,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Šio naudotojo nepavyko rasti.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Jei norite nuskenuoti QR kodą, leiskite „Signal“ prieigą prie kameros.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Jei norite nuskenuoti QR kodą, leiskite „Collie“ prieigą prie kameros.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Leisti prieigą</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Kad būtų galima nuskaityti QR kodus, „Signal“ reikalinga prieiga prie kameros</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Kad būtų galima nuskaityti QR kodus, „Collie“ reikalinga prieiga prie kameros</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Saugykla</string>
     <string name="preferences_storage__storage_usage">Saugyklos naudojimas</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">„Signal“ saugykla</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">„Collie“ saugykla</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizuoti „Signal“ saugyklą</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizuoti „Collie“ saugyklą</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Nepanaudoti įrašai bus išimti, tačiau juos bet kada galėsite atsisiųsti iš atsarginės kopijos.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1056,7 +1060,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Įrašai bus pašalinti iš jūsų atsarginės kopijos įrenginyje</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Įjungus „Optimizuoti „Signal“ saugyklą“, seni įrašai bus perkelti iš jūsų įrenginio. Juos bet kada galėsite vėl atsisiųsti. Ši funkcija taip pat pašalins senus įrašus iš jūsų atsarginės kopijos įrenginyje.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Įjungus „Optimizuoti „Collie“ saugyklą“, seni įrašai bus perkelti iš jūsų įrenginio. Juos bet kada galėsite vėl atsisiųsti. Ši funkcija taip pat pašalins senus įrašus iš jūsų atsarginės kopijos įrenginyje.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Įjungti</string>
 
@@ -1086,7 +1090,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Nepavyko atverti parinkiklio.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Kad įgalintų pranešimus, „Signal“ reikalingas leidimas juos rodyti.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Kad įgalintų pranešimus, „Collie“ reikalingas leidimas juos rodyti.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Įjungti</string>
     <string name="NotificationsSettingsFragment__calls">Skambučiai</string>
@@ -1185,7 +1189,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Cenzūravimo apėjimas</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Cenzūravimo apėjimas</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Jei įjungta, Signal bandys apeiti cenzūravimą. Neįjunkite šios ypatybės, nebent esate vietoje, kurioje Signal yra cenzūruojama.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Jei įjungta, Collie bandys apeiti cenzūravimą. Neįjunkite šios ypatybės, nebent esate vietoje, kurioje Collie yra cenzūruojama.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Cenzūravimo apėjimas buvo aktyvuotas pagal jūsų paskyros telefono numerį.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1202,7 +1206,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatinis rakto patvirtinimas</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Įjungus, „Signal“ bandys automatiškai patvirtinti asmeninių pokalbių šifravimą.</string>
+    <string name="preferences_automatic_key_verification_body">Įjungus, „Collie“ bandys automatiškai patvirtinti asmeninių pokalbių šifravimą.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

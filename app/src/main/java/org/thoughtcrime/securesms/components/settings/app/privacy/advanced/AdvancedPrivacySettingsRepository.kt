@@ -101,7 +101,7 @@ object AdvancedPrivacySettingsRepository {
   }
 
   suspend fun disablePushMessages(): DisablePushMessagesResult = withContext(Dispatchers.IO) {
-    val clearTokenError: Throwable? = when (val result = SignalNetwork.accountApi.clearFcmToken()) {
+    val clearTokenError: Throwable? = when (val result = SignalNetwork.accountApiV2.clearFcmToken()) {
       is RequestResult.Success, is RequestResult.NonSuccess -> null
       is RequestResult.RetryableNetworkError -> result.networkError
       is RequestResult.ApplicationError -> result.cause

@@ -32,6 +32,7 @@ import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateNotifications
 import org.thoughtcrime.securesms.apkupdate.CollieUpdateIndex
 import org.thoughtcrime.securesms.apkupdate.CollieUpdateProfile
+import org.thoughtcrime.securesms.keyvalue.MollyValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
@@ -42,6 +43,7 @@ import java.io.IOException
 @Config(manifest = Config.NONE, application = Application::class)
 class ApkUpdateJobTest {
   private val values = mockk<ApkUpdateValues>(relaxUnitFun = true)
+  private val mollyValues = mockk<MollyValues>(relaxUnitFun = true)
   private val client = mockk<OkHttpClient>()
   private val call = mockk<Call>()
   private var enabled = true
@@ -58,6 +60,9 @@ class ApkUpdateJobTest {
     every { values.availableVersionName } returns null
     every { values.lastNotifiedVersionCode } returns 0
     every { TextSecurePreferences.isUpdateApkEnabled(any()) } answers { enabled }
+    // The updater switch lives in MollyValues since the Molly 8.34 merge.
+    every { SignalStore.molly } returns mollyValues
+    every { mollyValues.updateApkEnabled } answers { enabled }
     every { ApkUpdateNotifications.showUpdateAvailable(any(), any()) } returns true
     every { ApkUpdateNotifications.dismissUpdatePrompt(any()) } returns Unit
   }

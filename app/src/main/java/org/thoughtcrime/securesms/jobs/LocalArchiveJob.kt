@@ -60,7 +60,7 @@ class LocalArchiveJob internal constructor(parameters: Parameters) : Job(paramet
         context,
         context.getString(R.string.LocalBackupJob_creating_signal_backup),
         NotificationChannels.getInstance().BACKUPS,
-        R.drawable.ic_notification_backup
+        CoreUiR.drawable.ic_notification_backup
       )
     } catch (e: UnableToStartException) {
       Log.w(TAG, "Unable to start foreground backup service, continuing without service")

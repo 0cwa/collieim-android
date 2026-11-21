@@ -72,13 +72,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import im.molly.unifiedpush.UnifiedPushDistributor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.appsettings.twofactorverify.TwoFactorVerifyMethod
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.NavigationType
@@ -406,6 +406,7 @@ class MainActivity :
         val navBarColor = when {
           isSplitPane -> SignalTheme.colors.colorSurface1.toArgb()
           isConversationFullscreen -> Color.Transparent.toArgb()
+          // MOLLY: Main nav paints this area via navbar_container_color.
           else -> Color.Transparent.toArgb()
         }
 

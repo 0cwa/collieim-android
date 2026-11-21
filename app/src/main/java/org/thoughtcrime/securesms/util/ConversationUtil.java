@@ -24,7 +24,7 @@ import org.thoughtcrime.securesms.database.GroupTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob;
-import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.signal.core.ui.permissions.Permissions;
 import org.thoughtcrime.securesms.recipients.Recipient;
@@ -95,7 +95,7 @@ public final class ConversationUtil {
    */
   @WorkerThread
   public static void ensureShortcutForRecipientSync(@NonNull Context context, @NonNull Recipient recipient) {
-    if (TextSecurePreferences.isPassphraseLockEnabled(context) || TextSecurePreferences.isBiometricScreenLockEnabled(context)) {
+    if (PlainTextKeyValueStore.getPassphraseLockEnabled()) {
       return;
     }
 

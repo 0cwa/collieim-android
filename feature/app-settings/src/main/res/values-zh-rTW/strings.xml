@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">重新註冊帳戶</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">更新 Signal</string>
+    <string name="preferences_account_update_signal">更新 Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">刪除所有資料</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">正在建立報告…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">你的報告僅在匯出時建立，並不會由 Signal 儲存在你的裝置上。</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">你的報告僅在匯出時建立，並不會由 Collie 儲存在你的裝置上。</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -595,7 +595,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">你還沒有建立密碼！</string>
     <string name="ApplicationPreferencesActivity_disable">停用</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">停用密碼嗎？</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">這將會永久性地解鎖 Signal 與訊息通知。</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">這將會永久性地解鎖 Collie 與訊息通知。</string>
     <string name="PrivacySettingsFragment__app_security">應用程式安全性</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">在對話清單或應用程式內停用畫面擷取功能</string>
@@ -640,7 +640,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">此設定不能保證，你的鍵盤可能會忽略它。</string>
     <string name="preferences__typing_indicators">打字狀態</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">選擇誰可以看到你的電話號碼，以及誰可以透過它在 Signal 上與你聯絡。</string>
+    <string name="preferences_app_protection__choose_who_can_see">選擇誰可以看到你的電話號碼，以及誰可以透過它在 Collie 上與你聯絡。</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">付款</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -656,7 +656,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">暫時不要</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">了解更多</string>
 
@@ -682,6 +682,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">無法兌換備份定期贊助</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">贊助 Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">內部偏好設定</string>
     <!-- App settings row that opens linked devices -->
@@ -867,9 +868,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">與你收發訊息的使用者、聯絡人和群組將會看到你的個人檔案及相關的變更內容。</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">更新 Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">更新 Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">此版本的 Signal 已過期。請立即更新以繼續使用 Signal。</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">此版本的 Collie 已過期。請立即更新以繼續使用 Collie。</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">更新</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -925,8 +926,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">關閉</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">透過贊助 Signal 可為你的個人資料欄中得到徽章。</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal 是一個沒有廣告商或投資者的非營利組織，只有像你這樣的人支持。</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">成為贊助人</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1006,19 +1010,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">找不到此用戶。</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">要掃描二維碼，請允許 Signal 存取相機。</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">要掃描二維碼，請允許 Collie 存取相機。</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">允許存取</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal 需要相機存取權限以掃描二維碼</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie 需要相機存取權限以掃描二維碼</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">儲存空間</string>
     <string name="preferences_storage__storage_usage">已使用的儲存容量</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal 儲存空間</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie 儲存空間</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">最佳化 Signal 儲存空間</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">最佳化 Collie 儲存空間</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">未使用的媒體將被卸載，但可以隨時從備份中下載。</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1044,7 +1048,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">將從你的裝置上備份中移除媒體</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">開啟「最佳化 Signal 儲存空間」後，系統將會把舊媒體從你的裝置中移除。你可以隨時再次下載。系統也會從你的裝置上備份中移除舊媒體。</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">開啟「最佳化 Collie 儲存空間」後，系統將會把舊媒體從你的裝置中移除。你可以隨時再次下載。系統也會從你的裝置上備份中移除舊媒體。</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">開啟</string>
 
@@ -1074,7 +1078,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">無法開啟選擇器。</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">要啟用通知，Signal 需要顯示通知的權限。</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">要啟用通知，Collie 需要顯示通知的權限。</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">開啟</string>
     <string name="NotificationsSettingsFragment__calls">通話</string>
@@ -1173,7 +1177,7 @@
     <string name="preferences_communication__category_censorship_circumvention">審查規避</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">審查規避</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">若啟用，Signal 將嘗試繞過網路審查，除非您所在的區域會封鎖 Signal，否則不要使用這項功能</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">若啟用，Collie 將嘗試繞過網路審查，除非您所在的區域會封鎖 Collie，否則不要使用這項功能</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">根據您的電話號碼，我們已自動啟用網路審查規避</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1190,7 +1194,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">自動金鑰驗證</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">啟用時，Signal 會嘗試自動驗證 1 對 1 聊天的加密。</string>
+    <string name="preferences_automatic_key_verification_body">啟用時，Collie 會嘗試自動驗證 1 對 1 聊天的加密。</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

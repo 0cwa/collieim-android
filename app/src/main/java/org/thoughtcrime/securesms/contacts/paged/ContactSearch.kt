@@ -15,8 +15,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -32,8 +32,8 @@ import org.signal.core.ui.compose.FastScrollerState
 import org.signal.core.ui.compose.LazyColumnFastScroller
 import org.signal.core.ui.compose.LocalFragmentManager
 import org.signal.core.ui.compose.Previews
-import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.util.ThemeUtil
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.util.logging.Log
 import org.signal.emoji.Emojifier
 import org.thoughtcrime.securesms.R
@@ -45,7 +45,6 @@ import org.thoughtcrime.securesms.util.adapter.mapping.compose.MappingEntryProvi
 import org.thoughtcrime.securesms.util.adapter.mapping.compose.MappingLazyColumn
 import org.thoughtcrime.securesms.util.adapter.mapping.compose.MappingLazyListController
 import org.thoughtcrime.securesms.util.adapter.mapping.compose.rememberMappingEntryProvider
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * A composable that displays a paged, selectable contact list driven by a [ContactSearchViewModel].

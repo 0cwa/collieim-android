@@ -27,7 +27,6 @@ import org.thoughtcrime.securesms.net.RemoteDeprecationDetectorInterceptor
 import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor
 import org.thoughtcrime.securesms.net.StorageServiceSizeLoggingInterceptor
 import java.io.IOException
-import java.util.Optional
 import kotlin.time.Duration.Companion.minutes
 
 /**

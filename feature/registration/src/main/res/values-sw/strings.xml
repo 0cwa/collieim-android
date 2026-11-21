@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Kubalisha ruhusa</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Ili kukusaidia kutuma ujumbe kwa watu unaowajua, Signal itakuomba ruhusa hizi. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Ili kukusaidia kutuma ujumbe kwa watu unaowajua, Collie itakuomba ruhusa hizi. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Sio sasa</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Wasiliana na Msaada</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Usajili wa Signal: Msimbo wa Hakiki wa Android</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Usajili wa Collie: Msimbo wa Hakiki wa Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Imeshindwa kurejesha nakala hii</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Toleo hili la Signal limeshindwa kurejesha nakala yako. Sasisha toleo jipya zaidi na ujaribu tena.</string>
+    <string name="RemoteRestoreScreen__update_latest">Toleo hili la Collie limeshindwa kurejesha nakala yako. Sasisha toleo jipya zaidi na ujaribu tena.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Sasisha Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Sasisha Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Sio sasa</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Wasiliana Msaada</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Hifadhi Nakala ya Signal Android imeshindwa kabisa kurejeshwa</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Hifadhi Nakala ya Collie Android imeshindwa kabisa kurejeshwa</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Akaunti yako imefungwa ili kulinda faragha yako na usalama wako. Baada ya siku %1$d bila shughuli kwenye akaunti yako utaweza kusajili upya nambari hii ya simu bila kuhitaji Nenosiri lako. Yote yaliyomo yatafutwa.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Fungua Signal kwenye kifaa chako cha zamani</string>
+    <string name="QuickRestoreQRScreen__step_1">Fungua Collie kwenye kifaa chako cha zamani</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Gusa aikoni ya kamera </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Ingiza Nenosiri lako</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Weka PIN uliyotengeneza wakati uliposakinisha Signal kwa mara ya kwanza</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Weka PIN uliyotengeneza wakati uliposakinisha Collie kwa mara ya kwanza</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Umeweka tena code ambayo ulishatumia kuthibitisha namba yako ya simu. Weka PIN ya Signal ya kipekee ambayo uliichagua awali kwa ajili ya akaunti yako.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Wasiliana Msaada</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Usajili wa Signal - Nahitaji Usaidizi wa Nambari ya Usajili kwenye Android</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Usajili wa Collie - Nahitaji Usaidizi wa Nambari ya Usajili kwenye Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Ruhusu Arifa</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal ingependa kuomba ruhusa ya arifa. Hii inaruhusu kifaa chako kuonyesha arifa za jumbe mpya zikiingia.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie ingependa kuomba ruhusa ya arifa. Hii inaruhusu kifaa chako kuonyesha arifa za jumbe mpya zikiingia.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Sio sasa</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Changanua code hii ili uunganishe akaunti yako</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Fungua Signal kwenye simu yako</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Fungua Collie kwenye simu yako</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Gusa picha ya wasifu wako ili ufungue Mipangilio ya Signal</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Gusa picha ya wasifu wako ili ufungue Mipangilio ya Collie</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Gusa \"Vifaa vilivyounganishwa\" na \"Unganisha kifaa kipya\"</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Imeshindwa kutayarisha code</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Hauna Signal kwenye kifaa kingine?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Hauna Collie kwenye kifaa kingine?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Fungua akaunti</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -536,7 +536,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Hamisha akaunti yako</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Ili uhamishe akaunti yako, fungua Signal kwenye kifaa chako cha Android cha zamani kisha chagua Hamisha Akaunti.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Ili uhamishe akaunti yako, fungua Collie kwenye kifaa chako cha Android cha zamani kisha chagua Hamisha Akaunti.</string>
     <string name="DeviceTransferInstructions__continue">Endelea</string>
 
     <!-- Device transfer: Setup screen -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">Ndio, namba zinalingana</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Nambari hazilingani</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Inasubiri kifaa chako cha zamani kithibitishe…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Signal inahitaji ruhusa ya kufikia data ya mahali ulipo ili kugundua na kuunganisha na kifaa chako cha zamani.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Collie inahitaji ruhusa ya kufikia data ya mahali ulipo ili kugundua na kuunganisha na kifaa chako cha zamani.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Ipe ruhusa</string>
-    <string name="DeviceTransferSetup__location_services_required">Signal inahitaji idhini ya kufikia data ya mahali ulipo ili igundue na kuunganisha na kifaa chako cha awali cha Android.</string>
+    <string name="DeviceTransferSetup__location_services_required">Collie inahitaji idhini ya kufikia data ya mahali ulipo ili igundue na kuunganisha na kifaa chako cha awali cha Android.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Washa huduma za eneo</string>
-    <string name="DeviceTransferSetup__wifi_required">Signal inahitaji W-Fi iwashwe ili iweze kugundua na kuunganisha kwenye kifaaa chako cha zamani.</string>
+    <string name="DeviceTransferSetup__wifi_required">Collie inahitaji W-Fi iwashwe ili iweze kugundua na kuunganisha kwenye kifaaa chako cha zamani.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Washa Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Samahani, inaonekana kifaa chako hakitumii Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Badala yake, rejesha nakala zilizohifadhiwa</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">Inahamisha data</string>
     <string name="DeviceTransferProgress__d_messages_so_far">1%1$d Jumbe hadi sasa</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Imeshindwa kuhamisha</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Haiwezi kuhamisha kutoka matoleo mapya ya Signal.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Haiwezi kuhamisha kutoka matoleo mapya ya Collie.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Baadhi ya data imeshindwa kuhama kutokana na vikwazo vya hifadhidata.</string>
     <string name="DeviceTransferProgress__transfer_failed">Imeshindwa kuhamisha. Tafadhali jaribu tena.</string>
     <string name="DeviceTransferProgress__try_again">Jaribu tena</string>

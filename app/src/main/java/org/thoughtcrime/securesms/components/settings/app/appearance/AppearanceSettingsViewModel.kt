@@ -40,6 +40,7 @@ class AppearanceSettingsViewModel(
   val actions: Flow<AppearanceSettingsAction> = _actions.receiveAsFlow()
 
   override suspend fun processEvent(event: AppearanceSettingsEvent) {
+    val currentState = _state.value
     when (event) {
       AppearanceSettingsEvent.NavigateBackClicked -> parentEventEmitter.navigateBack()
 
@@ -54,17 +55,15 @@ class AppearanceSettingsViewModel(
       }
 
       is AppearanceSettingsEvent.ThemeSelected -> {
-        val dynamicColors = _state.value.dynamicColors
-        AppearanceSettingsRepository.setTheme(event.theme, dynamicColors)
+        AppearanceSettingsRepository.setAppearance(event.theme, currentState.dynamicColors)
         _state.update { it.copy(theme = event.theme) }
-        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(event.theme, dynamicColors))
+        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(event.theme, currentState.dynamicColors))
       }
 
       is AppearanceSettingsEvent.DynamicColorsChanged -> {
-        val theme = _state.value.theme
-        AppearanceSettingsRepository.setTheme(theme, event.enabled)
+        AppearanceSettingsRepository.setAppearance(currentState.theme, event.enabled)
         _state.update { it.copy(dynamicColors = event.enabled) }
-        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(theme, event.enabled))
+        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(currentState.theme, event.enabled))
       }
 
       AppearanceSettingsEvent.ChatColorAndWallpaperClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.AppearanceRoute.Wallpaper)
@@ -99,11 +98,11 @@ class AppearanceSettingsViewModel(
     return AppearanceSettingsState(
       language = AppearanceSettingsRepository.getLanguage(),
       theme = AppearanceSettingsRepository.getTheme(),
-      dynamicColors = AppearanceSettingsRepository.useDynamicColors(),
-      isDynamicColorsAvailable = AppearanceSettingsRepository.isDynamicColorsAvailable(),
+      dynamicColors = AppearanceSettingsRepository.isDynamicColorsEnabled(),
       messageFontSize = AppearanceSettingsRepository.getMessageFontSize(),
       isCompactNavigationBar = AppearanceSettingsRepository.isCompactNavigationBar(),
       isSystemThemeAvailable = AppearanceSettingsRepository.isSystemThemeAvailable(),
+      isDynamicColorsAvailable = AppearanceSettingsRepository.isDynamicColorsAvailable(),
       isAppIconSupported = AppearanceSettingsRepository.isAppIconSupported()
     )
   }

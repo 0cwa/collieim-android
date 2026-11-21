@@ -136,7 +136,7 @@ public class BackupUtil {
   }
 
   public static void deleteOldBackups() {
-    int maxFiles = TextSecurePreferences.getBackupMaxFiles(AppDependencies.getApplication());
+    int maxFiles = SignalStore.molly().getBackupMaxFiles();
 
     Log.i(TAG, "Deleting older backups. Keep " + maxFiles + " max.");
 

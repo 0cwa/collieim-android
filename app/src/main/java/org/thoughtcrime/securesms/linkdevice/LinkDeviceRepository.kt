@@ -105,8 +105,8 @@ object LinkDeviceRepository {
 
   private fun DeviceInfo.toLocalDevice(): Device {
     val createdAt = this.getPlaintextCreatedAt()
-    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(id)
     val encodedName = name
+    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(id)
     val defaultDevice = Device(id, encodedName, createdAt, lastSeen, registrationId, canRename = canRename)
     try {
       if (encodedName.isNullOrEmpty() || encodedName.length < 4) {

@@ -679,7 +679,7 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
   }
 
   DropdownMenus.Item(
-    leadingIconResId = R.drawable.symbol_chat_check,
+    leadingIconResId = R.drawable.symbol_group_24,
     text = {
       Text(
         text = stringResource(R.string.text_secure_normal__menu_new_group)
@@ -692,6 +692,7 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
   )
 
   DropdownMenus.Item(
+    leadingIconResId = R.drawable.symbol_chat_check,
     text = {
       Text(
         text = stringResource(R.string.text_secure_normal__mark_all_as_read)

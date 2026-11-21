@@ -588,7 +588,7 @@ class AppRegistrationNetworkController(
     val notificationData = org.signal.devicetransfer.DeviceToDeviceTransferService.TransferNotificationData(
       org.thoughtcrime.securesms.notifications.NotificationIds.DEVICE_TRANSFER,
       org.thoughtcrime.securesms.notifications.NotificationChannels.getInstance().BACKUPS,
-      org.thoughtcrime.securesms.R.drawable.ic_notification_backup
+      org.signal.core.ui.R.drawable.ic_notification_backup
     )
     org.signal.devicetransfer.DeviceToDeviceTransferService.startServer(
       context,

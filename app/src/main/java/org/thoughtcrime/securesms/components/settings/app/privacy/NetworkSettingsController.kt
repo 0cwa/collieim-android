@@ -5,15 +5,11 @@
 
 package org.thoughtcrime.securesms.components.settings.app.privacy
 
-import android.content.Context
 import androidx.lifecycle.Lifecycle
 import org.signal.core.util.concurrent.SimpleTask
-import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.net.NetworkManager
-import org.thoughtcrime.securesms.net.ProxyType
 import org.thoughtcrime.securesms.util.SignalProxyUtil
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Consumer
@@ -62,18 +58,6 @@ class NetworkSettingsController(
       if (checkGeneration.get() == generation) {
         onResult.accept(succeeded)
       }
-    }
-  }
-
-  fun getProxyConfigurationSummary(context: Context): String {
-    return when (TextSecurePreferences.getProxyType(context)) {
-      ProxyType.NONE -> context.getString(R.string.network_privacy_inline__proxy_not_configured)
-      ProxyType.ORBOT -> context.getString(R.string.network_privacy_inline__proxy_orbot_configured)
-      ProxyType.SOCKS5 -> context.getString(
-        R.string.network_privacy_inline__proxy_socks5_configured,
-        TextSecurePreferences.getProxySocksHost(context),
-        TextSecurePreferences.getProxySocksPort(context)
-      )
     }
   }
 }

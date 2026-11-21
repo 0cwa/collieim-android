@@ -14,7 +14,6 @@ import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.Networking
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -53,7 +52,7 @@ class ApkUpdateJob private constructor(parameters: Parameters, private val appli
   public override fun onRun() {
     if (!BuildConfig.MANAGE_COLLIE_UPDATES) return
     val profile = CollieUpdateProfile.forApplicationId(applicationId) ?: return
-    if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
+    if (!SignalStore.molly.updateApkEnabled) return
 
     val values = SignalStore.apkUpdate
     val client = newClient()
@@ -65,7 +64,7 @@ class ApkUpdateJob private constructor(parameters: Parameters, private val appli
       }
       body.byteStream().use { CollieUpdateIndex.readEntry(profile, it, context.cacheDir, values.lastIndexTimestamp) }
     }
-    if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
+    if (!SignalStore.molly.updateApkEnabled) return
     val indexRequest = Request.Builder().url("${profile.repositoryUrl}/index-v2.json").build()
     val result = client.newCall(indexRequest).execute().use { response ->
       val body = response.body
@@ -76,7 +75,7 @@ class ApkUpdateJob private constructor(parameters: Parameters, private val appli
     }
 
     // Do not publish a result after the user has disabled checks while the request was running.
-    if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
+    if (!SignalStore.molly.updateApkEnabled) return
 
     val update = result.update
     val candidateChanged = values.availableVersionCode != (update?.versionCode ?: 0L) || values.availableVersionName != update?.versionName

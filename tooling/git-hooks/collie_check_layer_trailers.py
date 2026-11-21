@@ -227,6 +227,14 @@ def upstream_parent(merge, catalog, kind, upstream):
     return parent, declared[0]
 
 
+def landed_on_main(base):
+    """Commits on main that the base lacks, or an empty set when main is unknown."""
+    probe = ["git", "rev-parse", "--verify", "--quiet", "--end-of-options", f"{BASE}^{{commit}}"]
+    if subprocess.run(probe, stdout=subprocess.DEVNULL).returncode:
+        return set()
+    return set(git("rev-list", BASE, f"^{base}").splitlines())
+
+
 def check_range(base, head, pr=None, upstream=None):
     base, head = resolve_commit(base), resolve_commit(head)
     catalog = catalog_at(head)  # The PR's own catalog, so a new feature adds its entry.
@@ -245,8 +253,12 @@ def check_range(base, head, pr=None, upstream=None):
     # already excluded by the time they are reached.
     upstream_commits = set()
     skipped = 0
+    # Commits already on main passed main's own PR check when they landed, so a
+    # PR into another branch (the TrailBlazer Beta branch) that brings main in
+    # skips them. For a PR into main this set is empty.
+    landed = landed_on_main(base)
     for merge in git("rev-list", "--merges", "--topo-order", f"{base}..{head}").splitlines():
-        if merge in upstream_commits:
+        if merge in upstream_commits or merge in landed:
             continue
         joined = upstream_parent(merge, catalog, kind, upstream or Upstream())
         if joined is False:
@@ -260,8 +272,10 @@ def check_range(base, head, pr=None, upstream=None):
             print(f"Upstream merge {merge[:10]} ({declared}): skipped {count} upstream commits.")
     commits = [
         commit for commit in git("rev-list", "--no-merges", f"{base}..{head}").splitlines()
-        if commit not in upstream_commits
+        if commit not in upstream_commits and commit not in landed
     ]
+    if landed:
+        print(f"Skipped {len(landed)} commits already on main.")
     layers = set()
     for commit in commits:
         message = git("show", "-s", "--format=%B", commit)

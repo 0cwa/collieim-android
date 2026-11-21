@@ -39,6 +39,7 @@ import kotlinx.coroutines.withContext
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Fragments
+import org.signal.core.ui.R as CoreUiR
 import org.signal.core.util.DimensionUnit
 import org.signal.core.util.orNull
 import org.signal.remoteconfig.SelectionLimits
@@ -58,7 +59,6 @@ import org.thoughtcrime.securesms.recipients.ui.RecipientPicker.DisplayMode.Comp
 import org.thoughtcrime.securesms.recipients.ui.RecipientPicker.KeyboardType
 import java.util.Optional
 import java.util.function.Consumer
-import org.signal.core.ui.R as CoreUiR
 
 private typealias AndroidKeyboardType = androidx.compose.ui.text.input.KeyboardType
 

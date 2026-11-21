@@ -7,15 +7,17 @@ package org.thoughtcrime.securesms.crypto
 
 import android.content.Context
 import org.signal.core.util.crypto.AttachmentSecretStore
+import org.signal.storage.keyvalue.KeyValueDatabase
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 
 object AppAttachmentSecretStore : AttachmentSecretStore {
   override fun getAttachmentUnencryptedSecret(context: Context): String? {
-    return PlainTextKeyValueStore.attachmentLegacyUnencryptedSecret
+    return PlainTextKeyValueStore.attachmentLegacyUnencryptedSecret ?: failIfProtectedDatabaseExistsWithoutAnySecret(context)
   }
 
   override fun getAttachmentEncryptedSecret(context: Context): String? {
-    return PlainTextKeyValueStore.attachmentEncryptedSecret
+    return PlainTextKeyValueStore.attachmentEncryptedSecret ?: failIfProtectedDatabaseExistsWithoutAnySecret(context)
   }
 
   override fun setAttachmentEncryptedSecret(context: Context, secret: String) {
@@ -24,5 +26,18 @@ object AppAttachmentSecretStore : AttachmentSecretStore {
 
   override fun setAttachmentUnencryptedSecret(context: Context, secret: String?) {
     PlainTextKeyValueStore.attachmentLegacyUnencryptedSecret = secret
+  }
+
+  private fun failIfProtectedDatabaseExistsWithoutAnySecret(context: Context): String? {
+    val hasAnySecret = PlainTextKeyValueStore.attachmentLegacyUnencryptedSecret != null ||
+      PlainTextKeyValueStore.attachmentEncryptedSecret != null
+    val hasProtectedDatabase = SignalDatabase.databaseFileExists(context) || KeyValueDatabase.exists(context)
+
+    if (hasAnySecret || !hasProtectedDatabase) {
+      return null
+    }
+
+    // MOLLY: Existing databases and attachments must never be made unreachable by silently creating another secret.
+    throw IllegalStateException("Attachment secret is missing for an existing protected database")
   }
 }

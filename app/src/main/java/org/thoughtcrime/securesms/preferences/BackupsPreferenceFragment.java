@@ -264,7 +264,7 @@ public class BackupsPreferenceFragment extends Fragment {
   }
 
   private void setScheduleSummary() {
-    final long interval = TextSecurePreferences.getBackupInternal(requireContext());
+    final long interval = SignalStore.molly().getBackupInterval();
 
     if (interval == TimeUnit.DAYS.toMillis(1)) {
       scheduleSummary.setText(R.string.arrays__daily);
@@ -277,7 +277,7 @@ public class BackupsPreferenceFragment extends Fragment {
   }
 
   private void setMaxFilesSummary() {
-    maxFilesSummary.setText(String.valueOf(TextSecurePreferences.getBackupMaxFiles(requireContext())));
+    maxFilesSummary.setText(String.valueOf(SignalStore.molly().getBackupMaxFiles()));
   }
 
   private void setUpdateState() {
@@ -345,9 +345,9 @@ public class BackupsPreferenceFragment extends Fragment {
         .setTitle(R.string.BackupsPreferenceFragment__change_schedule)
         .setItems(R.array.backup_intervals, (dialog, which) -> {
           if (which == 1) {
-            TextSecurePreferences.setBackupInternal(requireContext(), TimeUnit.DAYS.toMillis(7));
+            SignalStore.molly().setBackupInterval(TimeUnit.DAYS.toMillis(7));
           } else {
-            TextSecurePreferences.setBackupInternal(requireContext(), TimeUnit.DAYS.toMillis(1));
+            SignalStore.molly().setBackupInterval(TimeUnit.DAYS.toMillis(1));
           }
 
           LocalBackupListener.setNextBackupTimeToIntervalFromNow(requireContext());
@@ -363,14 +363,14 @@ public class BackupsPreferenceFragment extends Fragment {
     final NumberPicker picker = view.findViewById(R.id.picker);
     picker.setMinValue(1);
     picker.setMaxValue(10);
-    picker.setValue(TextSecurePreferences.getBackupMaxFiles(requireContext()));
+    picker.setValue(SignalStore.molly().getBackupMaxFiles());
     picker.setWrapSelectorWheel(false);
     new MaterialAlertDialogBuilder(requireContext())
         .setTitle(R.string.BackupsPreferenceFragment__number_of_backups_to_retain)
         .setView(view)
         .setNegativeButton(android.R.string.cancel, null)
         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-          TextSecurePreferences.setBackupMaxFiles(requireContext(), picker.getValue());
+          SignalStore.molly().setBackupMaxFiles(picker.getValue());
           setMaxFilesSummary();
         })
         .create()

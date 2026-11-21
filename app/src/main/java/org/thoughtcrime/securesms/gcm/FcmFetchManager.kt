@@ -58,8 +58,10 @@ object FcmFetchManager {
       }
     }
 
+  // MOLLY: After a fetch, stop the services only if no newer push arrived while it was running.
+  // A fetch counter can remain nonzero after failures and prevent service shutdown indefinitely.
   @Volatile
-  private var last = 0L
+  private var lastPushNs = 0L
 
   @Volatile
   private var highPriority = false
@@ -114,7 +116,7 @@ object FcmFetchManager {
     NotificationManagerCompat.from(context).cancel(NotificationIds.MAY_HAVE_MESSAGES_NOTIFICATION_ID)
   }
 
-  private fun fetch(context: Context, now: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
+  private fun fetch(context: Context, lastPushAtStartNs: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
     val hasHighPriorityContext = highPriority
 
     val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
@@ -130,9 +132,8 @@ object FcmFetchManager {
     }
 
     synchronized(this) {
-
-      if (last <= now) {
-        Log.i(TAG, "No more active. Stopping.")
+      if (lastPushNs <= lastPushAtStartNs) {
+        Log.i(TAG, "No newer push since fetch start. Stopping.")
         context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
         FcmFetchForegroundService.stopServiceIfNecessary(context)
         highPriority = false
@@ -162,9 +163,9 @@ object FcmFetchManager {
       if (highPriority) {
         this.highPriority = true
       }
-      last = System.nanoTime()
-      Log.i(TAG, "Updating last event to $last")
-      EXECUTOR.enqueue { fetch(context, last, authorization) }
+      lastPushNs = System.nanoTime()
+      Log.i(TAG, "Updating last push to $lastPushNs")
+      EXECUTOR.enqueue { fetch(context, lastPushNs, authorization) }
     }
   }
 

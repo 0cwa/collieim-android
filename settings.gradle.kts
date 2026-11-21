@@ -44,19 +44,6 @@ dependencyResolutionManagement {
       }
     }
     maven {
-      url = uri("https://dl.cloudsmith.io/public/mollyim/ringrtc/maven/")
-      content {
-        includeModule("im.molly", "ringrtc-android")
-      }
-    }
-    maven {
-      url = uri("https://dl.cloudsmith.io/public/mollyim/libsignal/maven/")
-      content {
-        includeModule("im.molly", "libsignal-client")
-        includeModule("im.molly", "libsignal-android")
-      }
-    }
-    maven {
       url = uri("https://raw.githubusercontent.com/signalapp/maven/master/sqlcipher/release/")
       content {
         includeModule("org.signal", "sqlcipher-android")
@@ -77,6 +64,10 @@ dependencyResolutionManagement {
     }
     create("lintLibs") {
       from(files("gradle/lint-libs.versions.toml"))
+    }
+    // MOLLY: Play Services compatibility reference versions.
+    create("playServices") {
+      from(files("core/gms/play-services.versions.toml"))
     }
   }
 }
@@ -141,7 +132,6 @@ include(":feature:media-overview")
 include(":screener")
 include(":lintchecks")
 include(":fast-lint")
-include(":fuzz-encrypted-push")
 
 // Stable Gradle project IDs backed by grouped source directories.
 project(":core-gms").projectDir = file("core/gms")
@@ -153,6 +143,10 @@ project(":core-gms:tasks").projectDir = file("core/gms/tasks")
 project(":screener").projectDir = file("tooling/screener")
 project(":lintchecks").projectDir = file("tooling/lintchecks")
 project(":fast-lint").projectDir = file("tooling/fast-lint")
-project(":fuzz-encrypted-push").projectDir = file("tooling/fuzz-encrypted-push")
+val encryptedPushFuzzProject = file("tooling/fuzz-encrypted-push")
+if (encryptedPushFuzzProject.resolve("build.gradle.kts").isFile) {
+  include(":fuzz-encrypted-push")
+  project(":fuzz-encrypted-push").projectDir = encryptedPushFuzzProject
+}
 
 rootProject.name = "Molly"

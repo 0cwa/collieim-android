@@ -35,8 +35,9 @@ object NotificationIds {
   const val UNREGISTERED_NOTIFICATION_ID: Int = 180
   const val USER_NOTIFICATION_MIGRATION: Int = 190
   const val DONOR_BADGE_FAILURE: Int = 200
+  /** MOLLY: FCM failure alert posted by the fork's FcmRefreshJob. */
+  const val FCM_FAILURE: Int = 210
 
-  const val FCM_FAILURE: Int = 12
   const val PENDING_MESSAGES: Int = 1111
   const val MANUAL_BACKUP_NOT_CREATED: Int = 120502
 

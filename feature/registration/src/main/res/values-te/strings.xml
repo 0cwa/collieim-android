@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">అనుమతులను అనుమతించండి</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">మీకు తెలిసిన వ్యక్తులకు సందేశం పంపడంలో మీకు సహాయపడటానికి, Signal ఈ అనుమతులను అభ్యర్థిస్తుంది. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">మీకు తెలిసిన వ్యక్తులకు సందేశం పంపడంలో మీకు సహాయపడటానికి, Collie ఈ అనుమతులను అభ్యర్థిస్తుంది. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">ఇప్పుడు కాదు</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">మద్దతును సంప్రదించండి</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Signal రిజిస్ట్రేషన్ - Android కోసం ధృవీకరణ కోడ్</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Collie రిజిస్ట్రేషన్ - Android కోసం ధృవీకరణ కోడ్</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">ఈ బ్యాకప్‌ను పునరుద్ధరించడం సాధ్యపడలేదు</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Signal యొక్క ఈ వెర్షన్ మీ బ్యాకప్‌ను పునరుద్ధరించలేదు. తాజా వెర్షన్‌కు అప్‌డేట్ చేసి, మళ్ళీ ప్రయత్నించండి.</string>
+    <string name="RemoteRestoreScreen__update_latest">Collie యొక్క ఈ వెర్షన్ మీ బ్యాకప్‌ను పునరుద్ధరించలేదు. తాజా వెర్షన్‌కు అప్‌డేట్ చేసి, మళ్ళీ ప్రయత్నించండి.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Signal ను నవీకరించండి</string>
+    <string name="RemoteRestoreScreen__update_signal">Collie ను నవీకరించండి</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">ఇప్పుడు కాదు</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">మద్దతును సంప్రదించండి</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Signal Android బ్యాకప్ పునరుద్ధరణ శాశ్వత వైఫల్యం</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Collie Android బ్యాకప్ పునరుద్ధరణ శాశ్వత వైఫల్యం</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">మీ గోప్యత మరియు భద్రతను రక్షించడానికి మీ ఖాతా లాక్ చేయబడింది. మీ ఖాతాలో %1$d రోజుల నిష్క్రియాత్మకత తరువాత మీరు మీ పిన్ అవసరం లేకుండా ఈ ఫోన్ నంబర్‌ను తిరిగి నమోదు చేయగలరు. మొత్తం విషయాలు తొలగించబడతాయి.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">మీ పాత పరికరంలో Signal ను తెరవండి</string>
+    <string name="QuickRestoreQRScreen__step_1">మీ పాత పరికరంలో Collie ను తెరవండి</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">కెమెరా చిహ్నాన్ని తట్టండి </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">మీ పిన్ను నమోదు చేయండి</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">మీరు Signal ను మొదటిసారి ఇన్‌స్టాల్ చేసినప్పుడు మీరు సృష్టించిన PIN ను నమోదు చేయండి.</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">మీరు Collie ను మొదటిసారి ఇన్‌స్టాల్ చేసినప్పుడు మీరు సృష్టించిన PIN ను నమోదు చేయండి.</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">మీ ఫోన్ నంబర్‌ను ధృవీకరించడానికి ఇదివరకే ఉపయోగించిన కోడ్‌ను మీరు మళ్ళీ ఎంటర్ చేశారు. మీ ఖాతా కోసం మీరు ఇంతకుముందు ఎంచుకున్న ప్రత్యేకమైన Signal PIN ని ఎంటర్ చేయండి.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">మద్దతును సంప్రదించండి</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Signal నమోదీకరణ - ఆండ్రోయిడ్ కొరకు పిన్ తొ సహాయం కావలెను</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Collie నమోదీకరణ - ఆండ్రోయిడ్ కొరకు పిన్ తొ సహాయం కావలెను</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">నోటిఫికేషన్‌లను అనుమతించండి</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Signal నోటిఫికేషన్ అనుమతిని కోరాలనుకుంటోంది. కొత్త సందేశాలు వచ్చినప్పుడు మీ పరికరం హెచ్చరికలను ప్రదర్శించడానికి ఇది అనుమతిస్తుంది.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Collie నోటిఫికేషన్ అనుమతిని కోరాలనుకుంటోంది. కొత్త సందేశాలు వచ్చినప్పుడు మీ పరికరం హెచ్చరికలను ప్రదర్శించడానికి ఇది అనుమతిస్తుంది.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">ఇప్పుడు కాదు</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">మీ ఖాతాను అనుసంధానించడానికి ఈ కోడ్‌ను స్కాన్ చేయండి</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">మీ ఫోన్‌పై Signal ని ఓపెన్ చేయండి</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">మీ ఫోన్‌పై Collie ని ఓపెన్ చేయండి</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Signal సెట్టింగ్‌లను తెరవడానికి మీ ప్రొఫైల్ చిత్రాన్ని తట్టండి</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Collie సెట్టింగ్‌లను తెరవడానికి మీ ప్రొఫైల్ చిత్రాన్ని తట్టండి</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">\"లింక్ చేయబడిన పరికరాలు\" మరియు \"కొత్త పరికరాన్ని లింక్ చేయండి\" తట్టిండి</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">కోడ్‌ను రూపొందించడంలో విఫలమైంది</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">మరొక పరికరంలో Signal లేదా?</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">మరొక పరికరంలో Collie లేదా?</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">ఖాతాను సృష్టించండి</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -536,7 +536,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">మీ ఖాతాను బదిలీ చేయండి</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">మీ ఖాతాను బదిలీ చేయడానికి, మీ పాత Android పరికరంలో Signal ను తెరిచి, ఖాతాను బదిలీ చేయండిని ఎంచుకోండి.</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">మీ ఖాతాను బదిలీ చేయడానికి, మీ పాత Android పరికరంలో Collie ను తెరిచి, ఖాతాను బదిలీ చేయండిని ఎంచుకోండి.</string>
     <string name="DeviceTransferInstructions__continue">కొనసాగించు</string>
 
     <!-- Device transfer: Setup screen -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">అవును, సంఖ్యలు సరిపోలుతున్నాయి</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">నెంబర్లు జతకావడం లేదు</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">మీ పాత పరికరాన్ని ధృవీకరించేందుకు వేచి ఉన్నాము…</string>
-    <string name="DeviceTransferSetup__location_permission_required">మీ పాత పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి Signal కు ప్రదేశం అనుమతి అవసరం.</string>
+    <string name="DeviceTransferSetup__location_permission_required">మీ పాత పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి Collie కు ప్రదేశం అనుమతి అవసరం.</string>
     <string name="DeviceTransferSetup__grant_location_permission">అనుమతి ఇవ్వండి</string>
-    <string name="DeviceTransferSetup__location_services_required">మీ పాత పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి ప్రదేశ సేవలు ప్రారంభించడం Signal కొరకు అవసరం.</string>
+    <string name="DeviceTransferSetup__location_services_required">మీ పాత పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి ప్రదేశ సేవలు ప్రారంభించడం Collie కొరకు అవసరం.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">లొకేషన్ సర్వీస్‌లను ఆన్ చేయండి</string>
-    <string name="DeviceTransferSetup__wifi_required">మీ పాత పరికరాన్ని కనుగొని, దానితో అనుసంధానం అవ్వడానికి Wi-Fi ను ఆన్ చేసి ఉంచడం Signal కు అవసరం.</string>
+    <string name="DeviceTransferSetup__wifi_required">మీ పాత పరికరాన్ని కనుగొని, దానితో అనుసంధానం అవ్వడానికి Wi-Fi ను ఆన్ చేసి ఉంచడం Collie కు అవసరం.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Wi-Fi టర్న్ ఆన్ చేయండి</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">క్షమించండి, మీ పరికరం Wi-Fi Direct కు మద్దతు ఇవ్వనట్లు కనిపిస్తోంది.</string>
     <string name="DeviceTransferSetup__restore_a_backup">బదులుగా బ్యాకప్‌ను పునరుద్ధరించండి</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">డేటాని బదిలీ చేస్తోంది</string>
     <string name="DeviceTransferProgress__d_messages_so_far">ఇప్పటివరకు %1$d సందేశాలు</string>
     <string name="DeviceTransferProgress__unable_to_transfer">బదిలీ చేయలేకపోయింది</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Signal కొత్త వెర్షన్ నుంచి బదిలీ చేయలేము.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Collie కొత్త వెర్షన్ నుంచి బదిలీ చేయలేము.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">డేటాబేస్ పరిమితి కారణంగా కొంత డేటాను బదిలీ చేయలేకపోయాము.</string>
     <string name="DeviceTransferProgress__transfer_failed">బదిలీ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.</string>
     <string name="DeviceTransferProgress__try_again">మళ్ళీ ప్రయత్నించండి</string>

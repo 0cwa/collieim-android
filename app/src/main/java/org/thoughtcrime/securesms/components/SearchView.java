@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.thoughtcrime.securesms.R;
 import org.signal.emoji.EmojiFilter;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 
 /**
  * Custom styled search view that we can insert into ActionBar menus
@@ -31,7 +31,7 @@ public class SearchView extends androidx.appcompat.widget.SearchView {
   }
 
   private void initEmojiFilter() {
-    if (!isInEditMode() && !TextSecurePreferences.isSystemEmojiPreferred(this.getContext())) {
+    if (!isInEditMode() && !PlainTextKeyValueStore.isSystemEmojiPreferred()) {
       TextView searchText = findViewById(androidx.appcompat.R.id.search_src_text);
       if (searchText != null) {
         searchText.setFilters(appendEmojiFilter(searchText));

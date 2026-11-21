@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowBuild
 import org.signal.core.util.ConfigurationUtil
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.testutil.EmptyLogger
 
 @RunWith(RobolectricTestRunner::class)
@@ -49,14 +50,12 @@ class DynamicThemeTest {
     context = ApplicationProvider.getApplicationContext()
     val preferences = context.getSharedPreferences("dynamic-theme-test", Context.MODE_PRIVATE)
     preferences.edit().clear().commit()
-    mockkStatic(SecurePreferenceManager::class)
-    every { SecurePreferenceManager.getSecurePreferences(any()) } returns preferences
+    PlainTextKeyValueStore.init(preferences, 0)
   }
 
   @After
   fun tearDown() {
     activities.asReversed().forEach { it.close() }
-    unmockkStatic(SecurePreferenceManager::class)
   }
 
   @Test
@@ -100,7 +99,7 @@ class DynamicThemeTest {
     val original = controller.get()
     controller.pause().stop()
 
-    TextSecurePreferences.setDynamicColorsEnabled(context, true)
+    PlainTextKeyValueStore.isDynamicColorsEnabled = true
     resume(controller)
 
     assertFalse(DynamicTheme.isDynamicColorsAvailable())
@@ -132,7 +131,7 @@ class DynamicThemeTest {
     assertEquals(initialDynamicColors, original.isUsingDynamicColors())
     controller.pause().stop()
 
-    TextSecurePreferences.setDynamicColorsEnabled(context, !initialDynamicColors)
+    PlainTextKeyValueStore.isDynamicColorsEnabled = !initialDynamicColors
     resume(controller)
 
     val recreated = controller.get()
@@ -159,7 +158,7 @@ class DynamicThemeTest {
   }
 
   private fun createActivity(dynamicColors: Boolean): ActivityController<ThemedActivity> {
-    TextSecurePreferences.setDynamicColorsEnabled(context, dynamicColors)
+    PlainTextKeyValueStore.isDynamicColorsEnabled = dynamicColors
     return Robolectric.buildActivity(ThemedActivity::class.java).setup().also { activities += it }
   }
 

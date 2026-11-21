@@ -43,7 +43,6 @@ import org.signal.core.ui.util.ViewUtil;
 
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class ConversationItemFooter extends ConstraintLayout {

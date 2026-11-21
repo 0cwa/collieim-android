@@ -66,8 +66,8 @@ import org.signal.core.ui.compose.BottomSheets
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DropdownMenus
 import org.signal.core.ui.compose.IconButtons.IconButton
-import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.Previews
+import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.TabletPortraitDayPreview
 import org.signal.core.ui.compose.dismissWithAnimation
@@ -76,7 +76,6 @@ import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.isWidthExpanded
 import org.signal.core.ui.rememberWindowBreakpoint
 import org.signal.registration.R
-import org.signal.registration.RegistrationDependencies
 import org.signal.registration.screens.RegistrationScaffold
 import org.signal.registration.screens.attachDebugLogHelper
 import org.signal.registration.test.TestTags
@@ -148,10 +147,10 @@ private fun CompactLayout(
   modifier: Modifier = Modifier
 ) {
   RegistrationScaffold(
-    topBar = { NetworkSettingsTopAppBar() },
     modifier = modifier
       .fillMaxSize()
       .testTag(TestTags.WELCOME_SCREEN),
+    topBar = { WelcomeTopAppBar(onEvent) },
     content = {
       Column(
         modifier = Modifier.fillMaxSize(),
@@ -208,10 +207,10 @@ private fun MediumLayout(
   modifier: Modifier = Modifier
 ) {
   RegistrationScaffold(
-    topBar = { NetworkSettingsTopAppBar() },
     modifier = modifier
       .fillMaxSize()
       .padding(bottom = 56.dp),
+    topBar = { WelcomeTopAppBar(onEvent) },
     content = {
       Box {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -267,8 +266,8 @@ private fun LargeLayout(
   modifier: Modifier = Modifier
 ) {
   RegistrationScaffold(
-    topBar = { NetworkSettingsTopAppBar() },
     modifier = modifier.fillMaxSize(),
+    topBar = { WelcomeTopAppBar(onEvent) },
     content = {
       Row(
         horizontalArrangement = SpaceAround,
@@ -325,32 +324,39 @@ private fun LargeLayout(
 }
 
 @Composable
-private fun NetworkSettingsTopAppBar() {
-  val context = LocalContext.current
-  val menuController = remember { DropdownMenus.MenuController() }
-
+private fun WelcomeTopAppBar(onEvent: (WelcomeScreenEvents) -> Unit) {
   Scaffolds.DefaultTopAppBar(
     title = "",
     titleContent = { _, _ -> },
     onNavigationClick = {},
     navigationIcon = null,
     actions = {
+      val menuController = remember { DropdownMenus.MenuController() }
+
       IconButton(
         onClick = { menuController.show() },
-        modifier = Modifier.padding(horizontal = 8.dp)
+        modifier = Modifier
+          .padding(horizontal = 8.dp)
+          .testTag(TestTags.WELCOME_PROXY_MENU_BUTTON)
       ) {
         Icon(
           imageVector = ImageVector.vectorResource(CoreR.drawable.symbol_more_vertical_24),
           contentDescription = stringResource(R.string.RegistrationActivity_open_menu)
         )
       }
-      DropdownMenus.Menu(controller = menuController, offsetX = 24.dp, offsetY = 0.dp) {
+
+      DropdownMenus.Menu(
+        controller = menuController,
+        offsetX = 24.dp,
+        offsetY = 0.dp
+      ) {
         DropdownMenus.Item(
-          text = { Text(stringResource(R.string.RegistrationActivity_network_settings)) },
+          text = { Text(text = stringResource(R.string.RegistrationActivity_use_proxy)) },
           onClick = {
-            RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
             menuController.hide()
-          }
+            onEvent(WelcomeScreenEvents.ViewProxySettings)
+          },
+          modifier = Modifier.testTag(TestTags.WELCOME_PROXY_MENU_ITEM)
         )
       }
     }

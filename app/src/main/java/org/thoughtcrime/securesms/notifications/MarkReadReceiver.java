@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.notifications;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 

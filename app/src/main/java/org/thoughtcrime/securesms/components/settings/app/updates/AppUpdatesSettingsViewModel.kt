@@ -19,7 +19,7 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateNotifications
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener
-import org.thoughtcrime.securesms.apkupdate.CollieUpdateIndex
+import org.thoughtcrime.securesms.apkupdate.CollieUpdateProfile
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -29,8 +29,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class AppUpdatesSettingsViewModel(
   private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit,
-  private val isAutoUpdateSupported: Boolean = BuildConfig.MANAGE_COLLIE_UPDATES,
-  private val openRelease: (String) -> Unit = { CommunicationActions.openBrowserLink(AppDependencies.application, it) }
+  isAutoUpdateSupported: Boolean = BuildConfig.MANAGE_COLLIE_UPDATES,
+  private val openRelease: (String) -> Unit = { CommunicationActions.openBrowserLink(AppDependencies.application, it) },
+  applicationId: String = BuildConfig.APPLICATION_ID
 ) : EventDrivenViewModel<AppUpdatesSettingsEvent>(TAG) {
 
   companion object {
@@ -38,6 +39,8 @@ class AppUpdatesSettingsViewModel(
   }
 
   private val application: Application = AppDependencies.application
+  private val updateProfile = CollieUpdateProfile.forApplicationId(applicationId)
+  private val updatesSupported = isAutoUpdateSupported && updateProfile != null
   private val _state = MutableStateFlow(readState())
 
   val state: StateFlow<AppUpdatesSettingsState> = _state.asStateFlow()
@@ -47,7 +50,7 @@ class AppUpdatesSettingsViewModel(
       AppUpdatesSettingsEvent.ScreenResumed -> refresh()
       AppUpdatesSettingsEvent.NavigateBackClicked -> parentEventEmitter.navigateBack()
       is AppUpdatesSettingsEvent.AutoUpdateToggled -> {
-        if (isAutoUpdateSupported) {
+        if (updatesSupported) {
           TextSecurePreferences.setUpdateApkEnabled(application, event.enabled)
           if (event.enabled) {
             checkForUpdates()
@@ -58,12 +61,13 @@ class AppUpdatesSettingsViewModel(
         }
       }
       AppUpdatesSettingsEvent.ViewReleaseClicked -> {
-        if (isAutoUpdateSupported) {
-          readState().availableVersionName?.let { openRelease(CollieUpdateIndex.releasePage(it)) }
+        val profile = updateProfile
+        if (updatesSupported && profile != null) {
+          readState().availableVersionName?.let { openRelease(profile.releasePage(it)) }
         }
       }
       AppUpdatesSettingsEvent.CheckForUpdatesClicked -> {
-        if (isAutoUpdateSupported && _state.value.autoUpdateEnabled) {
+        if (updatesSupported && _state.value.autoUpdateEnabled) {
           checkForUpdates()
         }
       }
@@ -83,10 +87,10 @@ class AppUpdatesSettingsViewModel(
     return AppUpdatesSettingsState(
       lastCheckedTime = SignalStore.apkUpdate.lastSuccessfulCheck.milliseconds,
       autoUpdateEnabled = TextSecurePreferences.isUpdateApkEnabled(application),
-      isAutoUpdateSupported = isAutoUpdateSupported,
+      isAutoUpdateSupported = updatesSupported,
       lastCheckFailed = SignalStore.apkUpdate.lastCheckFailed,
       availableVersionName = SignalStore.apkUpdate.availableVersionName?.takeIf {
-        SignalStore.apkUpdate.availableVersionCode > ApkInfo.versionCode && runCatching { CollieUpdateIndex.releasePage(it) }.isSuccess
+        updatesSupported && SignalStore.apkUpdate.availableVersionCode > ApkInfo.versionCode && updateProfile?.isValidVersionName(it) == true
       },
       versionName = ApkInfo.versionName
     )

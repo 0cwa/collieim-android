@@ -1,0 +1,17 @@
+{
+  "title": "Stories settings are easier to find",
+  "summary": "You can open Stories directly from the main Settings list again.",
+  "change": "451aea2f27bcce179844ff3e9f8a4f0484c012fc",
+  "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
+  "origin": "Restored by 0cwa in Collie.",
+  "category": "Navigation",
+  "visual": "navigation",
+  "display_title": "Stories returns to Settings",
+  "diagram": {
+    "from": "Settings",
+    "to": "Stories",
+    "note": "Restored entry",
+    "caption": "Navigation diagram · not an app screenshot"
+  },
+  "change_type": "Restored entry"
+}

@@ -81,7 +81,7 @@ class LogSectionSystemInfo : LogSection {
       Days Installed    : ${getDaysSinceFirstInstalled(context)}
       Last Registration : ${if (locked) LOCKED else getTimeRegistered()}
       Build Variant     : ${BuildConfig.FLAVOR}
-      Emoji Version     : ${getEmojiVersionString(context)}
+      Emoji Version     : ${if (locked) LOCKED else getEmojiVersionString(context)}
       RenderBigEmoji    : ${canRenderEmojiAtFontSize(1024f)}
       DontKeepActivities: ${getDontKeepActivities(context)}
       Server Time Offset: ${if (locked) LOCKED else SignalStore.misc.lastKnownServerTimeOffset} ms (last updated: ${if (locked) LOCKED else SignalStore.misc.lastKnownServerTimeOffsetUpdateTime})
@@ -106,7 +106,7 @@ class LogSectionSystemInfo : LogSection {
       val versionName = packageManager.getPackageInfo(context.packageName, 0).versionName
       val manifestApkVersion = ApkInfo.versionCode
 
-      "$appLabel $versionName (${ApkInfo.signalCanonicalVersionCode}, $manifestApkVersion) (${BuildConfig.GIT_HASH})"
+      "$appLabel $versionName (${ApkInfo.signalCanonicalVersionCode}, $manifestApkVersion))"
     } catch (_: PackageManager.NameNotFoundException) {
       "Unknown"
     }

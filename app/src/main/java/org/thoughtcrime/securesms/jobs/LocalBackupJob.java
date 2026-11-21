@@ -117,7 +117,7 @@ public final class LocalBackupJob extends BaseJob {
     try (NotificationController notification = GenericForegroundService.startForegroundTask(context,
                                                                      context.getString(R.string.LocalBackupJob_creating_signal_backup),
                                                                      NotificationChannels.getInstance().BACKUPS,
-                                                                     R.drawable.ic_notification_backup))
+                                                                     org.signal.core.ui.R.drawable.ic_notification_backup))
     {
       updater.setNotification(notification);
       notification.setIndeterminateProgress();

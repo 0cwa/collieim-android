@@ -75,6 +75,23 @@ class AppearanceSettingsScreenTest {
   }
 
   @Test
+  fun `toggling dynamic colors emits DynamicColorsChanged`() {
+    setContent(AppearanceSettingsState(dynamicColors = true, isDynamicColorsAvailable = true))
+
+    scrollTo(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS)
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS).performClick()
+
+    assertThat(events).containsExactly(AppearanceSettingsEvent.DynamicColorsChanged(enabled = false))
+  }
+
+  @Test
+  fun `dynamic colors row is hidden when the device does not support it`() {
+    setContent(AppearanceSettingsState(isDynamicColorsAvailable = false))
+
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS).assertDoesNotExist()
+  }
+
+  @Test
   fun `clicking chat color and wallpaper emits ChatColorAndWallpaperClicked`() {
     setContent(AppearanceSettingsState())
 

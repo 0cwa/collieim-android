@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Перереєструвати акаунт</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Оновити Signal</string>
+    <string name="preferences_account_update_signal">Оновити Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Видалити всі дані</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Створюємо файл…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Файл з обліковими даними створюється лише під час експортування. Signal не зберігає файл на вашому пристрої.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Файл з обліковими даними створюється лише під час експортування. Collie не зберігає файл на вашому пристрої.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -510,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Використовувати блокування екрана</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Якщо ви вийдете із застосунку чи перейдете в інший, то повинні будете розблокувати Collie — так само, як розблоковуєте свій пристрій. Під час блокування екрана застосунку в сповіщеннях не буде показано вміст повідомлень.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Якщо ви вийдете із застосунку або перейдете в інший, то повинні будете розблокувати Collie — так само, як розблоковуєте свій пристрій. Під час блокування екрана застосунку в сповіщеннях не буде показано вміст повідомлень.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Активувати блокування екрана</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -598,7 +598,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Ви ще не встановили пароль!</string>
     <string name="ApplicationPreferencesActivity_disable">Деактивувати</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Деактивувати пароль?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Signal і сповіщення про повідомлення буде безстроково розблоковано.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Collie і сповіщення про повідомлення буде безстроково розблоковано.</string>
     <string name="PrivacySettingsFragment__app_security">Безпека застосунку</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Блокувати знімки екрана в режимі перегляду недавніх застосунків і в самому Signal.</string>
@@ -646,7 +646,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Це налаштування спрацьовує не в усіх випадках. Ваша клавіатура може його ігнорувати.</string>
     <string name="preferences__typing_indicators">Індикатор набору тексту</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Оберіть, хто зможе бачити ваш номер і зв\'язуватися з вами в Signal за номером.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Оберіть, хто зможе бачити ваш номер і зв\'язуватися з вами в Collie за номером.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Платежі</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -662,7 +662,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Не зараз</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Докладніше</string>
 
@@ -688,6 +688,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Не вдалось активувати передплату на резервне копіювання</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Підтримати Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Внутрішні налаштування</string>
     <!-- App settings row that opens linked devices -->
@@ -879,9 +880,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Ваш профіль і зміни в ньому бачать ваші співрозмовники, контакти й групи.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Оновити Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Оновити Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Ця версія Signal застаріла. Оновіть застосунок, щоб і надалі ним користуватися.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Ця версія Collie застаріла. Оновіть застосунок, щоб і надалі ним користуватися.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Оновити</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -937,8 +938,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Закрити</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Отримуйте значки для профілю за підтримку Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal — неприбуткова організація, що не має ні доходів від реклами, ні інвесторів. Її підтримують лише такі люди, як ви.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Стати благодійником</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1018,19 +1022,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Не вдалося знайти такого користувача.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Щоб сканувати QR-коди, надайте Signal доступ до камери.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Щоб сканувати QR-коди, надайте Collie доступ до камери.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Надати доступ</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal потребує доступу до камери, щоб сканувати QR-коди</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie потребує доступу до камери, щоб сканувати QR-коди</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Пам\'ять</string>
     <string name="preferences_storage__storage_usage">Використання пам\'яті</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Сховище Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Сховище Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Оптимізувати сховище Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Оптимізувати сховище Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Медіафайли, які не використовуються, буде вивантажено з пам\'яті пристрою; їх можна в будь-який час завантажити на пристрій з резервної копії.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1056,7 +1060,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">З резервної копії на пристрої буде вилучено медіафайли</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Якщо ввімкнути функцію «Оптимізувати сховище Signal», старі медіафайли буде вивантажено з пристрою. Ви можете завантажити їх у будь-який час. Також старі медіафайли буде вилучено з резервної копії на пристрої.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Якщо ввімкнути функцію «Оптимізувати сховище Collie», старі медіафайли буде вивантажено з пристрою. Ви можете завантажити їх у будь-який час. Також старі медіафайли буде вилучено з резервної копії на пристрої.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Увімкнути</string>
 
@@ -1086,7 +1090,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Не вдалося відкрити список.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Щоб увімкнути сповіщення, необхідно дозволити Signal їх показувати.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Щоб увімкнути сповіщення, необхідно дозволити Collie їх показувати.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Увімкнути</string>
     <string name="NotificationsSettingsFragment__calls">Виклики</string>
@@ -1185,7 +1189,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Обхід цензури</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Обхід цензури</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Якщо ввімкнути, то Signal намагатиметься обійти цензуру. Вмикайте цю функцію, тільки якщо ви в місці, де Signal заблоковано.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Якщо ввімкнути, то Collie намагатиметься обійти цензуру. Вмикайте цю функцію, тільки якщо ви в місці, де Collie заблоковано.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Обхід цензури активовано на підставі номера телефону, на який зареєстровано цей акаунт.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1202,7 +1206,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Автоматичне підтвердження ключа</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Якщо ввімкнути, Signal намагатиметься автоматично підтверджувати шифрування в особистих чатах.</string>
+    <string name="preferences_automatic_key_verification_body">Якщо ввімкнути, Collie намагатиметься автоматично підтверджувати шифрування в особистих чатах.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

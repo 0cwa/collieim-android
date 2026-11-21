@@ -8,17 +8,17 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateNotifications
 import org.thoughtcrime.securesms.apkupdate.CollieUpdateIndex
+import org.thoughtcrime.securesms.apkupdate.CollieUpdateProfile
 import org.thoughtcrime.securesms.events.ApkUpdateEvent
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.Networking
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /** Checks the signed Collie repository and notifies users. APK downloads are user initiated. */
-class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(parameters) {
+class ApkUpdateJob private constructor(parameters: Parameters, private val applicationId: String = BuildConfig.APPLICATION_ID) : BaseJob(parameters) {
   companion object {
     const val KEY = "UpdateApkJob"
     private val TAG = Log.tag(ApkUpdateJob::class.java)
@@ -33,13 +33,16 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
       .build()
   }
 
-  constructor() : this(
+  constructor() : this(BuildConfig.APPLICATION_ID)
+
+  internal constructor(applicationId: String) : this(
     Parameters.Builder()
       .setQueue(KEY)
       .setMaxInstancesForFactory(2)
       .addConstraint(NetworkConstraint.KEY)
       .setMaxAttempts(2)
-      .build()
+      .build(),
+    applicationId
   )
 
   override fun serialize(): ByteArray? = null
@@ -48,31 +51,31 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
   @Throws(IOException::class)
   public override fun onRun() {
     if (!BuildConfig.MANAGE_COLLIE_UPDATES) return
-    val channel = CollieUpdateIndex.channelFor(BuildConfig.APPLICATION_ID) ?: return
-    if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
+    val profile = CollieUpdateProfile.forApplicationId(applicationId) ?: return
+    if (!SignalStore.molly.updateApkEnabled) return
 
     val values = SignalStore.apkUpdate
     val client = newClient()
-    val entryRequest = Request.Builder().url("${channel.repositoryUrl}/entry.jar").build()
+    val entryRequest = Request.Builder().url("${profile.repositoryUrl}/entry.jar").build()
     val index = client.newCall(entryRequest).execute().use { response ->
       val body = response.body
       if (!response.isSuccessful || body == null || body.contentLength() > CollieUpdateIndex.MAX_ARCHIVE_BYTES) {
         throw IOException("Failed to fetch signed Collie update entry")
       }
-      body.byteStream().use { CollieUpdateIndex.readEntry(it, context.cacheDir, values.lastIndexTimestamp) }
+      body.byteStream().use { CollieUpdateIndex.readEntry(profile, it, context.cacheDir, values.lastIndexTimestamp) }
     }
-    if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
-    val indexRequest = Request.Builder().url("${channel.repositoryUrl}/index-v2.json").build()
+    if (!SignalStore.molly.updateApkEnabled) return
+    val indexRequest = Request.Builder().url("${profile.repositoryUrl}/index-v2.json").build()
     val result = client.newCall(indexRequest).execute().use { response ->
       val body = response.body
       if (!response.isSuccessful || body == null || body.contentLength() > index.size) {
         throw IOException("Failed to fetch Collie update index")
       }
-      body.byteStream().use { CollieUpdateIndex.readIndex(it, index, BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toSet(), channel) }
+      body.byteStream().use { CollieUpdateIndex.readIndex(profile, it, index, BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toSet()) }
     }
 
     // Do not publish a result after the user has disabled checks while the request was running.
-    if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
+    if (!SignalStore.molly.updateApkEnabled) return
 
     val update = result.update
     val candidateChanged = values.availableVersionCode != (update?.versionCode ?: 0L) || values.availableVersionName != update?.versionName
@@ -85,7 +88,7 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
     }
     if (update != null) {
       if (update.versionCode > values.lastNotifiedVersionCode) {
-        if (ApkUpdateNotifications.showUpdateAvailable(context, update.versionName)) {
+        if (ApkUpdateNotifications.showUpdateAvailable(context, update)) {
           values.lastNotifiedVersionCode = update.versionCode
         }
       }

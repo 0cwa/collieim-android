@@ -34,14 +34,7 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Collie ನವೀಕರಣಗೊಳ್ಳುತ್ತಿದೆ…</string>
 
     <!-- ApplicationPreferencesActivity -->
-    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">ನೀವು ಇನ್ನೂ ಪಾಸ್‌ಫ್ರೇಸ್ ಹೊಂದಿಸಿಲ್ಲ!</string>
-    <string name="ApplicationPreferencesActivity_disable_passphrase">ಪಾಸ್‌ಫ್ರೇಸ್‌ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದೇ?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ಇದು Collie ಮತ್ತು ಸಂದೇಶ ಅಧಿಸೂಚನೆಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅನ್ಲಾಕ್ ಮಾಡುತ್ತದೆ.</string>
-    <string name="ApplicationPreferencesActivity_disable">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">ಸರ್ವರ್‌ ಗೆ ಸಂಪರ್ಕಿಸುವಾಗ ದೋಷ!</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
 
     <!-- NumericKeyboardView -->
   <!-- Removed by excludeNonTranslatables <string name="NumericKeyboardView__1" translatable="false">1</string> -->
@@ -150,26 +143,45 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
+    <string name="CreditCardFragment__credit_or_debit_card">ಕ್ರೆಡಿಟ್ ಅಥವಾ ಡೆಬಿಟ್ ಕಾರ್ಡ್</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
+    <string name="CreditCardFragment__enter_your_card_details">ನಿಮ್ಮ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ. ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು Signal ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ ಅಥವಾ ಶೇಖರಿಸುವುದಿಲ್ಲ.</string>
     <!-- Displayed as a hint in the card number text field -->
+    <string name="CreditCardFragment__card_number">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</string>
     <!-- Displayed as a hint in the card expiry text field -->
+    <string name="CreditCardFragment__mm_yy">ತಿತಿ/ವವ</string>
     <!-- Displayed as a hint in the card cvv text field -->
+    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
+    <string name="CreditCardFragment__invalid_card_number">ಅಮಾನ್ಯ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
+    <string name="CreditCardFragment__card_has_expired">ಕಾರ್ಡ್ ಅವಧಿ ಮೀರಿದೆ</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
+    <string name="CreditCardFragment__code_is_too_short">ಕೋಡ್ ತೀರಾ ಚಿಕ್ಕದಾಗಿದೆ</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
+    <string name="CreditCardFragment__code_is_too_long">ಕೋಡ್ ತೀರಾ ಉದ್ದವಾಗಿದೆ</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
+    <string name="CreditCardFragment__invalid_code">ಅಮಾನ್ಯ ಕೋಡ್</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
+    <string name="CreditCardFragment__invalid_month">ಅಮಾನ್ಯ ತಿಂಗಳು</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
+    <string name="CreditCardFragment__year_required">ಇಸವಿ ಅಗತ್ಯವಿದೆ</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
+    <string name="CreditCardFragment__invalid_year">ಅಮಾನ್ಯ ಇಸವಿ</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
+    <string name="CreditCardFragment__donate_s">%1$s ಅವರಿಗೆ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
+    <string name="CreditCardFragment__donate_s_month">ತಿಂಗಳಿಗೆ %1$s ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
+    <string name="CreditCardFragment__pay_s_month">ತಿಂಗಳಿಗೆ %1$s ದೇಣಿಗೆ ನೀಡಿ</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
+    <string name="OneTimeDonationPreference__one_time_s">ಒಂದು ಬಾರಿ %1$s</string>
     <!-- Preference subtitle when donation is pending -->
+    <string name="OneTimeDonationPreference__donation_pending">ದೇಣಿಗೆ ಬಾಕಿಯಿದೆ</string>
     <!-- Preference subtitle when donation is processing -->
+    <string name="OneTimeDonationPreference__donation_processing">ದೇಣಿಗೆ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತಿದೆ</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$s ಅನ್ನು ನಿರ್ಬಂಧಿಸಬೇಕೇ ಮತ್ತು ತೊರೆಯಬೇಕೇ?</string>
@@ -346,7 +358,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s ಈ ಮೆಸೇಜ್ ಅನ್ನು ಅಳಿಸಿದ್ದಾರೆ</string>
     <string name="ConversationItem_you_deleted_this_message">ನೀವು ಈ ಮೆಸೇಜ್ ಅನ್ನು ಅಳಿಸಿದ್ದೀರಿ</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">ಅಡ್ಮಿನ್ %1$s ಈ ಮೆಸೇಜ್ ಅನ್ನು ಅಳಿಸಿದ್ದಾರೆ</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -451,7 +462,7 @@
     <string name="ConversationActivity_error_sending_media">ಮೀಡಿಯಾ ಕಳುಹಿಸುವಲ್ಲಿ ದೋಷ</string>
 
     <!-- Message shown when opening an MMS group conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">SMS ಮೆಸೇಜಿಂಗ್ ಅನ್ನು Signal ಇನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</string>
+    <string name="ConversationActivity__sms_messaging_is_no_longer_supported">SMS ಮೆಸೇಜಿಂಗ್ ಅನ್ನು Collie ಇನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</string>
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS ಮೆಸೇಜಿಂಗ್ ಅನ್ನು Signal ಇನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಇಲ್ಲಿ ಸಂಭಾಷಣೆಯನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು %1$s ಅವರನ್ನು Signal ಗೆ ಆಹ್ವಾನಿಸಿ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -501,6 +512,8 @@
     <string name="ConversationFragment_deleting_messages">ಸಂದೇಶಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತಿದೆ…</string>
     <string name="ConversationFragment_delete_for_me">ನನಗೆ ಮಾತ್ರ ಅಳಿಸಿ</string>
     <string name="ConversationFragment_delete_for_everyone">ಎಲ್ಲರಿಗೂ ಅಳಿಸಿ</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">ನನಗೆ ಮಾತ್ರ ಅಳಿಸಲಾಗಿದೆ</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">ಆಯ್ಕೆ ಮಾಡಲಾದ ಮೆಸೇಜನ್ನು ಅಳಿಸುವುದೇ?</item>
@@ -1095,7 +1108,7 @@
     <string name="ExpiredBuildReminder_update_now">ಈಗ ನವೀಕರಿಸಿ</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
-    <string name="DeprecatedSdkBanner_body">ಈ ಸಾಧನದಲ್ಲಿ Signal ಇನ್ನು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ. Signal ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಬಳಸಲು, Android ನ ಹೊಸ ಆವೃತ್ತಿಗೆ ನಿಮ್ಮ ಸಾಧನವನ್ನು ನವೀಕರಿಸಿ ಅಥವಾ ಹೊಸ ಸಾಧನಕ್ಕೆ ಬದಲಾಯಿಸಿ.</string>
+    <string name="DeprecatedSdkBanner_body">ಈ ಸಾಧನದಲ್ಲಿ Collie ಇನ್ನು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ. Collie ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಬಳಸಲು, Android ನ ಹೊಸ ಆವೃತ್ತಿಗೆ ನಿಮ್ಮ ಸಾಧನವನ್ನು ನವೀಕರಿಸಿ ಅಥವಾ ಹೊಸ ಸಾಧನಕ್ಕೆ ಬದಲಾಯಿಸಿ.</string>
 
     <!-- Title of notification telling users to update Signal -->
     <string name="DeprecatedNotificationJob_update_signal">Collie ಅನ್ನು ನವೀಕರಿಸಿ</string>
@@ -1443,9 +1456,9 @@
     </plurals>
 
     <!-- GroupJoinUpdateRequiredBottomSheetDialogFragment -->
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">ಗ್ರೂಪ್ ಲಿಂಕ್‌ಗಳನ್ನು ಬಳಸಲು Signal ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">ನೀವು ಬಳಸುತ್ತಿರುವ Signal ಆವೃತ್ತಿಯು ಈ ಗ್ರೂಪ್ ಲಿಂಕ್‌ಗೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಲಿಂಕ್ ಮೂಲಕ ಈ ಗ್ರೂಪ್‌ಗೆ ಸೇರಲು ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</string>
-    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Signal ಅನ್ನು ನವೀಕರಿಸಿ</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal_to_use_group_links">ಗ್ರೂಪ್ ಲಿಂಕ್‌ಗಳನ್ನು ಬಳಸಲು Collie ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_message">ನೀವು ಬಳಸುತ್ತಿರುವ Collie ಆವೃತ್ತಿಯು ಈ ಗ್ರೂಪ್ ಲಿಂಕ್‌ಗೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಲಿಂಕ್ ಮೂಲಕ ಈ ಗ್ರೂಪ್‌ಗೆ ಸೇರಲು ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</string>
+    <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_update_signal">Collie ಅನ್ನು ನವೀಕರಿಸಿ</string>
     <string name="GroupJoinUpdateRequiredBottomSheetDialogFragment_group_link_is_not_valid">ಗ್ರೂಪ್ ಲಿಂಕ್ ಮಾನ್ಯವಾಗಿಲ್ಲ</string>
 
     <!-- GroupInviteLinkEnableAndShareBottomSheetDialogFragment -->
@@ -2071,7 +2084,7 @@
         <item quantity="one">ನಿಮ್ಮಲ್ಲಿ %1$d ಪ್ರಯತ್ನ ಉಳಿದಿದೆ. ನೀವು ಪ್ರಯತ್ನಗಳ ಮಿತಿಯನ್ನು ಮೀರಿದರೆ, ನೀವು ಹೊಸ ಪಿನ್ ರಚಿಸಬಹುದು. ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನೀವು ನೋಂದಾಯಿಸಬಹುದು ಮತ್ತು ಬಳಸಬಹುದು. ಆದರೆ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮಾಹಿತಿಯಂತಹ ಕೆಲವು ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ.</item>
         <item quantity="other">ನಿಮ್ಮಲ್ಲಿ %1$d ಪ್ರಯತ್ನಗಳು ಉಳಿದಿವೆ. ನೀವು ಪ್ರಯತ್ನಗಳ ಮಿತಿಯನ್ನು ಮೀರಿದರೆ, ನೀವು ಹೊಸ ಪಿನ್ ರಚಿಸಬಹುದು. ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನೀವು ನೋಂದಾಯಿಸಬಹುದು ಮತ್ತು ಬಳಸಬಹುದು. ಆದರೆ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮಾಹಿತಿಯಂತಹ ಕೆಲವು ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ.</item>
     </plurals>
-    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Signal ನೋಂದಣಿ - Android ಗಾಗಿ ಪಿನ್‌ ಕುರಿತ ಸಹಾಯ ಬೇಕಿದೆ</string>
+    <string name="PinRestoreEntryFragment_signal_registration_need_help_with_pin">Collie ನೋಂದಣಿ - Android ಗಾಗಿ ಪಿನ್‌ ಕುರಿತ ಸಹಾಯ ಬೇಕಿದೆ</string>
 
     <!-- PinRestoreLockedFragment -->
     <string name="PinRestoreLockedFragment_create_your_pin">ನಿಮ್ಮ ಪಿನ್ ರಚಿಸಿ</string>
@@ -2163,7 +2176,7 @@
     <!-- Title for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
     <string name="WebRtcCallActivity__others_couldnt_hear_you">ಇತರರಿಗೆ ನಿಮ್ಮ ಮಾತು ಕೇಳಿಸುವುದಿಲ್ಲ</string>
     <!-- Message for dialog shown when returning to a call after the system muted the microphone because Signal\'s battery setting is "Restricted" -->
-    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">ಹಿನ್ನೆಲೆಯಲ್ಲಿ Signal ಇದ್ದಾಗ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿತ್ತು. ಇದನ್ನು ಸರಿಪಡಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು \"ಬ್ಯಾಟರಿ\" ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಹಿನ್ನೆಲೆ ಚಟುವಟಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</string>
+    <string name="WebRtcCallActivity__your_microphone_was_muted_while_signal_was_in_the_background">ಹಿನ್ನೆಲೆಯಲ್ಲಿ Collie ಇದ್ದಾಗ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿತ್ತು. ಇದನ್ನು ಸರಿಪಡಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು \"ಬ್ಯಾಟರಿ\" ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಹಿನ್ನೆಲೆ ಚಟುವಟಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</string>
     <!-- Title for dialog to approve all requests -->
     <plurals name="WebRtcCallActivity__approve_d_requests">
         <item quantity="one">%1$d ವಿನಂತಿಯನ್ನು ಅನುಮತಿಸಬೇಕೆ?</item>
@@ -2671,7 +2684,7 @@
     <!-- Shown when no stickers match the search. The placeholder what was searched. -->
     <string name="StickerManagement_search_no_results_s">%1$sಗೆ ಫಲಿತಾಂಶಗಳು ಲಭ್ಯವಿಲ್ಲ</string>
     <!-- Sticker pack button for forwarding a sticker link. -->
-    <string name="StickerManagement_menu_send_signal_pack">Signal ಮೂಲಕ ಕಳುಹಿಸಿ</string>
+    <string name="StickerManagement_menu_send_signal_pack">Collie ಮೂಲಕ ಕಳುಹಿಸಿ</string>
     <!-- Sticker pack button that opens a bottom sheet with more share options. -->
     <string name="StickerManagement_menu_link_pack">ಲಿಂಕ್</string>
     <!-- Sticker pack sheet option for sharing a sticker pack link using the system share sheet. -->
@@ -2909,8 +2922,6 @@
     <string name="KeyCachingService_lock">Collie ಲಾಕ್ ಮಾಡಿ</string>
 
     <!-- MediaPreviewActivity -->
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
     <string name="MediaPreviewActivity_media_no_longer_available">ಮೀಡಿಯಾ ಇನ್ನು ಲಭ್ಯವಿಲ್ಲ.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">ಮೀಡಿಯಾ ಪ್ಲೇ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</string>
@@ -2920,7 +2931,6 @@
     <string name="MediaPreviewFragment_edit_media_error">ಮಾಧ್ಯಮ ದೋಷ</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">ಸಂದೇಶವನ್ನು ಅಳಿಸುವಲ್ಲಿ ದೋಷ, ಸಂದೇಶ ಈಗಲೂ ಅಸ್ತಿತ್ವದಲ್ಲಿರಬಹುದು</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
     <string name="MediaPreviewFragment_share">ಹಂಚಿಕೊಳ್ಳಿ</string>
 
     <!-- MessageNotifier -->
@@ -3156,7 +3166,7 @@
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">ಸಾಧನವನ್ನು ಮರುನೋಂದಾಯಿಸಿ</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">ಈ ಸಾಧನವು ಇನ್ನು ಲಿಂಕ್ ಆಗಿರುವುದಿಲ್ಲ. ಮೆಸೇಜ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು Signal ಅನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಮರು-ಲಿಂಕ್ ಮಾಡಿ.</string>
+    <string name="UnauthorizedReminder_this_device_is_no_longer_linked_relink_to_continue_messaging">ಈ ಸಾಧನವು ಇನ್ನು ಲಿಂಕ್ ಆಗಿರುವುದಿಲ್ಲ. ಮೆಸೇಜ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು Collie ಅನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಮರು-ಲಿಂಕ್ ಮಾಡಿ.</string>
     <!-- Action in reminder banner that will take the user to re-link this device -->
     <string name="UnauthorizedReminder_relink_action">ಸಾಧನವನ್ನು ಮರು-ಲಿಂಕ್ ಮಾಡಿ</string>
 
@@ -3165,7 +3175,7 @@
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
-    <string name="EnclaveFailureReminder_update_signal">ಪಾವತಿಗಳ ಬಳಕೆ ಮುಂದುವರಿಸಲು Signal ನವೀಕರಿಸಿ. ನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್ ಅಪ್‌ಟುಡೇಟ್ ಇಲ್ಲದಿರಬಹುದು.</string>
+    <string name="EnclaveFailureReminder_update_signal">ಪಾವತಿಗಳ ಬಳಕೆ ಮುಂದುವರಿಸಲು Collie ನವೀಕರಿಸಿ. ನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್ ಅಪ್‌ಟುಡೇಟ್ ಇಲ್ಲದಿರಬಹುದು.</string>
     <!-- Banner button to update now -->
 
     <string name="WebRtcCallActivity__answered_on_a_linked_device">ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನದಲ್ಲಿ ಉತ್ತರಿಸಲಾಗಿದೆ.</string>
@@ -3489,18 +3499,6 @@
     <string name="EditProfileFragment__group_name">ಗುಂಪಿನ ಹೆಸರು</string>
     <string name="EditProfileFragment__group_description">ಗುಂಪಿನ ವಿವರಣೆ</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Collie ಅನ್ನು ನವೀಕರಿಸಿ</string>
-    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Collie ನ ಈ ಆವೃತ್ತಿಯ ವಾಯಿದೆ ಮುಗಿದಿದೆ. Collie ಬಳಕೆ ಮುಂದುವರಿಸಲು ಈಗಲೇ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ.</string>
-    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
-    <string name="EditProfileFragment_deprecated_dialog_update_button">ನವೀಕರಿಸಿ</string>
-    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_title">ಸಾಧನವು ನೋಂದಾಯಿತಗೊಂಡಿಲ್ಲ</string>
-    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-    <string name="EditProfileFragment_unregistered_dialog_body">ಈ ಸಾಧನವು ಇನ್ನು ನೋಂದಾಯಿತವಾಗಿರುವುದಿಲ್ಲ. ನಿಮ್ಮ ಖಾತೆಗೆ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಲು ಮರು-ನೋಂದಾಯಿಸಿ.</string>
-    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
-    <string name="EditProfileFragment_unregistered_dialog_reregister_button">ಪುನಃ ನೋಂದಾಯಿಸಿ</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">ಉಳಿಸಿ</string>
@@ -3623,7 +3621,7 @@
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__link__faq" translatable="false">https://support.signal.org</string> -->
     <!-- Heading used within support email that lists additional information to help with debugging -->
     <string name="HelpFragment__support_info">ಬೆಂಬಲ ಮಾಹಿತಿ</string>
-    <string name="HelpFragment__signal_android_support_request">Signal ಆಂಡ್ರಾಯ್ಡ್ ಬೆಂಬಲ ವಿನಂತಿ</string>
+    <string name="HelpFragment__signal_android_support_request">Collie ಆಂಡ್ರಾಯ್ಡ್ ಬೆಂಬಲ ವಿನಂತಿ</string>
   <!-- Removed by excludeNonTranslatables <string name="HelpFragment__debug_log" translatable="false">Debug Log:</string> -->
     <string name="HelpFragment__could_not_upload_logs">ಲಾಗ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗದು</string>
     <string name="HelpFragment__please_be_as_descriptive_as_possible">ಸಮಸ್ಯೆಯನ್ನು ಅರ್ಥ ಮಾಡಿಕೊಳ್ಳಲು ನಮಗೆ ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ಸಾಧ್ಯವಾದಷ್ಟೂ ವಿವರಣೆ ನೀಡಿ</string>
@@ -3679,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini ನಂತಹ AI ಸಹಾಯಕ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ Collie ಕಂಟೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು. ಇದನ್ನು ತಪ್ಪಿಸಲು, ಸ್ಕ್ರೀನ್ ಸುರಕ್ಷತೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಇದು ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳನ್ನು ಸಹ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini ನಂತಹ AI ಸಹಾಯಕ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ Signal ಕಂಟೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು. ಇದನ್ನು ತಪ್ಪಿಸಲು, ಸ್ಕ್ರೀನ್ ಸುರಕ್ಷತೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಇದು ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳನ್ನು ಸಹ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">ಸ್ಕ್ರೀನ್ ಸುರಕ್ಷತೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3687,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">ಸ್ಕ್ರೀನ್ ಸುರಕ್ಷತೆಯನ್ನು ಆಫ್ ಮಾಡಬೇಕೇ?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">ಇದನ್ನು ಆಫ್ ಮಾಡಿದರೆ, Google Gemini ರೀತಿಯ AI ಸಹಾಯಕಗಳು Collie ನಲ್ಲಿರುವ ಕಂಟೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಮತ್ತು ಅದನ್ನು ಖಾಸಗಿಯಾಗಿರದ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಬಳಸಲು ಅವಕಾಶ ನೀಡಿದಂತಾಗಬಹುದು.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">ಇದನ್ನು ಆಫ್ ಮಾಡಿದರೆ, Google Gemini ರೀತಿಯ AI ಸಹಾಯಕಗಳು Signal ನಲ್ಲಿರುವ ಕಂಟೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಮತ್ತು ಅದನ್ನು ಖಾಸಗಿಯಾಗಿರದ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಬಳಸಲು ಅವಕಾಶ ನೀಡಿದಂತಾಗಬಹುದು.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">ಆಫ್ ಮಾಡಿ</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -3695,24 +3693,15 @@
     <string name="preferences__notifications">ಅಧಿಸೂಚನೆಗಳು</string>
     <string name="preferences__led_color_unknown">ತಿಳಿಯದ</string>
     <string name="preferences__silent">ಮೌನ</string>
-    <!-- Preference label for making one-time donations to Signal -->
-    <string name="preferences__privacy">ಖಾಸಗಿತನ</string>
+    <string name="preferences__donate_to_signal">Collie ಗೆ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">ಸ್ಟೋರೀಸ್</string>
     <string name="preferences__payments">ಪೇಮೆಂಟ್‌ಗಳು</string>
     <string name="preferences__linked_devices">ಲಿಂಕ್ ಮಾಡಿರುವ ಸಾಧನಗಳು</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
     <string name="preferences__submit_debug_log">ಡೀಬಗ್ ಲಾಗ್ ಸಲ್ಲಿಸಿ</string>
 
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">ಓದದಿರುವ ರಿಮೈಂಡರ್‌ಗಳು</string>
-    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
-    <!-- Title of the \'censorship circumvention\' toggle switch -->
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ಸಕ್ರಿಯಗೊಳಿಸಿದಲ್ಲಿ, Collie ಸೆನ್ಸಾರ್ಶಿಪ್ ಅನ್ನು ತಪ್ಪಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ. ನೀವು Collie ಸೆನ್ಸಾರ್ ಮಾಡಿದ ಸ್ಥಳದಲ್ಲಿ ಇಲ್ಲದಿದ್ದರೆ ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬೇಡಿ.</string>
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
-    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
     <string name="preferences_proxy_address">ಪ್ರಾಕ್ಸಿ ವಿಳಾಸ</string>
     <string name="preferences_only_use_a_proxy_if">ಮೊಬೈಲ್ ಡೇಟಾ ಅಥವಾ ವೈಫೈನಲ್ಲಿ Signal ಗೆ ಸಂಪರ್ಕಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗದಿದ್ದರೆ, ಪ್ರಾಕ್ಸಿ ಮಾತ್ರ ಬಳಸಿ.</string>
     <string name="preferences_share">ಹಂಚಿಕೊಳ್ಳಿ</string>
@@ -3726,9 +3715,6 @@
     <string name="preferences_success">ಯಶಸ್ವಿಯಾಗಿದೆ</string>
     <string name="preferences_failed_to_connect">ಸಂಪರ್ಕಿಸಲು ವಿಫಲವಾಗಿದೆ</string>
     <string name="preferences_enter_proxy_address">ಪ್ರಾಕ್ಸಿ ವಿಳಾಸ ನಮೂದಿಸಿ</string>
-    <!-- Preference title for automatic key verification -->
-    <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, Collie 1:1 ಚಾಟ್‌ಗಳ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ದೃಢೀಕರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ.</string>
 
 
     <!-- Internal only preferences -->
@@ -4109,9 +4095,6 @@
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
 
-    <!-- media_preview -->
-
-
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
     <string name="media_preview_activity__media_content_description">ಮೀಡಿಯಾ ಮುನ್ನೋಟ</string>
@@ -4280,15 +4263,11 @@
     <string name="RegistrationActivity_call_me_instead_available_in">(%1$02d:%2$02d) ರ ಬಳಿಕ ನನಗೆ ಕರೆ ಮಾಡಿ</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">ಕೋಡ್ ಮರುಕಳುಹಿಸಿ (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Molly ನೋಂದಣಿ - ಆಂಡ್ರಾಯ್ಡ್‌ಗೆ ದೃಢೀಕರಣ ಕೋಡ್</string>
+    <string name="RegistrationActivity_code_support_subject">Collie ನೋಂದಣಿ - ಆಂಡ್ರಾಯ್ಡ್‌ಗೆ ದೃಢೀಕರಣ ಕೋಡ್</string>
     <string name="RegistrationActivity_incorrect_code">ತಪ್ಪಾದ ಕೋಡ್</string>
     <string name="BackupUtil_never">ಎಂದಿಗೂ ಇಲ್ಲ</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">ತಿಳಿಯದಿಲ್ಲ</string>
-    <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">ನಿಮ್ಮ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಯಾರು ನೋಡಬಹುದು ಮತ್ತು ಅದರ ಮೂಲಕ Collie ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಯಾರು ಸಂಪರ್ಕಿಸಬಹುದು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</string>
-    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
-    <string name="preferences_app_protection__to_use_screen_lock">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಅನ್ನು ಬಳಸಲು ಈ ಸಾಧನದಲ್ಲಿPIN, ಪ್ಯಾಟರ್ನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">ನಿಮ್ಮ ನೋಂದಣಿ ಲಾಕ್ ಪಿನ್ ಅನ್ನು ನೀವು ನಮೂದಿಸಬೇಕು</string>
     <string name="RegistrationActivity_your_pin_has_at_least_d_digits_or_characters">ನಿಮ್ಮ ಪಿನ್ ಕನಿಷ್ಠ %1$dಅಂಕಿಗಳು ಮತ್ತು ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು</string>
     <string name="RegistrationActivity_too_many_attempts">ಬಹಳಷ್ಟು ಪ್ರಯತ್ನಗಳು</string>
@@ -4321,11 +4300,11 @@
     <!-- Title of an informational card shown on the account settings screen of a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__this_is_a_linked_device">ಇದು ಲಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನ ಆಗಿದೆ</string>
     <!-- Body of an informational card explaining that account settings must be managed from the primary device -->
-    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">ನಿಮ್ಮ ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು, ನಿಮ್ಮ ಪ್ರಾಥಮಿಕ ಸಾಧನದಲ್ಲಿ Signal ತೆರೆಯಿರಿ.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__to_manage_your_account_settings">ನಿಮ್ಮ ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು, ನಿಮ್ಮ ಪ್ರಾಥಮಿಕ ಸಾಧನದಲ್ಲಿ Collie ತೆರೆಯಿರಿ.</string>
     <!-- Title of a settings row that deletes all Signal data from this linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data">ಆ್ಯಪ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</string>
     <!-- Subtitle of the delete app data row explaining what it does -->
-    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">ಇದು ಈ ಸಾಧನದಲ್ಲಿರುವ Signal ಆ್ಯಪ್‌ನಿಂದ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ.</string>
+    <string name="LinkedDeviceAccountSettingsFragment__this_will_remove_all_data">ಇದು ಈ ಸಾಧನದಲ್ಲಿರುವ Collie ಆ್ಯಪ್‌ನಿಂದ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ.</string>
     <!-- Title of the confirmation dialog shown when deleting app data from a linked device -->
     <string name="LinkedDeviceAccountSettingsFragment__delete_app_data_question">ಆ್ಯಪ್ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</string>
     <!-- Message of the confirmation dialog explaining that only this device\'s data is deleted, not the account -->
@@ -4827,7 +4806,7 @@
     <string name="ChangeNumberConfirmFragment__edit_number">ನಂಬರ್ ಎಡಿಟ್ ಮಾಡಿ</string>
 
     <!-- ChangeNumberRegistrationLockFragment -->
-    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Signal ನಂಬರ್ ಬದಲಾಯಿಸಿ - ಆಂಡ್ರಾಯ್ಡ್‌ನ PIN (v2 PIN) ಗೆ ಸಹಾಯ ಬೇಕಿದೆ</string>
+    <string name="ChangeNumberRegistrationLockFragment__signal_change_number_need_help_with_pin_for_android_v2_pin">Collie ನಂಬರ್ ಬದಲಾಯಿಸಿ - ಆಂಡ್ರಾಯ್ಡ್‌ನ PIN (v2 PIN) ಗೆ ಸಹಾಯ ಬೇಕಿದೆ</string>
 
     <!-- ChangeNumberPinDiffersFragment -->
     <string name="ChangeNumberPinDiffersFragment__pins_do_not_match">PIN ಗಳು ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ</string>
@@ -4990,7 +4969,6 @@
     <!-- AdvancedPrivacySettingsFragment -->
   <!-- Removed by excludeNonTranslatables <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string> -->
 
-    <!-- ExpireTimerSettingsFragment -->
 
 
     <!-- ChatColorSelectionFragment -->
@@ -5302,7 +5280,13 @@
 
     <string name="ImageView__badge">ಬ್ಯಾಡ್ಜ್‌</string>
 
+    <string name="SubscribeFragment__cancel_subscription">ಚಂದಾ ರದ್ದುಗೊಳಿಸಿ</string>
+    <string name="SubscribeFragment__confirm_cancellation">ರದ್ದತಿಯನ್ನು ದೃಢೀಕರಿಸುತ್ತೀರಾ?</string>
+    <string name="SubscribeFragment__you_wont_be_charged_again">ನಿಮಗೆ ಮತ್ತೊಮ್ಮೆ ಶುಲ್ಕ ವಿಧಿಸಲಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ನಿಮ್ಮ ಬಿಲ್ಲಿಂಗ್ ಅವಧಿಯ ಕೊನೆಯಲ್ಲಿ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</string>
+    <string name="SubscribeFragment__not_now">ಈಗಲ್ಲ</string>
+    <string name="SubscribeFragment__confirm">ದೃಢೀಕರಿಸಿ</string>
     <string name="SubscribeFragment__update_subscription">ಚಂದಾ ಅಪ್ಡೇಟ್ ಮಾಡಿ</string>
+    <string name="SubscribeFragment__your_subscription_has_been_cancelled">ನಿಮ್ಮ ಚಂದಾ ರದ್ದುಗೊಂಡಿದೆ.</string>
     <string name="SubscribeFragment__update_subscription_question">ಚಂದಾ ಅಪ್ಡೇಟ್ ಮಾಡುವುದೇ?</string>
     <string name="SubscribeFragment__update">ನವೀಕರಿಸಿ</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">ಇಂದು ನಿಮಗೆ ಹೊಸ ಚಂದಾ ಬೆಲೆಯ ಪೂರ್ಣ ಮೊತ್ತ (%1$s) ಅನ್ನು ವಿಧಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಚಂದಾ ಮಾಸಿಕವಾಗಿ ನವೀಕರಣಗೊಳ್ಳುತ್ತದೆ.</string>
@@ -5314,38 +5298,66 @@
     <string name="Subscription__expires_s">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ %1$s</string>
 
     <!-- Title of learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">ಸ್ವತಂತ್ರ ಲಾಭರಹಿತ ಸಂಸ್ಥೆಯಾಗಿ, Signal ಖಾಸಗಿ ಮೆಸೇಜ್ ಕಳುಹಿಸುವಿಕೆ ಮತ್ತು ಕರೆಗಳಿಗೆ ಬದ್ಧವಾಗಿದೆ. ಜಾಹೀರಾತುಗಳಿಲ್ಲ, ಟ್ರ್ಯಾಕರ್‌ಗಳಿಲ್ಲ, ಕಣ್ಗಾವಲಿಲ್ಲ. Signal ಅನ್ನು ಬೆಂಬಲಿಸಲು ಇಂದೇ ದೇಣಿಗೆ ನೀಡಿ.</string>
     <!-- Second small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">ನೀವು ದೇಣಿಗೆ ನೀಡಿದಾಗ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಐಚ್ಛಿಕ ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ</string>
     <!-- Third small text blurb on learn more sheet -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">ನಿಮ್ಮ ಗೌಪ್ಯತೆ ನಮ್ಮ ಧ್ಯೇಯವಾಗಿದೆ</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
+    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal 501c3 ಲಾಭರಹಿತ ಸಂಸ್ಥೆಯಾಗಿದೆ. US ದೇಣಿಗೆಗಳಿಗೆ ತೆರಿಗೆ ವಿನಾಯಿತಿ ಇದೆ.</string>
 
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">ನೀವು Signal ನಿಂದ ದಾನಿ ಬ್ಯಾಡ್ಜ್ ಗಳಿಸಿದ್ದೀರಿ! ನಿಮ್ಮ ಬೆಂಬಲವನ್ನು ತೋರಿಸಲು ಅದನ್ನು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಡಿಸ್‌ಪ್ಲೇ ಮಾಡಿ.</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">ನೀವಾಗಬಹುದು</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">ಮಾಸಿಕ ಸಸ್ಟೈನರ್.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪ್ರದರ್ಶಿಸಿ</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">ವೈಶಿಷ್ಟ್ಯಗೊಳಿಸಿದ ಬ್ಯಾಡ್ಜ್ ರೂಪಿಸಿ</string>
+    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">ಮುಂದುವರಿಸಿ</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">ನೀವು ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಬ್ಯಾಡ್ಜ್ ಹೊಂದಿದ್ದಾಗ, ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಇತರರು ನೋಡಲು ಒಂದು ಫೀಚರ್ ಅನ್ನು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Signal ಗೆ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Heading for more area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__more">ಇನ್ನಷ್ಟು</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
+    <string name="ManageDonationsFragment__my_support">My Support</string>
     <!-- Label for Donation Receipts button -->
+    <string name="ManageDonationsFragment__donation_receipts">ದೇಣಿಗೆ ಸ್ವೀಕೃತಿಗಳು</string>
+    <string name="ManageDonationsFragment__badges">ಬ್ಯಾಡ್ಜ್‌ಗಳು</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
+    <string name="ManageDonationsFragment__subscription_faq">ದಾನಿಯ ಕುರಿತು FAQ</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">ನೀಡಲು ಇತರೆ ದಾರಿಗಳು</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">ಸ್ನೇಹಿತರಿಗಾಗಿ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
+    <string name="ManageDonationsFragment__couldnt_confirm_donation">ದೇಣಿಗೆಯನ್ನು ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">ನಿಮ್ಮ %1$s/ತಿಂಗಳು ದೇಣಿಗೆಯನ್ನು ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ iDEAL | Wero ಪಾವತಿಯನ್ನು ಅನುಮೋದಿಸಲು ನಿಮ್ಮ ಬ್ಯಾಂಕಿಂಗ್ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
+    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">ನಿಮ್ಮ ಒಂದು ಬಾರಿಯ %1$s ದೇಣಿಗೆಯನ್ನು ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ iDEAL | Wero ಪಾವತಿಯನ್ನು ಅನುಮೋದಿಸಲು ನಿಮ್ಮ ಬ್ಯಾಂಕಿಂಗ್ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</string>
 
+    <string name="Boost__enter_custom_amount">ಕಸ್ಟಮ್‌ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ</string>
     <!-- Error label when the amount is smaller than what we can accept -->
+    <string name="Boost__the_minimum_amount_you_can_donate_is_s">ನೀವು ದೇಣಿಗೆ ನೀಡಬಹುದಾದ ಕನಿಷ್ಠ ಮೊತ್ತ %1$s</string>
 
+    <string name="MySupportPreference__s_per_month">%1$s/ತಿಂಗಳು</string>
+    <string name="MySupportPreference__renews_s">ನವೀಕರಿಸುತ್ತದೆ %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
+    <string name="MySupportPreference__processing_transaction">ವಹಿವಾಟು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
+    <string name="MySupportPreference__couldnt_add_badge_s">ಬ್ಯಾಡ್ಜ್ ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ. %1$s</string>
+    <string name="MySupportPreference__please_contact_support">ದಯವಿಟ್ಟು ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
+    <string name="MySupportPreference__payment_pending">ಪಾವತಿ ಬಾಕಿಯಿದೆ</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
+    <string name="MySupportPreference__your_bank_transfer_of_s">%1$s ನಷ್ಟು ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ ಬಾಕಿಯಿದೆ. ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆಗಳು ಪೂರ್ಣಗೊಳ್ಳಲು 1 ರಿಂದ 14 ವ್ಯಾವಹಾರಿಕ ದಿನಗಳು ಆಗಬಹುದು.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
+    <string name="MySupportPreference__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Displayed when a subscription refresh is being performed -->
+    <string name="MySupportPreference__checking_subscription">ಚಂದಾದಾರಿಕೆಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collie ಅನ್ನು ನವೀಕರಿಸಿ</string>
@@ -5382,9 +5394,11 @@
     <string name="Subscription__get_a_s_badge">%1$s ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ</string>
 
     <!-- *PaymentInProgressFragment strings -->
+    <string name="InAppPaymentInProgressFragment__processing_donation">ದೇಣಿಗೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
+    <string name="InAppDonations__recurring_d">%1$d ಮರುಕಳಿಸುತ್ತಿದೆ</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5403,8 +5417,11 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">ದೇಣಿಗೆ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
+    <string name="DonationsErrors__try_another_payment_method">ಇನ್ನೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
+    <string name="DonationsErrors__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
+    <string name="DonationsErrors__error_processing_payment_s">ದೇಣಿಗೆ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ. %1$s</string>
     <string name="DonationsErrors__your_payment">ನಿಮ್ಮ ದೇಣಿಗೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ ಮತ್ತು ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</string>
     <string name="DonationsErrors__still_processing">ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿದೆ</string>
     <string name="DonationsErrors__couldnt_add_badge">ಬ್ಯಾಡ್ಜ್ ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ</string>
@@ -5422,6 +5439,8 @@
     <string name="DonationsErrors__your_payment_was_processed_but">ನಿಮ್ಮ ದೇಣಿಗೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಯಿತು, ಆದರೆ ನಿಮ್ಮ ದೇಣಿಗೆ ಮೆಸೇಜ್ ಅನ್ನು ಕಳುಹಿಸಲು Signal ಗೆ ಸಾಧ್ಯವಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <string name="DonationsErrors__your_badge_could_not">ನಿಮ್ಮ ಖಾತೆಗೆ ನಿಮ್ಮ ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಆದರೆ ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಿರಬಹುದು. ದಯವಿಟ್ಟು ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <string name="DonationsErrors__your_payment_is_still">ನಿಮ್ಮ ದೇಣಿಗೆಯು ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತಿದೆ. ಇದು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಅವಲಂಬಿಸಿಕೊಂಡು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</string>
+    <string name="DonationsErrors__failed_to_cancel_subscription">ಚಂದಾ ರದ್ದುಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ</string>
+    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">ಚಂದಾ ರದ್ದತಿಗೆ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಬೇಕಾಗುತ್ತದೆ.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">ನಿಮ್ಮ ಸಾಧನವು ಇನ್-ಆ್ಯಪ್ ದೇಣಿಗೆಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ, ಹಾಗಾಗಿ ನೀವು ಬ್ಯಾಡ್ಜ್ ಗಳಿಸುವುದಕ್ಕೆ ಚಂದಾದಾರರಾಗಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಮ್ಮ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ದೇಣಿಗೆ ನೀಡುವ ಮೂಲಕ ನೀವು ಈಗಲೂ Signal ಅನ್ನು ಬೆಂಬಲಿಸಬಹುದು.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">ನೆಟ್‌ವರ್ಕ್ ದೋಷ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</string>
     <string name="NetworkFailure__retry">ಮರುಪ್ರಯತ್ನಿಸಿ</string>
@@ -5430,6 +5449,7 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">ಈ ಬಳಕೆದಾರರು Signal ಅನ್ನು ನವೀಕರಿಸುವ ತನಕ ಅವರು ದೇಣಿಗೆಯನ್ನು ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
+    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">ನಿಮ್ಮ iDEAL | Wero ದೇಣಿಗೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಇನ್ನೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s ಅವರ ಪರವಾಗಿ ದೇಣಿಗೆ</string>
@@ -5627,12 +5647,6 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">%1$s ತನಕ ಆನ್</string>
 
-    <!-- Displayed in a toast when we fail to open the ringtone picker -->
-    <string name="NotificationSettingsFragment__failed_to_open_picker">ಪಿಕರ್ ತೆರೆಯಲು ವಿಫಲವಾಗಿದೆ</string>
-    <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">ಅಧಿಸೂಚನೆಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಅವುಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲು Collie ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.</string>
-    <!-- Banner action when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__turn_on">ಆನ್‌ ಮಾಡಿ</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">ಇದು Signal ನ ಅಧಿಕೃತ ಮತ್ತು ಏಕೈಕ ಚಾಟ್ ಆಗಿದೆ</string>
@@ -5640,19 +5654,33 @@
     <string name="ReleaseNotes__keep_up_to_date">ಸುದ್ದಿ ಮತ್ತು ಆವೃತ್ತಿ ಟಿಪ್ಪಣಿಗಳೊಂದಿಗೆ ಅಪ್ ಟು ಡೇಟ್ ಆಗಿರಿ</string>
 
     <!-- Donation receipts activity title -->
+    <string name="DonationReceiptListFragment__all_activity">ಎಲ್ಲ ಚಟುವಟಿಕೆ</string>
     <!-- Donation receipts all tab label -->
+    <string name="DonationReceiptListFragment__all">ಎಲ್ಲಾ</string>
     <!-- Donation receipts recurring tab label -->
+    <string name="DonationReceiptListFragment__recurring">ಆವರ್ತ</string>
     <!-- Donation receipts one-time tab label -->
+    <string name="DonationReceiptListFragment__one_time">ಒಂದು ಬಾರಿ</string>
     <!-- Donation receipts gift tab -->
+    <string name="DonationReceiptListFragment__for_a_friend">ಸ್ನೇಹಿತರಿಗಾಗಿ</string>
     <!-- Donation receipts gift tab label -->
+    <string name="DonationReceiptListFragment__donation_for_a_friend">ಸ್ನೇಹಿತರಿಗಾಗಿ ದೇಣಿಗೆ</string>
     <!-- Donation receipts donation type heading -->
+    <string name="DonationReceiptDetailsFragment__donation_type">ದೇಣಿಗೆ ವಿಧ</string>
     <!-- Donation receipts date paid heading -->
+    <string name="DonationReceiptDetailsFragment__date_paid">ಪಾವತಿಸಿದ ದಿನಾಂಕ</string>
     <!-- Donation receipts share PNG -->
+    <string name="DonationReceiptDetailsFragment__share_receipt">ರಸೀದಿ ಹಂಚಿಕೊಳ್ಳಿ</string>
     <!-- Donation receipts list end note -->
+    <string name="DonationReceiptListFragment__if_you_have">ನೀವು Collie ಅನ್ನು ಮರು ಇನ್‍ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಲ್ಲಿ, ಹಿಂದಿನ ದೇಣಿಗೆಗಳ ರಸೀದಿಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.</string>
     <!-- Donation receipts document title -->
+    <string name="DonationReceiptDetailsFragment__donation_receipt">ದೇಣಿಗೆ ರಸೀದಿ</string>
     <!-- Donation receipts amount title -->
+    <string name="DonationReceiptDetailsFragment__amount">ಮೊತ್ತ</string>
     <!-- Donation receipts thanks -->
+    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Signal ಅನ್ನು ಬೆಂಬಲಿಸುತ್ತಿರುವುದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮುಕ್ತ ಅಭಿವ್ಯಕ್ತಿಯನ್ನು ರಕ್ಷಿಸುವ ಮತ್ತು ಓಪನ್ ಸೋರ್‍ಸ್ ಗೌಪ್ಯತೆ ತಂತ್ರಜ್ಞಾನದ ಮೂಲಕ ಪ್ರಪಂಚದಾದ್ಯಂತ ಲಕ್ಷಾಂತರ ಜನರಿಗೆ ಸುರಕ್ಷಿತ ಜಾಗತಿಕ ಸಂವಹನವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವ ಧ್ಯೇಯವನ್ನು ಉತ್ತೇಜಿಸಲು ನಿಮ್ಮ ಕೊಡುಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ನೀವು ಯುನೈಟೆಡ್ ಸ್ಟೇಟ್ಸ್ ನಿವಾಸಿಯಾಗಿದ್ದರೆ, ನಿಮ್ಮ ತೆರಿಗೆ ದಾಖಲೆಗಳಿಗಾಗಿ ಈ ರಸೀದಿಯನ್ನು ಇಟ್ಟುಕೊಳ್ಳಿ. Signal Technology Foundation ಎಂಬುದು ಯುನೈಟೆಡ್ ಸ್ಟೇಟ್ಸ್‌ನಲ್ಲಿ Internal Revenue Code ನ ಸೆಕ್ಷನ್ 501c3 ಅಡಿಯಲ್ಲಿ ತೆರಿಗೆ ವಿನಾಯಿತಿ ಪಡೆದ ಲಾಭರಹಿತ ಸಂಸ್ಥೆಯಾಗಿದೆ. ನಮ್ಮ Federal Tax ID is 82-4506840. ಈ ಕೊಡುಗೆಯ ಪರಿಗಣನೆಯಲ್ಲಿ Signal ಯಾವುದೇ ಸರಕುಗಳು ಅಥವಾ ಸೇವೆಗಳನ್ನು ಒದಗಿಸುವುದಿಲ್ಲ.</string>
     <!-- Donation reciepts screen empty state title -->
+    <string name="DonationReceiptListFragment__no_receipts">ರಸೀದಿಗಳಿಲ್ಲ</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6291,17 +6319,27 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
+    <string name="DonateToSignalFragment__privacy_over_profit">ಲಾಭರಹಿತ ಸಂಸ್ಥೆಯೆಂಬ ಹೆಗ್ಗಳಿಕೆ</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">ಮುಂದುವರಿಸಿ</string>
     <!-- Description below title -->
+    <string name="DonateToSignalFragment__private_messaging">ಖಾಸಗಿ ಮೆಸೇಜ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸಲು ದೇಣಿಗೆ ನೀಡಿ. Signal ಅನ್ನು ಸ್ವತಂತ್ರವಾಗಿ ಮತ್ತು ಜಾಹೀರಾತು-ಮುಕ್ತವಾಗಿ ಇರಿಸಿ.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
+    <string name="DonateToSignalFragment__you_have_a_donation_pending">ನಿಮ್ಮ ದೇಣಿಗೆ ಬಾಕಿಯಿದೆ</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆಗಳು ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳಲು 1 ರಿಂದ 14 ವ್ಯಾವಹಾರಿಕ ದಿನಗಳು ಆಗಬಹುದು. ನಿಮ್ಮ ಚಂದಾ ನವೀಕರಿಸುವ ಮುನ್ನ ಈ ಪಾವತಿ ಪೂರ್ಣಗೊಳ್ಳುವ ತನಕ ದಯವಿಟ್ಟು ಕಾಯಿರಿ.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆಗಳು ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳಲು 1 ರಿಂದ 14 ವ್ಯಾವಹಾರಿಕ ದಿನಗಳು ಆಗಬಹುದು. ಇನ್ನೊಂದು ದೇಣಿಗೆಯನ್ನು ಮಾಡುವ ಮುನ್ನ ಈ ಪಾವತಿ ಪೂರ್ಣಗೊಳ್ಳುವ ತನಕ ದಯವಿಟ್ಟು ಕಾಯಿರಿ.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">ನಿಮ್ಮ ದೇಣಿಗೆಯು ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತಿದೆ. ಇದು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಅವಲಂಬಿಸಿಕೊಂಡು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ನಿಮ್ಮ ಚಂದಾ ನವೀಕರಿಸುವ ಮುನ್ನ ಈ ಪಾವತಿ ಪೂರ್ಣಗೊಳ್ಳುವ ತನಕ ದಯವಿಟ್ಟು ಕಾಯಿರಿ.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
+    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">ನಿಮ್ಮ ದೇಣಿಗೆಯು ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತಿದೆ. ಇದು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಅವಲಂಬಿಸಿಕೊಂಡು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ಇನ್ನೊಂದು ದೇಣಿಗೆಯನ್ನು ಮಾಡುವ ಮುನ್ನ ಈ ಪಾವತಿ ಪೂರ್ಣಗೊಳ್ಳುವ ತನಕ ದಯವಿಟ್ಟು ಕಾಯಿರಿ.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
+    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">ನಿಮ್ಮ iDEAL | Wero ದೇಣಿಗೆ ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತಿದೆ. ಇನ್ನೊಂದು ದೇಣಿಗೆ ನೀಡುವ ಮುನ್ನ ನಿಮ್ಮ ಪಾವತಿಯನ್ನು ಅನುಮೋದಿಸಲು ನಿಮ್ಮ ಬ್ಯಾಂಕಿಂಗ್ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
+    <string name="DonateToSignal__donation_amount_too_high">ದೇಣಿಗೆ ಮೊತ್ತ ತೀರಾ ಅಧಿಕವಾಗಿದೆ</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
+    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">ನೀವು ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ ಮೂಲಕ %1$s ತನಕ ಕಳುಹಿಸಬಹುದು. ಬೇರೆ ಮೊತ್ತ ಅಥವಾ ಬೇರೆ ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">ಮಾಸಿಕ</string>
@@ -6310,77 +6348,129 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
+    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Signal ಗೆ ತಿಂಗಳಿಗೆ %1$s ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Sheet summary when subscribing -->
+    <string name="GatewaySelectorBottomSheet__get_a_s_badge">%1$s ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ</string>
     <!-- Sheet title when giving a one-time donation -->
+    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Signal ಗೆ %1$s ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">%2$d ದಿನಕ್ಕೆ %1$s ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ</item>
         <item quantity="other">%2$d ದಿನಗಳಿಗೆ %1$s ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
+    <string name="GatewaySelectorBottomSheet__bank_transfer">ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ</string>
     <!-- Button label for paying with a credit card -->
+    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">ಕ್ರೆಡಿಟ್ ಅಥವಾ ಡೆಬಿಟ್ ಕಾರ್ಡ್</string>
     <!-- Sheet summary when giving donating for a friend -->
+    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">ಸ್ನೇಹಿತರಿಗಾಗಿ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Button label for paying with iDEAL -->
+    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
+    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">ದೇಣಿಗೆಯನ್ನು ದೃಢೀಕರಿಸಲು Collie ಅನ್ನು ತೊರೆಯಬೇಕೇ?</string>
+    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">ದೃಢೀಕರಣಗೊಂಡಾಗ, ನಿಮ್ಮ ದೇಣಿಗೆಯ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು Collie ಗೆ ಹಿಂತಿರುಗಿ.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
+    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">ನಿಮ್ಮನ್ನು %1$s ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ದೃಢೀಕರಣಗೊಂಡಾಗ, ನಿಮ್ಮ ದೇಣಿಗೆ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು Collie ಗೆ ಹಿಂತಿರುಗಿ.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
+    <string name="BankTransferMandateFragment__bank_transfer">ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
+    <string name="BankTransferMandateFragment__stripe_processes_donations">Signal ಗೆ ನೀಡಿದ ದೇಣಿಗೆಗಳನ್ನು Stripe ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು Signal ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ ಅಥವಾ ಶೇಖರಿಸುವುದಿಲ್ಲ. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
+    <string name="BankTransferMandateFragment__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Button label to continue with transfer -->
+    <string name="BankTransferMandateFragment__agree">ಒಪ್ಪುತ್ತೇನೆ</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
+    <string name="BankTransferMandateFragment__read_more">ಇನ್ನಷ್ಟು ಓದಿ</string>
     <!-- Text displayed when mandate load fails -->
+    <string name="BankTransferMandateFragment__failed_to_load_mandate">ವಿನಂತಿಯನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲಗೊಂಡಿದೆ</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
+    <string name="BankTransferDetailsFragment__enter_your_bank_details">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ವಿವರಗಳು ಮತ್ತು ಇಮೇಲ್ ಅನ್ನು ನಮೂದಿಸಿ. ನಿಮ್ಮ ದೇಣಿಗೆಯ ಕುರಿತು ನಿಮಗೆ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಈ ಇಮೇಲ್ ಅನ್ನು Stripe ಬಳಸುತ್ತದೆ. %1$s</string>
     <!-- Subtext learn more link text -->
+    <string name="BankTransferDetailsFragment__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Text field label for name on bank account -->
+    <string name="BankTransferDetailsFragment__name_on_bank_account">ಬ್ಯಾಂಕ್ ಖಾತೆಯ ಹೆಸರು</string>
     <!-- Text field label for IBAN -->
+    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
+    <string name="BankTransferDetailsFragment__email">ಇಮೇಲ್</string>
     <!-- Text label for button to show user how to find their IBAN -->
+    <string name="BankTransferDetailsFragment__find_account_info">ಖಾತೆ ಮಾಹಿತಿ ಹುಡುಕಿ</string>
     <!-- Donate button label for monthly subscription -->
+    <string name="BankTransferDetailsFragment__donate_s_month">ತಿಂಗಳಿಗೆ %1$s ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Donate button label for one-time -->
+    <string name="BankTransferDetailsFragment__donate_s">%1$s ಅವರಿಗೆ ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Error label for IBAN field when number is too short -->
+    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN ತೀರಾ ಚಿಕ್ಕದಾಗಿದೆ</string>
     <!-- Error label for IBAN field when number is too long -->
+    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN ತೀರಾ ಉದ್ದವಾಗಿದೆ</string>
     <!-- Error label for IBAN field when country is not supported -->
+    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN ದೇಶದ ಕೋಡ್ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</string>
     <!-- Error label for IBAN field when number is invalid -->
+    <string name="BankTransferDetailsFragment__invalid_iban">ಅಮಾನ್ಯ IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
+    <string name="BankTransferDetailsFragment__minimum_3_characters">ಕನಿಷ್ಠ 3 ಅಕ್ಷರಗಳು</string>
     <!-- Error label for email field when email is not valid -->
+    <string name="BankTransferDetailsFragment__invalid_email_address">ಅಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸ</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank">ನಿಮ್ಮ ಹೆಸರು ಮತ್ತು ಇಮೇಲ್ ಅನ್ನು ನಮೂದಿಸಿ. ನಿಮ್ಮ ದೇಣಿಗೆಯ ಕುರಿತು ನಿಮಗೆ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು Stripe ಈ ಇಮೇಲ್ ಅನ್ನು ಬಳಸುತ್ತದೆ. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
+    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ. ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು Signal ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ ಅಥವಾ ಶೇಖರಿಸುವುದಿಲ್ಲ. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
+    <string name="IdealTransferDetailsFragment__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Hint label for text entry box for name on bank account -->
+    <string name="IdealTransferDetailsFragment__name_on_bank_account">ಬ್ಯಾಂಕ್ ಖಾತೆಯ ಹೆಸರು</string>
     <!-- Hint label for text entry box for email -->
+    <string name="IdealTransferDetailsFragment__email">ಇಮೇಲ್</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
+    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">iDEAL | Wero ಮೂಲಕ ನಿಮ್ಮ ದೇಣಿಗೆಯನ್ನು ದೃಢೀಕರಿಸಿ</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
+    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">ನಿಮ್ಮ ಮರುಕಳಿಸುವ ದೇಣಿಗೆಯನ್ನು ಸೆಟಪ್ ಮಾಡಲು ನಿಮ್ಮ ಬ್ಯಾಂಕ್‌ನೊಂದಿಗೆ €0,01 ಶುಲ್ಕವನ್ನು ಖಚಿತಪಡಿಸಲು ಮುಂದುವರಿಸಿ. ಇದನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮರುಪಾವತಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ %1$s/ತಿಂಗಳ ದೇಣಿಗೆಯನ್ನು ನಿಮ್ಮ ಖಾತೆಯಿಂದ ಡೆಬಿಟ್ ಮಾಡಲು ಅನುಮತಿಸುತ್ತದೆ.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
+    <string name="IdealTransferDetailsFragment__continue">ಮುಂದುವರಿಸಿ</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__find_your_account_information">ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಹುಡುಕಿ</string>
     <!-- Body of bottom sheet for finding account information -->
+    <string name="FindAccountInfoSheet__look_for_your_iban_at">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಸ್ಟೇಟ್‌ಮೆಂಟ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ನಿಮ್ಮ IBAN ಅನ್ನು ನೋಡಿ. IBAN ಗಳು 34 ವರೆಗೆ ಕ್ಯಾರೆಕ್ಟರ್‌ಗಳನ್ನು ಹೊಂದಿರುತ್ತವೆ. ನೀವು ನಮೂದಿಸಿದ ಹೆಸರು ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಖಾತೆಯಲ್ಲಿರುವ ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರಿನೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗಬೇಕು. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
+    <string name="DonationPendingBottomSheet__donation_pending">ದೇಣಿಗೆ ಬಾಕಿಯಿದೆ</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">ನಿಮ್ಮ ಮಾಸಿಕ ದೇಣಿಗೆ ಬಾಕಿಯಿದೆ. ನಿಮ್ಮ ದೇಣಿಗೆ ಸ್ವೀಕರಿಸಿದಾಗ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ %1$s ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ಡಿಸ್‌ಪ್ಲೇ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
+    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">ನಿಮ್ಮ ಒಂದು ಬಾರಿಯ ದೇಣಿಗೆ ಬಾಕಿಯಿದೆ. ನಿಮ್ಮ ದೇಣಿಗೆ ಸ್ವೀಕರಿಸಿದಾಗ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ %1$s ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ಡಿಸ್‌ಪ್ಲೇ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
+    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆಗಳು ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳಲು 1 ರಿಂದ 14 ವ್ಯಾವಹಾರಿಕ ದಿನಗಳು ಆಗಬಹುದು. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
+    <string name="DonationPendingBottomSheet__done">ಮುಗಿದಿದೆ</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">ದೇಣಿಗೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__were_having_trouble">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ನಾವು ಸಮಸ್ಯೆಯನ್ನು ಎದುರಿಸುತ್ತಿದ್ದೇವೆ. ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲಾಗಿಲ್ಲ. ಇನ್ನೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__try_again">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
+    <string name="DonationErrorBottomSheet__not_now">ಈಗಲ್ಲ</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
+    <string name="DonationCompletedBottomSheet__donation_complete">ದೇಣಿಗೆ ಪೂರ್ಣಗೊಂಡಿದೆ</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಬೆಂಬಲವನ್ನು ತೋರಿಸಲು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಈ ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ನೀವು ಡಿಸ್‌ಪ್ಲೇ ಮಾಡಬಹುದು.</string>
 
     <!-- StripePaymentInProgressFragment -->
+    <string name="StripePaymentInProgressFragment__cancelling">ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">ತುಂಬಾ ಸಂಪರ್ಕಗಳನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗಿದೆ</string>
@@ -6412,6 +6502,11 @@
     <string name="PaymentMessageView_s_sent_you">%1$s ಅವರು ನಿಮಗೆ ಕಳುಹಿಸಿದ್ದಾರೆ</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
+    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">ನಿಮ್ಮ ಮಾಹಿತಿಯು ಖಾಸಗಿಯಾಗಿದೆ</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">ನೀವು ದೇಣಿಗೆ ನೀಡುವಾಗ, ನಿಮ್ಮ ಯಾವುದೇ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು Signal ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ ಅಥವಾ ಶೇಖರಿಸುವುದಿಲ್ಲ.</string>
+    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">ನಿಮ್ಮ ದೇಣಿಗೆಗಳನ್ನು ಸ್ವೀಕರಿಸಲು Stripe ಅನ್ನು ಪಾವತಿ ಪ್ರೊಸೆಸರ್ ಆಗಿ ನಾವು ಬಳಸುತ್ತೇವೆ. ಅವರಿಗೆ ನೀವು ಒದಗಿಸುವ ಯಾವುದೇ ಮಾಹಿತಿಯನ್ನು ನಾವು ಪ್ರವೇಶಿಸುವುದಿಲ್ಲ, ಶೇಖರಿಸುವುದಿಲ್ಲ ಅಥವಾ ಉಳಿಸುವುದಿಲ್ಲ.</string>
+    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal ನಿಮ್ಮ ದೇಣಿಗೆಯನ್ನು ನಿಮ್ಮ Signal ಖಾತೆಗೆ ಸಂಪರ್ಕಿಸುವುದಿಲ್ಲ ಮತ್ತು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವೂ ಇಲ್ಲ.</string>
+    <string name="YourInformationIsPrivateBottomSheet__thank_you">ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6426,6 +6521,8 @@
     <string name="GroupStoryEducationSheet__next">ಮುಂದೆ</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
+    <string name="PaypalCompleteOrderBottomSheet__donate">ದೇಣಿಗೆ ನೀಡಿ</string>
+    <string name="PaypalCompleteOrderBottomSheet__payment">ಪಾವತಿ</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -6643,7 +6740,7 @@
     <!-- Toggle to require approval for all members before joining -->
     <string name="CreateCallLinkBottomSheetDialogFragment__require_admin_approval">ಅಡ್ಮಿನ್ ಅನುಮೋದನೆ ಅಗತ್ಯವಿದೆ</string>
     <!-- Row label to share the link via Signal -->
-    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Signal ಮೂಲಕ ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="CreateCallLinkBottomSheetDialogFragment__share_link_via_signal">Collie ಮೂಲಕ ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</string>
     <!-- Row label to copy the link to the clipboard -->
     <string name="CreateCallLinkBottomSheetDialogFragment__copy_link">ಲಿಂಕ್ ನಕಲಿಸಿ</string>
     <!-- Row label to share the link with the external share sheet -->
@@ -6794,9 +6891,9 @@
     <!-- Title of the backup setup complete bottom sheet -->
     <string name="BackupSetupCompleteBottomSheet__title">ನೀವು ಸಿದ್ಧರಾಗಿದ್ದೀರಿ. ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಆರಂಭಿಸಿ.</string>
     <!-- Body of the backup setup complete bottom sheet -->
-    <string name="BackupSetupCompleteBottomSheet__body">ಇದು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ಬ್ಯಾಕಪ್ ಮಾಡುವಾಗ ನೀವು Signal ಅನ್ನು ಎಂದಿನಂತೆ ಬಳಸಬಹುದು.</string>
+    <string name="BackupSetupCompleteBottomSheet__body">ಇದು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ಬ್ಯಾಕಪ್ ಮಾಡುವಾಗ ನೀವು Collie ಅನ್ನು ಎಂದಿನಂತೆ ಬಳಸಬಹುದು.</string>
     <!-- Label for the optimize storage toggle -->
-    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Signal ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿ</string>
+    <string name="BackupSetupCompleteBottomSheet__optimize_storage">Collie ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿ</string>
     <!-- Subtitle for the optimize storage toggle -->
     <string name="BackupSetupCompleteBottomSheet__optimize_subtitle">ಹಳೆಯ ಮೀಡಿಯಾವನ್ನು ಆಫ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ ಬ್ಯಾಕಪ್‌ನಿಂದ ಯಾವಾಗ ಬೇಕಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು.</string>
     <!-- Primary button on the setup complete bottom sheet -->
@@ -6814,7 +6911,7 @@
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
     <string name="OnDeviceBackupsScreen__to_restore_a_backup">"ಬ್ಯಾಕಪ್ ಅನ್ನು ರಿಸ್ಟೋರ್ ಮಾಡಲು, Collie ನ ಹೊಸ ಕಾಪಿಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ. ಆ್ಯಪ್ ತೆರೆಯಿರಿ ಮತ್ತು ಬ್ಯಾಕಪ್ ರಿಸ್ಟೋರ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ, ನಂತರ ಬ್ಯಾಕಪ್ ಫೈಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಿ."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
-    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">ನೀವು \"Signal ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿ\" ಅನ್ನು ಆನ್ ಮಾಡಿದ್ದೀರಿ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಬ್ಯಾಕಪ್‌ನಲ್ಲಿರುವ ಎಲ್ಲಾ ಮೀಡಿಯಾವನ್ನು ಸೇರಿಸಲು ನೀವು ಬಯಸಿದರೆ, ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ.</string>
+    <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">ನೀವು \"Collie ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿ\" ಅನ್ನು ಆನ್ ಮಾಡಿದ್ದೀರಿ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಬ್ಯಾಕಪ್‌ನಲ್ಲಿರುವ ಎಲ್ಲಾ ಮೀಡಿಯಾವನ್ನು ಸೇರಿಸಲು ನೀವು ಬಯಸಿದರೆ, ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
     <string name="OnDeviceBackupsScreen__view_setting">ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ವೀಕ್ಷಿಸಿ</string>
     <!-- Dialog action to proceed with turning on on-device backups without turning off "Optimize Signal storage" -->
@@ -6873,10 +6970,15 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
+    <string name="MonthlyDonationCanceled__title">ಮಾಸಿಕ ದೇಣಿಗೆಯು ರದ್ದುಗೊಂಡಿದೆ</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
+    <string name="MonthlyDonationCanceled__message">ನಿಮ್ಮ ಆವರ್ತ ಮಾಸಿಕ ದೇಣಿಗೆಯು ರದ್ದುಗೊಂಡಿದೆ. %1$s\n\nನಿಮ್ಮ ಬ್ಯಾಡ್ಜ್ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಇನ್ನು ಕಾಣಿಸುವುದಿಲ್ಲ. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
+    <string name="MonthlyDonationCanceled__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
+    <string name="MonthlyDonationCanceled__renew_button">ಚಂದಾ ನವೀಕರಿಸಿ</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
+    <string name="MonthlyDonationCanceled__not_now_button">ಈಗಲ್ಲ</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -6898,7 +7000,7 @@
     <!-- Dialog title for invalid phone number -->
     <string name="FindByActivity__invalid_phone_number">ಅಮಾನ್ಯವಾದ ಫೋನ್ ಸಂಖ್ಯೆ</string>
     <!-- Dialog title when phone number is not a registered signal user -->
-    <string name="FindByActivity__invite_to_signal">Signal ಗೆ ಆಮಂತ್ರಿಸಿ</string>
+    <string name="FindByActivity__invite_to_signal">Collie ಗೆ ಆಮಂತ್ರಿಸಿ</string>
     <!-- Dialog title when username is not found -->
     <string name="FindByActivity__username_not_found">ಬಳಕೆದಾರ ಹೆಸರು ಕಂಡುಬಂದಿಲ್ಲ</string>
     <!-- Dialog body for invalid username. Placeholder is the entered username. -->
@@ -7036,7 +7138,7 @@
     <!-- Dialog title when a backup redemption fails -->
     <string name="BackupAlertBottomSheet__couldnt_redeem_your_backups_subscription">ನಿಮ್ಮ ಬ್ಯಾಕಪ್‌ಗಳ ಚಂದಾದಾರಿಕೆಯನ್ನು ರಿಡೀಮ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it -->
-    <string name="BackupAlertBottomSheet__an_error_occurred">ದೋಷ ಸಂಭವಿಸಿದೆ ಮತ್ತು ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ನೀವು Signal ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
+    <string name="BackupAlertBottomSheet__an_error_occurred">ದೋಷ ಸಂಭವಿಸಿದೆ ಮತ್ತು ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ನೀವು Collie ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <!-- Dialog text for when a backup fails to be created and ways to fix it. Used for out of remote storage space error. -->
     <string name="BackupAlertBottomSheet__an_error_occurred_and">ದೋಷ ಸಂಭವಿಸಿದೆ ಮತ್ತು ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <!-- Dialog action button that will allow you to check for any Signal version updates -->
@@ -7118,7 +7220,7 @@
     <!-- Text displayed when a backup could not be completed -->
     <string name="BackupStatusRow__your_last_backup">ನಿಮ್ಮ ಮುಂಚಿನ ಬ್ಯಾಕಪ್ ಪೂರ್ತಿಯಾಗಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್ ವೈ-ಫೈಗೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಲು \"ಈಗಲೇ ಬ್ಯಾಕಪ್ ಮಾಡಿ\" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</string>
     <!-- Text displayed when a backup could not be completed and to check that they are on the latest version of Signal -->
-    <string name="BackupStatusRow__your_last_backup_latest_version">ನಿಮ್ಮ ಮುಂಚಿನ ಬ್ಯಾಕಪ್ ಪೂರ್ತಿಯಾಗಿಲ್ಲ. ನೀವು Signal ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="BackupStatusRow__your_last_backup_latest_version">ನಿಮ್ಮ ಮುಂಚಿನ ಬ್ಯಾಕಪ್ ಪೂರ್ತಿಯಾಗಿಲ್ಲ. ನೀವು Collie ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
     <!-- Text displayed when a backup file exceeds the storage limit during upload. -->
     <string name="BackupStatusRow__backup_file_too_large">ನಿಮ್ಮಲ್ಲಿರುವ ಮೆಸೇಜ್‌ಗಳ ಸಂಖ್ಯೆಯು ಸಂಗ್ರಹಣೆ ಮಿತಿಯನ್ನು ಮೀರಿದೆ. ಕೆಲವು ಮೆಸೇಜ್‌ಗಳನ್ನು ಅಳಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
     <!-- Text displayed when we\'re not backing up all messages. The placeholder represents the cutoff date for the messages we\'re backing up. -->
@@ -7144,6 +7246,7 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
+    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->
@@ -7170,34 +7273,6 @@
     <string name="GooglePlayServicesAvailability__learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">ನಿಮ್ಮ ಫೋನ್ Google Play ಸೇವೆಗಳನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ ನೀವು Signal ಸುರಕ್ಷಿತ ಬ್ಯಾಕಪ್‌ಗಳಿಗೆ ಸಬ್‌ಸ್ಕ್ರೈಬ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಹಾಯಕ್ಕಾಗಿ ಫೋನ್ ತಯಾರಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
-
-    <!-- ManageStorageSettingsFragment -->
-    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">ಚಾಟ್ ಮಿತಿಗಳು</string>
-    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
-    <string name="ManageStorageSettingsFragment_delete_message_history">ಮೆಸೇಜ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಿ</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
-    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">ಆಯ್ಕೆ ಮಾಡಲಾದ ಸಮಯಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮೆಸೇಜ್‌ಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</string>
-    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
-    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">ಆಯ್ಕೆ ಮಾಡಲಾದ ಉದ್ದವನ್ನು ಮೀರಿದ ಮೆಸೇಜ್‌ಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</string>
-    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_title">ಲಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಿಗೆ ಮಿತಿಗಳನ್ನು ಅನ್ವಯಿಸಿ</string>
-    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
-    <string name="ManageStorageSettingsFragment_apply_limits_description">ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, ಸಂವಹನ ಉದ್ದದ ಮಿತಿಗಳು ಸಹ ನಿಮ್ಮ ಲಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಿಂದ ಮೆಸೇಜ್‌ಗಳನ್ನು ಅಳಿಸುತ್ತವೆ.</string>
-    <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Collie ಸಂಗ್ರಹಣೆ</string>
-    <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿ</string>
-    <!-- Setting row explanation for storage optimization -->
-    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">ಬಳಕೆಯಾಗದ ಮೀಡಿಯಾವನ್ನು ಆಫ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ ಬ್ಯಾಕಪ್‌ನಿಂದ ಯಾವಾಗ ಬೇಕಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು.</string>
-    <!-- Dialog message for paid tier pending dialog -->
-    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Signal ಸುರಕ್ಷಿತ ಬ್ಯಾಕಪ್‌ಗಳ ಪಾವತಿಸಿದ ಶ್ರೇಣಿಯೊಂದಿಗೆ ಮಾತ್ರ ಸಂಗ್ರಹಣೆ ಆಪ್ಟಿಮೈಸೇಶನ್ ಅನ್ನು ಬಳಸಬಹುದು. ನಿಮ್ಮ ಬ್ಯಾಕಪ್‌ಗಳ ಚಂದಾದಾರಿಕೆಯು ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿದೆ ಮತ್ತು ಈವರೆಗೂ ಸಕ್ರಿಯವಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
-    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">ಮೀಡಿಯಾವನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಬ್ಯಾಕಪ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</string>
-    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿ\" ಅನ್ನು ಆನ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸಾಧನದಿಂದ ಹಳೆಯ ಮೀಡಿಯಾವನ್ನು ಆಫ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು. ಇದು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಬ್ಯಾಕಪ್‌ನಿಂದ ಹಳೆಯ ಮೀಡಿಯಾವನ್ನು ಸಹ ತೆಗೆದುಹಾಕುತ್ತದೆ.</string>
-    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
-    <string name="ManageStorageSettingsFragment__turn_on">ಆನ್‌ ಮಾಡಿ</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7585,7 +7660,7 @@
     <!-- Screen body shown when upgrading on-device backups to a new recovery key (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__local_backup_upgrade_description_bold">ಈ ಕೀ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಬ್ಯಾಕಪ್‌ಗಾಗಿ ಕೀಯನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 1). -->
-    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">ನಿಮ್ಮ ರಿಕವರಿ ಕೀ 64-ಅಕ್ಷರಗಳ ಕೋಡ್ ಆಗಿದ್ದು, ನೀವು Signal ಅನ್ನು ಮರು-ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಬ್ಯಾಕಪ್‌ಗಳನ್ನು ರಿಸ್ಟೋರ್ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ.</string>
+    <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description">ನಿಮ್ಮ ರಿಕವರಿ ಕೀ 64-ಅಕ್ಷರಗಳ ಕೋಡ್ ಆಗಿದ್ದು, ನೀವು Collie ಅನ್ನು ಮರು-ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಬ್ಯಾಕಪ್‌ಗಳನ್ನು ರಿಸ್ಟೋರ್ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ.</string>
     <!-- Screen body shown when enabling Signal Secure Backups while on-device backups are already enabled (part 2, bolded). -->
     <string name="MessageBackupsKeyEducationScreen__remote_backup_with_local_enabled_description_bold">ಇದು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ರಿಕವರಿ ಕೀಯಂತೆಯೇ ಇರುತ್ತದೆ.</string>
     <!-- Screen body shown when enabling on-device backups while Signal Secure Backups are already enabled (part 2, bolded). -->
@@ -7623,7 +7698,7 @@
     <!-- Dialog message shown when there is an error saving the recovery key because no compatible password manager was detected. -->
     <string name="MessageBackupsKeyRecordScreen__missing_password_manager_message">ನೀವು ಪಾಸ್‌ವರ್ಡ್ ಮ್ಯಾನೇಜರ್ ಸೆಟಪ್ ಹೊಂದಿಲ್ಲ ಅಥವಾ ನೀವು ಬಳಸುತ್ತಿರುವ ಪಾಸ್‌ವರ್ಡ್ ಮ್ಯಾನೇಜರ್ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</string>
     <!-- Dialog message shown when there is an error saving the recovery key because the user previously chose not to save Signal passwords to their password manager. -->
-    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">ನೀವು ಈ ಹಿಂದೆ Signal ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ಮ್ಯಾನೇಜರ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡದಿರುವುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿಕೊಂಡಿದ್ದೀರಿ. ನಿಮ್ಮ Google ಪಾಸ್‌ವರ್ಡ್ ಮ್ಯಾನೇಜರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ, \"ನಿರಾಕರಿಸಿದ ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳು\" ಎಂಬುದರಿಂದ Signal ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="MessageBackupsKeyRecordScreen__password_save_prompt_disabled_message">ನೀವು ಈ ಹಿಂದೆ Collie ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ಮ್ಯಾನೇಜರ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡದಿರುವುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿಕೊಂಡಿದ್ದೀರಿ. ನಿಮ್ಮ Google ಪಾಸ್‌ವರ್ಡ್ ಮ್ಯಾನೇಜರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ, \"ನಿರಾಕರಿಸಿದ ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳು\" ಎಂಬುದರಿಂದ Collie ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
     <!-- Label for a button that navigates to the device settings -->
     <string name="MessageBackupsKeyRecordScreen__go_to_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</string>
     <!-- Action button label -->
@@ -7770,7 +7845,7 @@
     <!-- ConfirmBackupCancellationDialog -->
 
     <!-- Email subject when contacting support on a create backup failure -->
-    <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android ಬ್ಯಾಕಪ್ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ದೋಷ</string>
+    <string name="BackupAlertBottomSheet_network_failure_support_email">Collie Android ಬ್ಯಾಕಪ್ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ದೋಷ</string>
     <!-- Email filter when contacting support on a create backup failure -->
   <!-- Removed by excludeNonTranslatables <string name="BackupAlertBottomSheet_export_failure_filter" translatable="false">Android SignalBackups Export Failed</string> -->
 
@@ -7800,7 +7875,7 @@
     <!-- Old device Transfer account bottom sheet dialog body -->
     <string name="TransferAccount_continue_on_your_other_device_details">ನಿಮ್ಮ ಇನ್ನೊಂದು ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ವರ್ಗಾಯಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ.</string>
     <!-- Old device Transfer account error dialog body shown when the new device is too old to accept an account that has no phone number -->
-    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">ನೀವು ವರ್ಗಾಯಿಸುತ್ತಿರುವ ಸಾಧನವು ತೀರಾ ಹಳೆಯದಾಗಿದೆ. ಆ ಸಾಧನದಲ್ಲಿ Signal ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="TransferAccount_the_device_you_are_transferring_to_is_out_of_date">ನೀವು ವರ್ಗಾಯಿಸುತ್ತಿರುವ ಸಾಧನವು ತೀರಾ ಹಳೆಯದಾಗಿದೆ. ಆ ಸಾಧನದಲ್ಲಿ Collie ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</string>
 
     <!-- Prepare Device screen title for quick restore flow -->
     <string name="PrepareDevice_title">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ</string>
@@ -7845,6 +7920,7 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">ಪ್ರಾಕ್ಸಿ</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
+    <string name="MainToolbar__donate">ದೇಣಿಗೆ ನೀಡಿ</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -7877,7 +7953,7 @@
     <!-- Notification title for when user is out of remote storage -->
     <string name="Notification_backup_storage_full">ಬ್ಯಾಕಪ್ ಸಂಗ್ರಹಣೆ ಭರ್ತಿಯಾಗಿದೆ</string>
     <!-- Notification body for when user is out of remote storage -->
-    <string name="Notification_youve_reached_your_backup_storage_limit">ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಸಂಗ್ರಹಣೆ ಮಿತಿಯನ್ನು ನೀವು ತಲುಪಿದ್ದೀರಿ. ಚಾಟ್‌ಗಳು ಮತ್ತು ಮೀಡಿಯಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು Signal ನಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಿ.</string>
+    <string name="Notification_youve_reached_your_backup_storage_limit">ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಸಂಗ್ರಹಣೆ ಮಿತಿಯನ್ನು ನೀವು ತಲುಪಿದ್ದೀರಿ. ಚಾಟ್‌ಗಳು ಮತ್ತು ಮೀಡಿಯಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು Collie ನಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಿ.</string>
     <!-- Notification title for when initial backup failed -->
     <string name="Notification_backup_failed">ಬ್ಯಾಕಪ್ ವಿಫಲವಾಗಿದೆ</string>
     <!-- Notification body for when initial backup failed -->
@@ -8327,7 +8403,7 @@
     <!-- Context menu entry that copies a shared contact detail to the clipboard -->
     <string name="SharedContactDetailsScreen__copy">ನಕಲಿಸು</string>
     <!-- Row that invites a shared contact who is not yet on Signal -->
-    <string name="SharedContactDetailsScreen__invite_to_signal">Signal ಗೆ ಆಮಂತ್ರಿಸಿ</string>
+    <string name="SharedContactDetailsScreen__invite_to_signal">Collie ಗೆ ಆಮಂತ್ರಿಸಿ</string>
     <!-- Row that saves a shared contact into the device address book -->
     <string name="SharedContactDetailsScreen__add_to_phone_contacts">ಫೋನ್ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ</string>
     <!-- Row that adds a shared contact to a Signal group -->
@@ -8339,20 +8415,18 @@
     <!-- Toast shown when there is no map app to open a shared address in -->
     <string name="SharedContactDetailsScreen__couldnt_open_maps">ನಕ್ಷೆಗಳನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
     <!-- Subject line of an email invitation to Signal -->
-    <string name="SharedContactDetailsScreen__join_me_on_signal">Signal ನಲ್ಲಿ ನನ್ನೊಂದಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</string>
+    <string name="SharedContactDetailsScreen__join_me_on_signal">Collie ನಲ್ಲಿ ನನ್ನೊಂದಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</string>
 
     <!-- Title of the bottom sheet that confirms the user wants a brand new recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__reset_your_recovery_key">ನಿಮ್ಮ ರಿಕವರಿ ಕೀ ಅನ್ನು ಮರುಹೊಂದಿಸಿ</string>
     <!-- First paragraph of the bottom sheet body, explaining what a reset does. -->
     <string name="ResetRecoveryKeyBottomSheet__resetting_your_recovery_key_will_create_a_new_key">ನಿಮ್ಮ ರಿಕವರಿ ಕೀ ಅನ್ನು ಮರುಹೊಂದಿಸುವುದರಿಂದ ನಿಮ್ಮ Signal Login ಗಾಗಿ ಹೊಸ ಕೀ ಅನ್ನು ರಚಿಸುತ್ತದೆ. ನಿಮ್ಮ ಕೀ ಬೇರೆ ಯಾರಿಗಾದರೂ ತಿಳಿದಿದ್ದರೆ ಮಾತ್ರ ಇದು ಅಗತ್ಯವಿರುತ್ತದೆ.</string>
     <!-- Second paragraph of the bottom sheet body, explaining what a reset means for backups. -->
-    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">ಬ್ಯಾಕಪ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿದ್ದರೆ ನೀವು ಮೀಡಿಯಾ ಸೇರಿದಂತೆ ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಅನ್ನು ಮರು-ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕು. ನೀವು \"Signal ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಜ್ ಮಾಡಿ\" ಆಯ್ಕೆಯನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ ಆಫ್‌ಲೋಡ್ ಮಾಡಿದ ಮೀಡಿಯಾವನ್ನು ಮೊದಲು ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕು.</string>
+    <string name="ResetRecoveryKeyBottomSheet__if_backups_are_enabled_you_will_have_to_re_upload">ಬ್ಯಾಕಪ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿದ್ದರೆ ನೀವು ಮೀಡಿಯಾ ಸೇರಿದಂತೆ ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಅನ್ನು ಮರು-ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕು. ನೀವು \"Collie ಸಂಗ್ರಹಣೆಯನ್ನು ಆಪ್ಟಿಮೈಜ್ ಮಾಡಿ\" ಆಯ್ಕೆಯನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ ಆಫ್‌ಲೋಡ್ ಮಾಡಿದ ಮೀಡಿಯಾವನ್ನು ಮೊದಲು ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕು.</string>
     <!-- Bottom sheet action that continues on to reset the recovery key. -->
     <string name="ResetRecoveryKeyBottomSheet__continue">ಮುಂದುವರಿಸಿ</string>
     <!-- Dialog body shown when the recovery key change limit is exhausted and the user does not have backups enabled. -->
     <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ನೀವು ರಚಿಸಬಹುದಾದ ಹೊಸ ಕೀಗಳ ಸಂಖ್ಯೆ ಮುಗಿದಿದೆ. ನೀವು 7 ದಿನಗಳಲ್ಲಿ ಹೊಸ ರಿಕವರಿ ಕೀಯನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</string>
-
-    <string name="ConversationFragment__deleted_for_me">ನನಗೆ ಮಾತ್ರ ಅಳಿಸಲಾಗಿದೆ</string>
 
     <!-- EOF -->
 </resources>

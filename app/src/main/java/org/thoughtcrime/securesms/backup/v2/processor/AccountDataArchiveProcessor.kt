@@ -69,8 +69,7 @@ object AccountDataArchiveProcessor {
 
     val backupSubscriberRecord = db.inAppPaymentSubscriberTable.getBackupsSubscriber()
 
-    // Molly passphrase locking is a device-local policy, distinct from Signal's screen-lock timer.
-    val screenLockTimeoutMinutes = null
+    val screenLockTimeoutMinutes = signalStore.settingsValues.syncedScreenLockTimeoutMinutes?.toInt()
 
     val mobileAutoDownload = SignalStore.settings.mobileMediaDownloadAllowed
     val wifiAutoDownload = SignalStore.settings.wifiMediaDownloadAllowed
@@ -295,6 +294,8 @@ object AccountDataArchiveProcessor {
       SignalStore.settings.mobileMediaDownloadAllowed = mobileAndWifiDownloadSet
       SignalStore.settings.wifiMediaDownloadAllowed = wifiDownloadSet
     }
+
+    SignalStore.settings.syncedScreenLockTimeoutMinutes = settings.screenLockTimeoutMinutes?.toLong()
 
     val pinReminders = settings.pinReminders
     if (pinReminders != null) {

@@ -5,6 +5,7 @@ import org.signal.appsettings.usernamelinks.UsernameQrCodeColorScheme
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.LegacySharedPrefs
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
 import org.signal.storage.keyvalue.booleanValue
 import org.signal.storage.keyvalue.integerValue
@@ -71,7 +72,6 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
     private const val LAST_APPLIED_PNI_CHANGE_SERVER_TIMESTAMP = "misc.last_applied_pni_change_server_timestamp"
     private const val LAST_MISSING_PLAY_SERVICES_FCM_VERIFICATION_TIME = "misc.last_missing_play_services_fcm_verification_time"
     private const val LAST_PROCESSED_SHARE_DATA_TIMESTAMP = "misc.last_processed_share_data_timestamp"
-    private const val DIRECTORY_REFRESH_TIME = "misc.directory_refresh_time"
     private const val HAS_SUCCESSFULLY_RETRIEVED_DIRECTORY = "misc.has_successfully_retrieved_directory"
     private const val LAST_FULL_CONTACT_SYNC_TIME = "misc.last_full_contact_sync_time"
     private const val NEEDS_FULL_CONTACT_SYNC = "misc.needs_full_contact_sync"
@@ -82,8 +82,6 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
     private const val FIRST_INSTALL_VERSION = "misc.first_install_version"
     private const val NOTIFICATION_CHANNEL_VERSION = "misc.notification_channel_version"
     private const val NOTIFICATION_MESSAGES_CHANNEL_VERSION = "misc.notification_messages_channel_version"
-    private const val RATING_ENABLED = "misc.rating_enabled"
-    private const val RATING_LATER_TIMESTAMP = "misc.rating_later_timestamp"
   }
 
   init {
@@ -97,7 +95,6 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
     Log.i(TAG, "[V1] Migrating misc values from shared prefs.")
 
     store.beginWrite()
-      .putLong(DIRECTORY_REFRESH_TIME, LegacySharedPrefs.getLong(context, "pref_directory_refresh_time", 0))
       .putBoolean(HAS_SUCCESSFULLY_RETRIEVED_DIRECTORY, LegacySharedPrefs.getBoolean(context, "pref_successful_directory", false))
       .putLong(LAST_FULL_CONTACT_SYNC_TIME, LegacySharedPrefs.getLong(context, "pref_last_full_contact_sync_time", 0))
       .putBoolean(NEEDS_FULL_CONTACT_SYNC, LegacySharedPrefs.getBoolean(context, "pref_needs_full_contact_sync", false))
@@ -107,15 +104,12 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
       .putInteger(JOB_MANAGER_VERSION, LegacySharedPrefs.getInteger(context, "pref_job_manager_version", 1))
       .putInteger(NOTIFICATION_CHANNEL_VERSION, LegacySharedPrefs.getInteger(context, "pref_notification_channel_version", 1))
       .putInteger(NOTIFICATION_MESSAGES_CHANNEL_VERSION, LegacySharedPrefs.getInteger(context, "pref_notification_messages_channel_version", 1))
-      .putBoolean(RATING_ENABLED, LegacySharedPrefs.getBoolean(context, "pref_rating_enabled", true))
-      .putLong(RATING_LATER_TIMESTAMP, LegacySharedPrefs.getLong(context, "pref_rating_later", -1))
       // Written last so that it acts as the marker for this migration having run.
-      .putInteger(FIRST_INSTALL_VERSION, LegacySharedPrefs.getInteger(context, "pref_first_install_version", -1))
+      .putInteger(FIRST_INSTALL_VERSION, LegacySharedPrefs.getInteger(context, PlainTextKeyValueStore.FIRST_INSTALL_VERSION, -1))
       .commit()
   }
 
-  /** When the next contact directory refresh is scheduled. */
-  var directoryRefreshTime: Long by longValue(DIRECTORY_REFRESH_TIME, 0)
+  // MOLLY: directoryRefreshTime moved to PlainTextKeyValueStore.
 
   /** Whether we've ever managed to pull down the contact directory. */
   var hasSuccessfullyRetrievedDirectory: Boolean by booleanValue(HAS_SUCCESSFULLY_RETRIEVED_DIRECTORY, false)
@@ -140,12 +134,6 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
   var notificationChannelVersion: Int by integerValue(NOTIFICATION_CHANNEL_VERSION, 1)
 
   var notificationMessagesChannelVersion: Int by integerValue(NOTIFICATION_MESSAGES_CHANNEL_VERSION, 1)
-
-  /** Whether we're still allowed to ask the user to rate the app. */
-  var ratingEnabled: Boolean by booleanValue(RATING_ENABLED, true)
-
-  /** The earliest time we're allowed to ask the user to rate the app again. */
-  var ratingLaterTimestamp: Long by longValue(RATING_LATER_TIMESTAMP, -1)
 
   public override fun onFirstEverAppLaunch() {
     putLong(MESSAGE_REQUEST_ENABLE_TIME, 0)

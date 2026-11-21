@@ -23,9 +23,9 @@ import org.thoughtcrime.securesms.gcm.FcmFetchManager
 import org.thoughtcrime.securesms.gcm.PushFetchHandler
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.concurrent.SerialMonoLifoExecutor
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.MessagingReceiver
@@ -431,7 +431,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
     when {
       // We look directly in the message to avoid its deserialization
       message.contains("\"urgent\":true") -> {
-        if (TextSecurePreferences.isPassphraseLockNotificationsEnabled(context)) {
+        if (PlainTextKeyValueStore.lockNotificationsEnabled) {
           Log.d(TAG, "New urgent message received while app is locked.")
           FcmFetchManager.postMayHaveMessagesNotification(context)
         }

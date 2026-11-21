@@ -60,7 +60,6 @@ class DozeBanner(private val context: Context) : Banner<Unit>() {
       }
     )
   }
-
   private fun markAsPrompted() {
     SignalStore.uiHints.setHasPromptedOptimizeDoze(true)
     enabledState.value = false

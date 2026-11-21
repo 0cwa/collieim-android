@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Đăng ký lại tài khoản</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Cập nhật Signal</string>
+    <string name="preferences_account_update_signal">Cập nhật Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Xóa tất cả dữ liệu</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Đang tạo báo cáo…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Báo cáo của bạn chỉ được tạo ra tại thời điểm bạn chọn xuất báo cáo và không được lưu bởi Signal trên thiết bị của bạn.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Báo cáo của bạn chỉ được tạo ra tại thời điểm bạn chọn xuất báo cáo và không được lưu bởi Collie trên thiết bị của bạn.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -595,7 +595,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Bạn chưa thiết lập mật khẩu!</string>
     <string name="ApplicationPreferencesActivity_disable">Tắt</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Tắt mật khẩu?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Thao tác này sẽ vĩnh viễn mở khóa Signal và thông báo tin nhắn.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Thao tác này sẽ vĩnh viễn mở khóa Collie và thông báo tin nhắn.</string>
     <string name="PrivacySettingsFragment__app_security">Bảo mật ứng dụng</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Chặn chụp màn hình trong danh sách gần đây và bên trong ứng dụng</string>
@@ -640,7 +640,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Cài đặt này không phải là đảm bảo, và bàn phím của bạn có thể bỏ qua nó.</string>
     <string name="preferences__typing_indicators">Thông báo đang nhập</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Chọn người có thể thấy số điện thoại của bạn và người có thể liên hệ với bạn trên Signal với số đó.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Chọn người có thể thấy số điện thoại của bạn và người có thể liên hệ với bạn trên Collie với số đó.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Thanh toán</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -656,7 +656,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Để sau</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Tìm hiểu thêm</string>
 
@@ -682,6 +682,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Không thể nhận gói đăng ký sao lưu của bạn</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Ủng hộ Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Tùy chỉnh nội bộ</string>
     <!-- App settings row that opens linked devices -->
@@ -867,9 +868,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Hồ sơ và các thay đổi trên hồ sơ của bạn sẽ chỉ hiển thị với những người bạn nhắn tin, với các liên hệ, và các nhóm.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Cập nhật Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Cập nhật Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Phiên bản này của Signal đã hết hạn. Cập nhật ngay để tiếp tục sử dụng Signal.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Phiên bản này của Collie đã hết hạn. Cập nhật ngay để tiếp tục sử dụng Collie.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Cập nhật</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -925,8 +926,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Đóng</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Hãy thu thập nhiều huy hiệu đính trên hồ sơ của bạn bằng cách hỗ trợ cho Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal là một ứng dụng phi lợi nhuận, không có quảng cáo cũng như nhà đầu tư nào. Nó chỉ được duy trì và phát triển bởi hàng triệu người dùng như bạn mà thôi.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Trở thành Nhà Ủng hộ</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1006,19 +1010,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Không thể tìm thấy người dùng này.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Để quét mã QR, hãy cho phép Signal truy cập camera của bạn.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Để quét mã QR, hãy cho phép Collie truy cập camera của bạn.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Cho phép Truy cập</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Signal cần quyền truy cập camera của bạn để quét mã QR</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Collie cần quyền truy cập camera của bạn để quét mã QR</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Lưu trữ</string>
     <string name="preferences_storage__storage_usage">Quản lí bộ nhớ</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Dung lượng của Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Dung lượng của Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Tối ưu hóa dung lượng của Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Tối ưu hóa dung lượng của Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Tập tin đa phương tiện không được sử dụng sẽ được gỡ bỏ, nhưng có thể được tải xuống từ bản sao lưu của bạn bất kỳ lúc nào.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1044,7 +1048,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Tập tin đa phương tiện sẽ bị xóa khỏi bản sao lưu trên thiết bị của bạn</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Việc bật tùy chọn \"Tối ưu hóa dung lượng của Signal\" sẽ giúp gỡ các tập tin đa phương tiện cũ khỏi thiết bị của bạn. Bạn có thể tải xuống lại bất cứ lúc nào. Tùy chọn này cũng sẽ xóa các tập tin đa phương tiện cũ khỏi bản sao lưu trên thiết bị của bạn.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Việc bật tùy chọn \"Tối ưu hóa dung lượng của Collie\" sẽ giúp gỡ các tập tin đa phương tiện cũ khỏi thiết bị của bạn. Bạn có thể tải xuống lại bất cứ lúc nào. Tùy chọn này cũng sẽ xóa các tập tin đa phương tiện cũ khỏi bản sao lưu trên thiết bị của bạn.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Bật</string>
 
@@ -1074,7 +1078,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Không mở được bộ chọn.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Để bật thông báo, Signal cần có quyền để hiển thị thông báo.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Để bật thông báo, Collie cần có quyền để hiển thị thông báo.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Bật</string>
     <string name="NotificationsSettingsFragment__calls">Cuộc gọi</string>
@@ -1173,7 +1177,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Tránh kiểm duyệt</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Tránh kiểm duyệt</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Nếu được bật, Signal sẽ thử tránh kiểm duyệt. Không bật tính năng này trừ khi bạn đang ở một nơi đang chặn Signal.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Nếu được bật, Collie sẽ thử tránh kiểm duyệt. Không bật tính năng này trừ khi bạn đang ở một nơi đang chặn Collie.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Tránh kiểm duyệt đã được bật dựa trên số điện thoại trong tài khoản của bạn.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1190,7 +1194,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Xác minh mã khóa tự động</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Khi được bật, Signal sẽ cố gắng tự động xác minh mã hóa của các cuộc trò chuyện 1:1.</string>
+    <string name="preferences_automatic_key_verification_body">Khi được bật, Collie sẽ cố gắng tự động xác minh mã hóa của các cuộc trò chuyện 1:1.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

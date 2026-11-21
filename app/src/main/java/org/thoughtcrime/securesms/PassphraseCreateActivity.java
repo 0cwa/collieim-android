@@ -25,8 +25,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 /**
  * Activity for creating a user's local encryption passphrase.
@@ -80,7 +80,7 @@ public class PassphraseCreateActivity extends PassphraseActivity {
       generateSecrets(MasterSecretUtil.generateMasterSecret(this, MasterSecretUtil.getUnencryptedPassphrase()));
     }
 
-    TextSecurePreferences.setPassphraseLockEnabled(this, enabled);
+    PlainTextKeyValueStore.setPassphraseLockEnabled(enabled);
   }
 
   private void generateSecrets(MasterSecret masterSecret) {

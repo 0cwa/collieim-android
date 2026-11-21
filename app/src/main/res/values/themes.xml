@@ -13,7 +13,21 @@
         <item name="contactCheckboxBackground">@drawable/contact_selection_checkbox</item>
     </style>
 
-    <!-- The media viewer fades its backdrop to reveal the chat during drag-to-dismiss. -->
+    <!-- MOLLY: Theme.Signal.DayNight.NoActionBar now in light_themes.xml -->
+
+    <style name="Theme.Molly.Starting.Light" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/molly_background_light</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+    </style>
+
+    <style name="Theme.Molly.Starting.Dark" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/molly_background_dark</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_monochrome</item>
+    </style>
+
+    <!-- The media viewer paints its own backdrop, and fades it to reveal the chat beneath during drag-to-dismiss. -->
     <style name="Signal.DayNight.NoActionBar.MediaViewer" parent="Theme.Signal.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -106,6 +120,104 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="Theme.Molly.Material3.Light" parent="@style/Theme.Material3.Light">
+        <item name="colorPrimaryInverse">@color/molly_primary_inverse_light</item>
+        <item name="colorPrimary">@color/molly_primary_light</item>
+        <item name="colorPrimaryDark">@color/molly_primary_light</item>
+        <item name="colorOnPrimary">@color/molly_on_primary_light</item>
+        <item name="colorPrimaryContainer">@color/molly_primary_container_light</item>
+        <item name="colorOnPrimaryContainer">@color/molly_on_primary_container_light</item>
+        <item name="colorPrimaryFixed">@color/molly_primary_fixed</item>
+        <item name="colorPrimaryFixedDim">@color/molly_primary_fixed_dim</item>
+        <item name="colorOnPrimaryFixed">@color/molly_on_primary_fixed</item>
+        <item name="colorSecondary">@color/molly_secondary_light</item>
+        <item name="colorOnSecondary">@color/molly_on_secondary_light</item>
+        <item name="colorSecondaryContainer">@color/molly_secondary_container_light</item>
+        <item name="colorOnSecondaryContainer">@color/molly_on_secondary_container_light</item>
+        <item name="colorSecondaryFixed">@color/molly_secondary_fixed</item>
+        <item name="colorSecondaryFixedDim">@color/molly_secondary_fixed_dim</item>
+        <item name="colorOnSecondaryFixed">@color/molly_on_secondary_fixed</item>
+        <item name="colorSurfaceInverse">@color/molly_surface_inverse_light</item>
+        <item name="colorSurfaceVariant">@color/molly_surface_variant_light</item>
+        <item name="colorSurface">@color/molly_surface_light</item>
+        <item name="colorSurfaceDim">@color/molly_surface_dim_light</item>
+        <item name="colorSurfaceContainerHighest">@color/molly_surface_container_highest_light</item>
+        <item name="colorSurfaceContainerHigh">@color/molly_surface_container_high_light</item>
+        <item name="colorSurfaceContainer">@color/molly_surface_container_light</item>
+        <item name="colorSurfaceContainerLow">@color/molly_surface_container_low_light</item>
+        <item name="colorSurfaceBright">@color/molly_surface_bright_light</item>
+        <item name="colorSurfaceContainerLowest">@color/molly_surface_container_lowest_light</item>
+        <item name="colorOnSurfaceInverse">@color/molly_on_surface_inverse_light</item>
+        <item name="colorOnSurface">@color/molly_on_surface_light</item>
+        <item name="colorOnBackground">@color/molly_on_background_light</item>
+        <item name="colorOnSurfaceVariant">@color/molly_on_surface_variant_light</item>
+        <item name="colorOutline">@color/molly_outline_light</item>
+        <item name="colorOutlineVariant">@color/molly_outline_variant_light</item>
+        <item name="colorError">@color/molly_error_light</item>
+        <item name="colorOnError">@color/molly_on_error_light</item>
+        <item name="colorErrorContainer">@color/molly_error_container_light</item>
+        <item name="colorOnErrorContainer">@color/molly_on_error_container_light</item>
+        <item name="colorTertiary">@color/molly_tertiary_light</item>
+        <item name="colorOnTertiary">@color/molly_on_tertiary_light</item>
+        <item name="colorTertiaryContainer">@color/molly_tertiary_container_light</item>
+        <item name="colorOnTertiaryContainer">@color/molly_on_tertiary_container_light</item>
+        <item name="colorTertiaryFixed">@color/molly_tertiary_fixed</item>
+        <item name="colorTertiaryFixedDim">@color/molly_tertiary_fixed_dim</item>
+        <item name="colorOnTertiaryFixed">@color/molly_on_tertiary_fixed</item>
+        <item name="colorOnTertiaryFixedVariant">@color/molly_on_tertiary_fixed_variant</item>
+        <item name="colorAccent">@color/molly_primary_light</item>
+        <item name="colorControlActivated">@color/molly_primary_light</item>
+    </style>
+
+    <style name="Theme.Molly.Material3.Dark" parent="@style/Theme.Material3.Dark">
+        <item name="colorPrimaryInverse">@color/molly_primary_inverse_dark</item>
+        <item name="colorPrimary">@color/molly_primary_dark</item>
+        <item name="colorPrimaryDark">@color/molly_primary_dark</item>
+        <item name="colorOnPrimary">@color/molly_on_primary_dark</item>
+        <item name="colorPrimaryContainer">@color/molly_primary_container_dark</item>
+        <item name="colorOnPrimaryContainer">@color/molly_on_primary_container_dark</item>
+        <item name="colorPrimaryFixed">@color/molly_primary_fixed</item>
+        <item name="colorPrimaryFixedDim">@color/molly_primary_fixed_dim</item>
+        <item name="colorOnPrimaryFixed">@color/molly_on_primary_fixed</item>
+        <item name="colorSecondary">@color/molly_secondary_dark</item>
+        <item name="colorOnSecondary">@color/molly_on_secondary_dark</item>
+        <item name="colorSecondaryContainer">@color/molly_secondary_container_dark</item>
+        <item name="colorOnSecondaryContainer">@color/molly_on_secondary_container_dark</item>
+        <item name="colorSecondaryFixed">@color/molly_secondary_fixed</item>
+        <item name="colorSecondaryFixedDim">@color/molly_secondary_fixed_dim</item>
+        <item name="colorOnSecondaryFixed">@color/molly_on_secondary_fixed</item>
+        <item name="colorSurfaceInverse">@color/molly_surface_inverse_dark</item>
+        <item name="colorSurfaceVariant">@color/molly_surface_variant_dark</item>
+        <item name="colorSurface">@color/molly_surface_dark</item>
+        <item name="colorSurfaceBright">@color/molly_surface_bright_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/molly_surface_container_highest_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/molly_surface_container_high_dark</item>
+        <item name="colorSurfaceContainer">@color/molly_surface_container_dark</item>
+        <item name="colorSurfaceContainerLow">@color/molly_surface_container_low_dark</item>
+        <item name="colorSurfaceDim">@color/molly_surface_dim_dark</item>
+        <item name="colorSurfaceContainerLowest">@color/molly_surface_container_lowest_dark</item>
+        <item name="colorOnSurfaceInverse">@color/molly_on_surface_inverse_dark</item>
+        <item name="colorOnSurface">@color/molly_on_surface_dark</item>
+        <item name="colorOnBackground">@color/molly_on_background_dark</item>
+        <item name="colorOnSurfaceVariant">@color/molly_on_surface_variant_dark</item>
+        <item name="colorOutline">@color/molly_outline_dark</item>
+        <item name="colorOutlineVariant">@color/molly_outline_variant_dark</item>
+        <item name="colorError">@color/molly_error_dark</item>
+        <item name="colorOnError">@color/molly_on_error_dark</item>
+        <item name="colorErrorContainer">@color/molly_error_container_dark</item>
+        <item name="colorOnErrorContainer">@color/molly_on_error_container_dark</item>
+        <item name="colorTertiary">@color/molly_tertiary_dark</item>
+        <item name="colorOnTertiary">@color/molly_on_tertiary_dark</item>
+        <item name="colorTertiaryContainer">@color/molly_tertiary_container_dark</item>
+        <item name="colorOnTertiaryContainer">@color/molly_on_tertiary_container_dark</item>
+        <item name="colorTertiaryFixed">@color/molly_tertiary_fixed</item>
+        <item name="colorTertiaryFixedDim">@color/molly_tertiary_fixed_dim</item>
+        <item name="colorOnTertiaryFixed">@color/molly_on_tertiary_fixed</item>
+        <item name="colorOnTertiaryFixedVariant">@color/molly_on_tertiary_fixed_variant</item>
+        <item name="colorAccent">@color/molly_primary_dark</item>
+        <item name="colorControlActivated">@color/molly_primary_dark</item>
+    </style>
+
     <style name="TextSecure.LightTheme" parent="TextSecure.BaseLightTheme">
         <!-- Allows for Overrides -->
     </style>
@@ -187,7 +299,7 @@
         <item name="materialCalendarTheme">@style/Signal.ThemeOverlay.Calendar</item>
         <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Filled</item>
         <item name="collapsingToolbarLayoutStyle">@style/Signal.Widget.CollapsingToolbar</item>
-    <item name="dynamic_colors">false</item>
+        <item name="dynamic_colors">false</item>
         <item name="android:navigationBarColor">@color/molly_surface_light</item>
         <item name="android:statusBarColor">@color/molly_surface_light</item>
         <item name="android:windowLightNavigationBar">true</item>
@@ -258,10 +370,10 @@
         <item name="message_request_bar_background_normal">?attr/colorSurfaceContainerHigh</item>
         <item name="message_request_bar_denyForeground_normal">?attr/colorError</item>
         <item name="message_request_bar_acceptForeground_normal">?attr/colorSurfaceInverse</item>
-        <item name="message_request_bar_container_background_wallpaper">@color/wallpaper_bubble_color</item> --&gt;
-        <item name="message_request_bar_background_wallpaper">@color/signal_colorNeutralVariant</item> --&gt;
+        <item name="message_request_bar_container_background_wallpaper">@color/wallpaper_bubble_color</item> -->
+        <item name="message_request_bar_background_wallpaper">@color/signal_colorNeutralVariant</item> -->
         <item name="message_request_bar_denyForeground_wallpaper">?attr/colorError</item>
-        <item name="message_request_bar_acceptForeground_wallpaper">@color/signal_colorNeutralInverse</item> --&gt;
+        <item name="message_request_bar_acceptForeground_wallpaper">@color/signal_colorNeutralInverse</item> -->
         <item name="safety_tip_background">@color/core_white</item>
         <item name="safety_tip_image_background">#99FFF4E5</item>
 
@@ -359,7 +471,7 @@
         <item name="materialCalendarTheme">@style/Signal.ThemeOverlay.Calendar</item>
         <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Filled</item>
         <item name="collapsingToolbarLayoutStyle">@style/Signal.Widget.CollapsingToolbar</item>
-    <item name="dynamic_colors">false</item>
+        <item name="dynamic_colors">false</item>
         <item name="android:navigationBarColor">@color/molly_surface_dark</item>
         <item name="android:statusBarColor">@color/molly_surface_dark</item>
         <item name="android:windowLightNavigationBar">false</item>
@@ -490,6 +602,8 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <!-- MOLLY: Deprecated themes -->
+
     <style name="TextSecure.DarkTheme.WebRTCCall">
         <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
         <item name="android:windowActionBar">false</item>
@@ -499,14 +613,19 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <!--
+      The bottom-sheet dialogs ask Material to lay their window out edge to edge, which it can only do when the
+      navigation bar colour below is non-opaque. Re-homed here from the API-qualified theme files the fork merged
+      into this one.
+    -->
     <style name="Theme.Signal.Light.BottomSheetDialog" parent="Theme.Material3.Light.BottomSheetDialog">
         <item name="android:navigationBarColor">@color/signal_bottom_sheet_navigation_bar</item>
-    <item name="enableEdgeToEdge">true</item>
+        <item name="enableEdgeToEdge">true</item>
     </style>
 
     <style name="Theme.Signal.BottomSheetDialog" parent="Theme.Material3.Dark.BottomSheetDialog">
         <item name="android:navigationBarColor">@color/signal_bottom_sheet_navigation_bar</item>
-    <item name="enableEdgeToEdge">true</item>
+        <item name="enableEdgeToEdge">true</item>
     </style>
 
     <style name="Theme.Signal.BottomSheetDialog.Fixed" parent="Theme.Design.BottomSheetDialog">
@@ -515,13 +634,15 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
-    <item name="enableEdgeToEdge">true</item>
+        <item name="enableEdgeToEdge">true</item>
     </style>
 
     <style name="Theme.Signal.BottomSheetDialog.Fixed.ReactWithAny">
         <item name="bottomSheetStyle">@style/Widget.Signal.BottomSheet.ReactWithAny</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
+
+    <!-- MOLLY: Signal.DayNight.Dialog.Animated.Bottom moved to signal_styles.xml -->
 
     <style name="Widget.Signal.BottomSheet.ReactWithAny" parent="Widget.Material3.BottomSheet">
         <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
@@ -723,114 +844,4 @@
         <item name="colorControlHighlight">?attr/signal_accent_primary</item>
         <item name="colorControlActivated">?attr/signal_accent_primary</item>
     </style>
-<style name="Theme.Molly.Starting.Light" parent="Theme.SplashScreen.IconBackground">
-        <item name="windowSplashScreenBackground">@color/molly_background_light</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_light</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
-    </style>
-
-    <style name="Theme.Molly.Starting.Dark" parent="Theme.SplashScreen.IconBackground">
-        <item name="windowSplashScreenBackground">@color/molly_background_dark</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_dark</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_monochrome</item>
-    </style>
-
-    <style name="Theme.Molly.Material3.Light" parent="@style/Theme.Material3.Light">
-        <item name="colorPrimaryInverse">@color/molly_primary_inverse_light</item>
-        <item name="colorPrimary">@color/molly_primary_light</item>
-        <item name="colorPrimaryDark">@color/molly_primary_light</item>
-        <item name="colorOnPrimary">@color/molly_on_primary_light</item>
-        <item name="colorPrimaryContainer">@color/molly_primary_container_light</item>
-        <item name="colorOnPrimaryContainer">@color/molly_on_primary_container_light</item>
-        <item name="colorPrimaryFixed">@color/molly_primary_fixed</item>
-        <item name="colorPrimaryFixedDim">@color/molly_primary_fixed_dim</item>
-        <item name="colorOnPrimaryFixed">@color/molly_on_primary_fixed</item>
-        <item name="colorSecondary">@color/molly_secondary_light</item>
-        <item name="colorOnSecondary">@color/molly_on_secondary_light</item>
-        <item name="colorSecondaryContainer">@color/molly_secondary_container_light</item>
-        <item name="colorOnSecondaryContainer">@color/molly_on_secondary_container_light</item>
-        <item name="colorSecondaryFixed">@color/molly_secondary_fixed</item>
-        <item name="colorSecondaryFixedDim">@color/molly_secondary_fixed_dim</item>
-        <item name="colorOnSecondaryFixed">@color/molly_on_secondary_fixed</item>
-        <item name="colorSurfaceInverse">@color/molly_surface_inverse_light</item>
-        <item name="colorSurfaceVariant">@color/molly_surface_variant_light</item>
-        <item name="colorSurface">@color/molly_surface_light</item>
-        <item name="colorSurfaceDim">@color/molly_surface_dim_light</item>
-        <item name="colorSurfaceContainerHighest">@color/molly_surface_container_highest_light</item>
-        <item name="colorSurfaceContainerHigh">@color/molly_surface_container_high_light</item>
-        <item name="colorSurfaceContainer">@color/molly_surface_container_light</item>
-        <item name="colorSurfaceContainerLow">@color/molly_surface_container_low_light</item>
-        <item name="colorSurfaceBright">@color/molly_surface_bright_light</item>
-        <item name="colorSurfaceContainerLowest">@color/molly_surface_container_lowest_light</item>
-        <item name="colorOnSurfaceInverse">@color/molly_on_surface_inverse_light</item>
-        <item name="colorOnSurface">@color/molly_on_surface_light</item>
-        <item name="colorOnBackground">@color/molly_on_background_light</item>
-        <item name="colorOnSurfaceVariant">@color/molly_on_surface_variant_light</item>
-        <item name="colorOutline">@color/molly_outline_light</item>
-        <item name="colorOutlineVariant">@color/molly_outline_variant_light</item>
-        <item name="colorError">@color/molly_error_light</item>
-        <item name="colorOnError">@color/molly_on_error_light</item>
-        <item name="colorErrorContainer">@color/molly_error_container_light</item>
-        <item name="colorOnErrorContainer">@color/molly_on_error_container_light</item>
-        <item name="colorTertiary">@color/molly_tertiary_light</item>
-        <item name="colorOnTertiary">@color/molly_on_tertiary_light</item>
-        <item name="colorTertiaryContainer">@color/molly_tertiary_container_light</item>
-        <item name="colorOnTertiaryContainer">@color/molly_on_tertiary_container_light</item>
-        <item name="colorTertiaryFixed">@color/molly_tertiary_fixed</item>
-        <item name="colorTertiaryFixedDim">@color/molly_tertiary_fixed_dim</item>
-        <item name="colorOnTertiaryFixed">@color/molly_on_tertiary_fixed</item>
-        <item name="colorOnTertiaryFixedVariant">@color/molly_on_tertiary_fixed_variant</item>
-        <item name="colorAccent">@color/molly_primary_light</item>
-        <item name="colorControlActivated">@color/molly_primary_light</item>
-    </style>
-
-    <style name="Theme.Molly.Material3.Dark" parent="@style/Theme.Material3.Dark">
-        <item name="colorPrimaryInverse">@color/molly_primary_inverse_dark</item>
-        <item name="colorPrimary">@color/molly_primary_dark</item>
-        <item name="colorPrimaryDark">@color/molly_primary_dark</item>
-        <item name="colorOnPrimary">@color/molly_on_primary_dark</item>
-        <item name="colorPrimaryContainer">@color/molly_primary_container_dark</item>
-        <item name="colorOnPrimaryContainer">@color/molly_on_primary_container_dark</item>
-        <item name="colorPrimaryFixed">@color/molly_primary_fixed</item>
-        <item name="colorPrimaryFixedDim">@color/molly_primary_fixed_dim</item>
-        <item name="colorOnPrimaryFixed">@color/molly_on_primary_fixed</item>
-        <item name="colorSecondary">@color/molly_secondary_dark</item>
-        <item name="colorOnSecondary">@color/molly_on_secondary_dark</item>
-        <item name="colorSecondaryContainer">@color/molly_secondary_container_dark</item>
-        <item name="colorOnSecondaryContainer">@color/molly_on_secondary_container_dark</item>
-        <item name="colorSecondaryFixed">@color/molly_secondary_fixed</item>
-        <item name="colorSecondaryFixedDim">@color/molly_secondary_fixed_dim</item>
-        <item name="colorOnSecondaryFixed">@color/molly_on_secondary_fixed</item>
-        <item name="colorSurfaceInverse">@color/molly_surface_inverse_dark</item>
-        <item name="colorSurfaceVariant">@color/molly_surface_variant_dark</item>
-        <item name="colorSurface">@color/molly_surface_dark</item>
-        <item name="colorSurfaceBright">@color/molly_surface_bright_dark</item>
-        <item name="colorSurfaceContainerHighest">@color/molly_surface_container_highest_dark</item>
-        <item name="colorSurfaceContainerHigh">@color/molly_surface_container_high_dark</item>
-        <item name="colorSurfaceContainer">@color/molly_surface_container_dark</item>
-        <item name="colorSurfaceContainerLow">@color/molly_surface_container_low_dark</item>
-        <item name="colorSurfaceDim">@color/molly_surface_dim_dark</item>
-        <item name="colorSurfaceContainerLowest">@color/molly_surface_container_lowest_dark</item>
-        <item name="colorOnSurfaceInverse">@color/molly_on_surface_inverse_dark</item>
-        <item name="colorOnSurface">@color/molly_on_surface_dark</item>
-        <item name="colorOnBackground">@color/molly_on_background_dark</item>
-        <item name="colorOnSurfaceVariant">@color/molly_on_surface_variant_dark</item>
-        <item name="colorOutline">@color/molly_outline_dark</item>
-        <item name="colorOutlineVariant">@color/molly_outline_variant_dark</item>
-        <item name="colorError">@color/molly_error_dark</item>
-        <item name="colorOnError">@color/molly_on_error_dark</item>
-        <item name="colorErrorContainer">@color/molly_error_container_dark</item>
-        <item name="colorOnErrorContainer">@color/molly_on_error_container_dark</item>
-        <item name="colorTertiary">@color/molly_tertiary_dark</item>
-        <item name="colorOnTertiary">@color/molly_on_tertiary_dark</item>
-        <item name="colorTertiaryContainer">@color/molly_tertiary_container_dark</item>
-        <item name="colorOnTertiaryContainer">@color/molly_on_tertiary_container_dark</item>
-        <item name="colorTertiaryFixed">@color/molly_tertiary_fixed</item>
-        <item name="colorTertiaryFixedDim">@color/molly_tertiary_fixed_dim</item>
-        <item name="colorOnTertiaryFixed">@color/molly_on_tertiary_fixed</item>
-        <item name="colorOnTertiaryFixedVariant">@color/molly_on_tertiary_fixed_variant</item>
-        <item name="colorAccent">@color/molly_primary_dark</item>
-        <item name="colorControlActivated">@color/molly_primary_dark</item>
-    </style>
-
-    </resources>
+</resources>

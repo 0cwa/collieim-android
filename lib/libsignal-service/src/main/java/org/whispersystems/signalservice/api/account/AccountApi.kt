@@ -66,9 +66,11 @@ class AccountApi(private val authWebSocket: SignalWebSocket.AuthenticatedWebSock
    * Removes any push tokens associated with this device. Afterwards, the server will assume this device
    * polls for new messages over an open websocket.
    */
-  suspend fun clearFcmToken(): RequestResult<Unit, Nothing> {
-    return authWebSocket.runCatchingWithChatConnection { connection ->
-      AuthDevicesService(connection).clearPushToken()
+  fun clearFcmToken(): RequestResult<Unit, Nothing> {
+    return runBlocking {
+      authWebSocket.runCatchingWithChatConnection { connection ->
+        AuthDevicesService(connection).clearPushToken()
+      }
     }
   }
 

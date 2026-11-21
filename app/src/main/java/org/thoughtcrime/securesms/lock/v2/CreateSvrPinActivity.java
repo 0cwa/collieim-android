@@ -13,7 +13,6 @@ import androidx.navigation.Navigation;
 import org.thoughtcrime.securesms.PassphrasePromptActivity;
 import org.thoughtcrime.securesms.PassphraseRequiredActivity;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.pin.RecoveryPinGuard;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.util.DynamicRegistrationTheme;
@@ -59,13 +58,6 @@ public class CreateSvrPinActivity extends PassphraseRequiredActivity {
   @Override
   public void onCreate(Bundle bundle, boolean ready) {
     super.onCreate(bundle, ready);
-
-    if (KeyCachingService.isLocked()) {
-      startActivity(getPromptPassphraseIntent());
-      finish();
-      return;
-    }
-
     dynamicTheme.onCreate(this);
 
     CreateSvrPinFragmentArgs arguments = CreateSvrPinFragmentArgs.fromBundle(getIntent().getExtras());

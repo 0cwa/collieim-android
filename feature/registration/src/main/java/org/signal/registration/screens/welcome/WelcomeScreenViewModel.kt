@@ -31,6 +31,7 @@ class WelcomeScreenViewModel(
   repository: RegistrationRepository,
   private val parentState: StateFlow<RegistrationFlowState>,
   private val parentEventEmitter: (RegistrationFlowEvent) -> Unit,
+  private val enableNetwork: () -> Unit,
   private val hasPermissions: () -> Boolean,
   private val getRequiredLinkedDevicePermission: () -> String?
 ) : EventDrivenViewModel<WelcomeScreenEvents>(TAG, shouldLogEvents = false) {
@@ -63,10 +64,20 @@ class WelcomeScreenViewModel(
   fun applyEvent(state: WelcomeScreenState, event: WelcomeScreenEvents, parentEventEmitter: (RegistrationFlowEvent) -> Unit, stateEmitter: (WelcomeScreenState) -> Unit) {
     when (event) {
       is WelcomeScreenEvents.ParentStateChanged -> stateEmitter(applyParentState(state, event.parentState))
-      WelcomeScreenEvents.Continue -> navigateRequestingPermissions(RegistrationRoute.PhoneNumberEntry, parentEventEmitter)
-      WelcomeScreenEvents.HasOldPhone -> navigateRequestingPermissions(RegistrationRoute.QuickRestoreQrScan, parentEventEmitter)
-      WelcomeScreenEvents.DoesNotHaveOldPhone -> navigateRequestingPermissions(RegistrationRoute.ArchiveRestoreSelection.forManualRestore(), parentEventEmitter)
+      WelcomeScreenEvents.Continue -> {
+        enableNetwork()
+        navigateRequestingPermissions(RegistrationRoute.PhoneNumberEntry, parentEventEmitter)
+      }
+      WelcomeScreenEvents.HasOldPhone -> {
+        enableNetwork()
+        navigateRequestingPermissions(RegistrationRoute.QuickRestoreQrScan, parentEventEmitter)
+      }
+      WelcomeScreenEvents.DoesNotHaveOldPhone -> {
+        enableNetwork()
+        navigateRequestingPermissions(RegistrationRoute.ArchiveRestoreSelection.forManualRestore(), parentEventEmitter)
+      }
       WelcomeScreenEvents.LinkDevice -> {
+        enableNetwork()
         if (getRequiredLinkedDevicePermission().isNullOrBlank()) {
           parentEventEmitter.navigateTo(RegistrationRoute.LinkAccount())
         } else {
@@ -74,6 +85,7 @@ class WelcomeScreenViewModel(
         }
       }
       WelcomeScreenEvents.ViewTermsAndPrivacy -> _actions.trySend(WelcomeScreenActions.ViewTermsAndPrivacy)
+      WelcomeScreenEvents.ViewProxySettings -> _actions.trySend(WelcomeScreenActions.ViewProxySettings)
     }
   }
 

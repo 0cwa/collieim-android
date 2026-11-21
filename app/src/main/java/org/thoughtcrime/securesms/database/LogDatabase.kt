@@ -9,11 +9,9 @@ import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import org.signal.core.database.SqlUtil
 import org.signal.core.database.delete
 import org.signal.core.database.deleteAll
-import org.signal.core.database.exists
 import org.signal.core.database.getTableRowCount
 import org.signal.core.database.insertInto
 import org.signal.core.database.select
-import org.signal.core.database.update
 import org.signal.core.database.withinTransaction
 import org.signal.core.util.Stopwatch
 import org.signal.core.util.logging.Log

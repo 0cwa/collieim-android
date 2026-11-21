@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.viewinterop.AndroidView
@@ -40,7 +41,7 @@ import org.signal.core.ui.compose.navigationBarsCompat
 import org.signal.core.ui.compose.rememberViewModelStoreOwner
 import org.signal.core.ui.compose.safeDrawingCompat
 import org.signal.core.ui.compose.statusBarsCompat
-import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.mediakeyboard.MediaKeyboard
 import org.signal.mediakeyboard.MediaKeyboardAction
 import org.signal.mediakeyboard.MediaKeyboardTab
@@ -91,7 +92,7 @@ fun ChatScreen(
 ) {
   val minimumHeight = dimensionResource(R.dimen.default_custom_keyboard_size)
   val topMargin = dimensionResource(R.dimen.min_custom_keyboard_top_margin_portrait)
-  val mediaKeyboardColor = SignalTheme.colors.colorSurface1
+  val mediaKeyboardColor = Color(ThemeUtil.getThemedColor(LocalContext.current, R.attr.mediaKeyboardBackgroundColor))
   val attachmentKeyboardColor = scrims.attachmentKeyboardColor
 
   val minimumVisibleContent = with(LocalDensity.current) { minimumVisibleContentPx.toDp() }

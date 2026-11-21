@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Đến camera</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal cần quyền để hiển thị ảnh và video của bạn</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie cần quyền để hiển thị ảnh và video của bạn</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Cho phép Truy cập</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Không tìm thấy ảnh hoặc video. Signal chỉ có quyền truy cập ảnh và video bạn đã chọn.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Không tìm thấy ảnh hoặc video. Collie chỉ có quyền truy cập ảnh và video bạn đã chọn.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal chỉ có thể truy cập một số ảnh hoặc video</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie chỉ có thể truy cập một số ảnh hoặc video</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Quản lý</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Để hiển thị ảnh và video:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Signal cần quyền truy cập để hiển thị ảnh và video của bạn.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Collie cần quyền truy cập để hiển thị ảnh và video của bạn.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Ảnh</string>
@@ -208,7 +208,7 @@
         <item quantity="other">%1$d mục được đặt thành chất lượng tiêu chuẩn</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Signal cần quyền truy cập Bộ nhớ để lưu tệp vào bộ nhớ, nhưng đã bị từ chối vĩnh viễn. Vui lòng mở cài đặt ứng dụng, chọn \"Quyền\" và bật \"Bộ nhớ\".</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Collie cần quyền truy cập Bộ nhớ để lưu tệp vào bộ nhớ, nhưng đã bị từ chối vĩnh viễn. Vui lòng mở cài đặt ứng dụng, chọn \"Quyền\" và bật \"Bộ nhớ\".</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Video sẽ được gửi mà không có âm thanh</string>
 
@@ -229,7 +229,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Không thể chuyển tài khoản</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Thiết bị bạn đang tiến hành chuyển đến đã cũ. Cập nhật Signal trên thiết bị đó và thử lại.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Thiết bị bạn đang tiến hành chuyển đến đã cũ. Cập nhật Collie trên thiết bị đó và thử lại.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

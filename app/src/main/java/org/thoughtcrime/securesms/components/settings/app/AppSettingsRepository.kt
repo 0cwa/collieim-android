@@ -21,6 +21,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.apkupdate.CollieUpdateProfile
 import org.thoughtcrime.securesms.util.SignalE164Util
 
 /**
@@ -57,7 +58,7 @@ object AppSettingsRepository {
 
   fun showPayments(): Boolean = false
 
-  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_COLLIE_UPDATES
+  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_COLLIE_UPDATES && CollieUpdateProfile.forApplicationId(BuildConfig.APPLICATION_ID) != null
 
   fun getBackupFailureState(): BackupFailureState {
     return when {

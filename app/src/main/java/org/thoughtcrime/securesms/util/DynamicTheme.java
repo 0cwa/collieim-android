@@ -15,6 +15,7 @@ import com.google.android.material.color.DynamicColors;
 
 import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.logging.Log;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.Theme;
 import org.signal.core.util.ConfigurationUtil;
@@ -32,14 +33,22 @@ public class DynamicTheme {
   private static final int regularTheme = R.style.Signal_DayNight;
   private static final int dynamicTheme = R.style.Theme_Molly_Dynamic;
 
+  protected @StyleRes int getRegularTheme() {
+    return regularTheme;
+  }
+
+  protected @StyleRes int getDynamicTheme() {
+    return dynamicTheme;
+  }
+
   public void onCreate(@NonNull Activity activity) {
     int     previousGlobalConfiguration = globalNightModeConfiguration;
     boolean previousGlobalDynamicColors = globalDynamicColors;
 
     onCreateNightModeConfiguration = ConfigurationUtil.getNightModeConfiguration(activity);
-    onCreateTheme                  = getTheme(activity);
+    onCreateTheme                  = getTheme();
     globalNightModeConfiguration   = onCreateNightModeConfiguration;
-    globalDynamicColors            = useDynamicColors(activity);
+    globalDynamicColors            = useDynamicColors();
 
     activity.setTheme(onCreateTheme);
 
@@ -50,7 +59,7 @@ public class DynamicTheme {
   }
 
   public void onResume(@NonNull Activity activity) {
-    if (onCreateTheme != getTheme(activity)) {
+    if (onCreateTheme != getTheme()) {
       // Changing palettes does not change uiMode, so AppCompat will not recreate a retained activity.
       // Rebuild its view and Compose hierarchies with the selected theme when returning from Settings.
       Log.d(TAG, "Theme changed since creation. Recreating activity.");
@@ -62,20 +71,12 @@ public class DynamicTheme {
     }
   }
 
-  protected @StyleRes int getRegularTheme() {
-    return regularTheme;
+  public final @StyleRes int getTheme() {
+    return useDynamicColors() ? getDynamicTheme() : getRegularTheme();
   }
 
-  protected @StyleRes int getDynamicTheme() {
-    return dynamicTheme;
-  }
-
-  public final @StyleRes int getTheme(@NonNull Context context) {
-    return useDynamicColors(context) ? getDynamicTheme() : getRegularTheme();
-  }
-
-  public static boolean useDynamicColors(@NonNull Context context) {
-    return isDynamicColorsAvailable() && TextSecurePreferences.isDynamicColorsEnabled(context);
+  public static boolean useDynamicColors() {
+    return isDynamicColorsAvailable() && PlainTextKeyValueStore.isDynamicColorsEnabled();
   }
 
   public static boolean isDynamicColorsAvailable() {
@@ -83,7 +84,7 @@ public class DynamicTheme {
   }
 
   public static @ColorInt int resolveColor(@NonNull Context context, int colorRef) {
-    int resId = useDynamicColors(context) ? dynamicTheme : regularTheme;
+    int resId = useDynamicColors() ? dynamicTheme : regularTheme;
     ContextThemeWrapper themeWrapper = new ContextThemeWrapper(context, resId);
     return ThemeUtil.getThemedColor(context, colorRef, themeWrapper.getTheme());
   }
@@ -93,7 +94,7 @@ public class DynamicTheme {
   }
 
   public static void setDefaultDayNightMode(@NonNull Context context) {
-    Theme theme = Theme.deserialize(TextSecurePreferences.getTheme(context));
+    Theme theme = Theme.deserialize(PlainTextKeyValueStore.getTheme());
 
     if (theme == Theme.SYSTEM) {
       Log.d(TAG, "Setting to follow system expecting: " + ConfigurationUtil.getNightModeConfiguration(context.getApplicationContext()));
@@ -113,7 +114,7 @@ public class DynamicTheme {
    * Takes the system theme into account.
    */
   public static boolean isDarkTheme(@NonNull Context context) {
-    Theme theme = Theme.deserialize(TextSecurePreferences.getTheme(context));
+    Theme theme = Theme.deserialize(PlainTextKeyValueStore.getTheme());
 
     if (theme == Theme.SYSTEM && systemThemeAvailable()) {
       return isSystemInDarkTheme(context);

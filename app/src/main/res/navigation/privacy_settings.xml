@@ -9,11 +9,6 @@
         android:name="org.thoughtcrime.securesms.components.settings.app.privacy.PrivacySettingsFragment"
         android:label="privacy_settings_fragment">
 
-        <argument
-            android:name="show_payment_lock"
-            android:defaultValue="false"
-            app:argType="boolean" />
-
         <action
             android:id="@+id/action_privacySettingsFragment_to_blockedUsersActivity"
             app:destination="@id/blockedUsersActivity"
@@ -42,7 +37,6 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
-
     </fragment>
 
     <activity

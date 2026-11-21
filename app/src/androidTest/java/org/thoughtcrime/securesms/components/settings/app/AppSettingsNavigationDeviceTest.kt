@@ -12,6 +12,7 @@ import android.os.Environment
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -27,6 +28,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.signal.appsettings.account.AccountSettingsTestTags
 import org.signal.appsettings.appearance.AppearanceSettingsTestTags
 import org.signal.appsettings.home.AppSettingsTestTags
 import org.signal.appsettings.routes.AppSettingsNavigation
@@ -37,12 +39,15 @@ import org.signal.core.ui.compose.split.detailEntry
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.isSplitPane
 import org.signal.remoteconfig.RemoteConfig
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.testing.RawFlag
 import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.Espresso.pressBackUnconditionally
 import org.junit.Assert.assertTrue
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.Assert.assertEquals
 
@@ -92,6 +97,7 @@ class AppSettingsNavigationDeviceTest {
 
     ActivityScenario.launch<AppSettingsNavigationActivity>(intent).use { scenario ->
       awaitNode(AppSettingsTestTags.ROW_APPEARANCE)
+      compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).assertIsDisplayed()
 
       val splitPane = AtomicBoolean()
       scenario.onActivity { splitPane.set(it.resources.isSplitPane()) }
@@ -100,6 +106,7 @@ class AppSettingsNavigationDeviceTest {
         compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_APPEARANCE))
         compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).performClick()
         awaitNode(AppearanceSettingsTestTags.ROW_THEME)
+        compose.onNodeWithTag(AppearanceSettingsTestTags.ROW_THEME).assertIsDisplayed()
         captureScreenshot(scenario, "appearance-settings")
       }
 
@@ -113,6 +120,30 @@ class AppSettingsNavigationDeviceTest {
             .fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
         }
         compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).assertIsDisplayed()
+      }
+    }
+  }
+
+  @Test
+  fun accountAndSupportRemainAvailableWithoutSignalCheckout() {
+    val context = harness.context
+    val collieSupport = context.getString(R.string.AppSettingsFragment__donate_to_collie)
+    val mollySupport = context.getString(R.string.AppSettingsFragment__donate_to_molly)
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(context)).use { scenario ->
+      awaitNode(AppSettingsTestTags.ROW_ACCOUNT)
+      val home = compose.onNodeWithTag(AppSettingsTestTags.SCROLLER)
+
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        home.performScrollToNode(hasText(collieSupport))
+        compose.onNodeWithText(collieSupport).assertIsDisplayed()
+        compose.onNodeWithText(mollySupport).assertExists()
+        captureScreenshot(scenario, "settings-support")
+
+        home.performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_ACCOUNT))
+        compose.onNodeWithTag(AppSettingsTestTags.ROW_ACCOUNT).performClick()
+        awaitNode(AccountSettingsTestTags.ROW_LINKED_DEVICES)
+        compose.onNodeWithText("Manage existing Signal donations").assertDoesNotExist()
+        captureScreenshot(scenario, "account-settings")
       }
     }
   }
@@ -145,13 +176,37 @@ class AppSettingsNavigationDeviceTest {
     }
   }
 
+  private fun awaitScreenshotFrame(scenario: ActivityScenario<AppSettingsNavigationActivity>) {
+    compose.waitForIdle()
+
+    // Compose can report idle before the window submits a frame with the new content or security flags.
+    val frameCommitted = CountDownLatch(1)
+    val callback = Runnable { frameCommitted.countDown() }
+    scenario.onActivity { activity ->
+      val decor = activity.window.decorView
+      assertTrue("Settings must use hardware rendering for frame capture", decor.isHardwareAccelerated)
+      decor.viewTreeObserver.registerFrameCommitCallback(callback)
+      decor.postInvalidateOnAnimation()
+    }
+    try {
+      assertTrue("Settings did not submit its rendered frame", frameCommitted.await(15, TimeUnit.SECONDS))
+    } finally {
+      scenario.onActivity { activity ->
+        val observer = activity.window.decorView.viewTreeObserver
+        if (observer.isAlive) observer.unregisterFrameCommitCallback(callback)
+      }
+    }
+    InstrumentationRegistry.getInstrumentation().uiAutomation.waitForIdle(500, 5_000)
+  }
+
   private fun captureScreenshot(
     scenario: ActivityScenario<AppSettingsNavigationActivity>,
     name: String
   ) {
-    compose.waitForIdle()
-    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+    awaitScreenshotFrame(scenario)
+    val bitmap = checkNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()) {
+      "Could not capture Settings screenshot"
+    }
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/collie-settings-navigation/"
     try {
       scenario.onActivity { activity ->

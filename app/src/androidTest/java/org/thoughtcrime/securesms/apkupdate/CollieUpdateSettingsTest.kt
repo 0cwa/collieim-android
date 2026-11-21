@@ -70,12 +70,12 @@ class CollieUpdateSettingsTest {
   @Test
   fun androidVerifiesThePinnedRepositorySigner() {
     val descriptor = instrumentation.context.assets.open("apkupdate/collie-entry.jar").use {
-      CollieUpdateIndex.readEntry(it, context.cacheDir, 0)
+      CollieUpdateIndex.readEntry(CollieUpdateProfile.STABLE, it, context.cacheDir, 0)
     }
     val result = instrumentation.context.assets.open("apkupdate/collie-index-v2.json").use {
-      CollieUpdateIndex.readIndex(it, descriptor, 177704, 35, setOf("arm64-v8a"))
+      CollieUpdateIndex.readIndex(CollieUpdateProfile.STABLE, it, descriptor, 177704, 35, setOf("arm64-v8a"))
     }
-    assertEquals(CollieUpdateIndex.Update(177705, "8.35.1-3-rc2"), result.update)
+    assertEquals(CollieUpdateIndex.Update(177705, "8.35.1-3-rc2", CollieUpdateProfile.STABLE), result.update)
     assertThrows(IOException::class.java) {
       instrumentation.context.assets.open("apkupdate/collie-entry.jar").use {
         CollieUpdateIndex.verifyArchive(it, context.cacheDir, "00".repeat(32))

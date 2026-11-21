@@ -1,0 +1,41 @@
+{
+  "title": "Stay connected when push is unavailable",
+  "summary": "If your chosen push service is unavailable, Collie keeps “Stay connected in background” switched on. When push is available, you can choose.",
+  "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
+  "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
+  "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
+  "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/push.patch",
+  "limit": "The source describes connection behavior. This pilot has not measured notification delivery or battery use.",
+  "source_blob": "312b26548d58259347f4bec3ab4ff4db90197f9d",
+  "placement": "lead",
+  "category": "Connection",
+  "visual": "connection",
+  "display_title": "When push is unavailable",
+  "visible_limit": "Notification delivery and battery use are unmeasured.",
+  "diagram": {
+    "caption": "“Stay connected in background” setting",
+    "cases": [
+      {
+        "condition": "Selected push is available",
+        "result": "You can change the setting"
+      },
+      {
+        "condition": "Selected push is unavailable",
+        "result": "On; cannot be turned off"
+      }
+    ]
+  },
+  "supporting_paths": [
+    {
+      "path": "feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt",
+      "blob": "05d1107963bdd997b549388f5bd1f8ba10933f69",
+      "label": "Settings control"
+    },
+    {
+      "path": "feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsState.kt",
+      "blob": "088afcb2897a708a84c9aa05c9319598c9d4c4e5",
+      "label": "Setting state"
+    }
+  ],
+  "change_type": "Adaptation"
+}

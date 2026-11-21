@@ -13,7 +13,7 @@
     <!-- Displayed as a title at the top of the screen -->
     <string name="GrantPermissionsFragment__allow_permissions">Να δοθούν δικαιώματα</string>
     <!-- Displayed as a subtitle at the top of the screen -->
-    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Η Signal θα ζητήσει αυτές τις άδειες, για να σε βοηθήσει να στέλνεις μηνύματα σε άτομα που γνωρίζεις. </string>
+    <string name="GrantPermissionsFragment__to_help_you_message_people_you_know">Η Collie θα ζητήσει αυτές τις άδειες, για να σε βοηθήσει να στέλνεις μηνύματα σε άτομα που γνωρίζεις. </string>
     <!-- Displayed as a text-only action button at the bottom start of the screen -->
     <string name="GrantPermissionsFragment__not_now">Όχι τώρα</string>
     <!-- Displayed as an action button at the bottom end of the screen -->
@@ -137,7 +137,7 @@
     <!-- Clickable substring linking to contacting support within VerificationCodeScreen__support_bottom_sheet_body_call_to_action -->
     <string name="VerificationCodeScreen__support_bottom_sheet_cta_contact_support_substring">Επικοινωνία με την υποστήριξη</string>
     <!-- Email subject used when contacting support from the verification code screen -->
-    <string name="VerificationCodeScreen__contact_support_email_subject">Εγγραφή Signal - Κωδικός επαλήθευσης για Android</string>
+    <string name="VerificationCodeScreen__contact_support_email_subject">Εγγραφή Collie - Κωδικός επαλήθευσης για Android</string>
     <!-- Text placed in the body of the support email composed from the verification code screen. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="VerificationCodeScreen__contact_support_email_filter" translatable="false">Signal Registration - Verification Code for Android</string> -->
     <!-- URL opened for troubleshooting steps from the verification code screen -->
@@ -320,9 +320,9 @@
     <!-- Title for the invalid backup version dialog -->
     <string name="RemoteRestoreScreen__couldnt_restore_this_backup">Δεν ήταν δυνατή η επαναφορά αυτού του αντιγράφου ασφαλείας</string>
     <!-- Body for the invalid backup version dialog -->
-    <string name="RemoteRestoreScreen__update_latest">Αυτή η έκδοση του Signal δεν μπορεί να επαναφέρει το αντίγραφο ασφαλείας σου. Ενημέρωσε το Signal στην τελευταία έκδοση και δοκίμασε ξανά.</string>
+    <string name="RemoteRestoreScreen__update_latest">Αυτή η έκδοση του Collie δεν μπορεί να επαναφέρει το αντίγραφο ασφαλείας σου. Ενημέρωσε το Collie στην τελευταία έκδοση και δοκίμασε ξανά.</string>
     <!-- Button to update Signal -->
-    <string name="RemoteRestoreScreen__update_signal">Αναβάθμισε το Signal</string>
+    <string name="RemoteRestoreScreen__update_signal">Αναβάθμισε το Collie</string>
     <!-- Button to dismiss update dialog -->
     <string name="RemoteRestoreScreen__not_now">Όχι τώρα</string>
     <!-- Title for unrecoverable backup failure dialog -->
@@ -332,7 +332,7 @@
     <!-- Button to contact support -->
     <string name="RemoteRestoreScreen__contact_support">Επικοινωνία με την υποστήριξη</string>
     <!-- Subject line of the support email composed when the user contacts support about an unrecoverable backup. -->
-    <string name="RemoteRestoreScreen__contact_support_email_subject">Μόνιμη αποτυχία επαναφοράς αντιγράφου ασφαλείας Signal Android</string>
+    <string name="RemoteRestoreScreen__contact_support_email_subject">Μόνιμη αποτυχία επαναφοράς αντιγράφου ασφαλείας Collie Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about an unrecoverable backup. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="RemoteRestoreScreen__contact_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
     <!-- Shown while downloading the backup from the server -->
@@ -354,7 +354,7 @@
     <string name="AccountLockedScreen__your_account">Ο λογαριασμός σου έχει κλειδωθεί για να προστατεύσουμε το απόρρητο και την ασφάλειά σου. Μετά από %1$d ημέρες αδράνειας του λογαριασμού σου, θα μπορείς να επανεγγράψεις αυτό τον αριθμό τηλεφώνου χωρίς να χρειάζεται το PIN σου. Όλα τα περιεχόμενα θα διαγραφούν.</string>
 
     <!-- Step 1 to quick restore -->
-    <string name="QuickRestoreQRScreen__step_1">Άνοιξε το Signal στην παλιά σου συσκευή</string>
+    <string name="QuickRestoreQRScreen__step_1">Άνοιξε το Collie στην παλιά σου συσκευή</string>
     <!-- Step 2 to quick restore -->
     <string name="QuickRestoreQRScreen__step_2">Πάτα το εικονίδιο της κάμερας </string>
     <!-- Step 3 to quick restore -->
@@ -428,7 +428,7 @@
     <!-- PIN entry screen title when restoring an account. -->
     <string name="PinEntryScreen__enter_your_pin">Γράψε το PIN σου</string>
     <!-- Describes the PIN that needs to be entered. -->
-    <string name="PinEntryScreen__enter_the_pin_you_created">Συμπλήρωσε το PIN που δημιούργησες όταν εγκατέστησες το Signal για πρώτη φορά</string>
+    <string name="PinEntryScreen__enter_the_pin_you_created">Συμπλήρωσε το PIN που δημιούργησες όταν εγκατέστησες το Collie για πρώτη φορά</string>
     <!-- Error shown when the user enters the code used to verify their phone number instead of their PIN, and it was not their actual PIN. -->
     <string name="PinEntryScreen__reentered_verification_code">Πληκτρολόγησες ξανά τον κωδικό που είχε ήδη χρησιμοποιηθεί για την επαλήθευση του αριθμού τηλεφώνου σου. Πληκτρολόγησε τον μοναδικό κωδικό PIN Signal που είχες επιλέξει προηγουμένως για τον λογαριασμό σου.</string>
     <!-- Error shown when an incorrect PIN is entered. %1$d is the number of attempts remaining. -->
@@ -457,14 +457,14 @@
     <!-- Labels the button in the no-data-to-restore dialog that lets the user contact support. -->
     <string name="PinEntryScreen__contact_support">Επικοινωνία με την υποστήριξη</string>
     <!-- Subject line of the support email composed when the user contacts support about PIN entry. -->
-    <string name="PinEntryScreen__contact_support_email_subject">Εγγραφή στο Signal - Βοήθεια με το PIN σε Android</string>
+    <string name="PinEntryScreen__contact_support_email_subject">Εγγραφή στο Collie - Βοήθεια με το PIN σε Android</string>
     <!-- Text placed in the body of the support email composed when the user contacts support about PIN entry. Used to route the request, so it is not translated. -->
   <!-- Removed by excludeNonTranslatables <string name="PinEntryScreen__contact_support_email_filter" translatable="false">Signal Registration - Need Help with PIN for Android</string> -->
 
     <!-- Title for the screen asking the user to grant the notification permission -->
     <string name="AllowNotificationsScreen__allow_notifications">Να επιτρέπονται οι ειδοποιήσεις</string>
     <!-- Description for the screen asking the user to grant the notification permission -->
-    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Το Signal θέλει να ζητήσει την άδεια ειδοποιήσεων. Αυτό επιτρέπει στη συσκευή σου να εμφανίζει ειδοποιήσεις όταν λαμβάνεις νέα μηνύματα.</string>
+    <string name="AllowNotificationsScreen__signal_would_like_to_request_the_notification_permission">Το Collie θέλει να ζητήσει την άδεια ειδοποιήσεων. Αυτό επιτρέπει στη συσκευή σου να εμφανίζει ειδοποιήσεις όταν λαμβάνεις νέα μηνύματα.</string>
     <!-- Button label that dismisses the notification permission request without granting it -->
     <string name="AllowNotificationsScreen__not_now">Όχι τώρα</string>
     <!-- Button label that proceeds with the notification permission request -->
@@ -500,9 +500,9 @@
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Σάρωσε αυτόν τον κωδικό για να συνδέσεις τον λογαριασμό σου</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
-    <string name="LinkAccountScreen__open_signal_on_your_phone">Άνοιξε το Signal στο κινητό σου</string>
+    <string name="LinkAccountScreen__open_signal_on_your_phone">Άνοιξε το Collie στο κινητό σου</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->
-    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Πάτα στη φωτογραφία προφίλ για να ανοίξεις τις Ρυθμίσεις Signal</string>
+    <string name="LinkAccountScreen__tap_your_profile_picture_to_open_signal_settings">Πάτα στη φωτογραφία προφίλ για να ανοίξεις τις Ρυθμίσεις Collie</string>
     <!-- Step in the link-account instructions: navigate to the Linked devices section and tap Link new device. The quoted strings should match the button/menu labels in the primary device\'s settings. -->
     <string name="LinkAccountScreen__tap_linked_devices_and_link_new_device">Πάτα «Συνδεδεμένες συσκευές» και «Σύνδεση νέας συσκευής»</string>
     <!-- Button label opening help content for users who can\'t complete the link-account steps -->
@@ -514,7 +514,7 @@
     <!-- Error label shown in place of the QR code if it could not be generated -->
     <string name="LinkAccountScreen__failed_to_generate_code">Αποτυχία δημιουργίας κωδικού</string>
     <!-- Footer prompt asking the user if they have another device with Signal. Precedes a separate "Create account" link. -->
-    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Δεν έχεις το Signal σε άλλη συσκευή;</string>
+    <string name="LinkAccountScreen__dont_have_signal_on_another_device">Δεν έχεις το Collie σε άλλη συσκευή;</string>
     <!-- Inline link in the link-account screen footer that takes the user to the new-account creation flow instead of linking -->
     <string name="LinkAccountScreen__create_account">Δημιουργία λογαριασμού</string>
     <!-- Button to retry generating the QR code after it failed to load -->
@@ -536,7 +536,7 @@
 
     <!-- Device transfer: Instructions screen -->
     <string name="DeviceTransferInstructions__transfer_your_account">Μεταφορά του λογαριασμού σου</string>
-    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Για να μεταφέρεις τον λογαριασμό σου, άνοιξε την εφαρμογή Signal στην παλιά σου συσκευή Android και επίλεξε «Μεταφορά λογαριασμού».</string>
+    <string name="DeviceTransferInstructions__to_transfer_open_signal_on_your_old_android_device">Για να μεταφέρεις τον λογαριασμό σου, άνοιξε την εφαρμογή Collie στην παλιά σου συσκευή Android και επίλεξε «Μεταφορά λογαριασμού».</string>
     <string name="DeviceTransferInstructions__continue">Συνέχεια</string>
 
     <!-- Device transfer: Setup screen -->
@@ -547,11 +547,11 @@
     <string name="DeviceTransferSetup__numbers_match">Ναι, οι αριθμοί ταιριάζουν</string>
     <string name="DeviceTransferSetup__numbers_do_not_match">Οι αριθμοί δεν ταιριάζουν.</string>
     <string name="DeviceTransferSetup__waiting_for_other_to_verify">Αναμονή για την επαλήθευση της παλιάς σου συσκευής…</string>
-    <string name="DeviceTransferSetup__location_permission_required">Το Signal χρειάζεται δικαιώματα τοποθεσίας για να ανακαλύψει και να συνδεθεί με την παλιά σου συσκευή.</string>
+    <string name="DeviceTransferSetup__location_permission_required">Το Collie χρειάζεται δικαιώματα τοποθεσίας για να ανακαλύψει και να συνδεθεί με την παλιά σου συσκευή.</string>
     <string name="DeviceTransferSetup__grant_location_permission">Χορήγηση άδειας</string>
-    <string name="DeviceTransferSetup__location_services_required">Το Signal χρειάζεται να έχεις την τοποθεσία ενεργοποιημένη για να ανακαλύψει και να συνδεθεί στη παλιά σου συσκευή.</string>
+    <string name="DeviceTransferSetup__location_services_required">Το Collie χρειάζεται να έχεις την τοποθεσία ενεργοποιημένη για να ανακαλύψει και να συνδεθεί στη παλιά σου συσκευή.</string>
     <string name="DeviceTransferSetup__turn_on_location_services">Ενεργοποίηση υπηρεσιών τοποθεσίας</string>
-    <string name="DeviceTransferSetup__wifi_required">Το Signal χρειάζεται Wi-Fi για να ανακαλύψει και να συνδεθεί με την παλιά σου συσκευή.</string>
+    <string name="DeviceTransferSetup__wifi_required">Το Collie χρειάζεται Wi-Fi για να ανακαλύψει και να συνδεθεί με την παλιά σου συσκευή.</string>
     <string name="DeviceTransferSetup__turn_on_wifi">Ενεργοποίηση Wi-Fi</string>
     <string name="DeviceTransferSetup__wifi_direct_unavailable">Συγγνώμη, φαίνεται ότι η συσκευή σου δεν υποστηρίζει το Wi-Fi Direct.</string>
     <string name="DeviceTransferSetup__restore_a_backup">Επαναφορά αντίγραφου ασφαλείας αντ\'αυτού</string>
@@ -568,7 +568,7 @@
     <string name="DeviceTransferProgress__transferring_data">Μεταφορά δεδομένων</string>
     <string name="DeviceTransferProgress__d_messages_so_far">%1$d μηνύματα μέχρι τώρα</string>
     <string name="DeviceTransferProgress__unable_to_transfer">Αδυναμία μεταφοράς</string>
-    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Δεν μπορεί να γίνει μεταφορά από νεότερη έκδοση του Signal.</string>
+    <string name="DeviceTransferProgress__cannot_transfer_from_newer_signal">Δεν μπορεί να γίνει μεταφορά από νεότερη έκδοση του Collie.</string>
     <string name="DeviceTransferProgress__failure_foreign_key">Ορισμένα δεδομένα δεν μπόρεσαν να μεταφερθούν λόγω περιορισμού της βάσης δεδομένων.</string>
     <string name="DeviceTransferProgress__transfer_failed">Η μεταφορά απέτυχε. Δοκίμασε ξανά.</string>
     <string name="DeviceTransferProgress__try_again">Δοκίμασε ξανά</string>

@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Hesabı təkrar qeydiyyatdan keçirin</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Signal-ı yenilə</string>
+    <string name="preferences_account_update_signal">Collie-ı yenilə</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Bütün verilənləri sil</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Hesabat yaradılır…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Hesabatınız yalnız ixrac zamanı yaradılır və Signal tərəfindən cihazınızda saxlanmır.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Hesabatınız yalnız ixrac zamanı yaradılır və Collie tərəfindən cihazınızda saxlanmır.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Hələlik parol təyin etməmisiniz!</string>
     <string name="ApplicationPreferencesActivity_disable">Qeyri-aktiv et</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Parol qeyri-aktiv edilsin?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Bu, Signal-ın və mesaj bildirişlərinin kilidini birdəfəlik açacaq.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Bu, Collie-ın və mesaj bildirişlərinin kilidini birdəfəlik açacaq.</string>
     <string name="PrivacySettingsFragment__app_security">Tətbiq təhlükəsizliyi</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Sonuncular siyahısında və tətbiq daxilində ekran şəkillərini blokla</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Bu tənzimləməyə zəmanət verilmir və klaviaturanız buna əhəmiyyət verməyə bilər.</string>
     <string name="preferences__typing_indicators">\"Yazır\" göstəricisi</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Telefon nömrənizi görə biləcək və nömrəniz vasitəsilə Signal-da sizinlə əlaqə saxlaya biləcək şəxsləri seçin.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Telefon nömrənizi görə biləcək və nömrəniz vasitəsilə Collie-da sizinlə əlaqə saxlaya biləcək şəxsləri seçin.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Ödənişlər</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">İndi yox</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Daha ətraflı</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Ehtiyat nüsxə abunəliyinizi aktivləşdirmək mümkün olmadı</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Collie-a ianə verin</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Daxili seçimlər</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Mesajlaşdığınız şəxslər, kontaktlarınız və qruplarınız profiliniz və orada etdiyiniz dəyişiklikləri görə biləcək.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Signal-ı yenilə</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie-ı yenilə</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Signal-ın bu versiyasının vaxtı bitib. Signal-dan istifadəyə davam etmək üçün indi yeniləyin.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Collie-ın bu versiyasının vaxtı bitib. Collie-dan istifadəyə davam etmək üçün indi yeniləyin.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Yenilə</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Bağla</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signal-ı dəstəkləyərək profiliniz üçün nişanlar qazanın.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal, reklamları və ya investoru olmayan və yalnız sizin kimi insanlardan dəstək alan qeyri-kommersiya təşkilatıdır.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Bir dəstəkçi olun</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,19 +1014,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Bu istifadəçi tapılmadı.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR kodunu skan etmək üçün Signal-a kameraya giriş icazəsi ver.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR kodunu skan etmək üçün Collie-a kameraya giriş icazəsi ver.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Müraciətə icazə ver</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">QR kodlarını skan etmək üçün Signal kameraya giriş tələb edir</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">QR kodlarını skan etmək üçün Collie kameraya giriş tələb edir</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Anbar</string>
     <string name="preferences_storage__storage_usage">Anbar istifadəsi</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Signal yaddaşı</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie yaddaşı</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal yaddaşını optimallaşdır</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie yaddaşını optimallaşdır</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">İstifadə edilməyən media faylı yaddaşdan çıxarılacaq, amma ehtiyat nüsxənizdən istənilən vaxt yenidən endirilə bilər.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1048,7 +1052,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media faylı cihazdaxili ehtiyat nüsxədən silinəcək</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal yaddaşını optimallaşdır\" funksiyasını açsanız, bu, cihazınızdan köhnə media faylların köçürülməsinə səbəb olacaq. Bunu istədiyiniz vaxt yenidən endirə bilərsiniz. Bu addım həmçinin cihazdaxili ehtiyat nüsxədən köhnə media faylını siləcək.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Collie yaddaşını optimallaşdır\" funksiyasını açsanız, bu, cihazınızdan köhnə media faylların köçürülməsinə səbəb olacaq. Bunu istədiyiniz vaxt yenidən endirə bilərsiniz. Bu addım həmçinin cihazdaxili ehtiyat nüsxədən köhnə media faylını siləcək.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Aç</string>
 
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Seçici, açılmadı.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Bildirişləri aktivləşdirmək üçün Signal onları ekranda göstərmə icazəsi tələb edir.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Bildirişləri aktivləşdirmək üçün Collie onları ekranda göstərmə icazəsi tələb edir.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Aç</string>
     <string name="NotificationsSettingsFragment__calls">Zənglər</string>
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Avtomatik şifrə yoxlaması</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Aktivləşdirildikdə, Signal 1:1 çatların şifrələməsini avtomatik yoxlamağa cəhd edəcək.</string>
+    <string name="preferences_automatic_key_verification_body">Aktivləşdirildikdə, Collie 1:1 çatların şifrələməsini avtomatik yoxlamağa cəhd edəcək.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

@@ -21,10 +21,13 @@ import org.signal.core.util.logging.Log
 
 /**
  * Drives [HelpSettingsScreen].
+ *
+ * MOLLY: [getLogEnabled] and [setLogEnabled] read and store the debug-logging choice, which lives outside this module.
  */
 class HelpSettingsViewModel(
+  private val getLogEnabled: () -> Boolean,
+  private val setLogEnabled: (Boolean) -> Unit,
   versionName: String,
-  logEnabled: Boolean = true,
   showAppUpdates: Boolean = false,
   private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
 ) : EventDrivenViewModel<HelpSettingsEvent>(TAG) {
@@ -33,7 +36,7 @@ class HelpSettingsViewModel(
     private val TAG = Log.tag(HelpSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = logEnabled, showAppUpdates = showAppUpdates))
+  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = getLogEnabled(), showAppUpdates = showAppUpdates))
   private val _actions = Channel<HelpSettingsAction>(Channel.BUFFERED)
 
   val state: StateFlow<HelpSettingsState> = _state.asStateFlow()
@@ -42,21 +45,42 @@ class HelpSettingsViewModel(
   override suspend fun processEvent(event: HelpSettingsEvent) {
     when (event) {
       HelpSettingsEvent.WebsiteClicked -> _actions.send(HelpSettingsAction.OpenWebsite)
-      HelpSettingsEvent.VersionClicked -> if (_state.value.showAppUpdates) parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates)
-      is HelpSettingsEvent.LogEnabledChanged -> _actions.send(HelpSettingsAction.SetLogEnabled(event.enabled))
-      is HelpSettingsEvent.LogEnabledSaved -> _state.update { it.copy(logEnabled = event.enabled) }
       HelpSettingsEvent.WhatsNewClicked -> _actions.send(HelpSettingsAction.OpenWhatsNew)
       HelpSettingsEvent.NavigateBackClicked -> parentEventEmitter.navigateBack()
       HelpSettingsEvent.SupportCenterClicked -> _actions.send(HelpSettingsAction.OpenSupportCenter)
       HelpSettingsEvent.ContactUsClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.Help())
+      HelpSettingsEvent.VersionClicked -> if (_state.value.showAppUpdates) parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates)
       HelpSettingsEvent.VersionLongClicked -> {
         _actions.send(HelpSettingsAction.CopyVersionToClipboard(_state.value.versionName))
         _state.update { it.copy(snackbar = HelpSettingsState.Snackbar.VersionCopied) }
       }
-      HelpSettingsEvent.DebugLogClicked -> if (_state.value.logEnabled) parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.DebugLog)
+      is HelpSettingsEvent.DebugLoggingChanged -> {
+        if (event.enabled) {
+          applyLogEnabled(true)
+        } else {
+          _actions.send(HelpSettingsAction.ConfirmDisableDebugLogging)
+        }
+      }
+      HelpSettingsEvent.DisableDebugLoggingConfirmed -> applyLogEnabled(false)
+      HelpSettingsEvent.DebugLogClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.DebugLog)
       HelpSettingsEvent.LicensesClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.Licenses)
       HelpSettingsEvent.TermsAndPrivacyPolicyClicked -> _actions.send(HelpSettingsAction.OpenTermsAndPrivacyPolicy)
       HelpSettingsEvent.SnackbarDismissed -> _state.update { it.copy(snackbar = HelpSettingsState.Snackbar.None) }
     }
+  }
+
+  /** Reloads the externally stored logging choice when returning to the screen. */
+  fun refresh() {
+    _state.update { it.copy(logEnabled = getLogEnabled()) }
+  }
+
+  private fun applyLogEnabled(enabled: Boolean) {
+    setLogEnabled(enabled)
+    if (enabled) {
+      Log.setLogging(true)
+    } else {
+      Log.disableAndWipeLogs()
+    }
+    refresh()
   }
 }

@@ -37,14 +37,12 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import org.signal.core.util.bitmaps.BitmapUtil;
 import org.signal.core.util.concurrent.ListenableFuture;
 import org.signal.core.util.logging.Log;
-import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.location.SignalMapView;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.MediaUtil;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 
 import java.io.IOException;
@@ -101,8 +99,6 @@ public final class PlacePickerActivity extends AppCompatActivity {
     bottomSheet      = findViewById(R.id.bottom_sheet);
     View markerImage = findViewById(R.id.marker_image_view);
     View fab         = findViewById(R.id.place_chosen_button);
-
-    findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
 
     ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (view, insets) -> {
       systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());

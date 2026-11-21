@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
 import org.signal.devicetransfer.TransferStatus;
@@ -21,6 +20,7 @@ import org.thoughtcrime.securesms.clockskew.ClockSkewDetector;
 import org.thoughtcrime.securesms.components.settings.app.changenumber.ChangeNumberLockActivity;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
 import org.thoughtcrime.securesms.devicetransfer.olddevice.OldDeviceTransferActivity;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.signal.storage.keyvalue.RestoreDecisionStateUtil;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.lock.v2.CreateSvrPinActivity;
@@ -32,7 +32,6 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.registration.ui.RegistrationIntents;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.AppStartup;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 public abstract class PassphraseRequiredActivity extends PassphraseActivity implements MasterSecretListener {
   private static final String TAG = Log.tag(PassphraseRequiredActivity.class);
@@ -288,7 +287,7 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
     this.clearKeyReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "onReceive() for clear key event. PassphraseLock: " + TextSecurePreferences.isPassphraseLockEnabled(context));
+        Log.i(TAG, "onReceive() for clear key event. PassphraseLock: " + PlainTextKeyValueStore.getPassphraseLockEnabled());
         onMasterSecretCleared();
       }
     };

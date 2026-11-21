@@ -57,14 +57,14 @@ class AppearanceSettingsViewModelTest {
 
     every { AppearanceSettingsRepository.getLanguage() } returns "zz"
     every { AppearanceSettingsRepository.getTheme() } returns Theme.SYSTEM
-    every { AppearanceSettingsRepository.useDynamicColors() } returns false
-    every { AppearanceSettingsRepository.isDynamicColorsAvailable() } returns false
+    every { AppearanceSettingsRepository.isDynamicColorsEnabled() } returns false
     every { AppearanceSettingsRepository.getMessageFontSize() } returns 16
     every { AppearanceSettingsRepository.isCompactNavigationBar() } returns false
     every { AppearanceSettingsRepository.isSystemThemeAvailable() } returns true
+    every { AppearanceSettingsRepository.isDynamicColorsAvailable() } returns true
     every { AppearanceSettingsRepository.isAppIconSupported() } returns true
     every { AppearanceSettingsRepository.applyLanguage(any()) } just Runs
-    every { AppearanceSettingsRepository.setTheme(any(), any()) } just Runs
+    every { AppearanceSettingsRepository.setAppearance(any(), any()) } just Runs
     every { AppearanceSettingsRepository.setMessageFontSize(any()) } just Runs
     every { AppearanceSettingsRepository.setCompactNavigationBar(any()) } just Runs
   }
@@ -79,9 +79,11 @@ class AppearanceSettingsViewModelTest {
   fun `initial state is read out of the repository`() = runTest(testDispatcher) {
     every { AppearanceSettingsRepository.getLanguage() } returns "de"
     every { AppearanceSettingsRepository.getTheme() } returns Theme.DARK
+    every { AppearanceSettingsRepository.isDynamicColorsEnabled() } returns true
     every { AppearanceSettingsRepository.getMessageFontSize() } returns 22
     every { AppearanceSettingsRepository.isCompactNavigationBar() } returns true
     every { AppearanceSettingsRepository.isSystemThemeAvailable() } returns false
+    every { AppearanceSettingsRepository.isDynamicColorsAvailable() } returns false
     every { AppearanceSettingsRepository.isAppIconSupported() } returns false
 
     val viewModel = createViewModel()
@@ -90,9 +92,11 @@ class AppearanceSettingsViewModelTest {
       AppearanceSettingsState(
         language = "de",
         theme = Theme.DARK,
+        dynamicColors = true,
         messageFontSize = 22,
         isCompactNavigationBar = true,
         isSystemThemeAvailable = false,
+        isDynamicColorsAvailable = false,
         isAppIconSupported = false
       )
     )
@@ -157,33 +161,34 @@ class AppearanceSettingsViewModelTest {
 
     viewModel.onEvent(AppearanceSettingsEvent.ThemeSelected(Theme.DARK))
 
-    verify { AppearanceSettingsRepository.setTheme(Theme.DARK, false) }
+    verify { AppearanceSettingsRepository.setAppearance(Theme.DARK, false) }
     assertThat(viewModel.state.value.theme).isEqualTo(Theme.DARK)
-    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK)))
+    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, false)))
   }
 
   @Test
-  fun `selecting a theme preserves dynamic colors`() = runTest(testDispatcher) {
-    every { AppearanceSettingsRepository.useDynamicColors() } returns true
+  fun `ThemeSelected preserves dynamic colors`() = runTest(testDispatcher) {
+    every { AppearanceSettingsRepository.isDynamicColorsEnabled() } returns true
     val viewModel = createViewModel()
-    val actions = collectActions(viewModel.actions)
 
     viewModel.onEvent(AppearanceSettingsEvent.ThemeSelected(Theme.DARK))
 
-    verify { AppearanceSettingsRepository.setTheme(Theme.DARK, true) }
-    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, true)))
+    verify { AppearanceSettingsRepository.setAppearance(Theme.DARK, true) }
+    assertThat(viewModel.state.value.theme).isEqualTo(Theme.DARK)
+    assertThat(viewModel.state.value.dynamicColors).isTrue()
   }
 
   @Test
-  fun `changing dynamic colors preserves the selected theme`() = runTest(testDispatcher) {
+  fun `DynamicColorsChanged preserves the theme and updates the splash screen`() = runTest(testDispatcher) {
     every { AppearanceSettingsRepository.getTheme() } returns Theme.DARK
     val viewModel = createViewModel()
     val actions = collectActions(viewModel.actions)
 
     viewModel.onEvent(AppearanceSettingsEvent.DynamicColorsChanged(true))
 
-    verify { AppearanceSettingsRepository.setTheme(Theme.DARK, true) }
-    assertThat(viewModel.state.value.dynamicColors).isEqualTo(true)
+    verify { AppearanceSettingsRepository.setAppearance(Theme.DARK, true) }
+    assertThat(viewModel.state.value.theme).isEqualTo(Theme.DARK)
+    assertThat(viewModel.state.value.dynamicColors).isTrue()
     assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, true)))
   }
 

@@ -91,7 +91,7 @@ class MollyLanguageBackupTest {
   }
 
   private fun exportedLanguage(): String? {
-    val preference = TextSecurePreferences.getPreferencesToSaveToBackup(context)
+    val preference = FullBackupExporter.getPlainTextPreferencesToSaveToBackup()
       .lastOrNull { it.key == "pref_language" }?.value_
     val keys = SignalStore.keysToIncludeInBackup
     assertTrue(keys.contains(SettingsValues.LANGUAGE))

@@ -156,8 +156,8 @@ class OverlayThemeTest {
     try {
       TextSecurePreferences.setDynamicColorsEnabled(context, true)
 
-      assertEquals(R.style.TextSecure_MediaPreview, DynamicMediaPreviewTheme().getTheme(context))
-      assertEquals(R.style.Signal_DayNight_NoActionBar_MediaViewer, DynamicMediaViewerTheme().getTheme(context))
+      assertEquals(R.style.TextSecure_MediaPreview, DynamicMediaPreviewTheme().getTheme())
+      assertEquals(R.style.Signal_DayNight_NoActionBar_MediaViewer, DynamicMediaViewerTheme().getTheme())
     } finally {
       TextSecurePreferences.setDynamicColorsEnabled(context, previous)
     }

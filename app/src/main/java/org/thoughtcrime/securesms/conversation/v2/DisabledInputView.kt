@@ -207,10 +207,8 @@ class DisabledInputView @JvmOverloads constructor(
       bind = {
         findViewById<TextView>(R.id.export_sms_message).text = if (recipient.isMmsGroup) {
           context.getString(R.string.ConversationActivity__sms_messaging_is_no_longer_supported)
-        } else if (recipient.hasAci) {
-          context.getString(R.string.ConversationActivity__this_person_is_no_longer_using_signal)
         } else {
-          context.getString(R.string.ConversationActivity__this_person_is_not_using_signal)
+          context.getString(R.string.NewConversationActivity__s_is_not_registered_with_signal, recipient.getDisplayName(context))
         }
 
         findViewById<MaterialButton>(R.id.export_sms_button).apply {

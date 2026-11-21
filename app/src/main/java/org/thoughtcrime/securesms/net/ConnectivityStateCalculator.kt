@@ -14,12 +14,14 @@ enum class ConnectivityState {
 
   /**
    * A network is connected but Android has not validated Internet reachability (e.g. a captive portal, or a
-   * restrictive network that blocks the OS validation probe).
+   * restrictive network that blocks the OS validation probe). Treated as online (see [isAssumedOnline]) so we
+   * still try.
    */
   CONNECTED_UNVALIDATED,
 
   /**
-   * We could not get connectivity information from the OS.
+   * We could not get connectivity information from the OS. We fail open and assume we are online until
+   * we get a strong signal otherwise (e.g. [BLOCKED]), rather than sitting idle believing we are offline.
    */
   MONITORING_UNAVAILABLE;
 
@@ -45,8 +47,8 @@ data class NetworkState(
     get() = when {
       isReachable && onVpn -> 4
       isReachable -> 3
-      blocked && onVpn -> 2
-      blocked -> 1
+      !blocked -> 2
+      blocked && onVpn -> 1
       else -> 0
     }
 }

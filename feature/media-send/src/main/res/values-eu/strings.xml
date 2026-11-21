@@ -60,13 +60,13 @@
   <!-- Accessibility description for the button that leaves media selection and opens the camera. -->
   <string name="MediaSelectScreen__go_to_camera">Joan kamerara</string>
   <!-- Message shown in place of the gallery when the user has not granted permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Signal-ek baimena behar du argazki eta bideoak erakusteko</string>
+  <string name="MediaSelectScreen__signal_needs_permission_to_show_your_photos_and_videos">Collie-ek baimena behar du argazki eta bideoak erakusteko</string>
   <!-- Label for the button that asks the system for permission to read the user\'s photos and videos. -->
   <string name="MediaSelectScreen__allow_access">Sartzeko Baimena Eman</string>
   <!-- Message shown in place of the gallery when the user only shared selected photos with Signal and none of them can be shown. -->
-  <string name="MediaSelectScreen__no_photos_or_videos_found">Ez da argazki edo bideorik aurkitu. Signal-ek zuk hautatutako argazki eta bideotarako sarbidea du bakarrik.</string>
+  <string name="MediaSelectScreen__no_photos_or_videos_found">Ez da argazki edo bideorik aurkitu. Collie-ek zuk hautatutako argazki eta bideotarako sarbidea du bakarrik.</string>
   <!-- Reminder shown above the gallery when the user only shared selected photos with Signal. -->
-  <string name="MediaSelectScreen__signal_has_limited_access">Signal-ek argazki eta bideoetarako sarbide mugatua du</string>
+  <string name="MediaSelectScreen__signal_has_limited_access">Collie-ek argazki eta bideoetarako sarbide mugatua du</string>
   <!-- Label for the button that opens the menu for changing which photos and videos Signal can see. -->
   <string name="MediaSelectScreen__manage">Kudeatu</string>
   <!-- Menu option that re-opens the system picker so the user can share more photos and videos with Signal. -->
@@ -78,7 +78,7 @@
   <!-- Subtitle of the sheet shown when the permission to read photos and videos has been permanently denied, introducing the steps that follow. -->
   <string name="MediaSelectScreen__to_show_photos_and_videos">Argazkiak eta bideoak erakusteko:</string>
   <!-- Snackbar shown when the user denies the permission to read their photos and videos. -->
-  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Argazki eta bideoak erakusteko, Signal-ek sarbidea behar du.</string>
+  <string name="MediaSelectScreen__signal_needs_access_to_show_your_photos_and_videos">Argazki eta bideoak erakusteko, Collie-ek sarbidea behar du.</string>
 
   <!-- Label for the button that switches the capture screen to taking a photo. -->
   <string name="MediaCaptureScreen__photo">Argazkia</string>
@@ -210,7 +210,7 @@
         <item quantity="other">%1$d elementuren kalitatea estandar gisa ezarri da</item>
     </plurals>
   <!-- Message shown when saving the media being edited requires the storage permission, but that permission has been permanently denied by the user. -->
-  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Signalek Gordailu baimena behar du kanpoko gordailuan datuak idazteko baina baimena ukatu egin diozu. Joan aplikazioaren ezarpenetara, aukeratu \"Baimenak\" eta aktibatu \"Gordailua\".</string>
+  <string name="MediaSendViewModel__signal_needs_the_storage_permission">Collieek Gordailu baimena behar du kanpoko gordailuan datuak idazteko baina baimena ukatu egin diozu. Joan aplikazioaren ezarpenetara, aukeratu \"Baimenak\" eta aktibatu \"Gordailua\".</string>
   <!-- Message shown when the user disables audio on a video -->
   <string name="MediaSendViewModel__video_will_be_sent_without_audio">Bideoa audiorik gabe bidaliko da</string>
 
@@ -231,7 +231,7 @@
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Ezin da transferitu kontua</string>
   <!-- The body of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
-  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Transferentziaren helburuko gailua zaharkituta dago. Eguneratu Signal gailu horretan eta saiatu berriro.</string>
+  <string name="ReRegistrationScannedDialog__the_device_you_are_transferring_to_is_out_of_date">Transferentziaren helburuko gailua zaharkituta dago. Eguneratu Collie gailu horretan eta saiatu berriro.</string>
 
     <!-- Gif label displayed in a pill in the editor specifying the type of media being sent. -->
     <plurals name="MediaEditScreen__gif">

@@ -17,6 +17,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
@@ -27,8 +28,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.ApkUpdateValues
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateNotifications
 import org.thoughtcrime.securesms.apkupdate.CollieUpdateIndex
+import org.thoughtcrime.securesms.apkupdate.CollieUpdateProfile
+import org.thoughtcrime.securesms.keyvalue.MollyValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
@@ -39,10 +43,11 @@ import java.io.IOException
 @Config(manifest = Config.NONE, application = Application::class)
 class ApkUpdateJobTest {
   private val values = mockk<ApkUpdateValues>(relaxUnitFun = true)
+  private val mollyValues = mockk<MollyValues>(relaxUnitFun = true)
   private val client = mockk<OkHttpClient>()
   private val call = mockk<Call>()
   private var enabled = true
-  private var result = CollieUpdateIndex.Result(1000, CollieUpdateIndex.Update(999999, "8.35.2"))
+  private var result = CollieUpdateIndex.Result(1000, CollieUpdateIndex.Update(999999, "8.35.2", CollieUpdateProfile.STABLE))
 
   @Before
   fun setUp() {
@@ -55,6 +60,9 @@ class ApkUpdateJobTest {
     every { values.availableVersionName } returns null
     every { values.lastNotifiedVersionCode } returns 0
     every { TextSecurePreferences.isUpdateApkEnabled(any()) } answers { enabled }
+    // The updater switch lives in MollyValues since the Molly 8.34 merge.
+    every { SignalStore.molly } returns mollyValues
+    every { mollyValues.updateApkEnabled } answers { enabled }
     every { ApkUpdateNotifications.showUpdateAvailable(any(), any()) } returns true
     every { ApkUpdateNotifications.dismissUpdatePrompt(any()) } returns Unit
   }
@@ -82,6 +90,34 @@ class ApkUpdateJobTest {
   }
 
   @Test
+  fun `unsupported package identities cannot construct a network client or publish state`() {
+    mockkObject(ApkUpdateJob.Companion)
+    every { ApkUpdateJob.newClient() } throws AssertionError("An unsupported package must not check a production feed")
+    for (applicationId in listOf("im.collie.app.staging", "im.collie.app.imo", "im.collie.app.trailblazer.staging", "im.molly.app", "")) {
+      job(applicationId).onRun()
+    }
+    verify(exactly = 0) { ApkUpdateJob.newClient() }
+    verify(exactly = 0) { values.setAvailableUpdate(any(), any(), any()) }
+    verify(exactly = 0) { ApkUpdateNotifications.showUpdateAvailable(any(), any()) }
+  }
+
+  @Test
+  fun `Beta fetches only its fixed feed and verifies it under the Beta identity`() {
+    val profile = CollieUpdateProfile.TRAILBLAZER_BETA
+    result = CollieUpdateIndex.Result(1000, CollieUpdateIndex.Update(999999, "8.36.0-beta1", profile))
+    stubNetworkAndVerification(profile)
+    val requests = mutableListOf<Request>()
+    every { client.newCall(capture(requests)) } returns call
+
+    job(profile.packageName).onRun()
+
+    assertEquals(listOf("${profile.repositoryUrl}/entry.jar", "${profile.repositoryUrl}/index-v2.json"), requests.map { it.url.toString() })
+    verify(exactly = 1) { CollieUpdateIndex.readEntry(profile, any(), any(), any()) }
+    verify(exactly = 1) { CollieUpdateIndex.readIndex(profile, any(), any(), any(), any(), any()) }
+    verify { ApkUpdateNotifications.showUpdateAvailable(any(), result.update!!) }
+  }
+
+  @Test
   fun `verified candidate is stored and only an allowed notification advances the notified version`() {
     stubNetworkAndVerification()
     every { ApkUpdateNotifications.showUpdateAvailable(any(), any()) } returns false
@@ -98,7 +134,7 @@ class ApkUpdateJobTest {
     every { values.availableVersionCode } returns 999999
     every { values.availableVersionName } returns "8.35.2"
     every { values.lastNotifiedVersionCode } returns 999999
-    result = CollieUpdateIndex.Result(1000, CollieUpdateIndex.Update(999998, "8.35.1"))
+    result = CollieUpdateIndex.Result(1000, CollieUpdateIndex.Update(999998, "8.35.1", CollieUpdateProfile.STABLE))
     stubNetworkAndVerification()
     job().onRun()
     verify { values.setAvailableUpdate(1000, 999998, "8.35.1") }
@@ -115,7 +151,7 @@ class ApkUpdateJobTest {
     job().onRun()
     verifyOrder {
       ApkUpdateNotifications.dismissUpdatePrompt(any())
-      ApkUpdateNotifications.showUpdateAvailable(any(), "8.35.2")
+      ApkUpdateNotifications.showUpdateAvailable(any(), result.update!!)
     }
     verify(exactly = 0) { values.lastNotifiedVersionCode = any() }
   }
@@ -123,7 +159,7 @@ class ApkUpdateJobTest {
   @Test
   fun `failed authentication cannot change update state or display a release`() {
     stubNetworkAndVerification()
-    every { CollieUpdateIndex.readIndex(any(), any(), any(), any(), any()) } throws IOException("Bad signature")
+    every { CollieUpdateIndex.readIndex(any(), any(), any(), any(), any(), any()) } throws IOException("Bad signature")
     assertThrows(IOException::class.java) { job().onRun() }
     verify(exactly = 0) { values.setAvailableUpdate(any(), any(), any()) }
     verify(exactly = 0) { values.lastSuccessfulCheck = any() }
@@ -133,7 +169,7 @@ class ApkUpdateJobTest {
   @Test
   fun `disabling checks during a request prevents result publication`() {
     stubNetworkAndVerification()
-    every { CollieUpdateIndex.readIndex(any(), any(), any(), any(), any()) } answers {
+    every { CollieUpdateIndex.readIndex(any(), any(), any(), any(), any(), any()) } answers {
       enabled = false
       result
     }
@@ -152,22 +188,22 @@ class ApkUpdateJobTest {
     verify(exactly = 0) { ApkUpdateNotifications.showUpdateAvailable(any(), any()) }
   }
 
-  private fun job() = ApkUpdateJob().apply { setContext(ApplicationProvider.getApplicationContext()) }
+  private fun job(applicationId: String = BuildConfig.APPLICATION_ID) = ApkUpdateJob(applicationId).apply { setContext(ApplicationProvider.getApplicationContext()) }
 
-  private fun stubNetworkAndVerification() {
+  private fun stubNetworkAndVerification(profile: CollieUpdateProfile = CollieUpdateProfile.STABLE) {
     mockkObject(ApkUpdateJob.Companion, CollieUpdateIndex)
     every { ApkUpdateJob.newClient() } returns client
     every { client.newCall(any()) } returns call
     every { call.execute() } answers {
       Response.Builder()
-        .request(Request.Builder().url("${CollieUpdateIndex.REPOSITORY_URL}/entry.jar").build())
+        .request(Request.Builder().url("${profile.repositoryUrl}/entry.jar").build())
         .protocol(Protocol.HTTP_1_1)
         .code(200)
         .message("OK")
         .body(byteArrayOf(1).toResponseBody("application/java-archive".toMediaType()))
         .build()
     }
-    every { CollieUpdateIndex.readEntry(any(), any(), any()) } returns CollieUpdateIndex.Index(1000, 1, "00".repeat(32))
-    every { CollieUpdateIndex.readIndex(any(), any(), any(), any(), any()) } answers { result }
+    every { CollieUpdateIndex.readEntry(profile, any(), any(), any()) } returns CollieUpdateIndex.Index(1000, 1, "00".repeat(32))
+    every { CollieUpdateIndex.readIndex(profile, any(), any(), any(), any(), any()) } answers { result }
   }
 }

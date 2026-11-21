@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">கணக்கை மீண்டும் பதிவு செய்க</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Signal லைப் புதுப்பிக்கவும்</string>
+    <string name="preferences_account_update_signal">Collie லைப் புதுப்பிக்கவும்</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">எல்லா தரவையும் நீக்கு</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">அறிக்கையை உருவாக்குகிறது…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">உங்கள் அறிக்கை ஏற்றுமதியின் போது மட்டுமே உருவாக்கப்படும் மற்றும் உங்கள் டிவைஸில் Signal மூலம் சேமிக்கப்படாது.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">உங்கள் அறிக்கை ஏற்றுமதியின் போது மட்டுமே உருவாக்கப்படும் மற்றும் உங்கள் டிவைஸில் Collie மூலம் சேமிக்கப்படாது.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -535,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">உரிமங்கள்</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">விதிமுறைகள் &amp; ஆம்ப்; தனியுரிமைக் கொள்கை</string>
-    <string name="HelpFragment__copyright_signal_messenger">பதிப்புரிமை Molly தூதர்</string>
+    <string name="HelpFragment__copyright_signal_messenger">பதிப்புரிமை Collie தூதர்</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 இன் கீழ் உரிமம் பெற்றது</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">சிக்னல் ஓர் இலாப நோக்கற்ற அமைப்பாகும்.</string>
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">நீங்கள் இன்னும் ஒரு கடவுச்சொல்லை அமைக்கவில்லை!</string>
     <string name="ApplicationPreferencesActivity_disable">முடக்கு</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">கடவுச்சொல்லை முடக்கு?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">இது நிரந்தரமாக Signal செய்தி அறிவிப்புகளைத் திறக்கும்.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">இது நிரந்தரமாக Collie செய்தி அறிவிப்புகளைத் திறக்கும்.</string>
     <string name="PrivacySettingsFragment__app_security">பயன்பாட்டு பாதுகாப்பு</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">சமீபத்தியவை பட்டியல் மற்றும் செயலிக்கு உள்ளே ஸ்கிரீன்ஷாட் எடுப்பதைத் தடுக்கவும்</string>
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">இப்போது வேண்டாம்</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">மேலும் அறிக</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">உங்களின் காப்புப்பிரதிகளின் சந்தாவை மீட்டெடுக்க முடியவில்லை</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Collieக்கு நன்கொடை அளிக்கவும்</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">உள்ளக விருப்பத்தேர்வுகள்</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">உங்கள் ப்ரொஃபைல் மற்றும் அதில் செய்த மாற்றங்கள் நீங்கள் செய்தி அனுப்புபவர்களுக்கு, தொடர்புகளுக்கு மற்றும் குழுக்களுக்குத் தெரிய வரும்.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Signal லைப் புதுப்பிக்கவும்</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie லைப் புதுப்பிக்கவும்</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">சிக்னலின் இந்தப் பதிப்பு காலாவதியானது. தொடர்ந்து Signalஐப் பயன்படுத்த, இப்போதே புதுப்பிக்கவும்.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">சிக்னலின் இந்தப் பதிப்பு காலாவதியானது. தொடர்ந்து Collieஐப் பயன்படுத்த, இப்போதே புதுப்பிக்கவும்.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">புதுப்பிக்கப்பட்டது</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">நெருக்கமான</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signalஐ ஆதரித்து உங்கள் சுயவிவரத்திற்கான பேட்ஜ்களைப் பெறுங்கள்.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">சிக்னல் என்பது உங்களைப் போன்றவர்களால் மட்டுமே ஆதரிக்கப்படும், விளம்பரதாரர்கள் அல்லது முதலீட்டாளர்கள் இல்லாத ஒரு இலாப நோக்கமற்ற நிறுவனமாகும்.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">ஒரு காப்பாளராக மாறவும்</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">பிக்கரைத் திறக்க முடியவில்லை.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">அறிவிப்புகளை இயக்க, Signalக்கு அவற்றைக் காண்பிக்க அனுமதி தேவை.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">அறிவிப்புகளை இயக்க, Collieக்கு அவற்றைக் காண்பிக்க அனுமதி தேவை.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">இயக்கு</string>
     <string name="NotificationsSettingsFragment__calls">அழைப்புகள்</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">தணிக்கையை மீறி செயலாற்றுதல்</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">தணிக்கையை மீறி செயலாற்றுதல்</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">இயக்கப்பட்டால், தணிக்கை தவிர்க்க Signal முயற்சிக்கும். நீங்கள் Signal தணிக்கை செய்யப்பட்ட இடத்தில் இல்லாவிட்டால் இந்த அம்சத்தை இயக்க வேண்டாம்.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">இயக்கப்பட்டால், தணிக்கை தவிர்க்க Collie முயற்சிக்கும். நீங்கள் Collie தணிக்கை செய்யப்பட்ட இடத்தில் இல்லாவிட்டால் இந்த அம்சத்தை இயக்க வேண்டாம்.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">உங்கள் கணக்கு தொலைபேசி எண்ணின் அடிப்படையில் தணிக்கை சுற்றளவு செயல்படுத்தப்பட்டுள்ளது.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->

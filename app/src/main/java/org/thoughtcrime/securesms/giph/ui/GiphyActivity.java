@@ -73,6 +73,12 @@ public class GiphyActivity extends PassphraseRequiredActivity {
   }
 
   @Override
+  public void onResume() {
+    super.onResume();
+    dynamicTheme.onResume(this);
+  }
+
+  @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     if (requestCode == MEDIA_SENDER && resultCode == RESULT_OK) {
       setResult(RESULT_OK, data);

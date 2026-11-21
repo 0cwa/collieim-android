@@ -52,6 +52,9 @@ class HelpSettingsScreenTest {
   }
 
   @Test
+  fun `clicking the website emits WebsiteClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_WEBSITE, HelpSettingsEvent.WebsiteClicked)
+
+  @Test
   fun `clicking support center emits SupportCenterClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_SUPPORT_CENTER, HelpSettingsEvent.SupportCenterClicked)
 
   @Test
@@ -61,7 +64,17 @@ class HelpSettingsScreenTest {
   fun `clicking What's new emits WhatsNewClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_WHATS_NEW, HelpSettingsEvent.WhatsNewClicked)
 
   @Test
-  fun `clicking debug log emits DebugLogClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_DEBUG_LOG, HelpSettingsEvent.DebugLogClicked)
+  fun `clicking the enabled debug log emits DebugLogClicked`() {
+    setContent(HelpSettingsState(versionName = "8.33.0", logEnabled = true))
+
+    scrollTo(HelpSettingsTestTags.ROW_DEBUG_LOG)
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_DEBUG_LOG).performClick()
+
+    assertThat(events).containsExactly(HelpSettingsEvent.DebugLogClicked)
+  }
+
+  @Test
+  fun `toggling debug logging emits the requested choice`() = assertClickEmits(HelpSettingsTestTags.ROW_DEBUG_LOGGING, HelpSettingsEvent.DebugLoggingChanged(true))
 
   @Test
   fun `clicking licenses emits LicensesClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_LICENSES, HelpSettingsEvent.LicensesClicked)
@@ -80,7 +93,7 @@ class HelpSettingsScreenTest {
   }
 
   @Test
-  fun `tapping the version emits VersionClicked`() {
+  fun `tapping the version opens app updates`() {
     setContent(HelpSettingsState(versionName = "8.33.0"))
 
     scrollTo(HelpSettingsTestTags.ROW_VERSION)

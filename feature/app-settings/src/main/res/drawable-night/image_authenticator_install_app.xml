@@ -23,7 +23,7 @@
         android:strokeWidth="1.5"
         android:pathData="M8.75 20c0-7.32 5.93-13.25 13.25-13.25h20c7.32 0 13.25 5.93 13.25 13.25v19c0 7.32-5.93 13.25-13.25 13.25h-20c-7.32 0-13.25-5.93-13.25-13.25z"/>
     <path
-        android:fillColor="#FFDBE1FC"
+        android:fillColor="#FFDDDCFC"
         android:pathData="M44 29.5C44 36.4 38.63 42 32 42s-12-5.6-12-12.5S25.37 17 32 17s12 5.6 12 12.5Z"/>
     <path
         android:fillColor="#FF2F384B"

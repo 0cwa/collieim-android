@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.preferences;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroupAdapter;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceViewHolder;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -26,15 +32,19 @@ import org.signal.core.ui.util.ThemeUtil;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.settings.app.privacy.NetworkSettingsController;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.keyvalue.MollyValues;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.net.NetworkManager;
 import org.thoughtcrime.securesms.net.ProxyType;
 import org.thoughtcrime.securesms.net.SocksProxy;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
 
-public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
+public class NetworkPreferenceFragment extends PreferenceFragmentCompat {
 
   private final NetworkManager networkManager;
   private final NetworkSettingsController networkSettingsController = new NetworkSettingsController();
@@ -43,6 +53,12 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
 
   public NetworkPreferenceFragment() {
     networkManager = AppDependencies.getNetworkManager();
+  }
+
+  @Override
+  public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    getPreferenceManager().setPreferenceDataStore(SignalStore.getPreferenceDataStore());
+    addPreferencesFromResource(R.xml.preferences_network);
   }
 
   @Override
@@ -59,9 +75,16 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    SystemWindowInsetsSetter.attach(view, getViewLifecycleOwner(), WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
     Toolbar toolbar = view.findViewById(R.id.toolbar);
     toolbar.setNavigationOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
+
+    // Edge-to-edge: the toolbar has to grow clear of the status bar, and the list has to clear the navigation bar and
+    // the keyboard (the Socks host and port rows are text fields). Same treatment as the proxy screen it replaces.
+    toolbar.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+    SystemWindowInsetsSetter.attach(toolbar, getViewLifecycleOwner(), WindowInsetsCompat.Type.statusBars());
+    SystemWindowInsetsSetter.attach(view, getViewLifecycleOwner(),
+                                    WindowInsetsCompat.Type.navigationBars() | WindowInsetsCompat.Type.ime(),
+                                    SystemWindowInsetsSetter.ApplyMode.MARGIN);
   }
 
   @Override
@@ -71,10 +94,10 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
     networkState = requirePreference("pref_network_connection_state");
     clearTestResult(networkState);
 
-    ListPreference     proxyType  = requirePreference(TextSecurePreferences.PROXY_TYPE);
+    ListPreference     proxyType  = requirePreference(MollyValues.PROXY_TYPE);
     Preference         socksGroup = requirePreference("proxy_socks");
-    EditTextPreference socksHost  = requirePreference(TextSecurePreferences.PROXY_SOCKS_HOST);
-    EditTextPreference socksPort  = requirePreference(TextSecurePreferences.PROXY_SOCKS_PORT);
+    EditTextPreference socksHost  = requirePreference(MollyValues.PROXY_SOCKS_HOST);
+    EditTextPreference socksPort  = requirePreference(MollyValues.PROXY_SOCKS_PORT);
 
     proxyType.setOnPreferenceChangeListener(new ListSummaryListener() {
       @Override
@@ -92,7 +115,7 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
     });
     initializeListSummary(proxyType);
 
-    socksGroup.setVisible(TextSecurePreferences.getProxyType(requireContext()) == ProxyType.SOCKS5);
+    socksGroup.setVisible(SignalStore.molly().getProxyType() == ProxyType.SOCKS5);
 
     socksHost.setOnBindEditTextListener(editText -> {
       editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -139,14 +162,46 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
   }
 
   @Override
-  protected void onCreateEncryptedPreferences(Bundle savedInstanceState, String rootKey) {
-    addPreferencesFromResource(R.xml.preferences_network);
+  @SuppressLint("RestrictedApi")
+  protected RecyclerView.Adapter onCreateAdapter(PreferenceScreen preferenceScreen) {
+    return new PreferenceGroupAdapter(preferenceScreen) {
+      @Override
+      public void onBindViewHolder(@NonNull PreferenceViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        Preference preference = getItem(position);
+        View iconFrame = holder.itemView.findViewById(androidx.preference.R.id.icon_frame);
+        if (iconFrame != null) {
+          iconFrame.setVisibility(preference.getIcon() == null ? View.GONE : View.VISIBLE);
+        }
+      }
+    };
+  }
+
+  private <T extends Preference> T requirePreference(@NonNull CharSequence key) {
+    return Objects.requireNonNull(findPreference(key));
+  }
+
+  private void initializeListSummary(ListPreference preference) {
+    preference.setSummary(preference.getEntry());
+  }
+
+  private class ListSummaryListener implements Preference.OnPreferenceChangeListener {
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object value) {
+      ListPreference listPreference = (ListPreference) preference;
+      int entryIndex = Arrays.asList(listPreference.getEntryValues()).indexOf(value);
+
+      listPreference.setSummary(entryIndex >= 0 && entryIndex < listPreference.getEntries().length
+                                ? listPreference.getEntries()[entryIndex]
+                                : getString(R.string.preferences__led_color_unknown));
+      return true;
+    }
   }
 
   @Override
   public void onPause() {
     super.onPause();
-    TextSecurePreferences.setHasSeenNetworkConfig(requireContext(), true);
+    SignalStore.molly().setHasSeenNetworkConfig(true);
     applyProxyChanges(false);
   }
 
@@ -187,7 +242,7 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
   }
 
   public static CharSequence getSummary(Context context) {
-    int proxyTypeResId = TextSecurePreferences.getProxyType(context).getStringResource();
+    int proxyTypeResId = SignalStore.molly().getProxyType().getStringResource();
     return context.getString(R.string.ApplicationPreferencesActivity_network_summary, context.getString(proxyTypeResId));
   }
 

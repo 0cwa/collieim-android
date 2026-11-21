@@ -6,7 +6,12 @@
 package org.signal.appsettings.privacy
 
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
+
+/** A selectable automatic-lockdown trigger, with its localized display label. */
+data class PassphraseLockTriggerOption(
+  val key: String,
+  val label: String
+)
 
 /**
  * Everything [PrivacySettingsScreen] needs to render.
@@ -14,60 +19,74 @@ import kotlin.time.Duration.Companion.minutes
 data class PrivacySettingsState(
   val hasPhoneNumber: Boolean = true,
   val blockedCount: Int = 0,
+  val blockUnknown: Boolean = false,
   val readReceipts: Boolean = false,
   val typingIndicators: Boolean = false,
   val universalExpireTimer: Duration = Duration.ZERO,
-  val isObsoletePassphraseEnabled: Boolean = false,
-  val isObsoletePassphraseTimeoutEnabled: Boolean = false,
-  val obsoletePassphraseTimeout: Duration = 5.minutes,
-  val isDeviceSecure: Boolean = true,
-  val screenLock: Boolean = false,
-  val screenLockTimeout: Duration = Duration.ZERO,
+  val passphraseLock: Boolean = false,
+  val passphraseLockTriggerValues: Set<String> = emptySet(),
+  val passphraseLockTriggerOptions: List<PassphraseLockTriggerOption> = emptyList(),
+  val isPassphraseLockTimeoutEnabled: Boolean = false,
+  val passphraseLockTimeout: Duration = Duration.ZERO,
+  val biometricScreenLock: Boolean = false,
   val screenSecurity: Boolean = false,
+  val isScreenSecurityForced: Boolean = false,
   val incognitoKeyboard: Boolean = false,
-  val paymentLock: Boolean = false,
-  val scrollToPaymentLock: Boolean = false,
+  /** COLLIE: Result of the inline network connection test. */
+  val networkConnectionStatus: NetworkConnectionStatus = NetworkConnectionStatus.NotChecked,
+  /** COLLIE: The configured proxy, summarized under the proxy row. */
+  val proxySummary: ProxySummary = ProxySummary.None,
   val dialog: Dialog = Dialog.None,
   val snackbar: Snackbar = Snackbar.None
 ) {
 
-  /** Screen lock can't do anything without a device credential, so it reads as off until one is set. */
-  val isScreenLockOn: Boolean
-    get() = isDeviceSecure && screenLock
+  /** Biometric auto-lock can force secure windows independently of the user's screen-security preference. */
+  val isScreenSecurityEnabled: Boolean
+    get() = screenSecurity || isScreenSecurityForced
 
-  /** Payment lock can't do anything without a device credential, so it reads as off until one is set. */
-  val isPaymentLockOn: Boolean
-    get() = isDeviceSecure && paymentLock
+  /** COLLIE: State of the inline connection test in the network section. */
+  sealed interface NetworkConnectionStatus {
+    data object NotChecked : NetworkConnectionStatus
 
-  /** A screen lock timeout of zero means "immediately", which the app treats as one minute. */
-  val effectiveScreenLockTimeout: Duration
-    get() = if (screenLockTimeout == Duration.ZERO) 1.minutes else screenLockTimeout
+    /** A test is running, through the configured proxy when [throughProxy] is true. */
+    data class Checking(val throughProxy: Boolean) : NetworkConnectionStatus
+
+    data object Succeeded : NetworkConnectionStatus
+
+    data object Failed : NetworkConnectionStatus
+  }
+
+  /** COLLIE: The proxy the app is configured to use. */
+  sealed interface ProxySummary {
+    data object None : ProxySummary
+
+    data object Orbot : ProxySummary
+
+    /** Host names are user configuration, not secrets, but keep them out of logs anyway. */
+    data class Socks5(val host: String, val port: Int) : ProxySummary {
+      override fun toString(): String = "Socks5"
+    }
+  }
 
   /** Whichever dialog the screen is showing, if any. */
   sealed interface Dialog {
     data object None : Dialog
 
-    /** Confirms turning off the legacy passphrase, which can't be undone. */
-    data object ConfirmDisablePassphrase : Dialog
-
-    /** Lets the user pick how long Signal can be inactive before the passphrase is required again. */
-    data object PassphraseTimeout : Dialog
-
-    /** Explains that payment lock needs a device screen lock, and offers to open the system settings. */
-    data object PaymentLockNeedsDeviceSecurity : Dialog
+    /** Lets the user choose when Molly should automatically require its passphrase. */
+    data object AutomaticLockdown : Dialog
   }
 
   /** Whichever snackbar the screen is showing, if any. */
   sealed interface Snackbar {
     data object None : Snackbar
 
-    /** Explains that screen lock needs a device screen lock. */
-    data object ScreenLockNeedsDeviceSecurity : Snackbar
+    /** The device has no biometric hardware, or it is currently unavailable. */
+    data object BiometricsUnavailable : Snackbar
 
-    /** Explains that there is no legacy passphrase to change. */
-    data object PassphraseNotSet : Snackbar
+    /** Biometrics are supported but none are enrolled. */
+    data object BiometricEnrollmentRequired : Snackbar
 
-    /** The system settings for setting up a device screen lock couldn't be opened. */
+    /** The system settings for setting up device security couldn't be opened. */
     data object DeviceSecuritySettingsUnavailable : Snackbar
   }
 }

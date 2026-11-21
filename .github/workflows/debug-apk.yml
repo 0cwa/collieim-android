@@ -363,6 +363,10 @@ jobs:
           "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "${app_apks[0]}" > build/navigation-validation/app-manifest.xml
           "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "${test_apks[0]}" > build/navigation-validation/test-manifest.xml
           sha256sum "${app_apks[0]}" "${test_apks[0]}" > build/navigation-validation/apk-before.txt
+          python3 tooling/upstream/verify-signal-donation-apk.py \
+            --apkanalyzer "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" \
+            --manifest tooling/upstream/signal-donation-removals.json "${app_apks[0]}" \
+            | tee build/navigation-validation/donation-removal.json
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -408,7 +412,7 @@ jobs:
           timeout 10s adb logcat -c
           ./gradlew --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
-            :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
+            :app:connectedProdWebsiteDebugAndroidTest --no-configuration-cache -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
             '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest' \
             2>&1 | tee "$evidence/connected.log"
           SH

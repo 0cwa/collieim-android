@@ -7,6 +7,7 @@ package org.signal.storage.database
 
 import android.content.Context
 import org.signal.core.util.crypto.KeyStoreHelper
+import org.signal.storage.keyvalue.KeyValueDatabase
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import java.io.IOException
 import java.security.SecureRandom
@@ -20,25 +21,37 @@ object DatabaseSecretProvider {
   @Volatile
   private var instance: DatabaseSecret? = null
 
+  /**
+   * MOLLY: Returns true when this install already has an encrypted database. The app adds its main database check;
+   * the default covers the key-value database, which lives in this module.
+   */
+  @JvmStatic
+  @Volatile
+  var existingDatabaseCheck: (Context) -> Boolean = { KeyValueDatabase.exists(it) }
+
   @JvmStatic
   fun getOrCreateDatabaseSecret(context: Context): DatabaseSecret {
     if (instance == null) {
       synchronized(this) {
         if (instance == null) {
-          instance = getOrCreate()
+          instance = getOrCreate(context)
         }
       }
     }
     return instance!!
   }
 
-  private fun getOrCreate(): DatabaseSecret {
+  private fun getOrCreate(context: Context): DatabaseSecret {
     val unencryptedSecret = PlainTextKeyValueStore.databaseLegacyUnencryptedSecret
     val encryptedSecret = PlainTextKeyValueStore.databaseEncryptedSecret
 
     return when {
       unencryptedSecret != null -> getUnencryptedDatabaseSecret(unencryptedSecret)
       encryptedSecret != null -> getEncryptedDatabaseSecret(encryptedSecret)
+      existingDatabaseCheck(context) -> {
+        // MOLLY: Never replace a missing key for an existing installation. Doing so would strand all encrypted data.
+        throw IllegalStateException("Database secret is missing for an existing protected database")
+      }
       else -> createAndStoreDatabaseSecret()
     }
   }

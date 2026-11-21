@@ -24,7 +24,7 @@
     <!-- Option in settings that will take use to re-register if they are no longer registered -->
     <string name="preferences_account_reregister">Réinscrire le compte</string>
     <!-- Option in settings that will take user to our website or playstore to update their expired build -->
-    <string name="preferences_account_update_signal">Mettre à jour Signal</string>
+    <string name="preferences_account_update_signal">Mettre à jour Collie</string>
     <!-- Option in settings shown when user is no longer registered or expired client that will WIPE ALL THEIR DATA -->
     <string name="preferences_account_delete_all_data">Supprimer toutes les données</string>
     <!-- Title for confirmation dialog confirming user wants to delete all their data -->
@@ -174,7 +174,7 @@
     <!-- Shown in a dialog with a spinner while the report is downloading -->
     <string name="ExportAccountDataFragment__download_progress">Création du rapport…</string>
     <!-- Explanation that the report is only generated on export and is not saved on the device -->
-    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Le rapport n\'est généré qu\'au moment de l\'exportation et Signal ne le stocke pas sur votre appareil.</string>
+    <string name="ExportAccountDataFragment__report_not_stored_disclaimer">Le rapport n\'est généré qu\'au moment de l\'exportation et Collie ne le stocke pas sur votre appareil.</string>
 
     <!-- TotpSetupScreen -->
     <!-- Title of the screen that walks the user through setting up an authenticator app -->
@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Activer le verrouillage de l\'écran</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Vous devrez utiliser la méthode de déverrouillage de votre appareil Android pour déverrouiller Collie lorsque vous quittez l’appli ou passez d’une appli à l’autre. Lorsque l’écran est verrouillé, les aperçus des notifications n’affichent pas le contenu des messages.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Vous devrez utiliser la méthode de déverrouillage de votre appareil Android pour déverrouiller Collie lorsque vous quittez l\'appli ou passez d\'une appli à l\'autre. Lorsque l\'écran est verrouillé, les aperçus des notifications n\'affichent pas le contenu des messages.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Verrouiller l\'écran</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -535,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Licences</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Conditions générales et règles de confidentialité</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Copyright Collie Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Sous licence GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal est un organisme à but non lucratif</string>
@@ -596,7 +596,7 @@
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Vous n\'avez pas encore défini de phrase secrète.</string>
     <string name="ApplicationPreferencesActivity_disable">Désactiver</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Désactiver la phrase secrète ?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">L\'accès à Signal et aux notifications de message sera toujours déverrouillé.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">L\'accès à Collie et aux notifications de message sera toujours déverrouillé.</string>
     <string name="PrivacySettingsFragment__app_security">Sécurité de l\'appli</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Interdire les captures d\'écran dans Signal et dans la liste des applications ouvertes récemment.</string>
@@ -642,7 +642,7 @@
     <string name="preferences__this_setting_is_not_a_guarantee">Ce paramètre ne garantit pas que votre clavier accepte le mode Incognito de Signal, qui peut être ignoré par certains claviers.</string>
     <string name="preferences__typing_indicators">Indicateurs de saisie</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">Choisissez qui peut voir votre numéro de téléphone et qui peut l\'utiliser pour vous rechercher sur Signal.</string>
+    <string name="preferences_app_protection__choose_who_can_see">Choisissez qui peut voir votre numéro de téléphone et qui peut l\'utiliser pour vous rechercher sur Collie.</string>
     <!-- Privacy settings payments section title -->
     <string name="preferences_app_protection__payments">Paiements</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
@@ -658,7 +658,7 @@
     <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
     <string name="PrivacySettingsScreen__not_now">Plus tard</string>
     <!-- Title of the authentication prompt shown when turning off payment lock -->
-    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">En savoir plus</string>
 
@@ -684,6 +684,7 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Impossible de récupérer votre abonnement aux sauvegardes</string>
     <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Faire un don à Collie</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Préférences internes</string>
     <!-- App settings row that opens linked devices -->
@@ -871,9 +872,9 @@
     <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
     <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Vos contacts, vos groupes et les personnes avec qui vous échangez des messages peuvent voir votre profil et les modifications que vous y apportez.</string>
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Installez la dernière version de Signal</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Installez la dernière version de Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Cette version de Signal est arrivée à expiration. Pour continuer d\'utiliser l\'appli, passez à la nouvelle version.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Cette version de Collie est arrivée à expiration. Pour continuer d\'utiliser l\'appli, passez à la nouvelle version.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">Mettre à jour</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -929,8 +930,11 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Fermer</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Soutenez Signal et gagnez des macarons à afficher sur votre profil.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal est un organisme à but non lucratif. Ici, ni annonceurs, ni investisseurs. Signal n\'existe que grâce à des personnes comme vous.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Devenir donateur mensuel</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->
@@ -1010,19 +1014,19 @@
     <!-- Shown when the QR code you scanned leads to a username link that no one has -->
     <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Utilisateur introuvable.</string>
     <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
-    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Pour scanner un code QR, autorisez Signal à accéder à l\'appareil photo.</string>
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Pour scanner un code QR, autorisez Collie à accéder à l\'appareil photo.</string>
     <!-- Button on the scan tab that asks for the camera permission -->
     <string name="UsernameLinkSettingsScreen__allow_access">Accorder l\'accès</string>
     <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
-    <string name="UsernameLinkSettingsScreen__camera_needed">Pour scanner des codes QR, Signal doit accéder à l\'appareil photo.</string>
+    <string name="UsernameLinkSettingsScreen__camera_needed">Pour scanner des codes QR, Collie doit accéder à l\'appareil photo.</string>
 
     <!-- ManageStorageSettingsScreen -->
     <string name="preferences__storage">Stockage</string>
     <string name="preferences_storage__storage_usage">Utilisation de l\'espace de stockage</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Stockage Signal</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Stockage Collie</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimiser le stockage Signal</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimiser le stockage Collie</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Signal déplacera les médias inutilisés vers la sauvegarde et les supprimera de votre appareil, mais vous pourrez les télécharger depuis votre sauvegarde à tout moment.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
@@ -1048,7 +1052,7 @@
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
     <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Les médias seront supprimés de votre sauvegarde locale</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Lorsque l\'option \"Optimiser le stockage Signal\" est activée, les anciens médias sont déplacés vers la sauvegarde et supprimés de votre appareil. Vous pouvez les retélécharger à tout moment. Ces médias sont également supprimés de votre sauvegarde locale.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Lorsque l\'option \"Optimiser le stockage Collie\" est activée, les anciens médias sont déplacés vers la sauvegarde et supprimés de votre appareil. Vous pouvez les retélécharger à tout moment. Ces médias sont également supprimés de votre sauvegarde locale.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Activer</string>
 
@@ -1078,7 +1082,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Impossible d\'ouvrir le sélecteur.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">Pour recevoir des notifications, autorisez Signal à les afficher.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">Pour recevoir des notifications, autorisez Collie à les afficher.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Activer</string>
     <string name="NotificationsSettingsFragment__calls">Appels</string>
@@ -1177,7 +1181,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Contournement de la censure</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Contournement de la censure</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Lorsque cette option est activée, Signal tente de contourner la censure. Ne l\'activez que si vous vous trouvez dans une zone géographique où Signal est censuré.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Lorsque cette option est activée, Collie tente de contourner la censure. Ne l\'activez que si vous vous trouvez dans une zone géographique où Collie est censuré.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Étant donné l\'indicatif téléphonique de votre compte, le contournement de la censure a été activé.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -1194,7 +1198,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Vérification automatique des clés</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Lorsque cette option est activée, Signal tente de vérifier automatiquement le chiffrement des conversations individuelles.</string>
+    <string name="preferences_automatic_key_verification_body">Lorsque cette option est activée, Collie tente de vérifier automatiquement le chiffrement des conversations individuelles.</string>
 
     <!-- ExpireTimerSettingsScreen -->
     <!-- Title of the screen for choosing a disappearing messages timer -->

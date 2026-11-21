@@ -20,6 +20,8 @@ public final class NetworkUtil {
   private NetworkUtil() {}
 
   public static boolean isConnectedWifi(@NonNull Context context) {
+    if (!Networking.isEnabled()) return false;
+
     ConnectivityManager connectivityManager = ServiceUtil.getConnectivityManager(context);
     Network             activeNetwork       = connectivityManager.getActiveNetwork();
 

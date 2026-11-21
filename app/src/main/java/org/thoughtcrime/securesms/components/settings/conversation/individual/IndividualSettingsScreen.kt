@@ -81,9 +81,15 @@ fun IndividualSettingsScreen(
         name = state.recipient.getDisplayName(context),
         storyViewState = state.storyViewState,
         subhead = state.recipient.combinedAboutAndEmoji,
+        subheadExtra = state.linkedDevicesCount?.let { count ->
+          if (count > 0) {
+            pluralStringResource(R.plurals.BioTextPreference_n_linked_devices, count, count)
+          } else {
+            stringResource(R.string.BioTextPreference_no_linked_devices)
+          }
+        },
         showVerifiedBadge = state.recipient.showVerified,
         showSystemContactBadge = state.recipient.isSystemContact,
-        linkedDeviceCount = state.linkedDeviceCount,
         onAvatarClick = { onEvent(IndividualSettingsEvent.AvatarClicked) },
         onNameClick = { onEvent(IndividualSettingsEvent.HeadlineClicked) },
         onAvatarViewCreated = onAvatarViewCreated
@@ -320,6 +326,7 @@ private fun IndividualSettingsScreenPreview() {
     IndividualSettingsScreen(
       state = IndividualSettingsState(
         recipient = previewRecipient(1L, profileName = ProfileName.fromParts("Miles", "Morales"), about = "Just hanging around"),
+        linkedDevicesCount = 2,
         threadId = 1L,
         canModifyBlockedState = true,
         starredMessagesEnabled = true,

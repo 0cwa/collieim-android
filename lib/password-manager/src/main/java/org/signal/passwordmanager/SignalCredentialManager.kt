@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.autofill.AutofillManager
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.UiContext
 import androidx.core.content.getSystemService
 import androidx.credentials.CreatePasswordRequest
@@ -42,9 +43,16 @@ object SignalCredentialManager {
   private const val GOOGLE_PLAY_SERVICES_PACKAGE = "com.google.android.gms"
   private const val GOOGLE_PASSWORD_MANAGER_PACKAGE = "com.google.android.apps.credentialmanager"
 
-  /** Platform credential providers and the selected autofill service do not require Google Play Services. */
+  /**
+   * Whether a password manager / credential provider may be available.
+   *
+   * On API 34+ Credential Manager can route to any provider, and there's no API to tell if one is set, so we assume
+   * true. Before that it can only save through Play Services into a Google account, regardless of the autofill service.
+   */
+  @ChecksSdkIntAtLeast(api = 34)
   fun isSupported(context: Context): Boolean {
-    return Build.VERSION.SDK_INT >= 34 || context.getSystemService<AutofillManager>()?.isEnabled == true
+    // MOLLY: core-gms implements no Credential Manager transport, so below API 34 is unsupported.
+    return Build.VERSION.SDK_INT >= 34
   }
 
   /** Identifies the selected provider without assuming every device uses Google Password Manager. */

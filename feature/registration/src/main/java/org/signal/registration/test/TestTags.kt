@@ -18,6 +18,8 @@ object TestTags {
   const val WELCOME_RESTORE_OR_TRANSFER_BUTTON = "welcome_restore_or_transfer_button"
   const val WELCOME_RESTORE_HAS_OLD_PHONE_BUTTON = "welcome_restore_has_old_phone_button"
   const val WELCOME_RESTORE_NO_OLD_PHONE_BUTTON = "welcome_restore_no_old_phone_button"
+  const val WELCOME_PROXY_MENU_BUTTON = "welcome_proxy_menu_button"
+  const val WELCOME_PROXY_MENU_ITEM = "welcome_proxy_menu_item"
 
   // Permissions Screen
   const val PERMISSIONS_SCREEN = "permissions_screen"

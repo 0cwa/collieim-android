@@ -25,6 +25,8 @@ done
 git diff --stat "$BASE...$HEAD"
 ```
 
+Commits that arrive through an upstream merge are Signal or Molly history and stay unsigned; verify the signed merge commit instead, as described under [Verify an upstream merge](#verify-an-upstream-merge).
+
 The PR check requires one `Layer:` trailer on every non-merge commit, naming an entry in [`tooling/layers.toml`](../tooling/layers.toml); from PR #202 on, a PR may change only one `feature` layer, and PRs land with a merge commit so each commit keeps its layer; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
 
 ## Catch trailer mistakes locally
@@ -46,9 +48,9 @@ Layer: website
 Co-authored-by: Name <name@example.com>
 ```
 
-A blank line between `Layer:` and `Co-authored-by:` makes Git ignore the layer. The check uses Git's trailer parser, including its handling of editor comments. Ordinary merge commits are exempt, as in CI.
+A blank line between `Layer:` and `Co-authored-by:` makes Git ignore the layer. The check uses Git's trailer parser, including its handling of editor comments. Ordinary merge commits are exempt, as in CI. An upstream merge must carry one `Layer:` of kind `upstream` and one `Upstream:` trailer; the commits it brings in are skipped.
 
-`pre-push` checks every non-merge commit in `origin/main..HEAD` for each branch being pushed, including commits already published on that branch. Fetch `origin/main` before pushing; a missing base blocks the push with a fetch instruction. Branch deletions and tags are left to their existing workflows. To check the same range manually:
+`pre-push` checks every non-merge commit in `origin/main..HEAD` for each branch being pushed, including commits already published on that branch. Fetch `origin/main` before pushing; a missing base blocks the push with a fetch instruction. Branch deletions and tags are left to their existing workflows. Like CI, it checks each upstream merge against the upstream repository over the network; offline, `COLLIE_UPSTREAM_OFFLINE=1 git push` skips only that network check, and CI still runs it. To check the same range manually:
 
 ```sh
 git fetch origin main
@@ -58,18 +60,20 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/git-hooks -p '
 
 The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) runs after the message is available; `pre-commit` runs earlier and cannot validate the final message. A pre-commit framework could run a commit-message check, but these two hooks need only Git and Python 3.11 or later (to read `tooling/layers.toml`), which CI already uses. Hooks are local and can be bypassed, so the required **Layer trailers** PR check remains the final guard and runs the same validator.
 
-## Verify a Signal upgrade
+## Verify an upstream merge
 
-Take `OLD` from `canonicalVersionName` in `app/build.gradle.kts` and `NEW` from the Signal tag under review. Fetch both tags and inspect the complete upstream change:
+Signal upgrades are `git merge` of a Signal tag and Molly updates are `git merge` of a Molly branch, made with `tooling/upstream/merge-upstream.py`. The merge commit is signed and carries `Layer: upgrade` and either `Upstream: signalapp/Signal-Android <tag>` or `Upstream: mollyim/mollyim-android <branch>@<full-sha>`. The **Layer trailers** check requires its second parent to be the commit that Signal's tag points to, or the declared Molly commit on that branch, checked with `git ls-remote` or a fetch from the upstream repository. To check one yourself:
 
 ```sh
-git fetch --no-tags https://github.com/signalapp/Signal-Android.git \
-  "refs/tags/$OLD:refs/tags/signal-$OLD" \
-  "refs/tags/$NEW:refs/tags/signal-$NEW"
-git diff --binary -M "signal-$OLD" "signal-$NEW"
+MERGE=<full-merge-commit-sha>
+TAG=<signal-tag>
+git verify-commit "$MERGE"
+git show -s --format=%B "$MERGE"
+git ls-remote https://github.com/signalapp/Signal-Android.git "refs/tags/$TAG" "refs/tags/$TAG^{}"   # its ^{} line must equal: git rev-parse "$MERGE^2"
+git diff "$MERGE^2" "$MERGE"   # Collie's differences from the upstream release after the merge
 ```
 
-Compare that tag-to-tag diff with the app PR diff. Keep applicable changes, adapt or remove changes that do not belong in Collie, and check the PR's `Upstream:` and `Co-authored-by:` trailers. Do not merge an upstream tag into app `main`.
+Review the merge's own changes (`git show --remerge-diff "$MERGE"`) for conflict resolutions, kept donation deletions and Collie adaptations.
 
 ## Verify a release tag
 

@@ -1,12 +1,15 @@
 """Exercise the PR #168 regression through real commits, merges and pushes."""
 
+import contextlib
 import importlib.util
+import io
 import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -28,9 +31,21 @@ about = "Setup"
 [layers.unified-push]
 alias_of = "relay"
 """
+UPSTREAM_CATALOG = CATALOG + '[layers.upgrade]\nkind = "upstream"\nabout = "Upstream ports"\n'
+SIGNAL = "signalapp/Signal-Android"
+MOLLY = "mollyim/mollyim-android"
 
 
-class LayerTrailerTests(unittest.TestCase):
+def load_checker():
+    spec = importlib.util.spec_from_file_location("checker", CHECKER)
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    return checker
+
+
+class RepositoryTest(unittest.TestCase):
+    """A real repository with commits, merges and pushes."""
+
     def setUp(self):
         scratch = Path(os.environ.get(
             "RUNNER_TEMP", Path.home() / "agent-scratch/collieim-android/git-hooks"
@@ -93,6 +108,8 @@ class LayerTrailerTests(unittest.TestCase):
         self.git("remote", "add", "origin", str(remote))
         return remote
 
+
+class LayerTrailerTests(RepositoryTest):
     def test_original_blank_line_regression_is_rejected_by_commit_and_range(self):
         self.install()
         rejected = self.commit(BROKEN, check=False)
@@ -267,9 +284,7 @@ class LayerTrailerTests(unittest.TestCase):
 
 
     def test_repository_catalog_parses(self):
-        spec = importlib.util.spec_from_file_location("checker", CHECKER)
-        checker = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(checker)
+        checker = load_checker()
         catalog = checker.Catalog(REPO_CATALOG.read_text(encoding="utf-8"))
         self.assertIsNone(catalog.problem("unifiedpush"))
         self.assertIn("use 'Layer: unifiedpush'", catalog.problem("unified-push"))
@@ -319,6 +334,138 @@ class LayerTrailerTests(unittest.TestCase):
     def test_range_without_catalog_checks_only_the_format(self):
         self.commit("Change\n\nLayer: anything-new\n")
         self.assertEqual(self.check_pr(300).returncode, 0)
+
+
+class UpstreamMergeTests(RepositoryTest):
+    """Upstream merges, verified against local stand-ins for the upstream repositories."""
+
+    def upstream(self, name, branch):
+        """Publish unsigned, trailer-less history on its own root to a bare repository."""
+        remote = self.root / f"{name}.git"
+        self.git("init", "--bare", str(remote))
+        self.git("switch", "--orphan", name)
+        self.commit(f"{name} change one")
+        self.git("switch", "-c", f"{name}-side")
+        self.commit(f"{name} side change")
+        self.git("switch", name)
+        self.commit(f"{name} change two")
+        self.git("merge", "--no-ff", f"{name}-side", "-m", f"{name}'s own merge")
+        self.git("push", str(remote), f"HEAD:refs/heads/{branch}")
+        return remote, self.git("rev-parse", "HEAD").stdout.strip()
+
+    def setUp(self):
+        super().setUp()
+        self.add_catalog(UPSTREAM_CATALOG)
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()  # The catalog is on the base.
+        self.signal, self.signal_commit = self.upstream("signal", "main")
+        self.git("tag", "-a", "-m", "Signal release", "v1.0", self.signal_commit)
+        self.git("push", str(self.signal), "refs/tags/v1.0")
+        self.molly, self.molly_commit = self.upstream("molly", "main")
+        self.git("switch", "main")
+        self.git("switch", "-c", "topic")
+        self.commit(GOOD)
+
+    def merge(self, commit, trailers):
+        self.git("merge", "-s", "ours", "--allow-unrelated-histories", "--no-edit", commit)
+        self.git("commit", "--amend", "--file=-", input=f"Merge upstream\n\n{trailers}\n")
+
+    def check(self):
+        checker = load_checker()
+        verifier = checker.Upstream({SIGNAL: str(self.signal), MOLLY: str(self.molly)})
+        stdout, stderr = io.StringIO(), io.StringIO()
+        cwd = os.getcwd()
+        os.chdir(self.repo)
+        try:
+            with mock.patch.dict(os.environ, self.env, clear=True), \
+                    contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                valid = checker.check_range(self.base, "HEAD", 202, verifier)
+        finally:
+            os.chdir(cwd)
+        return valid, stdout.getvalue(), stderr.getvalue()
+
+    def assert_rejected(self, message):
+        valid, _stdout, stderr = self.check()
+        self.assertFalse(valid)
+        self.assertIn(message, stderr)
+
+    def test_signal_tag_merge_skips_upstream_commits(self):
+        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
+        valid, stdout, stderr = self.check()
+        self.assertTrue(valid, stderr)
+        self.assertIn(f"({SIGNAL} v1.0): skipped 3 upstream commits", stdout)
+        self.assertIn("checked 1 non-merge commits, skipped 3 upstream commits", stdout)
+
+    def test_molly_merge_of_an_earlier_branch_commit(self):
+        older = self.git("rev-parse", f"{self.molly_commit}^").stdout.strip()
+        self.merge(older, f"Layer: upgrade\nUpstream: {MOLLY} main@{older}")
+        valid, stdout, stderr = self.check()
+        self.assertTrue(valid, stderr)
+        self.assertIn("skipped 2 upstream commits", stdout)
+        # The scratch repository for the blob-less fetch leaves nothing behind.
+        self.assertEqual(self.git("config", "--get-regexp", "promisor|partialclone", check=False).stdout, "")
+        self.assertEqual(list(Path(self.git("rev-parse", "--git-common-dir").stdout.strip()).glob("collie-upstream-check-*")), [])
+
+    def test_wrong_second_parent_is_rejected(self):
+        older = self.git("rev-parse", f"{self.signal_commit}^").stdout.strip()
+        self.merge(older, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
+        self.assert_rejected(f"is not {SIGNAL} v1.0")
+        self.git("reset", "--hard", "HEAD^")
+        self.merge(older, f"Layer: upgrade\nUpstream: {MOLLY} main@{self.molly_commit}")
+        self.assert_rejected("is not the declared")
+
+    def test_molly_commit_must_be_on_the_declared_branch(self):
+        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {MOLLY} main@{self.signal_commit}")
+        self.assert_rejected(f"which is not on {MOLLY} main")
+
+    def test_undeclared_or_malformed_upstream_is_rejected(self):
+        for trailer, message in (
+            ("Upstream: someone/Signal-Android v1.0", "only signalapp/Signal-Android and mollyim/mollyim-android"),
+            (f"Upstream: {SIGNAL} v2.0", "which signalapp/Signal-Android does not have"),
+            (f"Upstream: {MOLLY} main", "<branch>@<full-sha>"),
+            (f"Upstream: {SIGNAL} v1.0\nUpstream: {SIGNAL} v1.0", "exactly one 'Upstream:'"),
+        ):
+            with self.subTest(trailer=trailer):
+                self.merge(self.signal_commit, f"Layer: upgrade\n{trailer}")
+                self.assert_rejected(message)
+                self.git("reset", "--hard", "HEAD^")
+
+    def test_upstream_merge_needs_one_upstream_layer(self):
+        for layers, message in (
+            ("", "needs exactly one 'Layer:"),
+            ("Layer: website\n", "needs a Layer of kind 'upstream'"),
+            ("Layer: relay\n", "needs a Layer of kind 'upstream'"),
+            ("Layer: upgrade\nLayer: upgrade\n", "needs exactly one 'Layer:"),
+        ):
+            with self.subTest(layers=layers):
+                self.merge(self.signal_commit, f"{layers}Upstream: {SIGNAL} v1.0")
+                self.assert_rejected(message)
+                self.git("reset", "--hard", "HEAD^")
+
+    def test_collie_commit_without_trailer_on_the_first_parent_side_still_fails(self):
+        self.commit("Collie change hidden before the upstream merge")
+        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
+        self.assert_rejected("needs exactly one 'Layer:")
+
+    def test_upstream_commits_do_not_count_as_features(self):
+        self.commit("Relay change\n\nLayer: relay\n")
+        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
+        valid, stdout, stderr = self.check()
+        self.assertTrue(valid, stderr)
+        self.assertIn("feature layer: relay.", stdout)
+
+    def test_pre_push_can_skip_only_the_network_check_offline(self):
+        self.bare_remote()
+        self.git("update-ref", "refs/remotes/origin/main", self.base)
+        self.install()
+        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
+        self.env["COLLIE_UPSTREAM_OFFLINE"] = "1"
+        pushed = self.git("push", "origin", "HEAD:refs/heads/topic")
+        self.assertIn("offline", pushed.stderr)
+        self.assertIn("skipped 3 upstream commits", pushed.stderr + pushed.stdout)
+        self.git("commit", "--amend", "-m", "Merge upstream", "-m", f"Layer: website\nUpstream: {SIGNAL} v1.0")
+        rejected = self.git("push", "-f", "origin", "HEAD:refs/heads/topic", check=False)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn("needs a Layer of kind 'upstream'", rejected.stderr)
 
 
 if __name__ == "__main__":

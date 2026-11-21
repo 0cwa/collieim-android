@@ -5,8 +5,10 @@ import argparse
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 
 
 LAYER = re.compile(r"[a-z0-9][a-z0-9-]*")
@@ -16,6 +18,17 @@ KINDS = {"feature", "infra", "upstream"}
 # PRs numbered from here on may change only one feature layer. This lives in the
 # checker, which CI takes from the PR base, so a PR cannot move its own cutoff.
 ONE_FEATURE_PER_PR_FROM = 202
+# Upstream merges join unsigned upstream history without Layer trailers. Only
+# these repositories qualify, and the declared commit is checked against them.
+UPSTREAM_URLS = {
+    "signalapp/Signal-Android": "https://github.com/signalapp/Signal-Android.git",
+    "mollyim/mollyim-android": "https://github.com/mollyim/mollyim-android.git",
+}
+SIGNAL, MOLLY = UPSTREAM_URLS
+UPSTREAM_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]*")
+FULL_SHA = re.compile(r"[0-9a-f]{40}")
+# The pre-push hook may skip only the network identity check, for offline work.
+OFFLINE = "COLLIE_UPSTREAM_OFFLINE"
 
 
 def git(*args, **kwargs):
@@ -68,15 +81,19 @@ def catalog_in_worktree():
     return Catalog(path.read_text(encoding="utf-8")) if path.is_file() else None
 
 
-def check_message(message, label, catalog=None):
-    """Return the commit's layer name, or None after printing why it is invalid."""
+def trailer_values(message, name):
     trailers = git("interpret-trailers", "--parse", input=message)
-    layers = [
+    return [
         value.strip()
         for line in trailers.splitlines()
         for key, separator, value in [line.partition(":")]
-        if separator and key.lower() == "layer"
+        if separator and key.lower() == name
     ]
+
+
+def check_message(message, label, catalog=None):
+    """Return the commit's layer name, or None after printing why it is invalid."""
+    layers = trailer_values(message, "layer")
     if len(layers) == 1 and LAYER.fullmatch(layers[0]):
         problem = catalog and catalog.problem(layers[0])
         if not problem:
@@ -110,14 +127,141 @@ def resolve_commit(ref):
     return git("rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}").strip()
 
 
-def check_range(base, head, pr=None):
+class Upstream:
+    """Confirms an upstream commit against the upstream repository itself."""
+
+    def __init__(self, urls=None, offline=False):
+        self.urls = urls or UPSTREAM_URLS
+        self.offline = offline
+
+    def signal_tag(self, tag):
+        """The commit Signal's tag points to, peeled, or None if it has no such tag."""
+        ref = f"refs/tags/{tag}"
+        found = {}
+        for line in git("ls-remote", "--tags", "--end-of-options", self.urls[SIGNAL], ref, f"{ref}^{{}}").splitlines():
+            oid, _, name = line.partition("\t")
+            found[name] = oid
+        return found.get(f"{ref}^{{}}", found.get(ref))
+
+    def molly_contains(self, branch, commit):
+        """Whether Molly's branch head is, or descends from, commit."""
+        common = Path(git("rev-parse", "--path-format=absolute", "--git-common-dir").strip())
+        objects = git("rev-parse", "--path-format=absolute", "--git-path", "objects").strip()
+        # A throwaway repository borrowing this one's objects keeps the
+        # blob-less fetch's partial-clone settings out of this repository.
+        scratch = Path(tempfile.mkdtemp(prefix="collie-upstream-check-", dir=common))
+        try:
+            # Hooks may set GIT_DIR and similar; they must not reach the scratch repository.
+            local = set(git("rev-parse", "--local-env-vars").split())
+            env = {key: value for key, value in os.environ.items() if key not in local}
+            def run(*args):
+                return subprocess.run(["git", "-C", str(scratch), *args], text=True, env=env,
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if run("init", "-q", "--bare").returncode:
+                raise ValueError(f"cannot prepare a check of {MOLLY} {branch}")
+            (scratch / "objects/info/alternates").write_text(objects + "\n", encoding="utf-8")
+            # Offer the merged commit, so the fetch sends only what follows it.
+            if run("update-ref", "refs/have", commit).returncode:
+                raise ValueError(f"cannot prepare a check of {MOLLY} {branch}")
+            fetched = run("fetch", "-q", "--no-tags", "--filter=blob:none", "--end-of-options",
+                          self.urls[MOLLY], f"+refs/heads/{branch}:refs/upstream")
+            if fetched.returncode:
+                raise ValueError(f"cannot fetch {MOLLY} {branch}: {fetched.stderr.strip()}")
+            return run("merge-base", "--is-ancestor", commit, "refs/upstream").returncode == 0
+        finally:
+            shutil.rmtree(scratch, ignore_errors=True)
+
+
+def upstream_parent(merge, catalog, kind, upstream):
+    """For a merge declaring Upstream:, its verified upstream parent and trailer.
+
+    Returns False after printing why an upstream merge is invalid, and None for
+    an ordinary merge, which keeps the ordinary merge rules.
+    """
+    message = git("show", "-s", "--format=%B", merge)
+    declared = trailer_values(message, "upstream")
+    if not declared:
+        return None
+    label = git("show", "-s", "--format=%h %s", merge).strip()
+    def fail(reason):
+        print(f"{label}: upstream merge {reason}", file=sys.stderr)
+        return False
+    if len(declared) != 1:
+        return fail("needs exactly one 'Upstream:' trailer.")
+    repository, _, name = declared[0].partition(" ")
+    if repository not in UPSTREAM_URLS:
+        return fail(f"names {repository!r}; only {' and '.join(UPSTREAM_URLS)} are accepted.")
+    layer = check_message(message, label, catalog)
+    if layer is None:
+        return False
+    if kind(layer) != "upstream":
+        return fail(f"needs a Layer of kind 'upstream' in {CATALOG}, not '{layer}'.")
+    parents = git("show", "-s", "--format=%P", merge).split()
+    if len(parents) != 2:
+        return fail("needs exactly two parents: Collie first, then the upstream commit.")
+    parent = parents[1]
+    if repository == SIGNAL:
+        if not UPSTREAM_REF.fullmatch(name) or "/" in name:
+            return fail(f"needs 'Upstream: {SIGNAL} <tag>', not {declared[0]!r}.")
+        expected = name
+    else:
+        branch, _, expected = name.rpartition("@")
+        if not UPSTREAM_REF.fullmatch(branch) or not FULL_SHA.fullmatch(expected):
+            return fail(f"needs 'Upstream: {MOLLY} <branch>@<full-sha>', not {declared[0]!r}.")
+        if parent != expected:
+            return fail(f"second parent {parent} is not the declared {MOLLY} commit {expected}.")
+        name = branch
+    if subprocess.run(["git", "check-ref-format", f"refs/x/{name}"]).returncode:
+        return fail(f"names an invalid upstream ref {name!r}.")
+    if upstream.offline:
+        print(f"{label}: offline, so {declared[0]} is not checked against {repository}; "
+              "CI checks it.", file=sys.stderr)
+    elif repository == SIGNAL:
+        expected = upstream.signal_tag(name)
+        if expected is None:
+            return fail(f"names tag {name}, which {SIGNAL} does not have.")
+        if parent != expected:
+            return fail(f"second parent {parent} is not {SIGNAL} {name} ({expected}).")
+    elif not upstream.molly_contains(name, expected):
+        return fail(f"declares {expected}, which is not on {MOLLY} {name}.")
+    return parent, declared[0]
+
+
+def check_range(base, head, pr=None, upstream=None):
     base, head = resolve_commit(base), resolve_commit(head)
     catalog = catalog_at(head)  # The PR's own catalog, so a new feature adds its entry.
     # Kinds of layers that already exist come from the base, so a PR cannot
     # relabel a feature as infra to pass the one-feature rule.
     base_catalog = catalog_at(base)
-    commits = git("rev-list", "--no-merges", f"{base}..{head}").splitlines()
+    def kind(layer):
+        if base_catalog and base_catalog.kind(layer):
+            return base_catalog.kind(layer)
+        return catalog.kind(layer) if catalog else None
+
     valid = True
+    # Commits reachable only through a verified upstream parent are upstream
+    # history: unsigned, without trailers, and outside the one-feature rule.
+    # Children come first in topological order, so upstream's own merges are
+    # already excluded by the time they are reached.
+    upstream_commits = set()
+    skipped = 0
+    for merge in git("rev-list", "--merges", "--topo-order", f"{base}..{head}").splitlines():
+        if merge in upstream_commits:
+            continue
+        joined = upstream_parent(merge, catalog, kind, upstream or Upstream())
+        if joined is False:
+            valid = False
+        elif joined:
+            parent, declared = joined
+            plain = set(git("rev-list", "--no-merges", parent, f"^{base}").splitlines())
+            count = len(plain - upstream_commits)
+            upstream_commits |= set(git("rev-list", parent, f"^{base}").splitlines())
+            skipped += count
+            print(f"Upstream merge {merge[:10]} ({declared}): skipped {count} upstream commits.")
+    commits = [
+        commit for commit in git("rev-list", "--no-merges", f"{base}..{head}").splitlines()
+        if commit not in upstream_commits
+    ]
     layers = set()
     for commit in commits:
         message = git("show", "-s", "--format=%B", commit)
@@ -127,11 +271,6 @@ def check_range(base, head, pr=None):
             valid = False
         else:
             layers.add(layer)
-    def kind(layer):
-        if base_catalog and base_catalog.kind(layer):
-            return base_catalog.kind(layer)
-        return catalog.kind(layer) if catalog else None
-
     features = sorted(layer for layer in layers if kind(layer) == "feature")
     if len(features) > 1:
         enforced = pr is not None and pr >= ONE_FEATURE_PER_PR_FROM
@@ -144,6 +283,7 @@ def check_range(base, head, pr=None):
         valid = valid and not enforced
     if valid:
         print(f"Layer trailers: checked {len(commits)} non-merge commits"
+              + (f", skipped {skipped} upstream commits" if upstream_commits else "")
               + (f"; feature layer: {', '.join(features)}." if features else "."))
     return valid
 
@@ -156,7 +296,7 @@ def check_push():
             continue  # Branch deletion or a tag, neither of which opens an app PR.
         # Check the whole PR range, including bad commits already on the remote
         # branch. Checking only remote_oid..local_oid would miss those commits.
-        if not check_range(BASE, local_oid):
+        if not check_range(BASE, local_oid, upstream=Upstream(offline=os.environ.get(OFFLINE) == "1")):
             valid = False
     return valid
 
@@ -166,10 +306,12 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     message = commands.add_parser("message", help="check a pending commit message")
     message.add_argument("path", type=Path)
-    revisions = commands.add_parser("range", help="check every non-merge commit in base..head")
+    revisions = commands.add_parser("range", help="check every non-merge commit in base..head outside verified upstream merges")
     revisions.add_argument("base")
     revisions.add_argument("head", nargs="?", default="HEAD")
-    commands.add_parser("pre-push", help="check branch updates from Git's pre-push stdin")
+    commands.add_parser("pre-push", help=(
+        "check branch updates from Git's pre-push stdin; "
+        f"{OFFLINE}=1 skips only the network check of upstream merges"))
     args = parser.parse_args()
     try:
         if args.command == "message":

@@ -54,7 +54,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Allows selection of an address from a google map.
+ * Allows selection of an address from the OpenStreetMap raster map.
  * <p>
  * Based on https://github.com/suchoX/PlacePicker
  */
@@ -75,7 +75,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
   private SingleAddressBottomSheet bottomSheet;
   private Address                  currentAddress;
-  private LatLng                   initialLocation;
+  private LatLng                   initialLocation = PRIME_MERIDIAN;
   private LatLng                   currentLocation = new LatLng(0, 0);
   private AddressLookup            addressLookup;
   private GoogleMap                googleMap;
@@ -101,6 +101,9 @@ public final class PlacePickerActivity extends AppCompatActivity {
     bottomSheet      = findViewById(R.id.bottom_sheet);
     View markerImage = findViewById(R.id.marker_image_view);
     View fab         = findViewById(R.id.place_chosen_button);
+    // MapLibre initializes asynchronously. Do not send the placeholder coordinate
+    // before a camera target has been installed on the map.
+    fab.setEnabled(false);
 
     findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
 
@@ -155,6 +158,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
       enableMyLocationButtonIfHaveThePermission(googleMap);
 
       googleMap.setOnCameraMoveStartedListener(i -> {
+        fab.setEnabled(false);
         markerImage.animate()
                    .translationY(getMapMarkerOffsetY() - 75f)
                    .setInterpolator(OVERSHOOT_INTERPOLATOR)
@@ -180,6 +184,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
   protected void onResume() {
     super.onResume();
     dynamicTheme.onResume(this);
+    if (googleMap != null) enableMyLocationButtonIfHaveThePermission(googleMap);
   }
 
   private void setInitialLocation(@NonNull LatLng latLng) {
@@ -215,6 +220,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
   private void setCurrentLocation(LatLng location) {
     currentLocation = location;
+    findViewById(R.id.place_chosen_button).setEnabled(true);
     bottomSheet.showLoading();
     lookupAddress(location);
   }

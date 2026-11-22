@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Medijos išsaugoti neįmanoma</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Šis įrašas buvo perkeltas iš jūsų įrenginio, nes įjungtas pasirinkimas „Optimizuoti „Signal“ saugyklą“. Galite atsisiųsti elementus po vieną arba išjungti „Optimizuoti „Signal“ saugyklą“, kad atsisiųstumėte visus įrašus į savo įrenginį.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Šis įrašas buvo perkeltas iš jūsų įrenginio, nes įjungtas pasirinkimas „Optimizuoti „Collie“ saugyklą“. Galite atsisiųsti elementus po vieną arba išjungti „Optimizuoti „Collie“ saugyklą“, kad atsisiųstumėte visus įrašus į savo įrenginį.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Visų elementų išsaugoti neįmanoma</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Kai kurie jūsų pasirinkti įrašai buvo perkelti iš jūsų įrenginio, nes įjungtas pasirinkimas „Optimizuoti „Signal“ saugyklą“. Galite išsaugoti elementus po vieną arba išjungti „Optimizuoti „Signal“ saugyklą“, kad atsisiųstumėte visus įrašus į savo įrenginį.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Kai kurie jūsų pasirinkti įrašai buvo perkelti iš jūsų įrenginio, nes įjungtas pasirinkimas „Optimizuoti „Collie“ saugyklą“. Galite išsaugoti elementus po vieną arba išjungti „Optimizuoti „Collie“ saugyklą“, kad atsisiųstumėte visus įrašus į savo įrenginį.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Rodyti saugyklos nustatymus</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

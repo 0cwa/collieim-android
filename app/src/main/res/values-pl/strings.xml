@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacje z asystentami AI, takie jak Gemini, mogą uzyskać dostęp do treści Signal. Aby temu zapobiec, włączono Ochronę ekranu. Spowoduje to również wyłączenie możliwości robienia zrzutów ekranu.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacje z asystentami AI, takie jak Gemini, mogą uzyskać dostęp do treści Collie. Aby temu zapobiec, włączono Ochronę ekranu. Spowoduje to również wyłączenie możliwości robienia zrzutów ekranu.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Ochrona ekranu jest włączona</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Wyłączyć ochronę ekranu?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Po wyłączeniu tej opcji asystenci AI, jak np. Google Gemini, mogą odczytywać treści w aplikacji Signal i wykorzystywać je w funkcjach, które niekoniecznie gwarantują prywatność.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Po wyłączeniu tej opcji asystenci AI, jak np. Google Gemini, mogą odczytywać treści w aplikacji Collie i wykorzystywać je w funkcjach, które niekoniecznie gwarantują prywatność.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Wyłącz</string>
     <!-- Snackbar shown after the user turns off screen security -->

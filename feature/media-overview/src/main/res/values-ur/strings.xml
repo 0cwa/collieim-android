@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">میڈیا محفوظ نہیں کیا جا سکتا</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">یہ میڈیا آپ کی ڈیوائس سے آف لوڈ کر دیا گیا ہے کیونکہ \"Signal کی اسٹوریج کو بہتر بنائیں\" فعال ہے۔ آپ آئٹمز کو ایک ایک کر کے ڈاؤن لوڈ کر سکتے ہیں، یا \"Signal کی اسٹوریج کو بہتر بنائیں\" کو غیر فعال کر کے تمام میڈیا کو اپنی ڈیوائس پر ڈاؤن لوڈ کر سکتے ہیں۔</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">یہ میڈیا آپ کی ڈیوائس سے آف لوڈ کر دیا گیا ہے کیونکہ \"Collie کی اسٹوریج کو بہتر بنائیں\" فعال ہے۔ آپ آئٹمز کو ایک ایک کر کے ڈاؤن لوڈ کر سکتے ہیں، یا \"Collie کی اسٹوریج کو بہتر بنائیں\" کو غیر فعال کر کے تمام میڈیا کو اپنی ڈیوائس پر ڈاؤن لوڈ کر سکتے ہیں۔</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">تمام آئٹمز محفوظ نہیں کیے جا سکتے</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">آپ کا منتخب کردہ کچھ میڈیا آپ کی ڈیوائس سے آف لوڈ کر دیا گیا ہے کیونکہ \"Signal کی اسٹوریج کو بہتر بنائیں\" فعال ہے۔ آپ آئٹمز کو ایک ایک کر کے محفوظ کر سکتے ہیں، یا \"Signal کی اسٹوریج کو بہتر بنائیں\" کو غیر فعال کر کے تمام میڈیا کو اپنی ڈیوائس پر ڈاؤن لوڈ کر سکتے ہیں۔</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">آپ کا منتخب کردہ کچھ میڈیا آپ کی ڈیوائس سے آف لوڈ کر دیا گیا ہے کیونکہ \"Collie کی اسٹوریج کو بہتر بنائیں\" فعال ہے۔ آپ آئٹمز کو ایک ایک کر کے محفوظ کر سکتے ہیں، یا \"Collie کی اسٹوریج کو بہتر بنائیں\" کو غیر فعال کر کے تمام میڈیا کو اپنی ڈیوائس پر ڈاؤن لوڈ کر سکتے ہیں۔</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">اسٹوریج سیٹنگز دیکھیں</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

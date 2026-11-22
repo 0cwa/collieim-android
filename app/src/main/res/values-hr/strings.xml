@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacije s AI asistentima kao što je Gemini, mogu skenirati vaše podatke na Signalu. Zaštita zaslona omogućena je kako bi vas zaštitila. Ovime će i snimke zaslona biti onemogućene.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacije s AI asistentima kao što je Gemini, mogu skenirati vaše podatke na Collieu. Zaštita zaslona omogućena je kako bi vas zaštitila. Ovime će i snimke zaslona biti onemogućene.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Sigurnost zaslona je uključena</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Želite li isključiti sigurnost zaslona?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Ako onemogućite zaštitu zaslona, omogućit ćete AI asistentima kao što je Google Gemini skeniranje podataka na Signalu i njihovo korištenje za značajke koje možda nisu privatne.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Ako onemogućite zaštitu zaslona, omogućit ćete AI asistentima kao što je Google Gemini skeniranje podataka na Collieu i njihovo korištenje za značajke koje možda nisu privatne.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Isključi</string>
     <!-- Snackbar shown after the user turns off screen security -->

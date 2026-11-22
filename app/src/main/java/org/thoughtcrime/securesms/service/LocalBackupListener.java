@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import org.signal.core.util.JavaTimeExtensionsKt;
 import org.thoughtcrime.securesms.jobs.LocalBackupJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Media faylını yaddaşda saxlamaq mümkün deyil</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Bu media faylı cihazınızdan köçürülüb, çünki \"Signal yaddaşını optimallaşdır\" funksiyası yandırılıb. Faylları bir-bir endirə və ya \"Signal yaddaşını optimallaşdır\" funksiyasını söndürərək bütün media fayllarını cihazınıza endirə bilərsiniz.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Bu media faylı cihazınızdan köçürülüb, çünki \"Collie yaddaşını optimallaşdır\" funksiyası yandırılıb. Faylları bir-bir endirə və ya \"Collie yaddaşını optimallaşdır\" funksiyasını söndürərək bütün media fayllarını cihazınıza endirə bilərsiniz.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Bütün elementləri yaddaşda saxlamaq mümkün olmadı</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Seçdiyiniz bəzi media faylları cihazınızdan köçürülüb, çünki \"Signal yaddaşını optimallaşdır\" funksiyası yandırılıb. Faylları bir-bir yaddaşda saxlaya və ya \"Signal yaddaşını optimallaşdır\" funksiyasını söndürərək bütün media fayllarını cihazınıza endirə bilərsiniz.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Seçdiyiniz bəzi media faylları cihazınızdan köçürülüb, çünki \"Collie yaddaşını optimallaşdır\" funksiyası yandırılıb. Faylları bir-bir yaddaşda saxlaya və ya \"Collie yaddaşını optimallaşdır\" funksiyasını söndürərək bütün media fayllarını cihazınıza endirə bilərsiniz.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Yaddaş parametrlərinə baxın</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

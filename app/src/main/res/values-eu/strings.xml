@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini bezalako AAko laguntzaileak diren aplikazioek ahal dute zure Signal-eko edukia eskaneatu. Hau ekiditeko, pantailaren segurtasuna gaitu da. Honek pantaila-argazkiak desgaituko ditu ere.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini bezalako AAko laguntzaileak diren aplikazioek ahal dute zure Collie-eko edukia eskaneatu. Hau ekiditeko, pantailaren segurtasuna gaitu da. Honek pantaila-argazkiak desgaituko ditu ere.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Segurtasun-pantaila gaituta dago</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Segurtasun-pantaila desaktibatu nahi duzu?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Desaktibatzen bada, baliteke Google Gemini bezalako AAko laguntzaileei ahalbidetzea Signal-eko edukia eskaneatzea eta agian pribatuak ez diren haren eginbideak erabiltzea.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Desaktibatzen bada, baliteke Google Gemini bezalako AAko laguntzaileei ahalbidetzea Collie-eko edukia eskaneatzea eta agian pribatuak ez diren haren eginbideak erabiltzea.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Desaktibatu</string>
     <!-- Snackbar shown after the user turns off screen security -->

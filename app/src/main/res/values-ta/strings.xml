@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini போன்ற AI அசிஸ்டெண்ட் செயலிகள் உங்கள் Signal உள்ளடக்கத்தை ஸ்கேன் செய்யலாம். இதைத் தடுக்க, திரை பாதுகாப்பு இயக்கப்பட்டது. இது ஸ்கிரீன்ஷாட்களையும் முடக்கும்.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini போன்ற AI அசிஸ்டெண்ட் செயலிகள் உங்கள் Collie உள்ளடக்கத்தை ஸ்கேன் செய்யலாம். இதைத் தடுக்க, திரை பாதுகாப்பு இயக்கப்பட்டது. இது ஸ்கிரீன்ஷாட்களையும் முடக்கும்.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">திரைப் பாதுகாப்பு செயல்படுத்தப்பட்டுள்ளது</string>
     <!-- Bottom sheet button that turns screen security back off -->

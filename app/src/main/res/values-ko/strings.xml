@@ -3564,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini와 같은 AI 어시스턴트 앱이 Signal 화면의 내용을 스캔할 수 있어, 이를 방지하기 위해 화면 보안이 활성화되었습니다. 이에 따라 스크린샷 기능도 함께 차단됩니다.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini와 같은 AI 어시스턴트 앱이 Collie 화면의 내용을 스캔할 수 있어, 이를 방지하기 위해 화면 보안이 활성화되었습니다. 이에 따라 스크린샷 기능도 함께 차단됩니다.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">화면 보안 켜짐</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3572,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">화면 보안을 끌까요?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">이 설정을 끄면 Google Gemini 등의 AI 어시스턴트가 Signal 화면을 스캔하여 개인정보가 보호되지 않는 기능에 사용할 위험이 있습니다.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">이 설정을 끄면 Google Gemini 등의 AI 어시스턴트가 Collie 화면을 스캔하여 개인정보가 보호되지 않는 기능에 사용할 위험이 있습니다.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">끄기</string>
     <!-- Snackbar shown after the user turns off screen security -->

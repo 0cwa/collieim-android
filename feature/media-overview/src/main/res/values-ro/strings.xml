@@ -98,11 +98,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Nu se pot salva fișierele media</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Acest fișier media a fost eliminat de pe dispozitiv pentru că este activată funcția Optimizează stocarea Signal. Poți să descarci articolele unul câte unul sau să dezactivezi Optimizează stocarea Signal ca să descarci toate fișierele pe dispozitiv.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Acest fișier media a fost eliminat de pe dispozitiv pentru că este activată funcția Optimizează stocarea Collie. Poți să descarci articolele unul câte unul sau să dezactivezi Optimizează stocarea Collie ca să descarci toate fișierele pe dispozitiv.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Nu se pot salva toate articolele</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Unele fișiere pe care le-ai selectat au eliminate de pe dispozitiv deoarece este pornită funcția Optimizează stocarea Signal. Poți să salvezi articolele unul câte unul sau să dezactivezi Optimizează stocarea Signal ca să-ți descarci toate fișierele pe dispozitiv.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Unele fișiere pe care le-ai selectat au eliminate de pe dispozitiv deoarece este pornită funcția Optimizează stocarea Collie. Poți să salvezi articolele unul câte unul sau să dezactivezi Optimizează stocarea Collie ca să-ți descarci toate fișierele pe dispozitiv.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Vezi setările de stocare</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

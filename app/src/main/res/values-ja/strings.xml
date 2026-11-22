@@ -3564,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">GeminiのようなAIアシスタントアプリがSignalのコンテンツをスキャンできる状態です。これを防ぐために、スクリーンセキュリティが有効になりました。有効になるとスクリーンショットもできなくなります。</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">GeminiのようなAIアシスタントアプリがCollieのコンテンツをスキャンできる状態です。これを防ぐために、スクリーンセキュリティが有効になりました。有効になるとスクリーンショットもできなくなります。</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">画面のセキュリティが有効化されています</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3572,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">画面のセキュリティを無効化しますか？</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">オフにすると、Google GeminiなどのAIアシスタントがSignalコンテンツをスキャンできるようになり、プライバシーが保護されない恐れのある機能に利用される場合があります。</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">オフにすると、Google GeminiなどのAIアシスタントがCollieコンテンツをスキャンできるようになり、プライバシーが保護されない恐れのある機能に利用される場合があります。</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">無効化する</string>
     <!-- Snackbar shown after the user turns off screen security -->

@@ -14,7 +14,6 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.service.PersistentAlarmManagerListener;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +32,7 @@ public class ApkUpdateRefreshListener extends PersistentAlarmManagerListener {
   protected long onAlarm(Context context, long scheduledTime) {
     Log.i(TAG, "onAlarm...");
 
-    if (BuildConfig.MANAGE_COLLIE_UPDATES && CollieUpdateProfile.forApplicationId(BuildConfig.APPLICATION_ID) != null && TextSecurePreferences.isUpdateApkEnabled(context)) {
+    if (BuildConfig.MANAGE_COLLIE_UPDATES && CollieUpdateProfile.forApplicationId(BuildConfig.APPLICATION_ID) != null && SignalStore.molly().getUpdateApkEnabled()) {
       Log.i(TAG, "Queueing APK update job...");
       AppDependencies.getJobManager().add(new ApkUpdateJob());
     }
@@ -45,7 +44,7 @@ public class ApkUpdateRefreshListener extends PersistentAlarmManagerListener {
   }
 
   public static void scheduleIfAllowed(Context context) {
-    if (BuildConfig.MANAGE_COLLIE_UPDATES && CollieUpdateProfile.forApplicationId(BuildConfig.APPLICATION_ID) != null && TextSecurePreferences.isUpdateApkEnabled(context)) {
+    if (BuildConfig.MANAGE_COLLIE_UPDATES && CollieUpdateProfile.forApplicationId(BuildConfig.APPLICATION_ID) != null && SignalStore.molly().getUpdateApkEnabled()) {
       new ApkUpdateRefreshListener().onReceive(context, getScheduleIntent());
     }
   }

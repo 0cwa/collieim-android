@@ -59,6 +59,7 @@ import org.signal.storage.keyvalue.isDecisionPending
 import org.signal.storage.protos.RestoreDecisionState
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.BackupEvent
+import org.thoughtcrime.securesms.backup.CollieRestoredPreferences
 import org.thoughtcrime.securesms.backup.FullBackupImporter
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.RemoteRestoreResult
@@ -100,7 +101,6 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.service.LocalBackupListener
 import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener
 import org.thoughtcrime.securesms.util.BackupUtil
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.link.TransferArchiveResponse
 import org.whispersystems.signalservice.api.push.UsernameLinkComponents
 import java.io.File
@@ -432,7 +432,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
         }
 
         reenableLegacyLocalBackups(rootUri, passphrase)
-        TextSecurePreferences.onPostBackupRestore(context)
+        CollieRestoredPreferences.applyAfterRestore(context)
 
         trySend(readRestoredLocalBackupState(includePreRegistrationKeys = true))
         Log.d(TAG, "V1 restore complete.")

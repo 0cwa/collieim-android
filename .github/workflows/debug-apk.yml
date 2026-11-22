@@ -19,6 +19,34 @@ concurrency:
   group: debug-apk-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  probe:
+    name: probe ${{ matrix.n }}
+    strategy:
+      fail-fast: false
+      matrix:
+        n: [1, 2, 3, 4, 5, 6, 7, 8]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Resolve the Kotlin plugin with logging
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --info -p buildSrc tasks > "$RUNNER_TEMP/probe.log" 2>&1 || {
+            echo "PROBE FAILED"
+            grep -n -i -B3 -A30 "could not\|exception\|status code\|disabled" "$RUNNER_TEMP/probe.log" | head -200
+            exit 1
+          }
+          echo "PROBE OK"
+
   debug-apk:
     name: Debug APK
     runs-on: ubuntu-24.04

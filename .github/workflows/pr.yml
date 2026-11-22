@@ -192,6 +192,8 @@ jobs:
       - name: Run unit test shard
         env:
           SHARD: ${{ matrix.shard }}
+          # Any android-all jar the step above did not fetch comes from the mirror, not Central.
+          JAVA_TOOL_OPTIONS: -Drobolectric.dependency.repo.url=https://maven-central.storage-download.googleapis.com/maven2
         run: |
           if [ "$SHARD" = modules ]; then
             ./gradlew --no-daemon --continue -PcollieHostJniDir=build/host-tests/resources \

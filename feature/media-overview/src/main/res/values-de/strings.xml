@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Medien können nicht gespeichert werden</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Diese Medien wurden von deinem Gerät ausgelagert, da die Option »Signal-Speicher optimieren« aktiviert ist. Du kannst einzelne Elemente herunterladen oder die Option »Signal-Speicher optimieren« deaktivieren, um alle Medien auf dein Gerät herunterzuladen.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Diese Medien wurden von deinem Gerät ausgelagert, da die Option »Collie-Speicher optimieren« aktiviert ist. Du kannst einzelne Elemente herunterladen oder die Option »Collie-Speicher optimieren« deaktivieren, um alle Medien auf dein Gerät herunterzuladen.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Es können nicht alle Elemente gespeichert werden</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Einige der von dir ausgewählten Medien wurden von deinem Gerät ausgelagert, da die Option »Signal-Speicher optimieren« aktiviert ist. Du kannst einzelne Elemente speichern oder die Option »Signal-Speicher optimieren« deaktivieren, um alle Medien auf dein Gerät herunterzuladen.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Einige der von dir ausgewählten Medien wurden von deinem Gerät ausgelagert, da die Option »Collie-Speicher optimieren« aktiviert ist. Du kannst einzelne Elemente speichern oder die Option »Collie-Speicher optimieren« deaktivieren, um alle Medien auf dein Gerät herunterzuladen.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Speicher-Einstellungen anzeigen</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

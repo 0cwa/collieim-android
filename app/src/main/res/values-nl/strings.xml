@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">AI-assistenten zoals Gemini kunnen de inhoud van Signal scannen. Om dit te voorkomen, is schermbeveiliging ingeschakeld. Hierdoor kun je ook geen schermafbeeldingen maken.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">AI-assistenten zoals Gemini kunnen de inhoud van Collie scannen. Om dit te voorkomen, is schermbeveiliging ingeschakeld. Hierdoor kun je ook geen schermafbeeldingen maken.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Schermbeveiliging is ingeschakeld</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Schermbeveiliging uitschakelen?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Als je deze optie uitschakelt, kunnen AI-assistenten zoals Google Gemini mogelijk de inhoud van Signal scannen en gebruiken voor functies die mogelijk niet privé zijn.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Als je deze optie uitschakelt, kunnen AI-assistenten zoals Google Gemini mogelijk de inhoud van Collie scannen en gebruiken voor functies die mogelijk niet privé zijn.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Uitschakelen</string>
     <!-- Snackbar shown after the user turns off screen security -->

@@ -3790,7 +3790,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplicațiile cu asistenți AI, precum Gemini, pot analiza conținutul tău din Signal. Pentru a preveni acest lucru, s-a activat protecția ecranului. Această setare va dezactiva și capturile de ecran.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplicațiile cu asistenți AI, precum Gemini, pot analiza conținutul tău din Collie. Pentru a preveni acest lucru, s-a activat protecția ecranului. Această setare va dezactiva și capturile de ecran.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Securitatea ecranului este activată</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3798,7 +3798,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Dezactivezi securitatea ecranului?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Dacă această opțiune este dezactivată, este posibil ca asistenții AI, precum Google Gemini, să poată scana conținutul din Signal și să îl utilizeze pentru funcții care ar putea să nu fie confidențiale.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Dacă această opțiune este dezactivată, este posibil ca asistenții AI, precum Google Gemini, să poată scana conținutul din Collie și să îl utilizeze pentru funcții care ar putea să nu fie confidențiale.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Dezactivare</string>
     <!-- Snackbar shown after the user turns off screen security -->

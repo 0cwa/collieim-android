@@ -36,6 +36,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.conversation.ConversationContextMenu
 import org.thoughtcrime.securesms.testutil.EmptyLogger
@@ -57,6 +59,7 @@ class OverlayThemeTest {
     preferences.edit().clear().commit()
     mockkStatic(SecurePreferenceManager::class)
     every { SecurePreferenceManager.getSecurePreferences(any()) } returns preferences
+    PlainTextKeyValueStore.init(preferences, BuildConfig.VERSION_CODE)
   }
 
   @After
@@ -152,14 +155,14 @@ class OverlayThemeTest {
   @Config(sdk = [30])
   fun `media viewers ignore a persisted dynamic selection on unsupported Android`() {
     val context = ApplicationProvider.getApplicationContext<Application>()
-    val previous = TextSecurePreferences.isDynamicColorsEnabled(context)
+    val previous = PlainTextKeyValueStore.isDynamicColorsEnabled
     try {
-      TextSecurePreferences.setDynamicColorsEnabled(context, true)
+      PlainTextKeyValueStore.isDynamicColorsEnabled = true
 
       assertEquals(R.style.TextSecure_MediaPreview, DynamicMediaPreviewTheme().getTheme())
       assertEquals(R.style.Signal_DayNight_NoActionBar_MediaViewer, DynamicMediaViewerTheme().getTheme())
     } finally {
-      TextSecurePreferences.setDynamicColorsEnabled(context, previous)
+      PlainTextKeyValueStore.isDynamicColorsEnabled = previous
     }
   }
 

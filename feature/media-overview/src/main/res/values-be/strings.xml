@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Немагчыма захаваць медыяфайлы</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Гэты медыяфайл быў выгружаны з вашай прылады, бо ўключана опцыя «Зрабіць аптымізацыю сховішча Signal». Вы можаце запампаваць элементы па чарзе або адключыць опцыю «Зрабіць аптымізацыю сховішча Signal», каб спампаваць усе медыяфайлы на прыладу.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Гэты медыяфайл быў выгружаны з вашай прылады, бо ўключана опцыя «Зрабіць аптымізацыю сховішча Collie». Вы можаце запампаваць элементы па чарзе або адключыць опцыю «Зрабіць аптымізацыю сховішча Collie», каб спампаваць усе медыяфайлы на прыладу.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Немагчыма захаваць усе элементы</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Некаторыя выбраныя вамі медыяфайлы былі выгружаны з вашай прылады, бо ўключана опцыя «Зрабіць аптымізацыю сховішча Signal». Вы можаце захаваць элементы па чарзе або адключыць опцыю «Зрабіць аптымізацыю сховішча Signal», каб спампаваць усе медыяфайлы на прыладу.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Некаторыя выбраныя вамі медыяфайлы былі выгружаны з вашай прылады, бо ўключана опцыя «Зрабіць аптымізацыю сховішча Collie». Вы можаце захаваць элементы па чарзе або адключыць опцыю «Зрабіць аптымізацыю сховішча Collie», каб спампаваць усе медыяфайлы на прыладу.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Прагледзець налады сховішча</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

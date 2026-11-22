@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Kan nie media stoor nie</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Hierdie media is van jou toestel afgelaai omdat \"Optimaliseer Signal-stoorruimte\" aangeskakel is. Jy kan items een vir een aflaai, of jy kan \"Optimaliseer Signal-stoorruimte\" afskakel om alle media na jou toestel toe af te laai.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Hierdie media is van jou toestel afgelaai omdat \"Optimaliseer Collie-stoorruimte\" aangeskakel is. Jy kan items een vir een aflaai, of jy kan \"Optimaliseer Collie-stoorruimte\" afskakel om alle media na jou toestel toe af te laai.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Kan nie alle items stoor nie</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Sommige media wat jy geselekteer het, is van jou toestel afgelaai omdat \"Optimaliseer Signal-stoorruimte\" aangeskakel is. Jy kan items een vir een stoor, of jy kan \"Optimaliseer Signal-stoorruimte\" afskakel om alle media op jou toestel af te laai.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Sommige media wat jy geselekteer het, is van jou toestel afgelaai omdat \"Optimaliseer Collie-stoorruimte\" aangeskakel is. Jy kan items een vir een stoor, of jy kan \"Optimaliseer Collie-stoorruimte\" afskakel om alle media op jou toestel af te laai.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Bekyk stoorruimte-instellings</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

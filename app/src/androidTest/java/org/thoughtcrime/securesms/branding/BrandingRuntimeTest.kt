@@ -24,14 +24,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.io.File
 import java.util.Properties
+import org.thoughtcrime.securesms.util.SecurePreferenceManager
 
 @RunWith(AndroidJUnit4::class)
 class BrandingRuntimeTest {
@@ -114,10 +115,10 @@ class BrandingRuntimeTest {
     check(!restoreFile.exists()) { "A prior branding runtime state restore is still pending" }
 
     val snapshot = Properties().apply {
-      setProperty("theme", TextSecurePreferences.getTheme(context))
-      setProperty("dynamicColors", TextSecurePreferences.isDynamicColorsEnabled(context).toString())
+      setProperty("theme", PlainTextKeyValueStore.theme)
+      setProperty("dynamicColors", PlainTextKeyValueStore.isDynamicColorsEnabled.toString())
       setProperty("screenSecurity", SignalStore.settings.isScreenSecurityEnabled.toString())
-      setProperty("biometricLock", TextSecurePreferences.isBiometricScreenLockEnabled(context).toString())
+      setProperty("biometricLock", PlainTextKeyValueStore.biometricScreenLockEnabled.toString())
       setProperty("autoLock", ScreenLockController.autoLock.toString())
       setProperty("lockAtStart", ScreenLockController.lockScreenAtStart.toString())
       setProperty("appCompatNightMode", AppCompatDelegate.getDefaultNightMode().toString())
@@ -126,9 +127,9 @@ class BrandingRuntimeTest {
 
     persistThemePreferences(theme = "dark", dynamicColors = false, biometricLock = true)
     DynamicTheme.setDefaultDayNightMode(context)
-    check(TextSecurePreferences.getTheme(context) == "dark") { "Dark theme preference was not persisted" }
-    check(!TextSecurePreferences.isDynamicColorsEnabled(context)) { "Dynamic colors were not disabled for this fixture" }
-    check(TextSecurePreferences.isBiometricScreenLockEnabled(context)) { "Biometric lock preference was not persisted" }
+    check(PlainTextKeyValueStore.theme == "dark") { "Dark theme preference was not persisted" }
+    check(!PlainTextKeyValueStore.isDynamicColorsEnabled) { "Dynamic colors were not disabled for this fixture" }
+    check(PlainTextKeyValueStore.biometricScreenLockEnabled) { "Biometric lock preference was not persisted" }
     SignalStore.settings.isScreenSecurityEnabled = false
   }
 
@@ -152,9 +153,9 @@ class BrandingRuntimeTest {
       { AppCompatDelegate.setDefaultNightMode(requireNotNull(snapshot.getProperty("appCompatNightMode")).toInt()) }
     )
 
-    check(TextSecurePreferences.getTheme(context) == snapshot.getProperty("theme"))
-    check(TextSecurePreferences.isDynamicColorsEnabled(context) == snapshot.getProperty("dynamicColors").toBoolean())
-    check(TextSecurePreferences.isBiometricScreenLockEnabled(context) == snapshot.getProperty("biometricLock").toBoolean())
+    check(PlainTextKeyValueStore.theme == snapshot.getProperty("theme"))
+    check(PlainTextKeyValueStore.isDynamicColorsEnabled == snapshot.getProperty("dynamicColors").toBoolean())
+    check(PlainTextKeyValueStore.biometricScreenLockEnabled == snapshot.getProperty("biometricLock").toBoolean())
     check(SignalStore.settings.isScreenSecurityEnabled == snapshot.getProperty("screenSecurity").toBoolean())
     check(ScreenLockController.autoLock == snapshot.getProperty("autoLock").toBoolean())
     check(ScreenLockController.lockScreenAtStart == snapshot.getProperty("lockAtStart").toBoolean())
@@ -171,17 +172,17 @@ class BrandingRuntimeTest {
   }
 
   private fun persistThemePreferences(theme: String, dynamicColors: Boolean, biometricLock: Boolean) {
-    val committed = TextSecurePreferences.getSharedPreferences(context)
+    val committed = SecurePreferenceManager.getSecurePreferences(context)
       .edit()
-      .putString(TextSecurePreferences.THEME_PREF, theme)
-      .putBoolean(TextSecurePreferences.DYNAMIC_COLORS_ENABLED, dynamicColors)
-      .putBoolean(TextSecurePreferences.BIOMETRIC_SCREEN_LOCK, biometricLock)
+      .putString(PlainTextKeyValueStore.THEME, theme)
+      .putBoolean(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED, dynamicColors)
+      .putBoolean(PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED, biometricLock)
       .commit()
 
     check(committed) { "Could not persist branding runtime preferences synchronously" }
-    check(TextSecurePreferences.getTheme(context) == theme)
-    check(TextSecurePreferences.isDynamicColorsEnabled(context) == dynamicColors)
-    check(TextSecurePreferences.isBiometricScreenLockEnabled(context) == biometricLock)
+    check(PlainTextKeyValueStore.theme == theme)
+    check(PlainTextKeyValueStore.isDynamicColorsEnabled == dynamicColors)
+    check(PlainTextKeyValueStore.biometricScreenLockEnabled == biometricLock)
   }
 }
 
@@ -197,10 +198,10 @@ class BrandingNormalDarkActivityTest {
 
   @Test
   fun normalDarkMainActivityRenders24130D() {
-    val oldTheme = TextSecurePreferences.getTheme(context)
-    val oldDynamicColors = TextSecurePreferences.isDynamicColorsEnabled(context)
+    val oldTheme = PlainTextKeyValueStore.theme
+    val oldDynamicColors = PlainTextKeyValueStore.isDynamicColorsEnabled
     val oldScreenSecurity = SignalStore.settings.isScreenSecurityEnabled
-    val oldBiometricLock = TextSecurePreferences.isBiometricScreenLockEnabled(context)
+    val oldBiometricLock = PlainTextKeyValueStore.biometricScreenLockEnabled
     val oldAutoLock = ScreenLockController.autoLock
     val oldLockAtStart = ScreenLockController.lockScreenAtStart
     val oldAppCompatNightMode = AppCompatDelegate.getDefaultNightMode()
@@ -259,17 +260,17 @@ class BrandingNormalDarkActivityTest {
   }
 
   private fun commitThemePreferences(theme: String, dynamicColors: Boolean, biometricLock: Boolean) {
-    val committed = TextSecurePreferences.getSharedPreferences(context)
+    val committed = SecurePreferenceManager.getSecurePreferences(context)
       .edit()
-      .putString(TextSecurePreferences.THEME_PREF, theme)
-      .putBoolean(TextSecurePreferences.DYNAMIC_COLORS_ENABLED, dynamicColors)
-      .putBoolean(TextSecurePreferences.BIOMETRIC_SCREEN_LOCK, biometricLock)
+      .putString(PlainTextKeyValueStore.THEME, theme)
+      .putBoolean(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED, dynamicColors)
+      .putBoolean(PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED, biometricLock)
       .commit()
 
     check(committed) { "Could not restore the previous theme preferences" }
-    check(TextSecurePreferences.getTheme(context) == theme)
-    check(TextSecurePreferences.isDynamicColorsEnabled(context) == dynamicColors)
-    check(TextSecurePreferences.isBiometricScreenLockEnabled(context) == biometricLock)
+    check(PlainTextKeyValueStore.theme == theme)
+    check(PlainTextKeyValueStore.isDynamicColorsEnabled == dynamicColors)
+    check(PlainTextKeyValueStore.biometricScreenLockEnabled == biometricLock)
   }
 }
 

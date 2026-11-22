@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Асистентите кои користат вештачка интелигенција како Gemini ќе можат да ја скенираат вашата содржина на Signal. За да се спречи ова, овозможена е безбедност на екранот. Ова исто така ќе оневозможи слики од екранот.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Асистентите кои користат вештачка интелигенција како Gemini ќе можат да ја скенираат вашата содржина на Collie. За да се спречи ова, овозможена е безбедност на екранот. Ова исто така ќе оневозможи слики од екранот.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Безбедноста на екранот е вклучена</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Да се исклучи безбедноста на екранот?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Ако оваа опција е исклучена, асистентите кои користат вештачка интелигенција како Google Gemini ќе можат да ја скенираат вашата содржина на Signal и да ја користат за функции кои можеби нема да бидат приватни.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Ако оваа опција е исклучена, асистентите кои користат вештачка интелигенција како Google Gemini ќе можат да ја скенираат вашата содржина на Collie и да ја користат за функции кои можеби нема да бидат приватни.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Исклучи</string>
     <!-- Snackbar shown after the user turns off screen security -->

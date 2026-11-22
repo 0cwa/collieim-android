@@ -149,6 +149,34 @@ jobs:
         run: |
           echo "cache hit: ${{ steps.robolectric-cache.outputs.cache-matched-key || 'none' }}"
           find "$HOME/.m2/repository/org/robolectric" -name '*.jar' 2>/dev/null | sort || true
+      # Robolectric downloads a missing android-all jar once with no retry, and Central keeps
+      # answering 429 for the large ones. Fetch missing jars here with retries and a mirror,
+      # checked against Central's SHA-1, so the tests find them in ~/.m2.
+      - name: Fetch missing Robolectric android-all jars
+        id: robolectric-prefetch
+        run: |
+          set -euo pipefail
+          central=https://repo1.maven.org/maven2
+          mirror=https://maven-central.storage-download.googleapis.com/maven2
+          dir=org/robolectric/android-all-instrumented
+          for v in 6.0.1_r3-robolectric-r1-i7 8.0.0_r4-robolectric-r1-i7 9-robolectric-4913185-2-i7 \
+                   11-robolectric-6757853-i7 12-robolectric-7732740-i7 13-robolectric-9030017-i7 \
+                   14-robolectric-10818077-i7 15-robolectric-13954326-i7 16-robolectric-13921718-i7; do
+            jar="$HOME/.m2/repository/$dir/$v/android-all-instrumented-$v.jar"
+            [ -s "$jar" ] && continue
+            mkdir -p "$(dirname "$jar")"
+            sha1=$(curl -fsS --retry 8 --retry-all-errors --retry-delay 5 "$central/$dir/$v/android-all-instrumented-$v.jar.sha1")
+            ok=
+            for repo in "$central" "$mirror"; do
+              curl -fsSL --retry 8 --retry-all-errors --retry-delay 5 -o "$jar.part" "$repo/$dir/$v/android-all-instrumented-$v.jar" || continue
+              if [ "$(sha1sum "$jar.part" | cut -d' ' -f1)" = "${sha1%% *}" ]; then ok=1; break; fi
+              echo "checksum mismatch from $repo for $v" >&2
+            done
+            [ -n "$ok" ] || { echo "::warning::cannot fetch $v; Robolectric will try itself" >&2; rm -f "$jar.part"; continue; }
+            mv "$jar.part" "$jar"
+            echo "fetched=true" >> "$GITHUB_OUTPUT"
+            echo "fetched $v"
+          done
       - name: Run unit test shard
         env:
           SHARD: ${{ matrix.shard }}
@@ -164,7 +192,7 @@ jobs:
       - name: Save Robolectric android-all jars
         # Save unless this shard's own cache matched: a fallback to another shard's cache lacks
         # this shard's jars, and PR caches are not visible to other branches, so main needs its own.
-        if: ${{ always() && (!startsWith(steps.robolectric-cache.outputs.cache-matched-key, format('robolectric-jars-{0}-4.16-{1}-', runner.os, matrix.shard)) || job.status == 'failure') }}
+        if: ${{ always() && (!startsWith(steps.robolectric-cache.outputs.cache-matched-key, format('robolectric-jars-{0}-4.16-{1}-', runner.os, matrix.shard)) || steps.robolectric-prefetch.outputs.fetched == 'true' || job.status == 'failure') }}
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.m2/repository/org/robolectric

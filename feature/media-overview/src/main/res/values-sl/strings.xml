@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Ni mogoče shraniti predstavnostnih datotek</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Ta medij je bil odstranjen iz vaše naprave, ker je vklopljena možnost »Optimiziraj shrambo Signal«. Predmete lahko prenesete enega po enega ali pa izklopite »Optimiziraj shrambo Signal«, da prenesete vse medije v svojo napravo.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Ta medij je bil odstranjen iz vaše naprave, ker je vklopljena možnost »Optimiziraj shrambo Collie«. Predmete lahko prenesete enega po enega ali pa izklopite »Optimiziraj shrambo Collie«, da prenesete vse medije v svojo napravo.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Ni mogoče shraniti vseh predmetov</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Nekateri izbrani mediji so bili odstranjeni iz vaše naprave, ker je vklopljena možnost »Optimiziraj shrambo Signal«. Predmete lahko shranite enega po enega ali pa izklopite »Optimiziraj shrambo Signal«, da prenesete vse medije v svojo napravo.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Nekateri izbrani mediji so bili odstranjeni iz vaše naprave, ker je vklopljena možnost »Optimiziraj shrambo Collie«. Predmete lahko shranite enega po enega ali pa izklopite »Optimiziraj shrambo Collie«, da prenesete vse medije v svojo napravo.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Ogled nastavitev shrambe</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

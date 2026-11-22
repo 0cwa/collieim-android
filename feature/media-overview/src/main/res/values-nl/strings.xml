@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Kan media niet opslaan</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Dit mediabestand is verplaatst van je apparaat omdat ‘Signal-opslag optimaliseren’ is ingeschakeld. Je kunt items één voor één downloaden of je kunt ‘Signal-opslag optimaliseren’ uitschakelen om alle media naar je apparaat te downloaden.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Dit mediabestand is verplaatst van je apparaat omdat ‘Collie-opslag optimaliseren’ is ingeschakeld. Je kunt items één voor één downloaden of je kunt ‘Collie-opslag optimaliseren’ uitschakelen om alle media naar je apparaat te downloaden.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Kan niet alle items opslaan</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Sommige mediabestanden die je hebt geselecteerd zijn verplaatst van je apparaat omdat ‘Signal-opslag optimaliseren’ is ingeschakeld. Je kunt items één voor één opslaan of je kunt ‘Signal-opslag optimaliseren’ uitschakelen om alle media naar je apparaat te downloaden.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Sommige mediabestanden die je hebt geselecteerd zijn verplaatst van je apparaat omdat ‘Collie-opslag optimaliseren’ is ingeschakeld. Je kunt items één voor één opslaan of je kunt ‘Collie-opslag optimaliseren’ uitschakelen om alle media naar je apparaat te downloaden.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Opslaginstellingen weergeven</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

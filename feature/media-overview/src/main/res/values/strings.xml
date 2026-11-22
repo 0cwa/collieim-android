@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Can\'t save media</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">This media has been offloaded from your device because \"Optimize Signal storage\" is turned on. You can download items one-by-one, or turn off \"Optimize Signal storage\" to download all media to your device.</string>
+  <string mollyify="true" name="MediaOverviewScreen__media_offloaded_message">This media has been offloaded from your device because \"Optimize Collie storage\" is turned on. You can download items one-by-one, or turn off \"Optimize Collie storage\" to download all media to your device.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Can\'t save all items</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Some media you\'ve selected has been offloaded from your device because \"Optimize Signal storage\" is turned on. You can save items one-by-one, or turn off \"Optimize Signal storage\" to download all media to your device.</string>
+  <string mollyify="true" name="MediaOverviewScreen__some_media_offloaded_message">Some media you\'ve selected has been offloaded from your device because \"Optimize Collie storage\" is turned on. You can save items one-by-one, or turn off \"Optimize Collie storage\" to download all media to your device.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">View storage settings</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

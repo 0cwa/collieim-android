@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">मीडिया जतन करता येणार नाही</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">हा मीडिया तुमच्या डिव्हाईसवरून ऑफलोड केलेला आहे कारण \"Signal साठवण ऑप्टिमाईझ करा\" सुरु केलेले आहे. तुम्ही एक-एक करून आयटम डाऊनलोड करू शकता, किंवा तुमच्या डिव्हाईसवर सगळा मीडिया डाऊनलोड करण्यासाठी \"Signal साठवण ऑप्टिमाईझ करा\" बंद करू शकता.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">हा मीडिया तुमच्या डिव्हाईसवरून ऑफलोड केलेला आहे कारण \"Collie साठवण ऑप्टिमाईझ करा\" सुरु केलेले आहे. तुम्ही एक-एक करून आयटम डाऊनलोड करू शकता, किंवा तुमच्या डिव्हाईसवर सगळा मीडिया डाऊनलोड करण्यासाठी \"Collie साठवण ऑप्टिमाईझ करा\" बंद करू शकता.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">सर्व आयटम जतन करता येणार नाहीत</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">तुम्ही निवडलेला थोडा मीडिया तुमच्या डिव्हाईसवरून ऑफलोड केला आहे कारण \"Signal साठवण ऑप्टिमाईझ करा\" सुरु केलेले आहे. तुम्ही एक-एक करून आयटम जतन करू शकता, किंवा तुमच्या डिव्हाईसवर सगळा मीडिया डाऊनलोड करण्यासाठी \"Signal साठवण ऑप्टिमाईझ करा\" बंद करू शकता.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">तुम्ही निवडलेला थोडा मीडिया तुमच्या डिव्हाईसवरून ऑफलोड केला आहे कारण \"Collie साठवण ऑप्टिमाईझ करा\" सुरु केलेले आहे. तुम्ही एक-एक करून आयटम जतन करू शकता, किंवा तुमच्या डिव्हाईसवर सगळा मीडिया डाऊनलोड करण्यासाठी \"Collie साठवण ऑप्टिमाईझ करा\" बंद करू शकता.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">साठवणीच्या सेटिंग्ज बघा</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

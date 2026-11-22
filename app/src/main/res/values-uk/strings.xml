@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">ШІ-помічники, такі як Gemini, можуть сканувати вміст Signal. Щоб цього не сталося, було ввімкнено захист екрана. Він також деактивує знімки екрана.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">ШІ-помічники, такі як Gemini, можуть сканувати вміст Collie. Щоб цього не сталося, було ввімкнено захист екрана. Він також деактивує знімки екрана.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Увімкнено захист екрана</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Вимкнути захист екрана?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Якщо вимкнути, ШІ-помічники, такі як Google Gemini, можуть отримати можливість сканувати вміст Signal і використовувати це для функцій, що можуть не бути конфіденційними.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Якщо вимкнути, ШІ-помічники, такі як Google Gemini, можуть отримати можливість сканувати вміст Collie і використовувати це для функцій, що можуть не бути конфіденційними.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Вимкнути</string>
     <!-- Snackbar shown after the user turns off screen security -->

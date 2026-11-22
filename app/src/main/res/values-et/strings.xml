@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">AI-assistendi äpid nagu Gemini võivad su Signali sisu skannida. Selle vältimiseks on sisse lülitatud ekraaniturvalisus. See keelab ka kuvatõmmised.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">AI-assistendi äpid nagu Gemini võivad su Colliei sisu skannida. Selle vältimiseks on sisse lülitatud ekraaniturvalisus. See keelab ka kuvatõmmised.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Ekraani turvalisus on sisse lülitatud</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Kas lülitada ekraani turvalisus välja?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Kui see on välja lülitatud, võivad AI-assistendid nagu Google Gemini Signali sisu skannida ja kasutada seda funktsioonide tarbeks, mis ei pruugi olla privaatsed.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Kui see on välja lülitatud, võivad AI-assistendid nagu Google Gemini Colliei sisu skannida ja kasutada seda funktsioonide tarbeks, mis ei pruugi olla privaatsed.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Lülita välja</string>
     <!-- Snackbar shown after the user turns off screen security -->

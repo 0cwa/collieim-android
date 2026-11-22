@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacije s pomočniki umetne inteligence, kot je Gemini, lahko pregledujejo vsebino aplikacije Signal. Da bi to preprečili, je bila omogočena zaščita zaslona. S tem bodo onemogočeni tudi posnetki zaslona.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacije s pomočniki umetne inteligence, kot je Gemini, lahko pregledujejo vsebino aplikacije Collie. Da bi to preprečili, je bila omogočena zaščita zaslona. S tem bodo onemogočeni tudi posnetki zaslona.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Zaščita zaslona je omogočena</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Želite onemogočiti zaščito zaslona?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Če to možnost izklopite, lahko s pomočnikom umetne inteligence, kot je Google Gemini, omogočite pregledovanje vsebine aplikacije Signal in njeno uporabo za funkcije, pri katerih vaša zasebnost morda ne bo zagotovljena.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Če to možnost izklopite, lahko s pomočnikom umetne inteligence, kot je Google Gemini, omogočite pregledovanje vsebine aplikacije Collie in njeno uporabo za funkcije, pri katerih vaša zasebnost morda ne bo zagotovljena.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Onemogoči</string>
     <!-- Snackbar shown after the user turns off screen security -->

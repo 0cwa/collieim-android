@@ -3564,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Google Gemini غا ئوخشاش سۈنئىي ئەقىل ياردەمچى ئەپلىرى Signal دىكى مەزمۇنلارنى تەكشۈرۈرەلەيدۇ. بۇنىڭ ئالدىنى ئېلىش ئۈچۈن، ئېكران بىخەتەرلىكى قوزغىتىلدى. بۇ يەنە ئېكران رەسىمى تارتىش ئىقتىدارىنىمۇ چەكلەيدۇ.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Google Gemini غا ئوخشاش سۈنئىي ئەقىل ياردەمچى ئەپلىرى Collie دىكى مەزمۇنلارنى تەكشۈرۈرەلەيدۇ. بۇنىڭ ئالدىنى ئېلىش ئۈچۈن، ئېكران بىخەتەرلىكى قوزغىتىلدى. بۇ يەنە ئېكران رەسىمى تارتىش ئىقتىدارىنىمۇ چەكلەيدۇ.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">ئېكران بىخەتەرلىكى ئېچىىۋېتىلدى</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3572,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">ئېكران بىخەتەرلىكىنى ئېتىۋېتەمسىز؟</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">ئەگەر بۇ ئىقتىدار ئۆچۈرۈلسە، Google Gemini غا ئوخشاش سۈنئىي ئەقىل ياردەمچىلىرىنىڭ Signal دىكى مەزمۇنلارنى تەكشۈرۈشىگە ۋە شەخسىي مەخپىيەتلىككە كىرمەيدىغان ئىقتىدارلارنى ئىشلىتىشىگە يول قويۇلۇشى مۇمكىن.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">ئەگەر بۇ ئىقتىدار ئۆچۈرۈلسە، Google Gemini غا ئوخشاش سۈنئىي ئەقىل ياردەمچىلىرىنىڭ Collie دىكى مەزمۇنلارنى تەكشۈرۈشىگە ۋە شەخسىي مەخپىيەتلىككە كىرمەيدىغان ئىقتىدارلارنى ئىشلىتىشىگە يول قويۇلۇشى مۇمكىن.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">تاقا</string>
     <!-- Snackbar shown after the user turns off screen security -->

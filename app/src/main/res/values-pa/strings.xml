@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini ਵਰਗੀਆਂ AI ਅਸਿਸਟੈਂਟ ਐਪਾਂ ਤੁਹਾਡੀ Signal ਦੀ ਸਮੱਗਰੀ ਨੂੰ ਸਕੈਨ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਇਸਨੂੰ ਰੋਕਣ ਲਈ, ਸਕ੍ਰੀਨ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸ ਲਈ ਹੁਣ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਦੀ ਸਹੂਲਤ ਨੂੰ ਵੀ ਅਸਮਰੱਥ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini ਵਰਗੀਆਂ AI ਅਸਿਸਟੈਂਟ ਐਪਾਂ ਤੁਹਾਡੀ Collie ਦੀ ਸਮੱਗਰੀ ਨੂੰ ਸਕੈਨ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਇਸਨੂੰ ਰੋਕਣ ਲਈ, ਸਕ੍ਰੀਨ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸ ਲਈ ਹੁਣ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਦੀ ਸਹੂਲਤ ਨੂੰ ਵੀ ਅਸਮਰੱਥ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">ਸਕ੍ਰੀਨ ਸੁਰੱਖਿਆ ਸਮਰੱਥ ਹੈ</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">ਕੀ ਸਕ੍ਰੀਨ ਸੁਰੱਖਿਆ ਬੰਦ ਕਰਨੀ ਹੈ?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">ਜੇਕਰ ਬੰਦ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਇਹ Google Gemini ਵਰਗੇ AI ਅਸਿਸਟੈਂਟ ਨੂੰ Signal ਦੀ ਸਮੱਗਰੀ ਸਕੈਨ ਕਰਨ ਅਤੇ ਅਜਿਹੇ ਫੀਚਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਸਕਦਾ ਹੈ ਜੋ ਸ਼ਾਇਦ ਪ੍ਰਾਈਵੇਟ ਨਾ ਹੋਣ।</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">ਜੇਕਰ ਬੰਦ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਇਹ Google Gemini ਵਰਗੇ AI ਅਸਿਸਟੈਂਟ ਨੂੰ Collie ਦੀ ਸਮੱਗਰੀ ਸਕੈਨ ਕਰਨ ਅਤੇ ਅਜਿਹੇ ਫੀਚਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਸਕਦਾ ਹੈ ਜੋ ਸ਼ਾਇਦ ਪ੍ਰਾਈਵੇਟ ਨਾ ਹੋਣ।</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">ਬੰਦ ਕਰੋ</string>
     <!-- Snackbar shown after the user turns off screen security -->

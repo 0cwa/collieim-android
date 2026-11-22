@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Приложения-помощники на базе ИИ, такие как Gemini, могут сканировать содержимое вашего Signal. Чтобы предотвратить это, была включена защита экрана. Это также приведёт к отключению возможности делать снимки экрана.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Приложения-помощники на базе ИИ, такие как Gemini, могут сканировать содержимое вашего Collie. Чтобы предотвратить это, была включена защита экрана. Это также приведёт к отключению возможности делать снимки экрана.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Защита экрана включена</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Отключить защиту экрана?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Если эта функция отключена, ИИ-помощники (например, Google Gemini) могут получить возможность сканировать содержимое в Signal и использовать его для работы функций, которые, возможно, не обеспечивают конфиденциальность.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Если эта функция отключена, ИИ-помощники (например, Google Gemini) могут получить возможность сканировать содержимое в Collie и использовать его для работы функций, которые, возможно, не обеспечивают конфиденциальность.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Отключить</string>
     <!-- Snackbar shown after the user turns off screen security -->

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Impossible d\'enregistrer le média</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Ce média a été déplacé vers la sauvegarde, puis supprimé de votre appareil, car l\'option \"Optimiser le stockage Signal\" est activée. Vous pouvez télécharger chaque élément individuellement, ou désactiver cette option pour télécharger tous les médias sur votre appareil.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Ce média a été déplacé vers la sauvegarde, puis supprimé de votre appareil, car l\'option \"Optimiser le stockage Collie\" est activée. Vous pouvez télécharger chaque élément individuellement, ou désactiver cette option pour télécharger tous les médias sur votre appareil.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Impossible d\'enregistrer tous les éléments</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Certains médias sélectionnés ont été déplacés vers la sauvegarde, puis supprimés de votre appareil, car l\'option \"Optimiser le stockage Signal\" est activée. Vous pouvez enregistrer chaque élément individuellement, ou désactiver cette option pour télécharger tous les médias sur votre appareil.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Certains médias sélectionnés ont été déplacés vers la sauvegarde, puis supprimés de votre appareil, car l\'option \"Optimiser le stockage Collie\" est activée. Vous pouvez enregistrer chaque élément individuellement, ou désactiver cette option pour télécharger tous les médias sur votre appareil.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Afficher les paramètres de stockage</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

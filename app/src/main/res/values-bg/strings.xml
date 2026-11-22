@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Приложенията с AI асистенти като Gemini могат да сканират вашето съдържание в Signal. За да предотвратите това, „Сигурност на екрана“ е активирана. Това също така ще дезактивира скрийншотите.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Приложенията с AI асистенти като Gemini могат да сканират вашето съдържание в Collie. За да предотвратите това, „Сигурност на екрана“ е активирана. Това също така ще дезактивира скрийншотите.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">„Сигурност на екрана“ е активирана</string>
     <!-- Bottom sheet button that turns screen security back off -->

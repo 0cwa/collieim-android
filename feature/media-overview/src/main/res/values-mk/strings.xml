@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Не може да се зачува медиумската датотека</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Оваа медиумска датотека беше преместена од вашиот уред бидејќи овозможена е опцијата „Оптимизирај го Signal складирањето“. Можете да ги преземете ставките една по една или да ја исклучите опцијата „Оптимизирај го Signal складирањето“ за да ги преземете сите медиумски датотеки на вашиот уред.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Оваа медиумска датотека беше преместена од вашиот уред бидејќи овозможена е опцијата „Оптимизирај го Collie складирањето“. Можете да ги преземете ставките една по една или да ја исклучите опцијата „Оптимизирај го Collie складирањето“ за да ги преземете сите медиумски датотеки на вашиот уред.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Не можат да се зачуваат сите ставки</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Некои медиумски датотеки што ги избравте беа преместени од вашиот уред бидејќи овозможена е опцијата „Оптимизирај го Signal складирањето“. Можете да ги зачувате ставките една по една или да ја исклучите опцијата „Оптимизирај го Signal складирањето“ за да ги преземете сите медиумски датотеки на вашиот уред.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Некои медиумски датотеки што ги избравте беа преместени од вашиот уред бидејќи овозможена е опцијата „Оптимизирај го Collie складирањето“. Можете да ги зачувате ставките една по една или да ја исклучите опцијата „Оптимизирај го Collie складирањето“ за да ги преземете сите медиумски датотеки на вашиот уред.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Видете ги поставувањата за складирање</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Média nelze uložit</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Tato média byla z vašeho zařízení odložena, protože máte zapnutou funkci Optimalizovat úložiště Signal. Položky můžete stahovat jednotlivě, nebo můžete vypnout funkci Optimalizovat úložiště Signal a stáhnout všechna média do svého zařízení.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Tato média byla z vašeho zařízení odložena, protože máte zapnutou funkci Optimalizovat úložiště Collie. Položky můžete stahovat jednotlivě, nebo můžete vypnout funkci Optimalizovat úložiště Collie a stáhnout všechna média do svého zařízení.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Nejde uložit všechny položky</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Některá vybraná média byla z vašeho zařízení odložena, protože máte zapnutou funkci Optimalizovat úložiště Signal. Položky můžete ukládat jednotlivě, nebo můžete vypnout funkci Optimalizovat úložiště Signal a stáhnout všechna média do svého zařízení.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Některá vybraná média byla z vašeho zařízení odložena, protože máte zapnutou funkci Optimalizovat úložiště Collie. Položky můžete ukládat jednotlivě, nebo můžete vypnout funkci Optimalizovat úložiště Collie a stáhnout všechna média do svého zařízení.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Zobrazit nastavení úložiště</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

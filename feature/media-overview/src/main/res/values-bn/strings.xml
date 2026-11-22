@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">মিডিয়া সংরক্ষণ করা যায়নি</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">\"Signal স্টোরেজ অপ্টিমাইজ করুন\" চালু থাকার কারণে এই মিডিয়াটি আপনার ডিভাইস থেকে অফলোড করা হয়েছে। আপনি একটি একটি করে আইটেম ডাউনলোড করতে পারেন, অথবা আপনার ডিভাইসে সকল মিডিয়া ডাউনলোড করতে \"Signal স্টোরেজ অপ্টিমাইজ করুন\" বন্ধ করতে পারেন।</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">\"Collie স্টোরেজ অপ্টিমাইজ করুন\" চালু থাকার কারণে এই মিডিয়াটি আপনার ডিভাইস থেকে অফলোড করা হয়েছে। আপনি একটি একটি করে আইটেম ডাউনলোড করতে পারেন, অথবা আপনার ডিভাইসে সকল মিডিয়া ডাউনলোড করতে \"Collie স্টোরেজ অপ্টিমাইজ করুন\" বন্ধ করতে পারেন।</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">সব আইটেম সংরক্ষণ করা যায়নি</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">\"Signal স্টোরেজ অপ্টিমাইজ করুন\" চালু থাকার কারণে আপনার নির্বাচিত কিছু মিডিয়া আপনার ডিভাইস থেকে অফলোড করা হয়েছে। আপনি একটি একটি করে আইটেম সেভ করতে পারেন, অথবা আপনার ডিভাইসে সকল মিডিয়া ডাউনলোড করতে \"Signal স্টোরেজ অপ্টিমাইজ করুন\" বন্ধ করতে পারেন।</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">\"Collie স্টোরেজ অপ্টিমাইজ করুন\" চালু থাকার কারণে আপনার নির্বাচিত কিছু মিডিয়া আপনার ডিভাইস থেকে অফলোড করা হয়েছে। আপনি একটি একটি করে আইটেম সেভ করতে পারেন, অথবা আপনার ডিভাইসে সকল মিডিয়া ডাউনলোড করতে \"Collie স্টোরেজ অপ্টিমাইজ করুন\" বন্ধ করতে পারেন।</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">স্টোরেজ সেটিংস দেখুন</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

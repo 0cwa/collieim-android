@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">మీడియాను సేవ్ చేయడం సాధ్యం కాలేదు</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">\"Signal నిల్వను అనుకూలపరచండి\" ఆన్‌లో ఉన్నందున ఈ మీడియాను మీ పరికరం నుండి ఆఫ్‌లోడ్ చేయడం జరిగింది. మీరు అంశాలను ఒక్కొక్కటిగా డౌన్‌లోడ్ చేసుకోవచ్చు లేదా మీ పరికరానికి మీడియా అంతటినీ డౌన్‌లోడ్ చేసుకోవడానికి \"Signal నిల్వను అనుకూలపరచండి\"ని ఆఫ్ చేయవచ్చు.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">\"Collie నిల్వను అనుకూలపరచండి\" ఆన్‌లో ఉన్నందున ఈ మీడియాను మీ పరికరం నుండి ఆఫ్‌లోడ్ చేయడం జరిగింది. మీరు అంశాలను ఒక్కొక్కటిగా డౌన్‌లోడ్ చేసుకోవచ్చు లేదా మీ పరికరానికి మీడియా అంతటినీ డౌన్‌లోడ్ చేసుకోవడానికి \"Collie నిల్వను అనుకూలపరచండి\"ని ఆఫ్ చేయవచ్చు.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">అన్ని అంశాలను సేవ్ చేయడం సాధ్యం కాదు</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">\"Signal నిల్వను అనుకూలపరచండి\" ఆన్‌లో ఉన్నందున మీరు ఎంచుకున్న కొంత మీడియా మీ పరికరం నుండి ఆఫ్‌లోడ్ చేయడం జరిగింది. మీరు అంశాలను ఒక్కొక్కటిగా సేవ్ చేసుకోవచ్చు లేదా మీ పరికరానికి మీడియా అంతటినీ డౌన్‌లోడ్ చేసుకోవడానికి \"Signal నిల్వను అనుకూలపరచండి\"ని ఆఫ్ చేయవచ్చు.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">\"Collie నిల్వను అనుకూలపరచండి\" ఆన్‌లో ఉన్నందున మీరు ఎంచుకున్న కొంత మీడియా మీ పరికరం నుండి ఆఫ్‌లోడ్ చేయడం జరిగింది. మీరు అంశాలను ఒక్కొక్కటిగా సేవ్ చేసుకోవచ్చు లేదా మీ పరికరానికి మీడియా అంతటినీ డౌన్‌లోడ్ చేసుకోవడానికి \"Collie నిల్వను అనుకూలపరచండి\"ని ఆఫ్ చేయవచ్చు.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">నిల్వ సెట్టింగ్‌లను వీక్షించండి</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

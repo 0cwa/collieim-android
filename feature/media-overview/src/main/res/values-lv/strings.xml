@@ -98,11 +98,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Nevar saglabāt multividi</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Šī multivide tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Signal krātuvi”. Varat lejupielādēt failus pa vienam vai izslēgt funkciju “Optimizēt Signal krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Šī multivide tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Collie krātuvi”. Varat lejupielādēt failus pa vienam vai izslēgt funkciju “Optimizēt Collie krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Nevar saglabāt visus vienumus</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Daļa jūsu atlasītā multivides satura tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Signal krātuvi”. Varat saglabāt vienumus pa vienam vai izslēgt funkciju “Optimizēt Signal krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Daļa jūsu atlasītā multivides satura tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Collie krātuvi”. Varat saglabāt vienumus pa vienam vai izslēgt funkciju “Optimizēt Collie krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Skatīt krātuves iestatījumus</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

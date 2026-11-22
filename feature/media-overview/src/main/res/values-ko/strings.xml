@@ -88,11 +88,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">미디어를 저장할 수 없음</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">\'Signal 저장 공간 최적화\' 기능이 켜져 있어, 이 미디어가 기기에서 오프로드되었습니다. 항목을 한 번에 하나씩 저장하거나, \'Signal 저장 공간 최적화\' 기능을 해제하여 모든 미디어를 한꺼번에 기기에 다운로드하세요.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">\'Collie 저장 공간 최적화\' 기능이 켜져 있어, 이 미디어가 기기에서 오프로드되었습니다. 항목을 한 번에 하나씩 저장하거나, \'Collie 저장 공간 최적화\' 기능을 해제하여 모든 미디어를 한꺼번에 기기에 다운로드하세요.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">모든 항목을 저장할 수 없음</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">\'Signal 저장 공간 최적화\' 기능이 켜져 있어, 선택한 미디어 중 일부가 기기에서 오프로드되었습니다. 항목을 한 번에 하나씩 저장하거나, \'Signal 저장 공간 최적화\' 기능을 해제하여 모든 미디어를 한꺼번에 기기에 다운로드하세요.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">\'Collie 저장 공간 최적화\' 기능이 켜져 있어, 선택한 미디어 중 일부가 기기에서 오프로드되었습니다. 항목을 한 번에 하나씩 저장하거나, \'Collie 저장 공간 최적화\' 기능을 해제하여 모든 미디어를 한꺼번에 기기에 다운로드하세요.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">저장 공간 설정 보기</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

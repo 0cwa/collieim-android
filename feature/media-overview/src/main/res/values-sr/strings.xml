@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Чување медија није могуће</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Неки означени медији су уклоњени с вашег уређаја јер је укључена опција „Оптимизуј меморијски простор Signal-а“. Ставке сада можете сачувати једну по једну или искључити опцију „Оптимизуј меморијски простор Signal-а“ како бисте преузели све медије на уређај.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Неки означени медији су уклоњени с вашег уређаја јер је укључена опција „Оптимизуј меморијски простор Collie-а“. Ставке сада можете сачувати једну по једну или искључити опцију „Оптимизуј меморијски простор Collie-а“ како бисте преузели све медије на уређај.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Није могуће сачувати све ставке</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Неки означени медији су уклоњени с вашег уређаја јер је укључена опција „Оптимизуј меморијски простор Signal-а“. Ставке сада можете сачувати једну по једну или искључити опцију „Оптимизуј меморијски простор Signal-а“ како бисте преузели све медије на уређај.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Неки означени медији су уклоњени с вашег уређаја јер је укључена опција „Оптимизуј меморијски простор Collie-а“. Ставке сада можете сачувати једну по једну или искључити опцију „Оптимизуј меморијски простор Collie-а“ како бисте преузели све медије на уређај.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Прикажи подешавања меморијског простора</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

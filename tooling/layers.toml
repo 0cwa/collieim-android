@@ -8,6 +8,11 @@
 # kind = "upstream"  Signal or Molly ports and their pinned inputs
 # alias_of = "name"  an old spelling; commits must use the named layer instead
 #
+# Canonical features may have a provenance table for a selected fork change.
+# No table means tracking is unknown, not that the implementation is absent.
+# See docs/VERIFY.md#selected-fork-provenance for the planner contract. Signal
+# and Molly integration stays in verified upstream merges, not these tables.
+#
 # Tests for a feature go in that feature's layer. `testing` is for shared test
 # infrastructure only.
 

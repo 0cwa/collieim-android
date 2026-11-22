@@ -99,6 +99,25 @@ class RoadmapTest(unittest.TestCase):
             self.assertIn('Linked phones', page)
 
 
+class PublishedTagsTest(unittest.TestCase):
+    @staticmethod
+    def release(tag, when, draft=False):
+        return {'tag_name': tag, 'draft': draft, 'published_at': when}
+
+    def test_beta_tags_are_ignored_and_stable_tags_kept_newest_first(self):
+        releases = [
+            self.release('v8.36.3-1-rc2', '2026-11-20T10:00:00Z'),
+            self.release('trailblazer-v8.36.3-1-beta1', '2026-11-21T10:00:00Z'),
+            self.release('v8.36.2-1', '2026-11-01T10:00:00Z'),
+            self.release('v8.36.4-1', '2026-11-22T10:00:00Z', draft=True),
+        ]
+        self.assertEqual(['v8.36.3-1-rc2', 'v8.36.2-1'], build.published_tags(releases))
+
+    def test_unknown_tags_still_fail(self):
+        with self.assertRaises(ValueError):
+            build.published_tags([self.release('nightly', '2026-11-20T10:00:00Z')])
+
+
 class OutputSafetyTest(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()

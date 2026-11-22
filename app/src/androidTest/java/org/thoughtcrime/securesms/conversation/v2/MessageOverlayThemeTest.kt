@@ -32,6 +32,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.core.ui.util.ThemeUtil
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
@@ -51,7 +52,6 @@ import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.testing.actions.scrollToDescendant
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
 import kotlin.math.abs
 import org.signal.core.ui.R as CoreUiR
@@ -87,7 +87,7 @@ class MessageOverlayThemeTest {
     previousTheme = SignalStore.settings.theme
     previousDynamicColors = SignalStore.settings.isDynamicColorsEnabled
     previousScreenSecurity = SignalStore.settings.isScreenSecurityEnabled
-    previousBiometricLock = TextSecurePreferences.isBiometricScreenLockEnabled(context)
+    previousBiometricLock = PlainTextKeyValueStore.biometricScreenLockEnabled
     previousAutoLock = ScreenLockController.autoLock
     previousLockAtStart = ScreenLockController.lockScreenAtStart
     previousNightMode = AppCompatDelegate.getDefaultNightMode()
@@ -95,7 +95,7 @@ class MessageOverlayThemeTest {
 
     AppDependencies.networkManager.setNetworkEnabled(false)
     SignalStore.settings.isScreenSecurityEnabled = false
-    TextSecurePreferences.setBiometricScreenLockEnabled(context, false)
+    PlainTextKeyValueStore.biometricScreenLockEnabled = false
     ScreenLockController.enableAutoLock(false)
     ScreenLockController.lockScreenAtStart = false
   }
@@ -105,7 +105,7 @@ class MessageOverlayThemeTest {
     instrumentation.runOnMainSync {
       SignalStore.settings.setTheme(previousTheme, previousDynamicColors)
       SignalStore.settings.isScreenSecurityEnabled = previousScreenSecurity
-      TextSecurePreferences.setBiometricScreenLockEnabled(context, previousBiometricLock)
+      PlainTextKeyValueStore.biometricScreenLockEnabled = previousBiometricLock
       ScreenLockController.enableAutoLock(previousAutoLock)
       ScreenLockController.lockScreenAtStart = previousLockAtStart
       AppCompatDelegate.setDefaultNightMode(previousNightMode)

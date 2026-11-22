@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Imeshindwa kuhifadhi picha na video</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Picha na video hizi zimehamishwa kutoka kwenye kifaa chako kwa sababu kipengele cha “Boresha hifadhi ya Signal” kimewashwa. Unaweza kupakua kipengee kimoja baada ya kingine au uzime kipengele cha “Boresha hifadhi ya Signal” ili upakue picha na video zote kwenye kifaa chako.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Picha na video hizi zimehamishwa kutoka kwenye kifaa chako kwa sababu kipengele cha “Boresha hifadhi ya Collie” kimewashwa. Unaweza kupakua kipengee kimoja baada ya kingine au uzime kipengele cha “Boresha hifadhi ya Collie” ili upakue picha na video zote kwenye kifaa chako.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Imeshindwa kuhifadhi vipengee vyote</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Baadhi ya picha na video ulizochagua zimehamishwa kutoka kwenye kifaa chao kwa sababu kipengele cha \"Boresha hifadhi ya Signal\" kimewashwa. Unaweza kuhifadhi kipengee kimoja baada ya kingine au uzime kipengele cha “Boresha hifadhi ya Signal” ili upakue picha na video zote kwenye kifaa chako.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Baadhi ya picha na video ulizochagua zimehamishwa kutoka kwenye kifaa chao kwa sababu kipengele cha \"Boresha hifadhi ya Collie\" kimewashwa. Unaweza kuhifadhi kipengee kimoja baada ya kingine au uzime kipengele cha “Boresha hifadhi ya Collie” ili upakue picha na video zote kwenye kifaa chako.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Tazama mipangilio ya hifadhi</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">મીડિયા સેવ કરી શકતા નથી</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">\"Signal સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" ચાલુ હોવાથી આ મીડિયા તમારા ડિવાઇસમાંથી ઓફલોડ કરવામાં આવ્યું છે. તમે એક પછી એક આઇટમ સેવ કરી શકો છો અથવા તમારા ડિવાઇસ પર બધા મીડિયા ડાઉનલોડ કરવા માટે \"ડિવાઇસ સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" બંધ કરી શકો છો.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">\"Collie સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" ચાલુ હોવાથી આ મીડિયા તમારા ડિવાઇસમાંથી ઓફલોડ કરવામાં આવ્યું છે. તમે એક પછી એક આઇટમ સેવ કરી શકો છો અથવા તમારા ડિવાઇસ પર બધા મીડિયા ડાઉનલોડ કરવા માટે \"ડિવાઇસ સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" બંધ કરી શકો છો.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">બધી આઇટમ સેવ કરી શકતા નથી</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">\"Signal સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" ચાલુ હોવાથી તમે પસંદ કરેલા કેટલાક મીડિયા તમારા ડિવાઇસમાંથી ઓફલોડ કરવામાં આવ્યા છે. તમે એક પછી એક આઇટમ સેવ કરી શકો છો અથવા તમારા ડિવાઇસ પર બધા મીડિયા ડાઉનલોડ કરવા માટે \"ડિવાઇસ સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" બંધ કરી શકો છો.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">\"Collie સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" ચાલુ હોવાથી તમે પસંદ કરેલા કેટલાક મીડિયા તમારા ડિવાઇસમાંથી ઓફલોડ કરવામાં આવ્યા છે. તમે એક પછી એક આઇટમ સેવ કરી શકો છો અથવા તમારા ડિવાઇસ પર બધા મીડિયા ડાઉનલોડ કરવા માટે \"ડિવાઇસ સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" બંધ કરી શકો છો.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">સ્ટોરેજ સેટિંગ્સ જુઓ</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

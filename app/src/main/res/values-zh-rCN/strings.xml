@@ -3564,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini 等 AI 助手应用可以扫描您的 Signal 内容。为阻止扫描，屏幕安全功能已开启。此功能还会阻止屏幕截图操作。</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini 等 AI 助手应用可以扫描您的 Collie 内容。为阻止扫描，屏幕安全功能已开启。此功能还会阻止屏幕截图操作。</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">屏幕安全功能已启用</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3572,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">要关闭屏幕安全功能吗？</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">关闭此功能可能会允许 Google Gemini 等 AI 助手扫描 Signal 的内容，并将这些内容用于可能无法保障隐私的功能。</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">关闭此功能可能会允许 Google Gemini 等 AI 助手扫描 Collie 的内容，并将这些内容用于可能无法保障隐私的功能。</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">关闭</string>
     <!-- Snackbar shown after the user turns off screen security -->

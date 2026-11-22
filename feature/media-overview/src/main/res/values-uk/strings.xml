@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Не вдається зберегти медіафайл</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Ці медіафайли було вивантажено з пристрою, оскільки ви ввімкнули оптимізацію сховища Signal. Щоб завантажити на пристрій усі медіафайли, завантажте кожен файл окремо або вимкніть параметр «Оптимізувати сховище Signal».</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Ці медіафайли було вивантажено з пристрою, оскільки ви ввімкнули оптимізацію сховища Collie. Щоб завантажити на пристрій усі медіафайли, завантажте кожен файл окремо або вимкніть параметр «Оптимізувати сховище Collie».</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Не вдається зберегти всі файли</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Деякі з вибраних медіафайлів було вивантажено з пристрою, оскільки ви ввімкнули оптимізацію сховища Signal. Щоб завантажити на пристрій усі медіафайли, завантажте кожен файл окремо або вимкніть параметр «Оптимізувати сховище Signal».</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Деякі з вибраних медіафайлів було вивантажено з пристрою, оскільки ви ввімкнули оптимізацію сховища Collie. Щоб завантажити на пристрій усі медіафайли, завантажте кожен файл окремо або вимкніть параметр «Оптимізувати сховище Collie».</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Відкрити налаштування пам\'яті</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

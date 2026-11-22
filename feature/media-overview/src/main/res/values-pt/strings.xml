@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Não é possível guardar os ficheiros</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Este ficheiro multimédia foi descarregado do seu dispositivo porque a opção \"otimizar armazenamento do Signal\" está ativada. Pode transferir itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Este ficheiro multimédia foi descarregado do seu dispositivo porque a opção \"otimizar armazenamento do Collie\" está ativada. Pode transferir itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Não é possível guardar todos os itens</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Alguns ficheiros multimédia que selecionou foram descarregados do seu dispositivo porque a opção \"Otimizar armazenamento do Signal\" está ativada. Pode guardar itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Alguns ficheiros multimédia que selecionou foram descarregados do seu dispositivo porque a opção \"Otimizar armazenamento do Collie\" está ativada. Pode guardar itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Ver definições de armazenamento</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Мультимедианы сақтау мүмкін емес</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Бұл мультимедиа құрылғыңыздан жүктеп шығарылды, себебі \"Signal жадын оңтайландыру\" функциясы қосылды. Мультимедианың барлығын құрылғыңызға жүктеп алу үшін элементтерді бір-бірден жүктеп алуға немесе \"Signal жадын оңтайландыру\" функциясын өшіруге болады.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Бұл мультимедиа құрылғыңыздан жүктеп шығарылды, себебі \"Collie жадын оңтайландыру\" функциясы қосылды. Мультимедианың барлығын құрылғыңызға жүктеп алу үшін элементтерді бір-бірден жүктеп алуға немесе \"Collie жадын оңтайландыру\" функциясын өшіруге болады.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Барлық элементті сақтау мүмкін емес</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Сіз таңдаған кейбір мультимедиа құрылғыңыздан жүктеп шығарылды, себебі \"Signal жадын оңтайландыру\" функциясы қосылды. Мультимедианың барлығын құрылғыңызға жүктеп алу үшін элементтерді бір-бірден сақтауға немесе \"Signal жадын оңтайландыру\" функциясын өшіруге болады.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Сіз таңдаған кейбір мультимедиа құрылғыңыздан жүктеп шығарылды, себебі \"Collie жадын оңтайландыру\" функциясы қосылды. Мультимедианың барлығын құрылғыңызға жүктеп алу үшін элементтерді бір-бірден сақтауға немесе \"Collie жадын оңтайландыру\" функциясын өшіруге болады.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Жад параметрлерін көру</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

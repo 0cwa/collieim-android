@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">ਮੀਡੀਆ ਸੇਵ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">ਇਹ ਮੀਡੀਆ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਵਿੱਚੋਂ ਆਫਲੋਡ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ \"Signal ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ। ਤੁਸੀਂ ਆਈਟਮਾਂ ਨੂੰ ਇੱਕ-ਇੱਕ ਕਰਕੇ ਡਾਊਨਲੋਡ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਸਾਰਾ ਮੀਡੀਆ ਆਪਣੇ ਡਿਵਾਈਸ \'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ \"Signal ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">ਇਹ ਮੀਡੀਆ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਵਿੱਚੋਂ ਆਫਲੋਡ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ \"Collie ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ। ਤੁਸੀਂ ਆਈਟਮਾਂ ਨੂੰ ਇੱਕ-ਇੱਕ ਕਰਕੇ ਡਾਊਨਲੋਡ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਸਾਰਾ ਮੀਡੀਆ ਆਪਣੇ ਡਿਵਾਈਸ \'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ \"Collie ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">ਸਾਰੀਆਂ ਆਈਟਮਾਂ ਨੂੰ ਸੇਵ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣਿਆ ਗਿਆ ਕੁਝ ਮੀਡੀਆ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਵਿੱਚੋਂ ਆਫਲੋਡ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ \"Signal ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ। ਤੁਸੀਂ ਆਈਟਮਾਂ ਨੂੰ ਇੱਕ-ਇੱਕ ਕਰਕੇ ਸੇਵ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਸਾਰਾ ਮੀਡੀਆ ਆਪਣੇ ਡਿਵਾਈਸ \'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ \"Signal ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣਿਆ ਗਿਆ ਕੁਝ ਮੀਡੀਆ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਵਿੱਚੋਂ ਆਫਲੋਡ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ \"Collie ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ। ਤੁਸੀਂ ਆਈਟਮਾਂ ਨੂੰ ਇੱਕ-ਇੱਕ ਕਰਕੇ ਸੇਵ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਸਾਰਾ ਮੀਡੀਆ ਆਪਣੇ ਡਿਵਾਈਸ \'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ \"Collie ਸਟੋਰੇਜ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ\" ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">ਸਟੋਰੇਜ ਸੈਟਿੰਗਾਂ ਦੇਖੋ</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Не удаётся сохранить медиафайлы</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Этот медиафайл был выгружен с вашего устройства, поскольку включена функция «Оптимизировать хранилище Signal». Вы можете сохранить медиафайлы по одному либо отключить функцию «Оптимизировать хранилище Signal», чтобы загрузить все медиафайлы на ваше устройство.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Этот медиафайл был выгружен с вашего устройства, поскольку включена функция «Оптимизировать хранилище Collie». Вы можете сохранить медиафайлы по одному либо отключить функцию «Оптимизировать хранилище Collie», чтобы загрузить все медиафайлы на ваше устройство.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Не удаётся сохранить все медиафайлы</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Некоторые выбранные вами медиафайлы были выгружены с вашего устройства, поскольку включена функция «Оптимизировать хранилище Signal». Вы можете сохранить медиафайлы по одному либо отключить функцию «Оптимизировать хранилище Signal», чтобы загрузить все медиафайлы на ваше устройство.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Некоторые выбранные вами медиафайлы были выгружены с вашего устройства, поскольку включена функция «Оптимизировать хранилище Collie». Вы можете сохранить медиафайлы по одному либо отключить функцию «Оптимизировать хранилище Collie», чтобы загрузить все медиафайлы на ваше устройство.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Просмотреть настройки хранилища</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

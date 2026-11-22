@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Media nuk mund të ruhej</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Kjo media është shkarkuar nga pajisja pasi opsioni \"Optimizo hapësirën ruajtëse në Signal\" është i aktivizuar. Mund t\'i ruash artikujt një nga një, ose çaktivizo opsionin \"Optimizo hapësirën ruajtëse në Signal\" për të shkarkuar të gjitha mediat në pajisje.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Kjo media është shkarkuar nga pajisja pasi opsioni \"Optimizo hapësirën ruajtëse në Collie\" është i aktivizuar. Mund t\'i ruash artikujt një nga një, ose çaktivizo opsionin \"Optimizo hapësirën ruajtëse në Collie\" për të shkarkuar të gjitha mediat në pajisje.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Nuk mund të ruhet të gjitha artikujt</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Disa nga mediat që ke përzgjedhur janë shkarkuar nga pajisja pasi opsioni \"Optimizo hapësirën ruajtëse në Signal\" është i aktivizuar. Mund t\'i ruash artikujt një nga një, ose çaktivizo opsionin \"Optimizo hapësirën ruajtëse në Signal\" për të shkarkuar të gjitha mediat në pajisje.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Disa nga mediat që ke përzgjedhur janë shkarkuar nga pajisja pasi opsioni \"Optimizo hapësirën ruajtëse në Collie\" është i aktivizuar. Mund t\'i ruash artikujt një nga një, ose çaktivizo opsionin \"Optimizo hapësirën ruajtëse në Collie\" për të shkarkuar të gjitha mediat në pajisje.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Shiko parametrat e hapësirës ruajtëse</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

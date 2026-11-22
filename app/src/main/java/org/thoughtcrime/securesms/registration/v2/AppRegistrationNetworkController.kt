@@ -99,7 +99,6 @@ import org.thoughtcrime.securesms.jobs.ResetSvrGuessCountJob
 import org.thoughtcrime.securesms.jobs.StorageAccountRestoreJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.pin.SvrRepository
 import org.thoughtcrime.securesms.pin.SvrWrongPinException
 import org.thoughtcrime.securesms.profiles.AvatarHelper
@@ -148,7 +147,7 @@ class AppRegistrationNetworkController(
   }
 
   override fun enableNetworkForRegistration() {
-    TextSecurePreferences.setHasSeenNetworkConfig(context, true)
+    SignalStore.molly.hasSeenNetworkConfig = true
     AppDependencies.networkManager.setNetworkEnabled(true)
   }
 

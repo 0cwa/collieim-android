@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Asistenti AI jako Gemini mohou skenovat váš obsah v aplikaci Signal. Aby se tomu zabránilo, bylo zapnuto zabezpečení obrazovky. Tím se zároveň zakážou snímky obrazovky.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Asistenti AI jako Gemini mohou skenovat váš obsah v aplikaci Collie. Aby se tomu zabránilo, bylo zapnuto zabezpečení obrazovky. Tím se zároveň zakážou snímky obrazovky.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Zabezpečení obrazovky je zapnuto</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Vypnout zabezpečení obrazovky?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Pokud možnost vypnete, mohou asistenti AI, např. Google Gemini, skenovat obsah v aplikaci Signal a využívat jej pro funkce, které nemusejí být soukromé.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Pokud možnost vypnete, mohou asistenti AI, např. Google Gemini, skenovat obsah v aplikaci Collie a využívat jej pro funkce, které nemusejí být soukromé.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Vypnout</string>
     <!-- Snackbar shown after the user turns off screen security -->

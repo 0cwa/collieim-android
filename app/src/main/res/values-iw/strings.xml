@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">אפליקציות עוזרי AI כמו Gemini יכולות לסרוק את התוכן שלך ב–Signal. כדי למנוע זאת, אבטחת מסך הופעלה. זה ישבית גם את צילומי המסך.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">אפליקציות עוזרי AI כמו Gemini יכולות לסרוק את התוכן שלך ב–Collie. כדי למנוע זאת, אבטחת מסך הופעלה. זה ישבית גם את צילומי המסך.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">אבטחת מסך מופעלת</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">לכבות אבטחת מסך?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">אם האפשרות תכובה, עוזרי AI כמו Google Gemini עשויים לסרוק תוכן ב-Signal ולהשתמש בו לתכונות שייתכן שאינן פרטיות.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">אם האפשרות תכובה, עוזרי AI כמו Google Gemini עשויים לסרוק תוכן ב-Collie ולהשתמש בו לתכונות שייתכן שאינן פרטיות.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">כבה</string>
     <!-- Snackbar shown after the user turns off screen security -->

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Kan inte spara medier</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Det här mediet har avlastats från din enhet eftersom Optimera Signal-lagring är aktiverat. Du kan ladda ner objekt ett i taget eller stänga av Optimera Signal-lagring för att ladda ner alla medier till din enhet.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Det här mediet har avlastats från din enhet eftersom Optimera Collie-lagring är aktiverat. Du kan ladda ner objekt ett i taget eller stänga av Optimera Collie-lagring för att ladda ner alla medier till din enhet.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Kan inte spara alla objekt</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">En del av medierna du har valt har avlastats från din enhet eftersom Optimera Signal-lagring är aktiverat. Du kan spara objekten ett i taget eller stänga av Optimera Signal-lagring för att ladda ner alla medier till din enhet.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">En del av medierna du har valt har avlastats från din enhet eftersom Optimera Collie-lagring är aktiverat. Du kan spara objekten ett i taget eller stänga av Optimera Collie-lagring för att ladda ner alla medier till din enhet.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Visa lagringsinställningar</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

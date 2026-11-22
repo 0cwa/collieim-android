@@ -1,3 +1,13 @@
+pluginManagement {
+  repositories {
+    // The kotlin-dsl plugin and its Kotlin libraries otherwise come from the Gradle plugin portal,
+    // which forwards to Maven Central and fails with HTTP 429 on CI runners. Mirror first.
+    maven("https://maven-central.storage-download.googleapis.com/maven2/")
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {

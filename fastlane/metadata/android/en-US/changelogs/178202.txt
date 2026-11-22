@@ -1,0 +1,1 @@
+Collie now includes Molly 8.34. Background jobs wait for the passphrase lock, a protected install never gets a new database secret, and Molly's TLS trust fix is included. Proxy changes reset the network fully, Collie connects on networks Android has not validated while still enforcing a configured proxy, and privacy settings use Molly's screen with Collie's network section.

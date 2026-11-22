@@ -162,7 +162,9 @@ jobs:
               -PcollieAppTestShard="${SHARD#app-}" :app:testProdWebsiteDebugUnitTest
           fi
       - name: Save Robolectric android-all jars
-        if: ${{ always() && (steps.robolectric-cache.outputs.cache-matched-key == '' || job.status == 'failure') }}
+        # Save unless this shard's own cache matched: a fallback to another shard's cache lacks
+        # this shard's jars, and PR caches are not visible to other branches, so main needs its own.
+        if: ${{ always() && (!startsWith(steps.robolectric-cache.outputs.cache-matched-key, format('robolectric-jars-{0}-4.16-{1}-', runner.os, matrix.shard)) || job.status == 'failure') }}
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.m2/repository/org/robolectric

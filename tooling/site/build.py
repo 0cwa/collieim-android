@@ -31,6 +31,7 @@ SOURCE = ROOT / "docs" / "site"
 REPO = "0cwa/collieim-android"
 APK_NAME = "collie.apk"
 TAG_RE = re.compile(r"^v[0-9][0-9A-Za-z.\-]*$")
+BETA_TAG_RE = re.compile(r"^trailblazer-v[0-9][0-9A-Za-z.\-]*$")
 ROADMAP_CATEGORY = "upcoming-planned-features"
 ROADMAP_TITLES = {
     55: "UnifiedPush on linked devices",
@@ -205,6 +206,8 @@ def published_tags(releases):
         if release.get('draft') is not False or not release.get('published_at'):
             continue
         tag = release.get('tag_name', '')
+        if BETA_TAG_RE.fullmatch(tag):
+            continue  # TrailBlazer Beta releases are not listed on the Stable site
         if not TAG_RE.fullmatch(tag):
             raise ValueError('Invalid published release tag')
         when = datetime.fromisoformat(release['published_at'].replace('Z', '+00:00'))

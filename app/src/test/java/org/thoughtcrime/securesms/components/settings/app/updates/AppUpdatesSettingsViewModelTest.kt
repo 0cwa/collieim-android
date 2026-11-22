@@ -44,10 +44,10 @@ import org.thoughtcrime.securesms.BuildConfig
 import org.signal.storage.keyvalue.ApkUpdateValues
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob
+import org.thoughtcrime.securesms.keyvalue.MollyValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.CoroutineDispatcherRule
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -71,6 +71,7 @@ class AppUpdatesSettingsViewModelTest {
   val appDependencies = MockAppDependenciesRule()
 
   private val apkUpdateValues = mockk<ApkUpdateValues>(relaxUnitFun = true)
+  private val mollyValues = mockk<MollyValues>(relaxUnitFun = true)
   private var updatesEnabled = false
   private val openedReleases = mutableListOf<String>()
 
@@ -80,14 +81,15 @@ class AppUpdatesSettingsViewModelTest {
 
     mockkObject(SignalStore)
     every { SignalStore.apkUpdate } returns apkUpdateValues
+    every { SignalStore.molly } returns mollyValues
     every { apkUpdateValues.lastSuccessfulCheck } returns LAST_SUCCESSFUL_CHECK
     every { apkUpdateValues.lastCheckFailed } returns false
     every { apkUpdateValues.availableVersionCode } returns 0L
     every { apkUpdateValues.availableVersionName } returns null
-    mockkStatic(TextSecurePreferences::class, ApkUpdateRefreshListener::class)
+    mockkStatic(ApkUpdateRefreshListener::class)
     mockkObject(ApkUpdateNotifications)
-    every { TextSecurePreferences.isUpdateApkEnabled(any()) } answers { updatesEnabled }
-    every { TextSecurePreferences.setUpdateApkEnabled(any(), any()) } answers { updatesEnabled = secondArg() }
+    every { mollyValues.updateApkEnabled } answers { updatesEnabled }
+    every { mollyValues.updateApkEnabled = any() } answers { updatesEnabled = firstArg() }
     every { ApkUpdateRefreshListener.scheduleIfAllowed(any()) } just Runs
     every { ApkUpdateNotifications.dismissUpdatePrompt(any()) } just Runs
   }
@@ -146,7 +148,7 @@ class AppUpdatesSettingsViewModelTest {
 
     viewModel.onEvent(AppUpdatesSettingsEvent.AutoUpdateToggled(true))
 
-    verify { TextSecurePreferences.setUpdateApkEnabled(any(), true) }
+    verify { mollyValues.updateApkEnabled = true }
     assertThat(viewModel.state.value.autoUpdateEnabled).isTrue()
   }
 
@@ -157,7 +159,7 @@ class AppUpdatesSettingsViewModelTest {
 
     viewModel.onEvent(AppUpdatesSettingsEvent.AutoUpdateToggled(false))
 
-    verify { TextSecurePreferences.setUpdateApkEnabled(any(), false) }
+    verify { mollyValues.updateApkEnabled = false }
     assertThat(viewModel.state.value.autoUpdateEnabled).isFalse()
   }
 
@@ -210,7 +212,7 @@ class AppUpdatesSettingsViewModelTest {
     assertThat(viewModel.state.value.isAutoUpdateSupported).isFalse()
     assertThat(viewModel.state.value.availableVersionName).isNull()
     assertThat(openedReleases).isEmpty()
-    verify(exactly = 0) { TextSecurePreferences.setUpdateApkEnabled(any(), any()) }
+    verify(exactly = 0) { mollyValues.updateApkEnabled = any() }
     verify(exactly = 0) { AppDependencies.jobManager.add(ofType<ApkUpdateJob>()) }
     verify(exactly = 0) { ApkUpdateRefreshListener.scheduleIfAllowed(any()) }
   }
@@ -243,7 +245,7 @@ class AppUpdatesSettingsViewModelTest {
     viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
     viewModel.onEvent(AppUpdatesSettingsEvent.CheckForUpdatesClicked)
 
-    verify(exactly = 0) { TextSecurePreferences.setUpdateApkEnabled(any(), any()) }
+    verify(exactly = 0) { mollyValues.updateApkEnabled = any() }
     verify(exactly = 0) { AppDependencies.jobManager.add(ofType<ApkUpdateJob>()) }
   }
 

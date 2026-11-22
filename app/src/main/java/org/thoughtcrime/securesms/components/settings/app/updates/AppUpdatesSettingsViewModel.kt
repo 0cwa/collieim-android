@@ -24,7 +24,6 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.CommunicationActions
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import kotlin.time.Duration.Companion.milliseconds
 
 class AppUpdatesSettingsViewModel(
@@ -51,7 +50,7 @@ class AppUpdatesSettingsViewModel(
       AppUpdatesSettingsEvent.NavigateBackClicked -> parentEventEmitter.navigateBack()
       is AppUpdatesSettingsEvent.AutoUpdateToggled -> {
         if (updatesSupported) {
-          TextSecurePreferences.setUpdateApkEnabled(application, event.enabled)
+          SignalStore.molly.updateApkEnabled = event.enabled
           if (event.enabled) {
             checkForUpdates()
           } else {
@@ -86,7 +85,7 @@ class AppUpdatesSettingsViewModel(
   private fun readState(): AppUpdatesSettingsState {
     return AppUpdatesSettingsState(
       lastCheckedTime = SignalStore.apkUpdate.lastSuccessfulCheck.milliseconds,
-      autoUpdateEnabled = TextSecurePreferences.isUpdateApkEnabled(application),
+      autoUpdateEnabled = SignalStore.molly.updateApkEnabled,
       isAutoUpdateSupported = updatesSupported,
       lastCheckFailed = SignalStore.apkUpdate.lastCheckFailed,
       availableVersionName = SignalStore.apkUpdate.availableVersionName?.takeIf {

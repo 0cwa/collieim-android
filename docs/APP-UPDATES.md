@@ -1,6 +1,6 @@
 # Collie release notifications
 
-Current direct APK (`website`) builds check their product's signed F-Droid repository for newer compatible releases. **Settings → App updates** controls these checks and shows an available release even when Android notifications are disabled. Checks are enabled when there is no saved preference; an explicit choice to disable them is preserved. Store builds continue to rely on their store.
+Current direct APK (`website`) builds check their product's signed F-Droid repository for newer compatible releases. **Settings → App updates** controls these checks and shows an available release even when Android notifications are disabled. Checks are enabled when there is no saved preference; an explicit choice to disable them is preserved. Store builds continue to rely on their store. The published `v8.35.1-3-rc2` APK uses the legacy updater instead of these signed-repository checks; use Obtainium or F-Droid to update that release.
 
 The existing periodic schedule runs about every 22 hours, with an initial check when first scheduled. **Check for updates** queues a check while checks are enabled. A failed check remains visible alongside the time of the last successful check. Turning checks off dismisses the notification, and a request already in progress cannot publish its result after checks are disabled.
 

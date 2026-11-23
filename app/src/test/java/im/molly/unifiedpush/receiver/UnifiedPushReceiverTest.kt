@@ -176,6 +176,46 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `first endpoint resumes MollySocket setup without a control key`() {
+    fakeAccount()
+    values.device = null
+    mockPendingEndpointStorage()
+    val endpoint = PushEndpoint("https://push.example.invalid/first", null)
+
+    UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+
+    verify(timeout = 3000, exactly = 1) {
+      AppDependencies.jobManager.add(match<UnifiedPushRefreshJob> {
+        val data = org.thoughtcrime.securesms.jobmanager.JsonJobData.deserialize(it.serialize())
+        !data.getBoolean("ping") && data.getBoolean("fromNewEndpoint")
+      })
+    }
+    assertEquals(endpoint.url, values.endpoint)
+    assertNull(values.controlState.key)
+    controlJobAdds(0)
+    awaitLifecycleReady()
+  }
+
+  @Test
+  fun `rotated legacy endpoint schedules one refresh after registration recovery`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    failed = true
+    retryScheduled = true
+    mockPendingEndpointStorage()
+    val endpoint = PushEndpoint("https://push.example.invalid/new", null)
+
+    UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+
+    verify(timeout = 3000, exactly = 1) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+    assertEquals(endpoint.url, values.endpoint)
+    assertFalse(failed)
+    assertFalse(retryScheduled)
+    controlJobAdds(0)
+    awaitLifecycleReady()
+  }
+
+  @Test
   fun `unregistering clears the stored connector keys`() {
     fakeAccount()
     mockPendingEndpointStorage()

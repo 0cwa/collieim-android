@@ -147,7 +147,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
     }
     // The route is durable and coherent before reconciliation builds a frame from it.
     EndpointReconciler.reconcile()
-    if (effects.failed && !effects.changed) {
+    // A new distributor endpoint must also resume legacy MollySocket registration. Control
+    // reconciliation cannot do that before an encrypted enrollment has a control key.
+    if (effects.changed || effects.failed) {
       AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
     }
     if (effects.changed && effects.airGapped) {

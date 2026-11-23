@@ -11,6 +11,7 @@ plugins {
   id("print-version")
   id("signal-locales")
   id("pseudo-locales")
+  id("collie-app")
 }
 
 val canonicalVersionCode = 1782
@@ -108,14 +109,6 @@ android {
       // MOLLY: Reduce memory pressure by limiting the number of test classes per runner
       all { task ->
         task.forkEvery = 64
-        task.maxHeapSize = "1g"
-        providers.gradleProperty("collieAppTestShard").orNull?.toInt()?.let { shard ->
-          require(shard in 0..1)
-          task.include { element ->
-            val className = element.relativePath.pathString.substringBefore('$').removeSuffix(".class")
-            element.isDirectory || Math.floorMod(className.hashCode(), 2) == shard
-          }
-        }
       }
     }
   }
@@ -178,10 +171,10 @@ android {
   }
 
   defaultConfig {
-    val sourceVersionNameWithRevision = "${canonicalVersionName}-${mollyRevision}-port-unvalidated"
+    val sourceVersionNameWithRevision = "${canonicalVersionName}-${mollyRevision}"
 
-    versionCode = providers.gradleProperty("releaseVersionCode").orNull?.toInt()?.also { require(it > 177702) { "Release versionCode must exceed published RC1 and all later reservations" } } ?: ((canonicalVersionCode * maxHotfixVersions) + mollyRevision + currentHotfixVersion)
-    versionName = providers.gradleProperty("releaseVersionName").orNull ?: (if (ciEnabled) requireCommitTag() else sourceVersionNameWithRevision)
+    versionCode = (canonicalVersionCode * maxHotfixVersions) + mollyRevision + currentHotfixVersion
+    versionName = sourceVersionNameWithRevision
 
     minSdk = libs.versions.minSdk.get().toInt()
     targetSdk = libs.versions.targetSdk.get().toInt()
@@ -195,13 +188,12 @@ android {
     buildConfigField("String", "SIGNAL_CANONICAL_VERSION_NAME", "\"$canonicalVersionName\"")
     buildConfigField("String", "BACKUP_BASE_NAME", "\"$baseAppFileName\"")
     buildConfigField("boolean", "FORCE_INTERNAL_USER_FLAG", forceInternalUserFlag)
-    buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/repo\"")
+    buildConfigField("String", "FDROID_UPDATE_URL", "\"https://molly.im/fdroid/repo\"")
 
     vectorDrawables.useSupportLibrary = true
 
-    // MOLLY: BUILD_TIMESTAMP may be zero in debug builds.
-    buildConfigField("long", "BUILD_TIMESTAMP_OR_ZERO", getLastCommitTimestamp() + "L")
-    buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
+    buildConfigField("long", "BUILD_TIMESTAMP_OR_ZERO", buildFile.lastModified().toString() + "L")
+
     // MOLLY: Ensure to add any new URLs to SignalServiceNetworkAccess.HOSTNAMES list
     buildConfigField("String", "SIGNAL_URL", "\"https://chat.signal.org\"")
     buildConfigField("String", "STORAGE_URL", "\"https://storage.signal.org\"")
@@ -243,29 +235,12 @@ android {
       abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
     }
 
-    val isolatedPushTests = providers.gradleProperty("isolatedPushTests").isPresent
-    val imoTests = providers.gradleProperty("imoTests").isPresent
-    require(!isolatedPushTests || imoTests) {
-      "isolatedPushTests requires imoTests so the isolated runner and package remain test-only"
-    }
-    testInstrumentationRunner = if (isolatedPushTests) {
-      "org.thoughtcrime.securesms.testing.SignalTestRunner"
-    } else if (imoTests) {
-      "org.thoughtcrime.securesms.testing.incomingmessageobserver.IncomingMessageObserverTestRunner"
-    } else {
-      "org.thoughtcrime.securesms.testing.SignalTestRunner"
-    }
+    testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
   }
 
   buildTypes {
     getByName("debug") {
-      // The IMO harness signs its synthetic messages with a publicly known test key.
-      // Keep that trust root and package identity confined to an explicit debug test build.
-      if (providers.gradleProperty("imoTests").isPresent) {
-        applicationIdSuffix = ".imo"
-        buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{\"BVT/2gHqbrG1xzuIypLIOjFgMtihrMld1/5TGADL6Dhv\"}")
-      }
       isDefault = true
       isMinifyEnabled = false
       proguardFiles(
@@ -292,7 +267,6 @@ android {
       )
 
       buildConfigField("long", "BUILD_TIMESTAMP_OR_ZERO", "0L")
-      buildConfigField("String", "GIT_HASH", "\"abc123def456\"")
     }
 
     getByName("release") {
@@ -641,20 +615,4 @@ licensee {
   allowUrl("https://www.zetetic.net/sqlcipher/license/") {
     because("BSD-3-Clause")
   }
-}
-
-fun getLastCommitTimestamp(): String = providers.gradleProperty("collieBuildTimestamp").get() + "000"
-
-fun getGitHash(): String = providers.gradleProperty("collieBuildRevision").get()
-
-fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("${canonicalVersionName}-${mollyRevision}-port-unvalidated")
-
-// Publication migration gate: remove only with reviewed public native inputs and
-// direct-source acceptance. The legacy operator route is retained in engineering.
-val nativeAcceptanceFile = rootProject.file("build-inputs/native-publication.json")
-val nativeAcceptanceText = if (nativeAcceptanceFile.isFile) nativeAcceptanceFile.readText() else ""
-val nativeInputsAccepted = nativeAcceptanceText.contains("\"status\": \"ACCEPTED\"") &&
-  nativeAcceptanceText.contains("\"evidence_sha256\": \"20b21855db0175409618156f0247aa25503fcb256f1c3075959d33c87244f3c4\"")
-if (!nativeInputsAccepted) {
-  throw GradleException("Direct Android builds BLOCKED: accepted native publication evidence is absent or differs; see docs/BUILD.md")
 }

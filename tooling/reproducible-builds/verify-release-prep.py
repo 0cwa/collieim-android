@@ -8,6 +8,7 @@ from pathlib import Path
 
 KEYS = {"collieBuildRevision", "collieBuildTimestamp", "releaseVersionName", "releaseVersionCode"}
 ASSIGNMENT = re.compile(r"^\s*([^\s:=]+)\s*(?:[=:]\s*|\s+)(.*?)\s*$")
+NATURAL_LINE = re.compile(r"[^\r\n]*(?:\r\n|\r|\n)|[^\r\n]+\Z")
 
 
 class Invalid(ValueError):
@@ -21,7 +22,8 @@ def git(*args, binary=False):
 
 def properties(content):
     values, retained = {}, []
-    for line in content.splitlines(keepends=True):
+    # Java properties use CR, LF and CRLF as line endings. A form feed can occur inside a comment.
+    for line in NATURAL_LINE.findall(content):
         stripped = line.lstrip()
         if not stripped.strip() or stripped.startswith(("#", "!")):
             retained.append(line)
@@ -56,11 +58,11 @@ def verify(development_base=None):
     path = Path("gradle.properties")
     if path.is_symlink() or not path.is_file():
         raise Invalid("Gradle properties must be a regular file")
-    values, current_other = properties(path.read_text(encoding="utf-8"))
+    values, current_other = properties(path.read_bytes().decode("utf-8"))
     docker_properties = Path("tooling/gradle.properties.docker")
     if docker_properties.is_symlink() or not docker_properties.is_file():
         raise Invalid("builder Gradle properties must be a regular file")
-    docker_values, _ = properties(docker_properties.read_text(encoding="utf-8"))
+    docker_values, _ = properties(docker_properties.read_bytes().decode("utf-8"))
     if docker_values:
         raise Invalid("release properties in builder Gradle configuration are unsupported")
     if any("ORG_GRADLE_PROJECT_" + key in os.environ for key in KEYS):

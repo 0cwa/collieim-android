@@ -89,6 +89,17 @@ class ReleasePreparationTests(unittest.TestCase):
         self.commit("bump without a new source")
         self.assertNotEqual(self.check("--development-base", base).returncode, 0)
 
+    def test_form_feed_cannot_hide_a_release_property_in_a_comment(self):
+        self.prepare()
+        base = self.git("rev-parse", "HEAD")
+        path = self.root / "gradle.properties"
+        path.write_bytes(path.read_bytes().replace(b"releaseVersionName=", b"# comment\freleaseVersionName="))
+        self.git("add", "gradle.properties")
+        self.commit("hide the version name from Java properties")
+        result = self.check("--development-base", base)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("release requires exactly one of each release property", result.stderr)
+
     def test_base_cannot_be_the_checked_out_commit(self):
         self.prepare()
         self.develop()

@@ -134,7 +134,7 @@ class UnifiedPushRefreshJobTest {
   fun tearDown() {
     unmockkObject(LinkDeviceRepository)
     unmockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies, LockedPushState, EndpointReconciler)
-    unmockkStatic(AppDependencies::class, KeyCachingService::class, NotificationChannels::class, LockedPushState::class, EndpointReconciler::class)
+    unmockkStatic(AppDependencies::class, KeyCachingService::class, NotificationChannels::class, LockedPushState::class, EndpointReconciler::class, UnifiedPushDistributor::class)
     unmockkConstructor(UnifiedPushNotificationBuilder::class)
   }
 
@@ -567,7 +567,7 @@ class UnifiedPushRefreshJobTest {
   private fun configureEndpointCallbacks(): AtomicReference<LockedPushState.Endpoint?> {
     val context = ApplicationProvider.getApplicationContext<Application>()
     mockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies, LockedPushState, EndpointReconciler)
-    mockkStatic(AppDependencies::class, KeyCachingService::class, NotificationChannels::class, LockedPushState::class, EndpointReconciler::class)
+    mockkStatic(AppDependencies::class, KeyCachingService::class, NotificationChannels::class, LockedPushState::class, EndpointReconciler::class, UnifiedPushDistributor::class)
     mockkConstructor(UnifiedPushNotificationBuilder::class)
     every { AppDependencies.application } returns context
     every { AppDependencies.isInitialized } returns false

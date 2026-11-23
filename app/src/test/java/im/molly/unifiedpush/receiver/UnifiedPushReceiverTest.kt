@@ -164,6 +164,7 @@ class UnifiedPushReceiverTest {
 
   @Test
   fun `new endpoint stores one coherent connector tuple for enrollment export`() {
+    fakeAccount()
     mockPendingEndpointStorage()
     val receiver = UnifiedPushReceiver()
     every { values.endpoint } returns null
@@ -174,6 +175,7 @@ class UnifiedPushReceiverTest {
     receiver.onNewEndpoint(context, endpoint, "default")
 
     verify(timeout = 3000) { values.setEndpointRegistration("https://example.org/push", "pub-key", "auth-secret", "default") }
+    awaitLifecycleReady()
   }
 
   @Test

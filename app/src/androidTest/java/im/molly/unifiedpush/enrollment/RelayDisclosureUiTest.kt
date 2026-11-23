@@ -36,7 +36,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.testing.actions.scrollToDescendant
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
 import java.io.FileOutputStream
 
@@ -171,8 +170,8 @@ class RelayDisclosureUiTest {
   }
 
   private fun withSettings(block: (ActivityScenario<AppSettingsActivity>) -> Unit) {
-    val secureBefore = TextSecurePreferences.isScreenSecurityEnabled(context)
-    TextSecurePreferences.setScreenSecurityEnabled(context, false)
+    val secureBefore = SignalStore.settings.isScreenSecurityEnabled
+    SignalStore.settings.isScreenSecurityEnabled = false
     try {
       ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.notifications(context)).use { scenario ->
         var windowWasSecure = false
@@ -186,7 +185,7 @@ class RelayDisclosureUiTest {
           instrumentation.waitForIdleSync()
           block(scenario)
         } finally {
-          TextSecurePreferences.setScreenSecurityEnabled(context, secureBefore)
+          SignalStore.settings.isScreenSecurityEnabled = secureBefore
           scenario.onActivity { activity ->
             if (secureBefore || windowWasSecure) activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             else activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
@@ -194,7 +193,7 @@ class RelayDisclosureUiTest {
         }
       }
     } finally {
-      TextSecurePreferences.setScreenSecurityEnabled(context, secureBefore)
+      SignalStore.settings.isScreenSecurityEnabled = secureBefore
     }
   }
 

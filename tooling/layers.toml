@@ -8,6 +8,11 @@
 # kind = "upstream"  Signal or Molly ports and their pinned inputs
 # alias_of = "name"  an old spelling; commits must use the named layer instead
 #
+# Canonical features may have a provenance table for a selected fork change.
+# No table means tracking is unknown, not that the implementation is absent.
+# See docs/VERIFY.md#selected-fork-provenance for the planner contract. Signal
+# and Molly integration stays in verified upstream merges, not these tables.
+#
 # Tests for a feature go in that feature's layer. `testing` is for shared test
 # infrastructure only.
 
@@ -143,6 +148,16 @@ about = "Call safety behavior"
 [layers.group-profile-sharing]
 kind = "feature"
 about = "Profile sharing in groups"
+
+# PR #142 records the original adaptation and attribution.
+[layers.group-profile-sharing.provenance]
+repository = "johanw666/Signal-Android"
+revision = "8f4ad8577344e844945ee8e73d95fd1fcc7208bc"
+revision_kind = "release-snapshot"
+relationship = "adaptation"
+application = "manual"
+scope = "Prevent blocked inviters from automatically enabling group profile sharing."
+discovery_ref = "refs/tags/v8.36.0.0-JW"
 
 [layers.name-collisions]
 kind = "feature"

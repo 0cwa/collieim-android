@@ -27,6 +27,9 @@ UPSTREAM_URLS = {
 SIGNAL, MOLLY = UPSTREAM_URLS
 UPSTREAM_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]*")
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
+REPOSITORY = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/[A-Za-z0-9_.-]+")
+PROVENANCE_REQUIRED = {"repository", "revision", "revision_kind", "relationship", "application", "scope"}
+PROVENANCE_OPTIONAL = {"discovery_ref", "prerequisites"}
 # The pre-push hook may skip only the network identity check, for offline work.
 OFFLINE = "COLLIE_UPSTREAM_OFFLINE"
 
@@ -46,15 +49,94 @@ class Catalog:
         except ModuleNotFoundError:
             raise ValueError(f"{CATALOG} needs Python 3.11 or later to read") from None
         self.layers = tomllib.loads(text).get("layers", {})
+        if not isinstance(self.layers, dict):
+            raise ValueError(f"{CATALOG}: layers must be a table")
         for name, entry in self.layers.items():
             if not LAYER.fullmatch(name):
                 raise ValueError(f"{CATALOG}: invalid layer name {name!r}")
+            if not isinstance(entry, dict):
+                raise ValueError(f"{CATALOG}: {name} must be a table")
             if "alias_of" in entry:
-                target = self.layers.get(entry["alias_of"])
-                if target is None or "alias_of" in target:
+                alias = entry["alias_of"]
+                target = self.layers.get(alias) if isinstance(alias, str) else None
+                if not isinstance(target, dict) or "alias_of" in target:
                     raise ValueError(f"{CATALOG}: {name} is an alias of an unknown layer")
-            elif entry.get("kind") not in KINDS or not entry.get("about"):
+            elif not isinstance(entry.get("kind"), str) or entry["kind"] not in KINDS or not entry.get("about"):
                 raise ValueError(f"{CATALOG}: {name} needs a kind ({', '.join(sorted(KINDS))}) and about")
+        for name, entry in self.layers.items():
+            if "provenance" in entry:
+                self.validate_provenance(name, entry)
+        self.validate_prerequisites()
+
+    def validate_provenance(self, name, entry):
+        """Validate selective-feature metadata without granting upstream trust."""
+        label = f"{CATALOG}: {name}.provenance"
+        def fail(reason):
+            raise ValueError(f"{label}: {reason}")
+        if "alias_of" in entry or entry.get("kind") != "feature":
+            fail("only canonical feature layers may have provenance")
+        provenance = entry["provenance"]
+        if not isinstance(provenance, dict):
+            fail("must be a table")
+        missing = PROVENANCE_REQUIRED - provenance.keys()
+        unknown = provenance.keys() - PROVENANCE_REQUIRED - PROVENANCE_OPTIONAL
+        if missing:
+            fail(f"missing fields: {', '.join(sorted(missing))}")
+        if unknown:
+            fail(f"unknown fields: {', '.join(sorted(unknown))}")
+        for field in PROVENANCE_REQUIRED:
+            if not isinstance(provenance[field], str) or not provenance[field].strip():
+                fail(f"{field} must be a nonblank string")
+        repository = provenance["repository"]
+        if not REPOSITORY.fullmatch(repository) or repository.split("/")[-1] in {".", ".."} or repository.lower().endswith(".git"):
+            fail("repository must be a GitHub owner/repo name")
+        if repository.lower() in {upstream.lower() for upstream in UPSTREAM_URLS}:
+            fail("Signal and Molly integration is recorded by verified upstream merges")
+        revision = provenance["revision"]
+        if not FULL_SHA.fullmatch(revision) or revision == "0" * 40:
+            fail("revision must be an exact, nonzero, lowercase 40-hex commit SHA")
+        for field, choices in (
+            ("revision_kind", {"feature-commit", "release-snapshot"}),
+            ("relationship", {"direct-import", "adaptation", "inspiration"}),
+            ("application", {"mechanical", "manual"}),
+        ):
+            if provenance[field] not in choices:
+                fail(f"{field} must be one of {', '.join(sorted(choices))}")
+        if provenance["application"] == "mechanical" and (
+            provenance["relationship"] != "direct-import" or provenance["revision_kind"] != "feature-commit"
+        ):
+            fail("mechanical application requires a direct-import of a feature-commit")
+        if "discovery_ref" in provenance:
+            ref = provenance["discovery_ref"]
+            if not isinstance(ref, str) or not ref.startswith(("refs/heads/", "refs/tags/")) or subprocess.run(
+                ["git", "check-ref-format", ref], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            ).returncode:
+                fail("discovery_ref must be a full refs/heads/ or refs/tags/ ref, not a revision or pattern")
+        prerequisites = provenance.get("prerequisites", [])
+        if not isinstance(prerequisites, list) or any(not isinstance(item, str) for item in prerequisites):
+            fail("prerequisites must be a list of canonical feature IDs")
+        if len(set(prerequisites)) != len(prerequisites):
+            fail("prerequisites must not contain duplicate feature IDs")
+        for prerequisite in prerequisites:
+            target = self.layers.get(prerequisite, {})
+            if prerequisite == name or "alias_of" in target or target.get("kind") != "feature":
+                fail(f"prerequisite {prerequisite!r} must name another canonical feature")
+
+    def validate_prerequisites(self):
+        """Prerequisites order maintenance work; they cannot depend on themselves."""
+        visiting, visited = set(), set()
+        def visit(name):
+            if name in visiting:
+                raise ValueError(f"{CATALOG}: cyclic provenance prerequisites at {name}")
+            if name in visited:
+                return
+            visiting.add(name)
+            for prerequisite in self.layers[name].get("provenance", {}).get("prerequisites", []):
+                visit(prerequisite)
+            visiting.remove(name)
+            visited.add(name)
+        for name in self.layers:
+            visit(name)
 
     def problem(self, layer):
         entry = self.layers.get(layer)

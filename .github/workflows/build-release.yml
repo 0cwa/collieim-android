@@ -72,9 +72,17 @@ jobs:
       - uses: ./.github/actions/disk-cleanup
       - name: Build the candidate
         env:
-          # A reusable build inherits the caller's event; only a direct PR build can use its base.
-          COLLIE_DEVELOPMENT_BASE: ${{ github.event_name == 'pull_request' && job.workflow_ref != '' && job.workflow_ref == github.workflow_ref && github.event.pull_request.base.sha || '' }}
-        run: tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          CALLER_WORKFLOW_REF: ${{ github.workflow_ref }}
+          JOB_WORKFLOW_REF: ${{ job.workflow_ref }}
+        run: |
+          # Called workflows inherit the event. Compare workflow refs case-sensitively.
+          unset COLLIE_DEVELOPMENT_BASE
+          if [ "$EVENT_NAME" = pull_request ] && [ -n "$JOB_WORKFLOW_REF" ] && [ "$JOB_WORKFLOW_REF" = "$CALLER_WORKFLOW_REF" ]; then
+            export COLLIE_DEVELOPMENT_BASE="$PR_BASE"
+          fi
+          tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"
       - name: Prepare Beta artifact identity
         if: ${{ inputs.edition == 'beta' }}
         shell: bash

@@ -7,10 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.signal.core.util.PendingIntentFlags.mutable
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
@@ -45,7 +46,9 @@ import kotlin.time.Duration.Companion.minutes
 object FcmFetchManager {
 
   private val TAG = Log.tag(FcmFetchManager::class.java)
-  private val EXECUTOR = SerialMonoLifoExecutor(SignalExecutors.UNBOUNDED)
+
+  @VisibleForTesting
+  internal var executor = SerialMonoLifoExecutor(SignalExecutors.UNBOUNDED)
 
   private val KEEP_ALIVE_TOKEN = "FcmFetch"
 
@@ -119,24 +122,28 @@ object FcmFetchManager {
   private fun fetch(context: Context, lastPushAtStartNs: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
     val hasHighPriorityContext = highPriority
 
-    val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
-    val success = retrieveMessages(context, authorization)
-    if (success) {
-      SignalLocalMetrics.PushWebsocketFetch.onDrained(metricId)
-      cancelMayHaveMessagesNotification(context)
-    } else {
-      SignalLocalMetrics.PushWebsocketFetch.onTimedOut(metricId)
-      if (hasHighPriorityContext) {
-        postMayHaveMessagesNotification(context)
+    try {
+      val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
+      val success = retrieveMessages(context, authorization)
+      if (success) {
+        SignalLocalMetrics.PushWebsocketFetch.onDrained(metricId)
+        cancelMayHaveMessagesNotification(context)
+      } else {
+        SignalLocalMetrics.PushWebsocketFetch.onTimedOut(metricId)
+        if (hasHighPriorityContext) {
+          postMayHaveMessagesNotification(context)
+        }
       }
-    }
-
-    synchronized(this) {
-      if (lastPushNs <= lastPushAtStartNs) {
-        Log.i(TAG, "No newer push since fetch start. Stopping.")
-        context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
-        FcmFetchForegroundService.stopServiceIfNecessary(context)
-        highPriority = false
+    } finally {
+      // A failed fetch or fallback must not leave the checking-for-messages service running.
+      // Keep it alive only when another push has queued work that will perform its own cleanup.
+      synchronized(this) {
+        if (lastPushNs <= lastPushAtStartNs) {
+          Log.i(TAG, "No newer push since fetch start. Stopping.")
+          context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
+          FcmFetchForegroundService.stopServiceIfNecessary(context)
+          highPriority = false
+        }
       }
     }
   }
@@ -165,7 +172,7 @@ object FcmFetchManager {
       }
       lastPushNs = System.nanoTime()
       Log.i(TAG, "Updating last push to $lastPushNs")
-      EXECUTOR.enqueue { fetch(context, lastPushNs, authorization) }
+      executor.enqueue { fetch(context, lastPushNs, authorization) }
     }
   }
 

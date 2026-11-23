@@ -22,6 +22,9 @@ import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -29,7 +32,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowSystemClock
 import org.signal.core.models.ServiceId
 import org.signal.core.util.AppForegroundObserver
 import org.signal.core.util.ServiceUtil
@@ -44,6 +49,9 @@ import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
+import org.thoughtcrime.securesms.util.SignalLocalMetrics
+import org.thoughtcrime.securesms.util.concurrent.SerialMonoLifoExecutor
+import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -114,6 +122,66 @@ class FcmFetchManagerTest {
 
     verify(exactly = 1) { WebSocketDrainer.blockUntilDrainedAndProcessed(any(), "FcmFetch") }
     verify(exactly = 0) { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(any(), any()) }
+  }
+
+  @Test
+  fun `failed queued fetch stops both fetch services`() = withQueuedFetches { tasks ->
+    val authorization = currentAuthorization()
+    val failure = IllegalStateException("Synthetic fetch failure")
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } throws failure
+
+    FcmFetchManager.enqueueFetch(context, true, authorization)
+
+    assertSame(failure, assertThrows(IllegalStateException::class.java) { tasks.removeFirst().run() })
+    assertTrue(tasks.isEmpty())
+    assertEquals(FcmFetchBackgroundService::class.java.name, shadowOf(context).nextStoppedService.component?.className)
+    verify(exactly = 1) { FcmFetchForegroundService.stopServiceIfNecessary(context) }
+  }
+
+  @Test
+  fun `failed fallback scheduling still stops both fetch services`() = withQueuedFetches { tasks ->
+    val authorization = currentAuthorization()
+    val failure = IllegalStateException("Synthetic scheduling failure")
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } returns UnifiedPushFetchResult.RETRYABLE_FAILURE
+    mockkStatic(FcmJobService::class)
+    every { FcmJobService.schedule(context, authorization) } throws failure
+
+    FcmFetchManager.enqueueFetch(context, true, authorization)
+
+    assertSame(failure, assertThrows(IllegalStateException::class.java) { tasks.removeFirst().run() })
+    assertTrue(tasks.isEmpty())
+    assertEquals(FcmFetchBackgroundService::class.java.name, shadowOf(context).nextStoppedService.component?.className)
+    verify(exactly = 1) { FcmFetchForegroundService.stopServiceIfNecessary(context) }
+    UnifiedPushLifecycle.resetForTests() // The failed fallback must also have closed its authorization lease.
+  }
+
+  @Test
+  fun `failed fetch keeps services until a newer queued push finishes`() = withQueuedFetches { tasks ->
+    val authorization = currentAuthorization()
+    val failure = IllegalStateException("Synthetic first fetch failure")
+    var fetchCount = 0
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } answers {
+      if (fetchCount++ == 0) {
+        ShadowSystemClock.advanceBy(Duration.ofMillis(1))
+        FcmFetchManager.enqueueFetch(context, true, authorization)
+        throw failure
+      }
+      UnifiedPushFetchResult.DRAINED
+    }
+
+    FcmFetchManager.enqueueFetch(context, true, authorization)
+
+    assertSame(failure, assertThrows(IllegalStateException::class.java) { tasks.removeFirst().run() })
+    assertEquals(1, tasks.size)
+    assertNull(shadowOf(context).nextStoppedService)
+    verify(exactly = 0) { FcmFetchForegroundService.stopServiceIfNecessary(context) }
+
+    tasks.removeFirst().run()
+
+    assertTrue(tasks.isEmpty())
+    assertEquals(2, fetchCount)
+    assertEquals(FcmFetchBackgroundService::class.java.name, shadowOf(context).nextStoppedService.component?.className)
+    verify(exactly = 1) { FcmFetchForegroundService.stopServiceIfNecessary(context) }
   }
 
   @Test
@@ -262,5 +330,30 @@ class FcmFetchManagerTest {
 
     assertArrayEquals(serialized, restored.serialize())
     assertEquals(MessageFetchJob.KEY, restored.factoryKey)
+  }
+
+  private fun currentAuthorization(): UnifiedPushAccountTransition.FetchAuthorization {
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    return lease.use { UnifiedPushAccountTransition.fetchAuthorization(it) }
+  }
+
+  /** Runs the real serial/coalescing queue while letting each test choose the execution boundary. */
+  private fun withQueuedFetches(block: (ArrayDeque<Runnable>) -> Unit) {
+    val originalExecutor = FcmFetchManager.executor
+    val tasks = ArrayDeque<Runnable>()
+    FcmFetchManager.executor = SerialMonoLifoExecutor { tasks.addLast(it) }
+    mockkObject(FcmFetchForegroundService.Companion)
+    every { FcmFetchForegroundService.stopServiceIfNecessary(context) } just Runs
+    mockkStatic(SignalLocalMetrics.PushWebsocketFetch::class)
+    every { SignalLocalMetrics.PushWebsocketFetch.startFetch() } returns "synthetic-fetch-metric"
+    every { SignalLocalMetrics.PushWebsocketFetch.onDrained(any()) } just Runs
+    every { SignalLocalMetrics.PushWebsocketFetch.onTimedOut(any()) } just Runs
+    try {
+      block(tasks)
+    } finally {
+      FcmFetchManager.executor = originalExecutor
+      unmockkObject(FcmFetchForegroundService.Companion)
+      unmockkStatic(SignalLocalMetrics.PushWebsocketFetch::class)
+    }
   }
 }

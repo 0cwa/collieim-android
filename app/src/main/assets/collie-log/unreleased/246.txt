@@ -1,0 +1,3 @@
+topic: security
+pr: 246
+Collie now tells you when the passphrase you entered is wrong.

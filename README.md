@@ -22,7 +22,7 @@
   <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
 </p>
 
-Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  We use a patch-based release system for maximum code auditability, fast security updates ⚡, and interoperability.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
+Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
 
 <b>🌟 Stars! 🧡</b>
 
@@ -38,9 +38,9 @@ Collie builds on the work of [Molly](https://github.com/mollyim-android), suppor
 
 ## Download
 
-Use the Obtainium link above to stay updated.  Our apk `collie.apk` is on the [Releases page](https://github.com/0cwa/collieim-android/releases)  All APK files in the latest release contain the same Collie app; the older names are available for existing Obtainium filters. All are FOSS and all use the package `im.collie.app` and can be installed alongside Signal or Molly.  Our custom F-Droid repository, [repo.collie.im](https://repo.collie.im/), distributes the same signed APK; add it from there by link, F-Droid link or QR code.
+Use the Obtainium link above to stay updated.  Our apk `collie.apk` is on the [Releases page](https://github.com/0cwa/collieim-android/releases)  The Stable APKs (`collie.apk` and the older profile filenames) contain the same FOSS app with package `im.collie.app`; the older names remain for existing Obtainium filters. Stable can be installed alongside Signal or Molly. A separately named Beta APK uses the TrailBlazer package described in [the update profiles](docs/APP-UPDATES.md#product-identities).  Our custom F-Droid repository, [repo.collie.im](https://repo.collie.im/), distributes the same signed APK; add it from there by link, F-Droid link or QR code.
 
-The current source includes recommended-release checks in **Settings → App updates** for direct APK installations. This feature is not included in the published `v8.35.1-3-rc2` APK; use Obtainium or F-Droid to update that release. The new checks use Collie's signed repository through your configured app connection and notify you when a newer compatible release is available. Opening the official release page uses your browser and its connection settings; you choose when to download and install. See [how update checks are verified](docs/APP-UPDATES.md).
+For direct APK installations, **Settings → App updates** checks for recommended releases using Collie's signed repository through your configured app connection and notifies you when a newer compatible release is available. Opening the official release page uses your browser and its connection settings; you choose when to download and install. See [how update checks are verified](docs/APP-UPDATES.md).
 
 _[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_ - It helps me speed up development - I want to work on a desktop client too.
 

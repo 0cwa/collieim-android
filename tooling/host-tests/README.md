@@ -19,7 +19,9 @@ and Android SDK described in the app's build documentation. On Debian/Ubuntu,
 the native prerequisites are `clang libclang-dev cmake make protobuf-compiler
 libprotobuf-dev python3 git binutils`.
 
-From the repository root:
+Run this workflow from the repository root in a fresh worktree. The report
+checker scans the whole checkout, so XML from earlier runs, including other
+variants, can affect the result.
 
 ```sh
 rustup toolchain install 1.98.1 --profile minimal &&

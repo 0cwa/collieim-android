@@ -19,15 +19,20 @@ and Android SDK described in the app's build documentation. On Debian/Ubuntu,
 the native prerequisites are `clang libclang-dev cmake make protobuf-compiler
 libprotobuf-dev python3 git binutils`.
 
-From the repository root:
+Run this workflow from the repository root in a fresh worktree. The report
+checker scans the whole checkout, so XML from earlier runs, including other
+variants, can affect the result.
 
 ```sh
-rustup toolchain install 1.98.1 --profile minimal
-python3 tooling/host-tests/build_libsignal.py
+rustup toolchain install 1.98.1 --profile minimal &&
+python3 tooling/host-tests/build_libsignal.py &&
 ./gradlew --no-daemon --continue \
   -PcollieHostJniDir=build/host-tests/resources \
   :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
-  :core:util-jvm:test :lib:libsignal-service:test
+  :core:util-jvm:test :lib:libsignal-service:test \
+  :core:network:test :lib:network:test :fast-lint:test :lintchecks:test &&
+python3 .github/scripts/check-unit-test-results.py \
+  --json-output build/ci/unit-test-results.json
 ```
 
 The script reads the exact Rust version from the native lock and verifies it
@@ -36,9 +41,9 @@ compiles libsignal. Later builds reuse the generated checkout and Cargo
 outputs under `build/host-tests/libsignal`. Use `--work-dir <directory>` to
 select another location, and pass its `resources` subdirectory to Gradle.
 Memory-constrained local builds can set `CARGO_BUILD_JOBS=1`.
-The two explicit `:test` tasks cover JVM-only modules, including resettable-state
-concurrency and per-device control-message routing. They are not selected by
-Android's `testDebugUnitTest` task name.
+The explicit `:test` tasks cover JVM-only modules, including resettable-state
+concurrency, per-device control-message routing, networking and lint tooling.
+They are not selected by Android's `testDebugUnitTest` task name.
 `--prepare-only` verifies the source and patches without compiling Rust.
 `--verify-only` checks cached resources and their receipt against the current
 source pins without Rust or network access; it still needs `ldd` and `nm`.
@@ -85,6 +90,11 @@ and rejects an invalid stripped library before replacing a staged resource.
 Passing these checks does not replace running the JVM suite
 with a non-zero test count.
 
-The earlier security-suite inventory and proposed activation steps are recorded in
-[Security CI readiness](../../docs/SECURITY-CI-READINESS.md); that document is historical.
-See the [development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md) for current policy.
+[PR checks](../../.github/workflows/pr.yml) defines the CI shards and selects the
+branch's required task and security-suite inventory from
+[the main policy](../../.github/ci-required-tests.json) or
+[the Stable maintenance policy](../../.github/ci-required-tests-stable-8.35.json).
+For the maintenance branch, pass its policy to the report checker with `--policy`.
+See the [development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md)
+for merge requirements and [RELEASING.md](../../docs/RELEASING.md) for exact-source
+release checks. Host tests do not establish independent Android native reproduction.

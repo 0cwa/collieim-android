@@ -13,7 +13,7 @@ this publication path.
 
 1. **Prepare.** Merge a PR that sets `releaseVersionName` and `releaseVersionCode` in `gradle.properties` and adds `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (plain ASCII, at most 500 bytes), and add `distribution/release-notes/<version>.md` to `collie-release-engineering` main. The exact source commit must pass `tooling/ci/verify_release_readiness.py` on `main` or the exact `release/stable/8.35` branch. The maintenance route requires the CI workflow and its verification inputs to match the trusted main revision. Select the source branch in prerelease publication. Promotion reads that same branch from the publication record. Both workflows run on `main`.
 2. **Build, sign, upload.** On the maintainer machine run the release helper, `release/release.sh v<version> [--build-on local|github] [--source-branch <branch>]`. By default it builds `origin/main`; choose the maintenance branch explicitly when using that source. It builds with `tooling/reproducible-builds/build-release.sh` (here, or on GitHub via `build-release.yml`), signs `collie.apk` with the APK key, tags with the publication key (`.github/release-signers`), uploads the APK to a draft release and starts `release.yml` on main.
-3. **Prerelease.** `release.yml` verifies the approved SSH-signed annotated tag, source version, production APK identity and certificate, exact-commit CI, and release notes. It uploads the four identical profile copies (`collie-foss`, `molly-continued`, `molly-foss-continued`, `molly-minimal`) and `publication.json` while the release is still a draft, then explicitly publishes a prerelease without changing Latest. It never replaces an existing asset or demotes a full release on retry.
+3. **Prerelease.** `release.yml` verifies the approved SSH-signed annotated tag, source version, production APK identity and certificate, exact-commit CI, release notes, and a byte-for-byte match between the draft APK and that approved CI build plus its signing records. It uploads the four identical profile copies (`collie-foss`, `molly-continued`, `molly-foss-continued`, `molly-minimal`) and `publication.json` while the release is still a draft, then explicitly publishes a prerelease without changing Latest. It never replaces an existing asset or demotes a full release on retry.
 4. **Full release.** An independent rebuild must match the published APK first:
    - built locally: `gh workflow run promote.yml --ref main -f tag=v<version>` verifies the publication record, rebuilds its exact source commit on GitHub, compares APK payloads with `apkdiff.py`, and rechecks the signed tag and every asset identity before explicitly making that same release full and Latest;
    - built on GitHub: use the maintainer's independent local verification procedure, `release/verify-local.sh v<version>`. `promote.yml` refuses this build origin because a second GitHub build is not independent. The public workflow does not enforce or attest to the private verifier's implementation. Local builds use the machine's pinned JDK, SDK and NDK (`BUILD_MODE=host` in `build-release.sh`).
@@ -33,7 +33,9 @@ verify-only path still uses main.
 `publication.json` records schema version 1, the repository and release ID, tag
 name and signed tag object, source commit, package, version name and code, APK
 certificate, declared build origin (`local` or `github`), and the ID, name, size
-and SHA256 of each of the five identical APK assets. The build-origin declaration
+and SHA256 of each of the five identical APK assets. An optional `collie-beta.apk`
+companion is verified against the Beta package and signer and recorded separately
+as `beta_apk`; it does not enter the Stable feed. The build-origin declaration
 selects the independent verification route. Maintenance publications also record
 `source_branch`; historical records use `main`. Promotion binds the downloaded record's own asset identity
 as well. Release notes cannot override it.
@@ -68,24 +70,24 @@ path, and is never rewritten to invent evidence after publication.
 
 ## Public source-to-APK verification
 
-New prerelease notes link to the verification summary in the publication run.
-After publication, a read-only job takes the unsigned APK from the existing
-exact-commit production CI run. It downloads the published `collie.apk`,
-recreates the signing-related ZIP formatting and copies the existing APK
-signature data onto the CI build. The check succeeds only if the reconstructed
-APK and the public download match byte for byte. The summary shows the exact
-source commit, the original build run and both signed SHA-256 hashes.
+New prerelease notes link to the publication run. Before publishing, the workflow
+binds the draft `collie.apk` to the approved exact-commit production CI artifact.
+It recreates the signing-related ZIP formatting and copies the APK's existing
+signature data onto that unsigned build. Publication requires the reconstructed
+APK and the draft download to match byte for byte. The workflow retains this
+result with its publication evidence; it needs no signing key.
 
-The check uses an existing artifact and needs no signing key. Independent
-release promotion still follows step 4. To check an older release whose
-original GitHub build used the standalone unsigned build workflow, run:
+Independent release promotion still follows step 4. To recheck a published
+release without changing it, dispatch the read-only verification route:
 
 ```sh
 gh workflow run release.yml --ref main -f verify_only=true -f built_on=github \
-  -f tag=v8.35.1-3-rc2 -f legacy_build_run=42893881886
+  -f tag=v<version>
 ```
 
-The verification job reports an expired artifact as a failure.
+For an older release built by the standalone unsigned build workflow, also pass
+`-f legacy_build_run=<original-run-id>`. The verification job reports an expired
+artifact as a failure.
 
 Downloads verify the GitHub SHA256 and declared byte count, with a 2 GB maximum
 per asset and an 8 GB fetch budget per helper invocation. Equal-digest profile

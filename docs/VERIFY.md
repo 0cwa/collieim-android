@@ -4,17 +4,20 @@
 
 ## Verify an app source commit
 
-Fetch the current app source and identify the exact full commit SHA used by the build or release:
+Identify the exact full commit SHA and source branch used by the build. Ordinary
+app changes use `main`; the approved Stable maintenance route uses
+`release/stable/8.35`, as described in [RELEASING.md](RELEASING.md):
 
 ```sh
-git fetch origin main --tags
+SOURCE_BRANCH=main  # or release/stable/8.35 for the approved maintenance route
+git fetch origin "$SOURCE_BRANCH" --tags
 SOURCE=<full-app-commit-sha>
 git show -s --format=fuller "$SOURCE"
 git verify-commit "$SOURCE"
-git merge-base --is-ancestor "$SOURCE" origin/main
+git merge-base --is-ancestor "$SOURCE" "origin/$SOURCE_BRANCH"
 ```
 
-The source commit must be signed and reachable from `origin/main`. For an open pull request, identify its exact base and head and inspect the diff. For a range **without upstream merges**, verify every non-merge commit:
+The source commit must be signed and reachable from the selected source branch. For an open pull request, identify its exact base and head and inspect the diff. For a range **without upstream merges**, verify every non-merge commit:
 
 ```sh
 BASE=<full-pr-base-sha>
@@ -27,7 +30,12 @@ git diff --stat "$BASE...$HEAD"
 
 For a range containing upstream merges, first verify each declared merge's signature and upstream parent as described under [Verify an upstream merge](#verify-an-upstream-merge). Exclude only the history reached through those verified Signal or Molly parents from the non-merge signature loop, and verify the remaining Collie commits. A selective fork's provenance table never grants this exemption.
 
-The PR check requires one `Layer:` trailer on every non-merge commit, naming an entry in [`tooling/layers.toml`](../tooling/layers.toml); from PR #202 on, a PR may change only one `feature` layer, and PRs land with a merge commit so each commit keeps its layer; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
+The PR check requires one `Layer:` trailer on every non-merge commit, naming an
+entry in [`tooling/layers.toml`](../tooling/layers.toml). From PR #202 on, a PR may
+change only one `feature` layer; PRs land with a merge commit so each commit keeps
+its layer. [PR checks](../.github/workflows/pr.yml) runs unit tests, an unsigned
+production build and the aggregate `Security readiness` check. Merge requirements
+are maintained in the development cycle linked above.
 
 ## Catch trailer mistakes locally
 
@@ -108,17 +116,21 @@ Peeling `FETCH_HEAD` handles both annotated and lightweight Signal tags. For Mol
 
 Review the merge's own changes (`git show --remerge-diff "$MERGE"`) for conflict resolutions, kept donation deletions and Collie adaptations.
 
-## Verify a release tag
+## Verify a Stable release tag
 
-Release tags are annotated and signed with the publication key listed in `.github/release-signers`. Check the tag and the exact source commit it names:
+Stable tags are annotated and signed with the publication key listed in
+`.github/release-signers`. Use the `source_branch` recorded in `publication.json`,
+or `main` for historical records without that field. [RELEASING.md](RELEASING.md)
+permits only `main` and `release/stable/8.35` for this route.
 
 ```sh
-TAG=<release-tag>
-git fetch --depth=1 origin "refs/tags/$TAG:refs/tags/$TAG"
+TAG=<stable-release-tag>
+SOURCE_BRANCH=main  # or release/stable/8.35, matching publication.json
+git fetch origin "$SOURCE_BRANCH" "refs/tags/$TAG:refs/tags/$TAG"
 test "$(git cat-file -t "$TAG")" = tag
 git -c gpg.ssh.allowedSignersFile=.github/release-signers verify-tag "$TAG"
 git show -s --format=fuller "$TAG^{commit}"
-git merge-base --is-ancestor "$TAG^{commit}" origin/main
+git merge-base --is-ancestor "$TAG^{commit}" "origin/$SOURCE_BRANCH"
 ```
 
 Artifact signing, release checks, and independent rebuild requirements are in [RELEASING.md](RELEASING.md). A source signature or successful source build alone does not establish artifact reproducibility or runtime acceptance.

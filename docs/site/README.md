@@ -1,8 +1,10 @@
 # collie.im website
 
-One static page that explains Collie and links to the downloads. The source is in
-this folder, `tooling/site/build.py` builds it, and `.github/workflows/site.yml`
-deploys it to GitHub Pages at https://collie.im.
+The homepage and Obtainium handoff live in this folder.
+[`tooling/site/build.py`](../../tooling/site/build.py) builds them and the
+[reviewed patch and release pages](../../tooling/site/receipt/README.md).
+[Website CI](../../.github/workflows/site.yml) deploys the result to GitHub Pages
+at https://collie.im.
 
 ## Build and preview locally
 
@@ -12,9 +14,9 @@ python3 tooling/site/build.py --out /path/to/out --tag v8.35.1-3-rc2 --roadmap-j
 cd /path/to/out && python3 -m http.server 8000
 ```
 
-The build copies this folder (except Markdown files), fills `{{RELEASE_TAG}}` and
-`{{APK_URL}}` in `index.html`, and fails if a placeholder or a local file is
-missing. No Python packages are needed.
+The build copies this folder (except Markdown files), fills release, roadmap,
+donation and handoff placeholders, and fails if a placeholder or a local file is
+missing. The patch and release pages use the committed reviewed source receipt. No Python packages are needed.
 
 The output directory is replaced on each build, so use a disposable location.
 Inside this checkout, only `_site`, `build`, and their subdirectories are allowed;
@@ -43,16 +45,8 @@ Pull requests only build. The APK button always points at
 
 ## Design
 
-- Palette: Bark Black `#24130D` and the Redwood darks for the hero and footer,
-  Golden orange `#F2982B` for the main buttons, Forest `#2F4F3A` for the build
-  section, links and focus, Lichen Mist `#EDF2E4` for repeated cards, Soft Lichen
-  `#DFE9CC` for the featured card and the download block. Parchment appears only
-  inside the logo. Dark mode follows the visitor's system setting.
-- Type: Manrope (weights 250–500) for body text and the headline, Sora (200–300)
-  for subheadings.
-- The dashed ring from the logo is the recurring shape: behind the hero phones,
-  on the featured card, around the dog in the download block, and as the line
-  down the patch stack.
+Palette roles, fonts and responsive styling are defined in
+[`assets/site.css`](assets/site.css). Dark mode follows the visitor's system setting.
 
 ## Assets and where they come from
 
@@ -61,7 +55,7 @@ Pull requests only build. The APK button always points at
 | `assets/fonts/manrope.ttf`, `sora.ttf` and their `OFL.txt` | google/fonts at commit `b31870aff700ab7a1d74fa0c6887d95beb9e0037`, the same files repo.collie.im pins |
 | `assets/collie-icon.svg`, `collie-foreground.svg` | `docs/assets/` unchanged |
 | `assets/og.png` | `docs/assets/collie-feature-graphic.svg` rendered at 1200 px wide with `rsvg-convert` |
-| `assets/screens/conversation.webp` | Native API35 offline demo with fictional Alex/fourteen-message ongoing thread, now Fastlane 1.png; 1080×2160 resized to 540×1080 with `cwebp -q 82`; [capture provenance](../screenshots/pr-95/conversation-capture.md) |
+| `assets/screens/conversation.webp` | Native API35 offline demo with fictional Alex/fourteen-message ongoing thread, now Fastlane 1.png; 1080×2160 resized to 540×1080 with `cwebp -q 82`; [capture provenance](https://github.com/0cwa/collieim-android/blob/bb234a79e905d0b513ea6a693de3aaa685b0e1a0/docs/screenshots/pr-95/conversation-capture.md) |
 | `assets/screens/encryption.webp` | Original corrected 1080×2400 API35 capture in immutable `555fff83a6b7e8f5b8de89f522859f250a166b5f`, resized to 540×1200; current Fastlane 3.png is a separate native 1080×2160 capture for its 2:1 limit |
 | `tooling/site/qrcodegen.py` | Project Nayuki's QR Code generator, Python, tag `v1.8.0`, unchanged (MIT, licence in the file header); SHA-256 `b089855caf16185c61421ea4927c1b213cf9468940d71fa8ab11ef83662dcc84` |
 | `assets/screens/locked.webp`, `proxy.webp` | Existing Fastlane locked (formerly 4.png, now 2.png) and proxy (6.png) captures, resized to 540 px wide with `cwebp -q 82`; proxy retained but no longer a hero phone |

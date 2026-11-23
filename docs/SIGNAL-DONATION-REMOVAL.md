@@ -8,7 +8,7 @@ Merge the upstream release on a clean topic branch:
 
 ```sh
 python3 tooling/upstream/merge-upstream.py signal v8.37.0   # git merge of the Signal tag
-python3 tooling/upstream/merge-upstream.py molly main       # git merge of the Molly branch
+python3 tooling/upstream/merge-upstream.py molly <branch>   # explicitly select the Molly branch
 ```
 
 The script fetches the tag or branch and runs `git merge --no-commit`. Where upstream edited a file on the removal list, the file stays deleted. Every other conflict, including an upstream rename of a listed file, is left for review, and an upstream addition of a listed path is flagged. The prepared message lists those conflicts and ends with the trailers:
@@ -32,6 +32,6 @@ The value must be a full, lowercase, nonzero SHA of the commit, not a tag object
 
 ## Patch evidence
 
-The [patch explorer record](../tooling/site/receipt/subjects/signal-donation-removal.json) binds this change and the literal deletion list to the source tree. Select it when reviewing a release tag that contains the removal and run the normal receipt freeze. The older reviewed release keeps its existing source pins. The [unreleased Project Log entry](../app/src/main/assets/collie-log/unreleased/210.txt) records the change for a future release.
+The [patch explorer record](../tooling/site/receipt/subjects/signal-donation-removal.json) binds the removal and the literal deletion list to the source tree. Select it when reviewing a release tag that contains the removal and run the normal receipt freeze.
 
 The API 35 navigation job verifies the built APK before installation. It checks the removed checkout classes and resources and confirms the retained backup classes. The output digest identifies the APK checked.

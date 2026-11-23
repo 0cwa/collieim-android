@@ -18,6 +18,7 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.After
@@ -213,6 +214,111 @@ class UnifiedPushReceiverTest {
     assertFalse(retryScheduled)
     controlJobAdds(0)
     awaitLifecycleReady()
+  }
+
+  @Test
+  fun `unchanged endpoint keeps in-flight push work authorized without registering again`() {
+    fakeAccount()
+    every { values.enabled } returns true
+    values.setEndpointRegistration("https://push.example.invalid/current", "public-key", "auth-key", "default")
+    mockPendingEndpointStorage()
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+
+    try {
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint(values.endpoint!!, PublicKeySet("public-key", "auth-key")), "default")
+
+      assertTrue(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+      assertNotNull(UnifiedPushAccountTransition.acquireFetchLease(UnifiedPushAccountTransition.fetchAuthorization(lease))?.also { it.close() })
+      verify(exactly = 0) { LockedPushState.savePending(any(), any()) }
+      verify(exactly = 0) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+    } finally {
+      lease.close()
+    }
+  }
+
+  @Test
+  fun `legacy default instance callback does not revoke an existing lease`() {
+    fakeAccount()
+    values.setEndpointRegistration("https://push.example.invalid/current", null, null, null)
+    mockPendingEndpointStorage()
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+
+    try {
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint(values.endpoint!!, null), "default")
+
+      assertTrue(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+      assertEquals("default", values.endpointInstance)
+      verify(exactly = 0) { LockedPushState.savePending(any(), any()) }
+    } finally {
+      lease.close()
+    }
+  }
+
+  @Test
+  fun `unchanged callback still completes pending endpoint work`() {
+    fakeAccount()
+    val endpoint = LockedPushState.Endpoint("https://push.example.invalid/current", "public-key", "auth-key", "default")
+    values.setEndpointRegistration(endpoint.url, endpoint.p256dh, endpoint.auth, endpoint.instance)
+    val pending = mockPendingEndpointStorage(LockedPushState.Endpoint(null, null, null, "default"))
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+
+    try {
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint(endpoint.url!!, PublicKeySet(endpoint.p256dh!!, endpoint.auth!!)), endpoint.instance)
+
+      assertFalse("pending work must not be bypassed just because the stored tuple matches", UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+      assertEquals("the latest callback replaces the pending tuple", endpoint, pending.get())
+    } finally {
+      lease.close()
+    }
+    awaitLifecycleReady()
+    assertNull(pending.get())
+    assertEquals(endpoint.url, values.endpoint)
+  }
+
+  @Test
+  fun `changed URL revokes old work before applying the endpoint`() {
+    assertEndpointChangeRevokesWork(LockedPushState.Endpoint("https://push.example.invalid/new", "public-key", "auth-key", "default"))
+  }
+
+  @Test
+  fun `changed encryption key revokes old work even when the URL is unchanged`() {
+    assertEndpointChangeRevokesWork(LockedPushState.Endpoint("https://push.example.invalid/current", "new-public-key", "auth-key", "default"))
+  }
+
+  @Test
+  fun `changed authentication key revokes old work even when the URL is unchanged`() {
+    assertEndpointChangeRevokesWork(LockedPushState.Endpoint("https://push.example.invalid/current", "public-key", "new-auth-key", "default"))
+  }
+
+  @Test
+  fun `changed instance revokes old work even when the URL is unchanged`() {
+    assertEndpointChangeRevokesWork(LockedPushState.Endpoint("https://push.example.invalid/current", "public-key", "auth-key", "new-instance"))
+  }
+
+  private fun assertEndpointChangeRevokesWork(endpoint: LockedPushState.Endpoint) {
+    fakeAccount()
+    values.setEndpointRegistration("https://push.example.invalid/current", "public-key", "auth-key", "default")
+    val pending = mockPendingEndpointStorage()
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+
+    try {
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint(endpoint.url!!, PublicKeySet(endpoint.p256dh!!, endpoint.auth!!)), endpoint.instance)
+
+      assertFalse(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+      assertNull(UnifiedPushAccountTransition.acquireFetchLease(UnifiedPushAccountTransition.fetchAuthorization(lease)))
+      assertEquals(endpoint, pending.get())
+      assertEquals("https://push.example.invalid/current", values.endpoint)
+      assertEquals("public-key", values.endpointP256dh)
+      assertEquals("auth-key", values.endpointAuth)
+      assertEquals("default", values.endpointInstance)
+    } finally {
+      lease.close()
+    }
+    awaitLifecycleReady()
+    assertEquals(endpoint.url, values.endpoint)
+    assertEquals(endpoint.p256dh, values.endpointP256dh)
+    assertEquals(endpoint.auth, values.endpointAuth)
+    assertEquals(endpoint.instance, values.endpointInstance)
   }
 
   @Test

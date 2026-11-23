@@ -110,13 +110,31 @@ class UnifiedPushReceiver : MessagingReceiver() {
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
     Log.i(TAG, "onNewEndpoint($instance)")
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
+    var unchanged: UnifiedPushLifecycle.TransitionResult<EndpointEffects?>? = null
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      // registerApp also returns the existing endpoint. It must not revoke the registration
+      // or test notification that requested it. Real route changes still drain old work.
+      if (!appLocked && UnifiedPushLifecycle.isReadyLocked() && matchesCurrentEndpointLocked(received) && LockedPushState.peekPending(context) == null) {
+        unchanged = UnifiedPushLifecycle.TransitionResult(applyEndpointLocked(received), UnifiedPushLifecycle.currentGeneration())
+        return@synchronized false
+      }
       // Store first; the worker consumes it only after closing admission and draining old sends.
       LockedPushState.savePending(context, received)
       if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
       !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
     }
-    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    val completed = unchanged
+    if (completed != null) {
+      publishPendingEndpointEffects(context, completed)
+    } else if (schedule) {
+      SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    }
+  }
+
+  private fun matchesCurrentEndpointLocked(endpoint: LockedPushState.Endpoint): Boolean {
+    val current = UnifiedPushAccountTransition.captureContextLocked() ?: return false
+    return current.endpoint == endpoint.url && current.endpointP256dh == endpoint.p256dh &&
+      current.endpointAuth == endpoint.auth && current.instance == endpoint.instance
   }
 
   internal data class EndpointEffects(val failed: Boolean, val changed: Boolean, val airGapped: Boolean)

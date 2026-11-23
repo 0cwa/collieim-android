@@ -60,6 +60,7 @@ import org.thoughtcrime.securesms.util.CommunicationActions;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.SupportEmailUtil;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
+import org.thoughtcrime.securesms.util.text.AfterTextChanged;
 import org.thoughtcrime.securesms.util.views.CircularProgressMaterialButton;
 
 import java.util.Arrays;
@@ -178,6 +179,7 @@ public class PassphrasePromptActivity extends PassphraseActivity {
   }
 
   private void unlock() {
+    passphraseLayout.setError(null);
     char[] passphrase = getEnteredPassphrase(passphraseInput);
     if (passphrase.length > 0) {
       setInputEnabled(false);
@@ -268,6 +270,7 @@ public class PassphrasePromptActivity extends PassphraseActivity {
 
     passphraseInput.setHint(hint);
     passphraseInput.setOnEditorActionListener(this::onEditorActionTriggered);
+    passphraseInput.addTextChangedListener(new AfterTextChanged(editable -> passphraseLayout.setError(null)));
 
     okButton.setOnClickListener(this::onOkClicked);
 
@@ -376,6 +379,13 @@ public class PassphrasePromptActivity extends PassphraseActivity {
     passphraseAuthContainer.startAnimation(shake);
   }
 
+  private void showInvalidPassphraseAndEnableInput() {
+    // Editing the field removes the error, so clear it before showing the error.
+    passphraseInput.setText("");
+    showFailureAndEnableInput(true);
+    passphraseLayout.setError(getString(R.string.PassphrasePromptActivity_invalid_passphrase_exclamation));
+  }
+
   private void onSuccessfulPassphrase(MasterSecret masterSecret) {
     int shortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -440,7 +450,7 @@ public class PassphrasePromptActivity extends PassphraseActivity {
         onSuccessfulPassphrase(masterSecret);
       } else {
         showProgress(0f);
-        showFailureAndEnableInput(true);
+        showInvalidPassphraseAndEnableInput();
       }
     }
 

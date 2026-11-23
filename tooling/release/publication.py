@@ -24,6 +24,10 @@ CERTIFICATE = "f8cc0c0c052e5635c26fcd293c2b0af3e87d61ff7f2df3602a9af6e91f73c826"
 APK_NAMES = ("collie-foss.apk", "collie.apk", "molly-continued.apk",
              "molly-foss-continued.apk", "molly-minimal.apk")
 RECORD_NAME = "publication.json"
+# A Stable release may also carry the TrailBlazer Beta APK released alongside it.
+BETA_NAME = "collie-beta.apk"
+BETA_PACKAGE = "im.collie.app.trailblazer"
+BETA_CERTIFICATE = "a515c03498bce8852b835544910b09ccc11a3abbed23e826e9c62c002680fe98"
 VERSION = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9]+)?(?:-(?:alpha|beta|rc)[0-9]+)?\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 SHA1 = re.compile(r"[0-9a-f]{40}\Z")
@@ -131,7 +135,8 @@ def record_for(snapshot, built_on, source_branch="main", trusted_main=None):
     publication_route({"source_branch": source_branch, "trusted_main": trusted_main})
     require(built_on in ("local", "github"), "Unknown build origin")
     route = {"source_branch": source_branch, "trusted_main": trusted_main} if source_branch != "main" else {}
-    return {**route,
+    beta = [asset for asset in snapshot["assets"] if asset["name"] == BETA_NAME]
+    return {**route, **({"beta_apk": beta[0]} if beta else {}),
             "schema": 1, "edition": "collie", "repository": REPOSITORY,
             "release_id": snapshot["release"]["id"], "tag_name": snapshot["release"]["tag_name"],
             **{key: snapshot[key] for key in ("tag_object", "source_commit", "package",
@@ -144,7 +149,7 @@ def validate_record(snapshot):
     record = snapshot["publication"]
     require(isinstance(record, dict), "Prerelease has no structured publication record; legacy releases are not rewritten")
     require(type(record.get("schema")) is int and record["schema"] == 1, "Unsupported publication record schema")
-    require({asset["name"] for asset in snapshot["assets"]} == {*APK_NAMES, RECORD_NAME},
+    require({asset["name"] for asset in snapshot["assets"]} - {BETA_NAME} == {*APK_NAMES, RECORD_NAME},
             "Published Collie must have all profile copies and its publication record")
     require(record == record_for(snapshot, record.get("built_on"), *publication_route(record)),
             "Publication record differs from the signed tag or exact APK assets")
@@ -313,6 +318,18 @@ class Publication:
             self.apk_cache[asset["sha256"]] = self.apk_metadata(path)
         return self.apk_cache[asset["sha256"]]
 
+    def check_beta_apk(self, asset):
+        """The Beta APK released alongside Stable: its own package, Beta signer, not debuggable."""
+        path = self.downloaded(asset)
+        require(self.inspected_apk(asset)["package"] == BETA_PACKAGE,
+                "collie-beta.apk must be the TrailBlazer Beta package")
+        output = self.run([self.build_tools / "aapt2", "dump", "badging", path])
+        require(re.search(r"^application-debuggable(?:\s|$)", output, re.M) is None,
+                "collie-beta.apk must not be debuggable")
+        certificates = self.run([self.build_tools / "apksigner", "verify", "--print-certs", path])
+        require(set(re.findall(r"certificate SHA-256 digest: ([0-9a-f]{64})", certificates)) == {BETA_CERTIFICATE},
+                "collie-beta.apk signing certificate differs from the TrailBlazer Beta key")
+
     def asset_list(self, release_id):
         assets = sorted((asset_identity(value) for value in self.github.assets(release_id)), key=lambda x: x["name"])
         require(len({asset["name"] for asset in assets}) == len(assets), "Duplicate release asset names")
@@ -331,8 +348,8 @@ class Publication:
         identity = self.tag_identity(tag)
         assets = self.asset_list(state["id"])
         names = {asset["name"] for asset in assets}
-        require("collie.apk" in names and names <= {*APK_NAMES, RECORD_NAME},
-                "Only Collie APKs and publication.json are accepted by this publisher")
+        require("collie.apk" in names and names <= {*APK_NAMES, RECORD_NAME, BETA_NAME},
+                "Only Collie APKs, collie-beta.apk and publication.json are accepted by this publisher")
         canonical = next(asset for asset in assets if asset["name"] == "collie.apk")
         actual = self.inspected_apk(canonical)
         require(actual == {"package": PACKAGE, "version_name": identity["version_name"],
@@ -342,6 +359,8 @@ class Publication:
             if asset["name"] in APK_NAMES:
                 require(asset["sha256"] == canonical["sha256"], "Profile copy differs from collie.apk")
                 self.downloaded(asset)
+            elif asset["name"] == BETA_NAME:
+                self.check_beta_apk(asset)
             else:
                 require(asset["size"] <= 64_000, "Publication record is too large")
                 record = read_json(self.downloaded(asset))

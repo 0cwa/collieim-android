@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Les apps d\'assistents d\'IA com Gemini poden escanejar el teu contingut de Signal. Per prevenir-ho, s\'ha activat la seguretat de la pantalla. Això també desactiva les captures de pantalla.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Les apps d\'assistents d\'IA com Gemini poden escanejar el teu contingut de Collie. Per prevenir-ho, s\'ha activat la seguretat de la pantalla. Això també desactiva les captures de pantalla.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Seguretat de la pantalla activada</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Desactivar la seguretat de la pantalla?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Si desactives aquesta opció, podries permetre que assistents d\'IA com ara Gemini de Google escanegin el contingut de Signal i l\'utilitzin per funcions que poden no ser privades.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Si desactives aquesta opció, podries permetre que assistents d\'IA com ara Gemini de Google escanegin el contingut de Collie i l\'utilitzin per funcions que poden no ser privades.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Desactiva</string>
     <!-- Snackbar shown after the user turns off screen security -->

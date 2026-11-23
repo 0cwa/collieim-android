@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini gibi AI asistan uygulamaları Signal içeriğini tarayabilir. Bunu önlemek için ekran güvenliği etkinleştirilmiştir. Güvenlik, ekran resimlerini de devre dışı bırakacaktır.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini gibi AI asistan uygulamaları Collie içeriğini tarayabilir. Bunu önlemek için ekran güvenliği etkinleştirilmiştir. Güvenlik, ekran resimlerini de devre dışı bırakacaktır.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Ekran güvenliği etkinleştirildi</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Ekran güvenliği kapatılsın mı?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Kapatılırsa, Google Gemini gibi AI asistanlarının Signal içeriğini taramasına ve bunu gizli olmayabilecek özellikler için kullanmasına imkân tanıyabilir.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Kapatılırsa, Google Gemini gibi AI asistanlarının Collie içeriğini taramasına ve bunu gizli olmayabilecek özellikler için kullanmasına imkân tanıyabilir.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Kapat</string>
     <!-- Snackbar shown after the user turns off screen security -->

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Hindi ma-save ang media</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Ang media na ito ay in-offload mula sa device mo dahil naka-on ang \"I-optimize ang Signal storage\". Maaari mong i-download ang items nang paisa-isa, o i-off ang \"I-optimize ang Signal storage\" para ma-download ang lahat ng media sa device mo.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Ang media na ito ay in-offload mula sa device mo dahil naka-on ang \"I-optimize ang Collie storage\". Maaari mong i-download ang items nang paisa-isa, o i-off ang \"I-optimize ang Collie storage\" para ma-download ang lahat ng media sa device mo.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Hindi ma-save ang lahat ng items</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Ang ilang media na pinili mo ay na-offload mula sa device mo dahil naka-on ang \"I-optimize ang Signal storage\". Maaari mong i-save ang items nang paisa-isa, o i-off ang \"I-optimize ang Signal storage\" para ma-download ang lahat ng media sa device mo.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Ang ilang media na pinili mo ay na-offload mula sa device mo dahil naka-on ang \"I-optimize ang Collie storage\". Maaari mong i-save ang items nang paisa-isa, o i-off ang \"I-optimize ang Collie storage\" para ma-download ang lahat ng media sa device mo.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Tignan ang storage settings</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

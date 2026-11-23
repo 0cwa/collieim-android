@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">KI-assistenttoepassings soos Gemini kan jou Signal-inhoud skandeer. Om dit te verhinder, is skermsekuriteit geaktiveer. Dit sal ook skermgrepe deaktiveer.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">KI-assistenttoepassings soos Gemini kan jou Collie-inhoud skandeer. Om dit te verhinder, is skermsekuriteit geaktiveer. Dit sal ook skermgrepe deaktiveer.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Skermsekuriteit is geaktiveer</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Skakel skermsekuriteit af?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Indien dít afgeskakel word, kan dit KI-assistente soos Google Gemini toelaat om Signal-inhoud te skandeer en te gebruik vir kenmerke wat nie privaat is nie.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Indien dít afgeskakel word, kan dit KI-assistente soos Google Gemini toelaat om Collie-inhoud te skandeer en te gebruik vir kenmerke wat nie privaat is nie.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Skakel af</string>
     <!-- Snackbar shown after the user turns off screen security -->

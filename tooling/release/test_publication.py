@@ -250,13 +250,37 @@ class PublicationTests(unittest.TestCase):
         self.assertFalse(self.github.writes)
 
     def test_beta_asset_or_different_profile_copy_fails(self):
-        for name in ("trailblazer-beta.apk", "molly-minimal.apk"):
+        for name in ("trailblazer-beta.apk", "molly-minimal.apk", p.BETA_NAME):
             with self.subTest(name=name):
                 extra = self.github.add_asset(20, name, apk(payload=b"other"))
                 with self.assertRaises(p.Failure):
                     self.publish()
                 self.github.rows[20]["assets"].remove(extra)
         self.assertFalse(self.github.writes)
+
+    def beta_apk(self, **changes):
+        return apk(**{"package": p.BETA_PACKAGE, "certificate": p.BETA_CERTIFICATE,
+                      "code": 178201, "name": "8.36.3-1-beta1", "payload": b"beta payload", **changes})
+
+    def test_wrong_beta_certificate_or_debuggable_beta_never_reach_writes(self):
+        for changes in ({"certificate": p.CERTIFICATE}, {"debuggable": True}):
+            with self.subTest(changes=changes):
+                extra = self.github.add_asset(20, p.BETA_NAME, self.beta_apk(**changes))
+                with self.assertRaises(p.Failure):
+                    self.publish()
+                self.github.rows[20]["assets"].remove(extra)
+        self.assertFalse(self.github.writes)
+
+    def test_beta_apk_alongside_is_recorded_and_survives_promotion(self):
+        self.github.add_asset(20, p.BETA_NAME, self.beta_apk())
+        result = self.publish()
+        names = {asset["name"] for asset in result["identity"]["assets"]}
+        self.assertEqual(names, {*p.APK_NAMES, p.RECORD_NAME, p.BETA_NAME})
+        record = result["identity"]["publication"]
+        self.assertEqual(record["beta_apk"]["name"], p.BETA_NAME)
+        self.assertNotIn(p.BETA_NAME, {asset["name"] for asset in record["apks"]})
+        result = self.helper.promote(self.inspect("promote"), self.rebuilt(), RUN)
+        self.assertEqual(result["status"], "FULL_RELEASE_PUBLISHED")
 
     def test_missing_digest_duplicate_name_and_wrong_download_fail(self):
         original = copy.deepcopy(self.github.rows[20]["assets"])

@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Não é possível salvar os arquivos de mídia</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Esta mídia foi transferida do seu dispositivo para backup porque a opção \"Otimizar armazenamento do Signal\" está ativada. Você pode baixar itens individualmente ou desativar a opção \"Otimizar armazenamento do Signal\" para baixar todas as mídias para seu dispositivo.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Esta mídia foi transferida do seu dispositivo para backup porque a opção \"Otimizar armazenamento do Collie\" está ativada. Você pode baixar itens individualmente ou desativar a opção \"Otimizar armazenamento do Collie\" para baixar todas as mídias para seu dispositivo.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Não foi possível salvar todos os itens</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Algumas mídias selecionadas por você foram transferidas do seu dispositivo para backup porque a opção \"Otimizar armazenamento do Signal\" está ativada. Você pode salvar itens individualmente ou desativar a opção \"Otimizar armazenamento do Signal\" para baixar todas as mídias para seu dispositivo.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Algumas mídias selecionadas por você foram transferidas do seu dispositivo para backup porque a opção \"Otimizar armazenamento do Collie\" está ativada. Você pode salvar itens individualmente ou desativar a opção \"Otimizar armazenamento do Collie\" para baixar todas as mídias para seu dispositivo.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Ver configurações de armazenamento</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

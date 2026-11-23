@@ -4016,7 +4016,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Tá aipeanna cúntóra IS, amhail Gemini, in ann d\'ábhar Signal a scanadh. Le cosc a chur air sin, cumasaíodh slándáil scáileáin. Díchumasófar seatanna scáileáin leis sin freisin.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Tá aipeanna cúntóra IS, amhail Gemini, in ann d\'ábhar Collie a scanadh. Le cosc a chur air sin, cumasaíodh slándáil scáileáin. Díchumasófar seatanna scáileáin leis sin freisin.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Tá slándáil scáileáin cumasaithe</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -4024,7 +4024,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Cas as an tslándáil scáileáin?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Má chastar as í, d\'fhéadfadh sé ceadú do chúntóirí IS, amhail Google Gemini, ábhar Signal a scanadh agus é a úsáid do ghnéithe nach mbeadh príobháideach, b\'fhéidir.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Má chastar as í, d\'fhéadfadh sé ceadú do chúntóirí IS, amhail Google Gemini, ábhar Collie a scanadh agus é a úsáid do ghnéithe nach mbeadh príobháideach, b\'fhéidir.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Múch</string>
     <!-- Snackbar shown after the user turns off screen security -->

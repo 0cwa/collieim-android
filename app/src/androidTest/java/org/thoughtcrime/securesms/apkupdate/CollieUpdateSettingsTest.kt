@@ -40,7 +40,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
@@ -88,8 +87,8 @@ class CollieUpdateSettingsTest {
     val values = SignalStore.apkUpdate
     val previousTheme = SignalStore.settings.theme
     val previousDynamicColors = SignalStore.settings.isDynamicColorsEnabled
-    val previousSecurity = TextSecurePreferences.isScreenSecurityEnabled(context)
-    val previousEnabled = TextSecurePreferences.isUpdateApkEnabled(context)
+    val previousSecurity = SignalStore.settings.isScreenSecurityEnabled
+    val previousEnabled = SignalStore.molly.updateApkEnabled
     val previousTimestamp = values.lastIndexTimestamp
     val previousCode = values.availableVersionCode
     val previousName = values.availableVersionName
@@ -106,8 +105,8 @@ class CollieUpdateSettingsTest {
       }
     }
     instrumentation.addMonitor(monitor)
-    TextSecurePreferences.setScreenSecurityEnabled(context, false)
-    TextSecurePreferences.setUpdateApkEnabled(context, true)
+    SignalStore.settings.isScreenSecurityEnabled = false
+    SignalStore.molly.updateApkEnabled = true
     values.setAvailableUpdate(previousTimestamp, ApkInfo.versionCode.toLong() + 1, "8.35.3")
     values.lastCheckFailed = false
     values.lastSuccessfulCheck = System.currentTimeMillis()
@@ -173,8 +172,8 @@ class CollieUpdateSettingsTest {
       values.setAvailableUpdate(previousTimestamp, previousCode, previousName)
       values.lastCheckFailed = previousFailed
       values.lastSuccessfulCheck = previousCheck
-      TextSecurePreferences.setUpdateApkEnabled(context, previousEnabled)
-      TextSecurePreferences.setScreenSecurityEnabled(context, previousSecurity)
+      SignalStore.molly.updateApkEnabled = previousEnabled
+      SignalStore.settings.isScreenSecurityEnabled = previousSecurity
     }
   }
 

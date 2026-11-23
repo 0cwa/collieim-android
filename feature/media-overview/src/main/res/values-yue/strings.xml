@@ -88,11 +88,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">儲存唔到媒體</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">因為部機開咗「優化 Signal 儲存空間」功能，呢個媒體已經由你部機度卸載咗。你可以逐個逐個咁去下載，或者閂咗「優化 Signal 儲存空間」功能，將全部媒體下載去你部機。</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">因為部機開咗「優化 Collie 儲存空間」功能，呢個媒體已經由你部機度卸載咗。你可以逐個逐個咁去下載，或者閂咗「優化 Collie 儲存空間」功能，將全部媒體下載去你部機。</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">儲存唔到全部媒體</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">因為部機開咗「優化 Signal 儲存空間」功能，你揀咗嘅媒體已經由你部機度卸載咗。你可以逐個逐個咁去儲存，或者閂咗「優化 Signal 儲存空間」功能，將全部媒體下載去你部機度。</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">因為部機開咗「優化 Collie 儲存空間」功能，你揀咗嘅媒體已經由你部機度卸載咗。你可以逐個逐個咁去儲存，或者閂咗「優化 Collie 儲存空間」功能，將全部媒體下載去你部機度。</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">睇下儲存空間設定</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

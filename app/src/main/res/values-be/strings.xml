@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Праграмы ШІ-памочнікі, накшталт Gemini, могуць сканаваць ваша змесціва ў Signal. Каб прадухіліць гэта, уключана абарона экрана. Гэта таксама адключыць стварэнне скрыншотаў.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Праграмы ШІ-памочнікі, накшталт Gemini, могуць сканаваць ваша змесціва ў Collie. Каб прадухіліць гэта, уключана абарона экрана. Гэта таксама адключыць стварэнне скрыншотаў.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Бяспека экрана ўключана</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Адключыць бяспеку экрана?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Калі гэтая функцыя адключана, ШІ-памочнікі (напрыклад, Google Gemini) змогуць сканаваць змесціва ў Signal і выкарыстоўваць яго для функцый, якія могуць не забяспечваць канфідэнцыйнасць.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Калі гэтая функцыя адключана, ШІ-памочнікі (напрыклад, Google Gemini) змогуць сканаваць змесціва ў Collie і выкарыстоўваць яго для функцый, якія могуць не забяспечваць канфідэнцыйнасць.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Адключыць</string>
     <!-- Snackbar shown after the user turns off screen security -->

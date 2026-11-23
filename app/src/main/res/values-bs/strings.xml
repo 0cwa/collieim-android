@@ -3903,7 +3903,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacije AI asistenata poput Geminija mogu skenirati vaš sadržaj u Signalu. Da bi se to spriječilo, uključena je zaštita ekrana. Time se onemogućava i snimanje ekrana.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikacije AI asistenata poput Geminija mogu skenirati vaš sadržaj u Collieu. Da bi se to spriječilo, uključena je zaštita ekrana. Time se onemogućava i snimanje ekrana.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Zaštita ekrana je uključena</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3911,7 +3911,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Isključiti zaštitu ekrana?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Ako je isključite, AI asistenti poput Google Geminija mogli bi skenirati sadržaj Signala i koristiti ga za funkcije koje možda ne štite vašu privatnost.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Ako je isključite, AI asistenti poput Google Geminija mogli bi skenirati sadržaj Colliea i koristiti ga za funkcije koje možda ne štite vašu privatnost.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Isključi</string>
     <!-- Snackbar shown after the user turns off screen security -->

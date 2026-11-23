@@ -103,11 +103,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Nije moguće sačuvati medije</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Ovaj medijski sadržaj je premješten s vašeg uređaja jer je opcija \"Optimiziraj pohranu na Signalu\" uključena. Možete sačuvati stavke jednu po jednu ili isključiti \"Optimiziraj pohranu na Signalu\" kako biste preuzeli sve medije na uređaj.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Ovaj medijski sadržaj je premješten s vašeg uređaja jer je opcija \"Optimiziraj pohranu na Collieu\" uključena. Možete sačuvati stavke jednu po jednu ili isključiti \"Optimiziraj pohranu na Collieu\" kako biste preuzeli sve medije na uređaj.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Nije moguće sačuvati sve stavke</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Određeni medijski sadržaj koji ste odabrali je premješten s vašeg uređaja jer je opcija \"Optimiziraj pohranu na Signalu\" uključena. Možete sačuvati stavke jednu po jednu ili isključiti \"Optimiziraj pohranu na Signalu\" kako biste preuzeli sve medije na uređaj.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Određeni medijski sadržaj koji ste odabrali je premješten s vašeg uređaja jer je opcija \"Optimiziraj pohranu na Collieu\" uključena. Možete sačuvati stavke jednu po jednu ili isključiti \"Optimiziraj pohranu na Collieu\" kako biste preuzeli sve medije na uređaj.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Prikaži postavke pohrane</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

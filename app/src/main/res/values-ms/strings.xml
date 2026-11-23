@@ -3564,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplikasi pembantu AI seperti Gemini boleh mengimbas kandungan Signal anda. Untuk mengelakkan perkara ini, keselamatan skrin telah didayakan. Ini juga akan menyahdayakan tangkapan skrin.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplikasi pembantu AI seperti Gemini boleh mengimbas kandungan Collie anda. Untuk mengelakkan perkara ini, keselamatan skrin telah didayakan. Ini juga akan menyahdayakan tangkapan skrin.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">Keselamatan skrin didayakan</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3572,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Matikan keselamatan skrin?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Jika dimatikan, ciri ini mungkin membolehkan pembantu AI seperti Google Gemini mengimbas kandungan Signal dan menggunakannya untuk ciri yang mungkin tidak menjaga privasi anda.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Jika dimatikan, ciri ini mungkin membolehkan pembantu AI seperti Google Gemini mengimbas kandungan Collie dan menggunakannya untuk ciri yang mungkin tidak menjaga privasi anda.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Matikan</string>
     <!-- Snackbar shown after the user turns off screen security -->

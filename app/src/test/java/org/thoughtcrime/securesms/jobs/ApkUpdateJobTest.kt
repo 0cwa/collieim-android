@@ -5,7 +5,6 @@ import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import io.mockk.verifyOrder
@@ -36,7 +35,6 @@ import org.thoughtcrime.securesms.keyvalue.MollyValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
@@ -53,13 +51,11 @@ class ApkUpdateJobTest {
   fun setUp() {
     Log.initialize(SystemOutLogger())
     mockkObject(SignalStore, ApkUpdateNotifications)
-    mockkStatic(TextSecurePreferences::class)
     every { SignalStore.apkUpdate } returns values
     every { values.lastIndexTimestamp } returns 900
     every { values.availableVersionCode } returns 0
     every { values.availableVersionName } returns null
     every { values.lastNotifiedVersionCode } returns 0
-    every { TextSecurePreferences.isUpdateApkEnabled(any()) } answers { enabled }
     // The updater switch lives in MollyValues since the Molly 8.34 merge.
     every { SignalStore.molly } returns mollyValues
     every { mollyValues.updateApkEnabled } answers { enabled }

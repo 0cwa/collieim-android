@@ -1,9 +1,10 @@
 # Theme propagation regression checks
 
 These checks cover Appearance changes while Collie remains running, Dynamic
-Colors, the Compose media viewer and message overlays. Use the toolchain in
-[BUILD.md](../BUILD.md) and the screenshot requirements in
-[AGENTS.md](../../AGENTS.md).
+Colors, the Compose media viewer and message overlays. Use the JDK/SDK versions
+in the [build recipe](../../tooling/reproducible-builds/Dockerfile), the
+[host-test setup](../../tooling/host-tests/README.md) for JVM tests, and the
+screenshot requirements in [AGENTS.md](../../AGENTS.md).
 
 ## JVM tests
 

@@ -10,7 +10,7 @@ app changes use `main`; the approved Stable maintenance route uses
 
 ```sh
 SOURCE_BRANCH=main  # or release/stable/8.35 for the approved maintenance route
-git fetch origin "$SOURCE_BRANCH" --tags
+git fetch origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH" --tags
 SOURCE=<full-app-commit-sha>
 git show -s --format=fuller "$SOURCE"
 git verify-commit "$SOURCE"
@@ -63,7 +63,7 @@ A blank line between `Layer:` and `Co-authored-by:` makes Git ignore the layer. 
 `pre-push` checks every non-merge commit in `origin/main..HEAD` for each branch being pushed, including commits already published on that branch. Fetch `origin/main` before pushing; a missing base blocks the push with a fetch instruction. Branch deletions and tags are left to their existing workflows. Like CI, it checks each upstream merge against the upstream repository over the network; offline, `COLLIE_UPSTREAM_OFFLINE=1 git push` skips only that network check, and CI still runs it. To check the same range manually:
 
 ```sh
-git fetch origin main
+git fetch origin +refs/heads/main:refs/remotes/origin/main
 python3 tooling/git-hooks/collie_check_layer_trailers.py range origin/main HEAD
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/git-hooks -p 'test_*.py'
 ```
@@ -126,7 +126,7 @@ permits only `main` and `release/stable/8.35` for this route.
 ```sh
 TAG=<stable-release-tag>
 SOURCE_BRANCH=main  # or release/stable/8.35, matching publication.json
-git fetch origin "$SOURCE_BRANCH" "refs/tags/$TAG:refs/tags/$TAG"
+git fetch origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH" "refs/tags/$TAG:refs/tags/$TAG"
 test "$(git cat-file -t "$TAG")" = tag
 git -c gpg.ssh.allowedSignersFile=.github/release-signers verify-tag "$TAG"
 git show -s --format=fuller "$TAG^{commit}"

@@ -22,13 +22,13 @@ libprotobuf-dev python3 git binutils`.
 From the repository root:
 
 ```sh
-rustup toolchain install 1.98.1 --profile minimal
-python3 tooling/host-tests/build_libsignal.py
+rustup toolchain install 1.98.1 --profile minimal &&
+python3 tooling/host-tests/build_libsignal.py &&
 ./gradlew --no-daemon --continue \
   -PcollieHostJniDir=build/host-tests/resources \
   :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
   :core:util-jvm:test :lib:libsignal-service:test \
-  :core:network:test :lib:network:test :fast-lint:test :lintchecks:test
+  :core:network:test :lib:network:test :fast-lint:test :lintchecks:test &&
 python3 .github/scripts/check-unit-test-results.py \
   --json-output build/ci/unit-test-results.json
 ```

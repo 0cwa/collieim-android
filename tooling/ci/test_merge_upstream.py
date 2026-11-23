@@ -155,6 +155,92 @@ class MergeUpstreamTest(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.git("rev-parse", "-q", "--verify", "MERGE_HEAD", check=False), "")
 
+    def staged_upstream(self):
+        """Publish a Signal tag and Molly branch for one commit; return it and the tag object."""
+        self.git("checkout", "-q", "-b", "signal")
+        self.put(SHARED, "updated shared code\n")
+        target = self.commit("upstream new")
+        self.publish(tag="v2.0", branch="main")
+        tag_object = subprocess.run(
+            ["git", "-C", str(self.upstream), "rev-parse", "refs/tags/v2.0"],
+            env=self.env, text=True, stdout=subprocess.PIPE, check=True).stdout.strip()
+        self.assertNotEqual(tag_object, target)
+        return target, tag_object
+
+    def assert_untouched(self, result, expected):
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Upstream merge stopped", result.stderr)
+        self.assertIn(expected, result.stderr)
+        self.assertEqual(self.git("rev-parse", "-q", "--verify", "MERGE_HEAD", check=False), "")
+        self.assertEqual(self.git("status", "--porcelain=v1", "--untracked-files=all"), "")
+        self.assertEqual(self.git("rev-parse", "HEAD").strip(), self.collie_head)
+
+    def test_expected_commit_allows_matching_signal_and_molly_targets(self):
+        target, _ = self.staged_upstream()
+        self.fork()
+        result = self.merge("signal", "v2.0", "--expected-commit", target)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.git("rev-parse", "MERGE_HEAD").strip(), target)
+        self.git("merge", "--abort")
+        result = self.merge("molly", "main", "--expected-commit", target)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.git("rev-parse", "MERGE_HEAD").strip(), target)
+
+    def test_expected_commit_refuses_a_moved_molly_branch_before_merging(self):
+        self.staged_upstream()
+        self.fork()
+        self.collie_head = self.git("rev-parse", "HEAD").strip()
+        planned = self.git("rev-parse", "signal").strip()
+        self.git("checkout", "-q", "signal")
+        self.put(SHARED, "newer shared code\n")
+        moved = self.commit("upstream moved after planning")
+        self.git("push", "-q", str(self.upstream), "HEAD:refs/heads/main")
+        self.git("checkout", "-q", "collie")
+        result = self.merge("molly", "main", "--expected-commit", planned)
+        self.assert_untouched(result, f"resolves to {moved}, not the expected {planned}")
+        # The fetch is allowed to update the local ref; the merge is not.
+        self.assertEqual(self.git("rev-parse", "refs/remotes/molly/main").strip(), moved)
+
+    def test_expected_commit_must_match_the_peeled_signal_tag_target(self):
+        target, tag_object = self.staged_upstream()
+        self.fork()
+        self.collie_head = self.git("rev-parse", "HEAD").strip()
+        result = self.merge("signal", "v2.0", "--expected-commit", tag_object)
+        self.assert_untouched(result, f"resolves to {target}, not the expected {tag_object}")
+
+    def test_expected_commit_applies_to_no_fetch(self):
+        target, _ = self.staged_upstream()
+        self.fork()
+        self.collie_head = self.git("rev-parse", "HEAD").strip()
+        self.git("fetch", "-q", "--no-tags", str(self.upstream), "refs/tags/v2.0:refs/tags/signal-v2.0")
+        wrong = self.old
+        result = subprocess.run(
+            ["python3", str(SCRIPT), "signal", "v2.0", "--no-fetch", "--expected-commit", wrong],
+            cwd=self.root, env=self.env, text=True, capture_output=True)
+        self.assert_untouched(result, f"resolves to {target}, not the expected {wrong}")
+        result = subprocess.run(
+            ["python3", str(SCRIPT), "signal", "v2.0", "--no-fetch", "--expected-commit", target],
+            cwd=self.root, env=self.env, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.git("rev-parse", "MERGE_HEAD").strip(), target)
+
+    def test_expected_commit_must_be_a_full_lowercase_sha(self):
+        target, _ = self.staged_upstream()
+        self.fork()
+        self.collie_head = self.git("rev-parse", "HEAD").strip()
+        for value in (target[:12], target.upper(), "0" * 40, "v2.0", "HEAD", f"{target} ", ""):
+            with self.subTest(value=value):
+                result = self.merge("signal", "v2.0", "--expected-commit", value)
+                self.assert_untouched(result, "--expected-commit must be a full")
+        self.assertFalse((self.root / ".git/refs/tags/signal-v2.0").exists())
+
+    def test_expected_commit_composes_with_join(self):
+        target, _ = self.staged_upstream()
+        self.fork(modify_shared=True)
+        result = self.merge("signal", "v2.0", "--join", "--expected-commit", target)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.git("diff", "--cached", "--name-only", "HEAD"), "")
+
 
 if __name__ == "__main__":
     unittest.main()

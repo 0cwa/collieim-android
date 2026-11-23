@@ -64,7 +64,7 @@ object FcmFetchManager {
   // MOLLY: After a fetch, stop the services only if no newer push arrived while it was running.
   // A fetch counter can remain nonzero after failures and prevent service shutdown indefinitely.
   @Volatile
-  private var lastPushNs = 0L
+  private var lastPushGeneration = 0L
 
   @Volatile
   private var highPriority = false
@@ -119,8 +119,9 @@ object FcmFetchManager {
     NotificationManagerCompat.from(context).cancel(NotificationIds.MAY_HAVE_MESSAGES_NOTIFICATION_ID)
   }
 
-  private fun fetch(context: Context, lastPushAtStartNs: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
+  private fun fetch(context: Context, enqueueGeneration: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
     val hasHighPriorityContext = highPriority
+    var fetchFailure: Throwable? = null
 
     try {
       val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
@@ -134,15 +135,23 @@ object FcmFetchManager {
           postMayHaveMessagesNotification(context)
         }
       }
+    } catch (t: Throwable) {
+      fetchFailure = t
+      throw t
     } finally {
       // A failed fetch or fallback must not leave the checking-for-messages service running.
       // Keep it alive only when another push has queued work that will perform its own cleanup.
       synchronized(this) {
-        if (lastPushNs <= lastPushAtStartNs) {
+        if (lastPushGeneration == enqueueGeneration) {
           Log.i(TAG, "No newer push since fetch start. Stopping.")
-          context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
-          FcmFetchForegroundService.stopServiceIfNecessary(context)
-          highPriority = false
+          val cleanupFailure = stopFetchServices(context)
+          if (cleanupFailure != null) {
+            if (fetchFailure != null) {
+              fetchFailure.addSuppressed(cleanupFailure)
+            } else {
+              throw cleanupFailure
+            }
+          }
         }
       }
     }
@@ -170,10 +179,29 @@ object FcmFetchManager {
       if (highPriority) {
         this.highPriority = true
       }
-      lastPushNs = System.nanoTime()
-      Log.i(TAG, "Updating last push to $lastPushNs")
-      executor.enqueue { fetch(context, lastPushNs, authorization) }
+      lastPushGeneration++
+      val enqueueGeneration = lastPushGeneration
+      Log.i(TAG, "Updating last push generation to $enqueueGeneration")
+      executor.enqueue { fetch(context, enqueueGeneration, authorization) }
     }
+  }
+
+  /** Attempts both service stops and always clears priority state, preserving any earlier failure. */
+  private fun stopFetchServices(context: Context): Throwable? {
+    var failure: Throwable? = null
+    try {
+      context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
+    } catch (t: Throwable) {
+      failure = t
+    }
+    try {
+      FcmFetchForegroundService.stopServiceIfNecessary(context)
+    } catch (t: Throwable) {
+      if (failure == null) failure = t else failure.addSuppressed(t)
+    } finally {
+      highPriority = false
+    }
+    return failure
   }
 
   @JvmStatic

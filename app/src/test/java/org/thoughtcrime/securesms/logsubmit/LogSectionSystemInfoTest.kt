@@ -19,9 +19,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.util.AppSignatureUtil
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
@@ -32,7 +32,7 @@ class LogSectionSystemInfoTest {
   @Before
   fun setUp() {
     val preferences = context.getSharedPreferences("locked-sysinfo-test", 0)
-    preferences.edit().clear().putInt(TextSecurePreferences.FIRST_INSTALL_VERSION, 123).commit()
+    preferences.edit().clear().putInt(PlainTextKeyValueStore.FIRST_INSTALL_VERSION, 123).commit()
     mockkStatic(SecurePreferenceManager::class, GoogleApiAvailability::class, AppSignatureUtil::class)
     every { SecurePreferenceManager.getSecurePreferences(any()) } returns preferences
     val availability = mockk<GoogleApiAvailability>()

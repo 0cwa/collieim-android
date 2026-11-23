@@ -23,7 +23,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.SlowNotificationHeuristics
 import org.thoughtcrime.securesms.util.PowerManagerCompat
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import kotlin.time.Duration.Companion.days
 
 /**
@@ -132,7 +131,7 @@ object SetupStatusRepository {
       batteryPromptDismissed = SignalStore.uiHints.hasPromptedOptimizeDoze(),
       messagesDelayed = SlowNotificationHeuristics.isHavingDelayedNotifications(),
       updateChecksSupported = BuildConfig.MANAGE_COLLIE_UPDATES,
-      updateChecksEnabled = TextSecurePreferences.isUpdateApkEnabled(context),
+      updateChecksEnabled = SignalStore.molly.updateApkEnabled,
       backupsEnabled = SignalStore.backup.newLocalBackupsEnabled || SignalStore.settings.isBackupEnabled,
       hiddenItems = values.hiddenItems,
       showUpdated = showUpdated(nowMs),

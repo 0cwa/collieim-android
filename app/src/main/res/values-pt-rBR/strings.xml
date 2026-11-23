@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Aplicativos de assistentes de IA, como o Gemini, podem analisar seu conteúdo no Signal. Para evitar isso, a proteção de tela foi ativada. Isso também impedirá prints.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Aplicativos de assistentes de IA, como o Gemini, podem analisar seu conteúdo no Collie. Para evitar isso, a proteção de tela foi ativada. Isso também impedirá prints.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">A segurança da tela está ativada</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">Desativar segurança da tela?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">Se esta opção estiver desativada, assistentes de IA, como o Google Gemini, poderão analisar o conteúdo do Signal e utilizá-lo em recursos que talvez não sejam privados.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">Se esta opção estiver desativada, assistentes de IA, como o Google Gemini, poderão analisar o conteúdo do Collie e utilizá-lo em recursos que talvez não sejam privados.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">Desativar</string>
     <!-- Snackbar shown after the user turns off screen security -->

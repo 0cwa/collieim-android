@@ -3677,7 +3677,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini सारखी AI सहायक ॲप्स तुमचा Signal मजकूर स्कॅन करू शकतात. हे टाळण्यासाठी, स्क्रीन सुरक्षा सुरु करण्यात आली आहे. यामुळे स्क्रीनशॉट्ससुद्धा काढता येणार नाहीत.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini सारखी AI सहायक ॲप्स तुमचा Collie मजकूर स्कॅन करू शकतात. हे टाळण्यासाठी, स्क्रीन सुरक्षा सुरु करण्यात आली आहे. यामुळे स्क्रीनशॉट्ससुद्धा काढता येणार नाहीत.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">स्क्रीन सुरक्षा चालू झाली आहे</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3685,7 +3685,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">स्क्रीन सुरक्षा बंद करायची का?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">जर बंद केले, तर यामुळे Google Gemini सारख्या AI सहायकांना Signal मजकूर स्कॅन करता येईल आणि गोपनीय नसणाऱ्या वैशिष्ट्यांसाठी वापरता येईल.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">जर बंद केले, तर यामुळे Google Gemini सारख्या AI सहायकांना Collie मजकूर स्कॅन करता येईल आणि गोपनीय नसणाऱ्या वैशिष्ट्यांसाठी वापरता येईल.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">बंद करा</string>
     <!-- Snackbar shown after the user turns off screen security -->

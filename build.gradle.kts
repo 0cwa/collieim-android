@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.licensee) apply false
   id("dependency-verification")
   id("mollyify")
+  id("collie-root")
 }
 
 buildscript {
@@ -15,6 +16,10 @@ buildscript {
         includeGroupByRegex("(com\\.(android|google)|androidx?)(\\..*)?")
       }
     }
+    // Google's mirror of Maven Central answers first: Central itself rate-limits CI runners (HTTP 429)
+    // and Gradle reports that as a missing plugin. Missing files fall through to Central, and
+    // dependency verification checks every artifact whichever repository served it.
+    maven("https://maven-central.storage-download.googleapis.com/maven2/")
     mavenCentral()
   }
 
@@ -45,10 +50,6 @@ allprojects {
   }
 }
 
-// The production client JAR has no desktop JNI. Keep the separately built Linux
-// library on host test classpaths only, so it can never become an APK input.
-val hostJniDirectory = providers.gradleProperty("collieHostJniDir").orNull?.let { file(it) }
-
 abstract class ConcurrencyConstraintService : BuildService<BuildServiceParameters.None>
 
 fun limiter(name: String, max: Int) =
@@ -70,33 +71,6 @@ gradle.projectsEvaluated {
   }
 
   allprojects {
-    hostJniDirectory?.let { directory ->
-      val library = directory.resolve("libsignal_jni_testing_amd64.so")
-      val probe = rootProject.file("tooling/host-tests/InitializeNative.java")
-      tasks.withType<Test>().configureEach {
-        classpath = files(directory) + classpath
-        // Security CI requires tests to execute on this candidate. Compilation
-        // may use its normal caches, but stored test results cannot satisfy it.
-        outputs.upToDateWhen { false }
-        outputs.cacheIf { false }
-        doFirst {
-          check(library.isFile) {
-            "Missing host libsignal JNI. Run python3 tooling/host-tests/build_libsignal.py first."
-          }
-          val java = javaLauncher.get().executablePath.asFile.absolutePath
-          val command = listOf(java) + allJvmArgs + listOf("-cp", classpath.asPath, probe.absolutePath)
-          val process = ProcessBuilder(command).apply {
-            directory(workingDir)
-            environment().clear()
-            environment().putAll(environment.mapValues { it.value.toString() })
-            redirectErrorStream(true)
-          }.start()
-          val output = process.inputStream.bufferedReader().use { it.readText() }
-          check(process.waitFor() == 0) { "Host libsignal JNI failed to initialize in the test JVM environment:\n$output" }
-        }
-      }
-    }
-
     tasks.named { it.startsWith("lint") && it.contains("Analyze") }.configureEach {
       usesService(lintLimiter)
       mustRunAfter(kotlinCompiles)
@@ -115,18 +89,4 @@ allprojects {
 
 tasks.register("clean", Delete::class) {
   delete(rootProject.layout.buildDirectory)
-}
-
-// Collie native substitutions: ordinary tracked project configuration.
-allprojects {
-  configurations.configureEach {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("im.molly:libsignal-android")).using(module("im.collie.native:libsignal-android:0.107.0-collie.1"))
-        substitute(module("im.molly:libsignal-client")).using(module("im.collie.native:libsignal-client:0.107.0-collie.1"))
-        substitute(module("im.molly:ringrtc-android")).using(module("im.collie.native:ringrtc-android:2.74.0-collie.1"))
-        substitute(module("org.signal:libsignal-android")).using(module("im.collie.native:libsignal-android:0.107.0-collie.1"))
-        substitute(module("org.signal:libsignal-client")).using(module("im.collie.native:libsignal-client:0.107.0-collie.1"))
-        substitute(module("org.signal:ringrtc-android")).using(module("im.collie.native:ringrtc-android:2.74.0-collie.1"))
-    }
-  }
 }

@@ -3564,7 +3564,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">Gemini 之類嘅 AI 助理 APP 可以掃描你個 Signal 入面嘅內容。為咗防止呢個情況發生，我哋已經啟用咗遮掩畫面功能。咁仲會停用埋畫面截圖。</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini 之類嘅 AI 助理 APP 可以掃描你個 Collie 入面嘅內容。為咗防止呢個情況發生，我哋已經啟用咗遮掩畫面功能。咁仲會停用埋畫面截圖。</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">遮掩畫面功能已經開返</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3572,7 +3572,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">係咪要閂咗遮掩畫面功能？</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">如果閂咗呢個功能， Signal 入面嘅內容可能會俾 Google Gemini 等 AI 助理掃描，然後用咗去啲冇保護私隱嘅功能度。</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">如果閂咗呢個功能， Collie 入面嘅內容可能會俾 Google Gemini 等 AI 助理掃描，然後用咗去啲冇保護私隱嘅功能度。</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">關閉</string>
     <!-- Snackbar shown after the user turns off screen security -->

@@ -47,8 +47,87 @@ class ReleasePreparationTests(unittest.TestCase):
         self.git("add", "-A")
         self.commit("prepare")
 
-    def check(self):
-        return subprocess.run([sys.executable, str(SCRIPT)], cwd=self.root, text=True, capture_output=True)
+    def check(self, *args):
+        return subprocess.run([sys.executable, str(SCRIPT), *args], cwd=self.root, text=True, capture_output=True)
+
+    def develop(self, name="app.txt", content="later work\n"):
+        """Commit a change on top of the preparation and return the commit before it."""
+        before = self.git("rev-parse", "HEAD")
+        (self.root / name).write_text(content)
+        self.git("add", "-A")
+        self.commit("later development")
+        return before
+
+    def test_development_after_preparation_fails_without_a_base(self):
+        self.prepare()
+        self.develop()
+        result = self.check()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unapproved preparation change: app.txt", result.stderr)
+
+    def test_development_after_preparation_passes_against_its_base(self):
+        self.prepare()
+        base = self.develop()
+        result = self.check("--development-base", base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("development change", result.stdout)
+
+    def test_preparation_is_still_checked_against_its_base(self):
+        self.prepare(timestamp="1")
+        self.assertNotEqual(self.check("--development-base", self.source).returncode, 0)
+        self.git("reset", "--hard", self.source)
+        (self.root / "app.txt").write_text("changed\n")
+        self.prepare()
+        self.assertNotEqual(self.check("--development-base", self.source).returncode, 0)
+
+    def test_changed_release_properties_are_checked_as_preparation(self):
+        self.prepare()
+        base = self.develop()
+        data = (self.root / "gradle.properties").read_text().replace("177801", "177802")
+        (self.root / "gradle.properties").write_text(data)
+        self.git("add", "-A")
+        self.commit("bump without a new source")
+        self.assertNotEqual(self.check("--development-base", base).returncode, 0)
+
+    def test_form_feed_cannot_hide_a_release_property_in_a_comment(self):
+        self.prepare()
+        base = self.git("rev-parse", "HEAD")
+        path = self.root / "gradle.properties"
+        path.write_bytes(path.read_bytes().replace(b"releaseVersionName=", b"# comment\freleaseVersionName="))
+        self.git("add", "gradle.properties")
+        self.commit("hide the version name from Java properties")
+        result = self.check("--development-base", base)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("release requires exactly one of each release property", result.stderr)
+
+    def test_base_cannot_be_the_checked_out_commit(self):
+        self.prepare()
+        self.develop()
+        head = self.git("rev-parse", "HEAD")
+        self.assertNotEqual(self.check("--development-base", head).returncode, 0)
+
+    def test_development_base_cannot_be_an_unrelated_branch(self):
+        self.prepare()
+        base = self.git("rev-parse", "HEAD")
+        self.git("switch", "-qc", "other")
+        self.develop("other.txt")
+        other = self.git("rev-parse", "HEAD")
+        self.git("switch", "--detach", base)
+        self.develop()
+        self.assertNotEqual(self.check("--development-base", other).returncode, 0)
+
+    def test_recipe_passes_the_development_base(self):
+        self.prepare()
+        base = self.develop()
+        recipe = str(self.root / "tooling/reproducible-builds/build-release.sh")
+        with tempfile.TemporaryDirectory() as out:
+            env = {**os.environ, "CONTAINER": "no-such-container"}
+            result = subprocess.run([recipe, out], cwd=self.root, text=True, capture_output=True, env=env)
+            self.assertIn("unapproved preparation change", result.stderr)
+            env["COLLIE_DEVELOPMENT_BASE"] = base
+            result = subprocess.run([recipe, out], cwd=self.root, text=True, capture_output=True, env=env)
+        self.assertIn("development change", result.stdout)
+        self.assertIn("no-such-container", result.stderr)
 
     def test_development_build_does_not_require_preparation(self):
         result = self.check()

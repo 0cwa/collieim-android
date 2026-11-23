@@ -46,6 +46,7 @@ import org.signal.appsettings.home.AppSettingsTestTags
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.remoteconfig.RemoteConfig
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
@@ -58,7 +59,6 @@ import org.thoughtcrime.securesms.testing.RawFlag
 import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -95,14 +95,14 @@ class AppearanceThemePropagationTest {
     previousTheme = SignalStore.settings.theme
     previousDynamicColors = SignalStore.settings.isDynamicColorsEnabled
     previousScreenSecurity = SignalStore.settings.isScreenSecurityEnabled
-    previousBiometricLock = TextSecurePreferences.isBiometricScreenLockEnabled(context)
+    previousBiometricLock = PlainTextKeyValueStore.biometricScreenLockEnabled
     previousAutoLock = ScreenLockController.autoLock
     previousLockAtStart = ScreenLockController.lockScreenAtStart
     previousNightMode = AppCompatDelegate.getDefaultNightMode()
 
     // Screenshots are part of the regression evidence; restore security in tearDown.
     SignalStore.settings.isScreenSecurityEnabled = false
-    TextSecurePreferences.setBiometricScreenLockEnabled(context, false)
+    PlainTextKeyValueStore.biometricScreenLockEnabled = false
     ScreenLockController.enableAutoLock(false)
     ScreenLockController.lockScreenAtStart = false
   }
@@ -113,7 +113,7 @@ class AppearanceThemePropagationTest {
       ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList().forEach(Activity::finish)
       SignalStore.settings.setTheme(previousTheme, previousDynamicColors)
       SignalStore.settings.isScreenSecurityEnabled = previousScreenSecurity
-      TextSecurePreferences.setBiometricScreenLockEnabled(context, previousBiometricLock)
+      PlainTextKeyValueStore.biometricScreenLockEnabled = previousBiometricLock
       ScreenLockController.enableAutoLock(previousAutoLock)
       ScreenLockController.lockScreenAtStart = previousLockAtStart
       AppCompatDelegate.setDefaultNightMode(previousNightMode)

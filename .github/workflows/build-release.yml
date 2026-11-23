@@ -29,7 +29,7 @@ permissions:
   contents: read
 jobs:
   build:
-    name: Build ${{ inputs.ref || github.event.pull_request.head.sha }} (${{ matrix.index }})
+    name: Build ${{ inputs.ref || github.sha }} (${{ matrix.index }})
     runs-on: ubuntu-24.04
     env:
       COLLIE_BUILD_EDITION: ${{ inputs.edition || 'stable' }}
@@ -63,14 +63,26 @@ jobs:
           fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.ref || github.event.pull_request.head.sha }}
+          ref: ${{ inputs.ref || github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Verify checked-out Beta source
         if: ${{ inputs.edition == 'beta' }}
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: ./.github/actions/disk-cleanup
-      - run: tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"
+      - name: Build the candidate
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          CALLER_WORKFLOW_REF: ${{ github.workflow_ref }}
+          JOB_WORKFLOW_REF: ${{ job.workflow_ref }}
+        run: |
+          # Called workflows inherit the event. Compare workflow refs case-sensitively.
+          unset COLLIE_DEVELOPMENT_BASE
+          if [ "$EVENT_NAME" = pull_request ] && [ -n "$JOB_WORKFLOW_REF" ] && [ "$JOB_WORKFLOW_REF" = "$CALLER_WORKFLOW_REF" ]; then
+            export COLLIE_DEVELOPMENT_BASE="$PR_BASE"
+          fi
+          tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"
       - name: Prepare Beta artifact identity
         if: ${{ inputs.edition == 'beta' }}
         shell: bash

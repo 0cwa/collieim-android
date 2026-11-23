@@ -49,7 +49,8 @@ import org.thoughtcrime.securesms.megaphone.MegaphoneRepository
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
+import org.thoughtcrime.securesms.util.SecurePreferenceManager
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -297,9 +298,9 @@ class ProjectLogScreenshotTest {
   }
 
   private fun withFixture(theme: String, block: () -> Unit) {
-    val oldTheme = TextSecurePreferences.getTheme(context)
-    val oldDynamicColors = TextSecurePreferences.isDynamicColorsEnabled(context)
-    val oldBiometricLock = TextSecurePreferences.isBiometricScreenLockEnabled(context)
+    val oldTheme = PlainTextKeyValueStore.theme
+    val oldDynamicColors = PlainTextKeyValueStore.isDynamicColorsEnabled
+    val oldBiometricLock = PlainTextKeyValueStore.biometricScreenLockEnabled
     val oldScreenSecurity = SignalStore.settings.isScreenSecurityEnabled
     val oldAutoLock = ScreenLockController.autoLock
     val oldLockAtStart = ScreenLockController.lockScreenAtStart
@@ -361,10 +362,10 @@ class ProjectLogScreenshotTest {
 
   private fun commitThemePreferences(theme: String, dynamicColors: Boolean, biometricLock: Boolean) {
     check(
-      TextSecurePreferences.getSharedPreferences(context).edit()
-        .putString(TextSecurePreferences.THEME_PREF, theme)
-        .putBoolean(TextSecurePreferences.DYNAMIC_COLORS_ENABLED, dynamicColors)
-        .putBoolean(TextSecurePreferences.BIOMETRIC_SCREEN_LOCK, biometricLock)
+      SecurePreferenceManager.getSecurePreferences(context).edit()
+        .putString(PlainTextKeyValueStore.THEME, theme)
+        .putBoolean(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED, dynamicColors)
+        .putBoolean(PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED, biometricLock)
         .commit()
     ) { "Could not save the temporary theme preferences" }
   }

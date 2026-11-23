@@ -93,11 +93,11 @@
   <!-- Title of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_media">Medya kaydedilemedi</string>
   <!-- Body of the dialog shown when saving from the media overview, and every selected item has been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__media_offloaded_message">Bu medya cihazından kaldırıldı çünkü \"Signal depolama alanını optimize et\" özelliği açık. Tüm medyayı cihazına indirmek için öğeleri teker teker indirebilir ya da \"Signal depolama alanını optimize et\" özelliğini kapatabilirsin.</string>
+  <string name="MediaOverviewScreen__media_offloaded_message">Bu medya cihazından kaldırıldı çünkü \"Collie depolama alanını optimize et\" özelliği açık. Tüm medyayı cihazına indirmek için öğeleri teker teker indirebilir ya da \"Collie depolama alanını optimize et\" özelliğini kapatabilirsin.</string>
   <!-- Title of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space -->
   <string name="MediaOverviewScreen__cant_save_all_items">Tüm öğeler kaydedilemedi</string>
   <!-- Body of the dialog shown when saving from the media overview, and some of the selected items have been removed from the device to save space. "Optimize Signal storage" is the name of a setting -->
-  <string name="MediaOverviewScreen__some_media_offloaded_message">Seçtiğin bazı medyalar cihazından kaldırıldı çünkü \"Signal depolama alanını optimize et\" özelliği açık. Tüm medyayı cihazına indirmek için öğeleri teker teker kaydedebilir ya da \"Signal depolama alanını optimize et\" özelliğini kapatabilirsin.</string>
+  <string name="MediaOverviewScreen__some_media_offloaded_message">Seçtiğin bazı medyalar cihazından kaldırıldı çünkü \"Collie depolama alanını optimize et\" özelliği açık. Tüm medyayı cihazına indirmek için öğeleri teker teker kaydedebilir ya da \"Collie depolama alanını optimize et\" özelliğini kapatabilirsin.</string>
   <!-- Button in the dialogs about media removed from the device to save space. Opens the storage settings screen -->
   <string name="MediaOverviewScreen__view_storage_settings">Depolama alanı ayarlarını görüntüle</string>
   <!-- Toast shown when tapping a photo or video in the media overview that is still being sent -->

@@ -8,6 +8,7 @@ from pathlib import Path
 
 KEYS = {"collieBuildRevision", "collieBuildTimestamp", "releaseVersionName", "releaseVersionCode"}
 ASSIGNMENT = re.compile(r"^\s*([^\s:=]+)\s*(?:[=:]\s*|\s+)(.*?)\s*$")
+NATURAL_LINE = re.compile(r"[^\r\n]*(?:\r\n|\r|\n)|[^\r\n]+\Z")
 
 
 class Invalid(ValueError):
@@ -21,7 +22,8 @@ def git(*args, binary=False):
 
 def properties(content):
     values, retained = {}, []
-    for line in content.splitlines(keepends=True):
+    # Java properties use CR, LF and CRLF as line endings. A form feed can occur inside a comment.
+    for line in NATURAL_LINE.findall(content):
         stripped = line.lstrip()
         if not stripped.strip() or stripped.startswith(("#", "!")):
             retained.append(line)
@@ -48,7 +50,7 @@ def properties(content):
     return values, "".join(retained)
 
 
-def verify():
+def verify(development_base=None):
     # Replacement refs must never alter the identity, tree, ancestry or timestamp we inspect.
     os.environ["GIT_NO_REPLACE_OBJECTS"] = "1"
     head = git("rev-parse", "--verify", "HEAD^{commit}")
@@ -56,11 +58,11 @@ def verify():
     path = Path("gradle.properties")
     if path.is_symlink() or not path.is_file():
         raise Invalid("Gradle properties must be a regular file")
-    values, current_other = properties(path.read_text(encoding="utf-8"))
+    values, current_other = properties(path.read_bytes().decode("utf-8"))
     docker_properties = Path("tooling/gradle.properties.docker")
     if docker_properties.is_symlink() or not docker_properties.is_file():
         raise Invalid("builder Gradle properties must be a regular file")
-    docker_values, _ = properties(docker_properties.read_text(encoding="utf-8"))
+    docker_values, _ = properties(docker_properties.read_bytes().decode("utf-8"))
     if docker_values:
         raise Invalid("release properties in builder Gradle configuration are unsupported")
     if any("ORG_GRADLE_PROJECT_" + key in os.environ for key in KEYS):
@@ -76,6 +78,20 @@ def verify():
     grafts = Path(git("rev-parse", "--git-path", "info/grafts"))
     if grafts.is_symlink() or (grafts.exists() and grafts.read_bytes().strip()):
         raise Invalid("grafted Git history is unsupported")
+    if development_base:
+        # A PR that keeps its base's release properties is development on top of the last
+        # preparation (a feature, or main merged into the Beta branch), not a preparation. Its
+        # build keeps that release identity, as main's do. Release builds never pass a base.
+        if not re.fullmatch(r"[0-9a-f]{40}", development_base):
+            raise Invalid("development base must be a full commit ID")
+        base = git("rev-parse", "--verify", "--end-of-options", development_base + "^{commit}")
+        if base != development_base or base == head:
+            raise Invalid("development base must be a different commit")
+        subprocess.run(["git", "merge-base", "--is-ancestor", base, head], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        base_values, _ = properties(git("show", base + ":gradle.properties", binary=True).decode("utf-8"))
+        if base_values == values:
+            return {"development_base": base}
     if git("status", "--porcelain=v1", "--untracked-files=all"):
         raise Invalid("release checkout is not clean")
     if any(not entry.startswith(b"H ") for entry in git("ls-files", "-v", "-z", binary=True).split(b"\0") if entry):
@@ -130,10 +146,19 @@ def verify():
 
 
 def main():
+    base = None
+    if sys.argv[1:2] == ["--development-base"] and len(sys.argv) == 3:
+        base = sys.argv[2]
+    elif sys.argv[1:]:
+        print("usage: verify-release-prep.py [--development-base <commit>]", file=sys.stderr)
+        return 2
     try:
-        result = verify()
+        result = verify(base)
         if result is None:
             print("Release preparation check: development build")
+        elif "development_base" in result:
+            print("Release preparation check: development change; release properties match base "
+                  + result["development_base"] + ", so this build is not a preparation")
         else:
             import json
             print(json.dumps(result, sort_keys=True))

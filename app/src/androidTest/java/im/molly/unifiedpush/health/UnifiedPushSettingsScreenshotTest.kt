@@ -22,7 +22,6 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.SignalActivityRule
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
 import java.io.FileOutputStream
 
@@ -44,8 +43,8 @@ class UnifiedPushSettingsScreenshotTest {
   fun settingsOffersExplicitImportAndRecoveryModes() {
     val screenshotName = args.getString("ep_screenshot")
     assumeTrue(screenshotName != null)
-    val before = TextSecurePreferences.isScreenSecurityEnabled(context)
-    TextSecurePreferences.setScreenSecurityEnabled(context, false)
+    val before = SignalStore.settings.isScreenSecurityEnabled
+    SignalStore.settings.isScreenSecurityEnabled = false
     val values = SignalStore.unifiedpush
     values.enabled = true
     values.health.failures = 2
@@ -79,7 +78,7 @@ class UnifiedPushSettingsScreenshotTest {
         onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_message)).check(matches(isDisplayed()))
       }
     } finally {
-      TextSecurePreferences.setScreenSecurityEnabled(context, before)
+      SignalStore.settings.isScreenSecurityEnabled = before
       values.health.failures = 0
       values.health.fallback = false
     }

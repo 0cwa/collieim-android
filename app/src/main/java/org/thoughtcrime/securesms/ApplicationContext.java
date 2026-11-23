@@ -107,6 +107,7 @@ import org.thoughtcrime.securesms.jobs.RetrieveRemoteAnnouncementsJob;
 import org.thoughtcrime.securesms.jobs.StorageSyncJob;
 import org.thoughtcrime.securesms.jobs.StoryOnboardingDownloadJob;
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob;
+import org.thoughtcrime.securesms.keyvalue.CollieBootstrapValues;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger;
@@ -146,7 +147,6 @@ import org.thoughtcrime.securesms.util.ProcessExitReasonTracker;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
 import org.thoughtcrime.securesms.util.SqlCipherLogTarget;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.signal.locale.AppLocale;
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket;
 
@@ -587,7 +587,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
       Log.i(TAG, "Setting first install version to " + ApkInfo.signalCanonicalVersionCode);
       SignalStore.misc().setFirstInstallVersion(ApkInfo.signalCanonicalVersionCode);
-      TextSecurePreferences.setFirstInstallVersion(this, ApkInfo.signalCanonicalVersionCode);
+      CollieBootstrapValues.setFirstInstallVersion(this, ApkInfo.signalCanonicalVersionCode);
     }
   }
 

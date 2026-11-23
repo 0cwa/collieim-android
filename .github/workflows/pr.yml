@@ -319,6 +319,8 @@ jobs:
       - name: Build the exact candidate with the release recipe
         env:
           COLLIE_BUILD_EDITION: ${{ github.base_ref == 'trailblazer-beta' && 'beta' || 'stable' }}
+          # A PR that keeps its base's release properties builds as development (build-release.sh).
+          COLLIE_DEVELOPMENT_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
         run: |
           git rev-parse HEAD HEAD^{tree}
           tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/production-build"

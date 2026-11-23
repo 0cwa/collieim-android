@@ -12,6 +12,9 @@
 #                                    Gradle user home; dependencies are seeded read-only from
 #                                    ~/.gradle/caches.
 #        COLLIE_BUILD_EDITION=stable|beta   stable (default), or the TrailBlazer Beta package.
+#        COLLIE_DEVELOPMENT_BASE=<commit>   PR CI only: the PR base. A change that keeps the base's
+#                                    release properties is checked as development, not as a
+#                                    preparation. Release builds never set it.
 set -euo pipefail
 export GIT_NO_REPLACE_OBJECTS=1
 
@@ -30,7 +33,7 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   exit 1
 fi
 commit=$(git rev-parse HEAD)
-python3 tooling/reproducible-builds/verify-release-prep.py
+python3 tooling/reproducible-builds/verify-release-prep.py ${COLLIE_DEVELOPMENT_BASE:+--development-base "$COLLIE_DEVELOPMENT_BASE"}
 dockerfile=tooling/reproducible-builds/Dockerfile
 mkdir -p "$out"
 

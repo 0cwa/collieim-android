@@ -33,6 +33,9 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       COLLIE_BUILD_EDITION: ${{ inputs.edition || 'stable' }}
+      # PR builds of the recipe check a change that keeps its base's release properties as
+      # development; dispatched and called release builds always check the preparation.
+      COLLIE_DEVELOPMENT_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
     strategy:
       matrix:
         index: ${{ github.event_name == 'pull_request' && fromJSON('[0, 1]') || fromJSON('[0]') }}

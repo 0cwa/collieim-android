@@ -16,7 +16,9 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
+import org.signal.core.util.concurrent.SignalDispatchers
 import org.unifiedpush.android.connector.UnifiedPush
+import kotlin.coroutines.CoroutineContext
 
 /** Binds a user-confirmed disclosure to the account and configuration that the screen actually displayed. */
 object RelayDisclosure {
@@ -74,9 +76,15 @@ object RelayDisclosure {
     snapshot: Snapshot?,
     relay: MollySocket,
     deliveryMethod: NotificationDeliveryMethod? = null,
+  ): RefreshAuthorization? = selectRelay(snapshot, relay, deliveryMethod, currentCoroutineContext())
+
+  private suspend fun selectRelay(
+    snapshot: Snapshot?,
+    relay: MollySocket,
+    deliveryMethod: NotificationDeliveryMethod?,
+    caller: CoroutineContext,
   ): RefreshAuthorization? {
     if (snapshot == null || !runIfCurrent(snapshot) {}) return null
-    val caller = currentCoroutineContext()
     // Once admitted, even a cancelled screen must finish the transition and clear its incomplete marker.
     return withContext(NonCancellable) {
       try {
@@ -97,6 +105,20 @@ object RelayDisclosure {
     }
   }
 
+  /** Once a selection commits, finish its guarded scheduling even if its screen is destroyed. */
+  suspend fun selectRelayAndComplete(
+    snapshot: Snapshot?,
+    relay: MollySocket,
+    deliveryMethod: NotificationDeliveryMethod? = null,
+    onCurrent: (RefreshAuthorization) -> Unit,
+  ): Boolean {
+    val caller = currentCoroutineContext()
+    return withContext(NonCancellable) {
+      val authorization = withContext(SignalDispatchers.IO) { selectRelay(snapshot, relay, deliveryMethod, caller) }
+      authorization != null && completeSelection(authorization) { onCurrent(authorization) }
+    }
+  }
+
   /** Check inside the refresh job's lease admission, using the same monitor as account and relay changes. */
   fun matchesRefreshLocked(authorization: RefreshAuthorization): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
@@ -107,6 +129,10 @@ object RelayDisclosure {
       SignalStore.account.deviceId == authorization.localDeviceId &&
       values.airGapped == authorization.manual && values.mollySocketUrl == authorization.url &&
       values.vapidPublicKey == authorization.vapid && SignalStore.settings.preferredNotificationMethod == authorization.deliveryMethod
+  }
+
+  fun isCurrentAuthorization(authorization: RefreshAuthorization): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    matchesRefreshLocked(authorization)
   }
 
   /** A short, cancellable UI continuation; the caller executes this on Main and keeps the effect in [action]. */

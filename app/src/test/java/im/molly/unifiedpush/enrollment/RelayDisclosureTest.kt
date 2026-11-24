@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.AtomicInteger
 import org.unifiedpush.android.connector.UnifiedPush
 
 @RunWith(RobolectricTestRunner::class)
@@ -231,6 +233,42 @@ class RelayDisclosureTest {
     assertEquals(originalUrl, values.mollySocketUrl)
     assertTrue(UnifiedPushLifecycle.isReady())
     assertFalse(values.hasIncompleteAccountTransition)
+  }
+
+  @Test fun `cancellation during committed selection still schedules its guarded refresh`() = runBlocking {
+    val job = AtomicReference<Job>()
+    val scheduled = AtomicInteger()
+    every { values.lastReceivedTime = any() } answers {
+      callOriginal()
+      job.get().cancel()
+    }
+    val selection = launch(Dispatchers.Default, start = CoroutineStart.LAZY) {
+      RelayDisclosure.selectRelayAndComplete(capture(), proposed) { scheduled.incrementAndGet() }
+    }
+    job.set(selection)
+    selection.start()
+    withTimeout(5000) { selection.join() }
+    assertEquals(proposed.url, values.mollySocketUrl)
+    assertEquals(1, scheduled.get())
+  }
+
+  @Test fun `cancellation before selection commits does not schedule or change the relay`() = runBlocking {
+    val snapshot = capture()
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    val admitted = signalAdmission()
+    val scheduled = AtomicInteger()
+    val selection = launch(Dispatchers.Default) {
+      RelayDisclosure.selectRelayAndComplete(snapshot, proposed) { scheduled.incrementAndGet() }
+    }
+    try {
+      assertTrue(admitted.await(5, TimeUnit.SECONDS))
+      selection.cancel()
+    } finally {
+      lease.close()
+    }
+    withTimeout(5000) { selection.join() }
+    assertEquals(originalUrl, values.mollySocketUrl)
+    assertEquals(0, scheduled.get())
   }
 
   @Test fun `setup continuation survives normal endpoint registration but not another account`() = runBlocking {

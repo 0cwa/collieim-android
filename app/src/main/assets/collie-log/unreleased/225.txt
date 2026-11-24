@@ -1,0 +1,3 @@
+topic: setup
+pr: 225
+Finish setup opens and highlights Push notifications so you can find your message delivery options.

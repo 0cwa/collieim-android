@@ -15,6 +15,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -148,6 +149,30 @@ class AppSettingsNavigationDeviceTest {
     }
   }
 
+  @Test
+  fun setupDeliveryOpensWithTheHighlightedPushControlsVisible() {
+    val context = harness.context
+    val oldSecurity = SignalStore.settings.isScreenSecurityEnabled
+    val oldDelivery = SignalStore.settings.preferredNotificationMethod
+    SignalStore.settings.isScreenSecurityEnabled = false
+    SignalStore.settings.preferredNotificationMethod = org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+    try {
+      ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.pushNotifications(context)).use { scenario ->
+        val heading = context.getString(R.string.CollieSetup__delivery_title)
+        compose.waitUntil(15_000) {
+          compose.onAllNodesWithText(heading).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        compose.onNodeWithText(heading).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.NotificationsSettingsFragment__delivery_service)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.NotificationsSettingsFragment__configure_unifiedpush)).assertIsDisplayed()
+        captureScreenshot(scenario, "beta-setup-push-delivery")
+      }
+    } finally {
+      SignalStore.settings.preferredNotificationMethod = oldDelivery
+      SignalStore.settings.isScreenSecurityEnabled = oldSecurity
+    }
+  }
+
   private fun awaitNode(tag: String) {
     compose.waitUntil(15_000) {
       compose.onAllNodesWithTag(tag).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
@@ -176,7 +201,7 @@ class AppSettingsNavigationDeviceTest {
     }
   }
 
-  private fun awaitScreenshotFrame(scenario: ActivityScenario<AppSettingsNavigationActivity>) {
+  private fun <T : android.app.Activity> awaitScreenshotFrame(scenario: ActivityScenario<T>) {
     compose.waitForIdle()
 
     // Compose can report idle before the window submits a frame with the new content or security flags.
@@ -199,8 +224,8 @@ class AppSettingsNavigationDeviceTest {
     InstrumentationRegistry.getInstrumentation().uiAutomation.waitForIdle(500, 5_000)
   }
 
-  private fun captureScreenshot(
-    scenario: ActivityScenario<AppSettingsNavigationActivity>,
+  private fun <T : android.app.Activity> captureScreenshot(
+    scenario: ActivityScenario<T>,
     name: String
   ) {
     awaitScreenshotFrame(scenario)

@@ -154,14 +154,18 @@ class UnifiedPushRefreshJob private constructor(
 
     val device = lease.snapshot.pushDevice ?: try {
       val created = MollySocketRepository.createDevice()
-      val published = synchronized(UnifiedPushLifecycle.monitor) {
-        UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
-          UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
-          SignalStore.unifiedpush.device == null && run {
-            SignalStore.unifiedpush.device = created
-            SignalStore.unifiedpush.vapidKeySynced = true
-            true
-          }
+      val published = try {
+        synchronized(UnifiedPushLifecycle.monitor) {
+          UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
+            UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
+            SignalStore.unifiedpush.device == null && run {
+              // The relay may only learn this credential once a rebuilt store would still have it.
+              SignalStore.unifiedpush.commitProvisionedDevice(created)
+              true
+            }
+        }
+      } catch (e: Exception) {
+        removeUnpublishedDevice(created, lease, e)
       }
       if (!published) {
         // The linked-device request completed for an obsolete context. Remove it while this lease still pins the old account.
@@ -198,6 +202,31 @@ class UnifiedPushRefreshJob private constructor(
     Log.d(TAG, "Registration result: $result")
 
     return result.toRegistrationStatus()
+  }
+
+  /**
+   * The store did not acknowledge [created]. Remove the remote device while [lease] still pins its account. The write
+   * may have taken effect before its acknowledgement failed, so once removal is confirmed clear the record only if it
+   * is still exactly [created]. Always rethrows [failure]; a failed removal leaves the record for the next validation.
+   */
+  private fun removeUnpublishedDevice(
+    created: MollySocketDevice,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+    failure: Exception,
+  ): Nothing {
+    Log.w(TAG, "Could not persist new $created, removing it.", failure)
+    // An interrupted acknowledgement re-asserts the flag, which would otherwise abort the blocking removal call.
+    val interrupted = Thread.interrupted()
+    try {
+      MollySocketRepository.removeDevice(created)
+      clearDevice(created, lease)
+    } catch (cleanup: Exception) {
+      Log.w(TAG, "Could not remove unpublished $created.", cleanup)
+      failure.addSuppressed(cleanup)
+    } finally {
+      if (interrupted) Thread.currentThread().interrupt()
+    }
+    throw failure
   }
 
   @Throws(IOException::class)

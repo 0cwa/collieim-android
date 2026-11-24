@@ -48,6 +48,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.models.ServiceId
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValueDataSet
+import org.signal.storage.keyvalue.KeyValuePersistenceException
+import org.signal.storage.keyvalue.KeyValuePersistentStorage
+import org.signal.storage.keyvalue.KeyValueStore
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -55,12 +59,15 @@ import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.linkdevice.Device
 import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
+import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.whispersystems.signalservice.api.SignalServiceMessageSender
 import org.whispersystems.signalservice.api.messages.SendMessageResult
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
@@ -104,6 +111,7 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.mollySocketUrl } returns "https://molly.example.invalid"
     every { unifiedPush.device } answers { storedDevice }
     every { unifiedPush.device = any() } answers { storedDevice = firstArg() }
+    every { unifiedPush.commitProvisionedDevice(any()) } answers { storedDevice = firstArg() }
     every { unifiedPush.controlState } answers { controlState }
     every { unifiedPush.hasIncompleteAccountTransition } answers { transitionMarker }
     every { unifiedPush.setIncompleteAccountTransition(any()) } answers { transitionMarker = firstArg() }
@@ -460,6 +468,7 @@ class UnifiedPushRefreshJobTest {
       assertEquals("control key and sequence survive a stale create", "retained-control-key", controlState.key)
       assertEquals(7L, controlState.importSequence)
       verify(exactly = 0) { unifiedPush.device = created }
+      verify(exactly = 0) { unifiedPush.commitProvisionedDevice(any()) }
       verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
       assertTrue(transitionBody.count == 0L)
     } finally {
@@ -578,6 +587,225 @@ class UnifiedPushRefreshJobTest {
       finishSend.countDown()
       sendExecutor.shutdownNow()
       refreshExecutor.shutdownNow()
+    }
+  }
+
+  @Test
+  fun `relay learns a fresh credential only after its delayed write is acknowledged`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 11, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    val gate = CountDownLatch(1)
+    store.executor.gate = gate
+
+    val executor = Executors.newSingleThreadExecutor()
+    try {
+      val run = executor.submit<Throwable?> { runCatching { newRefreshJob().onRun() }.exceptionOrNull() }
+
+      assertTrue(store.executor.held.await(5, TimeUnit.SECONDS))
+      verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+      assertNull("nothing durable yet", store.rebuilt().device)
+
+      gate.countDown()
+      assertNull(run.get(5, TimeUnit.SECONDS))
+
+      assertEquals(created, store.rebuilt().device)
+      assertTrue(store.rebuilt().vapidKeySynced)
+      verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), created, any(), any()) }
+      verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
+    } finally {
+      gate.countDown()
+      executor.shutdownNow()
+    }
+  }
+
+  @Test
+  fun `failed backing write removes the fresh device and never reaches the relay`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 12, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } returns Unit
+    store.storage.delegate.nextWriteFailure = IllegalStateException("synthetic backing write failure")
+
+    val failure = runRefresh()
+
+    assertTrue(failure is KeyValuePersistenceException)
+    assertTrue(UnifiedPushRefreshJob().onShouldRetry(failure as Exception))
+    assertNull(store.values.device)
+    assertNull(store.rebuilt().device)
+    verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `rejected backing write removes the fresh device and never reaches the relay`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 13, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } returns Unit
+    store.executor.rejectNext = true
+
+    val failure = runRefresh()
+
+    assertTrue(failure is KeyValuePersistenceException)
+    assertTrue(failure!!.cause is RejectedExecutionException)
+    assertNull(store.rebuilt().device)
+    verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `failed compensation keeps the original write error and does not retry removal`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 14, password = "fresh-relay-credential")
+    val writeFailure = IllegalStateException("synthetic backing write failure")
+    val removalFailure = IOException("synthetic removal failure")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } throws removalFailure
+    store.storage.delegate.nextWriteFailure = writeFailure
+
+    val failure = runRefresh()
+
+    assertTrue(failure is KeyValuePersistenceException)
+    assertSame(writeFailure, failure!!.cause)
+    assertTrue(failure.suppressed.contains(removalFailure))
+    assertNull(store.rebuilt().device)
+    verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `acknowledgement failure after the write clears the fresh record only after removal`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 15, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } answers {
+      assertEquals("the write took effect even though it was not acknowledged", created, store.rebuilt().device)
+      Unit
+    }
+    store.storage.failReadAfterNextWrite = true
+
+    val failure = runRefresh()
+
+    assertTrue(failure is KeyValuePersistenceException)
+    assertNull(store.values.device)
+    assertNull(store.rebuilt().device)
+    verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `acknowledgement failure with failed removal keeps the written record`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 16, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } throws IOException("synthetic removal failure")
+    store.storage.failReadAfterNextWrite = true
+
+    assertTrue(runRefresh() is KeyValuePersistenceException)
+
+    assertEquals("an unremoved device stays tracked for the next validation", created, store.rebuilt().device)
+    verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `compensation never clears a replacement record`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 17, password = "fresh-relay-credential")
+    val replacement = MollySocketDevice(deviceId = 17, password = "replacement-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } answers {
+      store.values.device = replacement
+      Unit
+    }
+    store.storage.failReadAfterNextWrite = true
+
+    assertTrue(runRefresh() is KeyValuePersistenceException)
+
+    assertEquals(replacement, store.values.device)
+    assertEquals(replacement, store.rebuilt().device)
+    verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
+  }
+
+  private class ProvisioningStore(val storage: AckFailingStorage, val executor: ControlledExecutor, val values: UnifiedPushValues) {
+    fun rebuilt() = UnifiedPushValues(KeyValueStore(storage.delegate, Executor { it.run() }))
+  }
+
+  /** A real store for the relay values, ready for the refresh job to create a device and register it with the relay. */
+  private fun provisioningStore(): ProvisioningStore {
+    val storage = AckFailingStorage(SnapshotKeyValuePersistentStorage(KeyValueDataSet()))
+    val executor = ControlledExecutor()
+    val values = UnifiedPushValues(KeyValueStore(storage, executor))
+    values.enabled = true
+    values.airGapped = false
+    values.mollySocketUrl = "https://molly.example.invalid"
+    values.vapidPublicKey = "SYNTHETIC-VAPID"
+    values.setEndpointRegistration("https://push.example.invalid/endpoint", "SYNTHETIC-P256DH", "SYNTHETIC-AUTH", "fixture-instance")
+    every { SignalStore.unifiedpush } returns values
+
+    mockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies)
+    mockkStatic(AppDependencies::class)
+    every { UnifiedPushDistributor.checkIfActive() } returns true
+    every { AppDependencies.resetNetwork(any()) } returns Unit
+    every { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) } returns null
+    return ProvisioningStore(storage, executor, values)
+  }
+
+  private fun newRefreshJob() = UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true)
+    .apply { setContext(ApplicationProvider.getApplicationContext()) }
+
+  private fun runRefresh(): Throwable? {
+    val executor = Executors.newSingleThreadExecutor()
+    return try {
+      executor.submit<Throwable?> { runCatching { newRefreshJob().onRun() }.exceptionOrNull() }.get(5, TimeUnit.SECONDS)
+    } finally {
+      executor.shutdownNow()
+    }
+  }
+
+  /** Runs writes inline unless told to reject the next one or hold it behind [gate] on another thread. */
+  private class ControlledExecutor : Executor {
+    @Volatile var rejectNext = false
+
+    @Volatile var gate: CountDownLatch? = null
+    val held = CountDownLatch(1)
+
+    override fun execute(command: Runnable) {
+      if (rejectNext) {
+        rejectNext = false
+        throw RejectedExecutionException("synthetic executor rejection")
+      }
+      val waitFor = gate ?: return command.run()
+      gate = null
+      Thread {
+        held.countDown()
+        check(waitFor.await(5, TimeUnit.SECONDS))
+        command.run()
+      }.start()
+    }
+  }
+
+  /** Lets a write reach storage and then fails the store's re-read, so the store cannot acknowledge it. */
+  private class AckFailingStorage(val delegate: SnapshotKeyValuePersistentStorage) : KeyValuePersistentStorage {
+    @Volatile var failReadAfterNextWrite = false
+
+    @Volatile private var failNextRead = false
+
+    override fun writeDataSet(dataSet: KeyValueDataSet, removes: Collection<String>) {
+      delegate.writeDataSet(dataSet, removes)
+      if (failReadAfterNextWrite) {
+        failReadAfterNextWrite = false
+        failNextRead = true
+      }
+    }
+
+    override fun getDataSet(): KeyValueDataSet {
+      if (failNextRead) {
+        failNextRead = false
+        throw IllegalStateException("synthetic acknowledgement failure")
+      }
+      return delegate.getDataSet()
     }
   }
 

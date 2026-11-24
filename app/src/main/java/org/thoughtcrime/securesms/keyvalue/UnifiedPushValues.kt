@@ -9,6 +9,7 @@ import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.receiver.EncryptedPush
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
 import org.signal.storage.keyvalue.booleanValue
@@ -70,6 +71,19 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
         .putString(MOLLYSOCKET_PASSWORD, device?.password)
         .apply()
     }
+
+  /**
+   * Stores a freshly linked relay device and marks the VAPID key as synced in one batch, returning only after the
+   * backing store confirms it. On failure the batch may still have been written, so the caller owns the compensation.
+   */
+  @Throws(KeyValuePersistenceException::class)
+  fun commitProvisionedDevice(device: MollySocketDevice) {
+    store.beginWrite()
+      .putInteger(MOLLYSOCKET_DEVICE_ID, device.deviceId)
+      .putString(MOLLYSOCKET_PASSWORD, device.password)
+      .putBoolean(MOLLYSOCKET_VAPID_SYNCED, true)
+      .commitAndWaitForPersistence()
+  }
 
   fun isMollySocketDevice(deviceId: Int): Boolean =
     deviceId != 0 && getInteger(MOLLYSOCKET_DEVICE_ID, 0) == deviceId

@@ -191,6 +191,21 @@ revocation, multi-device continuation, group/link separation, bounded opaque
 decoding, callback lifetime, and transport-only sharing. UI tests cover defaults,
 inheritance, the absolute restriction, error state and unchanged selections.
 
+The feature workflow also has a focused **Call permission admission and settings
+host tests** job. Its maintained inventory selects 42 app classes (292 methods)
+and two settings classes (17 methods), including the ordinary call processors
+and shared-fixture regressions. It reuses the repository's pinned desktop JNI
+cache, source builder and receipt verifier; the library remains a host-test
+input only. The job downloads Robolectric 4.16's exact API 28, 35 and 36 jars
+from official Maven Central with bounded transfers and published SHA-512
+verification, then uses its local-only resolver. API 36 also supplies the
+sandbox compile SDK. Normal Gradle dependencies keep their existing pins.
+The scoped init script applies only to those two test tasks. The evidence gate
+requires every inventoried method exactly once, no failures or skips, unchanged
+source and native inputs, and verified SDK bytes. XML, source/method inventory,
+SDK/native receipts and logs are retained; older or cached test results cannot
+satisfy this job. The general PR shard workflow and its cache policy are separate.
+
 `CallPermissionsScreenshotTest` captures the real device, contact and group
 settings states. `CallLinkKeyNativeParityTest` and `CallEraIdNativeParityTest`
 compare managed helpers to packaged RingRTC on Android. App and instrumentation
@@ -206,6 +221,9 @@ avoiding the pinned AGP's comma-delimited argument serialization. Orchestrator
 still reports the original four methods under their individual test classes.
 Captures wait for the saving indicator to disappear and a new window frame to
 commit; a missing frame callback fails the capture after five seconds.
+They use AndroidX test storage (`useTestStorageService=true`), which preserves
+the PNGs while Orchestrator clears app and test data between methods. AGP
+collects the service output after the suite, independently of test order.
 Its evidence gate requires all four methods to pass, all nine settings captures
 to decode, and source, APK and device identity to match. The workflow retains
 the results as an Actions artifact; it does not prepare or publish a release.

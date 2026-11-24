@@ -27,6 +27,13 @@ on:
       - gradle/**
       - docs/CALL-PERMISSIONS.md
       - tooling/ci/test_call_admission_schema.py
+      - tooling/ci/call-permissions-host-tests.json
+      - tooling/ci/call-permissions-host.gradle
+      - tooling/ci/call_permissions_host.py
+      - tooling/ci/test_call_permissions_host.py
+      - tooling/host-tests/**
+      - build-inputs/engineering.json
+      - build-inputs/host-test-inputs.json
   workflow_dispatch:
 
 permissions:
@@ -37,6 +44,99 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  host:
+    name: Call permission admission and settings host tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Check the host-test recipe and scoped evidence gate
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/host-tests -p 'test_*.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/ci -p 'test_call_permissions_host.py'
+      - name: Record source and the complete feature test inventory
+        run: python3 tooling/ci/call_permissions_host.py prepare
+      # Reuse pr.yml's exact canonical cache key, source builder and verifier.
+      - name: Cache test-only libsignal JNI
+        id: host-jni-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            build/host-tests/resources
+            build/host-tests/receipt.json
+          key: host-libsignal-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('build-inputs/native-lock.json', 'build-inputs/engineering.json', 'build-inputs/host-test-inputs.json', 'tooling/host-tests/build_libsignal.py') }}
+      - name: Build pinned Linux JNI on a cache miss
+        if: steps.host-jni-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang libclang-dev cmake make protobuf-compiler libprotobuf-dev binutils
+          rust_version=$(python3 -c 'import json; print(json.load(open("build-inputs/native-lock.json"))["toolchain_reference"]["rust_version"])')
+          rustup toolchain install "$rust_version" --profile minimal
+          python3 tooling/host-tests/build_libsignal.py
+      - name: Verify test-only libsignal JNI
+        run: |
+          python3 tooling/host-tests/build_libsignal.py --verify-only
+          cp build/host-tests/receipt.json build/call-permissions-host/native-before.json
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - name: Fetch and verify the three pinned Robolectric SDKs
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A hard total deadline also bounds checksum/IO work; each transfer has
+          # its own finite attempts. No general PR cache or runtime download fallback.
+          timeout --kill-after=5s 610s python3 tooling/ci/call_permissions_host.py prefetch \
+            2>&1 | tee build/call-permissions-host/prefetch.log
+      - name: Run every inventoried calling and settings method
+        id: host-tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=build/call-permissions-host
+          collect() {
+            status=$?
+            trap - EXIT
+            printf '%s\n' "$status" > "$evidence/test-exit-code.txt"
+            git rev-parse HEAD HEAD^{tree} > "$evidence/source-after.txt"
+            exit "$status"
+          }
+          trap collect EXIT
+          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+          timeout --kill-after=30s 50m ./gradlew --no-daemon --console=plain --continue \
+            -PcollieHostJniDir=build/host-tests/resources \
+            -I tooling/ci/call-permissions-host.gradle \
+            :app:testProdWebsiteDebugUnitTest :feature:app-settings:testDebugUnitTest \
+            2>&1 | tee "$evidence/host-tests.log"
+      - name: Require all 309 methods with matching source and runtime inputs
+        if: always() && !cancelled()
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: python3 tooling/ci/call_permissions_host.py check
+      - name: Retain scoped host execution evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: call-permissions-host-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/call-permissions-host
+            build/host-tests/receipt.json
+            app/build/test-results/testProdWebsiteDebugUnitTest
+            app/build/reports/tests/testProdWebsiteDebugUnitTest
+            feature/app-settings/build/test-results/testDebugUnitTest
+            feature/app-settings/build/reports/tests/testDebugUnitTest
+          retention-days: 14
+          if-no-files-found: error
+
   api35:
     name: Beta smoke and call permissions on API 35
     runs-on: ubuntu-24.04
@@ -165,12 +265,13 @@ jobs:
           timeout 10s adb logcat -b all -d -v threadtime > "$evidence/beta-logcat.txt"
           timeout 10s adb shell am force-stop im.collie.app.trailblazer
           timeout 10s adb logcat -c
-          # Orchestrator keeps each method isolated. AGP collects additionalTestOutputDir,
-          # where CallPermissionsScreenshotTest also saves its nine PNGs.
+          # Orchestrator keeps each method isolated. Test storage preserves the nine PNGs
+          # across app-data clearing, and AGP collects the service output after the suite.
           # The suite preserves the three selectors through AGP's comma-delimited argument map.
           ./gradlew -PimoTests --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
             :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-call-permissions-apks.gradle" \
+            '-Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true' \
             '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.calls.permissions.CallPermissionsApi35Suite' \
             2>&1 | tee "$evidence/connected.log"
           git diff --exit-code

@@ -25,6 +25,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.services.storage.TestStorage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -42,15 +43,15 @@ import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
-import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import org.signal.appsettings.R as SettingsR
 
 /**
  * Actual settings navigation and durable policy writes, using synthetic recipients with networking disabled.
- * Install matching app/test APKs. API 35 screenshots are written under call-permissions-proof, including to
- * additionalTestOutputDir when supplied by the instrumentation runner. No native calls or remote accounts are used.
+ * Install matching app/test APKs and run with useTestStorageService=true. API 35 screenshots are written under
+ * call-permissions-proof in AndroidX test storage so they survive Orchestrator's per-method app-data clearing.
+ * No native calls or remote accounts are used.
  */
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 35, maxSdkVersion = 35)
@@ -214,13 +215,8 @@ class CallPermissionsScreenshotTest {
         }
       }
       assertTrue("The screenshot must contain actual app content", visible > 100)
-      val additionalOutput = InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")?.let(::File)
-      for (parent in listOfNotNull(context.getExternalFilesDir(null), additionalOutput).distinct()) {
-        val directory = File(parent, "call-permissions-proof")
-        assertTrue(directory.isDirectory || directory.mkdirs())
-        File(directory, name).outputStream().use { output ->
-          assertTrue(screenshot.compress(Bitmap.CompressFormat.PNG, 100, output))
-        }
+      TestStorage().openOutputFile("call-permissions-proof/$name").use { output ->
+        assertTrue(screenshot.compress(Bitmap.CompressFormat.PNG, 100, output))
       }
     } finally {
       screenshot.recycle()

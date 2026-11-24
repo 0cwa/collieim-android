@@ -38,9 +38,9 @@ internal class CallsSettingsViewModel(
       CallsSettingsEvent.NavigateBack -> parentEventEmitter.navigateBack()
       CallsSettingsEvent.ErrorDismissed -> mutableState.update { it.copy(saveFailed = false) }
       CallsSettingsEvent.Refresh -> viewModelScope.launch { refresh() }
-      is CallsSettingsEvent.DisableAllChanged -> change { access.setAllCallingDisabled(event.disabled) }
-      is CallsSettingsEvent.IncomingChanged -> if (!state.value.allCallingDisabled) change { access.setIncomingDefault(event.allowed) }
-      is CallsSettingsEvent.GroupsChanged -> if (!state.value.allCallingDisabled) change { access.setGroupDefault(event.allowed) }
+      is CallsSettingsEvent.DisableAllChanged -> if (state.value.allCallingDisabled != event.disabled) change { access.setAllCallingDisabled(event.disabled) }
+      is CallsSettingsEvent.IncomingChanged -> if (!state.value.allCallingDisabled && state.value.allowIncoming != event.allowed) change { access.setIncomingDefault(event.allowed) }
+      is CallsSettingsEvent.GroupsChanged -> if (!state.value.allCallingDisabled && state.value.allowGroups != event.allowed) change { access.setGroupDefault(event.allowed) }
     }
   }
 

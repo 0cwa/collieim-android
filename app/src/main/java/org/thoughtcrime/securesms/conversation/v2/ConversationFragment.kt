@@ -171,7 +171,7 @@ import org.signal.mediakeyboard.MediaKeyboardAction
 import org.signal.mediakeyboard.MediaKeyboardTab
 import org.signal.mediakeyboard.data.KeyboardSticker
 import org.signal.remoteconfig.RemoteConfig
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.BlockUnblockDialog
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.MuteDialog
@@ -4717,7 +4717,7 @@ class ConversationFragment :
       GroupDescriptionDialog.show(childFragmentManager, groupName, description, shouldLinkifyWebLinks)
     }
 
-    override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) {
+    override fun onJoinCallLink(callLinkRootKey: ManagedCallLinkRootKey) {
       CommunicationActions.startVideoCall(this@ConversationFragment, callLinkRootKey) {
         YouAreAlreadyInACallSnackbar.show(requireView())
       }

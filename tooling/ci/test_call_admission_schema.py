@@ -21,6 +21,28 @@ class CallAdmissionSchemaPinTest(unittest.TestCase):
             "Review the managed opaque decoder against the newly selected RingRTC schema before upgrading",
         )
 
+    def test_managed_call_link_metadata_codec_tracks_native_source(self):
+        lock = json.loads((ROOT / "build-inputs/native-lock.json").read_text())
+        codec = (ROOT / "app/src/main/java/org/thoughtcrime/securesms/calls/permissions/CallLinkKeyCodec.kt").read_text()
+        selected = re.search(r"pinned to\s+\* ([a-f0-9]{40})", codec)
+        self.assertIsNotNone(selected, "The managed key codec needs an exact RingRTC source pin")
+        self.assertEqual(
+            lock["source_provenance"]["ringrtc"],
+            selected.group(1),
+            "Review key versions, validation, formatting, and room-ID derivation before a native upgrade",
+        )
+
+    def test_managed_call_era_id_tracks_native_source(self):
+        lock = json.loads((ROOT / "build-inputs/native-lock.json").read_text())
+        codec = (ROOT / "app/src/main/java/org/thoughtcrime/securesms/calls/permissions/CallEraId.kt").read_text()
+        selected = re.search(r"Pinned source: signalapp/ringrtc ([a-f0-9]{40})", codec)
+        self.assertIsNotNone(selected, "The managed era-ID conversion needs an exact RingRTC source pin")
+        self.assertEqual(
+            lock["source_provenance"]["ringrtc"],
+            selected.group(1),
+            "Review era-ID parsing, reserved values, and fallback hashing before a native upgrade",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -223,6 +223,50 @@ class CallPermissionValuesTest {
     assertThrows(IOException::class.java) { open(directory).read() }
   }
 
+  @Test
+  fun `decoded state cache follows a replaced raw record after store cache reset`() {
+    val store = KeyValueStore(backing) { it.run() }
+    val values = CallPermissionValues(store, temporary.newFolder())
+    values.update { it.copy(account = account) }
+    val initial = values.read()
+    assertEquals(CallPermission.ALLOW, initial.directDefault)
+    val restricted = initial.copy(directDefault = CallPermission.BLOCK, groupDefault = CallPermission.BLOCK)
+    backing.writeDataSet(KeyValueDataSet().apply { putString(CallPermissionValues.RECORD, CallPolicyCodec.encode(restricted)) }, emptyList())
+    store.resetCache()
+
+    assertEquals(restricted, values.read())
+    assertFalse(values.read().allowsIncoming(CallContext.DIRECT, 12L))
+  }
+
+  @Test
+  fun `cached valid state cannot hide a replacement with unknown schema`() {
+    val store = KeyValueStore(backing) { it.run() }
+    val values = CallPermissionValues(store, temporary.newFolder())
+    values.update { it.copy(account = account) }
+    assertTrue(values.read().allowsIncoming(CallContext.DIRECT, 12L))
+    store.beginWrite().putString(CallPermissionValues.RECORD, "99\nfuture policy schema").commitAndWaitForPersistence()
+
+    assertThrows(RuntimeException::class.java) { values.read() }
+    assertThrows(RuntimeException::class.java) { values.update { it.copy(allCallingDisabled = false) } }
+  }
+
+  @Test
+  fun `unchanged cached raw record still checks installation anchor and journal`() {
+    for (tamper in listOf<(File) -> Unit>(
+      { File(it, "call-permission-installation").writeText(UUID.randomUUID().toString()) },
+      { marker(it).writeText("pending") }
+    )) {
+      val directory = temporary.newFolder()
+      val values = open(directory, SnapshotKeyValuePersistentStorage())
+      values.update { it.copy(account = account).withOverride(CallContext.DIRECT, 12L, CallPermission.ALLOW) }
+      assertTrue(values.read().allowsIncoming(CallContext.DIRECT, 12L))
+
+      tamper(directory)
+
+      assertRestricted(values.read())
+    }
+  }
+
   private fun open(directory: File, storage: KeyValuePersistentStorage = backing): CallPermissionValues =
     CallPermissionValues(KeyValueStore(storage) { it.run() }, directory)
 

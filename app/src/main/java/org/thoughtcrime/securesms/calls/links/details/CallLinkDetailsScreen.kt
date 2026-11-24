@@ -46,6 +46,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar.YouAreAlreadyInACallSnackbar
 import org.thoughtcrime.securesms.calls.links.CallLinks
 import org.thoughtcrime.securesms.calls.links.SignalCallRow
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.database.CallLinkTable
 import org.thoughtcrime.securesms.main.MainDetailRoute
 import org.thoughtcrime.securesms.main.MainNavigationEventSink
@@ -114,6 +115,7 @@ class DefaultCallLinkDetailsCallback(
   }
 
   override fun onEditNameClicked() {
+    if (!isCallingAvailable()) return
     eventSink.onEvent(
       MainNavigationEvents.GoToDetail(
         MainDetailRoute.Calls.CallLinks.EditCallLinkName(
@@ -125,6 +127,7 @@ class DefaultCallLinkDetailsCallback(
   }
 
   override fun onShareClicked() {
+    if (!isCallingAvailable()) return
     val mimeType = Intent.normalizeMimeType("text/plain")
     val shareIntent = ShareCompat.IntentBuilder(activity)
       .setText(CallLinks.url(viewModel.rootKeySnapshot))
@@ -139,11 +142,13 @@ class DefaultCallLinkDetailsCallback(
   }
 
   override fun onCopyClicked() {
+    if (!isCallingAvailable()) return
     Util.copyToClipboard(activity, CallLinks.url(viewModel.rootKeySnapshot))
     Toast.makeText(activity, R.string.CreateCallLinkBottomSheetDialogFragment__copied_to_clipboard, Toast.LENGTH_LONG).show()
   }
 
   override fun onShareLinkViaSignalClicked() {
+    if (!isCallingAvailable()) return
     activity.startActivity(
       ShareActivity.sendSimpleText(
         activity,
@@ -153,11 +158,13 @@ class DefaultCallLinkDetailsCallback(
   }
 
   override fun onDeleteClicked() {
+    if (!isCallingAvailable()) return
     viewModel.setDisplayRevocationDialog(true)
   }
 
   override fun onDeleteConfirmed() {
     viewModel.setDisplayRevocationDialog(false)
+    if (!isCallingAvailable()) return
     activity.lifecycleScope.launch {
       if (viewModel.delete()) {
         eventSink.onEvent(MainNavigationEvents.ExitDetail)
@@ -170,9 +177,16 @@ class DefaultCallLinkDetailsCallback(
   }
 
   override fun onApproveAllMembersChanged(checked: Boolean) {
+    if (!isCallingAvailable()) return
     activity.lifecycleScope.launch {
       viewModel.setApproveAllMembers(checked)
     }
+  }
+
+  private fun isCallingAvailable(): Boolean {
+    if (CallPermissions.isCallingAllowed()) return true
+    Toast.makeText(activity, R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show()
+    return false
   }
 }
 

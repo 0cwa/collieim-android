@@ -33,7 +33,7 @@ internal class CallPermissionOverrideViewModel(
 
   fun select(choice: CallPermissionChoice) {
     val current = state.value
-    if (current.loading || !current.available || current.saving || current.allCallingDisabled) return
+    if (current.loading || !current.available || current.saving || current.allCallingDisabled || current.choice == choice) return
     mutableState.update { it.copy(saving = true, saveFailed = false) }
     viewModelScope.launch {
       try {

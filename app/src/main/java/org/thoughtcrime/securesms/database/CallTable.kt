@@ -30,6 +30,7 @@ import org.signal.core.util.requireObject
 import org.signal.core.util.toInt
 import org.signal.core.util.toSingleLine
 import org.signal.ringrtc.CallId
+import org.thoughtcrime.securesms.calls.permissions.CallEraId
 import org.signal.ringrtc.CallManager.RingUpdate
 import org.thoughtcrime.securesms.database.CallTable.Companion.TIMESTAMP
 import org.thoughtcrime.securesms.database.model.MessageId
@@ -670,7 +671,7 @@ class CallTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTabl
     timestamp: Long,
     eraId: String
   ): Boolean {
-    return handleCallLinkUpdate(callRecipient, timestamp, CallId.fromEra(eraId), Direction.INCOMING, skipTimestampUpdate = true)
+    return handleCallLinkUpdate(callRecipient, timestamp, CallId(CallEraId.fromEra(eraId)), Direction.INCOMING, skipTimestampUpdate = true)
   }
 
   fun insertOrUpdateGroupCallFromLocalEvent(
@@ -683,7 +684,7 @@ class CallTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTabl
   ) {
     val recipient = Recipient.resolved(groupRecipientId)
     if (recipient.isCallLink) {
-      handleCallLinkUpdate(recipient, timestamp, peekGroupCallEraId?.let { CallId.fromEra(it) })
+      handleCallLinkUpdate(recipient, timestamp, peekGroupCallEraId?.let { CallId(CallEraId.fromEra(it)) })
     } else {
       handleGroupUpdate(recipient, sender, timestamp, peekGroupCallEraId, peekJoinedUuids, isCallFull)
     }
@@ -704,7 +705,7 @@ class CallTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTabl
         return@withinTransaction
       }
 
-      val callId = CallId.fromEra(peekGroupCallEraId).longValue()
+      val callId = CallEraId.fromEra(peekGroupCallEraId)
       val call = getCallById(callId, groupRecipient.id)
       val messageId: MessageId = if (call != null) {
         if (call.event == Event.DELETE) {
@@ -878,7 +879,7 @@ class CallTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTabl
     isCallFull: Boolean
   ) {
     Log.d(TAG, "Updating group call from peek.")
-    val callId = peekGroupCallEraId?.let { CallId.fromEra(it) }
+    val callId = peekGroupCallEraId?.let { CallId(CallEraId.fromEra(it)) }
     val recipientId = SignalDatabase.threads.getRecipientIdForThreadId(threadId)
     val call = if (callId != null && recipientId != null) {
       Log.d(TAG, "Found local call event.")

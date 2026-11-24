@@ -10,9 +10,8 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.isNotEmpty
 import org.signal.core.util.logging.Log
 import org.signal.core.util.toOptional
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
 import org.whispersystems.signalservice.api.storage.SignalCallLinkRecord
 import org.whispersystems.signalservice.api.storage.StorageId
 import org.whispersystems.signalservice.api.storage.toSignalCallLinkRecord
@@ -37,13 +36,14 @@ class CallLinkRecordProcessor : DefaultStorageRecordProcessor<SignalCallLinkReco
   }
 
   override fun isInvalid(remote: SignalCallLinkRecord): Boolean {
-    return remote.proto.adminPasskey.isNotEmpty() && remote.proto.deletedAtTimestampMs > 0L
+    return (remote.proto.adminPasskey.isNotEmpty() && remote.proto.deletedAtTimestampMs > 0L) ||
+      ManagedCallLinkRootKey.fromBytes(remote.proto.rootKey.toByteArray()) == null
   }
 
   override fun getMatching(remote: SignalCallLinkRecord, keyGenerator: StorageKeyGenerator): Optional<SignalCallLinkRecord> {
     Log.d(TAG, "Attempting to get matching record...")
-    val callRootKey = CallLinkRootKey(remote.proto.rootKey.toByteArray())
-    val roomId = CallLinkRoomId.fromCallLinkRootKey(callRootKey)
+    val callRootKey = ManagedCallLinkRootKey.fromBytes(remote.proto.rootKey.toByteArray()) ?: return Optional.empty()
+    val roomId = callRootKey.roomId
     val callLink = SignalDatabase.callLinks.getCallLinkByRoomId(roomId)
 
     if (callLink != null && callLink.credentials?.adminPassBytes != null) {
@@ -108,7 +108,7 @@ class CallLinkRecordProcessor : DefaultStorageRecordProcessor<SignalCallLinkReco
   }
 
   private fun insertOrUpdateRecord(record: SignalCallLinkRecord) {
-    val rootKey = CallLinkRootKey(record.proto.rootKey.toByteArray())
+    val rootKey = ManagedCallLinkRootKey.fromBytes(record.proto.rootKey.toByteArray()) ?: return
 
     SignalDatabase.callLinks.insertOrUpdateCallLinkByRootKey(
       callLinkRootKey = rootKey,

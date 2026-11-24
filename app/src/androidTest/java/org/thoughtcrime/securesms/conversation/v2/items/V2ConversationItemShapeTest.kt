@@ -19,7 +19,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.signal.core.models.recipients.RecipientId
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState
 import org.thoughtcrime.securesms.contactshare.Contact
 import org.thoughtcrime.securesms.conversation.ConversationAdapter
@@ -323,7 +323,7 @@ class V2ConversationItemShapeTest {
 
     override fun onShowGroupDescriptionClicked(groupName: String, description: String, shouldLinkifyWebLinks: Boolean) = Unit
 
-    override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) = Unit
+    override fun onJoinCallLink(callLinkRootKey: ManagedCallLinkRootKey) = Unit
     override fun onViewStickerPackLink(packId: String, packKey: String) = Unit
 
     override fun onItemClick(item: MultiselectPart?) = Unit

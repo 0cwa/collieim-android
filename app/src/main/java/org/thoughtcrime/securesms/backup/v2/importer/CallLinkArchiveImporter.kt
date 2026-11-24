@@ -9,13 +9,12 @@ import org.signal.archive.proto.CallLink
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.isEmpty
 import org.signal.core.util.logging.Log
-import org.signal.ringrtc.CallLinkRootKey
 import org.signal.ringrtc.CallLinkState
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.backup.v2.ArchiveCallLink
 import org.thoughtcrime.securesms.database.CallLinkTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkCredentials
-import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
 import org.thoughtcrime.securesms.service.webrtc.links.SignalCallLinkState
 import java.time.Instant
 
@@ -27,9 +26,8 @@ object CallLinkArchiveImporter {
   private val TAG = Log.tag(CallLinkArchiveImporter::class)
 
   fun import(callLink: ArchiveCallLink): RecipientId? {
-    val rootKey: CallLinkRootKey = try {
-      CallLinkRootKey(callLink.rootKey.toByteArray())
-    } catch (e: Exception) {
+    val rootKey = ManagedCallLinkRootKey.fromBytes(callLink.rootKey.toByteArray())
+    if (rootKey == null) {
       if (callLink.rootKey.isEmpty()) {
         Log.w(TAG, "Missing root key!")
       } else {
@@ -41,7 +39,7 @@ object CallLinkArchiveImporter {
     return SignalDatabase.callLinks.insertCallLink(
       CallLinkTable.CallLink(
         recipientId = RecipientId.UNKNOWN,
-        roomId = CallLinkRoomId.fromCallLinkRootKey(rootKey),
+        roomId = rootKey.roomId,
         credentials = CallLinkCredentials(callLink.rootKey.toByteArray(), callLink.adminKey?.toByteArray()),
         state = SignalCallLinkState(
           name = callLink.name,

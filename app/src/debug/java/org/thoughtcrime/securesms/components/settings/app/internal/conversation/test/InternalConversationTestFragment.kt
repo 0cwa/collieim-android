@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.logging.Log
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.ViewBinderDelegate
 import org.thoughtcrime.securesms.components.recyclerview.SmoothScrollingLinearLayoutManager
@@ -282,7 +282,7 @@ class InternalConversationTestFragment : Fragment(R.layout.conversation_test_fra
       Toast.makeText(requireContext(), "Can't touch this.", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) {
+    override fun onJoinCallLink(callLinkRootKey: ManagedCallLinkRootKey) {
       Toast.makeText(requireContext(), "Can't touch this.", Toast.LENGTH_SHORT).show()
     }
 

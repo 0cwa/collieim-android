@@ -110,6 +110,20 @@ class CallsSettingsViewModelTest {
   }
 
   @Test
+  fun `selecting an unchanged permission does not revoke the current call`() = runTest(dispatcher) {
+    val model = CallsSettingsViewModel(navigation::add, access, dispatcher)
+    val recipient = mockk<Recipient> { every { isGroup } returns false }
+    val contactModel = CallPermissionOverrideViewModel(recipient, access, dispatcher)
+
+    model.onEvent(CallsSettingsEvent.DisableAllChanged(false))
+    model.onEvent(CallsSettingsEvent.IncomingChanged(true))
+    model.onEvent(CallsSettingsEvent.GroupsChanged(true))
+    contactModel.select(CallPermissionChoice.INHERIT)
+
+    assertThat(access.writeCount).isEqualTo(0)
+  }
+
+  @Test
   fun `contact inherit stays inherit when the effective device default changes`() = runTest(dispatcher) {
     val recipient = mockk<Recipient> { every { isGroup } returns false }
     val model = CallPermissionOverrideViewModel(recipient, access, dispatcher)

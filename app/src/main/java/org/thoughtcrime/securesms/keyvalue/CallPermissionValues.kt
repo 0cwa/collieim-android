@@ -8,6 +8,8 @@ import org.thoughtcrime.securesms.calls.permissions.CallPolicyCodec
 import org.thoughtcrime.securesms.calls.permissions.CallPolicyState
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.channels.FileChannel
+import java.nio.file.StandardOpenOption
 import java.util.UUID
 
 /** Not backed up, transferred, or synced. The marker is also outside Android's backup domains. */
@@ -16,6 +18,9 @@ class CallPermissionValues(store: KeyValueStore, noBackupDirectory: File) : Sign
     const val KEY_PREFIX = "collie.local_call_permissions."
     internal const val RECORD = KEY_PREFIX + "v1"
   }
+
+  private var cachedRecord: String? = null
+  private var cachedState: CallPolicyState? = null
 
   private val installationFile = File(noBackupDirectory, "call-permission-installation")
   private val interruptedWrite = File(noBackupDirectory, "call-permission-write-pending")
@@ -26,7 +31,9 @@ class CallPermissionValues(store: KeyValueStore, noBackupDirectory: File) : Sign
   @Synchronized
   internal fun read(): CallPolicyState {
     val record = getString(RECORD, null)
-    val state = record?.let(CallPolicyCodec::decode) ?: CallPolicyState()
+    val state = if (cachedState != null && record == cachedRecord) cachedState!! else {
+      (record?.let(CallPolicyCodec::decode) ?: CallPolicyState()).also { cachedRecord = record; cachedState = it }
+    }
     val anchor = installationFile.takeIf { it.isFile }?.readText()
     val copiedRecord = state.installation != null && state.installation != anchor
     val unboundRecord = record != null && state.installation == null
@@ -45,6 +52,10 @@ class CallPermissionValues(store: KeyValueStore, noBackupDirectory: File) : Sign
     return next
   }
 
+  private fun syncDirectory() {
+    FileChannel.open(interruptedWrite.parentFile!!.toPath(), StandardOpenOption.READ).use { it.force(true) }
+  }
+
   private fun persist(state: CallPolicyState) {
     check(interruptedWrite.parentFile!!.isDirectory || interruptedWrite.parentFile!!.mkdirs())
     val existing = installationFile.takeIf { it.isFile }?.readText()
@@ -53,7 +64,9 @@ class CallPermissionValues(store: KeyValueStore, noBackupDirectory: File) : Sign
     }
     val serialized = CallPolicyCodec.encode(state.copy(installation = anchor))
     FileOutputStream(interruptedWrite).use { it.write(1); it.fd.sync() }
+    syncDirectory()
     store.beginWrite().putString(RECORD, serialized).commitAndWaitForPersistence()
     check(interruptedWrite.delete()) { "Could not complete local call permission write" }
+    syncDirectory()
   }
 }

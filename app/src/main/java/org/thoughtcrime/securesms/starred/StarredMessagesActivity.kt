@@ -54,7 +54,7 @@ import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.viewModel
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.PassphraseRequiredActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.menu.ActionItem
@@ -389,7 +389,7 @@ private class StarredMessageClickListener(
   override fun onUrlClicked(url: String): Boolean = false
   override fun goToMediaPreview(parent: ConversationItem, sharedElement: View, args: MediaIntentFactory.MediaPreviewArgs) = Unit
   override fun onShowGroupDescriptionClicked(groupName: String, description: String, shouldLinkifyWebLinks: Boolean) = Unit
-  override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) = Unit
+  override fun onJoinCallLink(callLinkRootKey: ManagedCallLinkRootKey) = Unit
   override fun onViewStickerPackLink(packId: String, packKey: String) = Unit
   override fun onDisplayMediaNoLongerAvailableSheet() = Unit
   override fun onShowUnverifiedProfileSheet(forGroup: Boolean) = Unit

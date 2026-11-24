@@ -34,7 +34,7 @@ import org.signal.core.util.concurrent.JvmRxExtensions;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.concurrent.SimpleTask;
 import org.signal.core.util.logging.Log;
-import org.signal.ringrtc.CallLinkRootKey;
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.calls.links.CallLinks;
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
@@ -342,7 +342,7 @@ public class CommunicationActions {
       return;
     }
 
-    CallLinkRootKey callLinkRootKey = CallLinks.parseUrl(potentialUrl);
+    ManagedCallLinkRootKey callLinkRootKey = CallLinks.parseUrl(potentialUrl);
     if (callLinkRootKey == null) {
       Log.w(TAG, "Failed to parse root key from call link");
       new MaterialAlertDialogBuilder(activity)
@@ -382,11 +382,11 @@ public class CommunicationActions {
    *
    * @param fragment The fragment, which will be used for context and permissions routing.
    */
-  public static void startVideoCall(@NonNull Fragment fragment, @NonNull CallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
+  public static void startVideoCall(@NonNull Fragment fragment, @NonNull ManagedCallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
     startVideoCall(new FragmentCallContext(fragment), rootKey, onUserAlreadyInAnotherCall);
   }
 
-  private static void startVideoCall(@NonNull CallContext callContext, @NonNull CallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
+  private static void startVideoCall(@NonNull CallContext callContext, @NonNull ManagedCallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
     long generation = CallPermissions.generation();
     if (!CallPermissions.isCallingAllowed()) {
       Toast.makeText(callContext.getContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show();
@@ -396,7 +396,7 @@ public class CommunicationActions {
       if (!CallPermissions.isCurrent(generation)) {
         return Optional.<Recipient>empty();
       }
-      CallLinkRoomId         roomId   = CallLinkRoomId.fromBytes(rootKey.deriveRoomId());
+      CallLinkRoomId         roomId   = rootKey.getRoomId();
       CallLinkTable.CallLink callLink = SignalDatabase.callLinks().getOrCreateCallLinkByRootKey(rootKey);
 
       if (callLink.getState().hasBeenRevoked()) {

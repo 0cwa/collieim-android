@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer;
 import com.bumptech.glide.RequestManager;
 
 import org.signal.core.models.recipients.RecipientId;
-import org.signal.ringrtc.CallLinkRootKey;
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey;
 import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState;
 import org.thoughtcrime.securesms.contactshare.Contact;
 import org.thoughtcrime.securesms.conversation.ConversationItem;
@@ -131,7 +131,7 @@ public interface BindableConversationItem extends Unbindable, Colorizable, Multi
     void goToMediaPreview(ConversationItem parent, View sharedElement, MediaIntentFactory.MediaPreviewArgs args);
     void onEditedIndicatorClicked(@NonNull ConversationMessage conversationMessage);
     void onShowGroupDescriptionClicked(@NonNull String groupName, @NonNull String description, boolean shouldLinkifyWebLinks);
-    void onJoinCallLink(@NonNull CallLinkRootKey callLinkRootKey);
+    void onJoinCallLink(@NonNull ManagedCallLinkRootKey callLinkRootKey);
     void onViewStickerPackLink(@NonNull String packId, @NonNull String packKey);
     void onShowSafetyTips(boolean forGroup);
     void onReportSpamLearnMoreClicked();

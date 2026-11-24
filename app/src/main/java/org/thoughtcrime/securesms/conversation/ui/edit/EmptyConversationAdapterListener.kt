@@ -9,7 +9,7 @@ import android.net.Uri
 import android.view.View
 import androidx.lifecycle.Observer
 import org.signal.core.models.recipients.RecipientId
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.components.voice.VoiceNotePlaybackState
 import org.thoughtcrime.securesms.contactshare.Contact
 import org.thoughtcrime.securesms.conversation.ConversationAdapter
@@ -78,7 +78,7 @@ object EmptyConversationAdapterListener : ConversationAdapter.ItemClickListener 
   override fun goToMediaPreview(parent: ConversationItem?, sharedElement: View?, args: MediaIntentFactory.MediaPreviewArgs?) = Unit
   override fun onEditedIndicatorClicked(conversationMessage: ConversationMessage) = Unit
   override fun onShowGroupDescriptionClicked(groupName: String, description: String, shouldLinkifyWebLinks: Boolean) = Unit
-  override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) = Unit
+  override fun onJoinCallLink(callLinkRootKey: ManagedCallLinkRootKey) = Unit
   override fun onViewStickerPackLink(packId: String, packKey: String) = Unit
   override fun onShowSafetyTips(forGroup: Boolean) = Unit
   override fun onReportSpamLearnMoreClicked() = Unit

@@ -22,7 +22,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import com.bumptech.glide.RequestManager;
 
 import org.signal.core.ui.view.Stub;
-import org.signal.ringrtc.CallLinkRootKey;
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.avatar.fallback.FallbackAvatar;
 import org.thoughtcrime.securesms.avatar.fallback.FallbackAvatarDrawable;
@@ -268,7 +268,7 @@ public class LinkPreviewView extends FrameLayout {
     spinner.setVisibility(GONE);
     noPreview.setVisibility(GONE);
 
-    CallLinkRootKey callLinkRootKey = CallLinks.isCallLink(linkPreview.getUrl()) ? CallLinks.parseUrl(linkPreview.getUrl()) : null;
+    ManagedCallLinkRootKey callLinkRootKey = CallLinks.isCallLink(linkPreview.getUrl()) ? CallLinks.parseUrl(linkPreview.getUrl()) : null;
     if (!Util.isEmpty(linkPreview.getTitle())) {
       title.setText(linkPreview.getTitle());
       title.setVisibility(VISIBLE);

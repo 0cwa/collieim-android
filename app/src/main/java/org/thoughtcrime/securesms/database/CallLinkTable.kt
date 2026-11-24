@@ -23,7 +23,7 @@ import org.signal.core.util.requireBoolean
 import org.signal.core.util.requireInt
 import org.signal.core.util.requireLong
 import org.signal.core.util.requireNonNullString
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.signal.ringrtc.CallLinkState.Restrictions
 import org.thoughtcrime.securesms.calls.log.CallLogRow
 import org.thoughtcrime.securesms.conversation.colors.AvatarColor
@@ -188,8 +188,8 @@ class CallLinkTable(context: Context, databaseHelper: SignalDatabase) : Database
       .readToSingleObject { CallLinkDeserializer.deserialize(it) }
   }
 
-  fun getOrCreateCallLinkByRootKey(callLinkRootKey: CallLinkRootKey): CallLink {
-    val roomId = CallLinkRoomId.fromBytes(callLinkRootKey.deriveRoomId())
+  fun getOrCreateCallLinkByRootKey(callLinkRootKey: ManagedCallLinkRootKey): CallLink {
+    val roomId = callLinkRootKey.roomId
     val callLink = getCallLinkByRoomId(roomId)
     return if (callLink == null) {
       val link = CallLink(
@@ -211,12 +211,12 @@ class CallLinkTable(context: Context, databaseHelper: SignalDatabase) : Database
   }
 
   fun insertOrUpdateCallLinkByRootKey(
-    callLinkRootKey: CallLinkRootKey,
+    callLinkRootKey: ManagedCallLinkRootKey,
     adminPassKey: ByteArray?,
     deletionTimestamp: Long = 0L,
     storageId: StorageId? = null
   ) {
-    val roomId = CallLinkRoomId.fromBytes(callLinkRootKey.deriveRoomId())
+    val roomId = callLinkRootKey.roomId
 
     writableDatabase.withinTransaction {
       val callLink = getCallLinkByRoomId(roomId)

@@ -27,6 +27,7 @@ import org.signal.core.util.requireString
 import org.signal.storageservice.storage.protos.groups.Member
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.storage.protos.groups.local.EnabledState
+import org.thoughtcrime.securesms.calls.permissions.CallPeekState
 import org.thoughtcrime.securesms.database.CallTable
 import org.thoughtcrime.securesms.database.CallTable.Direction
 import org.thoughtcrime.securesms.database.CallTable.Event
@@ -35,9 +36,9 @@ import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.GroupCallUpdateDetailsUtil
-import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.service.webrtc.CallLinkPeekInfo
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupUtil
 import java.util.concurrent.Executor
 import kotlin.math.abs
@@ -79,9 +80,10 @@ class CallEventCache(
       val output = mutableListOf<CallLogRow.Call>()
       val canUserBeginCallMap = mutableMapOf<Long, CallLogRow.CanStartCall>()
       val callLinksSeen = hashSetOf<Long>()
+      val peekInfoSnapshot = CallPeekState.snapshot()
 
       while (recordIterator.hasNext()) {
-        val log = recordIterator.readNextCallLog(filterState, newestGroupCallRowIds, canUserBeginCallMap, callLinksSeen)
+        val log = recordIterator.readNextCallLog(filterState, newestGroupCallRowIds, canUserBeginCallMap, callLinksSeen, peekInfoSnapshot)
         if (log != null) {
           output += log
         }
@@ -96,7 +98,8 @@ class CallEventCache(
       filterState: FilterState,
       newestGroupCallRowIds: Set<Long>,
       canUserBeginCallMap: MutableMap<Long, CallLogRow.CanStartCall>,
-      callLinksSeen: MutableSet<Long>
+      callLinksSeen: MutableSet<Long>,
+      peekInfoSnapshot: Map<RecipientId, CallLinkPeekInfo>
     ): CallLogRow.Call? {
       val parent = next()
 
@@ -117,7 +120,7 @@ class CallEventCache(
         }
       }
 
-      return createParentCallLogRow(parent, children, filterState, newestGroupCallRowIds, canUserBeginCallMap, isActiveCallLinkRow)
+      return createParentCallLogRow(parent, children, filterState, newestGroupCallRowIds, canUserBeginCallMap, isActiveCallLinkRow, peekInfoSnapshot)
     }
 
     private fun readDataFromDatabase(): List<CacheRecord> {
@@ -176,7 +179,8 @@ class CallEventCache(
       filterState: FilterState,
       newestGroupCallRowIds: Set<Long>,
       canUserBeginCallMap: MutableMap<Long, CallLogRow.CanStartCall>,
-      isActiveCallLinkRow: Boolean
+      isActiveCallLinkRow: Boolean,
+      peekInfoSnapshot: Map<RecipientId, CallLinkPeekInfo>
     ): CallLogRow.Call {
       val peer = Recipient.resolved(RecipientId.from(parent.peer))
       return CallLogRow.Call(
@@ -202,7 +206,7 @@ class CallEventCache(
         },
         children = setOf(parent.rowId) + children,
         searchQuery = filterState.query,
-        callLinkPeekInfo = if (isActiveCallLinkRow) AppDependencies.signalCallManager.peekInfoSnapshot[peer.id] else null,
+        callLinkPeekInfo = if (isActiveCallLinkRow) peekInfoSnapshot[peer.id] else null,
         canUserBeginCall = if (peer.isGroup) {
           canUserBeginCallMap.getOrPut(parent.peer) { canUserBeginCall(peer, parent.decryptedGroupBytes) }
         } else {
@@ -248,9 +252,7 @@ class CallEventCache(
         onDataSetInvalidated()
       }
 
-    disposables += AppDependencies
-      .signalCallManager
-      .peekInfoCache
+    disposables += CallPeekState.observe()
       .skipWhile { cache -> cache.isEmpty() || cache.values.all { it.isCompletelyInactive } }
       .subscribeOn(Schedulers.computation())
       .distinctUntilChanged()

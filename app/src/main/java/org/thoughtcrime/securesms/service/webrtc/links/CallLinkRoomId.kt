@@ -13,7 +13,6 @@ import okio.ByteString.Companion.toByteString
 import org.signal.core.util.Base64
 import org.signal.core.util.Hex
 import org.signal.core.util.Serializer
-import org.signal.ringrtc.CallLinkRootKey
 
 @Serializable
 @Parcelize
@@ -60,8 +59,5 @@ class CallLinkRoomId private constructor(private val roomId: ByteArray) : Parcel
       return CallLinkRoomId(byteArray)
     }
 
-    fun fromCallLinkRootKey(callLinkRootKey: CallLinkRootKey): CallLinkRoomId {
-      return CallLinkRoomId(callLinkRootKey.deriveRoomId())
-    }
   }
 }

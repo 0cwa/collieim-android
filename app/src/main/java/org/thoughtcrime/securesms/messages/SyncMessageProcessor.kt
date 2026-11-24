@@ -24,9 +24,8 @@ import org.signal.libsignal.protocol.ServiceId.Pni
 import org.signal.libsignal.protocol.SignalProtocolAddress
 import org.signal.libsignal.protocol.state.KyberPreKeyRecord
 import org.signal.libsignal.protocol.state.SignedPreKeyRecord
-import org.signal.ringrtc.CallException
 import org.signal.ringrtc.CallId
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.attachments.Attachment
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
 import org.thoughtcrime.securesms.attachments.TombstoneAttachment
@@ -1389,14 +1388,13 @@ object SyncMessageProcessor {
       return
     }
 
-    val callLinkRootKey = try {
-      CallLinkRootKey(callLinkUpdate.rootKey!!.toByteArray())
-    } catch (e: CallException) {
+    val callLinkRootKey = ManagedCallLinkRootKey.fromBytes(callLinkUpdate.rootKey!!.toByteArray())
+    if (callLinkRootKey == null) {
       log(envelopeTimestamp, "Synchronize call link has invalid root key, ignoring.")
       return
     }
 
-    val roomId = CallLinkRoomId.fromCallLinkRootKey(callLinkRootKey)
+    val roomId = callLinkRootKey.roomId
 
     if (SignalDatabase.callLinks.callLinkExists(roomId)) {
       log(envelopeTimestamp, "Synchronize call link for a link we already know about. Updating credentials.")

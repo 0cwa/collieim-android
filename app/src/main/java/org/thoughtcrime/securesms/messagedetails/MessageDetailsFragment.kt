@@ -18,7 +18,7 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.getParcelableCompat
 import org.signal.core.util.logging.Log
 import org.signal.core.util.requireParcelableCompat
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.WrapperDialogFragment
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner
@@ -345,7 +345,7 @@ class MessageDetailsFragment : Fragment(), MessageDetailsAdapter.Callbacks {
     Log.w(TAG, "Not yet implemented!", Exception())
   }
 
-  override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) {
+  override fun onJoinCallLink(callLinkRootKey: ManagedCallLinkRootKey) {
     Log.w(TAG, "Not yet implemented!", Exception())
   }
 

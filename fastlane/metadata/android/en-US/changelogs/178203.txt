@@ -1,0 +1,3 @@
+Collie is 100% free and open source. This is the last Stable release with duplicate APK filenames. Use collie.apk for future updates.
+
+Settings > Collie groups Story Archive, Better Search, Starred Messages, and chat archiving. Clearer unlock passphrase errors. UnifiedPush resumes interrupted relay cleanup and shows export results in a dialog. New relay sharing asks for consent. Turn off web preview images in Chats. Linked-device alerts arrive sooner, and you can copy or paste a linking code.

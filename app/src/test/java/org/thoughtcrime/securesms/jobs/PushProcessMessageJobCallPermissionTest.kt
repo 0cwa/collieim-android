@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -15,6 +16,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,7 +86,13 @@ class PushProcessMessageJobCallPermissionTest {
     val restored = job(serialized)
     assertEquals(serialized, CompleteMessage.ADAPTER.decode(restored.serialize()))
     restored.onRun()
-    verify(exactly = 1) { processor.process(any(), calling, any(), 1_000, any(), any(), any(), match { it.queueDelayMillis() == 1_000L }) }
+    val delivered = slot<CallMessageQueueReceipt>()
+    verify(exactly = 1) { processor.process(any(), calling, any(), 1_000, any(), any(), any(), capture(delivered)) }
+    assertEquals(serialized.callQueueProcess, delivered.captured.process)
+    assertEquals(serialized.callQueueGeneration, delivered.captured.generation)
+    assertEquals(serialized.callQueueReceivedAt, delivered.captured.receivedAt)
+    // Live policy reads must run outside MockK's matcher evaluation, which forbids mocked calls.
+    assertEquals(1_000L, delivered.captured.queueDelayMillis())
   }
 
   @Test
@@ -121,13 +129,19 @@ class PushProcessMessageJobCallPermissionTest {
   }
 
   @Test
-  fun `an ignored calling field preserves existing ordinary content precedence`() {
-    val ordinary = calling.copy(dataMessage = DataMessage(body = "hello", timestamp = 1_000))
-    val restored = job(data(ordinary))
+  fun `mixed calling and ordinary wire content is rejected before content processing`() {
+    val ordinary = Content(dataMessage = DataMessage(body = "hello", timestamp = 1_000))
+    val serialized = data(ordinary)
     CallPermissions.setAllCallingDisabled(true)
-    restored.onRun()
 
-    verify(exactly = 1) { processor.process(any(), ordinary, any(), 1_000, any(), any(), any(), null) }
+    // Content is a oneof. Supply conflicting wire fields in either order to exercise
+    // the actual persisted-job decoder rather than constructing an impossible Content.
+    for (encoded in listOf(calling.encode() + ordinary.encode(), ordinary.encode() + calling.encode())) {
+      assertThrows(IllegalArgumentException::class.java) {
+        job(serialized.copy(content = encoded.toByteString())).onRun()
+      }
+    }
+    verify(exactly = 0) { MessageContentProcessor.create(any()) }
   }
 
   private fun job(serialized: CompleteMessage) = PushProcessMessageJob.Factory().create(Job.Parameters.Builder().build(), serialized.encode()).apply {

@@ -32,14 +32,12 @@ class MapResourceCache internal constructor(
 ) : Interceptor {
   companion object {
     private const val FORMAT_VERSION = 1
-    internal const val MAX_TILE_BYTES = 1024 * 1024
     private const val MAX_HEADERS = 32
     private const val MAX_HEADER_LENGTH = 4096
-    private const val MAX_RECORD_BYTES = MAX_TILE_BYTES + 64 * 1024
+    private const val MAX_METADATA_BYTES = 64 * 1024
     private val DEFAULT_LIFETIME_MILLIS = TimeUnit.DAYS.toMillis(7)
     private val SESSION_SALT = ByteArray(32).also { SecureRandom().nextBytes(it) }
     private val LOCK = Any()
-    private val TILE_PATH = Regex("/[0-9]{1,2}/[0-9]+/[0-9]+\\.png")
     private val STORED_HEADERS = setOf("Cache-Control", "Expires", "Date", "Age", "ETag", "Last-Modified", "Content-Type", "Vary")
 
     @JvmStatic
@@ -50,20 +48,18 @@ class MapResourceCache internal constructor(
 
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
-    if (request.method != "GET" || request.url.host != "tile.openstreetmap.org" || !TILE_PATH.matches(request.url.encodedPath)) {
-      return chain.proceed(request)
-    }
+    val kind = MapResourceClient.tileKind(request) ?: return chain.proceed(request)
 
     if (request.cacheControl.noStore) {
       remove(request)
       if (request.cacheControl.onlyIfCached) return cacheMiss(request)
-      val response = bufferResponse(chain.proceed(request))
+      val response = bufferResponse(chain.proceed(request), kind.maximumBytes)
       return response.newBuilder()
         .headers(response.headers.forMapLibre("no-store, max-age=0, must-revalidate"))
         .build()
     }
 
-    val cached = read(request)
+    val cached = read(request, kind.maximumBytes)
     if (cached != null && !request.cacheControl.noCache && cached.isFresh(request, clock())) {
       return cached.response(request, clock())
     }
@@ -114,15 +110,15 @@ class MapResourceCache internal constructor(
         }.build()
       }
       val updated = entry(request, updatedHeaders, cached.body, sentAt, receivedAt)
-      storeOrRemove(request, updated)
+      storeOrRemove(request, updated, kind.maximumBytes)
       return updated.response(request, clock())
     }
 
-    val buffered = bufferResponse(networkResponse)
+    val buffered = bufferResponse(networkResponse, kind.maximumBytes)
     if (buffered.code == 200) {
       val bytes = buffered.body.bytes()
       val updated = entry(request, buffered.headers, bytes, sentAt, receivedAt)
-      storeOrRemove(request, updated)
+      storeOrRemove(request, updated, kind.maximumBytes)
       return buffered.newBuilder()
         .headers(buffered.headers.forMapLibre(updated.nativeCacheControl(clock())))
         .body(bytes.toResponseBody(buffered.body.contentType()))
@@ -136,16 +132,16 @@ class MapResourceCache internal constructor(
     .request(request).protocol(Protocol.HTTP_1_1).code(504).message("Map tile is not cached")
     .body(ByteArray(0).toResponseBody()).build()
 
-  private fun bufferResponse(response: Response): Response {
+  private fun bufferResponse(response: Response, maximumBytes: Int): Response {
     try {
-      if (response.body.contentLength() > MAX_TILE_BYTES) throw IOException("Map tile exceeds the size limit")
+      if (response.body.contentLength() > maximumBytes) throw IOException("Map tile exceeds the size limit")
       val output = ByteArrayOutputStream()
       response.body.byteStream().use { input ->
         val buffer = ByteArray(8192)
         while (true) {
           val count = input.read(buffer)
           if (count == -1) break
-          if (output.size() + count > MAX_TILE_BYTES) throw IOException("Map tile exceeds the size limit")
+          if (output.size() + count > maximumBytes) throw IOException("Map tile exceeds the size limit")
           output.write(buffer, 0, count)
         }
       }
@@ -169,11 +165,11 @@ class MapResourceCache internal constructor(
     return Entry(stored, vary, body, receivedAt, initialAge)
   }
 
-  private fun storeOrRemove(request: Request, entry: Entry) {
+  private fun storeOrRemove(request: Request, entry: Entry, maximumBytes: Int) {
     if (entry.headers.toCacheControl().noStore || "*" in varyNames(entry.headers) || entry.body.isEmpty()) {
       remove(request)
     } else {
-      write(request, entry)
+      write(request, entry, maximumBytes)
     }
   }
 
@@ -184,12 +180,12 @@ class MapResourceCache internal constructor(
     return File(directory, name)
   }
 
-  private fun read(request: Request): Entry? = synchronized(LOCK) {
+  private fun read(request: Request, maximumBytes: Int): Entry? = synchronized(LOCK) {
     val file = file(request)
     if (!file.isFile) return@synchronized null
     try {
       // The stream helper reads the complete 32-byte key prefix before returning a closeable stream.
-      if (file.length() < 32 || file.length() > MAX_RECORD_BYTES * 2L) throw IOException("Invalid map cache record")
+      if (file.length() < 32 || file.length() > (maximumBytes + MAX_METADATA_BYTES) * 2L) throw IOException("Invalid map cache record")
       val entry = DataInputStream(EncryptedStreamUtils.getInputStream(context, file)).use { input ->
         if (input.readInt() != FORMAT_VERSION) throw IOException("Invalid map cache format")
         val receivedAt = input.readLong()
@@ -198,7 +194,7 @@ class MapResourceCache internal constructor(
         val headers = readHeaders(input)
         val vary = readHeaders(input)
         val length = input.readInt()
-        if (length !in 1..MAX_TILE_BYTES) throw IOException("Invalid map cache size")
+        if (length !in 1..maximumBytes) throw IOException("Invalid map cache size")
         val body = ByteArray(length)
         input.readFully(body)
         Entry(headers, vary, body, receivedAt, initialAge)
@@ -215,7 +211,7 @@ class MapResourceCache internal constructor(
     }
   }
 
-  private fun write(request: Request, entry: Entry) = synchronized(LOCK) {
+  private fun write(request: Request, entry: Entry, maximumBytes: Int) = synchronized(LOCK) {
     var temporary: File? = null
     try {
       val bytes = ByteArrayOutputStream().also { output ->
@@ -229,7 +225,7 @@ class MapResourceCache internal constructor(
           it.write(entry.body)
         }
       }.toByteArray()
-      if (bytes.size > MAX_RECORD_BYTES || PaddingInputStream.getPaddedSize(bytes.size.toLong()) + 32 > maxCacheBytes) return@synchronized
+      if (bytes.size > maximumBytes + MAX_METADATA_BYTES || PaddingInputStream.getPaddedSize(bytes.size.toLong()) + 32 > maxCacheBytes) return@synchronized
       if (!directory.isDirectory && !directory.mkdirs()) return@synchronized
       temporary = File.createTempFile("tile-", ".tmp", directory)
       EncryptedStreamUtils.getOutputStream(context, temporary).use { output ->

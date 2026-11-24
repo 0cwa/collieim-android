@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 
 import org.maplibre.android.maps.MapLibreMap;
 import org.maplibre.android.maps.MapLibreMapOptions;
+import org.maplibre.android.maps.Style;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.maps.MapLibreConfiguration;
 import org.thoughtcrime.securesms.maps.MapLibreStyle;
@@ -29,6 +30,8 @@ import java.util.List;
 
 /** Compatibility view for upstream callers, backed by MapLibre Native. */
 public final class MapView extends FrameLayout {
+  private static final long OPTIONAL_CONTEXT_TIMEOUT_MILLIS = 5_000;
+
   private final List<OnMapReadyCallback> readyCallbacks = new ArrayList<>();
 
   private org.maplibre.android.maps.MapView renderer;
@@ -36,10 +39,12 @@ public final class MapView extends FrameLayout {
   private TextView attribution;
   private ZoomControls zoomControls;
   private GoogleMap.OnMapLoadedCallback loadedCallback;
+  private Runnable optionalContextFallback;
   private OnMapErrorListener errorListener;
   private Exception failure;
   private Bundle savedState;
   private int generation;
+  private int loadedCallbackGeneration;
   private boolean initializing;
   private boolean started;
   private boolean resumed;
@@ -170,20 +175,56 @@ public final class MapView extends FrameLayout {
   }
 
   void setOnMapLoadedCallback(@Nullable GoogleMap.OnMapLoadedCallback callback) {
+    loadedCallbackGeneration++;
     loadedCallback = callback;
+    scheduleOptionalContextFallback();
     dispatchLoadedCallback();
+  }
+
+  private void scheduleOptionalContextFallback() {
+    cancelOptionalContextFallback();
+    if (loadedCallback == null || fullyRendered || !resumed) return;
+
+    int currentGeneration = generation;
+    int callbackGeneration = loadedCallbackGeneration;
+    GoogleMap.OnMapLoadedCallback callback = loadedCallback;
+    optionalContextFallback = () -> {
+      optionalContextFallback = null;
+      if (generation != currentGeneration || loadedCallbackGeneration != callbackGeneration || loadedCallback != callback || fullyRendered || renderer == null) return;
+      renderer.getMapAsync(map -> {
+        if (generation != currentGeneration || loadedCallbackGeneration != callbackGeneration || loadedCallback != callback || fullyRendered) return;
+        Style style = map.getStyle();
+        if (style != null) {
+          MapLibreStyle.removeTransitContext(style);
+          map.triggerRepaint();
+        }
+        // Wait for a real complete base-map frame. Never declare a partial map ready.
+      });
+    };
+    postDelayed(optionalContextFallback, OPTIONAL_CONTEXT_TIMEOUT_MILLIS);
+  }
+
+  private void cancelOptionalContextFallback() {
+    if (optionalContextFallback != null) removeCallbacks(optionalContextFallback);
+    optionalContextFallback = null;
   }
 
   private void dispatchLoadedCallback() {
     if (!fullyRendered || loadedCallback == null || !resumed) return;
+    cancelOptionalContextFallback();
     GoogleMap.OnMapLoadedCallback callback = loadedCallback;
     loadedCallback = null;
     int currentGeneration = generation;
+    int callbackGeneration = loadedCallbackGeneration;
     // Leave the render callback before requesting a snapshot; never recurse through idle events.
     post(() -> {
-      if (generation != currentGeneration || failure != null) return;
-      if (resumed) callback.onMapLoaded();
-      else loadedCallback = callback;
+      if (generation != currentGeneration || loadedCallbackGeneration != callbackGeneration || failure != null) return;
+      if (resumed && fullyRendered) {
+        callback.onMapLoaded();
+      } else {
+        loadedCallback = callback;
+        scheduleOptionalContextFallback();
+      }
     });
   }
 
@@ -204,6 +245,7 @@ public final class MapView extends FrameLayout {
   }
 
   private void reportFailure(@NonNull Exception error) {
+    cancelOptionalContextFallback();
     failure = error;
     readyCallbacks.clear();
     loadedCallback = null;
@@ -232,12 +274,14 @@ public final class MapView extends FrameLayout {
     if (resumed) return;
     resumed = true;
     if (renderer != null) renderer.onResume();
+    scheduleOptionalContextFallback();
     dispatchLoadedCallback();
   }
 
   public void onPause() {
     if (!resumed) return;
     resumed = false;
+    cancelOptionalContextFallback();
     if (renderer != null) renderer.onPause();
   }
 
@@ -248,6 +292,7 @@ public final class MapView extends FrameLayout {
   }
 
   public void onDestroy() {
+    cancelOptionalContextFallback();
     OnMapErrorListener listener = errorListener;
     errorListener = null;
     generation++;

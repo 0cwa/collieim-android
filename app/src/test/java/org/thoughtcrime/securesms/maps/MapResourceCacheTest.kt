@@ -100,6 +100,57 @@ class MapResourceCacheTest {
   }
 
   @Test
+  fun `Shortbread vector bytes use encrypted storage with a separate decoded size budget`() {
+    val client = client()
+    val vectorBytes = ByteArray(MapTileKind.RASTER.maximumBytes + 128) { it.toByte() }
+    val privateMarker = "private-vector-tile-data".toByteArray()
+    privateMarker.copyInto(vectorBytes)
+    reply(headers = mapOf("Content-Type" to "application/vnd.mapbox-vector-tile", "Cache-Control" to "public, max-age=300"), body = vectorBytes)
+
+    assertArrayEquals(vectorBytes, fetch(client, transitRequest()))
+    assertArrayEquals(vectorBytes, fetch(client, transitRequest()))
+    assertEquals(1, requests.size)
+    val file = cacheFiles().single()
+    assertTrue(file.name.matches(Regex("[0-9a-f]{64}")))
+    assertFalse(file.readBytes().toString(Charsets.ISO_8859_1).contains("private-vector-tile-data"))
+  }
+
+  @Test
+  fun `Shortbread five minute freshness revalidates Last-Modified with Accept-Encoding variation`() {
+    val client = client()
+    val modified = date(now - TimeUnit.HOURS.toMillis(1))
+    reply(headers = mapOf(
+      "Cache-Control" to "public, max-age=300, stale-while-revalidate=3600, stale-if-error=86400",
+      "Last-Modified" to modified,
+      "Vary" to "Accept-Encoding"
+    ))
+    fetch(client, transitRequest())
+    now += 299_000
+    fetch(client, transitRequest())
+    assertEquals(1, requests.size)
+    now += 2_000
+    reply(code = 304, headers = mapOf("Cache-Control" to "public, max-age=300"), body = ByteArray(0))
+    assertArrayEquals(tile, fetch(client, transitRequest()))
+    assertEquals(modified, requests.last().header("If-Modified-Since"))
+    assertNull(requests.last().header("If-None-Match"))
+    assertEquals(2, requests.size)
+  }
+
+  @Test
+  fun `raster and vector resources remain distinct encrypted entries`() {
+    val client = client()
+    val vector = "vector-data".toByteArray()
+    reply()
+    reply(body = vector)
+    fetch(client)
+    fetch(client, transitRequest())
+    assertArrayEquals(tile, fetch(client))
+    assertArrayEquals(vector, fetch(client, transitRequest()))
+    assertEquals(2, requests.size)
+    assertEquals(2, cacheFiles().size)
+  }
+
+  @Test
   fun `expired tiles revalidate with validators and a 304 renews their encrypted record`() {
     val client = client()
     reply(headers = mapOf("Cache-Control" to "max-age=60", "ETag" to "tile-v1", "Last-Modified" to date(now - 100_000)))
@@ -290,12 +341,14 @@ class MapResourceCacheTest {
 
   @Test
   fun `both declared and streaming oversized responses fail without leaving cache files`() {
-    for (unknownLength in listOf(false, true)) {
-      val client = client()
-      reply(body = ByteArray(MapResourceCache.MAX_TILE_BYTES + 1), unknownLength = unknownLength)
-      val failure = assertThrows(IOException::class.java) { fetch(client) }
-      assertEquals("Map tile exceeds the size limit", failure.message)
-      assertTrue(cacheFiles().isEmpty())
+    for ((request, kind) in listOf(request() to MapTileKind.RASTER, transitRequest() to MapTileKind.TRANSIT)) {
+      for (unknownLength in listOf(false, true)) {
+        val client = client()
+        reply(body = ByteArray(kind.maximumBytes + 1), unknownLength = unknownLength)
+        val failure = assertThrows(IOException::class.java) { fetch(client, request) }
+        assertEquals("Map tile exceeds the size limit", failure.message)
+        assertTrue(cacheFiles().isEmpty())
+      }
     }
   }
 
@@ -374,6 +427,10 @@ class MapResourceCacheTest {
   }
 
   private fun request(path: String = "/1/1/1.png"): Request = Request.Builder().url("https://tile.openstreetmap.org$path").build()
+
+  private fun transitRequest(): Request = Request.Builder().url(
+    MapResourceClient.TRANSIT_TILE_TEMPLATE.replace("{z}", "12").replace("{x}", "2046").replace("{y}", "1362")
+  ).build()
 
   private fun fetch(client: OkHttpClient, request: Request = request()): ByteArray = client.newCall(request).execute().use { it.body.bytes() }
 

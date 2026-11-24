@@ -36,6 +36,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ProfileKeySendJob
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientUtil
+import org.thoughtcrime.securesms.service.webrtc.SignalCallManager
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.internal.push.CallMessage
@@ -52,6 +53,7 @@ class CallMessageAdmissionTest {
   private val policy = CallPermissionTestEnvironment()
   private val blockedId = RecipientId.from(9)
   private lateinit var sender: Recipient
+  private lateinit var callManager: SignalCallManager
   private val envelope = Envelope(clientTimestamp = 1_000, serverTimestamp = 1_000)
   private val metadata = EnvelopeMetadata(ServiceId.ACI.from(UUID(0, 9)), null, 2, true, null, policy.accountId, 1)
 
@@ -63,7 +65,8 @@ class CallMessageAdmissionTest {
     CallPermissions.setOverride(sender, CallPermission.BLOCK)
     mockkStatic(AppDependencies::class, RecipientUtil::class, GroupCallAdmission::class, ProfileKeySendJob::class)
     mockkObject(CallPolicyRejector, GroupCallAdmission)
-    every { AppDependencies.signalCallManager } returns mockk(relaxed = true)
+    callManager = mockk(relaxed = true)
+    every { AppDependencies.signalCallManager } returns callManager
     every { RecipientUtil.shareProfileIfFirstSecureMessage(any()) } just Runs
     every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns true
     every { ProfileKeySendJob.createForCall(any(), any()) } returns null
@@ -114,7 +117,8 @@ class CallMessageAdmissionTest {
     verify(exactly = 0) { AppDependencies.signalCallManager }
 
     process(CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY))))
-    verify(exactly = 1) { AppDependencies.signalCallManager.receivedIceCandidates(any(), any(), any()) }
+    verify(exactly = 1) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { callManager.receivedIceCandidates(any(), any(), any()) }
   }
 
   @Test
@@ -143,7 +147,8 @@ class CallMessageAdmissionTest {
 
     CallMessageProcessor.process(sender, envelope, Content(callMessage = ice), metadata, 2_000, receipt)
 
-    verify(exactly = 1) { AppDependencies.signalCallManager.receivedIceCandidates(any(), any(), any()) }
+    verify(exactly = 1) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { callManager.receivedIceCandidates(any(), any(), any()) }
   }
 
   @Test
@@ -205,7 +210,8 @@ class CallMessageAdmissionTest {
 
     process(deniedMessages().first())
 
-    verify(exactly = 1) { AppDependencies.signalCallManager.receivedOffer(any(), any(), any(), any()) }
+    verify(exactly = 1) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { callManager.receivedOffer(any(), any(), any(), any()) }
     verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
   }
 

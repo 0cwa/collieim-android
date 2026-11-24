@@ -9,7 +9,9 @@ import arrow.core.left
 import arrow.core.right
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -22,15 +24,16 @@ import org.signal.network.service.ArchiveError
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
+import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.io.IOException
-import kotlin.time.Duration.Companion.minutes
 
 class BackupTierDowngradeCheckJobTest {
 
   companion object {
     private val FREE_TIER = MessageBackupTier.FREE.toBackupLevel()
+    private const val RETRY_BACKOFF_CAP_MS = 1_000L
   }
 
   @get:Rule
@@ -46,12 +49,15 @@ class BackupTierDowngradeCheckJobTest {
 
     mockkObject(BackupRepository)
     mockkObject(RemoteConfig)
-    every { RemoteConfig.defaultMaxBackoff } returns 1.minutes.inWholeMilliseconds
+    // Job.defaultBackoff() calls the Java @JvmStatic getter, not the object mock.
+    mockkStatic(RemoteConfig::class)
+    every { RemoteConfig.defaultMaxBackoff } returns RETRY_BACKOFF_CAP_MS
   }
 
   @After
   fun tearDown() {
     unmockkObject(BackupRepository)
+    unmockkStatic(RemoteConfig::class)
     unmockkObject(RemoteConfig)
   }
 
@@ -82,6 +88,12 @@ class BackupTierDowngradeCheckJobTest {
     val result = BackupTierDowngradeCheckJob.create(FREE_TIER).run()
 
     assertTrue(result.isRetry)
+    // The package-private accessor exposes the actual retry interval without changing the app API.
+    val backoff = Job.Result::class.java.getDeclaredMethod("getBackoffInterval")
+      .apply { isAccessible = true }
+      .invoke(result) as Long
+    assertTrue("Retry backoff must honor the configured cap with jitter", backoff in (RETRY_BACKOFF_CAP_MS * 3 / 4) until (RETRY_BACKOFF_CAP_MS * 5 / 4))
+    verify(exactly = 1) { RemoteConfig.defaultMaxBackoff }
     verify(exactly = 0) { signalStore.backup.backupTier = any() }
   }
 

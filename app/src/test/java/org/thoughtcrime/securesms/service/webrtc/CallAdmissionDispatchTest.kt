@@ -11,6 +11,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -214,9 +215,12 @@ class CallAdmissionDispatchTest {
   @Test
   fun `policy change during final group lookup invalidates the original peek`() {
     val group = policy.group(8)
+    val recipientId = group.id
+    val originalGeneration = CallPermissions.generation()
+    var changePolicy = true
     prepareGroupPeek(group) {
-      var changePolicy = true
-      every { Recipient.resolved(group.id) } answers {
+      // Capture the ID before MockK recording; its getter is itself mocked.
+      every { Recipient.resolved(recipientId) } answers {
         if (changePolicy) {
           changePolicy = false
           CallPermissions.setDefault(CallContext.DIRECT, CallPermission.BLOCK)
@@ -225,13 +229,17 @@ class CallAdmissionDispatchTest {
       }
     }
 
-    manager.peekGroupCall(group.id)
+    manager.peekGroupCall(recipientId)
     queue.drain()
 
     verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
     verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+    assertFalse("The final recipient lookup must exercise the policy change", changePolicy)
+    assertFalse(CallPermissions.isCurrent(originalGeneration))
+    assertEquals(CallPermission.BLOCK, CallPermissions.settings().directDefault)
+    assertEquals(CallPermission.ALLOW, CallPermissions.settings().groupDefault)
     // The group remains allowed; it is the original request that was revoked.
-    check(CallPermissions.canReceiveGroup(group.id))
+    assertTrue(CallPermissions.canReceiveGroup(recipientId))
   }
 
   @Test

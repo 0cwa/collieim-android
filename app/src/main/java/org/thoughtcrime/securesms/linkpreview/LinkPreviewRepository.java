@@ -588,7 +588,7 @@ public class LinkPreviewRepository {
     }
   }
 
-  interface Callback {
+  public interface Callback {
     void onSuccess(@NonNull LinkPreview linkPreview);
 
     void onError(@NonNull Error error);

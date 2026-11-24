@@ -45,7 +45,7 @@ import java.util.Optional
 class LinkPreviewViewModelsImagePolicyTest {
 
   companion object {
-    private const val WEB_URL = "https://example.org/article"
+    private const val WEB_URL = "https://news.collie.im/article"
     private const val STICKER_URL = "https://signal.art/addstickers/#pack_id=aabb&pack_key=ccdd"
   }
 

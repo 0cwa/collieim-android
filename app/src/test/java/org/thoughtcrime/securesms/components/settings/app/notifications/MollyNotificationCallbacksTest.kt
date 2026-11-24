@@ -1,92 +1,453 @@
 package org.thoughtcrime.securesms.components.settings.app.notifications
 
 import android.app.Application
+import android.os.Looper
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.model.MollySocket
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.MutableStateFlow
+import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.After
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowDialog
 import org.signal.appsettings.routes.AppSettingsRoute
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 
 @RunWith(RobolectricTestRunner::class)
-@Config(application = Application::class)
+@Config(application = Application::class, sdk = [35])
 class MollyNotificationCallbacksTest {
+  private lateinit var controller: ActivityController<FragmentActivity>
   private lateinit var activity: FragmentActivity
+  private lateinit var callbacks: DefaultNotificationsSettingsCallbacks
   private val viewModel = mockk<NotificationsSettingsViewModel>(relaxed = true)
   private val router = mockk<AppSettingsRouter>(relaxed = true)
   private val results = RecordingResults()
+  private val disclosure = mockk<RelayDisclosure.Snapshot>()
+  private val authorization = mockk<RelayDisclosure.RefreshAuthorization>()
+  private var scanDisclosure: RelayDisclosure.Snapshot? = null
+  private val pendingLaunch = MutableStateFlow<UnifiedPushDefaultDistributorLinkActivity.Setup?>(null)
+  private var pendingSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
+  private var lastSetupId = "unrecognized-setup"
+  private val pendingResult = MutableStateFlow<NotificationsSettingsViewModel.PendingMollySocketResult?>(null)
+  private val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org/relay")
 
   @Before
   fun setUp() {
-    activity = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
-    DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results)
+    every { viewModel.scanDisclosure } answers { scanDisclosure }
+    every { viewModel.scanDisclosure = any() } answers { scanDisclosure = firstArg() }
+    every { viewModel.pendingMollySocketLaunch } returns pendingLaunch
+    coEvery { viewModel.awaitMollySocketPicker(any(), any()) } coAnswers { secondArg<() -> Unit>()(); true }
+    every { viewModel.pendingMollySocketResult } returns pendingResult
+    every { viewModel.pendingMollySocketSetup } answers { pendingSetup }
+    every { viewModel.pendingMollySocketSetup = any() } answers {
+      pendingSetup = firstArg()
+      pendingSetup?.let { lastSetupId = it.id }
+    }
+    controller = Robolectric.buildActivity(FragmentActivity::class.java)
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
+    controller.setup()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results)
+  }
+
+  @After
+  fun tearDown() {
+    ShadowDialog.getLatestDialog()?.dismiss()
+    if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) controller.pause()
+    if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) controller.stop()
+    controller.destroy()
   }
 
   @Test
-  fun `cancelling QR setup does not change the delivery method or link a distributor`() {
+  fun `cancelling before the scan does not launch it or select a relay`() {
+    callbacks.onNotificationMethodChanged(NotificationDeliveryMethod.WEBSOCKET to NotificationDeliveryMethod.UNIFIEDPUSH, disclosure)
+    pressButton(AlertDialog.BUTTON_NEGATIVE)
+
+    verify(exactly = 0) { results.qrLauncher.launch(Unit, null) }
+    verifyNoSelection()
+  }
+
+  @Test
+  fun `missing screen authorization does not launch the scanner`() {
+    callbacks.onNotificationMethodChanged(NotificationDeliveryMethod.WEBSOCKET to NotificationDeliveryMethod.UNIFIEDPUSH, null)
+
+    verify(exactly = 0) { results.qrLauncher.launch(Unit, null) }
+    verifyNoSelection()
+  }
+
+  @Test
+  fun `cancelling QR setup clears its authorization`() {
+    launchScan()
     results.qrResult.onActivityResult(null)
-
-    verify(exactly = 0) { viewModel.initializeMollySocket(any()) }
-    verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
-    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
-  }
-
-  @Test
-  fun `successful QR setup stores server before selecting UnifiedPush and linking distributor`() {
-    val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org")
     results.qrResult.onActivityResult(socket)
 
-    io.mockk.verifyOrder {
-      viewModel.initializeMollySocket(socket)
-      viewModel.setPreferredNotificationMethod(NotificationDeliveryMethod.UNIFIEDPUSH)
-      results.distributorLauncher.launch(Unit, null)
-    }
+    verifyNoSelection()
   }
 
   @Test
-  fun `distributor linking success opens settings without selecting a fallback`() {
-    results.distributorResult.onActivityResult(true)
-    shadowOf(android.os.Looper.getMainLooper()).idle()
+  fun `scanned relay requires trust confirmation with the initiating screen authorization`() {
+    allowSelection()
+    launchScan()
+    results.qrResult.onActivityResult(socket)
 
+    verifyNoSelection()
+    val message = latestDialog().findViewById<TextView>(android.R.id.message)!!.text
+    assertTrue(message.contains("https://push.example.org"))
+    assertFalse(message.contains(socket.url))
+    pressButton(AlertDialog.BUTTON_POSITIVE)
+
+    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure)) }
+    verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
+    verify(exactly = 1) { results.distributorLauncher.launch(any()) }
+  }
+
+  @Test
+  fun `cancelling relay trust does not select a relay or link a distributor`() {
+    launchScan()
+    results.qrResult.onActivityResult(socket)
+    pressButton(AlertDialog.BUTTON_NEGATIVE)
+
+    verifyNoSelection()
+  }
+
+  @Test
+  fun `rejected selection does not launch the distributor picker`() {
+    confirmScannedRelay()
+
+    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure)) }
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
+  }
+
+  @Test
+  fun `selection completing while activity is paused launches once on resume`() {
+    confirmScannedRelay()
+    controller.pause()
+
+    pendingLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
+    shadowOf(Looper.getMainLooper()).idle()
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
+
+    controller.resume()
+    shadowOf(Looper.getMainLooper()).idle()
+    verify(exactly = 1) { results.distributorLauncher.launch(any()) }
+    assertNull(pendingLaunch.value)
+  }
+
+  @Test
+  fun `distributor success opens settings only for accepted current authorization`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    returnDistributorResult(true)
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
   @Test
   fun `missing distributor selects fallback before opening settings`() {
-    results.distributorResult.onActivityResult(false)
-    shadowOf(android.os.Looper.getMainLooper()).idle()
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    returnDistributorResult(false)
+
+    io.mockk.coVerifyOrder {
+      viewModel.completeMollySocketSetup(refEq(authorization), any())
+      viewModel.selectFirstDistributor()
+      router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
+    }
+  }
+
+  @Test
+  fun `cancelled distributor link retains the guarded fallback behavior`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    returnDistributorResult(null)
 
     verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
   @Test
-  fun `cancelled distributor link also selects fallback`() {
-    results.distributorResult.onActivityResult(null)
-    shadowOf(android.os.Looper.getMainLooper()).idle()
+  fun `stale distributor result cannot select fallback or navigate`() {
+    allowSelection()
+    confirmScannedRelay()
+    returnDistributorResult(false)
 
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { router.navigateTo(any()) }
+  }
+
+  @Test
+  fun `distributor result without accepted setup is ignored`() {
+    returnDistributorResult(false)
+
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { router.navigateTo(any()) }
+  }
+
+  @Test
+  fun `distributor result while started waits before checking authorization and navigating`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    controller.pause()
+    returnDistributorResult(false)
+
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { router.navigateTo(any()) }
+
+    controller.resume()
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
+  @Test
+  fun `authorization rejected after the resume wait prevents fallback and navigation`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    controller.pause()
+    returnDistributorResult(false)
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+
+    // Represent an account or relay change while stopped: the current-context guard rejects on resume.
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } returns false
+    controller.resume()
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { router.navigateTo(any()) }
+  }
+
+  @Test
+  fun `distributor authorization is consumed only once`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    returnDistributorResult(true)
+    returnDistributorResult(false)
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(any(), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `superseded result does not consume the current distributor setup`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    val supersededId = lastSetupId
+    confirmScannedRelay()
+
+    returnDistributorResult(false, supersededId)
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+
+    returnDistributorResult(true)
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+  }
+
+  @Test
+  fun `distributor result survives activity recreation and remains single use`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+
+    controller.recreate()
+    activity = controller.get()
+    val recreatedResults = RecordingResults()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, recreatedResults)
+    recreatedResults.distributorResult.onActivityResult(UnifiedPushDefaultDistributorLinkActivity.LinkResult(lastSetupId, false))
+    shadowOf(Looper.getMainLooper()).idle()
+    recreatedResults.distributorResult.onActivityResult(UnifiedPushDefaultDistributorLinkActivity.LinkResult(lastSetupId, false))
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `delivered distributor result survives recreation before resume`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    controller.pause()
+    returnDistributorResult(false)
+
+    controller.recreate()
+    activity = controller.get()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults())
+    if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) controller.resume()
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `distributor result survives recreation while completion is suspended`() {
+    allowSelection()
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers { awaitCancellation() }
+    confirmScannedRelay()
+    returnDistributorResult(false)
+
+    controller.recreate()
+    activity = controller.get()
+    allowCompletion()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults())
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `replaced fragment view cannot consume a suspended distributor result`() {
+    controller.recreate()
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
+    val first = TestFragment()
+    activity.supportFragmentManager.beginTransaction().add(android.R.id.content, first).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, first.viewLifecycleOwner)
+    allowSelection()
+    var cancelled = false
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers {
+      try { awaitCancellation() } finally { cancelled = true }
+    }
+    confirmScannedRelay()
+    returnDistributorResult(false)
+
+    val second = TestFragment()
+    activity.supportFragmentManager.beginTransaction().replace(android.R.id.content, second).commitNow()
+    shadowOf(Looper.getMainLooper()).idle()
+    assertTrue("old view completion must be cancelled", cancelled)
+    assertNotNull("pending result must survive replacement", pendingResult.value)
+    allowCompletion()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), second.viewLifecycleOwner)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `picker result delivered after the same fragment recreates its view reaches the new owner`() {
+    controller.recreate()
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
+    val fragment = TestFragment()
+    activity.supportFragmentManager.beginTransaction().add(android.R.id.content, fragment).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, fragment.viewLifecycleOwner)
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+
+    activity.supportFragmentManager.beginTransaction().detach(fragment).commitNow()
+    activity.supportFragmentManager.beginTransaction().attach(fragment).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), fragment.viewLifecycleOwner)
+    returnDistributorResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  class TestFragment : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = FrameLayout(requireContext())
+  }
+
+  private fun returnDistributorResult(result: Boolean?, setupId: String = lastSetupId) {
+    results.distributorResult.onActivityResult(UnifiedPushDefaultDistributorLinkActivity.LinkResult(setupId, result))
+    shadowOf(Looper.getMainLooper()).idle()
+  }
+
+  private fun launchScan() {
+    callbacks.onNotificationMethodChanged(NotificationDeliveryMethod.WEBSOCKET to NotificationDeliveryMethod.UNIFIEDPUSH, disclosure)
+    pressButton(AlertDialog.BUTTON_POSITIVE)
+  }
+
+  private fun confirmScannedRelay() {
+    launchScan()
+    results.qrResult.onActivityResult(socket)
+    pressButton(AlertDialog.BUTTON_POSITIVE)
+  }
+
+  private fun allowSelection() {
+    every { viewModel.initializeMollySocket(any(), any()) } answers {
+      pendingLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
+    }
+  }
+
+  private fun allowCompletion() {
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers { secondArg<() -> Unit>()(); true }
+  }
+
+  private fun verifyNoSelection() {
+    verify(exactly = 0) { viewModel.initializeMollySocket(any(), any()) }
+    verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
+  }
+
+  private fun latestDialog(): AlertDialog = ShadowDialog.getLatestDialog() as AlertDialog
+
+  private fun pressButton(which: Int) {
+    latestDialog().getButton(which).performClick()
+    shadowOf(Looper.getMainLooper()).idle()
+  }
+
   private class RecordingResults : DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer {
     lateinit var qrResult: ActivityResultCallback<MollySocket?>
-    lateinit var distributorResult: ActivityResultCallback<Boolean?>
-    val distributorLauncher: ActivityResultLauncher<Unit> = mockk(relaxed = true)
+    lateinit var distributorResult: ActivityResultCallback<UnifiedPushDefaultDistributorLinkActivity.LinkResult?>
+    val qrLauncher: ActivityResultLauncher<Unit> = mockk(relaxed = true)
+    val distributorLauncher: ActivityResultLauncher<UnifiedPushDefaultDistributorLinkActivity.Setup> = mockk(relaxed = true)
 
     @Suppress("UNCHECKED_CAST")
     override fun <I, O> registerForActivityResult(
@@ -96,10 +457,10 @@ class MollyNotificationCallbacksTest {
       return when (contract) {
         is MollySocketQrScannerActivity.Contract -> {
           qrResult = callback as ActivityResultCallback<MollySocket?>
-          mockk(relaxed = true)
+          qrLauncher as ActivityResultLauncher<I>
         }
         is UnifiedPushDefaultDistributorLinkActivity.Contract -> {
-          distributorResult = callback as ActivityResultCallback<Boolean?>
+          distributorResult = callback as ActivityResultCallback<UnifiedPushDefaultDistributorLinkActivity.LinkResult?>
           distributorLauncher as ActivityResultLauncher<I>
         }
         else -> mockk(relaxed = true)

@@ -6,18 +6,25 @@ import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.UnifiedPushDistributor
-import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
+import im.molly.unifiedpush.enrollment.RelayDisclosure
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import android.widget.Toast
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.ApplicationContext
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.ApplicationContext
+import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
@@ -31,6 +38,15 @@ import org.thoughtcrime.securesms.recipients.RecipientForeverObserver
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 
 class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
+
+  // Keep confirmation bound to the original state across same-process scanner recreation.
+  internal var scanDisclosure: RelayDisclosure.Snapshot? = null
+
+  // Kept only in memory across configuration changes; the result is still revalidated before use.
+  internal val pendingMollySocketLaunch = MutableStateFlow<UnifiedPushDefaultDistributorLinkActivity.Setup?>(null)
+  internal var pendingMollySocketSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
+  internal data class PendingMollySocketResult(val authorization: RelayDisclosure.RefreshAuthorization, val success: Boolean?)
+  internal val pendingMollySocketResult = MutableStateFlow<PendingMollySocketResult?>(null)
 
   companion object {
     private val TAG = Log.tag(NotificationsSettingsViewModel::class)
@@ -145,19 +161,52 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
   }
 
   fun setPreferredNotificationMethod(method: NotificationDeliveryMethod) {
-    SignalStore.settings.preferredNotificationMethod = method
-    SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
-    ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices()
-    AppDependencies.resetNetwork(true)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      SignalStore.settings.preferredNotificationMethod = method
+      SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
+      ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices()
+      AppDependencies.resetNetwork(true)
+    }
     refresh()
   }
 
   fun selectFirstDistributor() {
-    UnifiedPushDistributor.selectFirstDistributor()
+    synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushDistributor.selectFirstDistributor()
+    }
   }
 
-  fun initializeMollySocket(mollySocket: MollySocket) {
-    SignalStore.unifiedpush.updateMollySocket(mollySocket)
+  fun initializeMollySocket(
+    mollySocket: MollySocket,
+    disclosure: RelayDisclosure.Snapshot?,
+  ) {
+    viewModelScope.launch {
+      val completed = RelayDisclosure.selectRelayAndSchedule(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
+          SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
+          AppDependencies.jobManager.add(UnifiedPushRefreshJob(authorization, configureDelivery = true))
+          pendingMollySocketSetup = null
+          pendingMollySocketResult.value = null
+          pendingMollySocketLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
+        }
+      currentCoroutineContext().ensureActive()
+      if (!completed) {
+        showStaleDisclosure()
+      }
+      refresh()
+    }
+  }
+
+  internal suspend fun awaitMollySocketPicker(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit): Boolean =
+    RelayDisclosure.completeSelection(authorization, onCurrent)
+
+  suspend fun completeMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit): Boolean =
+    RelayDisclosure.completeSelection(authorization, onCurrent)
+
+  fun isCurrentMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization): Boolean =
+    RelayDisclosure.isCurrentAuthorization(authorization)
+
+  private fun showStaleDisclosure() {
+    Toast.makeText(AppDependencies.application, R.string.UnifiedPushSettingsFragment__disclosure_stale, Toast.LENGTH_LONG).show()
   }
 
   fun setPlayServicesErrorCode(errorCode: Int?) {
@@ -211,47 +260,50 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
    * @param calculateSlowNotifications If true, calculate the true slow notification state (this is not main-thread safe). Otherwise, it will copy from
    * [currentState] or default to false.
    */
-  private fun getState(currentState: NotificationsSettingsState? = null, calculateSlowNotifications: Boolean = false): NotificationsSettingsState = NotificationsSettingsState(
-    messageNotificationsState = MessageNotificationsState(
-      notificationsEnabled = SignalStore.settings.isMessageNotificationsEnabled && canEnableNotifications(),
-      canEnableNotifications = canEnableNotifications(),
-      sound = SignalStore.settings.messageNotificationSound,
-      vibrateEnabled = SignalStore.settings.isMessageVibrateEnabled,
-      ledColor = SignalStore.settings.messageLedColor,
-      ledBlink = SignalStore.settings.messageLedBlinkPattern,
-      inChatSoundsEnabled = SignalStore.settings.isMessageNotificationsInChatSoundsEnabled,
-      repeatAlerts = SignalStore.settings.messageNotificationsRepeatAlerts,
-      messagePrivacy = SignalStore.settings.messageNotificationsPrivacy.toString(),
-      priority = SignalStore.settings.messageNotificationPriority,
-      troubleshootNotifications = if (calculateSlowNotifications) {
-        (SlowNotificationHeuristics.isBatteryOptimizationsOn() && SlowNotificationHeuristics.isHavingDelayedNotifications()) ||
-          SlowNotificationHeuristics.getDeviceSpecificShowCondition() == DeviceSpecificNotificationConfig.ShowCondition.ALWAYS
-      } else if (currentState != null) {
-        currentState.messageNotificationsState.troubleshootNotifications
-      } else {
-        false
-      },
-      reactionNotificationEnabled = SignalStore.settings.reactionNotifications,
-      unreadReminderEnabled = SignalStore.settings.unreadReminderEnabled,
-      allowCallsWhileMuted = SignalStore.settings.allowCallsWhileMuted,
-      allowMentionsWhileMuted = SignalStore.settings.allowMentionsWhileMuted,
-      allowRepliesWhileMuted = SignalStore.settings.allowRepliesWhileMuted
-    ),
-    callNotificationsState = CallNotificationsState(
-      notificationsEnabled = SignalStore.settings.isCallNotificationsEnabled && canEnableNotifications(),
-      canEnableNotifications = canEnableNotifications(),
-      ringtone = SignalStore.settings.callRingtone,
-      vibrateEnabled = SignalStore.settings.isCallVibrateEnabled
-    ),
-    notifyWhileLocked = PlainTextKeyValueStore.lockNotificationsEnabled && SignalStore.account.pushAvailable,
-    canEnableNotifyWhileLocked = SignalStore.account.pushAvailable,
-    isLinkedDevice = SignalStore.account.isLinkedDevice,
-    preferredNotificationMethod = SignalStore.settings.preferredNotificationMethod,
-    playServicesErrorCode = currentState?.playServicesErrorCode,
-    canReceiveFcm = SignalStore.account.canReceiveFcm,
-    canReceiveUnifiedPush = SignalStore.unifiedpush.isAvailableOrAirGapped,
-    notifyWhenContactJoinsSignal = SignalStore.settings.isNotifyWhenContactJoinsSignal
-  )
+  private fun getState(currentState: NotificationsSettingsState? = null, calculateSlowNotifications: Boolean = false): NotificationsSettingsState = synchronized(UnifiedPushLifecycle.monitor) {
+    NotificationsSettingsState(
+      messageNotificationsState = MessageNotificationsState(
+        notificationsEnabled = SignalStore.settings.isMessageNotificationsEnabled && canEnableNotifications(),
+        canEnableNotifications = canEnableNotifications(),
+        sound = SignalStore.settings.messageNotificationSound,
+        vibrateEnabled = SignalStore.settings.isMessageVibrateEnabled,
+        ledColor = SignalStore.settings.messageLedColor,
+        ledBlink = SignalStore.settings.messageLedBlinkPattern,
+        inChatSoundsEnabled = SignalStore.settings.isMessageNotificationsInChatSoundsEnabled,
+        repeatAlerts = SignalStore.settings.messageNotificationsRepeatAlerts,
+        messagePrivacy = SignalStore.settings.messageNotificationsPrivacy.toString(),
+        priority = SignalStore.settings.messageNotificationPriority,
+        troubleshootNotifications = if (calculateSlowNotifications) {
+          (SlowNotificationHeuristics.isBatteryOptimizationsOn() && SlowNotificationHeuristics.isHavingDelayedNotifications()) ||
+            SlowNotificationHeuristics.getDeviceSpecificShowCondition() == DeviceSpecificNotificationConfig.ShowCondition.ALWAYS
+        } else if (currentState != null) {
+          currentState.messageNotificationsState.troubleshootNotifications
+        } else {
+          false
+        },
+        reactionNotificationEnabled = SignalStore.settings.reactionNotifications,
+        unreadReminderEnabled = SignalStore.settings.unreadReminderEnabled,
+        allowCallsWhileMuted = SignalStore.settings.allowCallsWhileMuted,
+        allowMentionsWhileMuted = SignalStore.settings.allowMentionsWhileMuted,
+        allowRepliesWhileMuted = SignalStore.settings.allowRepliesWhileMuted
+      ),
+      callNotificationsState = CallNotificationsState(
+        notificationsEnabled = SignalStore.settings.isCallNotificationsEnabled && canEnableNotifications(),
+        canEnableNotifications = canEnableNotifications(),
+        ringtone = SignalStore.settings.callRingtone,
+        vibrateEnabled = SignalStore.settings.isCallVibrateEnabled
+      ),
+      notifyWhileLocked = PlainTextKeyValueStore.lockNotificationsEnabled && SignalStore.account.pushAvailable,
+      canEnableNotifyWhileLocked = SignalStore.account.pushAvailable,
+      isLinkedDevice = SignalStore.account.isLinkedDevice,
+      preferredNotificationMethod = SignalStore.settings.preferredNotificationMethod,
+      playServicesErrorCode = currentState?.playServicesErrorCode,
+      canReceiveFcm = SignalStore.account.canReceiveFcm,
+      canReceiveUnifiedPush = SignalStore.unifiedpush.isAvailableOrAirGapped,
+      notifyWhenContactJoinsSignal = SignalStore.settings.isNotifyWhenContactJoinsSignal,
+      relayDisclosure = RelayDisclosure.capture(),
+    )
+  }
 
   private fun canEnableNotifications(): Boolean {
     val areNotificationsDisabledBySystem = Build.VERSION.SDK_INT >= 26 &&

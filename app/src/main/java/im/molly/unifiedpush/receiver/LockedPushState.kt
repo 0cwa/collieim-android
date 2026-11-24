@@ -82,8 +82,13 @@ object LockedPushState {
     }
   }
 
-  /** Removes pending state only after the route tuple and control update have been applied. */
+  /** Removes the pending endpoint after it has been applied. */
   fun clearPending(context: Context) {
-    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PENDING).commit()
+    discardPending(context)
+  }
+
+  /** Requires a durable clear before a different relay is selected. */
+  fun discardPending(context: Context): Boolean {
+    return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PENDING).commit()
   }
 }

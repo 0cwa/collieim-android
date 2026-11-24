@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.model
 
 import android.net.Uri
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 sealed class MollySocket(val vapid: String) {
 
@@ -24,9 +25,8 @@ sealed class MollySocket(val vapid: String) {
 
         "webserver" -> {
           val url = uri.getQueryParameter("url") ?: return null
-          val parsedUrl = Uri.parse(url)
-          if (parsedUrl.scheme != "https") return null
-          WebServer(vapid = vapid, url = url)
+          val parsedUrl = url.toHttpUrlOrNull()?.takeIf { it.isHttps } ?: return null
+          WebServer(vapid = vapid, url = parsedUrl.toString())
         }
 
         else -> null

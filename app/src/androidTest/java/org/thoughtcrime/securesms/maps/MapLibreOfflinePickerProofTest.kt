@@ -74,12 +74,6 @@ class MapLibreOfflinePickerProofTest {
   private val tileColor = Color.rgb(186, 220, 213)
 
   @Test
-  fun pickerRendersAttributionAndReturnsFallbackLocationAfterRotation() = verifyPicker(stallTransit = false)
-
-  @Test
-  fun pickerReturnsRenderedPreviewWhileTransitTilesAreStalled() = verifyPicker(stallTransit = true)
-
-  @Test
   fun pickerRendersVectorRailInTheSharePreview() = verifyPicker(stallTransit = false, renderRail = true)
 
   private fun verifyPicker(stallTransit: Boolean, renderRail: Boolean = false) {

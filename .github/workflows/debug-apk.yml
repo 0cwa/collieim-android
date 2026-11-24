@@ -124,7 +124,7 @@ jobs:
           ./gradlew --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
             :app:connectedProdWebsiteDebugAndroidTest --no-configuration-cache -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
-            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.maps.MapLibreOfflinePickerProofTest#pickerRendersVectorRailInTheSharePreview,org.thoughtcrime.securesms.maps.MapLibreProxyRouteProofTest#realMapClientUsesConfiguredSocksForDnsAndClosesTransportOnRouteChange' \
+            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.maps.MapLibreRouteApi35Suite' \
             2>&1 | tee "$evidence/connected.log"
           SH
       - name: Run navigation tests on API 35

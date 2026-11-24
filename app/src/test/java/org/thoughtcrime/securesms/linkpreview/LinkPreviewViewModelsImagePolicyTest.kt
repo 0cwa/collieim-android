@@ -234,6 +234,51 @@ class LinkPreviewViewModelsImagePolicyTest {
   }
 
   @Test
+  fun `legacy resume stops loading when both preview preferences were disabled`() {
+    val controller = mockk<RequestController>(relaxed = true)
+    every { repository.getLinkPreview(any(), WEB_URL, any()) } returns controller
+    val model = legacy()
+    model.onTextChanged(WEB_URL, WEB_URL.length, WEB_URL.length)
+    drain()
+    assertTrue(model.linkPreviewState.value!!.isLoading)
+
+    every { settings.isLinkPreviewsEnabled } returns false
+    includeImages = false
+    model.refreshImagePreference()
+
+    assertFalse(model.linkPreviewState.value!!.hasContent())
+    verify(exactly = 1) { controller.cancel() }
+    verify(exactly = 1) { repository.getLinkPreview(any(), WEB_URL, any()) }
+  }
+
+  @Test
+  fun `story resume stops loading when both preview preferences were disabled`() {
+    val model = v2()
+    model.onTextChanged(WEB_URL, WEB_URL.length, WEB_URL.length)
+    drain()
+    assertTrue(model.linkPreviewStateSnapshot.isLoading)
+
+    every { settings.isLinkPreviewsEnabled } returns false
+    includeImages = false
+    model.refreshImagePreference()
+
+    assertFalse(model.linkPreviewStateSnapshot.hasContent())
+    verify(exactly = 1) { repository.getLinkPreview(WEB_URL) }
+  }
+
+  @Test
+  fun `enabling previews keeps SMS requests disabled`() {
+    val model = legacy()
+    model.onTransportChanged(true)
+
+    model.onEnabled()
+    model.onTextChanged(WEB_URL, WEB_URL.length, WEB_URL.length)
+    drain()
+
+    verify(exactly = 0) { repository.getLinkPreview(any(), any(), any()) }
+  }
+
+  @Test
   fun `legacy web preference changes leave a pending Signal card alone`() {
     val callbacks = mutableListOf<LinkPreviewRepository.Callback>()
     val controller = mockk<RequestController>(relaxed = true)

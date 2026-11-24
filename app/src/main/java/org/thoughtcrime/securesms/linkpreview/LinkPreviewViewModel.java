@@ -32,7 +32,7 @@ public class LinkPreviewViewModel extends ViewModel {
   private RequestController activeRequest;
   private boolean           userCanceled;
   private Debouncer         debouncer;
-  private boolean           enabled;
+  private boolean           smsTransport;
   private boolean           webImagesEnabled;
   private long              requestGeneration;
 
@@ -43,7 +43,6 @@ public class LinkPreviewViewModel extends ViewModel {
     this.enablePlaceholder    = enablePlaceholder;
     this.linkPreviewState     = new MutableLiveData<>();
     this.debouncer            = new Debouncer(250);
-    this.enabled              = SignalStore.settings().isLinkPreviewsEnabled();
     this.webImagesEnabled     = SignalStore.settings().isWebLinkPreviewImagesEnabled();
     this.linkPreviewSafeState = Transformations.map(linkPreviewState, state -> cleanseState(state));
   }
@@ -107,7 +106,7 @@ public class LinkPreviewViewModel extends ViewModel {
 
   public void onTextChanged(@NonNull String text, int cursorStart, int cursorEnd) {
     refreshImagePreference();
-    if (!enabled && !enablePlaceholder) return;
+    if (!isRequestEnabled() && !enablePlaceholder) return;
 
     debouncer.publish(() -> {
       if (TextUtils.isEmpty(text)) {
@@ -136,7 +135,7 @@ public class LinkPreviewViewModel extends ViewModel {
       linkPreviewState.setValue(LinkPreviewState.forLoading(link.get()));
 
       activeUrl     = link.get().url;
-      activeRequest = enabled ? performRequest(activeUrl) : createPlaceholder(activeUrl);
+      activeRequest = isRequestEnabled() ? performRequest(activeUrl) : createPlaceholder(activeUrl);
     });
   }
 
@@ -151,17 +150,20 @@ public class LinkPreviewViewModel extends ViewModel {
   }
 
   public void onTransportChanged(boolean isSms) {
-    enabled = SignalStore.settings().isLinkPreviewsEnabled() && !isSms;
+    smsTransport = isSms;
 
-    if (!enabled) {
+    if (!isRequestEnabled()) {
       onUserCancel();
     }
   }
 
   public void onEnabled() {
     userCanceled = false;
-    enabled      = SignalStore.settings().isLinkPreviewsEnabled();
     refreshImagePreference();
+  }
+
+  private boolean isRequestEnabled() {
+    return !smsTransport && SignalStore.settings().isLinkPreviewsEnabled();
   }
 
   /** Applies a setting changed while this composer was in the background. */
@@ -183,8 +185,13 @@ public class LinkPreviewViewModel extends ViewModel {
     if (currentState != null) {
       linkPreviewState.setValue(cleanseState(currentState));
     }
-    if (activeUrl != null && enabled && !userCanceled && (includeImages || (currentState != null && currentState.isLoading))) {
-      activeRequest = performRequest(activeUrl);
+    if (activeUrl != null && !userCanceled && (includeImages || (currentState != null && currentState.isLoading))) {
+      if (isRequestEnabled()) {
+        activeRequest = performRequest(activeUrl);
+      } else if (currentState != null && currentState.isLoading) {
+        activeUrl = null;
+        linkPreviewState.setValue(LinkPreviewState.forNoLinks());
+      }
     }
   }
 
@@ -278,7 +285,7 @@ public class LinkPreviewViewModel extends ViewModel {
   }
 
   private @NonNull LinkPreviewState cleanseState(@NonNull LinkPreviewState state) {
-    if (enabled) {
+    if (isRequestEnabled()) {
       if (!state.linkPreview.isPresent()) {
         return state;
       }

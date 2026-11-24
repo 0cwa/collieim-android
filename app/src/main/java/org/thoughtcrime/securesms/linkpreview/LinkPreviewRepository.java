@@ -150,11 +150,12 @@ public class LinkPreviewRepository {
                                              @NonNull String url,
                                              @NonNull Callback callback)
   {
-    if (!SignalStore.settings().isLinkPreviewsEnabled()) {
-      throw new IllegalStateException();
-    }
-
     CompositeRequestController compositeController = new CompositeRequestController();
+
+    if (!SignalStore.settings().isLinkPreviewsEnabled()) {
+      callback.onError(Error.PREVIEW_NOT_AVAILABLE);
+      return compositeController;
+    }
 
     if (!LinkUtil.isValidPreviewUrl(url)) {
       Log.w(TAG, "Tried to get a link preview for a non-whitelisted domain.");

@@ -115,6 +115,18 @@ class LinkPreviewRepositoryImagePolicyTest {
   }
 
   @Test
+  fun `a disabled preview request returns normally without network access`() {
+    every { settings.isLinkPreviewsEnabled } returns false
+    val pending = begin { request -> response(request, PAGE_WITH_IMAGE) }
+
+    val outcome = pending.await()
+
+    assertNull(outcome.preview)
+    assertEquals(LinkPreviewRepository.Error.PREVIEW_NOT_AVAILABLE, outcome.error)
+    assertTrue(requests.isEmpty())
+  }
+
+  @Test
   fun `disabled images request metadata only and return text`() {
     val pending = begin { request -> response(request, PAGE_WITH_IMAGE) }
 

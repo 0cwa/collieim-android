@@ -35,7 +35,7 @@ class LinkPreviewViewModelV2(
     private const val LINK_PREVIEW_STATE = "link_preview_state"
   }
 
-  private var enabled = SignalStore.settings.isLinkPreviewsEnabled
+  private val enabled: Boolean get() = SignalStore.settings.isLinkPreviewsEnabled
   private var webImagesEnabled = SignalStore.settings.isWebLinkPreviewImagesEnabled
   private var savedLinkPreviewState by savedStateHandle.delegate(LINK_PREVIEW_STATE) { LinkPreviewState.forNoLinks() }
   private val linkPreviewStateStore = RxStore(cleanseState(savedLinkPreviewState))
@@ -130,7 +130,6 @@ class LinkPreviewViewModelV2(
 
   fun onEnabled() {
     userCancelled = false
-    enabled = SignalStore.settings.isLinkPreviewsEnabled
     refreshImagePreference()
   }
 
@@ -153,8 +152,13 @@ class LinkPreviewViewModelV2(
     val currentState = linkPreviewStateStore.state
     setLinkPreviewState(currentState)
 
-    if (url != null && enabled && !userCancelled && (includeImages || currentState.isLoading)) {
-      activeRequest = performRequest(url)
+    if (url != null && !userCancelled && (includeImages || currentState.isLoading)) {
+      if (enabled) {
+        activeRequest = performRequest(url)
+      } else if (currentState.isLoading) {
+        activeUrl = null
+        setLinkPreviewState(LinkPreviewState.forNoLinks())
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase.Companion.runInTransac
 import org.thoughtcrime.securesms.database.helpers.SignalDatabaseMigrations
 import org.thoughtcrime.securesms.database.model.AvatarPickerDatabase
 import java.io.File
+import java.util.function.BinaryOperator
 import org.thoughtcrime.securesms.database.SQLiteDatabase as SignalSQLiteDatabase
 
 open class SignalDatabase(private val context: Application, databaseSecret: DatabaseSecret, attachmentSecret: AttachmentSecret, name: String = DATABASE_NAME) :
@@ -269,6 +270,11 @@ open class SignalDatabase(private val context: Application, databaseSecret: Data
     @JvmStatic
     fun runPostSuccessfulTransaction(dedupeKey: String, task: Runnable) {
       instance!!.signalWritableDatabase.runPostSuccessfulTransaction(dedupeKey, task)
+    }
+
+    @JvmStatic
+    fun runPostSuccessfulTransaction(dedupeKey: String, task: Runnable, combine: BinaryOperator<Runnable>) {
+      instance!!.signalWritableDatabase.runPostSuccessfulTransaction(dedupeKey, task, combine)
     }
 
     @JvmStatic

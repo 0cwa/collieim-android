@@ -6,6 +6,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.observers.TestObserver
 import okio.ByteString.Companion.toByteString
 import org.junit.Assert.assertEquals
@@ -22,11 +24,17 @@ import org.signal.libsignal.net.ChatConnectionListener
 import org.signal.libsignal.net.ChatServiceException
 import org.signal.libsignal.net.Network
 import org.signal.libsignal.net.UnauthenticatedChatConnection
+import org.signal.network.NetworkResult
+import org.signal.network.crypto.SealedSenderAccess
 import org.signal.network.websocket.WebSocketRequestMessage
 import org.signal.network.websocket.WebSocketResponseMessage
 import org.signal.network.websocket.WebsocketResponse
+import org.whispersystems.signalservice.api.message.MessageApi
 import org.whispersystems.signalservice.api.websocket.HealthMonitor
+import org.whispersystems.signalservice.api.websocket.SignalWebSocket
 import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
+import org.whispersystems.signalservice.internal.push.OutgoingPushMessageList
+import org.whispersystems.signalservice.internal.push.http.CancelationSignal
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
@@ -99,6 +107,58 @@ class LibSignalChatConnectionTest {
     every { chatConnection.start() } returns Unit
     every { chatConnection.info() } returns connectionInfo
     every { connectionInfo.isDirect() } returns true
+  }
+
+  @Test
+  fun `a hold while connecting prevents a queued payload from dispatching`() {
+    val connected = CompletableFuture<UnauthenticatedChatConnection>()
+    every { network.connectUnauthChat(any()) } returns connected
+    val rejected = IOException("group admission changed")
+    var held = false
+
+    connection.connect()
+    val send = connection.sendRequest(WebSocketRequestMessage("PUT", "/v1/messages/test"), 10) {
+      if (held) throw rejected
+    }.test()
+
+    held = true
+    connected.complete(chatConnection)
+
+    send.awaitDone(1, TimeUnit.SECONDS).assertError(rejected)
+    verify(exactly = 0) { chatConnection.send(any()) }
+  }
+
+  @Test
+  fun `a hold after an unidentified rejection prevents the authenticated fallback payload`() {
+    val unauth = mockk<WebSocketConnection>()
+    every { unauth.name } returns "test-unidentified"
+    every { unauth.connect() } returns Observable.just(WebSocketConnectionState.CONNECTED)
+    every { unauth.isDead() } returns false
+    var held = false
+    every { unauth.sendRequest(any(), any(), any()) } answers {
+      lastArg<() -> Unit>().invoke()
+      held = true
+      Single.just(WebsocketResponse(401, "", emptyMap(), true))
+    }
+
+    setupConnectedConnection()
+    val authSocket = SignalWebSocket.AuthenticatedWebSocket({ connection }, { true }, mockk(), 0).apply {
+      registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE)
+    }
+    val unauthSocket = SignalWebSocket.UnauthenticatedWebSocket({ unauth }, { true }, mockk(), 0).apply {
+      registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE)
+    }
+    val api = MessageApi(authSocket, unauthSocket)
+    val result = api.sendMessage(
+      OutgoingPushMessageList("test", 1L, emptyList(), online = false, urgent = true),
+      SealedSenderAccess.Story(mockk()),
+      story = true,
+      cancelationSignal = { held }
+    )
+
+    assertTrue((result as NetworkResult.NetworkError).exception is CancelationSignal.SendCanceledException)
+    verify(exactly = 1) { unauth.sendRequest(any(), any(), any()) }
+    verify(exactly = 0) { chatConnection.send(any()) }
   }
 
   // Test that the LibSignalChatConnection transitions through DISCONNECTED -> CONNECTING -> CONNECTED

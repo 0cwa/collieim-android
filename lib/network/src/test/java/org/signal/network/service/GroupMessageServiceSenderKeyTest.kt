@@ -152,19 +152,18 @@ class GroupMessageServiceSenderKeyTest {
   fun `a sender-key retry checks the guard again before transport`() = runTest {
     val stale = IOException("group admission changed")
     var changed = false
-    coEvery { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any()) } coAnswers {
+    val guard = { if (changed) throw stale }
+    coEvery { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any(), eq(guard)) } coAnswers {
       changed = true
       RequestResult.NonSuccess(mismatched(alice, extra = intArrayOf(2)))
     }
 
     val result = runCatching {
-      newService().sendMessageViaSenderKey(distributionId, targets, content, ContentHint.RESENDABLE, null, timestamp, groupSend, isOnline = false, urgent = true, beforeSend = {
-        if (changed) throw stale
-      })
+      newService().sendMessageViaSenderKey(distributionId, targets, content, ContentHint.RESENDABLE, null, timestamp, groupSend, isOnline = false, urgent = true, beforeSend = guard)
     }
 
     assertThat(result.exceptionOrNull()).isEqualTo(stale)
-    coVerify(exactly = 1) { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any()) }
+    coVerify(exactly = 1) { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any(), eq(guard)) }
   }
 
   @Test

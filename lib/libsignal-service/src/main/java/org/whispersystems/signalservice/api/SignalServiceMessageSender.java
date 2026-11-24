@@ -2089,8 +2089,10 @@ public class SignalServiceMessageSender {
         }
 
         try {
-          SendMessageResponse response = NetworkResultUtil.toMessageSendLegacy(messages.getDestination(), messageApi.sendMessage(messages, sealedSenderAccess, story));
+          SendMessageResponse response = NetworkResultUtil.toMessageSendLegacy(messages.getDestination(), messageApi.sendMessage(messages, sealedSenderAccess, story, cancelationSignal));
           return SendMessageResult.success(recipient, messages.getDevices(), response.getSentUnidentified(), response.getNeedsSync() || aciStore.isMultiDevice(), System.currentTimeMillis() - startTime, content.getContent());
+        } catch (CancelationSignal.SendCanceledException e) {
+          return SendMessageResult.canceledFailure(recipient);
         } catch (AuthorizationFailedException |
                  UnregisteredUserException |
                  MismatchedDevicesException |
@@ -2127,7 +2129,12 @@ public class SignalServiceMessageSender {
           return SendMessageResult.canceledFailure(recipient);
         }
 
-        SendMessageResponse response = socket.sendMessage(messages, sealedSenderAccess, story);
+        SendMessageResponse response;
+        try {
+          response = socket.sendMessage(messages, sealedSenderAccess, story, cancelationSignal);
+        } catch (CancelationSignal.SendCanceledException e) {
+          return SendMessageResult.canceledFailure(recipient);
+        }
 
         return SendMessageResult.success(recipient, messages.getDevices(), response.getSentUnidentified(), response.getNeedsSync() || aciStore.isMultiDevice(), System.currentTimeMillis() - startTime, content.getContent());
 
@@ -2480,7 +2487,7 @@ public class SignalServiceMessageSender {
                   if (cancelationSignal != null && cancelationSignal.isCanceled()) {
                     return new NetworkResult.NetworkError<>(new IOException("Canceled"));
                   }
-                  return messageApi.sendMessage(messages, sealedSenderAccess, story);
+                  return messageApi.sendMessage(messages, sealedSenderAccess, story, cancelationSignal);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -2504,7 +2511,7 @@ public class SignalServiceMessageSender {
             );
             return Single.just(result);
           } catch (IOException throwable) {
-            if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+            if (throwable instanceof CancelationSignal.SendCanceledException || (cancelationSignal != null && cancelationSignal.isCanceled())) {
               return Single.just(SendMessageResult.canceledFailure(recipient));
             }
 
@@ -2539,7 +2546,12 @@ public class SignalServiceMessageSender {
               if (cancelationSignal != null && cancelationSignal.isCanceled()) {
                 return SendMessageResult.canceledFailure(recipient);
               }
-              SendMessageResponse response = socket.sendMessage(messages, sealedSenderAccess, story);
+              SendMessageResponse response;
+              try {
+                response = socket.sendMessage(messages, sealedSenderAccess, story, cancelationSignal);
+              } catch (CancelationSignal.SendCanceledException e) {
+                return SendMessageResult.canceledFailure(recipient);
+              }
               return SendMessageResult.success(
                   recipient,
                   messages.getDevices(),
@@ -2822,7 +2834,7 @@ public class SignalServiceMessageSender {
         return buildCanceledGroupResults(workingRecipients, deferredResults);
       }
 
-      RequestResult<MultiRecipientMessageResponse, MultiRecipientSendFailure> result = messageApi.sendGroupMessage(ciphertext, multiRecipientAuth, timestamp, online, urgent);
+      RequestResult<MultiRecipientMessageResponse, MultiRecipientSendFailure> result = messageApi.sendGroupMessage(ciphertext, multiRecipientAuth, timestamp, online, urgent, cancelationSignal);
 
       if (result instanceof RequestResult.Success) {
         MultiRecipientMessageResponse response    = ((RequestResult.Success<MultiRecipientMessageResponse>) result).getResult();
@@ -2877,7 +2889,9 @@ public class SignalServiceMessageSender {
       } else if (result instanceof RequestResult.RetryableNetworkError) {
         RequestResult.RetryableNetworkError retryableError = (RequestResult.RetryableNetworkError) result;
         IOException                         exception      = retryableError.getNetworkError();
-        if (exception instanceof RetryLaterException) {
+        if (exception instanceof CancelationSignal.SendCanceledException) {
+          return buildCanceledGroupResults(workingRecipients, deferredResults);
+        } else if (exception instanceof RetryLaterException) {
           throw exception;
         } else if (retryableError.getRetryAfter() != null && retryableError.getRetryAfter().toMillis() > 0) {
           throw new RetryNetworkException(retryableError.getRetryAfter().toMillis(), exception);

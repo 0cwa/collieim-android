@@ -34,8 +34,11 @@ import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupMutation
 import org.thoughtcrime.securesms.groups.GroupProtoUtil
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionMembership
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionEvidence
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionMode
+import org.thoughtcrime.securesms.groups.v2.admission.MembershipKind
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor.Companion.LATEST
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
 import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob
@@ -691,7 +694,7 @@ class GroupsV2StateProcessor private constructor(
       if (updatedGroupState != null) {
         val admissionUpdate = GroupAdmission.prepareStateUpdate(groupId, serviceIds, groupStateDiff, updatedGroupState)
         if (admissionUpdate != null) {
-          completeAdmissionAfterCommit(admissionUpdate) {}
+          completeAdmissionAfterCommit(admissionUpdate, updatedGroupState)
         }
       }
 
@@ -808,24 +811,53 @@ class GroupsV2StateProcessor private constructor(
       profileAndMessageHelper.scheduleStorageServiceSync()
     }
 
-    if (admissionUpdate == null) {
-      profileAndMessageHelper.setProfileSharing(groupStateDiff, updatedGroupState, needsAvatarFetch, triggeringMessage?.sentBySelf == true)
-    } else {
-      completeAdmissionAfterCommit(admissionUpdate) {
-        profileAndMessageHelper.setProfileSharing(groupStateDiff, updatedGroupState, needsAvatarFetch, triggeringMessage?.sentBySelf == true)
-      }
+    completeAdmissionAfterCommit(
+      admissionUpdate,
+      updatedGroupState,
+      ProfileSharingUpdate(groupStateDiff, needsAvatarFetch, triggeringMessage?.sentBySelf == true)
+    )
+  }
+
+  private fun completeAdmissionAfterCommit(update: GroupAdmission.PendingUpdate?, state: DecryptedGroup, profileSharing: ProfileSharingUpdate? = null) {
+    val task = AdmissionCommit(update, state, GroupAdmissionEvidence.membership(state, serviceIds), profileSharing)
+    SignalDatabase.runPostSuccessfulTransaction("group-admission:$groupId", task) { previous, next ->
+      (previous as AdmissionCommit).combine(next as AdmissionCommit)
     }
   }
 
-  private fun completeAdmissionAfterCommit(update: GroupAdmission.PendingUpdate, onComplete: () -> Unit) {
-    SignalDatabase.runPostSuccessfulTransaction {
+  private data class ProfileSharingUpdate(val diff: GroupStateDiff, val needsAvatarFetch: Boolean, val sentBySelf: Boolean)
+
+  private inner class AdmissionCommit(
+    private val admission: GroupAdmission.PendingUpdate?,
+    private val state: DecryptedGroup,
+    private val membership: AdmissionMembership,
+    private val profileSharing: ProfileSharingUpdate?
+  ) : Runnable {
+    fun combine(next: AdmissionCommit): AdmissionCommit {
+      if (membership.episode != next.membership.episode) return next
+
+      val profile = when {
+        next.profileSharing == null -> profileSharing
+        membership.kind != MembershipKind.FULL || profileSharing == null -> next.profileSharing
+        else -> {
+          // The revision that first added us carries the inviter and join-request context.
+          // Later writes in this transaction can still change the avatar we should fetch.
+          profileSharing.copy(needsAvatarFetch = profileSharing.needsAvatarFetch || next.profileSharing.needsAvatarFetch)
+        }
+      }
+      return AdmissionCommit(next.admission, next.state, next.membership, profile)
+    }
+
+    override fun run() {
       val completed = try {
-        GroupAdmission.completeStateUpdate(update)
+        GroupAdmission.completeStateUpdate(admission)
       } catch (e: KeyValuePersistenceException) {
         Log.w(TAG, "$logPrefix Unable to persist admission after group state committed", e)
         false
       }
-      if (completed) onComplete()
+      if (completed && profileSharing != null) {
+        profileAndMessageHelper.setProfileSharing(profileSharing.diff, state, profileSharing.needsAvatarFetch, profileSharing.sentBySelf)
+      }
     }
   }
 

@@ -14,6 +14,13 @@ import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.GroupRecord
 import org.thoughtcrime.securesms.database.model.RecipientRecord
+import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionAccountState
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionMembership
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionRecord
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionStatus
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionValues
+import org.thoughtcrime.securesms.groups.v2.admission.MembershipKind
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.CallPermissionValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -28,6 +35,7 @@ internal class CallPermissionTestEnvironment {
   val pniId = ServiceId.PNI.from(UUID.fromString("20000000-0000-0000-0000-000000000001"))
   private val account: AccountValues = mockk()
   private val values: CallPermissionValues = mockk()
+  private val admissionValues: GroupAdmissionValues = mockk()
   private val recipients = HashMap<RecipientId, Recipient>()
   private val recipientTable: RecipientTable = mockk()
   private val groupTable: GroupTable = mockk()
@@ -38,6 +46,7 @@ internal class CallPermissionTestEnvironment {
   private val nextPolicyRead = AtomicReference<(() -> Unit)?>(null)
   private val nextRecipientTransaction = AtomicReference<(() -> Unit)?>(null)
   @Volatile private var state = CallPolicyState(account = accountId.toString())
+  @Volatile private var groupAdmission = AdmissionAccountState(accountId.toString())
 
   fun setUp() {
     mockkStatic(SignalStore::class, Recipient::class, SignalDatabase::class)
@@ -47,6 +56,8 @@ internal class CallPermissionTestEnvironment {
     every { SignalStore.isInitialized } returns true
     every { SignalStore.account } returns account
     every { SignalStore.callPermissions } returns values
+    every { SignalStore.groupAdmission } returns admissionValues
+    every { admissionValues.read(accountId.toString()) } answers { groupAdmission }
     every { account.aci } returns accountId
     every { account.pni } returns pniId
     every { account.deviceId } returns 1
@@ -109,8 +120,17 @@ internal class CallPermissionTestEnvironment {
 
   fun storedPolicy(): CallPolicyState = state
 
+  fun holdGroup(recipient: Recipient) {
+    val id = recipient.requireGroupId().toString()
+    val held = AdmissionRecord(AdmissionMembership(MembershipKind.FULL, "test-group", 1), AdmissionStatus.HELD)
+    groupAdmission = groupAdmission.copy(records = groupAdmission.records + (id to held))
+  }
+
   fun group(id: Long): Recipient {
     val recipient = recipient(id)
+    val groupId = GroupId.push(ByteArray(32) { id.toByte() }).requireV2()
+    every { recipient.groupId } returns Optional.of(groupId)
+    every { recipient.requireGroupId() } returns groupId
     every { recipient.isIndividual } returns false
     every { recipient.isPushV2Group } returns true
     every { recipient.isGroup } returns true

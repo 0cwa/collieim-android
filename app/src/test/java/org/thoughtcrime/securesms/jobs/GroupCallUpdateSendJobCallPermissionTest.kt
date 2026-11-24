@@ -18,6 +18,7 @@ import org.robolectric.annotation.Config
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -32,7 +33,8 @@ class GroupCallUpdateSendJobCallPermissionTest {
   fun setUp() {
     Log.initialize(SystemOutLogger())
     mockkObject(CallPermissions, Recipient)
-    mockkStatic(CallPermissions::class)
+    mockkStatic(CallPermissions::class, GroupAdmission::class)
+    every { GroupAdmission.isHeld(groupId) } returns false
     every { CallPermissions.generation() } returns 1
   }
 
@@ -58,6 +60,16 @@ class GroupCallUpdateSendJobCallPermissionTest {
     restored("exact-group").run()
     verify(exactly = 1) { Recipient.self() }
     verify(exactly = 0) { CallPermissions.canReceiveGroup(any()) }
+  }
+
+  @Test
+  fun `a held group cannot send an update with a valid cleanup permit`() {
+    every { GroupAdmission.isHeld(groupId) } returns true
+    every { CallPermissions.isGroupCleanupPermitValid("exact-group", groupId) } returns true
+
+    assertTrue(restored("exact-group").run().isSuccess)
+
+    verify(exactly = 0) { Recipient.self() }
   }
 
   @Test

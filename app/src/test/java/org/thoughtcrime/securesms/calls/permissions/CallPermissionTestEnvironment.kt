@@ -40,7 +40,9 @@ internal class CallPermissionTestEnvironment {
 
   fun setUp() {
     mockkStatic(SignalStore::class, Recipient::class, SignalDatabase::class)
-    mockkObject(SignalStore.Companion, SignalDatabase.Companion)
+    // Kotlin calls the companion directly; mocking only the Java static bridge leaves
+    // Recipient.resolved executing its real recipient-cache lookup during stub recording.
+    mockkObject(SignalStore.Companion, Recipient.Companion, SignalDatabase.Companion)
     every { SignalStore.isInitialized } returns true
     every { SignalStore.account } returns account
     every { SignalStore.callPermissions } returns values
@@ -86,7 +88,7 @@ internal class CallPermissionTestEnvironment {
   fun tearDown() {
     CallPermissions.setRevocationListener(Runnable {})
     CallPermissions.endAllSessions()
-    unmockkObject(SignalStore.Companion, SignalDatabase.Companion)
+    unmockkObject(SignalStore.Companion, Recipient.Companion, SignalDatabase.Companion)
     unmockkStatic(SignalStore::class, Recipient::class, SignalDatabase::class)
   }
 

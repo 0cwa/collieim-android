@@ -17,6 +17,7 @@ import org.signal.storage.keyvalue.NotificationProfileValues
 import org.signal.storage.keyvalue.PhoneNumberPrivacyValues
 import org.signal.storage.keyvalue.RegistrationValues
 import org.signal.storage.keyvalue.ReleaseChannelValues
+import org.signal.storage.keyvalue.RemoteConfigValues
 import org.signal.storage.keyvalue.StorageServiceValues
 import org.signal.storage.keyvalue.SvrValues
 import org.signal.storage.keyvalue.UiHintValues
@@ -95,6 +96,10 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
   lateinit var notificationProfile: NotificationProfileValues
     private set
 
+  /** Store readiness also enables lazy remote-config reads, so provide isolated backing data. */
+  lateinit var remoteConfig: RemoteConfigValues
+    private set
+
   /** Real local policy state so recipient merge and restore hooks remain exercised by DB tests. */
   lateinit var callPermissions: CallPermissionValues
     private set
@@ -119,7 +124,9 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
     payments = mockk(relaxed = relaxed.contains(PaymentsValues::class), relaxUnitFun = true)
     notificationProfile = mockk(relaxed = relaxed.contains(NotificationProfileValues::class), relaxUnitFun = true)
     callPermissionDirectory = Files.createTempDirectory("call-permission-test-store").toFile()
-    callPermissions = CallPermissionValues(KeyValueStore(SnapshotKeyValuePersistentStorage(), DirectExecutor()), callPermissionDirectory)
+    val localStore = KeyValueStore(SnapshotKeyValuePersistentStorage(), DirectExecutor())
+    callPermissions = CallPermissionValues(localStore, callPermissionDirectory)
+    remoteConfig = RemoteConfigValues(localStore)
 
     mockkObject(SignalStore)
     RemoteConfig.initDependencies(AppRemoteConfigDependencies)
@@ -139,6 +146,7 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
     every { SignalStore.uiHints } returns uiHints
     every { SignalStore.payments } returns payments
     every { SignalStore.notificationProfile } returns notificationProfile
+    every { SignalStore.remoteConfig } returns remoteConfig
     every { SignalStore.isInitialized } returns true
     every { SignalStore.callPermissions } returns callPermissions
   }

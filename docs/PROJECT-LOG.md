@@ -12,7 +12,7 @@ do not select the product.
 
 ## Authoring changes
 
-Add `app/src/main/assets/collie-log/unreleased/<PR number>.txt`:
+Add `tooling/collie-log/unreleased/<PR number>.txt`:
 
 ```text
 topic: push
@@ -30,9 +30,9 @@ settings, devices, look, signal and fixes. Entries are English; topic labels
 and highlights use translated Android resources. A PR with no noticeable
 app change uses the **no log entry** label.
 
-Pending files are preparation inputs. A development preview may show them in
-its one current-build section; they never form a second release. A prepared
-release cannot have unassigned fragments.
+Pending files are preparation inputs and are not packaged in the APK. A
+development preview shows its development heading and finalized history.
+A prepared release cannot have unassigned fragments.
 
 ## Release records
 

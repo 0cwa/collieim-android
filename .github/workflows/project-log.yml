@@ -21,9 +21,9 @@ jobs:
         run: |
           changed=$(git diff --name-only "$BASE...HEAD")
           app=$(grep -E '^(app|feature|lib)/' <<<"$changed" | grep -vE '/src/(test|androidTest|testShared)/|/collie-log/' || true)
-          log=$(grep -E '^app/src/main/assets/collie-log/' <<<"$changed" || true)
+          log=$(grep -E '^(app/src/main/assets/collie-log/|tooling/collie-log/unreleased/)' <<<"$changed" || true)
           if [ -z "$app" ]; then echo "No app code changed."; exit 0; fi
           if [ -n "$log" ]; then echo "Log entry: $log"; exit 0; fi
           if [ "$NO_ENTRY" = "true" ]; then echo "Labelled 'no log entry'."; exit 0; fi
-          echo "::error::This PR changes the app. Add app/src/main/assets/collie-log/unreleased/<PR number>.txt with one plain sentence people would notice (see docs/PROJECT-LOG.md), or add the 'no log entry' label."
+          echo "::error::This PR changes the app. Add tooling/collie-log/unreleased/<PR number>.txt with one plain sentence people would notice (see docs/PROJECT-LOG.md), or add the 'no log entry' label."
           exit 1

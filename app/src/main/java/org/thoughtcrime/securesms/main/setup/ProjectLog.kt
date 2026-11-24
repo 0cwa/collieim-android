@@ -25,7 +25,6 @@ import java.time.format.DateTimeParseException
 object ProjectLog {
   const val ASSET_DIR = "collie-log"
   const val RELEASES_DIR = "releases"
-  const val UNRELEASED_DIR = "unreleased"
   const val MAX_LENGTH = 120
   const val PR_URL = "https://github.com/0cwa/collieim-android/pull/"
   private const val RELEASE_URL = "https://github.com/0cwa/collieim-android/releases/tag/"

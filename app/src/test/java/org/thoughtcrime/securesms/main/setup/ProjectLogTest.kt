@@ -164,7 +164,7 @@ class ProjectLogTest {
       assertEquals(versions.size, versions.toSet().size)
       assertEquals(files.map { it.name }.sorted(), versions.map { "$it.txt" }.sorted())
     }
-    val pending = File(root, ProjectLog.UNRELEASED_DIR).listFiles().orEmpty()
+    val pending = File("../tooling/collie-log/unreleased").listFiles().orEmpty()
     assertEquals(emptyList<String>(), pending.flatMap { ProjectLog.problems(it.name, it.readText(), isRelease = false) })
   }
 

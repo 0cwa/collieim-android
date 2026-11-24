@@ -99,7 +99,7 @@ object RelayDisclosure {
                 old.url != (relay as? MollySocket.WebServer)?.url || old.vapid != relay.vapid
               // The receiver records and applies endpoints under the same monitor. Invalidate a
               // buffered endpoint before changing its destination, including after a restart.
-              if (destinationChanged && !LockedPushState.clearPending(AppDependencies.application)) return@synchronized null
+              if (destinationChanged && !LockedPushState.discardPending(AppDependencies.application)) return@synchronized null
               SignalStore.unifiedpush.updateMollySocket(relay)
               if (deliveryMethod != null) SignalStore.settings.preferredNotificationMethod = deliveryMethod
               refreshAuthorizationLocked(snapshot.account)

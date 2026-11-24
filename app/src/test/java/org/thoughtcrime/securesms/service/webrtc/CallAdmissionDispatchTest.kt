@@ -111,6 +111,25 @@ class CallAdmissionDispatchTest {
   }
 
   @Test
+  fun `opaque native receive includes queue delay without discarding the fractional age`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    check(CallPermissions.beginOutgoing(group.id))
+    val ticket = requireNotNull(CallPermissions.authorizeGroup(group.id, sender.id, null, 2, GroupMessageKind.GROUP_DATA, 59_900))
+    val senderUuid = UUID(0, 7)
+    val payload = byteArrayOf(1, 2, 3)
+    val opaque = WebRtcData.OpaqueMessageMetadata.fromMillis(senderUuid, payload, 2, 59_900)
+    assertEquals(59L, opaque.messageAgeSeconds)
+
+    manager.receivedOpaqueMessage(ticket, opaque)
+    verify(exactly = 0) { native.receivedCallMessage(any(), any(), any(), any(), any()) }
+    ShadowSystemClock.advanceBy(Duration.ofMillis(1_200))
+    queue.drain()
+
+    verify(exactly = 1) { native.receivedCallMessage(senderUuid, 2, 1, payload, 61L) }
+  }
+
+  @Test
   fun `a held group admits only a cancellation matching the existing ring`() {
     val group = policy.group(8)
     val sender = policy.recipient(7)
@@ -162,6 +181,20 @@ class CallAdmissionDispatchTest {
 
     verify(exactly = 0) { native.receivedCallMessage(any(), any(), any(), any(), any()) }
     assertNull(CallPermissions.authorizeGroup(group.id, sender.id, null, 2, GroupMessageKind.GROUP_DATA, 0))
+  }
+
+  @Test
+  fun `offer metadata ages without changing its original server timestamps`() {
+    val serverReceivedTimestamp = 1_000_000L
+    val serverDeliveredTimestamp = serverReceivedTimestamp + 59_900L
+    val offer = WebRtcData.ReceivedOfferMetadata(policy.accountId, byteArrayOf(1), serverReceivedTimestamp, serverDeliveredTimestamp)
+    assertEquals(59L, offer.messageAgeSeconds)
+
+    ShadowSystemClock.advanceBy(Duration.ofMillis(1_200))
+
+    assertEquals(61L, offer.messageAgeSeconds)
+    assertEquals(serverReceivedTimestamp, offer.serverReceivedTimestamp)
+    assertEquals(serverDeliveredTimestamp, offer.serverDeliveredTimestamp)
   }
 
   @Test

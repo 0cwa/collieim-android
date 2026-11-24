@@ -26,8 +26,10 @@ public interface CallRuntime {
 
   /**
    * Checks authorization before initialization and again before dispatch. Completion is delivered
-   * once on the runtime queue. Cancelling after dispatch does not undo an already executed command;
-   * asynchronous backend work must also check its originating authorization and cancellation.
+   * once on the runtime queue, or synchronously with FAILED if that queue rejects submission.
+   * Unexpected predicate/command errors still propagate after completing the request. Cancelling
+   * after dispatch does not undo an already executed command; asynchronous backend work must also
+   * check its originating authorization and cancellation.
    */
   Request execute(Mode mode, BooleanSupplier isAuthorized, Runnable action, Consumer<Result> complete);
 }

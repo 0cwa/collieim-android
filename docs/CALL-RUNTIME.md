@@ -26,6 +26,25 @@ cancellation prevents dispatch if startup is already underway; it cannot undo
 native code already loaded by that startup. Asynchronous network completions
 must retain the originating authorization and cancellation too.
 
+Signaling metadata advances its original server age using monotonic elapsed
+time while it waits for acquisition or dispatch. Initialization cannot make an
+old offer or group message appear fresh to RingRTC. Invalid or overflowing ages
+remain expired, and original server timestamps remain available for history.
+
+Local startup exposes a managed, attempt-specific progress event before native
+state exists. The call screen remains open while that attempt is pending; Back
+or cancellation invalidates that exact attempt, including a race with native
+startup completion. A recreated screen observes the existing attempt rather
+than granting a new call. Failure completes progress with the existing call
+error state and does not retry initialization.
+
+Cancellation uses Part 1's existing session identity (generation, serial and
+recipient), including an outgoing session that has no native call ID yet.
+`currentOutgoingSession` observes that identity and `endSession` ends only the
+matching session. Cleanup from an old screen cannot clear a replacement session
+for the same recipient. These accessors extend the existing ledger; they grant
+no permission and create no parallel admission state.
+
 The production `CallPermissionRuntime` adapter binds every request, including
 direct users of `AppDependencies.callRuntime`, to the existing policy generation
 and absolute prohibition. A caller-supplied predicate cannot override that gate.
@@ -47,7 +66,7 @@ requires prior acquisition and never creates a manager itself.
 | Call-link previews, detail refresh, `RefreshCallLinkDetailsJob` | Keep saved metadata and omit native refresh, before fetching native-operation credentials. | Read operations can refresh when warm; create/edit/delete are explicit operations. |
 | `SignalCallLinkManager` | Obtaining the facade and constructing an Rx request are inert. | Subscription prepares credentials on IO, then enters the runtime. Disposal, revocation and failed acquisition terminate/defer the request. |
 | `CallLinkCredentials.generate` | Generates the pinned pending V1 key format in managed code using `SecureRandom`, with finite rejection sampling and no fallback key. | Actual server creation still requires runtime admission. |
-| `CallingAssets`, `CallingAssetsDownloadJob` | Do not register or download calling assets for a cold opted-in engine. No deferred asset is marked as registered. | First acquisition registers cached assets and schedules missing assets using the existing job. |
+| `CallingAssets`, `CallingAssetsDownloadJob` | Do not register or download calling assets for a cold opted-in engine. No deferred asset is marked as registered. | First acquisition registers cached assets and schedules missing assets using the existing job. Default/off retains acquisition for a verified cached asset. |
 | Call history, linked-device call events and call-link sync | Preserve the message/history/metadata updates. | Only the optional native refresh is deferred. |
 | `CallLinkRecordProcessor`, `CallLinkTable`, backup import/export and metadata helpers | Reuse Part 1's managed key parser, room derivation and era conversion. | Native metadata parity stays tied to `build-inputs/native-lock.json`. |
 | WebRTC/EGL state and class initialization | Idle state contains managed values/null native resources. Nested enums and `CallId(long)` do not invoke native code. | EGL/video creation remains inside acquired call action processors. |

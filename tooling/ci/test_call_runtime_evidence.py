@@ -23,9 +23,17 @@ class CallRuntimeEvidenceTest(unittest.TestCase):
             ('on-demand-cold', True, False, evidence.PASSIVE_STEPS),
             ('all-calling-disabled', False, True, evidence.PASSIVE_STEPS + ['denied-explicit-acquisition']),
             ('authorized-acquisition', True, False, ['before-authorized-acquisition', 'authorized-then-revoked']),
+            ('pending-call-ui', True, False, evidence.PENDING_UI_STEPS),
         ], start=100):
             checkpoints = [({'step': step, 'nativeMapped': True, 'dispatched': 2} if step == 'authorized-then-revoked' else
                             {'step': step, 'nativeMapped': False, 'initialized': False}) for step in steps]
+            for row in checkpoints:
+                if row['step'] == 'starting-ui-survived-grace':
+                    row['waitedMillis'] = 1250
+                elif row['step'] == 'starting-ui-survived-rotation':
+                    row['recreated'] = True
+                elif row['step'] == 'back-cancelled-before-initialization':
+                    row.update(pending=False, runtimeState='COLD')
             proof = {'schema': 1, 'pid': pid, 'onDemandAtStart': enabled, 'allDisabledAtStart': disabled,
                      'checkpoints': checkpoints, 'realCallTimingSamples': 0}
             (self.directory / (name + '.json')).write_text(json.dumps(proof))
@@ -40,7 +48,7 @@ class CallRuntimeEvidenceTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             evidence.check_runtime_probes(self.root)
 
-    def test_three_complete_distinct_process_probes_pass(self):
+    def test_four_complete_distinct_process_probes_pass(self):
         evidence.check_runtime_probes(self.root)
 
     def test_missing_and_duplicate_probe_are_rejected(self):
@@ -76,6 +84,18 @@ class CallRuntimeEvidenceTest(unittest.TestCase):
         self.mutate('authorized-acquisition', lambda proof: proof['checkpoints'][-1].update(nativeMapped=True))
         self.mutate('authorized-acquisition', lambda proof: proof.update(realCallTimingSamples=1))
         self.rejected()
+
+    def test_missing_grace_rotation_or_pending_cancellation_is_rejected(self):
+        for index, field, invalid, valid in [
+            (1, 'waitedMillis', 999, 1250),
+            (2, 'recreated', False, True),
+            (3, 'pending', True, False),
+            (3, 'runtimeState', 'READY', 'COLD'),
+        ]:
+            with self.subTest(field=field):
+                self.mutate('pending-call-ui', lambda proof: proof['checkpoints'][index].update({field: invalid}))
+                self.rejected()
+                self.mutate('pending-call-ui', lambda proof: proof['checkpoints'][index].update({field: valid}))
 
 
 if __name__ == '__main__':

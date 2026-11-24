@@ -32,6 +32,7 @@ interface CallScreenMediator {
   fun setControlsListener(controlsListener: CallScreenControlsListener)
   fun setMicEnabled(enabled: Boolean)
   fun setStatus(status: String)
+  fun setCallStarting(starting: Boolean)
   fun setRecipient(recipient: Recipient)
   fun setWebRtcControls(webRtcControls: WebRtcControls)
   fun updateCallParticipants(callParticipantsViewState: CallParticipantsViewState)

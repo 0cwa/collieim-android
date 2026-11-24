@@ -2,6 +2,7 @@
 package org.thoughtcrime.securesms.calls.runtime;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -37,7 +38,24 @@ public final class SerializedCallRuntime implements CallRuntime {
   @Override
   public Request execute(Mode mode, BooleanSupplier isAuthorized, Runnable action, Consumer<Result> complete) {
     Pending request = new Pending();
-    executor.execute(() -> dispatch(request, mode, isAuthorized, action, complete));
+    AtomicBoolean completed = new AtomicBoolean();
+    Consumer<Result> completeOnce = result -> {
+      if (completed.compareAndSet(false, true)) complete.accept(result);
+    };
+    try {
+      executor.execute(() -> {
+        try {
+          dispatch(request, mode, isAuthorized, action, completeOnce);
+        } finally {
+          // Predicates and backend commands may fail unexpectedly. Preserve propagation, but
+          // never strand an operation waiting for a completion that cannot arrive.
+          completeOnce.accept(Result.FAILED);
+        }
+      });
+    } catch (RejectedExecutionException rejected) {
+      completeOnce.accept(Result.FAILED);
+      throw rejected;
+    }
     return request;
   }
 

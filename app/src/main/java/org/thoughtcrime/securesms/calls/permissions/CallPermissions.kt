@@ -143,6 +143,20 @@ object CallPermissions {
   @JvmStatic
   fun activateGroup(recipientId: RecipientId): Boolean = activateCall(recipientId)
 
+  /** Identity for cancelling only the outgoing intent that a managed starting screen observed. */
+  @JvmStatic
+  fun currentOutgoingSession(recipientId: RecipientId): CallSessionKey? = synchronized(lock) {
+    if (!isCallingAllowed()) return null
+    syncGeneration()
+    sessions.outgoingSession(recipientId.toLong())
+  }
+
+  @JvmStatic
+  fun endSession(key: CallSessionKey): Boolean = synchronized(lock) {
+    syncGeneration()
+    sessions.endSession(key)
+  }
+
   @JvmStatic
   fun canContinueCall(recipientId: RecipientId): Boolean = runCatching {
     val recipient = Recipient.resolved(recipientId)

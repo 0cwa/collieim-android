@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -324,6 +325,59 @@ public class SerializedCallRuntimeTest {
 
     assertEquals(List.of(CallRuntime.Result.FAILED), results);
     assertEquals(CallRuntime.State.READY, runtime.getState());
+  }
+
+  @Test
+  public void authorizationFailureCompletesWithoutInitializing() {
+    QueueExecutor executor = new QueueExecutor();
+    List<CallRuntime.Result> results = new ArrayList<>();
+    IllegalStateException failure = new IllegalStateException("Unavailable request authority");
+    CallRuntime runtime = new SerializedCallRuntime(executor, () -> fail("No grant"), error -> fail(error.toString()));
+    runtime.execute(CallRuntime.Mode.START_IF_AUTHORIZED, () -> { throw failure; }, () -> fail("No grant"), results::add);
+    try {
+      executor.drain();
+      fail("Predicate error must retain its existing propagation");
+    } catch (IllegalStateException caught) {
+      assertSame(failure, caught);
+    }
+    assertEquals(List.of(CallRuntime.Result.FAILED), results);
+    assertEquals(CallRuntime.State.COLD, runtime.getState());
+  }
+
+  @Test
+  public void finalAuthorizationFailureCompletesWithoutDispatch() {
+    QueueExecutor executor = new QueueExecutor();
+    AtomicInteger checks = new AtomicInteger();
+    List<CallRuntime.Result> results = new ArrayList<>();
+    IllegalStateException failure = new IllegalStateException("Authority disappeared during startup");
+    CallRuntime runtime = new SerializedCallRuntime(executor, () -> {}, error -> fail(error.toString()));
+    runtime.execute(CallRuntime.Mode.START_IF_AUTHORIZED, () -> {
+      if (checks.incrementAndGet() == 2) throw failure;
+      return true;
+    }, () -> fail("No final grant"), results::add);
+    try {
+      executor.drain();
+      fail("Predicate error must retain its existing propagation");
+    } catch (IllegalStateException caught) {
+      assertSame(failure, caught);
+    }
+    assertEquals(List.of(CallRuntime.Result.FAILED), results);
+    assertEquals(CallRuntime.State.READY, runtime.getState());
+  }
+
+  @Test
+  public void rejectedQueueCompletesWithoutInitializing() {
+    List<CallRuntime.Result> results = new ArrayList<>();
+    RejectedExecutionException failure = new RejectedExecutionException("Runtime is unavailable");
+    CallRuntime runtime = new SerializedCallRuntime(command -> { throw failure; }, () -> fail("Rejected queue"), error -> fail(error.toString()));
+    try {
+      runtime.execute(CallRuntime.Mode.START_IF_AUTHORIZED, () -> true, () -> fail("Rejected queue"), results::add);
+      fail("Queue rejection must propagate");
+    } catch (RejectedExecutionException caught) {
+      assertSame(failure, caught);
+    }
+    assertEquals(List.of(CallRuntime.Result.FAILED), results);
+    assertEquals(CallRuntime.State.COLD, runtime.getState());
   }
 
   @Test

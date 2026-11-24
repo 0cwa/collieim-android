@@ -10,6 +10,7 @@ import okio.IOException
 import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallException
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
+import org.thoughtcrime.securesms.calls.runtime.CallRuntimePolicy
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.s3.S3
 import java.io.File
@@ -45,33 +46,50 @@ object CallingAssets {
    * Safe to call multiple times -- assets already registered are skipped.
    */
   @JvmStatic
-  @Synchronized
   fun registerAssetsIfNeeded() {
     val generation = CallPermissions.generation()
     if (!CallPermissions.isCurrent(generation)) return
-    val manager = AppDependencies.signalCallManager
-    // The managed facade is safe to obtain; asset bookkeeping must never acquire the engine.
-    // A skipped cold registration is not a native failure and must remain eligible after startup.
-    if (!manager.isEngineReady()) return
+    // Opted-in cold processes do not read calling assets or acquire the engine. Ordinary startup
+    // retains cached-asset warm-up, but only after the file passes its existing verification.
+    if (CallRuntimePolicy.isOnDemand() && !AppDependencies.signalCallManager.isEngineReady()) return
 
     ASSETS.forEach { entry ->
       if (!CallPermissions.isCurrent(generation)) return
-      if (registeredLog.contains(entry.name)) {
+      if (synchronized(registeredLog) { registeredLog.contains(entry.name) }) {
         return@forEach
       }
 
       try {
         val content = getFromFile(entry.name) ?: return@forEach
         if (verify(content, entry)) {
-          if (CallPermissions.runIfCurrent(generation) { manager.addAsset(entry.assetGroup, content) }) {
-            registeredLog.add(entry.name)
-            Log.i(TAG, "Registered calling asset: ${entry.name}")
+          if (!CallPermissions.isCurrent(generation)) return
+          val manager = AppDependencies.signalCallManager
+          if (manager.isEngineReady()) {
+            registerVerifiedAsset(manager, generation, entry, content)
+          } else {
+            manager.withCallEngine(false, { CallPermissions.isCurrent(generation) }, {
+              registerVerifiedAsset(manager, generation, entry, content)
+            }, {})
           }
         } else {
           Log.w(TAG, "Invalid calling asset on disk, skipping registration: ${entry.name}")
         }
       } catch (e: IOException) {
         Log.e(TAG, "Failed to register calling asset ${entry.name}", e)
+      }
+    }
+  }
+
+  private fun registerVerifiedAsset(manager: SignalCallManager, generation: Long, entry: ManifestEntry, content: ByteArray) {
+    synchronized(registeredLog) {
+      // Runtime acquisition prepares assets before invoking its callback. That preparation may
+      // already have registered this entry; only an actual native attempt makes it terminal.
+      if (registeredLog.contains(entry.name) || !manager.isEngineReady()) return
+      try {
+        if (CallPermissions.runIfCurrent(generation) { manager.addAsset(entry.assetGroup, content) }) {
+          registeredLog.add(entry.name)
+          Log.i(TAG, "Registered calling asset: ${entry.name}")
+        }
       } catch (e: CallException) {
         Log.w(TAG, "RingRTC rejected calling asset ${entry.name}: ${e.message}")
         // Native rejections are terminal for this process; revocation is not a registration.

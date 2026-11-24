@@ -75,6 +75,8 @@ import org.thoughtcrime.securesms.components.webrtc.WebRtcControls
 import org.thoughtcrime.securesms.components.webrtc.requests.CallLinkIncomingRequestSheet
 import org.thoughtcrime.securesms.conversation.ui.error.SafetyNumberChangeDialog
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.calls.runtime.CallRuntime
+import org.thoughtcrime.securesms.events.CallStartEvent
 import org.thoughtcrime.securesms.events.WebRtcViewModel
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.messagerequests.CalleeMustAcceptMessageRequestActivity
@@ -109,6 +111,7 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
     private const val CUSTOM_REACTION_BOTTOM_SHEET_TAG = "CallReaction"
     private const val SAVED_STATE_PIP_ASPECT_RATIO = "pip_aspect_ratio"
     private const val SAVED_STATE_LOCAL_PARTICIPANT_LANDSCAPE = "local_participant_landscape"
+    private const val SAVED_STATE_LOCAL_START_VERSION = "local_start_version"
 
     private val BACKGROUND_RESTRICTION_WARNING_STATES = setOf(
       WebRtcViewModel.State.CALL_PRE_JOIN,
@@ -150,12 +153,15 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
   private var enterPipOnResume: Boolean = false
   private var lastProcessedIntentTimestamp = 0L
   private var previousEvent: WebRtcViewModel? = null
+  private var pendingCallStart: CallStartEvent? = null
+  private var observedLocalStartVersion: Long = -1L
   private var answeredFromNotification: Boolean = false
   private var ephemeralStateDisposable = Disposable.empty()
   private val callPermissionsDialogController = CallPermissionsDialogController()
   private val eventSubscriptions = listOf(
     RestartableSubscription { EventBus.default.subscribe<RecaptchaRequiredEvent>(ThreadMode.MAIN, ::onRecaptchaRequiredEvent) },
-    RestartableSubscription { EventBus.default.subscribeSticky<WebRtcViewModel>(ThreadMode.MAIN, ::onEventMainThread) }
+    RestartableSubscription { EventBus.default.subscribeSticky<WebRtcViewModel>(ThreadMode.MAIN, ::onEventMainThread) },
+    RestartableSubscription { EventBus.default.subscribe<CallStartEvent>(ThreadMode.MAIN) { refreshCallStartState() } }
   )
   private val mediaProjectionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
     if (result.resultCode == RESULT_OK && result.data != null) {
@@ -193,11 +199,17 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
 
     initializeResources()
     initializeViewModel()
+    observedLocalStartVersion = savedInstanceState?.takeIf { it.containsKey(SAVED_STATE_LOCAL_START_VERSION) }?.getLong(SAVED_STATE_LOCAL_START_VERSION)
+      ?: AppDependencies.signalCallManager.localStartVersion
 
     onBackPressedDispatcher.addCallback(
       this,
       object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
+          if (pendingCallStart != null) {
+            finish()
+            return
+          }
           if (viewModel.callParticipantsStateSnapshot.callState != WebRtcViewModel.State.CALL_INCOMING && enterPipModeIfPossible()) {
             return
           }
@@ -274,6 +286,7 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
+    outState.putLong(SAVED_STATE_LOCAL_START_VERSION, observedLocalStartVersion)
     // Always save these values - Activity may recreate while entering PIP (before isInPipMode is true)
     if (lastPipAspectRatio > 0f) {
       outState.putFloat(SAVED_STATE_PIP_ASPECT_RATIO, lastPipAspectRatio)
@@ -303,12 +316,23 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
 
     subscribeToEvents()
 
+    // A recreated/backgrounded Activity may have missed completion. The managed snapshot is
+    // authoritative and does not acquire RingRTC or an EGL/camera resource.
+    val pending = AppDependencies.signalCallManager.pendingLocalStart
+    if (pending != null || pendingCallStart != null) {
+      refreshCallStartState()
+    } else {
+      pendingCallStart = null
+      callScreen.setCallStarting(false)
+      if (!isFinishing) observedLocalStartVersion = AppDependencies.signalCallManager.localStartVersion
+    }
+
     val rtcViewModel = EventBus.default.getStickyEvent<WebRtcViewModel>()
-    if (rtcViewModel == null) {
+    if (rtcViewModel == null && pendingCallStart == null && previousEvent?.state != WebRtcViewModel.State.NETWORK_FAILURE) {
       Log.w(TAG, "Activity resumed without service event, perform delay destroy")
       ThreadUtil.runOnMainDelayed({
         val delayedViewModel = EventBus.default.getStickyEvent<WebRtcViewModel>()
-        if (delayedViewModel == null) {
+        if (delayedViewModel == null && AppDependencies.signalCallManager.pendingLocalStart == null && previousEvent?.state != WebRtcViewModel.State.NETWORK_FAILURE) {
           Log.w(TAG, "Activity still without service event, finishing activity")
           finish()
         } else {
@@ -335,6 +359,7 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
 
     val callIntent = getCallIntent()
     Log.i(TAG, "onNewIntent(${callIntent.isStartedFromFullScreen})")
+    if (!isFinishing) observedLocalStartVersion = AppDependencies.signalCallManager.localStartVersion
     logIntent(callIntent)
     processIntent(callIntent)
   }
@@ -376,10 +401,17 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
       AppDependencies.signalCallManager.setEnableVideo(false)
     }
 
+    // Leaving an unjoined lobby cancels it, as with the existing native prejoin state. An audio
+    // call already requested by the user may continue starting in the background. Rotation keeps
+    // the same attempt so the replacement Activity can observe it.
+    if (pendingCallStart?.isPreJoin == true && !isChangingConfigurations && !isInMultiWindowModeCompat() && !callPermissionsDialogController.isAskingForPermission) {
+      finish()
+    }
+
     if (!viewModel.isCallStarting && !isChangingConfigurations) {
       val state = viewModel.callParticipantsStateSnapshot
       if (state.callState.isPreJoinOrNetworkUnavailable || state.callState.isIncomingOrHandledElsewhere) {
-        AppDependencies.signalCallManager.cancelPreJoin()
+        AppDependencies.signalCallManager.cancelPreJoinIfCurrent(observedLocalStartVersion)
       } else if (state.callState.inOngoingCall && isInPipMode()) {
         AppDependencies.signalCallManager.relaunchPipOnForeground()
       }
@@ -391,6 +423,14 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
     super.onDestroy()
     windowInfoTrackerCallbackAdapter.removeWindowLayoutInfoListener(windowLayoutInfoConsumer)
     unsubscribeFromEvents()
+  }
+
+  override fun finish() {
+    val pending = pendingCallStart
+    pendingCallStart = null
+    if (::callScreen.isInitialized) callScreen.setCallStarting(false)
+    if (pending != null) AppDependencies.signalCallManager.cancelPendingLocalStart(pending.attemptId)
+    super.finish()
   }
 
   @SuppressLint("MissingSuperCall")
@@ -452,12 +492,47 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
     RecaptchaProofBottomSheetFragment.show(supportFragmentManager)
   }
 
+  private fun refreshCallStartState() {
+    if (isFinishing) return
+    // A notification may arrive after newer pending, native and terminal events. The durable
+    // snapshot contains the latest outcome, so old notifications cannot revive a pending marker
+    // or hide the newer request's denial/cancellation.
+    val event = AppDependencies.signalCallManager.latestLocalStart ?: return
+    // A fresh incoming screen may receive a delayed notification for an older local attempt.
+    // Only a screen still displaying local startup owns its terminal outcome.
+    if (!event.isPending && pendingCallStart == null) return
+    if (event.isPending && previousEvent?.state == WebRtcViewModel.State.CALL_INCOMING) return
+    observedLocalStartVersion = event.attemptId
+    if (event.isPending) {
+      pendingCallStart = event
+      val recipient = Recipient.resolved(event.recipientId)
+      viewModel.setRecipient(recipient)
+      callScreen.setRecipient(recipient)
+      callScreen.setCallStarting(true)
+    } else {
+      pendingCallStart = null
+      callScreen.setCallStarting(false)
+      when (event.result) {
+        CallRuntime.Result.CANCELLED, CallRuntime.Result.DENIED, CallRuntime.Result.DEFERRED -> finish()
+        // The manager posts the ordinary call/error state before the terminal progress event.
+        else -> Unit
+      }
+    }
+  }
+
   private fun onEventMainThread(event: WebRtcViewModel) {
     Log.i(TAG, "Got message from service: ${event.describeDifference(previousEvent)}")
+    if (!isFinishing) observedLocalStartVersion = AppDependencies.signalCallManager.localStartVersion
 
     val previousCallState: WebRtcViewModel.State? = previousEvent?.state
 
     previousEvent = event
+    if (event.state == WebRtcViewModel.State.CALL_INCOMING) {
+      // Incoming call UI supersedes an obsolete local-start presentation without cancelling it
+      // through the old screen. Its delayed terminal notification must not finish this call UI.
+      pendingCallStart = null
+      callScreen.setCallStarting(false)
+    }
 
     viewModel.setRecipient(event.recipient)
     callScreen.setRecipient(event.recipient)

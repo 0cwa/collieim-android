@@ -13,6 +13,9 @@ on:
       - app/src/main/java/org/thoughtcrime/securesms/linkpreview/**
       - app/src/**/service/webrtc/**
       - app/src/**/components/settings/**
+      - app/src/**/components/webrtc/**
+      - app/src/**/events/Call*
+      - app/src/**/events/WebRtc*
       - app/src/**/keyvalue/**
       - app/src/**/messages/**
       - app/src/**/jobs/*Call*
@@ -29,6 +32,7 @@ on:
       - build-inputs/native-lock.json
       - gradle/**
       - docs/CALL-PERMISSIONS.md
+      - docs/CALL-RUNTIME.md
       - tooling/ci/test_call_admission_schema.py
       - tooling/ci/call-permissions-host-tests.json
       - tooling/ci/call-permissions-host.gradle
@@ -270,7 +274,7 @@ jobs:
           timeout 10s adb logcat -b all -d -v threadtime > "$evidence/beta-logcat.txt"
           timeout 10s adb shell am force-stop im.collie.app.trailblazer
           timeout 10s adb logcat -c
-          # Orchestrator keeps each method isolated. Test storage preserves the twelve PNGs and runtime probes
+          # Orchestrator keeps each method isolated. Test storage preserves the thirteen PNGs and runtime probes
           # across app-data clearing, and AGP collects the service output after the suite.
           # The suite preserves all four selectors through AGP's comma-delimited argument map.
           ./gradlew -PimoTests --no-daemon --console=plain \
@@ -294,7 +298,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: bash "$RUNNER_TEMP/run-call-permissions.sh"
-      - name: Require Beta smoke, eight passing methods, twelve screenshots and runtime probes
+      - name: Require Beta smoke, nine passing methods, thirteen screenshots and runtime probes
         if: always() && !cancelled()
         env:
           EXPECTED_SHA: ${{ github.sha }}

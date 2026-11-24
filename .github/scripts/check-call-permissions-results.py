@@ -18,12 +18,14 @@ METHODS = {
     (PREFIX + 'ColdCallRuntimeTest', 'onDemandColdStartKeepsPassiveRoutesAndDeniedTrafficUnloaded'),
     (PREFIX + 'ColdCallRuntimeTest', 'absoluteDisablePreventsLoadingEvenWhenOrdinaryStartupIsEnabled'),
     (PREFIX + 'ColdCallRuntimeTest', 'authorizedAcquisitionLoadsEngineAndRevocationBlocksFurtherWork'),
+    (PREFIX + 'ColdCallRuntimeTest', 'pendingCallUiSurvivesStartupAndRotationThenCancelsWithoutLoading'),
 }
 SCREENSHOTS = {
     '01-collie-hardening.png', '02-calls-defaults.png', '03-calls-disabled.png',
     '04-separate-group-default.png', '05-contact-inherit.png', '06-contact-choices.png',
     '07-contact-blocked.png', '08-group-choices.png', '09-group-allowed.png',
     '10-on-demand-off.png', '11-on-demand-on.png', '12-on-demand-with-all-calling-disabled.png',
+    '13-call-starting-after-rotation.png',
 }
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 EVIDENCE = 'build/call-permissions-api35'
@@ -32,6 +34,10 @@ PASSIVE_STEPS = [
     'linked-device-call-history', 'link-metadata-sync-and-storage', 'link-preview-refresh-group-peek-and-cleanup',
     'calls-settings-screen', 'group-settings-browsing', 'six-denied-signaling-categories',
 ]
+PENDING_UI_STEPS = [
+    'before-pending-call-ui', 'starting-ui-survived-grace', 'starting-ui-survived-rotation',
+    'back-cancelled-before-initialization',
+]
 
 
 def check_runtime_probes(outputs):
@@ -39,6 +45,7 @@ def check_runtime_probes(outputs):
         'on-demand-cold.json': (True, False, PASSIVE_STEPS),
         'all-calling-disabled.json': (False, True, PASSIVE_STEPS + ['denied-explicit-acquisition']),
         'authorized-acquisition.json': (True, False, ['before-authorized-acquisition', 'authorized-then-revoked']),
+        'pending-call-ui.json': (True, False, PENDING_UI_STEPS),
     }
     paths = list(outputs.rglob('call-runtime-proof/*.json'))
     if len(paths) != len(expected) or {path.name for path in paths} != set(expected):
@@ -61,6 +68,12 @@ def check_runtime_probes(outputs):
                     raise ValueError('missing successful native acquisition and post-revocation rejection')
             elif row.get('nativeMapped') is not False or row.get('initialized') is not False:
                 raise ValueError('a cold or disabled route loaded the calling engine')
+            if row['step'] == 'starting-ui-survived-grace' and (type(row.get('waitedMillis')) is not int or not 1250 <= row['waitedMillis'] < 45000):
+                raise ValueError('missing bounded observation beyond the call-screen grace timer')
+            if row['step'] == 'starting-ui-survived-rotation' and row.get('recreated') is not True:
+                raise ValueError('the pending call screen was not recreated after rotation')
+            if row['step'] == 'back-cancelled-before-initialization' and (row.get('pending') is not False or row.get('runtimeState') != 'COLD'):
+                raise ValueError('Back did not cancel the pending attempt before initialization')
 
 
 def apk_hashes(path):
@@ -173,7 +186,7 @@ def check(root, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized screenshot: {path.name}')
-    print(f'Passed real Beta startup, {len(METHODS)} isolated methods, {len(SCREENSHOTS)} API 35 screenshots and three clean-process runtime probes with matching source and APK hashes')
+    print(f'Passed real Beta startup, {len(METHODS)} isolated methods, {len(SCREENSHOTS)} API 35 screenshots and four clean-process runtime probes with matching source and APK hashes')
 
 
 if __name__ == '__main__':

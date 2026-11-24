@@ -1,11 +1,14 @@
 package org.thoughtcrime.securesms.service.webrtc;
 
+import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallManager;
 import org.thoughtcrime.securesms.ringrtc.RemotePeer;
+import org.thoughtcrime.securesms.calls.runtime.CallMessageAge;
 import org.whispersystems.signalservice.api.messages.calls.HangupMessage;
 import org.whispersystems.signalservice.api.messages.calls.OfferMessage;
 import org.signal.core.models.ServiceId;
@@ -71,6 +74,7 @@ public class WebRtcData {
     private final @Nullable byte[]    remoteIdentityKey;
     private final           long      serverReceivedTimestamp;
     private final           long      serverDeliveredTimestamp;
+    private final           CallMessageAge messageAge;
 
     public ReceivedOfferMetadata(@NonNull ServiceId destinationServiceId,
                                  @Nullable byte[] remoteIdentityKey,
@@ -81,6 +85,7 @@ public class WebRtcData {
       this.remoteIdentityKey        = remoteIdentityKey;
       this.serverReceivedTimestamp  = serverReceivedTimestamp;
       this.serverDeliveredTimestamp = serverDeliveredTimestamp;
+      this.messageAge               = CallMessageAge.fromTimestamps(serverReceivedTimestamp, serverDeliveredTimestamp, SystemClock::elapsedRealtime);
     }
 
     @NonNull ServiceId getDestinationServiceId() {
@@ -97,6 +102,10 @@ public class WebRtcData {
 
     long getServerDeliveredTimestamp() {
       return serverDeliveredTimestamp;
+    }
+
+    long getMessageAgeSeconds() {
+      return messageAge.seconds();
     }
   }
 
@@ -173,13 +182,21 @@ public class WebRtcData {
     private final UUID   uuid;
     private final byte[] opaque;
     private final int    remoteDeviceId;
-    private final long   messageAgeSeconds;
+    private final CallMessageAge messageAge;
 
     public OpaqueMessageMetadata(@NonNull UUID uuid, @NonNull byte[] opaque, int remoteDeviceId, long messageAgeSeconds) {
+      this(uuid, opaque, remoteDeviceId, CallMessageAge.fromSeconds(messageAgeSeconds, SystemClock::elapsedRealtime));
+    }
+
+    private OpaqueMessageMetadata(@NonNull UUID uuid, @NonNull byte[] opaque, int remoteDeviceId, CallMessageAge messageAge) {
       this.uuid              = uuid;
       this.opaque            = opaque;
       this.remoteDeviceId    = remoteDeviceId;
-      this.messageAgeSeconds = messageAgeSeconds;
+      this.messageAge        = messageAge;
+    }
+
+    public static OpaqueMessageMetadata fromMillis(@NonNull UUID uuid, @NonNull byte[] opaque, int remoteDeviceId, long messageAgeMillis) {
+      return new OpaqueMessageMetadata(uuid, opaque, remoteDeviceId, CallMessageAge.fromMillis(messageAgeMillis, SystemClock::elapsedRealtime));
     }
 
     @NonNull UUID getUuid() {
@@ -195,7 +212,7 @@ public class WebRtcData {
     }
 
     long getMessageAgeSeconds() {
-      return messageAgeSeconds;
+      return messageAge.seconds();
     }
   }
 }

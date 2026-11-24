@@ -1,0 +1,3 @@
+topic: privacy
+pr: 236
+Start calling on demand in Hardening to reduce background activity; calls may take longer to connect.

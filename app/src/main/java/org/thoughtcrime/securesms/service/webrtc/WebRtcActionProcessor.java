@@ -253,9 +253,6 @@ public abstract class WebRtcActionProcessor {
                                .putRemotePeer(callMetadata.getRemotePeer())
                                .build();
 
-    long messageAgeSec = Math.max(receivedOfferMetadata.getServerDeliveredTimestamp() - receivedOfferMetadata.getServerReceivedTimestamp(), 0) / 1000;
-    Log.i(tag, "messageAgeSec: " + messageAgeSec + ", serverReceivedTimestamp: " + receivedOfferMetadata.getServerReceivedTimestamp() + ", serverDeliveredTimestamp: " + receivedOfferMetadata.getServerDeliveredTimestamp());
-
     try {
       byte[] remoteIdentityKey = WebRtcUtil.getPublicKeyBytes(receivedOfferMetadata.getRemoteIdentityKey());
       byte[] localIdentityKey  = WebRtcUtil.getPublicKeyBytes(SignalStore.account().getAciIdentityKey().getPublicKey().serialize());
@@ -265,7 +262,7 @@ public abstract class WebRtcActionProcessor {
                                                       callMetadata.getRemotePeer(),
                                                       callMetadata.getRemoteDevice(),
                                                       offerMetadata.getOpaque(),
-                                                      messageAgeSec,
+                                                      receivedOfferMetadata.getMessageAgeSeconds(),
                                                       WebRtcUtil.getCallMediaTypeFromOfferType(offerMetadata.getOfferType()),
                                                       SignalStore.account().getDeviceId(),
                                                       remoteIdentityKey,

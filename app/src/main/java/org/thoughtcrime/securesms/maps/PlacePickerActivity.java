@@ -78,6 +78,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private AddressLookup            addressLookup;
   private GoogleMap                googleMap;
   private Insets                   systemBarInsets;
+  private @Nullable SimpleProgressDialog.DismissibleDialog snapshotProgress;
 
   public static void startActivityForResultAtCurrentLocation(@NonNull Fragment fragment, int requestCode, @ColorInt int chatColor) {
     fragment.startActivityForResult(new Intent(fragment.requireActivity(), PlacePickerActivity.class).putExtra(KEY_CHAT_COLOR, chatColor), requestCode);
@@ -222,16 +223,22 @@ public final class PlacePickerActivity extends AppCompatActivity {
   }
 
   private void finishWithAddress() {
+    if (snapshotProgress != null) return;
+
     Intent      returnIntent = new Intent();
     String      address      = currentAddress != null && currentAddress.getAddressLine(0) != null ? currentAddress.getAddressLine(0) : "";
     AddressData addressData  = new AddressData(currentLocation.latitude, currentLocation.longitude, address);
 
-    SimpleProgressDialog.DismissibleDialog dismissibleDialog = SimpleProgressDialog.showDelayed(this);
+    SimpleProgressDialog.DismissibleDialog progress = SimpleProgressDialog.showDelayed(this);
+    snapshotProgress = progress;
     MapView mapView = findViewById(R.id.map_view);
     SignalMapView.snapshot(currentLocation, mapView).addListener(new ListenableFuture.Listener<>() {
       @Override
       public void onSuccess(Bitmap result) {
-        dismissibleDialog.dismiss();
+        if (snapshotProgress != progress) return;
+        clearSnapshotProgress();
+        if (isFinishing() || isDestroyed()) return;
+
         byte[] blob = BitmapUtil.toByteArray(result);
         Uri uri = AppDependencies.getBlobs()
                               .forData(blob)
@@ -245,10 +252,24 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
       @Override
       public void onFailure(ExecutionException e) {
-        dismissibleDialog.dismiss();
+        if (snapshotProgress != progress) return;
+        clearSnapshotProgress();
         Log.e(TAG, "Failed to generate snapshot", e);
       }
     });
+  }
+
+  private void clearSnapshotProgress() {
+    if (snapshotProgress != null) {
+      snapshotProgress.dismissNow();
+      snapshotProgress = null;
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    clearSnapshotProgress();
+    super.onDestroy();
   }
 
   private void enableMyLocationButtonIfHaveThePermission(GoogleMap googleMap) {

@@ -17,6 +17,7 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -131,10 +132,11 @@ class UnifiedPushSettingsViewModelPersistenceTest {
     val file = File(application.getExternalFilesDir(null), EnrollmentExporter.FILE_NAME)
     val requestId = "22222222-2222-4222-8222-222222222222"
     val viewModel = UnifiedPushSettingsViewModel(application)
+    val reopenedSettings = UnifiedPushSettingsViewModel(application)
     val messages = mutableListOf<String>()
-    val observer = Observer<String?> { if (it != null) messages.add(it) }
+    val observer = Observer<UnifiedPushSettingsViewModel.ExportState?> { result -> result?.message?.let(messages::add) }
     mockkStatic(EnrollmentExporter::class)
-    viewModel.exportSuccessResult.observeForever(observer)
+    reopenedSettings.exportState.observeForever(observer)
     try {
       for ((index, highestUsed) in listOf(1L, 3L).withIndex()) {
         val result = EnrollmentExporter.Export(file, 2L, highestUsed, requestId)
@@ -146,23 +148,24 @@ class UnifiedPushSettingsViewModelPersistenceTest {
         }
         val count = messages.size
         viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
-        assertEquals(true, viewModel.isExportPending.value)
-        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        assertTrue(reopenedSettings.isExportPending())
+        reopenedSettings.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
         while (messages.size == count && System.nanoTime() < deadline) {
           shadowOf(Looper.getMainLooper()).idle()
           if (messages.size == count) Thread.sleep(10)
         }
         assertEquals(listOf(expected), messages.drop(count))
-        assertEquals(expected, viewModel.exportSuccessResult.value)
-        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
-        viewModel.acknowledgeExportResult(expected)
-        assertEquals(null, viewModel.exportSuccessResult.value)
-        assertEquals(false, viewModel.isExportPending.value)
+        val unread = checkNotNull(UnifiedPushSettingsViewModel.unreadExport())
+        assertEquals(expected, unread.message)
+        reopenedSettings.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        UnifiedPushSettingsViewModel.acknowledgeExportResult(unread.id)
+        assertEquals(null, UnifiedPushSettingsViewModel.unreadExport())
+        assertFalse(reopenedSettings.isExportPending())
         verify(exactly = index + 1) { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) }
       }
     } finally {
-      viewModel.exportSuccessResult.removeObserver(observer)
+      reopenedSettings.exportState.removeObserver(observer)
       unmockkStatic(EnrollmentExporter::class)
     }
   }

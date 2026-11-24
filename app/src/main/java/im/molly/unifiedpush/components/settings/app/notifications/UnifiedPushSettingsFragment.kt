@@ -49,10 +49,8 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
     }
-    viewModel.isExportPending.observe(viewLifecycleOwner) {
+    viewModel.exportState.observe(viewLifecycleOwner) {
       viewModel.state.value?.let { adapter.submitList(getConfiguration(it).toMappingModelList()) }
-    }
-    viewModel.exportSuccessResult.observe(viewLifecycleOwner) {
       showPendingExportResult()
     }
 
@@ -68,22 +66,34 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
   }
 
   private fun showPendingExportResult() {
-    val message = viewModel.exportSuccessResult.value ?: return
+    val result = UnifiedPushSettingsViewModel.unreadExport() ?: return
     if (childFragmentManager.isStateSaved || childFragmentManager.findFragmentByTag(ExportResultDialog.TAG) != null) return
     ExportResultDialog().apply {
-      arguments = bundleOf(ExportResultDialog.MESSAGE to message)
+      arguments = bundleOf(ExportResultDialog.RESULT_ID to result.id)
     }.showNow(childFragmentManager, ExportResultDialog.TAG)
   }
 
   class ExportResultDialog : DialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-      val message = requireNotNull(requireArguments().getString(MESSAGE))
+    private val resultId: String? get() = requireArguments().getString(RESULT_ID)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      showsDialog = resultId != null && UnifiedPushSettingsViewModel.unreadExport()?.id == resultId
       isCancelable = false
+    }
+
+    override fun onStart() {
+      super.onStart()
+      if (!showsDialog) dismissAllowingStateLoss()
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+      val result = UnifiedPushSettingsViewModel.unreadExport()?.takeIf { it.id == resultId }
       val dialog = MaterialAlertDialogBuilder(requireContext())
         .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
-        .setMessage(message)
+        .setMessage(result?.message)
         .setPositiveButton(android.R.string.ok) { _, _ ->
-          (requireParentFragment() as UnifiedPushSettingsFragment).viewModel.acknowledgeExportResult(message)
+          result?.let { UnifiedPushSettingsViewModel.acknowledgeExportResult(it.id) }
         }
         .create()
       WindowUtil.initializeScreenshotSecurity(requireContext(), requireNotNull(dialog.window))
@@ -92,7 +102,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
 
     companion object {
       const val TAG = "relay-export-result"
-      const val MESSAGE = "export-result-message"
+      const val RESULT_ID = "export-result-id"
     }
   }
 
@@ -321,7 +331,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           if (state.controlStateCorrupt) R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
           else R.string.UnifiedPushSettingsFragment__export_enrollment_summary
         ),
-        isEnabled = !state.controlStateCorrupt && viewModel.isExportPending.value != true,
+        isEnabled = !state.controlStateCorrupt && !viewModel.isExportPending(),
         onClick = { showExportModeDialog(state) },
       )
     }

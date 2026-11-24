@@ -1,5 +1,7 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
+import android.app.Dialog
+import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -7,11 +9,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.ViewModelProvider
-import im.molly.unifiedpush.health.PushHealth
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
@@ -23,6 +27,7 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.events.PushServiceEvent
+import org.thoughtcrime.securesms.util.WindowUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 
 class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDeliveryMethod__unifiedpush) {
@@ -44,18 +49,48 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
     }
-    viewModel.exportSuccessResult.observe(viewLifecycleOwner) { message ->
-      MaterialAlertDialogBuilder(requireContext())
-        .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
-        .setMessage(message)
-        .setPositiveButton(android.R.string.ok, null)
-        .show()
+    viewModel.exportSuccessResult.observe(viewLifecycleOwner) {
+      showPendingExportResult()
     }
 
     RestartableSubscription { EventBus.default.subscribe<PushServiceEvent>(ThreadMode.MAIN, ::onPushServiceEvent) }
       .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
 
     viewModel.updateRegistration()
+  }
+
+  override fun onResume() {
+    super.onResume()
+    if (::viewModel.isInitialized) showPendingExportResult()
+  }
+
+  private fun showPendingExportResult() {
+    val message = viewModel.exportSuccessResult.value ?: return
+    if (childFragmentManager.isStateSaved || childFragmentManager.findFragmentByTag(ExportResultDialog.TAG) != null) return
+    ExportResultDialog().apply {
+      arguments = bundleOf(ExportResultDialog.MESSAGE to message)
+    }.showNow(childFragmentManager, ExportResultDialog.TAG)
+  }
+
+  class ExportResultDialog : DialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+      val message = requireNotNull(requireArguments().getString(MESSAGE))
+      isCancelable = false
+      val dialog = MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
+        .setMessage(message)
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+          (requireParentFragment() as UnifiedPushSettingsFragment).viewModel.acknowledgeExportResult(message)
+        }
+        .create()
+      WindowUtil.initializeScreenshotSecurity(requireContext(), requireNotNull(dialog.window))
+      return dialog
+    }
+
+    companion object {
+      const val TAG = "relay-export-result"
+      const val MESSAGE = "export-result-message"
+    }
   }
 
   private fun showExportModeDialog(state: UnifiedPushSettingsState) {

@@ -131,7 +131,7 @@ class UnifiedPushSettingsViewModelPersistenceTest {
     val requestId = "22222222-2222-4222-8222-222222222222"
     val viewModel = UnifiedPushSettingsViewModel(application)
     val messages = mutableListOf<String>()
-    val observer = Observer<String> { messages.add(it) }
+    val observer = Observer<String?> { if (it != null) messages.add(it) }
     mockkStatic(EnrollmentExporter::class)
     viewModel.exportSuccessResult.observeForever(observer)
     try {
@@ -151,6 +151,9 @@ class UnifiedPushSettingsViewModelPersistenceTest {
           if (messages.size == count) Thread.sleep(10)
         }
         assertEquals(listOf(expected), messages.drop(count))
+        assertEquals(expected, viewModel.exportSuccessResult.value)
+        viewModel.acknowledgeExportResult(expected)
+        assertEquals(null, viewModel.exportSuccessResult.value)
       }
     } finally {
       viewModel.exportSuccessResult.removeObserver(observer)

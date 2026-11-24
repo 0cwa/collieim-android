@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.control.ControlReset
@@ -28,17 +29,20 @@ import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
-import org.thoughtcrime.securesms.util.SingleLiveEvent
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.unifiedpush.android.connector.UnifiedPush
 
 class UnifiedPushSettingsViewModel(private val application: Application) : ViewModel() {
 
   private val store = Store(getState())
-  private val exportSuccess = SingleLiveEvent<String>()
+  private val exportSuccess = MutableLiveData<String?>()
 
   val state: LiveData<UnifiedPushSettingsState> = store.stateLiveData
-  val exportSuccessResult: LiveData<String> = exportSuccess
+  val exportSuccessResult: LiveData<String?> = exportSuccess
+
+  fun acknowledgeExportResult(message: String) {
+    if (exportSuccess.value == message) exportSuccess.value = null
+  }
 
   fun refresh() {
     store.update { getState() }

@@ -82,6 +82,20 @@ class AppSettingsActivityIntentsTest {
     }
   }
 
+  @Test
+  fun `only the dedicated setup intent requests the push section in both navigation modes`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+
+      val setup = AppSettingsActivity.pushNotifications(context)
+      assertThat(setup.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(setup.startRoute()).isEqualTo(AppSettingsRoute.NotificationsRoute.Notifications)
+      assertThat(setup.getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false)).isEqualTo(true)
+      assertThat(AppSettingsActivity.notifications(context).getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false)).isEqualTo(false)
+      assertThat(AppSettingsActivity.playServicesProblem(context, 42).getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false)).isEqualTo(false)
+    }
+  }
+
   /** The start route rides under a host-specific extra key, so find it by type rather than by name. */
   private fun Intent.startRoute(): AppSettingsRoute? {
     return extras?.keySet()?.firstNotNullOfOrNull { getParcelableExtraCompat(it, AppSettingsRoute::class.java) }

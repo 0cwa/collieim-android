@@ -646,6 +646,11 @@
             android:defaultValue="0"
             app:argType="integer" />
 
+        <argument
+            android:name="focus_push_notifications"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
     </fragment>
 
     <!-- region Privacy -->

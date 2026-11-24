@@ -30,11 +30,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.appsettings.account.AccountSettingsTestTags
 import org.signal.appsettings.appearance.AppearanceSettingsTestTags
+import org.signal.appsettings.collie.CollieSettingsTestTags
 import org.signal.appsettings.home.AppSettingsTestTags
 import org.signal.appsettings.routes.AppSettingsNavigation
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.AppSettingsRouter
+import org.signal.appsettings.updates.AppUpdatesSettingsTestTags
 import org.signal.core.ui.compose.split.detailEntry
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.isSplitPane
@@ -144,6 +146,30 @@ class AppSettingsNavigationDeviceTest {
         awaitNode(AccountSettingsTestTags.ROW_LINKED_DEVICES)
         compose.onNodeWithText("Manage existing Signal donations").assertDoesNotExist()
         captureScreenshot(scenario, "account-settings")
+      }
+    }
+  }
+
+  @Test
+  fun collieOpensAppUpdatesAndBackReturnsToCollie() {
+    val context = harness.context
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(context)).use { scenario ->
+      awaitNode(AppSettingsTestTags.ROW_ACCOUNT)
+      compose.onNodeWithTag(AppSettingsTestTags.SCROLLER)
+        .performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_COLLIE))
+      compose.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).performClick()
+      awaitNode(CollieSettingsTestTags.ROW_APP_UPDATES)
+      compose.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertIsDisplayed()
+
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        captureScreenshot(scenario, "collie-app-updates-entry")
+        compose.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).performClick()
+        awaitNode(AppUpdatesSettingsTestTags.ROW_AUTO_UPDATE)
+        compose.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_AUTO_UPDATE).assertIsDisplayed()
+        captureScreenshot(scenario, "collie-app-updates-settings")
+        pressBack()
+        awaitNode(CollieSettingsTestTags.ROW_APP_UPDATES)
+        compose.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertIsDisplayed()
       }
     }
   }

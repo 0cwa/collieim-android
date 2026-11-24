@@ -24,8 +24,12 @@ DEVICE_METHODS = {
     'splitPaneHomeSelectionFollowsSectionChange',
     'settingsHomeOpensAppearanceAndBackMatchesLayout',
     'accountAndSupportRemainAvailableWithoutSignalCheckout',
+    'collieOpensAppUpdatesAndBackReturnsToCollie',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+SCREENSHOTS = {
+    'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png',
+    'collie-app-updates-entry.png', 'collie-app-updates-settings.png',
+}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 

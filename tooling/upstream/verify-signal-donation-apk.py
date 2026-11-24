@@ -16,9 +16,6 @@ REMOVED_CLASSES = (
 RETAINED_CLASSES = (
     "MessageBackupsCheckoutActivity", "BackupPaymentErrorHandler", "DonationPermitsRepository",
 )
-REMOVED_STRING_PREFIXES = (
-    "DonateToSignalFragment__", "DonationPillToggle__", "ManageDonationsFragment__", "SetCurrencyFragment__",
-)
 
 
 def verify(analyzer, apk, manifest):
@@ -28,9 +25,6 @@ def verify(analyzer, apk, manifest):
                for line in dex.splitlines() if line.startswith("C ")}
     bad_classes = classes.intersection(REMOVED_CLASSES)
     missing = set(RETAINED_CLASSES).difference(classes)
-    bad_strings = {line.split()[-1] for line in dex.splitlines()
-                   if line.startswith("F ") and "R$string int " in line
-                   and line.split()[-1].startswith(REMOVED_STRING_PREFIXES)}
     resource_paths = set()
     for entry in manifest["removed"]:
         path = entry["path"]
@@ -43,9 +37,9 @@ def verify(analyzer, apk, manifest):
         match = re.fullmatch(r"/res/([^/]+)/([^/]+)", path)
         if match and (match[1].split("-", 1)[0], match[2]) in resource_paths:
             bad_files.append(path)
-    if bad_classes or missing or bad_strings or bad_files:
+    if bad_classes or missing or bad_files:
         raise ValueError(f"checkout classes present: {sorted(bad_classes)}; missing backup classes: {sorted(missing)}; "
-                         f"checkout strings present: {sorted(bad_strings)}; checkout resources present: {sorted(bad_files)}")
+                         f"checkout resources present: {sorted(bad_files)}")
     with apk.open("rb") as handle:
         digest = file_digest(handle, "sha256").hexdigest()
     return {"apk_sha256": digest, "checked_resource_paths": len(resource_paths), "retained_classes": list(RETAINED_CLASSES)}

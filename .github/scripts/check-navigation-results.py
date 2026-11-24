@@ -19,13 +19,11 @@ HOST_METHODS = {
     'a route the host opens as an activity stays off the back stack',
     'home selection follows a replaced section',
 }
-DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
+DEVICE_CLASS = 'im.molly.unifiedpush.health.UnifiedPushSettingsScreenshotTest'
 DEVICE_METHODS = {
-    'splitPaneHomeSelectionFollowsSectionChange',
-    'settingsHomeOpensAppearanceAndBackMatchesLayout',
-    'accountAndSupportRemainAvailableWithoutSignalCheckout',
+    'exportResultShowsFullCleanupAndCollisionWarnings',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+SCREENSHOTS = {'relay-export-success.png', 'relay-export-collision.png'}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
@@ -94,7 +92,7 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases and three API 35 device cases with matching APKs and decoded Settings screenshots')
+    print('Passed eight host navigation cases and the API 35 export-result case with matching APKs and decoded Settings screenshots')
 
 
 if __name__ == '__main__':

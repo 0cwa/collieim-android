@@ -6,6 +6,12 @@
 package im.molly.unifiedpush.health
 
 import android.content.Context
+import android.view.WindowManager
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment
+import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel
+import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -81,6 +87,75 @@ class UnifiedPushSettingsScreenshotTest {
       SignalStore.settings.isScreenSecurityEnabled = before
       values.health.failures = 0
       values.health.fallback = false
+    }
+  }
+
+  @Test
+  fun exportResultShowsFullCleanupAndCollisionWarnings() {
+    val screenshotPrefix = args.getString("ep_export_screenshot_prefix")
+    assumeTrue(screenshotPrefix != null)
+    val before = SignalStore.settings.isScreenSecurityEnabled
+    SignalStore.settings.isScreenSecurityEnabled = false
+    try {
+      ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.notifications(context)).use { scenario ->
+        scenario.onActivity { activity ->
+          val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment
+          host.navController.navigate(R.id.notificationUnifiedPushFragment)
+        }
+        instrumentation.waitForIdleSync()
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_enrollment)).check(matches(isDisplayed()))
+
+        val file = File(context.getExternalFilesDir(null), EnrollmentExporter.FILE_NAME).absolutePath
+        val messages = mapOf(
+          "success" to context.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, file),
+          "collision" to context.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, file, 2L, 3L),
+        )
+        val secureFlag = WindowManager.LayoutParams.FLAG_SECURE
+        for ((name, message) in messages) {
+          // Check restoration with capture protection enabled, then recreate for the evidence.
+          SignalStore.settings.isScreenSecurityEnabled = true
+          scenario.onActivity { activity ->
+            val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment
+            val fragment = host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment
+            val model = ViewModelProvider(fragment)[UnifiedPushSettingsViewModel::class.java]
+            // Exercise the real settings presentation without provisioning a distributor or a relay.
+            val field = model.javaClass.getDeclaredField("exportSuccess").apply { isAccessible = true }
+            @Suppress("UNCHECKED_CAST")
+            val result = field.get(model) as MutableLiveData<String?>
+            result.value = message
+          }
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+            .check(matches(withText(message)))
+            .check(matches(isDisplayed()))
+          scenario.recreate()
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+            .check(matches(withText(message)))
+            .check(matches(isDisplayed()))
+          scenario.onActivity { activity ->
+            val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment
+            val fragment = host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment
+            val result = fragment.childFragmentManager.findFragmentByTag(UnifiedPushSettingsFragment.ExportResultDialog.TAG)
+              as UnifiedPushSettingsFragment.ExportResultDialog
+            check(requireNotNull(result.requireDialog().window).attributes.flags and secureFlag != 0)
+          }
+          SignalStore.settings.isScreenSecurityEnabled = false
+          scenario.recreate()
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+            .check(matches(withText(message)))
+            .check(matches(isDisplayed()))
+          val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+          try {
+            FileOutputStream(File(context.getExternalFilesDir(null), "$screenshotPrefix-$name.png")).use { output ->
+              check(image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, output))
+            }
+          } finally {
+            image.recycle()
+          }
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).perform(click())
+        }
+      }
+    } finally {
+      SignalStore.settings.isScreenSecurityEnabled = before
     }
   }
 }

@@ -74,7 +74,7 @@ fun EducationSheet(onClick: (Boolean) -> Unit) {
       modifier = Modifier.padding(bottom = 12.dp)
     )
     Text(
-      text = stringResource(R.string.AddLinkDeviceFragment__use_this_device_to_scan_qr_code),
+      text = stringResource(R.string.LinkDeviceCode__scan_or_paste),
       style = MaterialTheme.typography.bodyMedium,
       textAlign = TextAlign.Center,
       modifier = Modifier.padding(bottom = 12.dp)
@@ -89,7 +89,7 @@ fun EducationSheet(onClick: (Boolean) -> Unit) {
       onClick = { onClick(false) },
       modifier = Modifier.defaultMinSize(minWidth = 220.dp)
     ) {
-      Text(stringResource(id = R.string.DeviceAddFragment__link_without_scanning))
+      Text(stringResource(id = R.string.LinkDeviceCode__link_with_code))
     }
   }
 }

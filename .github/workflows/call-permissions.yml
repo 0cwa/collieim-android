@@ -167,10 +167,11 @@ jobs:
           timeout 10s adb logcat -c
           # Orchestrator keeps each method isolated. AGP collects additionalTestOutputDir,
           # where CallPermissionsScreenshotTest also saves its nine PNGs.
+          # The suite preserves the three selectors through AGP's comma-delimited argument map.
           ./gradlew -PimoTests --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
             :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-call-permissions-apks.gradle" \
-            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.calls.permissions.CallPermissionsScreenshotTest,org.thoughtcrime.securesms.calls.permissions.CallLinkKeyNativeParityTest,org.thoughtcrime.securesms.calls.permissions.CallEraIdNativeParityTest' \
+            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.calls.permissions.CallPermissionsApi35Suite' \
             2>&1 | tee "$evidence/connected.log"
           git diff --exit-code
           SH

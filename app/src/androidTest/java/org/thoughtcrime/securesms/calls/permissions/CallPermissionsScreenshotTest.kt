@@ -16,6 +16,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -42,6 +43,8 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.signal.appsettings.R as SettingsR
 
 /**
@@ -184,12 +187,24 @@ class CallPermissionsScreenshotTest {
   }
 
   private fun <T : Activity> capture(scenario: ActivityScenario<T>, name: String) {
+    compose.waitUntil(10_000) {
+      compose.onAllNodesWithText(context.getString(SettingsR.string.CollieCalls__saving)).fetchSemanticsNodes().isEmpty()
+    }
     compose.waitForIdle()
     instrumentation.waitForIdleSync()
+    compose.waitUntil(5_000) { instrumentation.uiAutomation.rootInActiveWindow?.packageName?.toString() == context.packageName }
+
+    // Semantics can already expose the saved value while the previous frame still says "Saving…".
+    // Require a newly committed frame; an idle UI thread alone is not a rendering barrier.
+    val frameCommitted = CountDownLatch(1)
     scenario.onActivity { activity ->
       assertEquals("Screen security is disabled only for evidence capture", 0, activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE)
+      val view = activity.window.decorView
+      assertTrue("Evidence capture requires an attached hardware-rendered window", view.isAttachedToWindow && view.isHardwareAccelerated)
+      view.viewTreeObserver.registerFrameCommitCallback { frameCommitted.countDown() }
+      view.invalidate()
     }
-    compose.waitUntil(5_000) { instrumentation.uiAutomation.rootInActiveWindow?.packageName?.toString() == context.packageName }
+    assertTrue("The saved settings frame must commit before capture", frameCommitted.await(5, TimeUnit.SECONDS))
     val screenshot = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
     try {
       var visible = 0

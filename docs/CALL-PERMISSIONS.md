@@ -201,6 +201,11 @@ test. Retain actual runtime evidence outside Git and link it in the PR.
 The **Call permissions API 35** workflow builds the Beta variant directly and
 launches a separately signed disposable test copy on API 35. It then runs the
 three instrumentation classes above using matching isolated IMO app/test APKs.
+`CallPermissionsApi35Suite` selects exactly those classes with one runner argument,
+avoiding the pinned AGP's comma-delimited argument serialization. Orchestrator
+still reports the original four methods under their individual test classes.
+Captures wait for the saving indicator to disappear and a new window frame to
+commit; a missing frame callback fails the capture after five seconds.
 Its evidence gate requires all four methods to pass, all nine settings captures
 to decode, and source, APK and device identity to match. The workflow retains
 the results as an Actions artifact; it does not prepare or publish a release.

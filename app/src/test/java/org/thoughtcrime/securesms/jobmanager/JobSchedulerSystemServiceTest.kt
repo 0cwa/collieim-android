@@ -94,6 +94,17 @@ class JobSchedulerSystemServiceTest {
   }
 
   @Test
+  fun `late stop of a legacy generation returns the successful rearm result`() {
+    val legacy = parameters(0, generation = null)
+    assertTrue(service.onStartJob(legacy))
+    listeners.single().onQueueEmpty()
+    completions.single().accept(false)
+
+    assertFalse(service.onStopJob(parameters(0, generation = null)))
+    verify(exactly = 1) { service.jobFinished(legacy, false) }
+  }
+
+  @Test
   fun `stopping a wakeup removes its listener requests retry and ignores a late drain`() {
     val parameters = parameters(0, "stopped")
     assertTrue(service.onStartJob(parameters))
@@ -144,8 +155,12 @@ class JobSchedulerSystemServiceTest {
     verify(exactly = 0) { service.jobFinished(any(), any()) }
   }
 
-  private fun parameters(id: Int, generation: String): JobParameters {
-    val extras = PersistableBundle().apply { putString(JobSchedulerScheduler.WAKEUP_GENERATION, generation) }
+  private fun parameters(id: Int, generation: String?): JobParameters {
+    val extras = PersistableBundle().apply {
+      if (generation != null) {
+        putString(JobSchedulerScheduler.WAKEUP_GENERATION, generation)
+      }
+    }
     return mockk {
       every { jobId } returns id
       every { this@mockk.extras } returns extras

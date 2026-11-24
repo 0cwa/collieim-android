@@ -163,8 +163,9 @@ public final class JobSchedulerScheduler implements Scheduler {
     @Override
     public boolean onStopJob(JobParameters params) {
       synchronized (activeWakeups) {
+        String generation = params.getExtras().getString(WAKEUP_GENERATION, "");
         ActiveWakeup wakeup = activeWakeups.get(params.getJobId());
-        if (wakeup != null && Objects.equals(wakeup.parameters.getExtras().getString(WAKEUP_GENERATION), params.getExtras().getString(WAKEUP_GENERATION))) {
+        if (wakeup != null && Objects.equals(wakeup.parameters.getExtras().getString(WAKEUP_GENERATION, ""), generation)) {
           if (wakeup.finishing) {
             return wakeup.needsReschedule != null && wakeup.needsReschedule;
           }
@@ -172,7 +173,7 @@ public final class JobSchedulerScheduler implements Scheduler {
           wakeup.jobManager.removeOnEmptyQueueListener(wakeup);
         } else {
           CompletedWakeup completed = completedWakeups.get(params.getJobId());
-          if (completed != null && completed.generation.equals(params.getExtras().getString(WAKEUP_GENERATION))) {
+          if (completed != null && completed.generation.equals(generation)) {
             return completed.needsReschedule;
           }
         }

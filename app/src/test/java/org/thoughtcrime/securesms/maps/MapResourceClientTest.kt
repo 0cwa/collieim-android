@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import okhttp3.Call
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -18,6 +19,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +29,7 @@ import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.net.SocksProxy
 import java.io.IOException
+import java.net.Proxy
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -35,12 +38,18 @@ class MapResourceClientTest {
   private val previousProxy = Networking.socksProxy
   private val requests = mutableListOf<Request>()
   private lateinit var client: OkHttpClient
+  private lateinit var route: Networking.Routing
 
   @Before
   fun setUp() {
     Networking.isEnabled = true
     Networking.socksProxy = null
-    client = MapResourceClient.create(ApplicationProvider.getApplicationContext()).newBuilder()
+    route = Networking.routing
+    client = configuredClient(route)
+  }
+
+  private fun configuredClient(route: Networking.Routing): OkHttpClient {
+    return MapResourceClient.createClient(ApplicationProvider.getApplicationContext(), route).newBuilder()
       // Exercise the real policy interceptor without making network connections.
       .addInterceptor { chain ->
         requests += chain.request()
@@ -97,7 +106,10 @@ class MapResourceClientTest {
       client.newCall(tileRequest()).execute().close()
     }
 
-    assertEquals("Map networking is disabled", failure.message)
+    assertEquals("Map network route changed", failure.message)
+    val fresh = configuredClient(Networking.routing)
+    val disabled = assertThrows(IOException::class.java) { fresh.newCall(tileRequest()).execute().close() }
+    assertEquals("Map networking is disabled", disabled.message)
     assertEquals(1, requests.size)
   }
 
@@ -110,7 +122,10 @@ class MapResourceClientTest {
       client.newCall(tileRequest()).execute().close()
     }
 
-    assertEquals("Map proxy is unavailable", failure.message)
+    assertEquals("Map network route changed", failure.message)
+    val fresh = configuredClient(Networking.routing)
+    val unavailable = assertThrows(IOException::class.java) { fresh.newCall(tileRequest()).execute().close() }
+    assertEquals("Map proxy is unavailable", unavailable.message)
     assertEquals(1, requests.size)
   }
 
@@ -202,6 +217,8 @@ class MapResourceClientTest {
     val chain = mockk<Interceptor.Chain>()
     every { chain.request() } returns requests.single()
     Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
+    Networking.socksProxy = null
+    assertEquals(Proxy.NO_PROXY, Networking.routing.proxy)
 
     val failure = assertThrows(IOException::class.java) {
       client.networkInterceptors.single().intercept(chain)
@@ -228,14 +245,51 @@ class MapResourceClientTest {
 
   @Test
   fun `transport uses Collie routing without redirects multiplexing or a plaintext HTTP cache`() {
-    assertSame(Networking.socketFactory, client.socketFactory)
-    assertSame(Networking.proxySelectorForSocks, client.proxySelector)
-    assertSame(Networking.dns, client.dns)
+    assertSame(route.socketFactory, client.socketFactory)
+    assertSame(route.proxySelector, client.proxySelector)
+    assertSame(route.dns, client.dns)
     assertEquals(listOf(Protocol.HTTP_1_1), client.protocols)
     assertFalse(client.followRedirects)
     assertFalse(client.followSslRedirects)
     assertFalse(client.retryOnConnectionFailure)
     assertNull(client.cache)
+  }
+
+  @Test
+  fun `route changes cancel admitted tile calls and reject superseded DNS and sockets`() {
+    val call = mockk<Call>(relaxed = true)
+    route.track(call)
+
+    Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
+    Networking.socksProxy = null
+
+    verify(exactly = 1) { call.cancel() }
+    assertThrows(IOException::class.java) { route.track(mockk()) }
+    assertThrows(IOException::class.java) { route.socketFactory.createSocket() }
+    assertThrows(IOException::class.java) { route.dns.lookup("tile.openstreetmap.org") }
+  }
+
+  @Test
+  fun `MapLibre factory binds new calls to the latest configuration`() {
+    val factory = MapResourceClient.create(ApplicationProvider.getApplicationContext())
+    val old = factory.newCall(tileRequest())
+    Networking.isEnabled = false
+
+    val stale = assertThrows(IOException::class.java) { old.execute().close() }
+    assertEquals("Map network route changed", stale.message)
+    val disabled = assertThrows(IOException::class.java) { factory.newCall(tileRequest()).execute().close() }
+    assertEquals("Map networking is disabled", disabled.message)
+  }
+
+  @Test
+  fun `platform geocoding is available only when the direct route is enabled`() {
+    assertTrue(Networking.canUsePlatformGeocoder())
+    val proxy = SocksProxy("127.0.0.1", 9050)
+    Networking.socksProxy = proxy
+    assertFalse(Networking.canUsePlatformGeocoder())
+    Networking.socksProxy = null
+    Networking.isEnabled = false
+    assertFalse(Networking.canUsePlatformGeocoder())
   }
 
   private fun tileRequest(): Request = Request.Builder()

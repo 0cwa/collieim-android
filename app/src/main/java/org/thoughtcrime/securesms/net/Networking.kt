@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.net
 
+import okhttp3.Call
 import okhttp3.Dns
 import java.io.IOException
 import java.net.InetAddress
@@ -12,8 +13,19 @@ import javax.net.SocketFactory
 
 object Networking {
 
+  private val routeLock = Any()
+  private val routeCalls = mutableSetOf<Call>()
+
+  @Volatile
+  internal var routing = Routing(false, null)
+    private set
+
   @JvmStatic
-  var isEnabled: Boolean = false
+  var isEnabled: Boolean
+    get() = routing.enabled
+    set(value) = updateRoute { current ->
+      if (current.enabled == value) current else Routing(value, current.socksProxy)
+    }
 
   @JvmStatic
   val socketFactory: SocketFactory = ProxySocketFactory {
@@ -22,7 +34,17 @@ object Networking {
   }
 
   @JvmStatic
-  var socksProxy: SocksProxy? = null
+  var socksProxy: SocksProxy?
+    get() = routing.socksProxy
+    set(value) = updateRoute { current ->
+      if (current.socksProxy == value) current else Routing(current.enabled, value)
+    }
+
+  @JvmStatic
+  fun canUsePlatformGeocoder(): Boolean {
+    val current = routing
+    return current.enabled && current.socksProxy == null
+  }
 
   /**
    * A SOCKS [Proxy] instance pointing to the "discard" service on localhost (port 9),
@@ -43,18 +65,23 @@ object Networking {
    */
   @JvmStatic
   val proxy: Proxy
-    get() {
-      val currentSocksProxy = socksProxy ?: return Proxy.NO_PROXY
-      return currentSocksProxy.makeProxy() ?: DUMMY_PROXY
-    }
+    get() = routing.proxy
 
   @JvmStatic
-  val proxySelectorForSocks = object : ProxySelector() {
+  val proxySelectorForSocks = proxySelector { socksProxy != null }
+
+  @JvmStatic
+  val dns: Dns = DnsProxyAware(socketFactory, proxySelectorForSocks) {
+    ensureNetworkEnabled()
+    socksProxy != null
+  }
+
+  private fun proxySelector(hasSocksProxy: () -> Boolean): ProxySelector = object : ProxySelector() {
     private val systemDefault = getDefault()
 
     override fun select(uri: URI?): List<Proxy> {
-      return if (socksProxy != null) {
-        // Do not chain to system proxy if SOCKS proxy is selected
+      return if (hasSocksProxy()) {
+        // Do not chain to system proxy if SOCKS proxy is selected.
         listOf(Proxy.NO_PROXY)
       } else {
         systemDefault.select(uri)
@@ -65,8 +92,51 @@ object Networking {
       systemDefault.connectFailed(uri, sa, ioe)
   }
 
-  @JvmStatic
-  val dns: Dns = DnsProxyAware()
+  private fun updateRoute(update: (Routing) -> Routing) {
+    val cancelled = synchronized(routeLock) {
+      val replacement = update(routing)
+      if (replacement === routing) return
+      routing = replacement
+      routeCalls.toList().also { routeCalls.clear() }
+    }
+    cancelled.forEach(Call::cancel)
+  }
+
+  /**
+   * One published configuration per network enablement or proxy change. Identity, rather
+   * than proxy equality, distinguishes a superseded route even after switching back.
+   */
+  internal class Routing(val enabled: Boolean, val socksProxy: SocksProxy?) {
+    val proxy: Proxy = socksProxy?.let { it.makeProxy() ?: DUMMY_PROXY } ?: Proxy.NO_PROXY
+    val socketFactory: SocketFactory by lazy {
+      ProxySocketFactory {
+        ensureCurrent()
+        proxy
+      }
+    }
+    val proxySelector: ProxySelector by lazy { Networking.proxySelector { socksProxy != null } }
+    val dns: Dns by lazy {
+      DnsProxyAware(socketFactory, proxySelector) {
+        ensureCurrent()
+        socksProxy != null
+      }
+    }
+
+    fun ensureCurrent() {
+      if (this !== routing) throw IOException("Map network route changed")
+      if (!enabled) throw IOException("Map networking is disabled")
+      if (proxy == DUMMY_PROXY) throw IOException("Map proxy is unavailable")
+    }
+
+    fun track(call: Call) = synchronized(routeLock) {
+      ensureCurrent()
+      routeCalls.add(call)
+    }
+
+    fun untrack(call: Call) = synchronized(routeLock) {
+      routeCalls.remove(call)
+    }
+  }
 
   private fun ensureNetworkEnabled() {
     if (!isEnabled) throw IOException("Network is disabled")
@@ -76,7 +146,11 @@ object Networking {
     if (proxy == DUMMY_PROXY) throw IOException("Proxy socket address not available yet")
   }
 
-  private class DnsProxyAware : Dns {
+  private class DnsProxyAware(
+    socketFactory: SocketFactory,
+    proxySelectorForSocks: ProxySelector,
+    private val useProxy: () -> Boolean
+  ) : Dns {
     private val cloudflare: Dns = DohClient("https://1.1.1.1/dns-query", socketFactory, proxySelectorForSocks)
     private val quad9: Dns = DohClient("https://9.9.9.9/dns-query", socketFactory, proxySelectorForSocks)
 
@@ -84,8 +158,7 @@ object Networking {
     private val dohDnsResolver: Dns = SequentialDns(cloudflare, quad9)
 
     override fun lookup(hostname: String): List<InetAddress> {
-      ensureNetworkEnabled()
-      return if (socksProxy == null) {
+      return if (!useProxy()) {
         systemDnsResolver.lookup(hostname)
       } else {
         dohDnsResolver.lookup(hostname)

@@ -40,6 +40,7 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.location.SignalMapView;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.net.Networking;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.MediaUtil;
@@ -226,7 +227,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
     if (snapshotProgress != null) return;
 
     Intent      returnIntent = new Intent();
-    String      address      = currentAddress != null && currentAddress.getAddressLine(0) != null ? currentAddress.getAddressLine(0) : "";
+    String      address      = Networking.canUsePlatformGeocoder() ? Objects.requireNonNullElse(addressToString(currentAddress), "") : "";
     AddressData addressData  = new AddressData(currentLocation.latitude, currentLocation.longitude, address);
 
     SimpleProgressDialog.DismissibleDialog progress = SimpleProgressDialog.showDelayed(this);
@@ -282,6 +283,13 @@ public final class PlacePickerActivity extends AppCompatActivity {
     if (addressLookup != null) {
       addressLookup.cancel(true);
     }
+    currentAddress = null;
+    if (target == null || !Networking.canUsePlatformGeocoder()) {
+      addressLookup = null;
+      bottomSheet.hide();
+      return;
+    }
+
     addressLookup = new AddressLookup();
     addressLookup.execute(target);
   }
@@ -310,7 +318,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
     @Override
     protected Address doInBackground(LatLng... latLngs) {
-      if (latLngs.length == 0) return null;
+      if (latLngs.length == 0 || !Networking.canUsePlatformGeocoder()) return null;
       LatLng latLng = latLngs[0];
       if (latLng == null) return null;
       try {
@@ -324,6 +332,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(@Nullable Address address) {
+      if (!Networking.canUsePlatformGeocoder()) address = null;
       currentAddress = address;
       if (address != null) {
         bottomSheet.showResult(address.getLatitude(), address.getLongitude(), addressToShortString(address), addressToString(address));

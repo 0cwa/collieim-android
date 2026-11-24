@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.maps
 
 import android.content.Context
+import okhttp3.Call
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -8,7 +9,6 @@ import okhttp3.Request
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.net.Networking
 import java.io.IOException
-import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 /** Transport for the bundled OSM raster map and OSMF Shortbread transit overlay. */
@@ -20,12 +20,29 @@ object MapResourceClient {
   private val TRANSIT_PATH = Regex("/shortbread_v1/([0-9]{1,2})/([0-9]{1,6})/([0-9]{1,6})\\.mvt")
 
   @JvmStatic
-  fun create(context: Context): OkHttpClient = OkHttpClient.Builder()
-    .socketFactory(Networking.socketFactory)
-    .proxySelector(Networking.proxySelectorForSocks)
-    .dns(Networking.dns)
-    // A connection opened before a proxy change must not serve a later request.
-    // HTTP/1.1 also prevents concurrent calls from sharing an HTTP/2 connection.
+  fun create(context: Context): Call.Factory {
+    val application = context.applicationContext
+    return object : Call.Factory {
+      private var routing: Networking.Routing? = null
+      private var client: OkHttpClient? = null
+
+      @Synchronized
+      override fun newCall(request: Request): Call {
+        val current = Networking.routing
+        if (routing !== current) {
+          client = createClient(application, current)
+          routing = current
+        }
+        return checkNotNull(client).newCall(request)
+      }
+    }
+  }
+
+  internal fun createClient(context: Context, route: Networking.Routing): OkHttpClient = OkHttpClient.Builder()
+    .socketFactory(route.socketFactory)
+    .proxySelector(route.proxySelector)
+    .dns(route.dns)
+    // Only share connections within one route and avoid retaining them between tile calls.
     .connectionPool(ConnectionPool(0, 1, TimeUnit.SECONDS))
     .protocols(listOf(Protocol.HTTP_1_1))
     .followRedirects(false)
@@ -33,27 +50,26 @@ object MapResourceClient {
     .retryOnConnectionFailure(false)
     .callTimeout(30, TimeUnit.SECONDS)
     .addInterceptor { chain ->
-      val proxy = currentProxy()
       val request = chain.request()
       if (tileKind(request) == null) {
         // Resource URLs contain viewed coordinates. Never include them in errors.
         throw IOException("Map resource destination is not allowed")
       }
 
-      chain.proceed(
-        request.newBuilder()
+      val call = chain.call()
+      route.track(call)
+      try {
+        chain.proceed(request.newBuilder()
           .header("User-Agent", "Collie/${BuildConfig.VERSION_NAME} (+https://collie.im)")
-          .tag(Route::class.java, Route(proxy))
-          .build()
-      )
+          .build())
+      } finally {
+        route.untrack(call)
+      }
     }
     .addInterceptor(MapResourceCache(context.applicationContext))
     .addNetworkInterceptor { chain ->
-      // Check again after DNS/connect and before sending coordinates in HTTP headers.
-      // This does not cancel a request whose headers were already sent before a change.
-      if (chain.request().tag(Route::class.java)?.proxy != currentProxy()) {
-        throw IOException("Map network route changed")
-      }
+      // Check after DNS and connection setup, immediately before sending tile headers.
+      route.ensureCurrent()
       chain.proceed(chain.request())
     }
     .build()
@@ -80,15 +96,6 @@ object MapResourceClient {
     val tilesPerSide = 1 shl zoom
     return kind.takeIf { x < tilesPerSide && y < tilesPerSide }
   }
-
-  private fun currentProxy(): Proxy {
-    if (!Networking.isEnabled) throw IOException("Map networking is disabled")
-    val proxy = Networking.proxy
-    if (proxy == Networking.DUMMY_PROXY) throw IOException("Map proxy is unavailable")
-    return proxy
-  }
-
-  private data class Route(val proxy: Proxy)
 }
 
 internal enum class MapTileKind(val maximumZoom: Int, val maximumBytes: Int) {

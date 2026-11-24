@@ -387,7 +387,7 @@ class MapResourceCacheTest {
   fun `network policy is enforced before reading an already cached tile`() {
     Networking.isEnabled = true
     Networking.socksProxy = null
-    val client = withTransport(MapResourceClient.create(context).newBuilder())
+    val client = withTransport(MapResourceClient.createClient(context, Networking.routing).newBuilder())
     reply()
     fetch(client)
     Networking.isEnabled = false

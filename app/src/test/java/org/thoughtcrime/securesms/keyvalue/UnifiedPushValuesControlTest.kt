@@ -9,9 +9,11 @@ import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.enrollment.ControlKeyId
+import im.molly.unifiedpush.model.MollySocketDevice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -21,12 +23,14 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueDataSet
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storage.keyvalue.KeyValuePersistentStorage
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -312,5 +316,32 @@ class UnifiedPushValuesControlTest {
     val absent = values(KeyValueDataSet())
     absent.clearControl()
     assertTrue(absent.controlStateRead is ControlStateRead.Absent)
+  }
+
+  @Test
+  fun `commitClearedDevice durably clears the relay device and surfaces persistence failures`() {
+    val storage = SnapshotKeyValuePersistentStorage(KeyValueDataSet())
+    val values = UnifiedPushValues(KeyValueStore(storage, Executor { it.run() }))
+    val device = MollySocketDevice(deviceId = 7, password = "synthetic-relay-credential")
+
+    values.commitProvisionedDevice(device)
+    assertEquals(device, values.device)
+    assertTrue(values.vapidKeySynced)
+    assertEquals(device, UnifiedPushValues(KeyValueStore(storage, Executor { it.run() })).device)
+
+    val writeFailure = IllegalStateException("synthetic clear write failure")
+    storage.nextWriteFailure = writeFailure
+
+    val failure = assertThrows(KeyValuePersistenceException::class.java) {
+      values.commitClearedDevice()
+    }
+    assertSame(writeFailure, failure.cause)
+    assertEquals(device, values.device)
+    assertEquals(device, UnifiedPushValues(KeyValueStore(storage, Executor { it.run() })).device)
+
+    values.commitClearedDevice()
+    assertNull(values.device)
+    assertFalse(values.isMollySocketDevice(device.deviceId))
+    assertNull(UnifiedPushValues(KeyValueStore(storage, Executor { it.run() })).device)
   }
 }

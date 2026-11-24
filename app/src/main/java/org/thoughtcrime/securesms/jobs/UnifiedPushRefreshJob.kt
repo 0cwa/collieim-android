@@ -207,7 +207,9 @@ class UnifiedPushRefreshJob private constructor(
   /**
    * The store did not acknowledge [created]. Remove the remote device while [lease] still pins its account. The write
    * may have taken effect before its acknowledgement failed, so once removal is confirmed clear the record only if it
-   * is still exactly [created]. Always rethrows [failure]; a failed removal leaves the record for the next validation.
+   * still belongs to the same account and matches [created] exactly, even if a route-only transition invalidated the
+   * lease generation while unlinking ran. Always rethrows [failure], attaching any failed removal or clear as a
+   * suppressed exception.
    */
   private fun removeUnpublishedDevice(
     created: MollySocketDevice,
@@ -219,7 +221,7 @@ class UnifiedPushRefreshJob private constructor(
     val interrupted = Thread.interrupted()
     try {
       MollySocketRepository.removeDevice(created)
-      clearDevice(created, lease)
+      clearDevice(created, lease, allowRouteTransition = true)
     } catch (cleanup: Exception) {
       Log.w(TAG, "Could not remove unpublished $created.", cleanup)
       failure.addSuppressed(cleanup)
@@ -301,30 +303,47 @@ class UnifiedPushRefreshJob private constructor(
   /**
    * Close admission before dropping this job's lease, then enter the serialized transition with the
    * generation observed at invalidation. If another transition won the writer first, this one fails
-   * stale instead of waiting for a transition that is itself draining our lease.
+   * stale instead of waiting for a transition that is itself draining our lease. Compensating cleanup
+   * after an unacknowledged provisioning write may proceed across a route-only transition while still
+   * rechecking account identity and exact credential equality inside the transition.
    */
-  internal fun clearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Long? {
-    val expectedGeneration = synchronized(UnifiedPushLifecycle.monitor) {
-      if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation ||
-        !UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) || SignalStore.unifiedpush.device != device) {
-        null
-      } else {
-        UnifiedPushLifecycle.invalidateLocked()
-        UnifiedPushLifecycle.currentGeneration()
+  internal fun clearDevice(
+    device: MollySocketDevice,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+    allowRouteTransition: Boolean = false,
+  ): Long? {
+    var shouldClear = false
+    var ownInvalidation = false
+    var expectedGeneration: Long? = null
+    try {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        val readyOnLeaseGeneration = UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation
+        if ((readyOnLeaseGeneration || allowRouteTransition) &&
+          UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
+          SignalStore.unifiedpush.device == device) {
+          if (readyOnLeaseGeneration) {
+            UnifiedPushLifecycle.invalidateLocked()
+            ownInvalidation = true
+            expectedGeneration = if (allowRouteTransition) null else UnifiedPushLifecycle.currentGeneration()
+          }
+          shouldClear = true
+        }
       }
+    } finally {
+      lease.close()
     }
-    lease.close()
-    if (expectedGeneration == null) return null
+    if (!shouldClear) return null
 
     var cleared = false
     val transition = runBlocking {
       UnifiedPushAccountTransition.withTransitionAndGeneration(
-      expectedGeneration = expectedGeneration,
-      completesInvalidation = true,
+        expectedGeneration = expectedGeneration,
+        completesInvalidation = ownInvalidation,
       ) {
         synchronized(UnifiedPushLifecycle.monitor) {
-          if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && SignalStore.unifiedpush.device == device) {
-            SignalStore.unifiedpush.device = null
+          if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
+            SignalStore.unifiedpush.device == device) {
+            SignalStore.unifiedpush.commitClearedDevice()
             // Stop dispatching a frame addressed to the removed device while retaining keys, replay, import sequence,
             // and every pending import identity that an old file can still satisfy.
             SignalStore.unifiedpush.mutateControl { it.copy(update = null) }

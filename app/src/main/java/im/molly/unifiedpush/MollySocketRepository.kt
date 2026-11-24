@@ -61,13 +61,14 @@ object MollySocketRepository {
 
     try {
       loadPreKeys(device.deviceId)
+      SignalStore.account.isMultiDevice = true
     } catch (e: Exception) {
       // The caller never learns this device ID, so nothing else could remove it. Do it now, under the caller's lease.
-      Log.w(TAG, "Prekey setup failed for new $device, removing it.", e)
+      Log.w(TAG, "Post-registration setup failed for new $device, removing it.", e)
       try {
         removeDevice(device)
       } catch (cleanup: Exception) {
-        Log.w(TAG, "Could not remove $device after failed prekey setup.", cleanup)
+        Log.w(TAG, "Could not remove $device after failed post-registration setup.", cleanup)
         e.addSuppressed(cleanup)
       }
       throw e
@@ -112,9 +113,7 @@ object MollySocketRepository {
       accountAttributes,
       aciPreKeyCollection, pniPreKeyCollection,
       null
-    ).also {
-      SignalStore.account.isMultiDevice = true
-    }
+    )
   }
 
   /**

@@ -85,6 +85,17 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .commitAndWaitForPersistence()
   }
 
+  /**
+   * Clears the stored relay device only after the backing store confirms the write.
+   */
+  @Throws(KeyValuePersistenceException::class)
+  fun commitClearedDevice() {
+    store.beginWrite()
+      .putInteger(MOLLYSOCKET_DEVICE_ID, 0)
+      .putString(MOLLYSOCKET_PASSWORD, null)
+      .commitAndWaitForPersistence()
+  }
+
   fun isMollySocketDevice(deviceId: Int): Boolean =
     deviceId != 0 && getInteger(MOLLYSOCKET_DEVICE_ID, 0) == deviceId
 

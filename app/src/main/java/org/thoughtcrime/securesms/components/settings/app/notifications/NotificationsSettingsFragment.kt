@@ -209,12 +209,13 @@ open class DefaultNotificationsSettingsCallbacks(
     callback = {}
   )
 
-  private val linkDefaultDistributorLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
+  private val linkDefaultDistributorLauncher: ActivityResultLauncher<UnifiedPushDefaultDistributorLinkActivity.Setup> = activityResultRegisterer.registerForActivityResult(
     contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
-    callback = { success ->
-      val authorization = viewModel.pendingMollySocketSetup
-      if (authorization != null) {
-        viewModel.pendingMollySocketResult.value = NotificationsSettingsViewModel.PendingMollySocketResult(authorization, success)
+    callback = { result ->
+      val setup = viewModel.pendingMollySocketSetup
+      if (setup != null && result != null && result.setupId == setup.id) {
+        viewModel.pendingMollySocketSetup = null
+        viewModel.pendingMollySocketResult.value = NotificationsSettingsViewModel.PendingMollySocketResult(setup.authorization, result.found)
       }
     }
   )
@@ -231,8 +232,10 @@ open class DefaultNotificationsSettingsCallbacks(
           RelayDisclosureDialogs.showRelay(activity, mollySocket) {
             viewModel.initializeMollySocket(mollySocket, disclosure) { authorization ->
               if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                viewModel.pendingMollySocketSetup = authorization
-                linkDefaultDistributorLauncher.launch()
+                val setup = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
+                viewModel.pendingMollySocketResult.value = null
+                viewModel.pendingMollySocketSetup = setup
+                linkDefaultDistributorLauncher.launch(setup)
               }
             }
           }
@@ -257,7 +260,6 @@ open class DefaultNotificationsSettingsCallbacks(
       val completed = viewModel.completeMollySocketSetup(pending.authorization) {
         if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult.value === pending) {
           viewModel.pendingMollySocketResult.value = null
-          viewModel.pendingMollySocketSetup = null
           if (pending.success != true) viewModel.selectFirstDistributor()
           onNavigationUnifiedPushSettings()
         }
@@ -267,7 +269,6 @@ open class DefaultNotificationsSettingsCallbacks(
         owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
           if (viewModel.pendingMollySocketResult.value === pending) {
             viewModel.pendingMollySocketResult.value = null
-            viewModel.pendingMollySocketSetup = null
             RelayDisclosureDialogs.showStaleAction(activity)
           }
         }

@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.net.Uri
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -13,17 +15,26 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.test.core.app.ApplicationProvider
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.signal.camera.CameraScreenEvents
 import org.signal.camera.CameraScreenState
+import org.signal.camera.CameraScreenViewModel
 import org.signal.core.ui.CoreUiDependenciesRule
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.thoughtcrime.securesms.R
@@ -83,6 +94,94 @@ class LinkDeviceCodeScreenTest {
     compose.onNodeWithText(text(R.string.LinkDeviceCode__paste_code)).performScrollTo().performClick()
     compose.onNodeWithText(text(R.string.LinkDeviceCode__clipboard_empty)).performScrollTo().assertIsDisplayed()
     compose.onNodeWithText(text(R.string.DeviceProvisioningActivity_continue)).assertIsNotEnabled()
+  }
+
+  @Test
+  fun `failed paste clears a previously entered code and keeps submission disabled`() {
+    var submitted: String? = null
+    showManual { submitted = it }
+
+    compose.onNode(hasSetTextAction()).performTextReplacement(CODE)
+    compose.onNodeWithText(text(R.string.DeviceProvisioningActivity_continue)).assertIsEnabled()
+
+    clipboard.setPrimaryClip(ClipData.newPlainText("test", "   "))
+    compose.onNodeWithText(text(R.string.LinkDeviceCode__paste_code)).performScrollTo().performClick()
+    compose.onNodeWithText(text(R.string.LinkDeviceCode__clipboard_empty)).performScrollTo().assertIsDisplayed()
+    compose.onNodeWithText(CODE).assertDoesNotExist()
+    compose.onNodeWithText(text(R.string.DeviceProvisioningActivity_continue)).assertIsNotEnabled()
+    compose.onNode(hasSetTextAction()).performImeAction()
+    compose.runOnIdle { assertNull(submitted) }
+
+    clipboard.setPrimaryClip(ClipData.newPlainText("test", CODE))
+    compose.onNodeWithText(text(R.string.LinkDeviceCode__paste_code)).performScrollTo().performClick()
+    compose.onNodeWithText(text(R.string.DeviceProvisioningActivity_continue)).assertIsEnabled()
+
+    clipboard.setPrimaryClip(ClipData.newRawUri("uri", Uri.parse(CODE)))
+    compose.onNodeWithText(text(R.string.LinkDeviceCode__paste_code)).performScrollTo().performClick()
+    compose.onNodeWithText(text(R.string.LinkDeviceCode__clipboard_empty)).performScrollTo().assertIsDisplayed()
+    compose.onNodeWithText(CODE).assertDoesNotExist()
+    compose.onNodeWithText(text(R.string.DeviceProvisioningActivity_continue)).assertIsNotEnabled()
+    compose.onNode(hasSetTextAction()).performImeAction()
+    compose.runOnIdle { assertNull(submitted) }
+  }
+
+  @Test
+  fun `opening manual entry directly does not allocate camera view model`() {
+    val storeOwner = object : ViewModelStoreOwner {
+      override val viewModelStore = ViewModelStore()
+    }
+    var factoryCalls = 0
+    var resolved: CameraScreenViewModel? = mockk(relaxed = true)
+
+    compose.setContent {
+      CompositionLocalProvider(LocalViewModelStoreOwner provides storeOwner) {
+        resolved = rememberLinkDeviceCameraViewModel(
+          linkWithoutQrCode = true,
+          factory = {
+            factoryCalls++
+            mockk(relaxed = true)
+          }
+        )
+      }
+    }
+
+    compose.runOnIdle {
+      assertEquals(0, factoryCalls)
+      assertNull(resolved)
+    }
+    storeOwner.viewModelStore.clear()
+  }
+
+  @Test
+  fun `switching from scanner to manual entry unbinds camera while view model store lives`() {
+    val storeOwner = object : ViewModelStoreOwner {
+      override val viewModelStore = ViewModelStore()
+    }
+    val mockCameraViewModel = mockk<CameraScreenViewModel>(relaxed = true)
+    val linkWithoutQrCode = mutableStateOf(false)
+    var resolved: CameraScreenViewModel? = null
+
+    compose.setContent {
+      CompositionLocalProvider(LocalViewModelStoreOwner provides storeOwner) {
+        resolved = rememberLinkDeviceCameraViewModel(
+          linkWithoutQrCode = linkWithoutQrCode.value,
+          factory = { mockCameraViewModel }
+        )
+      }
+    }
+
+    compose.runOnIdle {
+      assertSame(mockCameraViewModel, resolved)
+      verify(exactly = 0) { mockCameraViewModel.onEvent(any()) }
+    }
+
+    linkWithoutQrCode.value = true
+
+    compose.runOnIdle {
+      assertNull(resolved)
+      verify(exactly = 1) { mockCameraViewModel.onEvent(CameraScreenEvents.UnbindCamera) }
+    }
+    storeOwner.viewModelStore.clear()
   }
 
   @Test

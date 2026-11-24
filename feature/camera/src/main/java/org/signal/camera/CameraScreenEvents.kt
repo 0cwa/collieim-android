@@ -60,4 +60,7 @@ sealed interface CameraScreenEvents {
 
   /** Indicates the capture error has been handled and can be cleared. */
   data object ClearCaptureError : CameraScreenEvents
+
+  /** Unbinds camera use cases owned by this screen and cancels any pending bind retries. */
+  data object UnbindCamera : CameraScreenEvents
 }

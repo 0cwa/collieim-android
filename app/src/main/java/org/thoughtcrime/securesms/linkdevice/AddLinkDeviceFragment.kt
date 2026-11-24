@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +62,7 @@ class AddLinkDeviceFragment : ComposeFragment() {
   @Composable
   override fun FragmentContent() {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val cameraViewModel: CameraScreenViewModel? = if (state.linkWithoutQrCode) null else viewModel { CameraScreenViewModel() }
+    val cameraViewModel: CameraScreenViewModel? = rememberLinkDeviceCameraViewModel(state.linkWithoutQrCode)
     val cameraState = cameraViewModel?.state?.value ?: CameraScreenState()
     val context = LocalContext.current
     val navController: NavController by remember { mutableStateOf(findNavController()) }
@@ -114,6 +115,20 @@ class AddLinkDeviceFragment : ComposeFragment() {
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     Permissions.onRequestPermissionsResult(this, requestCode, permissions, grantResults)
   }
+}
+
+@Composable
+internal fun rememberLinkDeviceCameraViewModel(
+  linkWithoutQrCode: Boolean,
+  factory: () -> CameraScreenViewModel = { CameraScreenViewModel() }
+): CameraScreenViewModel? {
+  val cameraViewModel: CameraScreenViewModel? = if (linkWithoutQrCode) null else viewModel { factory() }
+  DisposableEffect(cameraViewModel) {
+    onDispose {
+      cameraViewModel?.onEvent(CameraScreenEvents.UnbindCamera)
+    }
+  }
+  return cameraViewModel
 }
 
 @Composable

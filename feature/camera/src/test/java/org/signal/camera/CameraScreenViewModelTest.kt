@@ -904,6 +904,56 @@ class CameraScreenViewModelTest {
     assertThat(viewModel.state.value.zoomRatio).isEqualTo(2f)
   }
 
+  // ===========================================================================
+  // UnbindCamera
+  // ===========================================================================
+
+  @Test
+  fun `UnbindCamera unbinds active use cases and stops observing zoom once`() {
+    val unbound = mutableListOf<List<Any?>>()
+    every { mockCameraProvider.unbind(*anyVararg()) } answers {
+      val list = if (args.size == 1 && args[0] is Array<*>) {
+        (args[0] as Array<*>).toList()
+      } else {
+        args
+      }
+      unbound.add(list)
+    }
+    setupZoomState(minZoom = 1f, maxZoom = 4f)
+    bindCamera(captureMode = CameraCaptureMode.ImageOnly, enableQrScanning = true)
+    assertThat(zoomStateLiveData.hasObservers()).isTrue()
+
+    viewModel.onEvent(CameraScreenEvents.UnbindCamera)
+    viewModel.onEvent(CameraScreenEvents.UnbindCamera)
+
+    assertThat(unbound.size).isEqualTo(1)
+    assertThat(unbound[0].any { it is Preview }).isTrue()
+    assertThat(unbound[0].imageCapture()).isNotNull()
+    assertThat(unbound[0].hasImageAnalysis()).isTrue()
+    assertThat(zoomStateLiveData.hasObservers()).isFalse()
+  }
+
+  @Test
+  fun `UnbindCamera before binding is a no-op`() {
+    viewModel.onEvent(CameraScreenEvents.UnbindCamera)
+
+    verify(exactly = 0) { mockCameraProvider.unbind(*anyVararg()) }
+    verify(exactly = 0) { mockCameraProvider.unbindAll() }
+  }
+
+  @Test
+  fun `UnbindCamera cancels pending bind retries`() {
+    val attempts = captureBindingAttempts(failCount = Int.MAX_VALUE)
+
+    bindCamera(captureMode = CameraCaptureMode.ImageOnly, enableQrScanning = false)
+    assertThat(attempts.size).isEqualTo(1)
+
+    viewModel.onEvent(CameraScreenEvents.UnbindCamera)
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertThat(attempts.size).isEqualTo(1)
+  }
+
   private companion object {
     /** Far enough into an animation to be clear of both ends without having to know how long it runs for. */
     private const val HALFWAY_MS = 120L

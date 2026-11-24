@@ -252,6 +252,7 @@ class UnifiedPushReceiverTest {
       assertTrue(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
       assertEquals("default", values.endpointInstance)
       verify(exactly = 0) { LockedPushState.savePending(any(), any()) }
+      verify(exactly = 0) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
     } finally {
       lease.close()
     }
@@ -296,6 +297,27 @@ class UnifiedPushReceiverTest {
   @Test
   fun `changed instance revokes old work even when the URL is unchanged`() {
     assertEndpointChangeRevokesWork(LockedPushState.Endpoint("https://push.example.invalid/current", "public-key", "auth-key", "new-instance"))
+  }
+
+  @Test
+  fun `same URL key rotation resets air gapped delivery and publishes effects once`() {
+    fakeAccount()
+    val url = "https://push.example.invalid/current"
+    values.setEndpointRegistration(url, fixtureP256dh, fixtureAuth, "default")
+    every { values.airGapped } returns true
+    values.lastReceivedTime = 1234L
+    val rotated = LockedPushState.Endpoint(url, fixtureP256dh, "rotated-auth", "default")
+    mockPendingEndpointStorage(rotated)
+    every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() } returns Unit
+
+    val committed = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
+    UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
+    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint(url, PublicKeySet(fixtureP256dh, "rotated-auth")), "default")
+
+    assertEquals(0L, values.lastReceivedTime)
+    assertEquals("rotated-auth", values.endpointAuth)
+    verify(exactly = 1) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
+    verify(exactly = 1) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
   }
 
   private fun assertEndpointChangeRevokesWork(endpoint: LockedPushState.Endpoint) {

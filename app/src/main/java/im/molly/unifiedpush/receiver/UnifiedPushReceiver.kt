@@ -181,13 +181,16 @@ class UnifiedPushReceiver : MessagingReceiver() {
     SignalStore.unifiedpush.registrationFailed = false
     SignalStore.unifiedpush.registrationRetryScheduled = false
     val values = SignalStore.unifiedpush
-    val changed = endpoint.url != values.endpoint
+    val instance = endpoint.instance.takeIf { endpoint.url != null }
+    val previousInstance = (values.endpointInstance ?: "default").takeIf { values.endpoint != null }
+    val changed = endpoint.url != values.endpoint || endpoint.p256dh != values.endpointP256dh ||
+      endpoint.auth != values.endpointAuth || instance != previousInstance
     val airGapped = values.airGapped
     values.setEndpointRegistration(
       endpoint = endpoint.url,
       p256dh = endpoint.p256dh,
       auth = endpoint.auth,
-      instance = endpoint.instance.takeIf { endpoint.url != null },
+      instance = instance,
     )
     val warning = if (changed && airGapped) {
       updateLastReceivedTime(0)

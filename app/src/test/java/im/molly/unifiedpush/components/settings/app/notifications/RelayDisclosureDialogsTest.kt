@@ -73,16 +73,18 @@ class RelayDisclosureDialogsTest {
   }
 
   @Test
-  fun `known scanned relay shows its full destination`() {
-    val dialog = RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), address)) {}
+  fun `known scanned relay shows its canonical HTTPS origin`() {
+    val url = address.replace("push.example.org", "PUSH.EXAMPLE.ORG")
+    val dialog = requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), url)) {})
 
-    assertTrue(message(dialog).contains(address))
+    assertTrue(message(dialog).contains("https://push.example.org:9443/"))
+    assertFalse(message(dialog).contains("/relay?instance=one"))
     assertFalse(message(dialog).contains("v".repeat(87)))
   }
 
   @Test
   fun `manual enrollment copy and export do not invent a destination`() {
-    val manual = RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87))) {}
+    val manual = requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87))) {})
     assertTrue(message(manual).contains(activity.getString(R.string.RelayDisclosureDialog__manual_destination)))
     assertFalse(message(manual).contains(address))
     manual.dismiss()
@@ -100,8 +102,8 @@ class RelayDisclosureDialogsTest {
   private fun message(dialog: AlertDialog): String = dialog.findViewById<TextView>(android.R.id.message)!!.text.toString()
 
   private fun routes(): List<(() -> Unit) -> AlertDialog> = listOf(
-    { action -> RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), address), action) },
-    { action -> RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87)), action) },
+    { action -> requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), address), action)) },
+    { action -> requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87)), action)) },
     { action -> RelayDisclosureDialogs.showCopy(activity, action) },
     { action -> RelayDisclosureDialogs.showExport(activity, action) },
   )

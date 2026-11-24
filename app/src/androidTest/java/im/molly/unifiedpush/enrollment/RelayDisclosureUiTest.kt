@@ -84,12 +84,14 @@ class RelayDisclosureUiTest {
   @Test
   fun knownAndManualRelayDialogsCanBeCancelled() = withSettings { scenario ->
     screenshot("01-settings")
-    val relayUrl = "https://relay.example.invalid:9443/notifications"
+    val relayOrigin = "https://relay.example.invalid:9443/"
+    val relayUrl = "${relayOrigin}notifications"
     var confirmed = 0
     scenario.onActivity { activity ->
       RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), relayUrl)) { confirmed++ }
     }
-    onView(withId(android.R.id.message)).check(matches(withText(containsString(relayUrl))))
+    onView(withId(android.R.id.message)).check(matches(withText(containsString(relayOrigin))))
+    onView(withId(android.R.id.message)).check(matches(withText(not(containsString(relayUrl)))))
     assertTrustVisible()
     screenshot("02-web-relay-trust")
     cancelDialog()
@@ -99,7 +101,7 @@ class RelayDisclosureUiTest {
       RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87))) { confirmed++ }
     }
     onView(withId(android.R.id.message)).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__manual_destination)))))
-    onView(withId(android.R.id.message)).check(matches(withText(not(containsString(relayUrl)))))
+    onView(withId(android.R.id.message)).check(matches(withText(not(containsString(relayOrigin)))))
     assertTrustVisible()
     screenshot("03-manual-relay-trust")
     cancelDialog()

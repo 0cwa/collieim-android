@@ -193,6 +193,7 @@ object MollySocketRepository {
     endpoint: String,
     ping: Boolean = false,
   ): ConnectionResult? {
+    if (!url.isHttps) throw IOException("Relay registration requires HTTPS")
     val requestData = ConnectionRequest(
       uuid = SignalStore.account.requireAci().toString(),
       deviceId = device.deviceId,
@@ -203,7 +204,7 @@ object MollySocketRepository {
 
     val postBody = JsonUtils.toJson(requestData).toRequestBody(MEDIA_TYPE_JSON)
     val request = Request.Builder().url(url).post(postBody).build()
-    val client = AppDependencies.okHttpClient.newBuilder().build()
+    val client = AppDependencies.okHttpClient.newBuilder().followRedirects(false).followSslRedirects(false).build()
 
     client.newCall(request).execute().use { response ->
       if (!response.isSuccessful) {

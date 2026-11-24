@@ -19,13 +19,16 @@ HOST_METHODS = {
     'a route the host opens as an activity stays off the back stack',
     'home selection follows a replaced section',
 }
-DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
-DEVICE_METHODS = {
-    'splitPaneHomeSelectionFollowsSectionChange',
-    'settingsHomeOpensAppearanceAndBackMatchesLayout',
-    'accountAndSupportRemainAvailableWithoutSignalCheckout',
+DEVICE_CLASS = 'org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest'
+DEVICE_METHODS = {'bulkAttachmentRemovalPreservesBothMessages'}
+SCREENSHOTS = {
+    'bulk-attachment-selection.png',
+    'bulk-attachment-confirmation.png',
+    'bulk-attachment-complete.png',
+    'bulk-attachment-gallery-refreshed.png',
+    'bulk-attachment-retained-message-1.png',
+    'bulk-attachment-retained-message-2.png',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
@@ -86,15 +89,15 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
     require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CLASS, DEVICE_METHODS)
     screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
-        raise ValueError('missing, duplicate or unexpected Settings screenshots')
+        raise ValueError('missing, duplicate or unexpected bulk attachment removal screenshots')
     for path in screenshot_paths:
         with Image.open(path, formats=['PNG']) as image:
             image.verify()
         with Image.open(path, formats=['PNG']) as image:
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
-                raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases and three API 35 device cases with matching APKs and decoded Settings screenshots')
+                raise ValueError(f'blank or undersized bulk attachment removal screenshot: {path.name}')
+    print('Passed eight host navigation cases and one API 35 bulk attachment removal case with matching APKs and decoded bulk attachment removal screenshots')
 
 
 if __name__ == '__main__':

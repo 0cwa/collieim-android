@@ -20,6 +20,12 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
@@ -46,6 +52,8 @@ import org.thoughtcrime.securesms.keyvalue.protos.ArchiveUploadProgressState.Sta
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 @RunWith(RobolectricTestRunner::class)
@@ -63,6 +71,7 @@ class ArchiveUploadProgressTest {
     private var backsUpMedia: Boolean = true
     private var finishedInitialBackup: Boolean = false
     private var pendingArchiveUploadBytes: Long = 0
+    private var hasPendingArchiveUpload: Boolean = false
 
     @BeforeClass
     @JvmStatic
@@ -82,6 +91,7 @@ class ArchiveUploadProgressTest {
       every { SignalDatabase.instance } returns signalDatabase
       every { signalDatabase.attachmentTable } returns attachments
       every { attachments.getPendingArchiveUploadBytes() } answers { pendingArchiveUploadBytes }
+      every { attachments.areAnyAttachmentsPendingArchiveUpload() } answers { hasPendingArchiveUpload }
 
       mockkObject(BackupMessagesJob.Companion)
       every { BackupMessagesJob.enqueue() } just Runs
@@ -105,11 +115,13 @@ class ArchiveUploadProgressTest {
   @Before
   fun setUp() {
     clearMocks(backup, attachments, BackupMessagesJob.Companion, answers = false, recordedCalls = true)
+    every { attachments.areAnyAttachmentsPendingArchiveUpload() } answers { hasPendingArchiveUpload }
 
     storedState = ArchiveUploadProgressState(state = State.None)
     backsUpMedia = true
     finishedInitialBackup = false
     pendingArchiveUploadBytes = 0
+    hasPendingArchiveUpload = false
 
     every { AppDependencies.jobManager.areQueuesEmpty(any()) } returns true
 
@@ -196,6 +208,7 @@ class ArchiveUploadProgressTest {
 
   @Test
   fun `onAttachmentSectionStarted - sets upload media state with total bytes`() {
+    hasPendingArchiveUpload = true
     pendingArchiveUploadBytes = 7000
 
     ArchiveUploadProgress.onAttachmentSectionStarted(totalAttachmentBytes = 7000)
@@ -223,6 +236,7 @@ class ArchiveUploadProgressTest {
   fun `onMessageBackupFinishedEarly - with pending media reverts to upload media`() {
     backsUpMedia = true
     every { AppDependencies.jobManager.areQueuesEmpty(any()) } returns false
+    hasPendingArchiveUpload = true
     pendingArchiveUploadBytes = 2000
     setUploadProgress(ArchiveUploadProgressState(state = State.UploadBackupFile, backupFileTotalBytes = 100))
 
@@ -250,6 +264,7 @@ class ArchiveUploadProgressTest {
   fun `onMainBackupFileUploadFailure - with pending media reverts to upload media`() {
     backsUpMedia = true
     every { AppDependencies.jobManager.areQueuesEmpty(any()) } returns false
+    hasPendingArchiveUpload = true
     pendingArchiveUploadBytes = 3000
     setUploadProgress(ArchiveUploadProgressState(state = State.UploadBackupFile, backupFileTotalBytes = 100))
 
@@ -330,9 +345,22 @@ class ArchiveUploadProgressTest {
   }
 
   @Test
+  fun `finishing an invalidated attempt does not remove replacement progress`() {
+    val attachmentId = AttachmentId(52)
+    val oldToken = ArchiveUploadProgress.onAttachmentStarted(attachmentId, sizeBytes = 500)
+    val currentToken = ArchiveUploadProgress.onAttachmentStarted(attachmentId, sizeBytes = 700)
+
+    assertThat(ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, oldToken)).isFalse()
+    assertThat(attachmentProgressMap().containsKey(attachmentId)).isTrue()
+    assertThat(ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, currentToken)).isTrue()
+    assertThat(attachmentProgressMap().containsKey(attachmentId)).isFalse()
+  }
+
+  @Test
   fun `onAttachmentProgress - computes media uploaded bytes via flow`() {
     setUploadProgress(ArchiveUploadProgressState(state = State.UploadMedia, mediaTotalBytes = 1000, mediaUploadedBytes = 0))
     pendingArchiveUploadBytes = 1000
+    hasPendingArchiveUpload = true
 
     val attachmentId = AttachmentId(1)
     ArchiveUploadProgress.onAttachmentProgress(attachmentId, bytesUploaded = 300)
@@ -357,9 +385,10 @@ class ArchiveUploadProgressTest {
 
   @Test
   fun `progress flow - expands total when more media becomes pending than expected`() {
-    setUploadProgress(ArchiveUploadProgressState(state = State.UploadMedia, mediaTotalBytes = 1000, mediaUploadedBytes = 0))
     backsUpMedia = true
     pendingArchiveUploadBytes = 1500
+    hasPendingArchiveUpload = true
+    setUploadProgress(ArchiveUploadProgressState(state = State.UploadMedia, mediaTotalBytes = 1000, mediaUploadedBytes = 0))
 
     ArchiveUploadProgress.triggerUpdate()
 
@@ -405,6 +434,51 @@ class ArchiveUploadProgressTest {
     val state = awaitUploadProgress { it.state == State.None }
     assertThat(state.mediaUploadedBytes).isEqualTo(1000L)
     verify { backup.finishedInitialBackup = true }
+    verify(exactly = 0) { BackupMessagesJob.enqueue() }
+  }
+
+  @Test
+  fun `progress flow - stale byte credit cannot complete while attachment table still has pending work`() {
+    pendingArchiveUploadBytes = 0
+    hasPendingArchiveUpload = true
+    setUploadProgress(ArchiveUploadProgressState(state = State.UploadMedia, mediaTotalBytes = 1000, mediaUploadedBytes = 0))
+    val attachmentId = AttachmentId(51)
+    val token = ArchiveUploadProgress.onAttachmentStarted(attachmentId, sizeBytes = 1000)
+    ArchiveUploadProgress.onAttachmentProgressIfOwned(attachmentId, token, bytesUploaded = 1000)
+
+    ArchiveUploadProgress.triggerUpdate()
+
+    val state = awaitUploadProgress { it.state == State.UploadMedia && it.mediaUploadedBytes == 1000L }
+    assertThat(state.mediaUploadedBytes).isEqualTo(1000L)
+    verify(exactly = 0) { backup.finishedInitialBackup = true }
+    verify(exactly = 0) { BackupMessagesJob.enqueue() }
+  }
+
+  @Test
+  fun `progress flow - cancellation wins over a completion computed from an older state`() {
+    val calculationStarted = CountDownLatch(1)
+    val releaseCalculation = CountDownLatch(1)
+    every { attachments.areAnyAttachmentsPendingArchiveUpload() } answers {
+      calculationStarted.countDown()
+      releaseCalculation.await(5, TimeUnit.SECONDS)
+      false
+    }
+    setUploadProgress(ArchiveUploadProgressState(state = State.None))
+    ArchiveUploadProgress.onAttachmentSectionStarted(totalAttachmentBytes = 1000)
+
+    assertThat(calculationStarted.await(5, TimeUnit.SECONDS)).isTrue()
+    runBlocking {
+      // The next published cancellation is downstream of the stale calculation's acceptance stage.
+      val processed = async(start = CoroutineStart.UNDISPATCHED) {
+        withTimeout(5000) { ArchiveUploadProgress.progress.drop(1).first { it.state == State.UserCanceled } }
+      }
+      ArchiveUploadProgress.cancel()
+      releaseCalculation.countDown()
+      processed.await()
+    }
+
+    assertThat(uploadProgress().state).isEqualTo(State.UserCanceled)
+    verify(exactly = 0) { backup.finishedInitialBackup = true }
     verify(exactly = 0) { BackupMessagesJob.enqueue() }
   }
 

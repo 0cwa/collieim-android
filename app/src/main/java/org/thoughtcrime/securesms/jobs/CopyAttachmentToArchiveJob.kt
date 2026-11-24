@@ -36,7 +36,12 @@ import java.util.concurrent.TimeUnit
  * This job runs at high priority within its queue, which it shares with [UploadAttachmentToArchiveJob]. Therefore, copies are given priority over new uploads,
  * which allows the two-part archive upload process to finish quickly.
  */
-class CopyAttachmentToArchiveJob private constructor(private val attachmentId: AttachmentId, private val progressToken: String?, parameters: Parameters) : CoroutineJob(parameters) {
+class CopyAttachmentToArchiveJob private constructor(
+  private val attachmentId: AttachmentId,
+  private val progressToken: String?,
+  private var ownerIdentity: String?,
+  parameters: Parameters
+) : CoroutineJob(parameters) {
   private var attemptedCandidate: AttachmentTable.UploadCandidate? = null
 
   companion object {
@@ -50,9 +55,12 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
 
   constructor(attachmentId: AttachmentId) : this(attachmentId, null)
 
-  constructor(attachmentId: AttachmentId, progressToken: String?) : this(
+  constructor(attachmentId: AttachmentId, progressToken: String?) : this(attachmentId, progressToken, null)
+
+  internal constructor(attachmentId: AttachmentId, progressToken: String?, expectedOwnerIdentity: String?) : this(
     attachmentId = attachmentId,
     progressToken = progressToken,
+    ownerIdentity = expectedOwnerIdentity,
     parameters = Parameters.Builder()
       .addConstraint(NetworkConstraint.KEY)
       .addConstraint(NoRemoteArchiveGarbageCollectionPendingConstraint.KEY)
@@ -62,21 +70,24 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
       .setQueuePriority(Parameters.PRIORITY_HIGH)
       .setGlobalPriority(Parameters.PRIORITY_LOW)
       .build()
-  )
+  ) {
+    if (ownerIdentity == null) {
+      ownerIdentity = SignalDatabase.attachments.getUploadCandidate(attachmentId)?.let(SignalDatabase.attachments::archiveOwnerToken)
+    }
+  }
 
   override fun serialize(): ByteArray = CopyAttachmentToArchiveJobData(
     attachmentId = attachmentId.id,
-    progressToken = progressToken
+    progressToken = progressToken,
+    ownerIdentity = ownerIdentity
   ).encode()
 
   override fun getFactoryKey(): String = KEY
 
   override fun onAdded() {
-    val transferStatus = SignalDatabase.attachments.getArchiveTransferState(attachmentId) ?: return
-
-    if (transferStatus == AttachmentTable.ArchiveTransferState.NONE || transferStatus == AttachmentTable.ArchiveTransferState.UPLOAD_IN_PROGRESS) {
+    val owner = ownerIdentity ?: return
+    if (SignalDatabase.attachments.markArchivePendingIfOwnerMatches(attachmentId, owner, AttachmentTable.ArchiveTransferState.COPY_PENDING)) {
       Log.d(TAG, "[$attachmentId] Updating archive transfer state to ${AttachmentTable.ArchiveTransferState.COPY_PENDING}")
-      SignalDatabase.attachments.markArchivePendingIfEligible(attachmentId, AttachmentTable.ArchiveTransferState.COPY_PENDING)
     }
   }
 
@@ -87,9 +98,36 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
   }
 
   private suspend fun runCopy(): Result {
+    val expectedOwner = ownerIdentity
+    val captured = if (expectedOwner == null) {
+      SignalDatabase.attachments.getUploadCandidate(attachmentId)
+    } else {
+      SignalDatabase.attachments.getArchiveCandidateIfOwnerMatches(attachmentId, expectedOwner)
+    }
+    val attachment: DatabaseAttachment? = captured?.attachment
+
+    if (attachment == null) {
+      if (expectedOwner != null) {
+        Log.i(TAG, "[$attachmentId] Attachment changed since this archive copy was created; retiring stale work.")
+        progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
+        return Result.success()
+      }
+      Log.w(TAG, "[$attachmentId] Attachment no longer exists! Skipping.")
+      return Result.failure()
+    }
+
+    if (expectedOwner == null) {
+      // Reissue old persisted work once with an owner captured before serialization.
+      progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
+      AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachmentId, null, SignalDatabase.attachments.archiveOwnerToken(captured!!)))
+      return Result.success()
+    }
+
+    attemptedCandidate = captured
+
     if (SignalStore.account.isLinkedDevice) {
       Log.w(TAG, "[$attachmentId] Linked devices don't backup media. Skipping.")
-      SignalDatabase.attachments.getUploadCandidate(attachmentId)?.let { setArchiveStateIfUnchanged(it, AttachmentTable.ArchiveTransferState.NONE) }
+      setArchiveStateIfUnchanged(captured, AttachmentTable.ArchiveTransferState.NONE)
       return Result.success()
     }
 
@@ -102,16 +140,6 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
       Log.w(TAG, "[$attachmentId] Already marked as out of remote storage space. Failing.")
       return Result.failure()
     }
-
-    val captured = SignalDatabase.attachments.getUploadCandidate(attachmentId)
-    val attachment: DatabaseAttachment? = captured?.attachment
-
-    if (attachment == null) {
-      Log.w(TAG, "[$attachmentId] Attachment no longer exists! Skipping.")
-      return Result.failure()
-    }
-
-    attemptedCandidate = captured
 
     val mediaIdLog: String = if (RemoteConfig.internalUser && attachment.remoteKey != null && attachment.dataHash != null) {
       val mediaId = MediaName.fromPlaintextHashAndRemoteKey(attachment.dataHash.decodeBase64()!!, attachment.remoteKey.decodeBase64()!!).toMediaId(SignalStore.backup.mediaRootBackupKey)
@@ -163,20 +191,20 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
     if (attachment.cdn !in ALLOWED_SOURCE_CDNS) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment CDN (${attachment.cdn}) is not in allowed source CDNs. Enqueueing an upload job instead.")
       if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
-      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
+      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false, expectedOwner = expectedOwner))
       return Result.success()
     }
 
     if (attachment.remoteLocation == null) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Attachment has no remote location. Enqueueing an upload job instead.")
       if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
-      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
+      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false, expectedOwner = expectedOwner))
       return Result.success()
     }
 
     if (attachment.archiveTransferState == AttachmentTable.ArchiveTransferState.NONE) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Not marked as pending copy. Enqueueing an upload job instead.")
-      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId))
+      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, expectedOwner = expectedOwner))
       return Result.success()
     }
 
@@ -200,14 +228,14 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
           is ArchiveError.CopyMediaError.WrongSourceLength -> {
             Log.w(TAG, "[$attachmentId]$mediaIdLog Something is invalid about our request. Possibly the length. Scheduling a re-upload.")
             if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
-            AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
+            AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false, expectedOwner = expectedOwner))
             // Returning immediately to avoid marking the attachment as finished.
             return Result.success()
           }
           is ArchiveError.CopyMediaError.SourceNotFound -> {
             Log.w(TAG, "[$attachmentId]$mediaIdLog The attachment no longer exists on the transit tier. Scheduling a re-upload.")
             if (!setArchiveStateIfUnchanged(captured!!, AttachmentTable.ArchiveTransferState.NONE)) return Result.retry(defaultBackoff())
-            AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
+            AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false, expectedOwner = expectedOwner))
             // Returning immediately to avoid marking the attachment as finished.
             return Result.success()
           }
@@ -259,6 +287,7 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
       }
       if (!updated) {
         Log.i(TAG, "[$attachmentId] Attachment changed during archive copy; retrying.")
+        progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
         return Result.retry(defaultBackoff())
       }
 
@@ -304,6 +333,7 @@ class CopyAttachmentToArchiveJob private constructor(private val attachmentId: A
       return CopyAttachmentToArchiveJob(
         attachmentId = AttachmentId(jobData.attachmentId),
         progressToken = jobData.progressToken,
+        ownerIdentity = jobData.ownerIdentity,
         parameters = parameters
       )
     }

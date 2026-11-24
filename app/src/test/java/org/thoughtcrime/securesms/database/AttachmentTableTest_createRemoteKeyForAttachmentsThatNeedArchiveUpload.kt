@@ -9,12 +9,15 @@ import android.app.Application
 import android.content.ContentValues
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.every
+import io.mockk.slot
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
@@ -25,6 +28,12 @@ import org.signal.core.database.update
 import org.signal.core.models.database.AttachmentId
 import org.signal.core.util.Base64
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobmanager.Job
+import org.thoughtcrime.securesms.jobs.CopyAttachmentToArchiveJob
+import org.thoughtcrime.securesms.jobs.UploadAttachmentToArchiveJob
+import org.thoughtcrime.securesms.jobs.protos.CopyAttachmentToArchiveJobData
+import org.thoughtcrime.securesms.jobs.protos.UploadAttachmentToArchiveJobData
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import org.thoughtcrime.securesms.testutil.SignalDatabaseRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
@@ -166,6 +175,77 @@ class AttachmentTableTest_createRemoteKeyForAttachmentsThatNeedArchiveUpload {
 
     // Verify attachment still has remote key
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)?.remoteKey).isNotNull()
+  }
+
+  @Test
+  fun archivePendingTransitionKeepsItsOwnerAndRejectsAReplacedDataFile() {
+    val attachmentId = insertWithData()
+    val initial = SignalDatabase.attachments.getUploadCandidate(attachmentId)!!
+    val owner = SignalDatabase.attachments.archiveOwnerToken(initial)
+
+    assertThat(SignalDatabase.attachments.markArchivePendingIfOwnerMatches(attachmentId, owner, AttachmentTable.ArchiveTransferState.UPLOAD_IN_PROGRESS)).isTrue()
+    val pending = SignalDatabase.attachments.getUploadCandidate(attachmentId)!!
+    assertThat(SignalDatabase.attachments.archiveOwnerToken(pending)).isEqualTo(owner)
+
+    SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+      .values(AttachmentTable.DATA_RANDOM to "replacement-random".toByteArray())
+      .where("${AttachmentTable.ID} = ?", attachmentId.id)
+      .run()
+
+    assertThat(SignalDatabase.attachments.getArchiveCandidateIfOwnerMatches(attachmentId, owner)).isNull()
+    assertThat(SignalDatabase.attachments.markArchivePendingIfOwnerMatches(attachmentId, owner, AttachmentTable.ArchiveTransferState.COPY_PENDING)).isFalse()
+    assertThat(SignalDatabase.attachments.getArchiveTransferState(attachmentId)).isEqualTo(AttachmentTable.ArchiveTransferState.UPLOAD_IN_PROGRESS)
+  }
+
+  @Test
+  fun archiveCopyFallbackKeepsItsOwnerAcrossReplacementAndFactoryRestore() {
+    val id = insertWithData()
+    val captured = SignalDatabase.attachments.getUploadCandidate(id)!!
+    val owner = SignalDatabase.attachments.archiveOwnerToken(captured)
+    assertThat(SignalDatabase.attachments.markArchivePendingIfOwnerMatches(id, owner, AttachmentTable.ArchiveTransferState.COPY_PENDING)).isTrue()
+    val copying = SignalDatabase.attachments.getUploadCandidate(id)!!
+    assertThat(SignalDatabase.attachments.setArchiveStateIfCandidateUnchanged(copying, AttachmentTable.ArchiveTransferState.NONE)).isTrue()
+
+    replaceVersion(id, changePath = true)
+    val successor = UploadAttachmentToArchiveJob(id, canReuseUpload = false, expectedOwner = owner)
+    val serialized = successor.serialize()
+    assertThat(UploadAttachmentToArchiveJobData.ADAPTER.decode(serialized).ownerIdentity).isEqualTo(owner)
+    val restored = UploadAttachmentToArchiveJob.Factory().create(Job.Parameters.Builder().build(), serialized)
+    restored.onAdded()
+    assertThat(SignalDatabase.attachments.getArchiveTransferState(id)).isEqualTo(AttachmentTable.ArchiveTransferState.NONE)
+    assertThat(restored.run().isSuccess).isTrue()
+    assertThat(SignalDatabase.attachments.getArchiveTransferState(id)).isEqualTo(AttachmentTable.ArchiveTransferState.NONE)
+    assertThat(SignalDatabase.attachments.getAttachment(id)!!.remoteKey).isNull()
+  }
+
+  @Test
+  fun legacyUploadPayloadIsReissuedWithCurrentAttachmentOwner() {
+    val id = insertWithData()
+    val owner = SignalDatabase.attachments.archiveOwnerToken(SignalDatabase.attachments.getUploadCandidate(id)!!)
+    val legacy = UploadAttachmentToArchiveJobData(attachmentId = id.id, canReuseUpload = false)
+    val job = UploadAttachmentToArchiveJob.Factory().create(Job.Parameters.Builder().build(), legacy.encode())
+    val enqueued = slot<Job>()
+
+    every { AppDependencies.jobManager.add(capture(enqueued)) } returns Unit
+
+    assertThat(job.run().isSuccess).isTrue()
+    verify(exactly = 1) { AppDependencies.jobManager.add(any<UploadAttachmentToArchiveJob>()) }
+    assertThat(UploadAttachmentToArchiveJobData.ADAPTER.decode(enqueued.captured.serialize()!!).ownerIdentity).isEqualTo(owner)
+  }
+
+  @Test
+  fun legacyCopyPayloadIsReissuedWithCurrentAttachmentOwner() {
+    val id = insertWithData()
+    val owner = SignalDatabase.attachments.archiveOwnerToken(SignalDatabase.attachments.getUploadCandidate(id)!!)
+    val legacy = CopyAttachmentToArchiveJobData(attachmentId = id.id)
+    val job = CopyAttachmentToArchiveJob.Factory().create(Job.Parameters.Builder().build(), legacy.encode())
+    val enqueued = slot<Job>()
+
+    every { AppDependencies.jobManager.add(capture(enqueued)) } returns Unit
+
+    assertThat(job.run().isSuccess).isTrue()
+    verify(exactly = 1) { AppDependencies.jobManager.add(any<CopyAttachmentToArchiveJob>()) }
+    assertThat(CopyAttachmentToArchiveJobData.ADAPTER.decode(enqueued.captured.serialize()!!).ownerIdentity).isEqualTo(owner)
   }
 
   @Test

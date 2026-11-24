@@ -19,32 +19,48 @@ HOST_METHODS = {
     'a route the host opens as an activity stays off the back stack',
     'home selection follows a replaced section',
 }
-DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
-DEVICE_METHODS = {
-    'splitPaneHomeSelectionFollowsSectionChange',
-    'settingsHomeOpensAppearanceAndBackMatchesLayout',
-    'accountAndSupportRemainAvailableWithoutSignalCheckout',
+DEVICE_CASES = {
+    'org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest': {'bulkAttachmentRemovalPreservesBothMessages'},
+    'org.thoughtcrime.securesms.mediapreview.AttachmentCategoryRemovalProofTest': {
+        'mixedAlbumKeepsItsVideoAndMessageAfterImageRemoval',
+        'audioTabRemovesOnlyAudioAndRetainsTheMessage',
+        'filesTabRemovesOnlyDocumentAndRetainsTheMessage',
+    },
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+SCREENSHOTS = {
+    'bulk-attachment-selection.png',
+    'bulk-attachment-confirmation.png',
+    'bulk-attachment-complete.png',
+    'bulk-attachment-gallery-refreshed.png',
+    'bulk-attachment-retained-message-1.png',
+    'bulk-attachment-retained-message-2.png',
+    'attachment-category-mixed-album-confirmation.png',
+    'attachment-category-mixed-album-retained.png',
+    'attachment-category-audio-menu.png',
+    'attachment-category-audio-retained.png',
+    'attachment-category-document-menu.png',
+    'attachment-category-document-retained.png',
+}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
-def require_cases(directory, classname, expected):
+def require_cases(directory, expected):
     cases = []
-    suites = []
+    suite_counts = {}
     for path in directory.rglob('TEST-*.xml'):
         report = ET.parse(path).getroot()
         for suite in report.iter('testsuite'):
-            suites.append(suite)
-            if any(int(suite.get(key, '0')) for key in ('failures', 'errors', 'skipped')):
-                raise ValueError(f'failed or skipped suite: {path}')
+            name = suite.get('name')
+            if name not in expected or name in suite_counts or any(int(suite.get(key, '0')) for key in ('failures', 'errors', 'skipped')):
+                raise ValueError(f'wrong, duplicate, failed or skipped suite: {path}')
+            suite_counts[name] = int(suite.get('tests', '0'))
         for case in report.iter('testcase'):
-            if case.get('classname') != classname or any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
-                raise ValueError(f'wrong class or nonpassing case: {path}')
-            cases.append(case.get('name'))
-    if len(suites) != 1 or int(suites[0].get('tests', '0')) != len(expected) or len(cases) != len(expected) or set(cases) != expected:
-        raise ValueError(f'missing, duplicate, or unexpected test cases: {classname}: {cases}')
-
+            if any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
+                raise ValueError(f'nonpassing case: {path}')
+            cases.append((case.get('classname'), case.get('name')))
+    expected_cases = {(classname, case) for classname, methods in expected.items() for case in methods}
+    if suite_counts != {classname: len(methods) for classname, methods in expected.items()} or len(cases) != len(expected_cases) or set(cases) != expected_cases:
+        raise ValueError(f'missing, duplicate, or unexpected test cases: {cases}')
 
 def hashes(path):
     result = {}
@@ -82,19 +98,19 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
     test_apk = 'app/build/outputs/apk/androidTest/prodWebsite/debug/app-prod-website-debug-androidTest.apk'
     if set(hashes(evidence / 'apk-before.txt')) != {app_apk, test_apk}:
         raise ValueError('expected matching prodWebsite app and Android test APKs')
-    require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', HOST_CLASS, HOST_METHODS)
-    require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CLASS, DEVICE_METHODS)
+    require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', {HOST_CLASS: HOST_METHODS})
+    require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CASES)
     screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
-        raise ValueError('missing, duplicate or unexpected Settings screenshots')
+        raise ValueError('missing, duplicate or unexpected bulk attachment removal screenshots')
     for path in screenshot_paths:
         with Image.open(path, formats=['PNG']) as image:
             image.verify()
         with Image.open(path, formats=['PNG']) as image:
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
-                raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases and three API 35 device cases with matching APKs and decoded Settings screenshots')
+                raise ValueError(f'blank or undersized bulk attachment removal screenshot: {path.name}')
+    print('Passed eight host navigation cases and four API 35 attachment removal cases with matching APKs and decoded bulk attachment removal screenshots')
 
 
 if __name__ == '__main__':

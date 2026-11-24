@@ -6,25 +6,44 @@
 package org.thoughtcrime.securesms.mediapreview
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.ColorStateListDrawable
+import android.os.Environment
 import android.os.Process
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.descendants
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.longClick
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
@@ -32,8 +51,12 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.shape.MaterialShapeDrawable
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.sameInstance
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotSame
@@ -52,17 +75,23 @@ import org.signal.video.VideoPlayer
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.attachments.UriAttachment
+import org.thoughtcrime.securesms.components.ThumbnailView
+import org.thoughtcrime.securesms.conversation.ConversationIntents
+import org.thoughtcrime.securesms.conversation.ConversationItem
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.MmsHelper
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.MainActivity
+import org.thoughtcrime.securesms.mediaoverview.MediaOverviewActivity
 import org.thoughtcrime.securesms.mediaviewer.MediaViewerActivity
 import org.thoughtcrime.securesms.mediaviewer.MediaViewerViewModel
 import org.thoughtcrime.securesms.mms.OutgoingMessage
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import org.thoughtcrime.securesms.testing.actions.scrollToDescendant
 import org.thoughtcrime.securesms.util.DynamicTheme
 import java.io.File
 import kotlin.math.roundToInt
@@ -76,7 +105,7 @@ import org.signal.video.R as VideoR
 class MediaThemeRuntimeTest {
 
   @get:Rule
-  val harness = SignalActivityRule(othersCount = 0)
+  val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
 
   @get:Rule
   val animations = DisableAnimationsRule()
@@ -135,6 +164,182 @@ class MediaThemeRuntimeTest {
   @Test
   fun composeVideoUpdatesItsDarkPaletteWithoutRestarting() {
     assertComposePaletteRoundTrip(Sample.VIDEO, SettingsValues.Theme.DARK)
+  }
+
+  @Test
+  fun individualAttachmentRemovalPreservesTheMessage() {
+    selectTheme(SettingsValues.Theme.LIGHT, dynamic = false)
+    val intent = mediaIntent(Sample.IMAGE, MediaViewerActivity::class.java)
+    val messageId = messageIds.single()
+    val attachmentId = SignalDatabase.attachments.getAttachmentsForMessage(messageId).single().attachmentId
+    assertTrue(SignalDatabase.attachments.isAttachmentLocallyRemovable(attachmentId))
+
+    ActivityScenario.launch<MediaViewerActivity>(intent).use { scenario ->
+      awaitReady(scenario, false, "attachment-removal", composeContent = true) { activity ->
+        val state = ViewModelProvider(activity)[MediaViewerViewModel::class.java].state.value
+        decodedMediaReady(activity, Sample.IMAGE) && state.loadState == MediaViewerState.LoadState.MEDIA_READY && state.chromeVisible
+      }
+      compose.onNodeWithTag(MediaViewerScreenTestTags.CAPTION).assertIsDisplayed()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).performClick()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_DELETE).assertIsDisplayed()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).assertIsDisplayed()
+      captureRemovalSurface("attachment-removal-menu")
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).performClick()
+      compose.waitUntil(10_000) {
+        compose.onAllNodes(androidx.compose.ui.test.hasTestTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG))
+          .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+      }
+      compose.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG).assertIsDisplayed()
+      captureRemovalSurface("attachment-removal-confirmation")
+      compose.onNodeWithText(context.getString(org.signal.mediaviewer.R.string.MediaViewerScreen__cancel)).performClick()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG).assertDoesNotExist()
+      assertTrue(SignalDatabase.attachments.isAttachmentLocallyRemovable(attachmentId))
+
+      compose.onNodeWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).performClick()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).performClick()
+      compose.waitUntil(10_000) {
+        compose.onAllNodes(androidx.compose.ui.test.hasTestTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_BUTTON))
+          .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+      }
+      compose.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_BUTTON).performClick()
+      compose.waitUntil(10_000) {
+        SignalDatabase.attachments.getAttachment(attachmentId)?.isLocallyRemoved == true
+      }
+      assertEquals(CAPTION, SignalDatabase.messages.getMessageRecordOrNull(messageId)?.body)
+      val removed = checkNotNull(SignalDatabase.attachments.getAttachment(attachmentId))
+      assertTrue(removed.isLocallyRemoved)
+      assertTrue(removed.uri == null)
+    }
+  }
+
+  @Test
+  fun bulkAttachmentRemovalPreservesBothMessages() {
+    selectTheme(SettingsValues.Theme.LIGHT, dynamic = false)
+    val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(harness.self)
+    val captions = listOf("Attachment proof image caption", "Attachment proof video caption")
+    val now = System.currentTimeMillis()
+    val messages = listOf(
+      seedMedia(Sample.IMAGE, threadId, now - 1_000, captions[0]),
+      seedMedia(Sample.VIDEO, threadId, now, captions[1])
+    )
+    val attachments = messages.map { SignalDatabase.attachments.getAttachmentsForMessage(it).single().attachmentId }
+
+    ActivityScenario.launch<MediaOverviewActivity>(MediaOverviewActivity.forThread(context, threadId)).use { scenario ->
+      var firstThumbnail: ThumbnailView? = null
+      compose.waitUntil(20_000) {
+        scenario.onActivity { activity ->
+          val thumbnails = activity.findViewById<ViewGroup>(R.id.pager).descendants
+            .filterIsInstance<ThumbnailView>()
+            .filter { it.id == R.id.image && it.isShown && it.isLongClickable && it.getGlobalVisibleRect(Rect()) }
+            .toList()
+          if (thumbnails.size == attachments.size) firstThumbnail = thumbnails.first()
+        }
+        firstThumbnail != null
+      }
+      onView(sameInstance<View>(checkNotNull(firstThumbnail))).perform(longClick())
+      onView(withText(R.string.CallContextMenu__select)).inRoot(isPlatformPopup()).perform(click())
+      val actionBar = isDescendantOfA(withId(R.id.media_overview_bottom_action_bar))
+      onView(allOf(withText(R.string.MediaOverviewActivity_select_all), actionBar)).perform(click())
+      val removeFiles = onView(allOf(withText(R.string.CollieAttachmentRemoval_short_action), actionBar))
+      removeFiles.check(matches(isDisplayed()))
+      captureRemovalSurface("bulk-attachment-selection")
+
+      removeFiles.perform(click())
+      val confirmation = context.resources.getQuantityString(
+        R.plurals.CollieAttachmentRemoval_confirmation,
+        attachments.size,
+        attachments.size
+      )
+      onView(withText(confirmation)).inRoot(isDialog()).check(matches(isDisplayed()))
+      captureRemovalSurface("bulk-attachment-confirmation")
+      onView(withText(android.R.string.cancel)).inRoot(isDialog()).perform(click())
+      onView(withText(R.string.CollieAttachmentRemoval_confirm)).check(doesNotExist())
+      messages.zip(captions).forEach { (id, caption) ->
+        assertEquals(caption, SignalDatabase.messages.getMessageRecordOrNull(id)?.body)
+      }
+      attachments.forEach { id ->
+        assertTrue(SignalDatabase.attachments.isAttachmentLocallyRemovable(id))
+        assertTrue(SignalDatabase.attachments.getAttachment(id)?.uri != null)
+      }
+
+      // Cancellation leaves the two-item selection available for another explicit confirmation.
+      removeFiles.perform(click())
+      onView(withText(confirmation)).inRoot(isDialog()).check(matches(isDisplayed()))
+      onView(withText(R.string.CollieAttachmentRemoval_remove)).inRoot(isDialog()).perform(click())
+
+      val expectedResult = context.getString(R.string.CollieAttachmentRemoval_result, attachments.size, attachments.size)
+      compose.waitUntil(20_000) {
+        compose.onAllNodes(androidx.compose.ui.test.hasText(expectedResult))
+          .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+      }
+      compose.onNodeWithText(context.getString(R.string.CollieAttachmentRemoval_complete)).assertIsDisplayed()
+      compose.onNodeWithText(expectedResult).assertIsDisplayed()
+      captureRemovalSurface("bulk-attachment-complete")
+      compose.onNodeWithText(context.getString(android.R.string.ok)).performClick()
+
+      messages.zip(captions).forEach { (id, caption) ->
+        assertEquals(caption, SignalDatabase.messages.getMessageRecordOrNull(id)?.body)
+      }
+      attachments.forEach { id ->
+        val removed = checkNotNull(SignalDatabase.attachments.getAttachment(id))
+        assertTrue(removed.isLocallyRemoved)
+        assertTrue(removed.uri == null)
+      }
+      compose.waitUntil(15_000) {
+        var emptyGallery = false
+        scenario.onActivity { activity ->
+          emptyGallery = activity.findViewById<ViewGroup>(R.id.pager).descendants.any {
+            it.id == R.id.no_images && it.isShown && it.getGlobalVisibleRect(Rect())
+          }
+        }
+        emptyGallery
+      }
+      onView(allOf(withId(R.id.no_images), isDisplayed())).check(matches(isDisplayed()))
+      onView(allOf(withId(R.id.image), isDisplayed())).check(doesNotExist())
+      captureRemovalSurface("bulk-attachment-gallery-refreshed")
+    }
+
+    val conversation = ConversationIntents.createBuilder(context, harness.self.id, threadId).blockingGet().build()
+    context.startActivity(conversation.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    try {
+      captions.forEachIndexed { index, caption ->
+        val row = allOf(isAssignableFrom(ConversationItem::class.java), hasDescendant(withText(caption)))
+        val marker = allOf(withId(R.id.thumbnail_removed_label), isDescendantOfA(row), isDisplayed())
+        scrollToDescendant(R.id.conversation_item_recycler, withText(caption), timeoutMs = 20_000)
+        onView(withText(caption)).check(matches(isDisplayed()))
+        onView(marker).check(matches(isDisplayed()))
+        captureRemovalSurface("bulk-attachment-retained-message-${index + 1}")
+      }
+    } finally {
+      instrumentation.runOnMainSync {
+        val lifecycle = ActivityLifecycleMonitorRegistry.getInstance()
+        listOf(Stage.RESUMED, Stage.PAUSED, Stage.STOPPED)
+          .flatMap(lifecycle::getActivitiesInStage)
+          .filterIsInstance<MainActivity>()
+          .forEach { it.finish() }
+      }
+    }
+  }
+
+  private fun captureRemovalSurface(name: String) {
+    compose.waitForIdle()
+    instrumentation.uiAutomation.waitForIdle(500, 5_000)
+    val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
+    val resolver = context.contentResolver
+    try {
+      val uri = checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, "$name.png")
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/collie-settings-navigation/")
+        put(MediaStore.MediaColumns.IS_PENDING, 1)
+      }))
+      checkNotNull(resolver.openOutputStream(uri)).use { stream ->
+        assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream))
+      }
+      resolver.update(uri, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null)
+    } finally {
+      bitmap.recycle()
+    }
   }
 
   private fun assertComposePaletteRoundTrip(sample: Sample, appTheme: SettingsValues.Theme) {
@@ -239,7 +444,7 @@ class MediaThemeRuntimeTest {
     return video.duration > 0 && player?.playbackState == Player.STATE_READY
   }
 
-  private fun mediaIntent(sample: Sample, activityClass: Class<out Activity>): Intent {
+  private fun seedMedia(sample: Sample, threadId: Long, timestamp: Long, caption: String): Long {
     val bytes = instrumentation.context.assets.open(sample.asset).use { it.readBytes() }
     val uri = AppDependencies.blobs.forData(bytes).withMimeType(sample.mimeType).createForSingleSessionInMemory()
     val attachment = UriAttachment(
@@ -256,18 +461,17 @@ class MediaThemeRuntimeTest {
       videoGif = false,
       quote = false,
       quoteTargetContentType = null,
-      caption = CAPTION,
+      caption = caption,
       stickerLocator = null,
       blurHash = null,
       audioHash = null,
       transformProperties = TransformProperties.empty()
     )
-    val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(harness.self)
     val messageId = MmsHelper.insert(
       OutgoingMessage(
         threadRecipient = harness.self,
-        sentTimeMillis = System.currentTimeMillis(),
-        body = CAPTION,
+        sentTimeMillis = timestamp,
+        body = caption,
         isSecure = true,
         attachments = listOf(attachment)
       ),
@@ -275,6 +479,12 @@ class MediaThemeRuntimeTest {
     )
     messageIds += messageId
     SignalDatabase.messages.markAsSent(messageId, true)
+    return messageId
+  }
+
+  private fun mediaIntent(sample: Sample, activityClass: Class<out Activity>): Intent {
+    val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(harness.self)
+    val messageId = seedMedia(sample, threadId, System.currentTimeMillis(), CAPTION)
     val stored = SignalDatabase.attachments.getAttachmentsForMessage(messageId).single()
     val record = checkNotNull(SignalDatabase.media.getViewableGalleryMediaForAttachment(threadId, stored.attachmentId.id))
     val intent = MediaIntentFactory.intentFromMediaRecord(context, record, leftIsRecent = false, allMediaInRail = false)

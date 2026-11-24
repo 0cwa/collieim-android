@@ -289,8 +289,7 @@ class LinkDeviceViewModelTest {
   @Test
   fun `recreating the device list preserves an in flight linking operation`() {
     coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()
-    every { signalStore.misc.newLinkedDeviceId } returns 0
-    every { signalStore.misc.newLinkedDeviceCreatedTime } returns 0L
+    every { signalStore.misc.takeNewLinkedDeviceWarning() } returns (0 to 0L)
     viewModel.onQrCodeScanned(CODE)
     viewModel.addDevice(shouldSync = false)
     assertTrue("The approved request should start", requestStarted.await(5, TimeUnit.SECONDS))
@@ -311,12 +310,8 @@ class LinkDeviceViewModelTest {
 
   @Test
   fun `missing linked device during linking is retained and shown once linking closes`() {
-    var storedId = 7
-    var storedCreatedAt = 1_700_000_000_000L
-    every { signalStore.misc.newLinkedDeviceId } answers { storedId }
-    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedId = firstArg() }
-    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
-    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+    val storedWarning = AtomicReference(7 to 1_700_000_000_000L)
+    every { signalStore.misc.takeNewLinkedDeviceWarning() } answers { storedWarning.getAndSet(0 to 0L) }
     coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()
 
     viewModel.onQrCodeScanned(CODE)
@@ -330,8 +325,7 @@ class LinkDeviceViewModelTest {
 
     assertEquals(DialogState.Linking, viewModel.state.value.dialogState)
     assertEquals(DialogState.DeviceUnlinked(1_700_000_000_000L), viewModel.state.value.pendingDeviceUnlinked)
-    assertEquals(0, storedId)
-    assertEquals(0L, storedCreatedAt)
+    assertEquals(0 to 0L, storedWarning.get())
 
     finishRequest.countDown()
     runBlocking {
@@ -358,12 +352,8 @@ class LinkDeviceViewModelTest {
       registrationId = 99,
       createdAtCiphertext = null
     )
-    var storedId = 0
-    var storedCreatedAt = 0L
-    every { signalStore.misc.newLinkedDeviceId } answers { storedId }
-    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedId = firstArg() }
-    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
-    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+    val storedWarning = AtomicReference(0 to 0L)
+    every { signalStore.misc.takeNewLinkedDeviceWarning() } answers { storedWarning.getAndSet(0 to 0L) }
 
     mockkObject(NewLinkedDeviceNotificationJob)
     try {
@@ -388,8 +378,7 @@ class LinkDeviceViewModelTest {
         withTimeout(5_000) { viewModel.state.first { it.dialogState is DialogState.SyncingFailed } }
       }
 
-      storedId = 7
-      storedCreatedAt = 1_700_000_000_000L
+      storedWarning.set(7 to 1_700_000_000_000L)
       viewModel.initialize()
       runBlocking {
         withTimeout(5_000) { viewModel.state.first { !it.deviceListLoading } }
@@ -414,12 +403,8 @@ class LinkDeviceViewModelTest {
 
   @Test
   fun `retry launching scanner keeps pending warning off until returning to device list`() {
-    var storedId = 7
-    var storedCreatedAt = 1_700_000_000_000L
-    every { signalStore.misc.newLinkedDeviceId } answers { storedId }
-    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedId = firstArg() }
-    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
-    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+    val storedWarning = AtomicReference(7 to 1_700_000_000_000L)
+    every { signalStore.misc.takeNewLinkedDeviceWarning() } answers { storedWarning.getAndSet(0 to 0L) }
     every { LinkDeviceRepository.addDevice(any(), any()) } returns LinkDeviceResult.Success("token")
     coEvery { LinkDeviceRepository.waitForDeviceToBeLinked(any(), any()) } returns null
     coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()

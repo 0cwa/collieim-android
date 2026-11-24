@@ -1,6 +1,9 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Looper
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
@@ -12,6 +15,7 @@ import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
+import im.molly.unifiedpush.model.MollySocketDevice
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -129,6 +133,34 @@ class UnifiedPushSettingsViewModelPersistenceTest {
 
     assertTrue(values.controlState.intents.isEmpty())
     assertEquals(application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed), ShadowToast.getTextOfLatestToast().toString())
+  }
+
+  @Test
+  fun `server parameter clipboard refuses a credential that became pending after rendering`() {
+    UnifiedPushLifecycle.resetForTests()
+    val account = mockk<ServiceId.ACI>()
+    every { account.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { signalStore.account.aci } returns account
+    val device = MollySocketDevice(2, "synthetic-relay-password")
+    values.device = device
+    values.endpoint = "https://push.example.invalid/endpoint"
+    val model = UnifiedPushSettingsViewModel(application)
+    val clipboard = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    mockkStatic(KeyCachingService::class)
+    try {
+      every { KeyCachingService.isLocked() } returns false
+      model.copyParamsToClipboard(application)
+      assertEquals(model.state.value?.serverParameters, clipboard.primaryClip?.getItemAt(0)?.text?.toString())
+
+      clipboard.setPrimaryClip(ClipData.newPlainText("fixture", "keep me"))
+      values.commitProvisionedDevice(device)
+      model.copyParamsToClipboard(application)
+      assertEquals("keep me", clipboard.primaryClip?.getItemAt(0)?.text?.toString())
+      assertEquals(null, UnifiedPushSettingsViewModel(application).state.value?.serverParameters)
+    } finally {
+      clipboard.clearPrimaryClip()
+      unmockkStatic(KeyCachingService::class)
+    }
   }
 
   @Test

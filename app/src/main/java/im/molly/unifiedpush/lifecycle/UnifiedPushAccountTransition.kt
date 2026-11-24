@@ -98,7 +98,12 @@ object UnifiedPushAccountTransition {
       },
       block = block,
     )
-    if (!keepIncompleteMarker && !completesInvalidation && UnifiedPushLifecycle.isReady() && AppDependencies.isInitialized) {
+    val canProcessEndpoint = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushLifecycle.isReadyLocked() ||
+        (relayCleanup != null && values.pendingRelayCleanup == null && !values.hasIncompleteAccountTransition &&
+          UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked())
+    }
+    if (!keepIncompleteMarker && !completesInvalidation && canProcessEndpoint && AppDependencies.isInitialized) {
       SignalExecutors.BOUNDED.execute { UnifiedPushReceiver.applyPendingEndpoint(AppDependencies.application) }
     }
     return result

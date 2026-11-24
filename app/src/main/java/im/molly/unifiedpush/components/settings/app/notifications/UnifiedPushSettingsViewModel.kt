@@ -99,7 +99,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val controlRead = SignalStore.unifiedpush.controlStateRead.stateOrNull
     return UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
-      device = SignalStore.unifiedpush.device,
+      device = SignalStore.unifiedpush.device?.takeUnless(SignalStore.unifiedpush::isProvisioningPending),
       aci = SignalStore.account.aci?.toString(),
       registrationStatus = SignalStore.unifiedpush.registrationStatus,
       registrationFailed = SignalStore.unifiedpush.registrationFailed,
@@ -154,8 +154,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   fun copyParamsToClipboard(context: Context) {
-    val parameters = state.value?.serverParameters ?: ""
-    writeTextToClipboard(context, "Server parameters", parameters)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (!UnifiedPushLifecycle.isReadyLocked() || KeyCachingService.isLocked()) return
+      val snapshot = state.value ?: return
+      val values = SignalStore.unifiedpush
+      val device = values.device ?: return
+      if (values.isProvisioningPending(device) || device != snapshot.device ||
+        values.endpoint != snapshot.endpoint || SignalStore.account.aci?.toString() != snapshot.aci) return
+      val parameters = snapshot.serverParameters ?: return
+      writeTextToClipboard(context, "Server parameters", parameters)
+    }
   }
 
   fun copyAciToClipboard(context: Context) {

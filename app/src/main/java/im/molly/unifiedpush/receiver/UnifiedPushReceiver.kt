@@ -84,7 +84,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
           }
         }
       } catch (_: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
-        // The winning transition schedules the pending connector work when it reopens admission.
+        // The winning transition schedules pending connector work after committing.
         null
       }
     }

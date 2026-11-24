@@ -220,10 +220,22 @@ object CallPermissions {
     synchronized(lock) {
       syncGeneration()
       val recipient = parts[4].toLong().takeUnless { it == 0L }
+      val context = CallContext.valueOf(parts[3])
+      // The trusted PNI handshake ends its pseudo-call before its profile job runs. Its exact
+      // recipient grant survives normal teardown, but never a policy/account change or restart.
       parts[1].toLong() == epoch.get() && writes.get() == 0 && SystemClock.elapsedRealtime() < parts[5].toLong() &&
-        sessions.sharingSession(CallContext.valueOf(parts[3]), recipient) == parts[2].toLong()
+        if (context == CallContext.DIRECT) recipient != null else sessions.sharingSession(context, recipient) == parts[2].toLong()
     }
   }.getOrDefault(false)
+
+  @JvmStatic
+  fun isSharingPermitValid(permit: String, recipientId: RecipientId): Boolean {
+    if (!isSharingPermitValid(permit)) return false
+    return runCatching {
+      val parts = permit.split('|')
+      parts[3] != CallContext.DIRECT.name || parts[4].toLong() == Recipient.resolved(recipientId).id.toLong()
+    }.getOrDefault(false)
+  }
 
   /** May be called inside a recipient DB transaction. It never waits for the dispatch lock. */
   @JvmStatic

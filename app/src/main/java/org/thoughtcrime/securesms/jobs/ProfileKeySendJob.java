@@ -7,6 +7,8 @@ import androidx.annotation.WorkerThread;
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.NoSessionException;
+import org.thoughtcrime.securesms.calls.permissions.CallContext;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.database.GroupTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.RecipientRecord;
@@ -29,6 +31,7 @@ import org.whispersystems.signalservice.api.push.exceptions.ProofRequiredExcepti
 import org.whispersystems.signalservice.api.push.exceptions.ServerRejectedException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -39,13 +42,19 @@ public class ProfileKeySendJob extends BaseJob {
   private static final String TAG            = Log.tag(ProfileKeySendJob.class);
   private static final String KEY_RECIPIENTS = "recipients";
   private static final String KEY_THREAD     = "thread";
+  private static final String KEY_CALL_SHARING_PERMIT = "call_sharing_permit";
 
   public static final String KEY = "ProfileKeySendJob";
 
   private final long              threadId;
   private final List<RecipientId> recipients;
+  private final @Nullable String callSharingPermit;
 
-  public static ProfileKeySendJob createForCallLinks(List<RecipientId> recipientIds) {
+  public static @Nullable ProfileKeySendJob createForCallLinks(@NonNull RecipientId callLinkRecipientId, List<RecipientId> recipientIds) {
+    String permit = CallPermissions.createSharingPermit(CallContext.CALL_LINK, callLinkRecipientId);
+    if (permit == null) {
+      return null;
+    }
     return new ProfileKeySendJob(
         new Parameters.Builder()
             .setQueue("ProfileKeySendJob__call_links")
@@ -57,8 +66,20 @@ public class ProfileKeySendJob extends BaseJob {
             .setMaxAttempts(Parameters.UNLIMITED)
             .build(),
         -1L,
-        recipientIds
+        recipientIds,
+        permit
     );
+  }
+
+  /** Call-triggered profile sharing is valid only in the admitted call that requested it. */
+  @WorkerThread
+  public static @Nullable ProfileKeySendJob createForCall(@NonNull Recipient recipient, boolean queueLimits) {
+    String permit = CallPermissions.createSharingPermit(CallContext.DIRECT, recipient.resolve().getId());
+    if (permit == null) {
+      return null;
+    }
+    ProfileKeySendJob ordinaryJob = create(recipient, queueLimits);
+    return ordinaryJob == null ? null : new ProfileKeySendJob(ordinaryJob.getParameters(), ordinaryJob.threadId, ordinaryJob.recipients, permit);
   }
 
   /**
@@ -127,13 +148,21 @@ public class ProfileKeySendJob extends BaseJob {
   }
 
   private ProfileKeySendJob(@NonNull Parameters parameters, long threadId, @NonNull List<RecipientId> recipients) {
+    this(parameters, threadId, recipients, null);
+  }
+
+  private ProfileKeySendJob(@NonNull Parameters parameters, long threadId, @NonNull List<RecipientId> recipients, @Nullable String callSharingPermit) {
     super(parameters);
     this.threadId   = threadId;
     this.recipients = recipients;
+    this.callSharingPermit = callSharingPermit;
   }
 
   @Override
   protected void onRun() throws Exception {
+    if (!isCallSharingAllowed()) {
+      return;
+    }
     if (!Recipient.self().isRegistered()) {
       throw new NotPushRegisteredException();
     }
@@ -144,6 +173,17 @@ public class ProfileKeySendJob extends BaseJob {
     }
 
     List<Recipient> destinations = recipients.stream().map(Recipient::resolved).collect(Collectors.toList());
+    if (callSharingPermit != null) {
+      List<RecipientId> denied = destinations.stream().filter(recipient -> !canShareWith(recipient)).map(Recipient::getId).collect(Collectors.toList());
+      recipients.removeAll(denied);
+      destinations.removeIf(recipient -> denied.contains(recipient.getId()));
+      if (destinations.isEmpty()) {
+        return;
+      }
+    }
+    if (!isCallSharingAllowed()) {
+      return;
+    }
     List<Recipient> completions  = deliver(destinations);
 
     for (Recipient completion : completions) {
@@ -176,6 +216,7 @@ public class ProfileKeySendJob extends BaseJob {
     return new JsonJobData.Builder()
                    .putLong(KEY_THREAD, threadId)
                    .putString(KEY_RECIPIENTS, RecipientId.toSerializedList(recipients))
+                   .putString(KEY_CALL_SHARING_PERMIT, callSharingPermit)
                    .serialize();
   }
 
@@ -195,10 +236,17 @@ public class ProfileKeySendJob extends BaseJob {
                                                                            .withTimestamp(System.currentTimeMillis())
                                                                            .withProfileKey(Recipient.self().resolve().getProfileKey());
 
-    List<SendMessageResult>    results       = GroupSendUtil.sendUnresendableDataMessage(context, null, destinations, false, ContentHint.IMPLICIT, dataMessage.build(), false, null);
+    if (!isCallSharingAllowed()) {
+      return destinations;
+    }
+    List<Recipient> allowedDestinations = callSharingPermit == null ? destinations : destinations.stream().filter(this::canShareWith).collect(Collectors.toList());
+    if (allowedDestinations.isEmpty()) {
+      return destinations;
+    }
+    List<SendMessageResult>    results       = GroupSendUtil.sendUnresendableDataMessage(context, null, allowedDestinations, false, ContentHint.IMPLICIT, dataMessage.build(), false, null);
     ProofRequiredException     proofRequired = results.stream().filter(r -> r.getProofRequiredFailure() != null).reduce((a,b) -> b).map(SendMessageResult::getProofRequiredFailure).orElse(null);
 
-    GroupSendJobHelper.SendResult groupResult = GroupSendJobHelper.getCompletedSends(destinations, results);
+    GroupSendJobHelper.SendResult groupResult = GroupSendJobHelper.getCompletedSends(allowedDestinations, results);
 
     for (RecipientId unregistered : groupResult.unregistered) {
       SignalDatabase.recipients().markUnregistered(unregistered);
@@ -209,7 +257,21 @@ public class ProfileKeySendJob extends BaseJob {
       ProofRequiredExceptionHandler.handle(context, proofRequired, null, -1L, -1L);
     }
 
-    return groupResult.completed;
+    List<Recipient> completed = new ArrayList<>(groupResult.completed);
+    destinations.stream().filter(recipient -> !allowedDestinations.contains(recipient)).forEach(completed::add);
+    return completed;
+  }
+
+  private boolean canShareWith(@NonNull Recipient recipient) {
+    Recipient current = recipient.resolve();
+    return !current.isBlocked() && CallPermissions.isSharingPermitValid(callSharingPermit, current.getId()) &&
+           (threadId == -1L || RecipientUtil.isCallRequestAccepted(current));
+  }
+
+  private boolean isCallSharingAllowed() {
+    // Legacy call-link jobs have no live-session permit and are intentionally discarded.
+    // Normal messaging profile jobs keep their established behavior.
+    return callSharingPermit == null ? threadId != -1L : CallPermissions.isSharingPermitValid(callSharingPermit);
   }
 
   public static class Factory implements Job.Factory<ProfileKeySendJob> {
@@ -220,8 +282,9 @@ public class ProfileKeySendJob extends BaseJob {
 
       long              threadId   = data.getLong(KEY_THREAD);
       List<RecipientId> recipients = RecipientId.fromSerializedList(data.getString(KEY_RECIPIENTS));
+      String permit = data.hasString(KEY_CALL_SHARING_PERMIT) ? data.getString(KEY_CALL_SHARING_PERMIT) : null;
 
-      return new ProfileKeySendJob(parameters, threadId, recipients);
+      return new ProfileKeySendJob(parameters, threadId, recipients, permit);
     }
   }
 }

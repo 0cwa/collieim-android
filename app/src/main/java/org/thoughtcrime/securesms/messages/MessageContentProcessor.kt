@@ -523,6 +523,9 @@ open class MessageContentProcessor(private val context: Context) {
           return
         }
 
+        // senderRecipient was resolved from authenticated EnvelopeMetadata above.
+        // CallMessageProcessor admits the entire message before obtaining calling
+        // dependencies or sharing a profile; payload fields never choose the sender.
         CallMessageProcessor.process(senderRecipient, envelope, content, metadata, serverDeliveredTimestamp)
       }
 

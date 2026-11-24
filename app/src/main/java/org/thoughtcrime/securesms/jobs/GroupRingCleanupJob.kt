@@ -5,6 +5,7 @@
 
 package org.thoughtcrime.securesms.jobs
 
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -42,7 +43,12 @@ class GroupRingCleanupJob private constructor(parameters: Parameters) : BaseJob(
 
   override fun onRun() {
     SignalDatabase.calls.getLatestRingingCalls().forEach {
-      AppDependencies.signalCallManager.peekGroupCall(it.peer)
+      val generation = CallPermissions.generation()
+      if (CallPermissions.canUseGroup(it.peer)) {
+        CallPermissions.runIfCurrent(generation) {
+          AppDependencies.signalCallManager.peekGroupCall(it.peer)
+        }
+      }
     }
 
     SignalDatabase.calls.markRingingCallsAsMissed()

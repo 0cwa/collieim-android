@@ -15,6 +15,7 @@ import org.signal.libsignal.protocol.InvalidKeyException;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallManager;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.signal.ringrtc.CallManager.RingUpdate;
 import org.signal.ringrtc.GroupCall;
 import org.signal.ringrtc.NetworkRoute;
@@ -134,6 +135,10 @@ public abstract class WebRtcActionProcessor {
   protected final @NonNull WebRtcServiceState handleSendOffer(@NonNull WebRtcServiceState currentState, @NonNull CallMetadata callMetadata, @NonNull OfferMetadata offerMetadata, boolean broadcast) {
     Log.i(tag, "handleSendOffer(): id: " + callMetadata.getCallId().format(callMetadata.getRemoteDevice()));
 
+    if (!CallPermissions.canContinueCall(callMetadata.getRemotePeer().getId())) {
+      return currentState;
+    }
+
     OfferMessage             offerMessage        = new OfferMessage(callMetadata.getCallId().longValue(), offerMetadata.getOfferType(), offerMetadata.getOpaque());
     Integer                  destinationDeviceId = broadcast ? null : callMetadata.getRemoteDevice();
     SignalServiceCallMessage callMessage         = SignalServiceCallMessage.forOffer(offerMessage, destinationDeviceId);
@@ -183,6 +188,7 @@ public abstract class WebRtcActionProcessor {
         Log.i(tag, "Caller is untrusted but called our PNI, insert missed call and do not send hangup.");
       }
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL);
+      CallPermissions.endCall(callMetadata.getRemotePeer().getId(), callMetadata.getCallId().longValue());
       return currentState;
     }
 
@@ -190,6 +196,7 @@ public abstract class WebRtcActionProcessor {
       Log.w(tag, "Caller is untrusted.");
       currentState = currentState.getActionProcessor().handleSendHangup(currentState, callMetadata, WebRtcData.HangupMetadata.fromType(HangupMessage.Type.NEED_PERMISSION), true);
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL);
+      CallPermissions.endCall(callMetadata.getRemotePeer().getId(), callMetadata.getCallId().longValue());
       return currentState;
     }
 
@@ -197,6 +204,7 @@ public abstract class WebRtcActionProcessor {
       Log.i(tag, "PSTN line is busy.");
       currentState = currentState.getActionProcessor().handleSendBusy(currentState, callMetadata, true);
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL);
+      CallPermissions.endCall(callMetadata.getRemotePeer().getId(), callMetadata.getCallId().longValue());
       return currentState;
     }
 
@@ -204,6 +212,7 @@ public abstract class WebRtcActionProcessor {
       Log.w(tag, "Opaque data is required.");
       currentState = currentState.getActionProcessor().handleSendHangup(currentState, callMetadata, WebRtcData.HangupMetadata.fromType(HangupMessage.Type.NORMAL), true);
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL);
+      CallPermissions.endCall(callMetadata.getRemotePeer().getId(), callMetadata.getCallId().longValue());
       return currentState;
     }
 
@@ -211,6 +220,7 @@ public abstract class WebRtcActionProcessor {
       Log.w(tag, "Unable to locate remote identity key for caller, bailing");
       currentState = currentState.getActionProcessor().handleSendHangup(currentState, callMetadata, WebRtcData.HangupMetadata.fromType(HangupMessage.Type.NORMAL), true);
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL);
+      CallPermissions.endCall(callMetadata.getRemotePeer().getId(), callMetadata.getCallId().longValue());
       return currentState;
     }
 
@@ -218,6 +228,7 @@ public abstract class WebRtcActionProcessor {
     if (activeProfile != null && !(activeProfile.isRecipientAllowed(callMetadata.getRemotePeer().getId()) || activeProfile.getAllowAllCalls())) {
       Log.w(tag, "Caller is excluded by notification profile.");
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL, CallTable.Event.MISSED_NOTIFICATION_PROFILE);
+      CallPermissions.endCall(callMetadata.getRemotePeer().getId(), callMetadata.getCallId().longValue());
       return currentState;
     }
 
@@ -248,6 +259,7 @@ public abstract class WebRtcActionProcessor {
       byte[] remoteIdentityKey = WebRtcUtil.getPublicKeyBytes(receivedOfferMetadata.getRemoteIdentityKey());
       byte[] localIdentityKey  = WebRtcUtil.getPublicKeyBytes(SignalStore.account().getAciIdentityKey().getPublicKey().serialize());
 
+      if (!CallPermissions.isDispatchAuthorized()) return currentState;
       webRtcInteractor.getCallManager().receivedOffer(callMetadata.getCallId(),
                                                       callMetadata.getRemotePeer(),
                                                       callMetadata.getRemoteDevice(),
@@ -436,6 +448,7 @@ public abstract class WebRtcActionProcessor {
     Log.i(tag, "handleReceivedHangup(): id: " + callMetadata.getCallId().format(callMetadata.getRemoteDevice()));
 
     try {
+      if (!CallPermissions.isDispatchAuthorized()) return currentState;
       webRtcInteractor.getCallManager().receivedHangup(callMetadata.getCallId(), callMetadata.getRemotePeer(), callMetadata.getRemoteDevice(), hangupMetadata.getCallHangupType(), hangupMetadata.getDeviceId());
     } catch (CallException e) {
       return callFailure(currentState, "receivedHangup() failed: ", e);
@@ -569,6 +582,7 @@ public abstract class WebRtcActionProcessor {
     Log.i(tag, "handleReceivedIceCandidates(): id: " + callMetadata.getCallId().format(callMetadata.getRemoteDevice()) + ", count: " + iceCandidates.size());
 
     try {
+      if (!CallPermissions.isDispatchAuthorized()) return currentState;
       webRtcInteractor.getCallManager().receivedIceCandidates(callMetadata.getCallId(), callMetadata.getRemotePeer(), callMetadata.getRemoteDevice(), iceCandidates);
     } catch (CallException e) {
       return callFailure(currentState, "receivedIceCandidates() failed: ", e);
@@ -754,6 +768,8 @@ public abstract class WebRtcActionProcessor {
       activePeer = remotePeer;
     }
 
+    CallPermissions.endCall(activePeer.getId(), activePeer.getCallId().longValue());
+
     AppForegroundObserver.removeListener(webRtcInteractor.getForegroundListener());
 
     if (activePeer.getState() != CallState.IDLE) {
@@ -878,6 +894,7 @@ public abstract class WebRtcActionProcessor {
     Log.i(tag, "handleReceivedOpaqueMessage():");
 
     try {
+      if (!CallPermissions.isDispatchAuthorized()) return currentState;
       webRtcInteractor.getCallManager().receivedCallMessage(opaqueMessageMetadata.getUuid(),
                                                             opaqueMessageMetadata.getRemoteDeviceId(),
                                                             SignalStore.account().getDeviceId(),
@@ -961,6 +978,7 @@ public abstract class WebRtcActionProcessor {
   }
 
   protected synchronized @NonNull WebRtcServiceState terminateGroupCall(@NonNull WebRtcServiceState currentState, boolean terminateVideo) {
+    CallPermissions.endAllSessions();
     webRtcInteractor.updatePhoneState(LockManager.PhoneState.PROCESSING);
     boolean playDisconnectSound = currentState.getCallInfoState().getCallState() == WebRtcViewModel.State.CALL_DISCONNECTED;
     webRtcInteractor.stopAudio(playDisconnectSound);

@@ -43,12 +43,14 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
 
   private var serial = 0L
   private var current: Session? = null
+  private var glare: Session? = null
   var generation: Long = 1L
     private set
 
   fun revoke() {
     generation++
     current = null
+    glare = null
   }
 
   fun beginOutgoing(context: CallContext, recipient: Long): Boolean {
@@ -70,17 +72,19 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
     if (s.recipient != recipient) return false
     s.active = true
     s.expiresAt = clock() + ACTIVE_LEASE_MS
+    glare?.takeIf { it.recipient == recipient }?.let { it.active = true; it.expiresAt = clock() + ACTIVE_LEASE_MS }
     return true
   }
 
   fun end(recipient: Long, callId: Long) {
-    val s = current ?: return
-    if (s.recipient == recipient && (s.callId == callId || s.callId == null)) current = null
+    current?.let { if (it.recipient == recipient && (it.callId == callId || it.callId == null)) current = null }
+    glare?.let { if (it.recipient == recipient && it.callId == callId) glare = null }
+    live()
   }
 
   fun hasSession(recipient: Long): Boolean = live()?.recipient == recipient
 
-  fun clear() { current = null }
+  fun clear() { current = null; glare = null }
 
   fun sharingSession(context: CallContext, recipient: Long?): Long? = live()?.takeIf {
     it.context == context && (recipient == null || it.recipient == recipient) && (context == CallContext.DIRECT || it.active)
@@ -88,12 +92,18 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
 
   fun direct(recipient: Long, callId: Long, device: Int, kind: DirectMessageKind, age: Long, incomingAllowed: Boolean): CallAuthorization? {
     if (!fresh(device, age)) return null
-    var s = live()
+    val primary = live()
+    var s = primary?.takeIf { it.callId == callId } ?: glare?.takeIf { it.callId == callId }
     if (kind == DirectMessageKind.OFFER) {
       if (!incomingAllowed) return null
-      if (s == null) {
+      if (primary == null) {
         s = Session(++serial, CallContext.DIRECT, recipient, false, callId, device, recipient, clock() + SIGNALING_LEASE_MS)
         current = s
+      } else if (s == null && primary.context == CallContext.DIRECT && primary.outgoing && primary.recipient == recipient && glare == null) {
+        // Let RingRTC resolve simultaneous calls from the SAME permitted peer. This does not
+        // authorize an unrelated caller or turn an incoming BLOCK into an outgoing exception.
+        s = Session(++serial, CallContext.DIRECT, recipient, false, callId, device, recipient, clock() + SIGNALING_LEASE_MS)
+        glare = s
       }
     }
     s ?: return null
@@ -128,7 +138,8 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
   }
 
   fun valid(ticket: CallAuthorization): Boolean {
-    val s = live() ?: return false
+    val primary = live()
+    val s = primary?.takeIf { it.serial == ticket.session } ?: glare?.takeIf { it.serial == ticket.session } ?: return false
     return ticket.generation == generation && ticket.session == s.serial && ticket.recipient == s.recipient &&
       ticket.context == s.context && clock() < ticket.expiresAt
   }
@@ -141,6 +152,8 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
 
   private fun live(): Session? {
     if (current?.let { clock() >= it.expiresAt } == true) current = null
+    if (glare?.let { clock() >= it.expiresAt } == true) glare = null
+    if (current == null) { current = glare; glare = null }
     return current
   }
 }

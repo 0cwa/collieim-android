@@ -1,0 +1,75 @@
+/*
+ * Copyright 2019-2021 Signal Messenger, LLC
+ * SPDX-License-Identifier: AGPL-3.0-only
+ *
+ * Managed admission projection of RingRTC 2.74.0 signaling.proto and group_call.proto,
+ * pinned by build-inputs/native-lock.json to bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f.
+ * https://github.com/signalapp/ringrtc/tree/bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f/protobuf/protobuf
+ * Keep field numbers/types in sync when the native input is upgraded. These are
+ * independent optional fields, deliberately not a oneof. Admission rejects mixed
+ * variants, then re-encodes the decoded message before passing it to RingRTC.
+ */
+syntax = "proto2";
+
+package collie.calling;
+option java_package = "org.thoughtcrime.securesms.calls.permissions.proto";
+option java_multiple_files = true;
+
+message OpaqueCallMessage {
+  message RingIntention {
+    enum Type {
+      RING = 0;
+      CANCELLED = 1;
+    }
+    optional bytes groupId = 1;
+    optional Type type = 2;
+    optional sfixed64 ringId = 3;
+  }
+
+  message RingResponse {
+    enum Type {
+      RINGING = 0;
+      ACCEPTED = 1;
+      DECLINED = 2;
+      BUSY = 3;
+    }
+    optional bytes groupId = 1;
+    optional Type type = 2;
+    optional sfixed64 ringId = 3;
+  }
+
+  optional GroupDeviceMessage groupCallMessage = 1;
+  optional RingIntention ringIntention = 2;
+  optional RingResponse ringResponse = 3;
+}
+
+message GroupDeviceMessage {
+  message MediaKey {
+    optional uint32 ratchetCounter = 1;
+    optional bytes secret = 2;
+    optional uint32 demuxId = 3;
+  }
+  message Heartbeat {
+    optional bool audioMuted = 1;
+    optional bool videoMuted = 2;
+    optional bool presenting = 3;
+    optional bool sharingScreen = 4;
+    optional uint32 mutedByDemuxId = 5;
+  }
+  message Leaving {
+    optional uint32 demuxId = 1;
+  }
+  message Reaction {
+    optional string value = 1;
+  }
+  message RemoteMuteRequest {
+    optional uint32 targetDemuxId = 1;
+  }
+
+  optional bytes groupId = 1;
+  optional MediaKey mediaKey = 2;
+  optional Heartbeat heartbeat = 3;
+  optional Leaving leaving = 4;
+  optional Reaction reaction = 5;
+  optional RemoteMuteRequest remoteMuteRequest = 6;
+}

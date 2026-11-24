@@ -12,6 +12,7 @@ import org.signal.remoteconfig.RemoteConfig;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallManager;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.components.webrtc.EglBaseWrapper;
 import org.thoughtcrime.securesms.database.CallTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
@@ -210,6 +211,7 @@ public class OutgoingCallActionProcessor extends DeviceAwareActionProcessor {
       byte[] remoteIdentityKey = WebRtcUtil.getPublicKeyBytes(receivedAnswerMetadata.getRemoteIdentityKey());
       byte[] localIdentityKey  = WebRtcUtil.getPublicKeyBytes(SignalStore.account().getAciIdentityKey().getPublicKey().serialize());
 
+      if (!CallPermissions.isDispatchAuthorized()) return currentState;
       webRtcInteractor.getCallManager().receivedAnswer(callMetadata.getCallId(), callMetadata.getRemotePeer(), callMetadata.getRemoteDevice(), answerMetadata.getOpaque(), remoteIdentityKey, localIdentityKey);
     } catch (CallException | InvalidKeyException e) {
       return callFailure(currentState, "receivedAnswer() failed: ", e);
@@ -223,6 +225,7 @@ public class OutgoingCallActionProcessor extends DeviceAwareActionProcessor {
     Log.i(TAG, "handleReceivedBusy(): id: " + callMetadata.getCallId().format(callMetadata.getRemoteDevice()));
 
     try {
+      if (!CallPermissions.isDispatchAuthorized()) return currentState;
       webRtcInteractor.getCallManager().receivedBusy(callMetadata.getCallId(), callMetadata.getRemotePeer(), callMetadata.getRemoteDevice());
     } catch (CallException e) {
       return callFailure(currentState, "receivedBusy() failed: ", e);

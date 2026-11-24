@@ -14,6 +14,7 @@ import org.signal.core.util.ThrottledDebouncer
 import org.signal.core.util.concurrent.SerialExecutor
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.service.webrtc.ActiveCallData
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
@@ -153,19 +154,26 @@ class CallLogPeekHelper : DefaultLifecycleObserver {
       if (peekQueue.isEmpty() || isPaused) {
         return@execute
       }
+      val generation = CallPermissions.generation()
+      if (!CallPermissions.isCallingAllowed()) {
+        localDeviceCallRecipientId = RecipientId.UNKNOWN
+        return@execute
+      }
 
       Log.d(TAG, "Checking if user is in a call locally.")
 
-      AppDependencies.signalCallManager.isCallActive(object : ResultReceiver(null) {
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-          if (resultCode == 1 && resultData != null) {
-            val activeCallData = ActiveCallData.fromBundle(resultData)
-            localDeviceCallRecipientId = activeCallData.recipientId
-          } else {
-            localDeviceCallRecipientId = RecipientId.UNKNOWN
+      CallPermissions.runIfCurrent(generation) {
+        AppDependencies.signalCallManager.isCallActive(object : ResultReceiver(null) {
+          override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+            if (CallPermissions.isCurrent(generation) && resultCode == 1 && resultData != null) {
+              val activeCallData = ActiveCallData.fromBundle(resultData)
+              localDeviceCallRecipientId = activeCallData.recipientId
+            } else {
+              localDeviceCallRecipientId = RecipientId.UNKNOWN
+            }
           }
-        }
-      })
+        })
+      }
 
       Log.d(TAG, "Peeks in queue. Taking first $PEEK_SIZE.")
 
@@ -176,9 +184,14 @@ class CallLogPeekHelper : DefaultLifecycleObserver {
       peekQueue.addAll(remaining)
 
       items.forEach {
-        when (it.identifier.peekEntryType) {
-          PeekEntryType.CALL_LINK -> AppDependencies.signalCallManager.peekCallLinkCall(it.recipientId)
-          PeekEntryType.GROUP_CALL -> AppDependencies.signalCallManager.peekGroupCall(it.recipientId)
+        val allowed = it.identifier.peekEntryType == PeekEntryType.CALL_LINK || CallPermissions.canUseGroup(it.recipientId)
+        if (allowed) {
+          CallPermissions.runIfCurrent(generation) {
+            when (it.identifier.peekEntryType) {
+              PeekEntryType.CALL_LINK -> AppDependencies.signalCallManager.peekCallLinkCall(it.recipientId)
+              PeekEntryType.GROUP_CALL -> AppDependencies.signalCallManager.peekGroupCall(it.recipientId)
+            }
+          }
         }
       }
 

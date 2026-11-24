@@ -226,11 +226,14 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
   }
 
   fun setAci(aci: ACI) {
-    if (this.aci != aci) {
+    val changed = this.aci != aci
+    if (changed) {
       org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountRegistrationChanged()
     }
     putString(KEY_ACI, aci.toString())
-    org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountChanged(aci.toString())
+    if (changed) {
+      org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountChanged(aci.toString())
+    }
     RegisteredConstraint.Observer.notifyListeners()
   }
 

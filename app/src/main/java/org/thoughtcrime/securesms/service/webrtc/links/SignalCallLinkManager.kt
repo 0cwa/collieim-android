@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.service.webrtc.links
 
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.zkgroup.GenericServerPublicParams
 import org.signal.libsignal.zkgroup.calllinks.CallLinkAuthCredentialPresentation
@@ -19,6 +20,8 @@ import org.signal.ringrtc.CallLinkRootKey
 import org.signal.ringrtc.CallLinkState
 import org.signal.ringrtc.CallLinkState.Restrictions
 import org.signal.ringrtc.CallManager
+import org.thoughtcrime.securesms.calls.permissions.CallLinkPolicy
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
@@ -86,71 +89,71 @@ class SignalCallLinkManager(
   fun createCallLink(
     callLinkCredentials: CallLinkCredentials
   ): Single<CreateCallLinkResult> {
-    return Single.create { emitter ->
+    val denied = CreateCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS)
+    return authorizedLinkOperation<CreateCallLinkResult>(denied) { emitter, generation ->
       Log.d(TAG, "Generating keys.")
-
       val rootKey = CallLinkRootKey(callLinkCredentials.linkKeyBytes)
       val adminPassKey: ByteArray = requireNotNull(callLinkCredentials.adminPassBytes)
       val roomId: ByteArray = rootKey.deriveRoomId()
 
       Log.d(TAG, "Generating credential.")
       val credentialPresentation = try {
-        requestCreateCallLinkCredentialPresentation(
-          rootKey.keyBytes,
-          roomId
-        )
+        requestCreateCallLinkCredentialPresentation(rootKey.keyBytes, roomId)
       } catch (e: Exception) {
         Log.e(TAG, "Failed to create call link credential.", e)
         emitter.onSuccess(CreateCallLinkResult.Failure(-1))
-        return@create
+        return@authorizedLinkOperation
       }
-
-      Log.d(TAG, "Creating call link.")
 
       val publicParams = CallLinkSecretParams.deriveFromRootKey(rootKey.keyBytes).publicParams
-
-      // Credential
-      callManager.createCallLink(
-        SignalStore.internal.groupCallingServer,
-        credentialPresentation.serialize(),
-        rootKey,
-        adminPassKey,
-        publicParams.serialize(),
-        Restrictions.ADMIN_APPROVAL
-      ) { result ->
-        if (result.isSuccess) {
-          Log.d(TAG, "Successfully created call link.")
-          val rootKey = result.value!!.rootKey
-          emitter.onSuccess(
+      val dispatched = CallPermissions.runIfCurrent(generation) {
+        callManager.createCallLink(
+          SignalStore.internal.groupCallingServer,
+          credentialPresentation.serialize(),
+          rootKey,
+          adminPassKey,
+          publicParams.serialize(),
+          Restrictions.ADMIN_APPROVAL
+        ) { result ->
+          val outcome = if (result.isSuccess) {
+            Log.d(TAG, "Successfully created call link.")
             CreateCallLinkResult.Success(
-              credentials = CallLinkCredentials(rootKey.keyBytes, adminPassKey),
+              credentials = CallLinkCredentials(result.value!!.rootKey.keyBytes, adminPassKey),
               state = result.value!!.toAppState()
             )
-          )
-        } else {
-          Log.w(TAG, "Failed to create call link with failure status ${result.status}")
-          emitter.onSuccess(CreateCallLinkResult.Failure(result.status))
+          } else {
+            Log.w(TAG, "Failed to create call link with failure status ${result.status}")
+            CreateCallLinkResult.Failure(result.status)
+          }
+          emitAuthorized(emitter, generation, outcome, denied)
         }
       }
+      if (!dispatched) emitter.onSuccess(denied)
     }
   }
 
   fun readCallLink(
     credentials: CallLinkCredentials
   ): Single<ReadCallLinkResult> {
-    return Single.create { emitter ->
-      callManager.readCallLink(
-        SignalStore.internal.groupCallingServer,
-        requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes).serialize(),
-        CallLinkRootKey(credentials.linkKeyBytes)
-      ) {
-        if (it.isSuccess) {
-          emitter.onSuccess(ReadCallLinkResult.Success(it.value!!.toAppState()))
-        } else {
-          Log.w(TAG, "Failed to read call link with failure status ${it.status}")
-          emitter.onSuccess(ReadCallLinkResult.Failure(it.status))
+    val denied = ReadCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS)
+    return authorizedLinkOperation<ReadCallLinkResult>(denied) { emitter, generation ->
+      val presentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes).serialize()
+      val dispatched = CallPermissions.runIfCurrent(generation) {
+        callManager.readCallLink(
+          SignalStore.internal.groupCallingServer,
+          presentation,
+          CallLinkRootKey(credentials.linkKeyBytes)
+        ) { result ->
+          val outcome = if (result.isSuccess) {
+            ReadCallLinkResult.Success(result.value!!.toAppState())
+          } else {
+            Log.w(TAG, "Failed to read call link with failure status ${result.status}")
+            ReadCallLinkResult.Failure(result.status)
+          }
+          emitAuthorized(emitter, generation, outcome, denied)
         }
       }
+      if (!dispatched) emitter.onSuccess(denied)
     }
   }
 
@@ -158,26 +161,23 @@ class SignalCallLinkManager(
     credentials: CallLinkCredentials,
     name: String
   ): Single<UpdateCallLinkResult> {
-    if (credentials.adminPassBytes == null) {
-      return Single.just(UpdateCallLinkResult.NotAuthorized)
-    }
+    if (credentials.adminPassBytes == null) return Single.just(UpdateCallLinkResult.NotAuthorized)
 
-    return Single.create { emitter ->
-      val credentialPresentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes)
-
-      callManager.updateCallLinkName(
-        SignalStore.internal.groupCallingServer,
-        credentialPresentation.serialize(),
-        CallLinkRootKey(credentials.linkKeyBytes),
-        credentials.adminPassBytes,
-        name
-      ) { result ->
-        if (result.isSuccess) {
-          emitter.onSuccess(UpdateCallLinkResult.Update(result.value!!.toAppState()))
-        } else {
-          emitter.onSuccess(UpdateCallLinkResult.Failure(result.status))
+    return authorizedLinkOperation<UpdateCallLinkResult>(UpdateCallLinkResult.NotAuthorized) { emitter, generation ->
+      val presentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes)
+      val dispatched = CallPermissions.runIfCurrent(generation) {
+        callManager.updateCallLinkName(
+          SignalStore.internal.groupCallingServer,
+          presentation.serialize(),
+          CallLinkRootKey(credentials.linkKeyBytes),
+          credentials.adminPassBytes,
+          name
+        ) { result ->
+          val outcome = if (result.isSuccess) UpdateCallLinkResult.Update(result.value!!.toAppState()) else UpdateCallLinkResult.Failure(result.status)
+          emitAuthorized(emitter, generation, outcome, UpdateCallLinkResult.NotAuthorized)
         }
       }
+      if (!dispatched) emitter.onSuccess(UpdateCallLinkResult.NotAuthorized)
     }
   }
 
@@ -185,54 +185,71 @@ class SignalCallLinkManager(
     credentials: CallLinkCredentials,
     restrictions: Restrictions
   ): Single<UpdateCallLinkResult> {
-    if (credentials.adminPassBytes == null) {
-      return Single.just(UpdateCallLinkResult.NotAuthorized)
-    }
+    if (credentials.adminPassBytes == null) return Single.just(UpdateCallLinkResult.NotAuthorized)
 
-    return Single.create { emitter ->
-      val credentialPresentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes)
-
-      callManager.updateCallLinkRestrictions(
-        SignalStore.internal.groupCallingServer,
-        credentialPresentation.serialize(),
-        CallLinkRootKey(credentials.linkKeyBytes),
-        credentials.adminPassBytes,
-        restrictions
-      ) { result ->
-        if (result.isSuccess) {
-          emitter.onSuccess(UpdateCallLinkResult.Update(result.value!!.toAppState()))
-        } else {
-          emitter.onSuccess(UpdateCallLinkResult.Failure(result.status))
+    return authorizedLinkOperation<UpdateCallLinkResult>(UpdateCallLinkResult.NotAuthorized) { emitter, generation ->
+      val presentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes)
+      val dispatched = CallPermissions.runIfCurrent(generation) {
+        callManager.updateCallLinkRestrictions(
+          SignalStore.internal.groupCallingServer,
+          presentation.serialize(),
+          CallLinkRootKey(credentials.linkKeyBytes),
+          credentials.adminPassBytes,
+          restrictions
+        ) { result ->
+          val outcome = if (result.isSuccess) UpdateCallLinkResult.Update(result.value!!.toAppState()) else UpdateCallLinkResult.Failure(result.status)
+          emitAuthorized(emitter, generation, outcome, UpdateCallLinkResult.NotAuthorized)
         }
       }
+      if (!dispatched) emitter.onSuccess(UpdateCallLinkResult.NotAuthorized)
     }
   }
 
   fun deleteCallLink(
     credentials: CallLinkCredentials
   ): Single<UpdateCallLinkResult> {
-    if (credentials.adminPassBytes == null) {
-      return Single.just(UpdateCallLinkResult.NotAuthorized)
-    }
+    if (credentials.adminPassBytes == null) return Single.just(UpdateCallLinkResult.NotAuthorized)
 
-    return Single.create { emitter ->
-      val credentialPresentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes)
-
-      callManager.deleteCallLink(
-        SignalStore.internal.groupCallingServer,
-        credentialPresentation.serialize(),
-        CallLinkRootKey(credentials.linkKeyBytes),
-        credentials.adminPassBytes
-      ) { result ->
-        if (result.isSuccess && result.value == true) {
-          emitter.onSuccess(UpdateCallLinkResult.Delete(credentials.roomId))
-        } else {
-          when (result.status) {
-            409.toShort() -> emitter.onSuccess(UpdateCallLinkResult.CallLinkIsInUse)
-            else -> emitter.onSuccess(UpdateCallLinkResult.Failure(result.status))
+    return authorizedLinkOperation<UpdateCallLinkResult>(UpdateCallLinkResult.NotAuthorized) { emitter, generation ->
+      val presentation = requestCallLinkAuthCredentialPresentation(credentials.linkKeyBytes)
+      val dispatched = CallPermissions.runIfCurrent(generation) {
+        callManager.deleteCallLink(
+          SignalStore.internal.groupCallingServer,
+          presentation.serialize(),
+          CallLinkRootKey(credentials.linkKeyBytes),
+          credentials.adminPassBytes
+        ) { result ->
+          val outcome = if (result.isSuccess && result.value == true) {
+            UpdateCallLinkResult.Delete(credentials.roomId)
+          } else {
+            when (result.status) {
+              409.toShort() -> UpdateCallLinkResult.CallLinkIsInUse
+              else -> UpdateCallLinkResult.Failure(result.status)
+            }
           }
+          emitAuthorized(emitter, generation, outcome, UpdateCallLinkResult.NotAuthorized)
         }
       }
+      if (!dispatched) emitter.onSuccess(UpdateCallLinkResult.NotAuthorized)
+    }
+  }
+
+  private fun <T : Any> authorizedLinkOperation(denied: T, operation: (SingleEmitter<T>, Long) -> Unit): Single<T> {
+    val generation = CallPermissions.generation()
+    return Single.create { emitter ->
+      if (!CallPermissions.isCallingAllowed() || !CallPermissions.isCurrent(generation)) {
+        emitter.onSuccess(denied)
+      } else {
+        operation(emitter, generation)
+      }
+    }
+  }
+
+  private fun <T : Any> emitAuthorized(emitter: SingleEmitter<T>, generation: Long, result: T, denied: T) {
+    // Recheck before forwarding results to state updates and sync scheduling.
+    // A response from an operation revoked in flight is discarded.
+    if (!CallPermissions.runIfCurrent(generation) { emitter.onSuccess(result) }) {
+      emitter.onSuccess(denied)
     }
   }
 

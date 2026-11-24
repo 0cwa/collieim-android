@@ -89,4 +89,34 @@ class CallSessionAuthorizerTest {
     sessions.end(1, 9)
     assertFalse(sessions.valid(ticket))
   }
+  @Test
+  fun `same peer glare preserves native resolution without admitting unrelated callers`() {
+    assertTrue(sessions.beginOutgoing(CallContext.DIRECT, 1))
+    assertTrue(sessions.bindOutgoing(1, 9))
+    val incoming = sessions.direct(1, 10, 2, DirectMessageKind.OFFER, 0, true)!!
+    assertNull(sessions.direct(2, 11, 1, DirectMessageKind.OFFER, 0, true))
+    assertNotNull(sessions.direct(1, 10, 2, DirectMessageKind.ICE, 0, true))
+    assertNull(sessions.direct(1, 10, 3, DirectMessageKind.ICE, 0, true))
+    sessions.end(1, 9)
+    assertTrue(sessions.valid(incoming))
+    sessions.end(1, 10)
+    assertFalse(sessions.valid(incoming))
+  }
+
+  @Test
+  fun `outgoing exception does not authorize blocked same peer glare`() {
+    sessions.beginOutgoing(CallContext.DIRECT, 1)
+    sessions.bindOutgoing(1, 9)
+    assertNull(sessions.direct(1, 10, 2, DirectMessageKind.OFFER, 0, false))
+  }
+
+  @Test
+  fun `group ring and cancellation bind authenticated ringer and device`() {
+    assertNotNull(sessions.group(CallContext.GROUP, 2, 1, 10, 1, GroupMessageKind.RING, 0, true))
+    assertNull(sessions.group(CallContext.GROUP, 2, 3, 10, 1, GroupMessageKind.RING, 0, true))
+    assertNull(sessions.group(CallContext.GROUP, 2, 3, 10, 1, GroupMessageKind.CANCEL, 0, true))
+    assertNull(sessions.group(CallContext.GROUP, 2, 1, 10, 2, GroupMessageKind.CANCEL, 0, true))
+    assertNotNull(sessions.group(CallContext.GROUP, 2, 1, 10, 1, GroupMessageKind.CANCEL, 0, true))
+  }
+
 }

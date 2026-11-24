@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.signal.core.models.recipients.RecipientId;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
@@ -40,8 +41,12 @@ final class GroupCallPeekWorkerJob extends BaseJob {
   @Override
   protected void onRun() {
     RecipientId groupRecipientId = RecipientId.from(groupCallPeekJobData.groupRecipientId);
+    long generation = CallPermissions.generation();
+    if (!CallPermissions.canUseGroup(groupRecipientId)) {
+      return;
+    }
 
-    AppDependencies.getSignalCallManager().peekGroupCall(groupRecipientId, (peekInfo) -> {
+    CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().peekGroupCall(groupRecipientId, (peekInfo) -> {
       if (groupCallPeekJobData.senderRecipientId == RecipientId.UNKNOWN.toLong()) {
         return;
       }
@@ -55,7 +60,7 @@ final class GroupCallPeekWorkerJob extends BaseJob {
           peekInfo.getJoinedMembers(),
           WebRtcUtil.isCallFull(peekInfo)
       );
-    });
+    }));
   }
 
   @Override

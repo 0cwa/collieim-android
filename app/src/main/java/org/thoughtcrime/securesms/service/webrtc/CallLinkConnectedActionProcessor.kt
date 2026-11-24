@@ -50,7 +50,7 @@ class CallLinkConnectedActionProcessor(
     val callLink: CallLinkTable.CallLink = SignalDatabase.callLinks.getCallLinkByRoomId(callLinkRoomId) ?: return superState
     val joinedParticipants: Set<Recipient> = peekInfo.joinedMembers.map { Recipient.externalPush(ServiceId.ACI.from(it)) }.toSet()
 
-    CallLinkProfileKeySender.onRecipientsUpdated(joinedParticipants)
+    CallLinkProfileKeySender.onRecipientsUpdated(callLink.recipientId, joinedParticipants)
 
     if (callLink.credentials?.adminPassBytes == null) {
       Log.i(tag, "User is not an admin.")

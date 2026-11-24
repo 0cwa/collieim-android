@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.calls.links
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.signal.ringrtc.CallLinkState
+import org.thoughtcrime.securesms.calls.permissions.CallLinkPolicy
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.CallLinkUpdateSendJob
@@ -27,31 +28,28 @@ import org.thoughtcrime.securesms.storage.StorageSyncHelper
  * All of these will delegate to the [SignalCallLinkManager] but will additionally update the database state.
  */
 class UpdateCallLinkRepository(
-  private val callLinkManager: SignalCallLinkManager = AppDependencies.signalCallManager.callLinkManager
+  private val callLinkManager: SignalCallLinkManager? = null
 ) {
   fun setCallName(credentials: CallLinkCredentials, name: String): Single<UpdateCallLinkResult> {
-    return callLinkManager
-      .updateCallLinkName(
-        credentials = credentials,
-        name = name
-      )
+    return CallLinkPolicy.guarded<UpdateCallLinkResult>(UpdateCallLinkResult.NotAuthorized) {
+      (callLinkManager ?: AppDependencies.signalCallManager.callLinkManager).updateCallLinkName(credentials, name)
+    }
       .doOnSuccess(updateState(credentials))
       .subscribeOn(Schedulers.io())
   }
 
   fun setCallRestrictions(credentials: CallLinkCredentials, restrictions: CallLinkState.Restrictions): Single<UpdateCallLinkResult> {
-    return callLinkManager
-      .updateCallLinkRestrictions(
-        credentials = credentials,
-        restrictions = restrictions
-      )
+    return CallLinkPolicy.guarded<UpdateCallLinkResult>(UpdateCallLinkResult.NotAuthorized) {
+      (callLinkManager ?: AppDependencies.signalCallManager.callLinkManager).updateCallLinkRestrictions(credentials, restrictions)
+    }
       .doOnSuccess(updateState(credentials))
       .subscribeOn(Schedulers.io())
   }
 
   fun deleteCallLink(credentials: CallLinkCredentials): Single<UpdateCallLinkResult> {
-    return callLinkManager
-      .deleteCallLink(credentials)
+    return CallLinkPolicy.guarded<UpdateCallLinkResult>(UpdateCallLinkResult.NotAuthorized) {
+      (callLinkManager ?: AppDependencies.signalCallManager.callLinkManager).deleteCallLink(credentials)
+    }
       .doOnSuccess(updateState(credentials))
       .subscribeOn(Schedulers.io())
   }

@@ -6,20 +6,25 @@
 package org.thoughtcrime.securesms.mediapreview
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.ColorStateListDrawable
+import android.os.Environment
 import android.os.Process
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.descendants
@@ -76,7 +81,7 @@ import org.signal.video.R as VideoR
 class MediaThemeRuntimeTest {
 
   @get:Rule
-  val harness = SignalActivityRule(othersCount = 0)
+  val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
 
   @get:Rule
   val animations = DisableAnimationsRule()
@@ -135,6 +140,73 @@ class MediaThemeRuntimeTest {
   @Test
   fun composeVideoUpdatesItsDarkPaletteWithoutRestarting() {
     assertComposePaletteRoundTrip(Sample.VIDEO, SettingsValues.Theme.DARK)
+  }
+
+  @Test
+  fun individualAttachmentRemovalPreservesTheMessage() {
+    selectTheme(SettingsValues.Theme.LIGHT, dynamic = false)
+    val intent = mediaIntent(Sample.IMAGE, MediaViewerActivity::class.java)
+    val messageId = messageIds.single()
+    val attachmentId = SignalDatabase.attachments.getAttachmentsForMessage(messageId).single().attachmentId
+    assertTrue(SignalDatabase.attachments.isAttachmentLocallyRemovable(attachmentId))
+
+    ActivityScenario.launch<MediaViewerActivity>(intent).use { scenario ->
+      awaitReady(scenario, false, "attachment-removal", composeContent = true) { activity ->
+        val state = ViewModelProvider(activity)[MediaViewerViewModel::class.java].state.value
+        decodedMediaReady(activity, Sample.IMAGE) && state.loadState == MediaViewerState.LoadState.MEDIA_READY && state.chromeVisible
+      }
+      compose.onNodeWithTag(MediaViewerScreenTestTags.CAPTION).assertIsDisplayed()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).performClick()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_DELETE).assertIsDisplayed()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).assertIsDisplayed()
+      captureRemovalSurface("attachment-removal-menu")
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).performClick()
+      compose.waitUntil(10_000) {
+        compose.onAllNodes(androidx.compose.ui.test.hasTestTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG))
+          .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+      }
+      compose.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG).assertIsDisplayed()
+      captureRemovalSurface("attachment-removal-confirmation")
+      compose.onNodeWithText(context.getString(org.signal.mediaviewer.R.string.MediaViewerScreen__cancel)).performClick()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG).assertDoesNotExist()
+      assertTrue(SignalDatabase.attachments.isAttachmentLocallyRemovable(attachmentId))
+
+      compose.onNodeWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).performClick()
+      compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).performClick()
+      compose.waitUntil(10_000) {
+        compose.onAllNodes(androidx.compose.ui.test.hasTestTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_BUTTON))
+          .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+      }
+      compose.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_BUTTON).performClick()
+      compose.waitUntil(10_000) {
+        SignalDatabase.attachments.getAttachment(attachmentId)?.isLocallyRemoved == true
+      }
+      assertEquals(CAPTION, SignalDatabase.messages.getMessageRecordOrNull(messageId)?.body)
+      val removed = checkNotNull(SignalDatabase.attachments.getAttachment(attachmentId))
+      assertTrue(removed.isLocallyRemoved)
+      assertTrue(removed.uri == null)
+    }
+  }
+
+  private fun captureRemovalSurface(name: String) {
+    compose.waitForIdle()
+    instrumentation.uiAutomation.waitForIdle(500, 5_000)
+    val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
+    val resolver = context.contentResolver
+    try {
+      val uri = checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, "$name.png")
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/collie-settings-navigation/")
+        put(MediaStore.MediaColumns.IS_PENDING, 1)
+      }))
+      checkNotNull(resolver.openOutputStream(uri)).use { stream ->
+        assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream))
+      }
+      resolver.update(uri, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null)
+    } finally {
+      bitmap.recycle()
+    }
   }
 
   private fun assertComposePaletteRoundTrip(sample: Sample, appTheme: SettingsValues.Theme) {

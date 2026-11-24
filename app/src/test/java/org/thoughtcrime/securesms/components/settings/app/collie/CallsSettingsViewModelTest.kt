@@ -70,6 +70,7 @@ class CallsSettingsViewModelTest {
 
     model.onEvent(CallsSettingsEvent.IncomingChanged(false))
     model.onEvent(CallsSettingsEvent.GroupsChanged(false))
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(true))
 
     assertThat(access.writeCount).isEqualTo(0)
     model.onEvent(CallsSettingsEvent.DisableAllChanged(false))
@@ -84,6 +85,7 @@ class CallsSettingsViewModelTest {
 
     model.onEvent(CallsSettingsEvent.DisableAllChanged(false))
     model.onEvent(CallsSettingsEvent.IncomingChanged(true))
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(true))
 
     assertThat(model.state.value.available).isFalse()
     assertThat(access.writeCount).isEqualTo(0)
@@ -118,8 +120,64 @@ class CallsSettingsViewModelTest {
     model.onEvent(CallsSettingsEvent.DisableAllChanged(false))
     model.onEvent(CallsSettingsEvent.IncomingChanged(true))
     model.onEvent(CallsSettingsEvent.GroupsChanged(true))
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(false))
     contactModel.select(CallPermissionChoice.INHERIT)
 
+    assertThat(access.writeCount).isEqualTo(0)
+  }
+
+  @Test
+  fun `on demand is off by default and changes only after a durable save`() = runTest(dispatcher) {
+    val model = CallsSettingsViewModel(navigation::add, access, dispatcher)
+    assertThat(model.state.value.onDemandCalling).isFalse()
+    access.beforeWrite = {
+      assertThat(model.state.value.onDemandCalling).isFalse()
+      assertThat(model.state.value.saving).isTrue()
+    }
+
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(true))
+
+    assertThat(model.state.value.onDemandCalling).isTrue()
+    assertThat(model.state.value.allowIncoming).isTrue()
+    assertThat(model.state.value.allowGroups).isTrue()
+    assertThat(model.state.value.allCallingDisabled).isFalse()
+    assertThat(access.writeCount).isEqualTo(1)
+  }
+
+  @Test
+  fun `a failed startup change leaves the persisted opt in visible`() = runTest(dispatcher) {
+    access.device = access.device.copy(onDemandCalling = true)
+    val model = CallsSettingsViewModel(navigation::add, access, dispatcher)
+    access.beforeWrite = { throw IOException("disk full") }
+
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(false))
+
+    assertThat(model.state.value.onDemandCalling).isTrue()
+    assertThat(model.state.value.saveFailed).isTrue()
+    assertThat(model.state.value.saving).isFalse()
+  }
+
+  @Test
+  fun `disabling all calling preserves the startup preference for later reenable`() = runTest(dispatcher) {
+    access.device = access.device.copy(onDemandCalling = true)
+    val model = CallsSettingsViewModel(navigation::add, access, dispatcher)
+
+    model.onEvent(CallsSettingsEvent.DisableAllChanged(true))
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(false))
+
+    assertThat(model.state.value.allCallingDisabled).isTrue()
+    assertThat(model.state.value.onDemandCalling).isTrue()
+    assertThat(access.writeCount).isEqualTo(1)
+  }
+
+  @Test
+  fun `a product without the startup experiment cannot enable it through events`() = runTest(dispatcher) {
+    access.device = access.device.copy(onDemandAvailable = false)
+    val model = CallsSettingsViewModel(navigation::add, access, dispatcher)
+
+    model.onEvent(CallsSettingsEvent.OnDemandChanged(true))
+
+    assertThat(model.state.value.onDemandCalling).isFalse()
     assertThat(access.writeCount).isEqualTo(0)
   }
 
@@ -184,7 +242,7 @@ class CallsSettingsViewModelTest {
 
   private class FakeAccess : CallPermissionsSettingsAccess {
     override val changes = MutableStateFlow(0L)
-    var device = CallsSettingsState(loading = false, available = true)
+    var device = CallsSettingsState(loading = false, available = true, onDemandAvailable = true)
     var recipient = CallPermissionOverrideState(loading = false, available = true)
     var readFails = false
     var writeCount = 0
@@ -201,6 +259,8 @@ class CallsSettingsViewModelTest {
     }
 
     override fun setAllCallingDisabled(disabled: Boolean) = write { device = device.copy(allCallingDisabled = disabled) }
+
+    override fun setOnDemandCalling(enabled: Boolean) = write { device = device.copy(onDemandCalling = enabled) }
 
     override fun setIncomingDefault(allow: Boolean) = write { device = device.copy(allowIncoming = allow) }
 

@@ -6,6 +6,9 @@
 package org.thoughtcrime.securesms.jobs
 
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
+import org.thoughtcrime.securesms.calls.runtime.CallRuntimePolicy
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.AutoDownloadEmojiConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil
@@ -38,6 +41,14 @@ class CallingAssetsDownloadJob private constructor(parameters: Parameters) : Job
   override fun getFactoryKey(): String = KEY
 
   override fun run(): Result {
+    val policy = CallPermissions.settings()
+    if (!policy.available || policy.allCallingDisabled) return Result.success()
+    if (CallRuntimePolicy.isOnDemand() && !AppDependencies.signalCallManager.isEngineReady()) {
+      // First authorized engine acquisition schedules this job again. Do not mark missing
+      // assets downloaded, or turn a deferred background task into a startup retry loop.
+      return Result.success()
+    }
+
     var succeeded = true
     if (SignalStore.misc.callingAssetsVersion != CallingAssets.CURRENT_VERSION) {
       succeeded = CallingAssets.downloadMissingAssets()

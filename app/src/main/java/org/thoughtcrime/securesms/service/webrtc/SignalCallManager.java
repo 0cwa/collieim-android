@@ -48,6 +48,11 @@ import org.thoughtcrime.securesms.calls.permissions.CallEraId;
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.calls.permissions.CallSessionKey;
 import org.thoughtcrime.securesms.calls.permissions.GroupCallAdmission;
+import org.thoughtcrime.securesms.calls.runtime.CallRuntime;
+import org.thoughtcrime.securesms.calls.runtime.CallPermissionRuntime;
+import org.thoughtcrime.securesms.calls.runtime.CallRuntimePolicy;
+import org.thoughtcrime.securesms.calls.runtime.RingRtcLibrary;
+import org.thoughtcrime.securesms.calls.runtime.SerializedCallRuntime;
 import org.thoughtcrime.securesms.components.webrtc.v2.CallIntent;
 import org.thoughtcrime.securesms.components.webrtc.CallLinkProfileKeySender;
 import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil;
@@ -59,6 +64,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.events.CallParticipant;
+import org.thoughtcrime.securesms.events.CallStartEvent;
 import org.thoughtcrime.securesms.events.GroupCallPeekEvent;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.groups.GroupId;
@@ -66,6 +72,7 @@ import org.thoughtcrime.securesms.groups.GroupManager;
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobs.CallSyncEventJob;
+import org.thoughtcrime.securesms.jobs.CallingAssetsDownloadJob;
 import org.thoughtcrime.securesms.jobs.GroupCallUpdateSendJob;
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
@@ -118,6 +125,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -145,7 +154,16 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
 
   public static final int BUSY_TONE_LENGTH = 2000;
 
-  @Nullable private final CallManager callManager;
+  @Nullable private volatile CallManager callManager;
+  private final CallRuntime callRuntime;
+  private final AtomicLong localAttempt = new AtomicLong();
+  private final Object localStartLock = new Object();
+  @Nullable private volatile CallStartEvent pendingLocalStart;
+  @Nullable private LocalStart lastLocalStart;
+  @Nullable private volatile LocalStart localSessionOrigin;
+  private volatile long dispatchedLocalAttempt;
+  private final boolean registerCallingAssets;
+  private boolean assetsDownloadScheduled;
 
   private final Context                     context;
   private final ExecutorService             serviceExecutor;
@@ -175,15 +193,12 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
     this.ephemeralStateStore = new RxStore<>(new WebRtcEphemeralState(), Schedulers.from(serviceExecutor));
     this.linkPeekInfoStore   = new RxStore<>(new HashMap<>(), Schedulers.from(serviceExecutor));
 
-    CallManager callManager = testCallManager;
-    try {
-      if (callManager == null) {
-        callManager = CallManager.createCallManager(this);
-      }
-    } catch (CallException e) {
-      Log.w(TAG, "Unable to create CallManager", e);
-    }
-    this.callManager = callManager;
+    this.callManager = testCallManager;
+    this.registerCallingAssets = testCallManager == null;
+    this.callRuntime = new CallPermissionRuntime(new SerializedCallRuntime(serviceExecutor, () -> {
+      RingRtcLibrary.initialize(context);
+      this.callManager = Objects.requireNonNull(CallManager.createCallManager(this));
+    }, failure -> Log.w(TAG, "Unable to initialize calling; no retry in this process", failure), testCallManager != null));
 
     this.serviceState = new WebRtcServiceState(new IdleActionProcessor(new WebRtcInteractor(this.context,
                                                                                             this,
@@ -199,8 +214,48 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   @NonNull CallManager getRingRtcCallManager() {
-    //noinspection ConstantConditions
-    return callManager;
+    // Internal processors can only run after authorized acquisition. This getter never acquires.
+    return Objects.requireNonNull(callManager, "Calling engine has not been acquired");
+  }
+
+  public @NonNull CallRuntime getCallRuntime() {
+    return callRuntime;
+  }
+
+  public boolean isEngineReady() {
+    return callRuntime.getState() == CallRuntime.State.READY;
+  }
+
+  /** Native backend bridge. Passive callers pass false and cannot cold-start in on-demand mode. */
+  public @NonNull CallRuntime.Request withCallEngine(boolean allowColdStart,
+                                                    @NonNull BooleanSupplier isAuthorized,
+                                                    @NonNull Consumer<CallManager> operation,
+                                                    @NonNull Consumer<CallRuntime.Result> complete) {
+    long generation = CallPermissions.generation();
+    CallRuntime.Mode mode = CallRuntimePolicy.mode(allowColdStart);
+    AtomicBoolean dispatched = new AtomicBoolean();
+    return callRuntime.execute(mode,
+                               () -> CallPermissions.isCurrent(generation) && (mode == CallRuntime.Mode.IF_RUNNING || canAcquireEngine(allowColdStart)) && isAuthorized.getAsBoolean(),
+                               () -> {
+                                 if (!CallPermissions.isCurrent(generation) || !isAuthorized.getAsBoolean()) return;
+                                 prepareCallingAssets();
+                                 if (!CallPermissions.isCurrent(generation) || !isAuthorized.getAsBoolean()) return;
+                                 dispatched.set(true);
+                                 operation.accept(Objects.requireNonNull(callManager));
+                               }, result -> complete.accept(result == CallRuntime.Result.DISPATCHED && !dispatched.get() ? CallRuntime.Result.DENIED : result));
+  }
+
+  private boolean canAcquireEngine(boolean allowColdStart) {
+    return allowColdStart || isEngineReady() || !CallRuntimePolicy.isOnDemand();
+  }
+
+  private void prepareCallingAssets() {
+    if (!registerCallingAssets || !CallPermissions.isCallingAllowed()) return;
+    CallingAssets.registerAssetsIfNeeded();
+    if (!assetsDownloadScheduled && CallRuntimePolicy.isOnDemand()) {
+      assetsDownloadScheduled = true;
+      AppDependencies.getJobManager().add(new CallingAssetsDownloadJob());
+    }
   }
 
   @NonNull LockManager getLockManager() {
@@ -228,16 +283,23 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   private void process(@Nullable CallAuthorization authorization, long generation, @NonNull ProcessAction action) {
+    process(authorization, generation, authorization != null, () -> true, action, result -> {});
+  }
+
+  private void process(@Nullable CallAuthorization authorization, long generation, boolean allowColdStart,
+                       @NonNull BooleanSupplier isRequestAuthorized, @NonNull ProcessAction action,
+                       @NonNull Consumer<CallRuntime.Result> complete) {
     Throwable t      = new Throwable();
     String    caller = t.getStackTrace().length > 1 ? t.getStackTrace()[1].getMethodName() : "unknown";
 
-    if (callManager == null) {
-      Log.w(TAG, "Unable to process action, call manager is not initialized");
-      return;
-    }
-
-    serviceExecutor.execute(() -> {
+    CallRuntime.Mode mode = CallRuntimePolicy.mode(allowColdStart);
+    AtomicBoolean dispatched = new AtomicBoolean();
+    callRuntime.execute(mode,
+                        () -> CallPermissions.isCurrent(generation) && (mode == CallRuntime.Mode.IF_RUNNING || canAcquireEngine(allowColdStart)) && isRequestAuthorized.getAsBoolean() &&
+                              (authorization == null || CallPermissions.isAuthorized(authorization)), () -> {
       Runnable dispatch = () -> {
+        if (!isRequestAuthorized.getAsBoolean()) return;
+        prepareCallingAssets();
         if (needsToSetSelfUuid) {
           try {
             ACI selfAci = SignalStore.account().getAci();
@@ -250,7 +312,10 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
         }
 
         Log.v(TAG, "Processing action: " + caller + ", handler: " + serviceState.getActionProcessor().getTag());
+        if (!isRequestAuthorized.getAsBoolean() || !CallPermissions.isCurrent(generation) ||
+            (authorization != null && !CallPermissions.isAuthorized(authorization))) return;
         WebRtcServiceState previous = serviceState;
+        dispatched.set(true);
         serviceState = action.process(previous, previous.getActionProcessor());
 
         if (previous != serviceState) {
@@ -285,10 +350,11 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
       } else {
         CallPermissions.runIfCurrent(generation, dispatch);
       }
-    });
+    }, result -> complete.accept(result == CallRuntime.Result.DISPATCHED && !dispatched.get() ? CallRuntime.Result.DENIED : result));
   }
 
   private void onCallPermissionsChanged() {
+    invalidateLocalStart(CallRuntime.Result.DENIED);
     // This listener belongs to an existing manager; policy changes never obtain
     // AppDependencies.signalCallManager merely to stop calling.
     serviceExecutor.execute(() -> {
@@ -381,33 +447,223 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   public void startPreJoinCall(@NonNull Recipient recipient) {
-    process((s, p) -> {
+    processLocalStart(recipient, true, (s, p) -> {
       Recipient target = Recipient.resolved(recipient.getId());
-      return !GroupAdmission.isHeld(target) && CallPermissions.beginOutgoing(target.getId()) ? p.handlePreJoinCall(s, new RemotePeer(target.getId())) : s;
+      return GroupAdmission.isHeld(target) ? s : p.handlePreJoinCall(s, new RemotePeer(target.getId()));
     });
   }
 
   public void startOutgoingAudioCall(@NonNull Recipient recipient) {
-    process((s, p) -> {
+    processLocalStart(recipient, false, (s, p) -> {
       Recipient target = Recipient.resolved(recipient.getId());
-      return beginLocalCall(target) ? p.handleOutgoingCall(s, new RemotePeer(target.getId()), OfferMessage.Type.AUDIO_CALL) : s;
+      return p.handleOutgoingCall(s, new RemotePeer(target.getId()), OfferMessage.Type.AUDIO_CALL);
     });
   }
 
   public void startOutgoingVideoCall(@NonNull Recipient recipient) {
-    process((s, p) -> {
+    processLocalStart(recipient, false, (s, p) -> {
       Recipient target = Recipient.resolved(recipient.getId());
-      return beginLocalCall(target) ? p.handleOutgoingCall(s, new RemotePeer(target.getId()), OfferMessage.Type.VIDEO_CALL) : s;
+      return p.handleOutgoingCall(s, new RemotePeer(target.getId()), OfferMessage.Type.VIDEO_CALL);
     });
   }
 
-  private boolean beginLocalCall(@NonNull Recipient recipient) {
-    if (GroupAdmission.isHeld(recipient) || !CallPermissions.beginOutgoing(recipient.getId())) return false;
-    // Pressing Join is fresh local consent even after a long stay in the lobby.
-    return !(recipient.isGroup() || recipient.isCallLink()) || CallPermissions.activateGroup(recipient.getId());
+  /** Passive progress for the UI, including the period before a native call state exists. */
+  public @Nullable CallStartEvent getPendingLocalStart() {
+    return pendingLocalStart;
+  }
+
+  /** Latest actual local intent and terminal result; retained independently of event delivery. */
+  public @Nullable CallStartEvent getLatestLocalStart() {
+    synchronized (localStartLock) {
+      return lastLocalStart != null ? lastLocalStart.snapshot : null;
+    }
+  }
+
+  /** Lets an Activity bind later lifecycle cleanup to the local intent it originally observed. */
+  public long getLocalStartVersion() {
+    return localAttempt.get();
+  }
+
+  private void processLocalStart(@NonNull Recipient recipient, boolean preJoin, @NonNull ProcessAction action) {
+    long generation = CallPermissions.generation();
+    CallStartEvent pending;
+    LocalStart origin;
+    synchronized (localStartLock) {
+      pending = new CallStartEvent(localAttempt.incrementAndGet(), recipient.getId(), preJoin);
+      WebRtcServiceState current = serviceState;
+      LocalStart predecessor = localSessionOrigin;
+      boolean ownsLobby = !preJoin && current.getCallInfoState().getCallState() == WebRtcViewModel.State.CALL_PRE_JOIN &&
+                          predecessor != null && dispatchedLocalAttempt == predecessor.event.getAttemptId() &&
+                          current.getCallInfoState().getCallRecipient().getId().equals(recipient.getId()) &&
+                          predecessor.event.getRecipientId().equals(recipient.getId());
+      origin = new LocalStart(pending, ownsLobby ? predecessor : null);
+      lastLocalStart = origin;
+      pendingLocalStart = pending;
+    }
+    // Never invoke subscribers under localStartLock: a UI subscriber may resolve a recipient
+    // while a database mutation is synchronously invalidating this local start.
+    EventBus.getDefault().post(pending);
+    BooleanSupplier authorized = () -> !origin.cancelled.get() && localAttempt.get() == pending.getAttemptId() &&
+                                       !GroupAdmission.isHeld(recipient) && CallPermissions.canStartCall(recipient);
+    process(null, generation, true, authorized, (s, p) -> {
+      // A cancellation may be accepted before its cleanup enters this queue. Finish that exact
+      // predecessor before admitting a replacement, including a replacement for the same peer.
+      if (localSessionOrigin != null && localSessionOrigin.cancelled.get()) {
+        s = cleanupLocalStart(s, localSessionOrigin);
+      }
+      if (!authorized.getAsBoolean()) return s;
+      Recipient target = Recipient.resolved(recipient.getId());
+      if (GroupAdmission.isHeld(target) || !CallPermissions.beginOutgoing(target.getId())) return s;
+      origin.session = CallPermissions.currentOutgoingSession(target.getId());
+      localSessionOrigin = origin;
+      if (origin.session == null || !authorized.getAsBoolean() || !CallPermissions.isCurrent(generation)) {
+        endLocalSession(origin);
+        return s;
+      }
+      // Pressing Join remains fresh local consent, using the existing Part 1 session contract.
+      if (!preJoin && (target.isGroup() || target.isCallLink()) && !CallPermissions.activateGroup(target.getId())) {
+        endLocalSession(origin);
+        return s;
+      }
+      WebRtcServiceState next = action.process(s, s.getActionProcessor());
+      if (next != s) dispatchedLocalAttempt = pending.getAttemptId();
+      if (origin.cancelled.get()) next = cleanupLocalStart(next, origin);
+      return next;
+    }, result -> {
+      boolean stillAuthorized = authorized.getAsBoolean() && CallPermissions.isCurrent(generation);
+      if (result == CallRuntime.Result.FAILED && stillAuthorized) {
+        // Publish the existing failed-call UI from managed state. No processor reset/EGL access is
+        // safe when creation failed. A later user attempt reports the same failure without retry.
+        WebRtcServiceState failed = serviceState.builder().changeCallInfoState()
+                                               .callRecipient(recipient).callState(NETWORK_FAILURE).build();
+        postStateUpdate(failed);
+      }
+      // A competing session may reject beginOutgoing without changing managed call state.
+      // Do not leave a starting screen alive for an operation that produced no call.
+      boolean hasCallState = serviceState.getCallInfoState().getCallState() != WebRtcViewModel.State.IDLE &&
+                             serviceState.getCallInfoState().getCallRecipient().getId().equals(pending.getRecipientId());
+      completeLocalStart(pending, (result == CallRuntime.Result.DISPATCHED && !hasCallState) || !stillAuthorized ? CallRuntime.Result.DENIED : result);
+    });
+  }
+
+  private void completeLocalStart(@NonNull CallStartEvent pending, @NonNull CallRuntime.Result result) {
+    CallStartEvent completed = pending.completed(result);
+    synchronized (localStartLock) {
+      if (pendingLocalStart != pending) return;
+      pendingLocalStart = null;
+      if (lastLocalStart != null && lastLocalStart.event == pending) lastLocalStart.snapshot = completed;
+    }
+    EventBus.getDefault().post(completed);
+  }
+
+  private void invalidateLocalStart(@NonNull CallRuntime.Result result) {
+    CallStartEvent completed = null;
+    synchronized (localStartLock) {
+      localAttempt.incrementAndGet();
+      CallStartEvent pending = pendingLocalStart;
+      pendingLocalStart = null;
+      if (pending != null && lastLocalStart != null) {
+        lastLocalStart.cancelled.set(true);
+        completed = pending.completed(result);
+        lastLocalStart.snapshot = completed;
+      }
+    }
+    if (completed != null) EventBus.getDefault().post(completed);
+  }
+
+  /** A finishing/Back action belongs only to the starting screen that issued it. */
+  public boolean cancelPendingLocalStart(long attemptId) {
+    LocalStart origin;
+    CallStartEvent completed;
+    boolean wasPending;
+    synchronized (localStartLock) {
+      if (lastLocalStart == null || lastLocalStart.event.getAttemptId() != attemptId || localAttempt.get() != attemptId) return false;
+      origin = lastLocalStart;
+      origin.cancelled.set(true);
+      completed = origin.event.completed(CallRuntime.Result.CANCELLED);
+      origin.snapshot = completed;
+      // A queued Join owns the same recipient's existing lobby even before it acquires a session
+      // token of its own. Closing that starting screen must also release that lobby's resources.
+      if (origin.predecessor != null) origin.predecessor.cancelled.set(true);
+      localAttempt.incrementAndGet();
+      wasPending = pendingLocalStart == origin.event;
+      if (wasPending) pendingLocalStart = null;
+    }
+    if (wasPending) EventBus.getDefault().post(completed);
+    WebRtcServiceState current = serviceState;
+    if (current.getCallInfoState().getActivePeer() == null && current.getCallInfoState().getGroupCall() == null) {
+      endLocalSession(origin);
+      if (origin.predecessor != null) endLocalSession(origin.predecessor);
+    }
+    // Completion can race the main thread receiving its first native-state event. Teardown the
+    // same attempt in that case, without allowing an old Activity to stop a newer local start.
+    process((s, p) -> cleanupLocalStart(s, origin));
+    return true;
+  }
+
+  private WebRtcServiceState cleanupLocalStart(@NonNull WebRtcServiceState state, @NonNull LocalStart origin) {
+    if (origin.predecessor != null && origin.predecessor.cancelled.get()) {
+      state = cleanupLocalStart(state, origin.predecessor);
+    }
+    if (dispatchedLocalAttempt == origin.event.getAttemptId() && state.getCallInfoState().getCallRecipient().getId().equals(origin.event.getRecipientId())) {
+      WebRtcActionProcessor processor = state.getActionProcessor();
+      state = origin.event.isPreJoin() ? processor.handleCancelPreJoinCall(state) : processor.handleLocalHangup(state);
+      dispatchedLocalAttempt = 0;
+    }
+    endLocalSession(origin);
+    return state;
+  }
+
+  private void endLocalSession(@NonNull LocalStart origin) {
+    CallSessionKey session = origin.session;
+    if (session != null) CallPermissions.endSession(session);
+  }
+
+  private static final class LocalStart {
+    final CallStartEvent event;
+    // Read and written only under localStartLock; unlike notifications, this survives late delivery.
+    CallStartEvent snapshot;
+    @Nullable final LocalStart predecessor;
+    final AtomicBoolean cancelled = new AtomicBoolean();
+    @Nullable volatile CallSessionKey session;
+
+    LocalStart(CallStartEvent event, @Nullable LocalStart predecessor) {
+      this.event = event;
+      this.snapshot = event;
+      this.predecessor = predecessor;
+    }
   }
 
   public void cancelPreJoin() {
+    invalidateLocalStart(CallRuntime.Result.CANCELLED);
+    cancelPreJoinAfterInvalidation();
+  }
+
+  /** A stopped Activity must not revoke a newer local intent published by another instance. */
+  public void cancelPreJoinIfCurrent(long observedLocalStartVersion) {
+    LocalStart origin;
+    WebRtcServiceState observedState = serviceState;
+    synchronized (localStartLock) {
+      if (localAttempt.get() != observedLocalStartVersion) return;
+      origin = lastLocalStart != null && lastLocalStart.event.getAttemptId() == observedLocalStartVersion ? lastLocalStart : null;
+    }
+    boolean local = origin != null && (pendingLocalStart == origin.event ||
+                                      (origin.session != null && origin.session.equals(CallPermissions.currentOutgoingSession(origin.event.getRecipientId()))));
+    if (local) {
+      cancelPendingLocalStart(observedLocalStartVersion);
+    } else {
+      // Incoming/non-local screens have no outgoing token. Preserve their ordinary queued
+      // teardown only while both the local-intent version and native state still match.
+      process((s, p) -> {
+        if (localAttempt.get() != observedLocalStartVersion || s != observedState) return s;
+        CallPermissions.endAllSessions();
+        return p.handleCancelPreJoinCall(s);
+      });
+    }
+  }
+
+  private void cancelPreJoinAfterInvalidation() {
+    CallPermissions.endAllSessions();
     process((s, p) -> {
       CallPermissions.endAllSessions();
       return p.handleCancelPreJoinCall(s);
@@ -464,11 +720,24 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   public void denyCall() {
+    invalidateLocalStart(CallRuntime.Result.CANCELLED);
+    cancelPendingSessions();
     process((s, p) -> p.handleDenyCall(s));
   }
 
   public void localHangup() {
+    invalidateLocalStart(CallRuntime.Result.CANCELLED);
+    cancelPendingSessions();
     process((s, p) -> p.handleLocalHangup(s));
+  }
+
+  private void cancelPendingSessions() {
+    WebRtcServiceState current = serviceState;
+    // Established calls need their original session long enough to issue normal teardown/cleanup
+    // permits. Cold requests have no native resources and must be revoked without waiting for init.
+    if (current.getCallInfoState().getActivePeer() == null && current.getCallInfoState().getGroupCall() == null) {
+      CallPermissions.endAllSessions();
+    }
   }
 
   public void requestUpdateGroupMembers() {
@@ -480,7 +749,10 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   public void isCallActive(@Nullable ResultReceiver resultReceiver) {
-    process((s, p) -> p.handleIsInCallQuery(s, resultReceiver));
+    // A query must answer even while disabled/cold. It does not need a native manager or a grant.
+    serviceExecutor.execute(() -> {
+      serviceState.getActionProcessor().handleIsInCallQuery(serviceState, resultReceiver);
+    });
   }
 
   public void networkChange(boolean available) {
@@ -606,12 +878,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   public void peekCallLinkCall(@NonNull RecipientId id) {
     if (!CallPermissions.canUseCallLinks()) return;
     long generation = CallPermissions.generation();
-    if (callManager == null) {
-      Log.i(TAG, "Unable to peekCallLinkCall, call manager is null");
-      return;
-    }
-
-    keyedExecutor.execute(id.toString(), () -> {
+    withCallEngine(false, () -> CallPermissions.isCurrent(generation) && CallPermissions.canUseCallLinks(), engine -> keyedExecutor.execute(id.toString(), () -> {
       if (!CallPermissions.isCurrent(generation) || !CallPermissions.canUseCallLinks()) return;
       try {
         Recipient              callLinkRecipient = Recipient.resolved(id);
@@ -637,7 +904,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
 
         if (!CallPermissions.isCurrent(generation) || !CallPermissions.canUseCallLinks()) return;
         CallLinkRootKey callLinkRootKey = new CallLinkRootKey(callLinkRootKeyBytes);
-        nativeIfCurrent(generation, () -> callManager.peekCallLinkCall(SignalStore.internal().getGroupCallingServer(), callLinkAuthCredentialPresentation.serialize(), callLinkRootKey, peekInfo -> {
+        nativeIfCurrent(generation, () -> engine.peekCallLinkCall(SignalStore.internal().getGroupCallingServer(), callLinkAuthCredentialPresentation.serialize(), callLinkRootKey, peekInfo -> {
           if (!CallPermissions.isCurrent(generation) || !CallPermissions.canUseCallLinks()) return;
           PeekInfo info = peekInfo.getValue();
           if (info == null) {
@@ -659,7 +926,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
       } catch (CallException | VerificationFailedException | InvalidInputException | IOException e) {
         Log.i(TAG, "error peeking call link", e);
       }
-    });
+    }), result -> {});
   }
 
   public void emitCallLinkPeekInfoUpdate(@NonNull RecipientId recipientId, @NonNull PeekInfo peekInfo) {
@@ -683,12 +950,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   public void peekGroupCall(@NonNull RecipientId id, @Nullable Consumer<PeekInfo> onWillUpdateCallFromPeek, @NonNull BooleanSupplier isRequestAuthorized) {
     if (!CallPermissions.canUseGroup(id) || !isRequestAuthorized.getAsBoolean()) return;
     long generation = CallPermissions.generation();
-    if (callManager == null) {
-      Log.i(TAG, "Unable to peekGroupCall, call manager is null");
-      return;
-    }
-
-    keyedExecutor.execute(id.toString(), () -> {
+    withCallEngine(false, () -> CallPermissions.isCurrent(generation) && CallPermissions.canUseGroup(id) && isRequestAuthorized.getAsBoolean(), engine -> keyedExecutor.execute(id.toString(), () -> {
       if (!CallPermissions.isCurrent(generation) || !CallPermissions.canUseGroup(id) || !isRequestAuthorized.getAsBoolean()) return;
       try {
         Recipient group = Recipient.resolved(id);
@@ -707,7 +969,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
                                                               .map(entry -> new GroupCall.GroupMemberInfo(entry.getKey(), entry.getValue().serialize())).collect(Collectors.toList());
         nativeIfGroupCurrent(generation, id, () -> {
           if (GroupAdmission.isHeld(groupId) || !isRequestAuthorized.getAsBoolean()) return;
-          callManager.peekGroupCall(SignalStore.internal().getGroupCallingServer(), credential.token.getBytes(Charsets.UTF_8), members, peekInfo -> {
+          engine.peekGroupCall(SignalStore.internal().getGroupCallingServer(), credential.token.getBytes(Charsets.UTF_8), members, peekInfo -> {
             if (GroupAdmission.isHeld(groupId) || !CallPermissions.isCurrent(generation) || !CallPermissions.canUseGroup(id) || !isRequestAuthorized.getAsBoolean()) return;
             Long threadId = SignalDatabase.threads().getThreadIdFor(group.getId());
 
@@ -731,7 +993,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
       } catch (IOException | VerificationFailedException | CallException e) {
         Log.i(TAG, "error peeking from active conversation", e);
       }
-    });
+    }), result -> {});
   }
 
   public void peekGroupCallForRingingCheck(@NonNull GroupCallRingCheckInfo info) {
@@ -743,12 +1005,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
     BooleanSupplier isRequestAuthorized = () -> CallPermissions.isGroupPeekPermitValid(permit, info.getRecipientId(), senderId) &&
                                                CallPermissions.isIncomingGroupRingCurrent(info.getRecipientId(), info.getRingId(), senderId);
     if (!isRequestAuthorized.getAsBoolean()) return;
-    if (callManager == null) {
-      Log.i(TAG, "Unable to peekGroupCall, call manager is null");
-      return;
-    }
-
-    keyedExecutor.execute("Call::" + info.getRecipientId(), () -> {
+    withCallEngine(true, () -> CallPermissions.isCurrent(generation) && isRequestAuthorized.getAsBoolean(), engine -> keyedExecutor.execute("Call::" + info.getRecipientId(), () -> {
       if (!CallPermissions.isCurrent(generation) || !isRequestAuthorized.getAsBoolean()) return;
       try {
         Recipient               group      = Recipient.resolved(info.getRecipientId());
@@ -766,7 +1023,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
 
         nativeIfGroupCurrent(generation, info.getRecipientId(), () -> {
           if (GroupAdmission.isHeld(groupId) || !isRequestAuthorized.getAsBoolean()) return;
-          callManager.peekGroupCall(SignalStore.internal().getGroupCallingServer(),
+          engine.peekGroupCall(SignalStore.internal().getGroupCallingServer(),
                                     credential.token.getBytes(Charsets.UTF_8),
                                     members,
                                     peekInfo -> {
@@ -778,7 +1035,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
       } catch (IOException | VerificationFailedException | CallException e) {
         Log.i(TAG, "error peeking for ringing check", e);
       }
-    });
+    }), result -> {});
   }
 
   private void nativeIfCurrent(long generation, @NonNull NativeAction action) throws CallException {
@@ -1767,7 +2024,7 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   public @NonNull SignalCallLinkManager getCallLinkManager() {
-    return new SignalCallLinkManager(Objects.requireNonNull(callManager));
+    return new SignalCallLinkManager(this);
   }
 
   public void addAsset(String assetGroup, byte[] content) throws CallException {

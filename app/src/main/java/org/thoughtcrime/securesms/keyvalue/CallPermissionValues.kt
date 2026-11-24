@@ -1,8 +1,12 @@
 /* SPDX-License-Identifier: AGPL-3.0-only */
 package org.thoughtcrime.securesms.keyvalue
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.calls.permissions.CallPermission
 import org.thoughtcrime.securesms.calls.permissions.CallPolicyCodec
 import org.thoughtcrime.securesms.calls.permissions.CallPolicyState
@@ -17,16 +21,37 @@ class CallPermissionValues(store: KeyValueStore, noBackupDirectory: File) : Sign
   companion object {
     const val KEY_PREFIX = "collie.local_call_permissions."
     internal const val RECORD = KEY_PREFIX + "v1"
+    internal const val ON_DEMAND = KEY_PREFIX + "on_demand"
+
+    /** Use the existing Beta product and development builds; Stable has no experiment switch. */
+    @JvmStatic
+    fun isOnDemandCallingAvailable(): Boolean = BuildConfig.BUILD_TYPE == "beta" || BuildConfig.DEBUG
   }
 
   private var cachedRecord: String? = null
   private var cachedState: CallPolicyState? = null
+  private val startupChanged = MutableStateFlow(0L)
+
+  val onDemandChanges: StateFlow<Long> = startupChanged
 
   private val installationFile = File(noBackupDirectory, "call-permission-installation")
   private val interruptedWrite = File(noBackupDirectory, "call-permission-write-pending")
 
   override fun onFirstEverAppLaunch() = Unit
   override val keysToIncludeInBackup: List<String> = emptyList()
+
+  /** A startup preference, not a call grant. Reading it never acquires the calling engine. */
+  @Synchronized
+  fun isOnDemandCallingEnabled(): Boolean = isOnDemandCallingAvailable() && getBoolean(ON_DEMAND, false)
+
+  /** Publish only a durable choice, without changing the policy generation or active sessions. */
+  @Synchronized
+  fun setOnDemandCallingEnabled(enabled: Boolean) {
+    check(isOnDemandCallingAvailable()) { "On-demand calling is available in TrailBlazer Beta" }
+    if (isOnDemandCallingEnabled() == enabled) return
+    store.beginWrite().putBoolean(ON_DEMAND, enabled).commitAndWaitForPersistence()
+    startupChanged.update { it + 1 }
+  }
 
   @Synchronized
   internal fun read(): CallPolicyState {

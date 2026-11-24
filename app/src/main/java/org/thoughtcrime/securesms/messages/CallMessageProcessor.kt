@@ -32,7 +32,6 @@ import org.whispersystems.signalservice.internal.push.CallMessage
 import org.whispersystems.signalservice.internal.push.CallMessage.Offer
 import org.whispersystems.signalservice.internal.push.Content
 import org.whispersystems.signalservice.internal.push.Envelope
-import kotlin.time.Duration.Companion.milliseconds
 
 object CallMessageProcessor {
   fun process(
@@ -281,20 +280,17 @@ object CallMessageProcessor {
   private fun handleCallOpaqueMessage(envelope: Envelope, metadata: EnvelopeMetadata, data: ByteArray, senderServiceId: ServiceId, serverDeliveredTimestamp: Long, authorization: CallAuthorization) {
     log(envelope.clientTimestamp!!, "handleCallOpaqueMessage")
 
-    var messageAgeSeconds: Long = 0
-    if (envelope.serverTimestamp in 1..serverDeliveredTimestamp) {
-      messageAgeSeconds = (serverDeliveredTimestamp - envelope.serverTimestamp!!).milliseconds.inWholeSeconds
-    }
+    val messageAgeMillis = if (envelope.serverTimestamp in 1..serverDeliveredTimestamp) serverDeliveredTimestamp - envelope.serverTimestamp!! else Long.MAX_VALUE
 
     if (!CallPermissions.isDispatchAuthorized()) return
     AppDependencies.signalCallManager
       .receivedOpaqueMessage(
         authorization,
-        OpaqueMessageMetadata(
+        OpaqueMessageMetadata.fromMillis(
           senderServiceId.rawUuid,
           data,
           metadata.sourceDeviceId,
-          messageAgeSeconds
+          messageAgeMillis
         )
       )
   }

@@ -29,6 +29,7 @@ REPORTS = {
     ':feature:app-settings:testDebugUnitTest': 'feature/app-settings/build/test-results/testDebugUnitTest',
 }
 TEST_METHOD = re.compile(r'(?m)^\s*@Test(?:\([^\n]*\))?\s+fun\s+(?:`([^`]+)`|(\w+))\s*\(\s*\)')
+JAVA_TEST_METHOD = re.compile(r'(?m)^\s*@Test(?:\([^\n]*\))?\s+public\s+void\s+(\w+)\s*\(\s*\)')
 MAVEN = 'https://repo.maven.apache.org/maven2/org/robolectric/android-all-instrumented'
 MAVEN_MIRROR = 'https://maven-central.storage-download.googleapis.com/maven2/org/robolectric/android-all-instrumented'
 PREFETCH_SECONDS = 600
@@ -64,14 +65,16 @@ def inventory(root):
     for task, files in manifest['tasks'].items():
         for filename, expected_count in files.items():
             path = Path(filename)
-            require(not path.is_absolute() and '..' not in path.parts and path.suffix == '.kt', 'Invalid test source path')
+            require(not path.is_absolute() and '..' not in path.parts and path.suffix in ('.kt', '.java'), 'Invalid test source path')
             require(filename.startswith(task.rsplit(':', 1)[0].strip(':').replace(':', '/') + '/src/test/'), 'Test source is outside its task')
             content = (root / path).read_text()
-            packages = re.findall(r'(?m)^package ([\w.]+)\s*$', content)
+            package_end = ';' if path.suffix == '.java' else ''
+            packages = re.findall(r'(?m)^package ([\w.]+)' + package_end + r'\s*$', content)
             declarations = re.findall(r'(?m)^\s*(?:internal\s+|public\s+)?class\s+' + re.escape(path.stem) + r'\b', content)
             require(len(packages) == len(declarations) == 1, f'Ambiguous test class: {filename}')
             require(not re.search(r'@(?:Ignore|Disabled|Parameterized)\b', content), f'Unsupported skipped/parameterized source: {filename}')
-            methods = [match.group(1) or match.group(2) for match in TEST_METHOD.finditer(content)]
+            methods = ([match.group(1) for match in JAVA_TEST_METHOD.finditer(content)] if path.suffix == '.java' else
+                       [match.group(1) or match.group(2) for match in TEST_METHOD.finditer(content)])
             annotations = re.findall(r'(?m)^\s*@Test\b', content)
             require(type(expected_count) is int and expected_count > 0 and len(methods) == len(annotations) == expected_count,
                     f'Test methods changed or cannot be parsed: {filename}; update the maintained inventory deliberately')

@@ -11,9 +11,13 @@ import android.graphics.Color
 import android.view.WindowManager
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.isEnabled
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -76,6 +80,7 @@ class CallPermissionsScreenshotTest {
     val previous = CallPermissions.settings()
     val previousContact = CallPermissions.getOverride(contact)
     val previousGroup = CallPermissions.getOverride(group)
+    val previousOnDemand = SignalStore.callPermissions.isOnDemandCallingEnabled()
     val previousScreenSecurity = SignalStore.settings.isScreenSecurityEnabled
     val previousAutoLock = ScreenLockController.autoLock
     val previousLockAtStart = ScreenLockController.lockScreenAtStart
@@ -86,6 +91,7 @@ class CallPermissionsScreenshotTest {
       ScreenLockController.enableAutoLock(false)
       ScreenLockController.lockScreenAtStart = false
       CallPermissions.setAllCallingDisabled(false)
+      SignalStore.callPermissions.setOnDemandCallingEnabled(false)
       CallPermissions.setDefault(CallContext.DIRECT, CallPermission.ALLOW)
       CallPermissions.setDefault(CallContext.GROUP, CallPermission.ALLOW)
       CallPermissions.setOverride(contact, CallPermission.INHERIT)
@@ -106,6 +112,16 @@ class CallPermissionsScreenshotTest {
         compose.onNodeWithText(context.getString(SettingsR.string.CollieCalls__allow_incoming)).assertIsDisplayed()
         capture(scenario, "02-calls-defaults.png")
 
+        scrollTo(CallsSettingsTestTags.ON_DEMAND)
+        awaitEnabled(CallsSettingsTestTags.ON_DEMAND)
+        startupSwitch().assertIsOff()
+        capture(scenario, "10-on-demand-off.png")
+        compose.onNodeWithTag(CallsSettingsTestTags.ON_DEMAND).performClick()
+        compose.waitUntil(10_000) { SignalStore.callPermissions.isOnDemandCallingEnabled() }
+        awaitEnabled(CallsSettingsTestTags.ON_DEMAND)
+        startupSwitch().assertIsOn()
+        capture(scenario, "11-on-demand-on.png")
+
         scrollTo(CallsSettingsTestTags.DISABLE_ALL)
         awaitEnabled(CallsSettingsTestTags.DISABLE_ALL)
         compose.onNodeWithTag(CallsSettingsTestTags.DISABLE_ALL).performClick()
@@ -114,6 +130,10 @@ class CallPermissionsScreenshotTest {
         compose.waitUntil(10_000) { compose.onAllNodes(hasTestTag(CallsSettingsTestTags.INCOMING) and isEnabled()).fetchSemanticsNodes().isEmpty() }
         compose.onNodeWithTag(CallsSettingsTestTags.INCOMING).assertIsNotEnabled()
         capture(scenario, "03-calls-disabled.png")
+        scrollTo(CallsSettingsTestTags.ON_DEMAND)
+        compose.onNodeWithTag(CallsSettingsTestTags.ON_DEMAND).assertIsNotEnabled()
+        startupSwitch().assertIsOn()
+        capture(scenario, "12-on-demand-with-all-calling-disabled.png")
 
         scrollTo(CallsSettingsTestTags.DISABLE_ALL)
         awaitEnabled(CallsSettingsTestTags.DISABLE_ALL)
@@ -158,6 +178,7 @@ class CallPermissionsScreenshotTest {
         { CallPermissions.setDefault(CallContext.GROUP, previous.groupDefault) },
         { CallPermissions.setOverride(contact, previousContact) },
         { CallPermissions.setOverride(group, previousGroup) },
+        { SignalStore.callPermissions.setOnDemandCallingEnabled(previousOnDemand) },
         { CallPermissions.setAllCallingDisabled(previous.allCallingDisabled) },
         { SignalStore.settings.isScreenSecurityEnabled = previousScreenSecurity },
         { ScreenLockController.enableAutoLock(previousAutoLock) },
@@ -170,6 +191,8 @@ class CallPermissionsScreenshotTest {
     compose.waitUntil(15_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
     compose.waitForIdle()
   }
+
+  private fun startupSwitch() = compose.onNode(isToggleable() and hasAnyAncestor(hasTestTag(CallsSettingsTestTags.ON_DEMAND)))
 
   private fun scrollTo(tag: String) {
     compose.onNodeWithTag(CallsSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(tag))

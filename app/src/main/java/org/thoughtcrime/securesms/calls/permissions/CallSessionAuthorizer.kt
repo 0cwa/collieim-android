@@ -7,7 +7,7 @@ package org.thoughtcrime.securesms.calls.permissions
 enum class DirectMessageKind { OFFER, ANSWER, ICE, HANGUP, BUSY }
 enum class GroupMessageKind { RING, CANCEL, RING_RESPONSE, GROUP_DATA }
 
-/** Process-local identity of one explicitly authorized call-link session. */
+/** Process-local identity of one authorized session; observing it does not grant admission. */
 @ConsistentCopyVisibility
 data class CallSessionKey internal constructor(val generation: Long, val serial: Long, val recipient: Long)
 
@@ -108,6 +108,20 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
   fun hasSession(recipient: Long): Boolean = live()?.recipient == recipient
 
   fun hasSession(): Boolean = live() != null
+
+  fun outgoingSession(recipient: Long): CallSessionKey? = live()?.takeIf {
+    it.outgoing && it.recipient == recipient
+  }?.let { CallSessionKey(generation, it.serial, it.recipient) }
+
+  /** Cleanup may arrive after another attempt, even before the first call has a native ID. */
+  fun endSession(key: CallSessionKey): Boolean {
+    if (key.generation != generation) return false
+    val s = live() ?: return false
+    if (s.serial != key.serial || s.recipient != key.recipient) return false
+    current = null
+    live()
+    return true
+  }
 
   fun callLinkSession(recipient: Long): CallSessionKey? = live()?.takeIf {
     it.context == CallContext.CALL_LINK && it.active && it.recipient == recipient

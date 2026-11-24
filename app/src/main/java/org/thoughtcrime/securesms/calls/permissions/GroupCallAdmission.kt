@@ -35,7 +35,7 @@ object GroupCallAdmission {
       if (authorization != null) {
         ready += DeferredOpaque(
           authorization,
-          WebRtcData.OpaqueMessageMetadata(message.sender, message.opaque, authorization.sourceDevice, message.ageAt(SystemClock.elapsedRealtime()) / 1000)
+          WebRtcData.OpaqueMessageMetadata.fromMillis(message.sender, message.opaque, authorization.sourceDevice, message.ageAt(SystemClock.elapsedRealtime()))
         )
       } else if (CallPermissions.isPendingCallLinkCurrent(message.authorization)) {
         pendingLinkMessages.put(message)

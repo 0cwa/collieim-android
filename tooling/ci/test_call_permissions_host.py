@@ -58,6 +58,28 @@ class CallPermissionsHostTest(unittest.TestCase):
         manifest = json.loads((host.ROOT / host.MANIFEST).read_text())
         self.assertEqual(manifest['expected_classes'], len(actual['suites']))
         self.assertEqual(manifest['expected_methods'], sum(len(s['methods']) for s in actual['suites']))
+        self.assertIn('org.thoughtcrime.securesms.calls.runtime.SerializedCallRuntimeTest', {s['class_name'] for s in actual['suites']})
+
+    def test_java_runtime_methods_use_the_same_exact_inventory(self):
+        java_path = self.app.replace('.kt', '.java')
+        (self.root / java_path).write_text('package example;\npublic class AppTest {\n  @Test\n  public void one() {}\n  @Test\n  public void two() throws Exception {}\n}\n')
+        manifest = json.loads((self.root / host.MANIFEST).read_text())
+        manifest['tasks'][':app:testProdWebsiteDebugUnitTest'] = {java_path: 2}
+        (self.root / host.MANIFEST).write_text(json.dumps(manifest))
+        actual = host.inventory(self.root)
+        self.assertEqual(['one', 'two'], actual['suites'][0]['methods'])
+        self.assertEqual(3, sum(row['passed'] for row in host.check_reports(self.root, actual)))
+
+    def test_java_nonpublic_parameterized_or_duplicate_methods_are_rejected(self):
+        java_path = self.app.replace('.kt', '.java')
+        manifest = json.loads((self.root / host.MANIFEST).read_text())
+        manifest['tasks'][':app:testProdWebsiteDebugUnitTest'] = {java_path: 2}
+        (self.root / host.MANIFEST).write_text(json.dumps(manifest))
+        original = 'package example;\npublic class AppTest {\n  @Test\n  public void one() {}\n  @Test\n  public void two() {}\n}\n'
+        for source in [original.replace('public void two', 'void two'), original.replace('two()', 'two(int x)'), original.replace('two()', 'one()')]:
+            (self.root / java_path).write_text(source)
+            with self.assertRaises(ValueError):
+                host.inventory(self.root)
 
     def test_complete_exact_method_reports_pass(self):
         self.assertEqual(3, sum(row['passed'] for row in host.check_reports(self.root, self.selected)))

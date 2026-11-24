@@ -111,6 +111,7 @@ class ComposeCallScreenMediator(private val activity: WebRtcCallActivity, viewMo
       val recipient by viewModel.getRecipientFlow().collectAsStateWithLifecycle(Recipient.UNKNOWN)
       val webRtcCallState by callScreenViewModel.callState.collectAsStateWithLifecycle()
       val callScreenState by callScreenViewModel.callScreenState.collectAsStateWithLifecycle()
+      val callStarting by callScreenViewModel.callStarting.collectAsStateWithLifecycle()
       val isLocalScreenSharing by viewModel.isLocalScreenSharing.collectAsStateWithLifecycle()
       val callControlsState by viewModel.getCallControlsState().collectAsStateWithLifecycle(CallControlsState())
       val callParticipantsViewState by callScreenViewModel.callParticipantsViewState.collectAsStateWithLifecycle()
@@ -210,6 +211,12 @@ class ComposeCallScreenMediator(private val activity: WebRtcCallActivity, viewMo
       val controlAndInfoState by controlsAndInfoViewModel.state
 
       SignalTheme(isDarkMode = true) {
+        // Keep native call state/status untouched while showing a managed, cancellable layout.
+        // In particular, IDLE has no ordinary call overlay and must not create a video renderer.
+        if (callStarting) {
+          CallStartingScreen(recipient, onCancel = activity::finish)
+          return@SignalTheme
+        }
         CallScreen(
           callRecipient = recipient,
           webRtcCallState = webRtcCallState,
@@ -307,6 +314,10 @@ class ComposeCallScreenMediator(private val activity: WebRtcCallActivity, viewMo
 
   override fun setStatus(status: String) {
     callScreenViewModel.callScreenState.update { it.copy(callStatus = status) }
+  }
+
+  override fun setCallStarting(starting: Boolean) {
+    callScreenViewModel.callStarting.value = starting
   }
 
   override fun setRecipient(recipient: Recipient) {
@@ -451,6 +462,7 @@ class ComposeCallScreenMediator(private val activity: WebRtcCallActivity, viewMo
   class CallScreenViewModel : ViewModel() {
     val callScreenControllerEvents = MutableSharedFlow<CallScreenController.Event>()
     val callState = MutableStateFlow(WebRtcViewModel.State.IDLE)
+    val callStarting = MutableStateFlow(false)
     val callScreenState = MutableStateFlow(
       CallScreenState(
         reactions = SignalStore.emoji.reactions.map {

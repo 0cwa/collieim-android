@@ -217,4 +217,60 @@ class CallSessionAuthorizerTest {
     assertFalse(sessions.valid(ticket))
   }
 
+  @Test
+  fun `exact local session can end before a native call id exists`() {
+    for (context in CallContext.entries) {
+      assertTrue(sessions.beginOutgoing(context, 2))
+      val key = requireNotNull(sessions.outgoingSession(2))
+      assertNull(sessions.outgoingSession(3))
+      assertFalse(sessions.endSession(key.copy(recipient = 3)))
+      assertTrue(sessions.hasSession(2))
+
+      assertTrue(sessions.endSession(key))
+      assertFalse(sessions.hasSession())
+      assertFalse(sessions.endSession(key))
+    }
+  }
+
+  @Test
+  fun `late local cancellation cannot end a replacement for the same recipient`() {
+    assertTrue(sessions.beginOutgoing(CallContext.GROUP, 2))
+    val old = requireNotNull(sessions.outgoingSession(2))
+    assertTrue(sessions.endSession(old))
+    assertTrue(sessions.beginOutgoing(CallContext.GROUP, 2))
+    val replacement = requireNotNull(sessions.outgoingSession(2))
+
+    assertNotEquals(old, replacement)
+    assertFalse(sessions.endSession(old))
+    assertEquals(replacement, sessions.outgoingSession(2))
+    assertTrue(sessions.hasSession(2))
+  }
+
+  @Test
+  fun `revoked local session identity cannot cancel newly authorized work`() {
+    assertTrue(sessions.beginOutgoing(CallContext.CALL_LINK, 2))
+    val old = requireNotNull(sessions.outgoingSession(2))
+    sessions.revoke()
+    assertTrue(sessions.beginOutgoing(CallContext.CALL_LINK, 2))
+    val current = requireNotNull(sessions.outgoingSession(2))
+
+    assertFalse(sessions.endSession(old))
+    assertFalse(sessions.endSession(current.copy(generation = old.generation)))
+    assertEquals(current, sessions.outgoingSession(2))
+  }
+
+  @Test
+  fun `exact outgoing cleanup preserves separately admitted same peer glare`() {
+    assertTrue(sessions.beginOutgoing(CallContext.DIRECT, 1))
+    assertTrue(sessions.bindOutgoing(1, 9))
+    val outgoing = requireNotNull(sessions.outgoingSession(1))
+    val incoming = requireNotNull(sessions.direct(1, 10, 2, DirectMessageKind.OFFER, 0, true))
+
+    assertTrue(sessions.endSession(outgoing))
+    assertTrue(sessions.valid(incoming))
+    assertNull(sessions.outgoingSession(1))
+    assertFalse(sessions.endSession(outgoing))
+    assertTrue(sessions.valid(incoming))
+  }
+
 }

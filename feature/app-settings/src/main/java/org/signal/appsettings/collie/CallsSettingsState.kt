@@ -10,6 +10,8 @@ data class CallsSettingsState(
   val loading: Boolean = true,
   val available: Boolean = false,
   val allCallingDisabled: Boolean = false,
+  val onDemandAvailable: Boolean = false,
+  val onDemandCalling: Boolean = false,
   val allowIncoming: Boolean = true,
   val allowGroups: Boolean = true,
   val saving: Boolean = false,
@@ -35,6 +37,7 @@ data class CallPermissionOverrideState(
 sealed interface CallsSettingsEvent {
   data object NavigateBack : CallsSettingsEvent
   data class DisableAllChanged(val disabled: Boolean) : CallsSettingsEvent
+  data class OnDemandChanged(val enabled: Boolean) : CallsSettingsEvent
   data class IncomingChanged(val allowed: Boolean) : CallsSettingsEvent
   data class GroupsChanged(val allowed: Boolean) : CallsSettingsEvent
   data object Refresh : CallsSettingsEvent

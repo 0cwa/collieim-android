@@ -7,8 +7,9 @@ package org.thoughtcrime.securesms.service.webrtc.links
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.CallLinkKeyCodec
 import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
+import java.security.SecureRandom
 
 /**
  * Holds onto the credentials for a given call link.
@@ -51,9 +52,14 @@ data class CallLinkCredentials(
      * Generate a new call link credential for creating a new call.
      */
     fun generate(): CallLinkCredentials {
+      return generate(SecureRandom())
+    }
+
+    /** Local editor state must not load RingRTC before a create/join operation is authorized. */
+    internal fun generate(random: SecureRandom): CallLinkCredentials {
       return CallLinkCredentials(
-        CallLinkRootKey.generate().keyBytes,
-        CallLinkRootKey.generateAdminPasskey()
+        CallLinkKeyCodec.generate(random),
+        ByteArray(16).also(random::nextBytes)
       )
     }
   }

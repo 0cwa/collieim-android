@@ -119,9 +119,11 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
   protected @NonNull WebRtcServiceState handleCancelPreJoinCall(@NonNull WebRtcServiceState currentState) {
     Log.i(tag, "handleCancelPreJoinCall():");
 
-    GroupCall groupCall = currentState.getCallInfoState().requireGroupCall();
+    GroupCall groupCall = currentState.getCallInfoState().getGroupCall();
     try {
-      groupCall.disconnect();
+      // Cancellation can revoke the local grant while credentials are being fetched, before
+      // createGroupCall returns a native client. The vanity/video resources still need cleanup.
+      if (groupCall != null) groupCall.disconnect();
     } catch (CallException e) {
       return groupCallFailure(currentState, "Unable to disconnect from group call", e);
     }

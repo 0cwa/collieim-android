@@ -1,0 +1,126 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+package org.thoughtcrime.securesms.calls.runtime;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+
+/** One initialization attempt per runtime, with no automatic retry or permission fallback. */
+public final class SerializedCallRuntime implements CallRuntime {
+  @FunctionalInterface
+  public interface Initializer {
+    void initialize() throws Exception;
+  }
+
+  private final Executor executor;
+  private final Initializer initializer;
+  private final Consumer<Throwable> failureHandler;
+  private volatile State state;
+
+  public SerializedCallRuntime(Executor executor, Initializer initializer, Consumer<Throwable> failureHandler) {
+    this(executor, initializer, failureHandler, false);
+  }
+
+  public SerializedCallRuntime(Executor executor, Initializer initializer, Consumer<Throwable> failureHandler, boolean initiallyReady) {
+    this.executor = executor;
+    this.initializer = initializer;
+    this.failureHandler = failureHandler;
+    this.state = initiallyReady ? State.READY : State.COLD;
+  }
+
+  @Override
+  public State getState() {
+    return state;
+  }
+
+  @Override
+  public Request execute(Mode mode, BooleanSupplier isAuthorized, Runnable action, Consumer<Result> complete) {
+    Pending request = new Pending();
+    AtomicBoolean completed = new AtomicBoolean();
+    Consumer<Result> completeOnce = result -> {
+      if (completed.compareAndSet(false, true)) complete.accept(result);
+    };
+    try {
+      executor.execute(() -> {
+        try {
+          dispatch(request, mode, isAuthorized, action, completeOnce);
+        } finally {
+          // Predicates and backend commands may fail unexpectedly. Preserve propagation, but
+          // never strand an operation waiting for a completion that cannot arrive.
+          completeOnce.accept(Result.FAILED);
+        }
+      });
+    } catch (RejectedExecutionException rejected) {
+      completeOnce.accept(Result.FAILED);
+      throw rejected;
+    }
+    return request;
+  }
+
+  // The production executor is already serial. This lock also protects initialization if another
+  // backend supplies a pool; cancellation never takes it and can invalidate a blocked initializer.
+  private synchronized void dispatch(Pending request, Mode mode, BooleanSupplier isAuthorized, Runnable action, Consumer<Result> complete) {
+    if (request.cancelled.get()) {
+      complete.accept(Result.CANCELLED);
+      return;
+    }
+    if (!isAuthorized.getAsBoolean()) {
+      complete.accept(Result.DENIED);
+      return;
+    }
+    if (request.cancelled.get()) {
+      complete.accept(Result.CANCELLED);
+      return;
+    }
+    if (state == State.FAILED) {
+      complete.accept(Result.FAILED);
+      return;
+    }
+    if (state == State.COLD) {
+      if (mode == Mode.IF_RUNNING) {
+        complete.accept(Result.DEFERRED);
+        return;
+      }
+      state = State.INITIALIZING;
+      try {
+        initializer.initialize();
+        state = State.READY;
+      } catch (Exception | LinkageError | AssertionError failure) {
+        state = State.FAILED;
+        try {
+          failureHandler.accept(failure);
+        } finally {
+          complete.accept(Result.FAILED);
+        }
+        return;
+      }
+    }
+    if (request.cancelled.get()) {
+      complete.accept(Result.CANCELLED);
+    } else if (!isAuthorized.getAsBoolean()) {
+      complete.accept(Result.DENIED);
+    } else if (request.cancelled.get()) {
+      complete.accept(Result.CANCELLED);
+    } else {
+      Result result = Result.FAILED;
+      try {
+        action.run();
+        result = Result.DISPATCHED;
+      } finally {
+        // Preserve the backend's existing exception behavior without abandoning a waiting caller.
+        complete.accept(result);
+      }
+    }
+  }
+
+  private static final class Pending implements Request {
+    private final AtomicBoolean cancelled = new AtomicBoolean();
+
+    @Override
+    public void cancel() {
+      cancelled.set(true);
+    }
+  }
+}

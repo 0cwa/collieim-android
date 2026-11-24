@@ -615,6 +615,11 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   @MainThread
   public void updatePushNotificationServices() {
+    updatePushNotificationServices(new UnifiedPushRefreshJob());
+  }
+
+  /** The setup flow supplies a refresh bound to its confirmed account and relay. */
+  public void updatePushNotificationServices(@NonNull UnifiedPushRefreshJob unifiedPushRefresh) {
     if (!SignalStore.account().isRegistered()) {
       return;
     }
@@ -638,9 +643,9 @@ public class ApplicationContext extends Application implements AppForegroundObse
           updateUnifiedPushStatus(false);
         } else if (!unifiedPushEnabled) {
           Log.i(TAG, "Switching to UnifiedPush.");
-          updateUnifiedPushStatus(true);
+          updateUnifiedPushStatus(true, unifiedPushRefresh);
         } else {
-          AppDependencies.getJobManager().add(new UnifiedPushRefreshJob());
+          AppDependencies.getJobManager().add(unifiedPushRefresh);
         }
       } else {
         if (unifiedPushEnabled) {
@@ -681,6 +686,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   private void updateUnifiedPushStatus(boolean enabled) {
+    updateUnifiedPushStatus(enabled, new UnifiedPushRefreshJob());
+  }
+
+  private void updateUnifiedPushStatus(boolean enabled, @NonNull UnifiedPushRefreshJob refresh) {
     SignalStore.unifiedpush().setEnabled(enabled);
     if (enabled) {
       UnifiedPushDistributor.registerApp(SignalStore.unifiedpush().getVapidPublicKey());
@@ -689,7 +698,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
       // When air gapped, we want to avoid unnecessary endpoint rotation
       UnifiedPushDistributor.unregisterApp();
     }
-    AppDependencies.getJobManager().add(new UnifiedPushRefreshJob());
+    AppDependencies.getJobManager().add(refresh);
   }
 
   private void initializeExpiringMessageManager() {

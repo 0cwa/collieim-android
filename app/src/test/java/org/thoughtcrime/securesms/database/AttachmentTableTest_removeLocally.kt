@@ -85,7 +85,8 @@ class AttachmentTableTest_removeLocally {
     val id = attachment(messageId, data = data, thumbnail = thumbnail, transfer = transfer, metadataId = metadataId)
     val beforeMessage = row(MessageTable.TABLE_NAME, messageId)
     val original = attachments.getAttachment(id)!!
-    clearMocks(AppDependencies.jobManager, answers = false)
+    val jobManager = AppDependencies.jobManager
+    clearMocks(jobManager, answers = false)
 
     assertTrue(remove(id))
 
@@ -115,8 +116,8 @@ class AttachmentTableTest_removeLocally {
     assertFalse(thumbnail.exists())
     assertFalse(transfer.exists())
     assertFalse(db.exists(AttachmentMetadataTable.TABLE_NAME).where("${AttachmentMetadataTable.ID} = ?", metadataId).run())
-    verify { AppDependencies.jobManager.cancelAllInQueue(AttachmentDownloadJob.constructQueueString(id)) }
-    verify(exactly = 0) { AppDependencies.jobManager.add(any<org.thoughtcrime.securesms.jobmanager.Job>()) }
+    verify { jobManager.cancelAllInQueue(AttachmentDownloadJob.constructQueueString(id)) }
+    verify(exactly = 0) { jobManager.add(any<org.thoughtcrime.securesms.jobmanager.Job>()) }
   }
 
   @Test

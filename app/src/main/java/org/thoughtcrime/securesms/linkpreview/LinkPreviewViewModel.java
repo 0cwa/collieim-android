@@ -189,8 +189,12 @@ public class LinkPreviewViewModel extends ViewModel {
       if (isRequestEnabled()) {
         activeRequest = performRequest(activeUrl);
       } else if (currentState != null && currentState.isLoading) {
-        activeUrl = null;
-        linkPreviewState.setValue(LinkPreviewState.forNoLinks());
+        if (enablePlaceholder) {
+          activeRequest = createPlaceholder(activeUrl);
+        } else {
+          activeUrl = null;
+          linkPreviewState.setValue(LinkPreviewState.forNoLinks());
+        }
       }
     }
   }

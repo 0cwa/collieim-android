@@ -267,6 +267,43 @@ class LinkPreviewViewModelsImagePolicyTest {
   }
 
   @Test
+  fun `legacy story link entry keeps the URL available after disabling both preview preferences`() {
+    val controller = mockk<RequestController>(relaxed = true)
+    every { repository.getLinkPreview(any(), WEB_URL, any()) } returns controller
+    val model = legacy(enablePlaceholder = true)
+    model.onTextChanged(WEB_URL, WEB_URL.length, WEB_URL.length)
+    drain()
+
+    every { settings.isLinkPreviewsEnabled } returns false
+    includeImages = false
+    model.refreshImagePreference()
+    drain()
+
+    val state = model.linkPreviewState.value!!
+    assertFalse(state.isLoading)
+    assertEquals(WEB_URL, state.activeUrlForError)
+    verify(exactly = 1) { controller.cancel() }
+    verify(exactly = 1) { repository.getLinkPreview(any(), WEB_URL, any()) }
+  }
+
+  @Test
+  fun `story composer keeps the URL available after disabling both preview preferences`() {
+    val model = v2(enablePlaceholder = true)
+    model.onTextChanged(WEB_URL, WEB_URL.length, WEB_URL.length)
+    drain()
+
+    every { settings.isLinkPreviewsEnabled } returns false
+    includeImages = false
+    model.refreshImagePreference()
+    drain()
+
+    val state = model.linkPreviewStateSnapshot
+    assertFalse(state.isLoading)
+    assertEquals(WEB_URL, state.activeUrlForError)
+    verify(exactly = 1) { repository.getLinkPreview(WEB_URL) }
+  }
+
+  @Test
   fun `enabling previews keeps SMS requests disabled`() {
     val model = legacy()
     model.onTransportChanged(true)
@@ -297,14 +334,14 @@ class LinkPreviewViewModelsImagePolicyTest {
     assertSame(original, model.onSend().single())
   }
 
-  private fun v2(savedState: SavedStateHandle = SavedStateHandle()): LinkPreviewViewModelV2 {
-    val model = LinkPreviewViewModelV2(savedState, repository, enablePlaceholder = false)
+  private fun v2(savedState: SavedStateHandle = SavedStateHandle(), enablePlaceholder: Boolean = false): LinkPreviewViewModelV2 {
+    val model = LinkPreviewViewModelV2(savedState, repository, enablePlaceholder)
     viewModels.put("model-${nextModel++}", model)
     return model
   }
 
-  private fun legacy(): LinkPreviewViewModel {
-    val model = LinkPreviewViewModel.Factory(repository).create(LinkPreviewViewModel::class.java)
+  private fun legacy(enablePlaceholder: Boolean = false): LinkPreviewViewModel {
+    val model = LinkPreviewViewModel.Factory(repository, enablePlaceholder).create(LinkPreviewViewModel::class.java)
     viewModels.put("model-${nextModel++}", model)
     val observer = Observer<LinkPreviewState> { }
     model.linkPreviewState.observeForever(observer)

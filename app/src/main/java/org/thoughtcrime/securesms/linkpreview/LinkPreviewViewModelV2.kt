@@ -156,8 +156,12 @@ class LinkPreviewViewModelV2(
       if (enabled) {
         activeRequest = performRequest(url)
       } else if (currentState.isLoading) {
-        activeUrl = null
-        setLinkPreviewState(LinkPreviewState.forNoLinks())
+        if (enablePlaceholder) {
+          activeRequest = createPlaceholder(url)
+        } else {
+          activeUrl = null
+          setLinkPreviewState(LinkPreviewState.forNoLinks())
+        }
       }
     }
   }

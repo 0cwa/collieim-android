@@ -58,6 +58,8 @@ object LinkDeviceRepository {
   private val WAIT_FOR_LINK_RETRY_BACKOFF = 5.seconds
   private const val DECRYPTION_INFO = "deviceCreatedAt"
   private const val MAX_ARCHIVE_UPLOAD_ATTEMPTS = 5
+  private const val MAX_LINKING_CODE_LENGTH = 4096
+  private val PUBLIC_KEY_PATTERN = Regex("[A-Za-z0-9+/_-]+={0,2}")
 
   suspend fun removeDevice(deviceId: Int): Boolean {
     return when (val result = AppDependencies.linkDeviceApi.removeDevice(deviceId)) {
@@ -192,22 +194,29 @@ object LinkDeviceRepository {
     }
   }
 
+  fun parseLinkingCode(code: String): Uri? {
+    val trimmed = code.trim()
+    if (trimmed.length > MAX_LINKING_CODE_LENGTH) {
+      return null
+    }
+    return Uri.parse(trimmed).takeIf(::isValidQr)
+  }
+
   fun isValidQr(uri: Uri): Boolean {
-    if (!uri.isHierarchical) {
+    if (!uri.isHierarchical || uri.toString().length > MAX_LINKING_CODE_LENGTH) {
       return false
     }
 
-    if (uri.scheme != "sgnl") {
+    if (uri.scheme != "sgnl" || uri.encodedAuthority != "linkdevice" || !uri.path.isNullOrEmpty() || uri.fragment != null) {
       return false
     }
 
-    if (uri.host != "linkdevice") {
+    if (uri.getQueryParameters("uuid").size != 1 || uri.getQueryParameters("pub_key").size != 1 || uri.getQueryParameters("capabilities").size > 1) {
       return false
     }
 
     val ephemeralId: String? = uri.getQueryParameter("uuid")
-    val publicKeyEncoded: String? = uri.getQueryParameter("pub_key")
-    return ephemeralId.isNotNullOrBlank() && publicKeyEncoded.isNotNullOrBlank()
+    return ephemeralId.isNotNullOrBlank() && ephemeralId.none { it.isWhitespace() || it.isISOControl() } && parsePublicKey(uri) != null
   }
 
   /**
@@ -216,7 +225,20 @@ object LinkDeviceRepository {
   @VisibleForTesting
   fun parsePublicKey(uri: Uri): ECPublicKey? {
     val publicKeyEncoded: String = uri.getQueryParameter("pub_key") ?: return null
-    return ECPublicKey(Base64.decode(publicKeyEncoded))
+    if (publicKeyEncoded.length > 48 || !PUBLIC_KEY_PATTERN.matches(publicKeyEncoded)) {
+      return null
+    }
+
+    return try {
+      // Provisioning keys are serialized Curve25519 public keys. Use a strict decoder
+      // rather than the general-purpose decoder, which also accepts compressed data.
+      val decoded = java.util.Base64.getDecoder().decode(publicKeyEncoded.replace('-', '+').replace('_', '/'))
+      if (decoded.size != 33) null else ECPublicKey(decoded)
+    } catch (e: IllegalArgumentException) {
+      null
+    } catch (e: InvalidKeyException) {
+      null
+    }
   }
 
   /**
@@ -226,9 +248,12 @@ object LinkDeviceRepository {
    */
   fun addDevice(uri: Uri, ephemeralMessageBackupKey: MessageBackupKey?): LinkDeviceResult {
     if (!isValidQr(uri)) {
-      Log.w(TAG, "Bad URI! $uri")
+      Log.w(TAG, "Invalid device linking code")
       return LinkDeviceResult.BadCode
     }
+
+    val ephemeralId = uri.getQueryParameter("uuid") ?: return LinkDeviceResult.BadCode
+    val publicKey = parsePublicKey(uri) ?: return LinkDeviceResult.BadCode
 
     val verificationCodeResult: LinkedDeviceVerificationCodeResponse = when (val result = SignalNetwork.linkDeviceApi.getDeviceVerificationCode()) {
       is NetworkResult.Success -> result.result
@@ -241,13 +266,6 @@ object LinkDeviceRepository {
           else -> LinkDeviceResult.NetworkError(result.exception)
         }
       }
-    }
-
-    val ephemeralId: String = uri.getQueryParameter("uuid") ?: return LinkDeviceResult.BadCode
-    val publicKey = try {
-      parsePublicKey(uri) ?: return LinkDeviceResult.BadCode
-    } catch (e: InvalidKeyException) {
-      return LinkDeviceResult.KeyError
     }
 
     val deviceLinkResult = SignalNetwork.linkDeviceApi.linkDevice(

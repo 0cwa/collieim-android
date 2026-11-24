@@ -79,4 +79,47 @@ class LinkDeviceUriParsingTest {
     assertFalse(LinkDeviceRepository.isValidQr(uri))
     assertNull(LinkDeviceRepository.parsePublicKey(uri))
   }
+
+  @Test
+  fun `pasted code trims surrounding whitespace and preserves capabilities`() {
+    val code = "sgnl://linkdevice?uuid=$EPHEMERAL_ID_PERCENT_ENCODED&pub_key=$URL_SAFE_B64&capabilities=backup5,numberless,future"
+
+    val parsed = LinkDeviceRepository.parseLinkingCode(" \n$code\r\n ")
+
+    assertEquals(code, parsed.toString())
+    assertEquals("backup5,numberless,future", parsed!!.getQueryParameter("capabilities"))
+  }
+
+  @Test
+  fun `non linking URLs and ambiguous destinations are rejected`() {
+    val query = "uuid=$EPHEMERAL_ID_PERCENT_ENCODED&pub_key=$URL_SAFE_B64"
+    listOf(
+      "https://linkdevice?$query",
+      "sgnl://other?$query",
+      "sgnl:linkdevice?$query",
+      "sgnl://user@linkdevice?$query",
+      "sgnl://linkdevice:443?$query",
+      "sgnl://linkdevice/other?$query",
+      "sgnl://linkdevice?$query#fragment",
+      "sgnl://linkdevice?$query&uuid=other",
+      "sgnl://linkdevice?$query&pub_key=$URL_SAFE_B64",
+      "sgnl://linkdevice?$query&capabilities=backup5&capabilities=numberless"
+    ).forEach { assertNull(it, LinkDeviceRepository.parseLinkingCode(it)) }
+  }
+
+  @Test
+  fun `empty malformed and oversized codes are rejected without throwing`() {
+    listOf("", " \n ", "123456", "not a linking code", "sgnl://linkdevice?uuid=%20&pub_key=$URL_SAFE_B64", "sgnl://linkdevice?uuid=one%0Atwo&pub_key=$URL_SAFE_B64", "x".repeat(4097))
+      .forEach { assertNull(LinkDeviceRepository.parseLinkingCode(it)) }
+  }
+
+  @Test
+  fun `malformed public keys are rejected before linking`() {
+    listOf("", "invalid", "!".repeat(44), "A".repeat(44), "A".repeat(4096), "$URL_SAFE_B64%0A", "$URL_SAFE_B64=", STANDARD_B64)
+      .forEach { key ->
+        val uri = Uri.parse("sgnl://linkdevice?uuid=$EPHEMERAL_ID_PERCENT_ENCODED&pub_key=$key")
+        assertFalse(LinkDeviceRepository.isValidQr(uri))
+        assertNull(LinkDeviceRepository.parsePublicKey(uri))
+      }
+  }
 }

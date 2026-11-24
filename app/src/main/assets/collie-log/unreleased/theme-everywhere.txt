@@ -1,2 +1,0 @@
-topic: look
-Theme changes reach appearance settings and media screens straight away.

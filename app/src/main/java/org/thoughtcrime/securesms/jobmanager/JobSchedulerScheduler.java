@@ -8,11 +8,11 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.os.PersistableBundle;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-
-import java.util.stream.Collectors;
 
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
@@ -20,6 +20,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.function.LongSupplier;
+import java.util.stream.Collectors;
 
 @RequiresApi(26)
 public final class JobSchedulerScheduler implements Scheduler {
@@ -39,6 +41,8 @@ public final class JobSchedulerScheduler implements Scheduler {
   private final Application          application;
   private final Executor             executor;
   private final LongSupplier         clock;
+
+  @GuardedBy("this")
   private final Map<Integer, String> finishedGenerations = new HashMap<>();
 
   JobSchedulerScheduler(@NonNull Application application) {
@@ -56,12 +60,11 @@ public final class JobSchedulerScheduler implements Scheduler {
   @Override
   public void schedule(long delay, @NonNull List<Constraint> constraints) {
     long wakeupAt = deadlineFor(delay);
-    executor.execute(() -> scheduleAt(wakeupAt, constraints));
-  }
-
-  /** Persist the successor before releasing the currently running system job's lifetime. */
-  boolean scheduleSynchronously(long delay, @NonNull List<Constraint> constraints) {
-    return scheduleAt(deadlineFor(delay), constraints);
+    executor.execute(() -> {
+      synchronized (this) {
+        scheduleAt(new PendingWakeup(wakeupAt, constraints), null);
+      }
+    });
   }
 
   private long deadlineFor(long delay) {
@@ -69,17 +72,15 @@ public final class JobSchedulerScheduler implements Scheduler {
     return delay > Long.MAX_VALUE - now ? Long.MAX_VALUE : now + Math.max(0, delay);
   }
 
-  /** Keep one persistent wakeup per constraint group, always at its earliest requested deadline. */
-  private synchronized boolean scheduleAt(long wakeupAt, @NonNull List<Constraint> constraints) {
+  /** Keep one persistent wakeup per Android job ID, at its earliest requested deadline. */
+  @GuardedBy("this")
+  private boolean scheduleAt(@NonNull PendingWakeup wakeup, @Nullable String finishingGeneration) {
     JobScheduler jobScheduler = application.getSystemService(JobScheduler.class);
-    String constraintNames = constraints.stream()
-                                        .map(Constraint::getJobSchedulerKeyPart).filter(Objects::nonNull)
-                                        .sorted()
-                                        .collect(Collectors.joining("-"));
-    int jobId = constraintNames.hashCode();
+    long wakeupAt = wakeup.wakeupAt;
+    int jobId = wakeup.jobId;
     JobInfo pending = jobScheduler.getPendingJob(jobId);
 
-    if (pending != null && !Objects.equals(finishedGenerations.get(jobId), pending.getExtras().getString(WAKEUP_GENERATION, ""))) {
+    if (pending != null && !hasGeneration(pending, finishingGeneration) && !hasGeneration(pending, finishedGenerations.get(jobId))) {
       if (!pending.getExtras().containsKey(WAKEUP_AT)) {
         // An older app version left no absolute deadline. Wake once now, then rebuild future
         // wakeups from the durable job rows rather than guessing how much of its delay remains.
@@ -95,14 +96,14 @@ public final class JobSchedulerScheduler implements Scheduler {
     extras.putLong(WAKEUP_AT, wakeupAt);
     extras.putString(WAKEUP_GENERATION, UUID.randomUUID().toString());
 
-    Log.i(TAG, String.format(Locale.US, "JobScheduler enqueue of %s (%d)", constraintNames, jobId));
+    Log.i(TAG, String.format(Locale.US, "JobScheduler enqueue of %s (%d)", wakeup.constraintNames, jobId));
 
     JobInfo.Builder jobInfoBuilder = new JobInfo.Builder(jobId, new ComponentName(application, SystemService.class))
                                                 .setMinimumLatency(Math.max(0, wakeupAt - clock.getAsLong()))
                                                 .setPersisted(true)
                                                 .setExtras(extras);
 
-    for (Constraint constraint : constraints) {
+    for (Constraint constraint : wakeup.constraints) {
       constraint.applyToJobInfo(jobInfoBuilder);
     }
 
@@ -115,17 +116,57 @@ public final class JobSchedulerScheduler implements Scheduler {
     }
   }
 
-  /** jobFinished is asynchronous; ignore only that exact generation while rearming its successor. */
-  synchronized void onWakeupFinished(int jobId, @NonNull PersistableBundle extras) {
-    JobInfo pending = application.getSystemService(JobScheduler.class).getPendingJob(jobId);
+  /** Persist other IDs first so Android can still retry the current generation on failure. */
+  synchronized boolean rearmWakeup(int jobId, @NonNull PersistableBundle extras, @NonNull List<PendingWakeup> pendingWakeups) {
+    Map<Integer, PendingWakeup> earliestById = new LinkedHashMap<>();
+    for (PendingWakeup wakeup : pendingWakeups) {
+      earliestById.merge(wakeup.jobId, wakeup, (previous, next) -> previous.wakeupAt <= next.wakeupAt ? previous : next);
+    }
+
+    PendingWakeup successor = earliestById.remove(jobId);
+    boolean success = true;
+    for (PendingWakeup wakeup : earliestById.values()) {
+      if (!scheduleAt(wakeup, null)) {
+        success = false;
+      }
+    }
+    if (!success) {
+      return false;
+    }
+
     String generation = extras.getString(WAKEUP_GENERATION, "");
-    if (pending != null && generation.equals(pending.getExtras().getString(WAKEUP_GENERATION, ""))) {
+    if (successor != null) {
+      return scheduleAt(successor, generation);
+    }
+
+    // jobFinished is asynchronous. Ignore the consumed generation if Android still lists it.
+    JobInfo pending = application.getSystemService(JobScheduler.class).getPendingJob(jobId);
+    if (pending != null && hasGeneration(pending, generation)) {
       finishedGenerations.put(jobId, generation);
     }
+    return true;
   }
 
-  synchronized void onWakeupRetrying(int jobId, @NonNull PersistableBundle extras) {
-    finishedGenerations.remove(jobId, extras.getString(WAKEUP_GENERATION, ""));
+  private static boolean hasGeneration(@NonNull JobInfo job, @Nullable String generation) {
+    return job.getExtras().getString(WAKEUP_GENERATION, "").equals(generation);
+  }
+
+  static final class PendingWakeup {
+    private final long             wakeupAt;
+    private final List<Constraint> constraints;
+    private final String           constraintNames;
+    private final int              jobId;
+
+    PendingWakeup(long wakeupAt, @NonNull List<Constraint> constraints) {
+      this.wakeupAt = wakeupAt;
+      this.constraints = constraints;
+      this.constraintNames = constraints.stream()
+                                        .map(Constraint::getJobSchedulerKeyPart)
+                                        .filter(Objects::nonNull)
+                                        .sorted()
+                                        .collect(Collectors.joining("-"));
+      this.jobId = constraintNames.hashCode();
+    }
   }
 
   @RequiresApi(api = 26)

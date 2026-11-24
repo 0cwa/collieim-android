@@ -1,5 +1,9 @@
 package org.thoughtcrime.securesms.jobmanager
 
+import android.app.Application
+import android.database.sqlite.SQLiteDatabase
+import androidx.core.content.contentValuesOf
+import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -15,7 +19,11 @@ import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
+import org.signal.storage.database.DatabaseSecret
 import org.thoughtcrime.securesms.database.JobDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.impl.MasterSecretConstraint
@@ -28,10 +36,14 @@ import org.thoughtcrime.securesms.jobs.NewLinkedDeviceNotificationJob
 import org.thoughtcrime.securesms.jobs.protos.NewLinkedDeviceNotificationJobData
 import org.thoughtcrime.securesms.jobs.toMinimalJobSpec
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
+import java.io.File
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
+import net.zetetic.database.sqlcipher.SQLiteDatabase as SqlCipherDatabase
 
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, application = Application::class, sdk = [35])
 class NewLinkedDeviceNotificationSchedulingTest {
 
   @Before
@@ -125,14 +137,13 @@ class NewLinkedDeviceNotificationSchedulingTest {
   }
 
   @Test
-  fun `legacy reminder keeps its persisted schedule while dropping its obsolete network gate`() {
+  fun `factory decodes the legacy payload with the migrated scheduling parameters`() {
     // Pre-change wire payload: deviceId = 2, deviceCreatedAt = 42, no phase field.
     val oldPayload = byteArrayOf(0x08, 0x02, 0x10, 0x2a)
     val oldParameters = Job.Parameters.Builder()
       .setQueue(NewLinkedDeviceNotificationJob.KEY)
       .setCreateTime(1000L)
       .setInitialDelay(123.minutes.inWholeMilliseconds)
-      .addConstraint(NetworkConstraint.KEY)
       .setLifespan(7.days.inWholeMilliseconds)
       .setMaxAttempts(Job.Parameters.UNLIMITED)
       .build()
@@ -152,42 +163,117 @@ class NewLinkedDeviceNotificationSchedulingTest {
   }
 
   @Test
-  fun `early notification can run ahead of an older pending reminder before and after storage reload`() {
+  fun `persisted legacy reminders become eligible offline without changing queue order or deadlines`() {
     val oldReminder = NewLinkedDeviceNotificationJob.Factory().create(
       Job.Parameters.Builder()
         .setQueue(NewLinkedDeviceNotificationJob.KEY)
-        .setInitialDelay(120.minutes.inWholeMilliseconds)
+        .setInitialDelay(90.minutes.inWholeMilliseconds)
+        .addConstraint(NetworkConstraint.KEY)
         .build(),
       byteArrayOf(0x08, 0x02, 0x10, 0x2a)
     )
     val early = NewLinkedDeviceNotificationJob(3, 5678L, isEarlyNotification = true)
-    val reminderSpec = fullSpec(oldReminder, createTime = 1000L)
+    val reminder = NewLinkedDeviceNotificationJob(3, 5678L)
+    val oldSpec = fullSpec(oldReminder, createTime = 1000L)
     val earlySpec = fullSpec(early, createTime = 2000L)
-    val specs = listOf(reminderSpec, earlySpec)
-    val database = mockk<JobDatabase>(relaxed = true)
-    every { database.getAllMinimalJobSpecs() } returns specs.map { it.jobSpec.toMinimalJobSpec() }
-    every { database.getJobSpecs(any()) } returns specs.map { it.jobSpec }
-    every { database.getConstraintSpecsForJobs(any()) } returns specs.flatMap { it.constraintSpecs }
-    every { database.getAllDependencySpecs() } returns emptyList()
-    val storage = FastJobStorage(database)
-    storage.insertJobs(specs)
+    val reminderSpec = fullSpec(reminder, createTime = 2000L).let {
+      it.copy(jobSpec = it.jobSpec.copy(initialDelay = 120.minutes.inWholeMilliseconds))
+    }
+    val otherSpec = oldSpec.copy(
+      jobSpec = oldSpec.jobSpec.copy(id = "unrelated", factoryKey = "UnrelatedJob", queueKey = null),
+      constraintSpecs = listOf(ConstraintSpec("unrelated", NetworkConstraint.KEY, false))
+    )
+    val specs = listOf(oldSpec, earlySpec, reminderSpec, otherSpec)
 
-    assertEquals(oldReminder.parameters.queue, early.parameters.queue)
-    assertTrue(early.parameters.queuePriority > oldReminder.parameters.queuePriority)
-    val justBeforeEarly = earlySpec.jobSpec.createTime + earlySpec.jobSpec.initialDelay - 1
-    val afterEarly = earlySpec.jobSpec.createTime + earlySpec.jobSpec.initialDelay + 1
-    assertNull(storage.getNextEligibleJob(justBeforeEarly) { true })
-    assertEquals(early.id, storage.getNextEligibleJob(afterEarly) { true }?.id)
+    val app = ApplicationProvider.getApplicationContext<Application>()
+    val file = File(app.cacheDir, "legacy-job-storage.db")
+    val jobDatabase = JobDatabase(app, DatabaseSecret.fromBytes(ByteArray(32)))
+    try {
+      SQLiteDatabase.openOrCreateDatabase(file, null).use { db ->
+        jobDatabase.onCreate(cipherFacade(db))
+        db.version = 5
+        for ((spec, constraints) in specs) {
+          db.insertOrThrow(
+            "job_spec",
+            null,
+            contentValuesOf(
+              "job_spec_id" to spec.id,
+              "factory_key" to spec.factoryKey,
+              "queue_key" to spec.queueKey,
+              "create_time" to spec.createTime,
+              "queue_priority" to spec.queuePriority,
+              "initial_delay" to spec.initialDelay,
+              "serialized_data" to spec.serializedData
+            )
+          )
+          for (constraint in constraints) {
+            db.insertOrThrow("constraint_spec", null, contentValuesOf("job_spec_id" to spec.id, "factory_key" to constraint.factoryKey))
+          }
+        }
+      }
 
-    val reloaded = FastJobStorage(database).apply { init() }
-    assertNull(reloaded.getNextEligibleJob(justBeforeEarly) { true })
-    assertEquals(early.id, reloaded.getNextEligibleJob(afterEarly) { true }?.id)
+      SQLiteDatabase.openOrCreateDatabase(file, null).use { db ->
+        jobDatabase.onUpgrade(cipherFacade(db), db.version, 6)
+        db.version = 6
+      }
 
-    reloaded.deleteJob(early.id)
-    assertNull(reloaded.getNextEligibleJob(afterEarly) { true })
-    assertEquals(oldReminder.id, reloaded.getJobSpec(oldReminder.id)?.id)
-    val afterReminder = reminderSpec.jobSpec.createTime + reminderSpec.jobSpec.initialDelay + 1
-    assertEquals(oldReminder.id, reloaded.getNextEligibleJob(afterReminder) { true }?.id)
+      SQLiteDatabase.openOrCreateDatabase(file, null).use { db ->
+        val storedSpecs = db.rawQuery("SELECT job_spec_id, queue_key, create_time, queue_priority, initial_delay, serialized_data FROM job_spec ORDER BY _id", null).use {
+          buildList {
+            while (it.moveToNext()) {
+              val original = specs.single { row -> row.jobSpec.id == it.getString(0) }.jobSpec
+              assertTrue(original.serializedData!!.contentEquals(it.getBlob(5)))
+              add(original.copy(queueKey = it.getString(1), createTime = it.getLong(2), queuePriority = it.getInt(3), initialDelay = it.getLong(4)))
+            }
+          }
+        }
+        val storedConstraints = db.rawQuery("SELECT job_spec_id, factory_key FROM constraint_spec", null).use {
+          buildList {
+            while (it.moveToNext()) {
+              add(ConstraintSpec(it.getString(0), it.getString(1), false))
+            }
+          }
+        }
+        assertEquals(specs.map { it.jobSpec }, storedSpecs)
+        assertEquals(specs.map { it.jobSpec.queuePriority }, storedSpecs.map { it.queuePriority })
+        assertEquals(specs.map { it.jobSpec.initialDelay }, storedSpecs.map { it.initialDelay })
+        assertEquals(specs.flatMap { it.constraintSpecs }.filterNot { it.jobSpecId == oldReminder.id && it.factoryKey == NetworkConstraint.KEY }.toSet(), storedConstraints.toSet())
+
+        val database = mockk<JobDatabase>(relaxed = true)
+        every { database.getAllMinimalJobSpecs() } returns storedSpecs.map { it.toMinimalJobSpec() }
+        every { database.getJobSpecs(any()) } returns storedSpecs
+        every { database.getConstraintSpecsForJobs(any()) } answers {
+          val ids = firstArg<Collection<String>>()
+          storedConstraints.filter { it.jobSpecId in ids }
+        }
+        val storage = FastJobStorage(database).apply { init() }
+        fun eligibleOffline(time: Long) = storage.getNextEligibleJob(time) { job ->
+          storage.getConstraintSpecs(job.id).none { it.factoryKey == NetworkConstraint.KEY }
+        }?.id
+
+        val earlyAt = earlySpec.jobSpec.createTime + earlySpec.jobSpec.initialDelay
+        val legacyAt = oldSpec.jobSpec.createTime + oldSpec.jobSpec.initialDelay
+        val reminderAt = reminderSpec.jobSpec.createTime + reminderSpec.jobSpec.initialDelay
+        assertNull(eligibleOffline(earlyAt))
+        assertEquals(early.id, eligibleOffline(earlyAt + 1))
+        storage.markJobAsRunning(early.id, earlyAt + 1)
+        assertNull(eligibleOffline(reminderAt + 1))
+        storage.deleteJob(early.id)
+        assertNull(eligibleOffline(legacyAt))
+        assertEquals(oldReminder.id, eligibleOffline(legacyAt + 1))
+        storage.deleteJob(oldReminder.id)
+        assertNull(eligibleOffline(reminderAt))
+        assertEquals(reminder.id, eligibleOffline(reminderAt + 1))
+      }
+    } finally {
+      SQLiteDatabase.deleteDatabase(file)
+    }
+  }
+
+  // Run the production upgrade SQL against real SQLite rows in the host JVM.
+  private fun cipherFacade(db: SQLiteDatabase): SqlCipherDatabase = mockk {
+    every { execSQL(any()) } answers { db.execSQL(firstArg()) }
+    every { execSQL(any(), any()) } answers { db.execSQL(firstArg(), secondArg()) }
   }
 
   private fun fullSpec(job: Job, createTime: Long): FullSpec {

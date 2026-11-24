@@ -7,17 +7,21 @@ import android.content.ComponentName
 import androidx.test.core.app.ApplicationProvider
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.jobmanager.impl.BatteryNotLowConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.ChargingConstraint
+import org.thoughtcrime.securesms.jobmanager.impl.MasterSecretConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.util.ArrayDeque
@@ -103,7 +107,7 @@ class JobSchedulerSchedulerTest {
     val early = pending()
     now = early.wakeupAt
 
-    scheduler.onWakeupFinished(early.id, early.extras)
+    assertTrue(scheduler.rearmWakeup(early.id, early.extras, emptyList()))
     runAll()
     // Android can still report the old JobInfo after jobFinished has been called.
     assertEquals(early.generation, pending().generation)
@@ -126,7 +130,7 @@ class JobSchedulerSchedulerTest {
     runAll()
     val current = pending()
 
-    scheduler.onWakeupFinished(old.id, old.extras)
+    assertTrue(scheduler.rearmWakeup(old.id, old.extras, listOf(wakeup(3.hours.inWholeMilliseconds))))
     runAll()
     scheduler.schedule(3.hours.inWholeMilliseconds, emptyList())
     runAll()
@@ -225,70 +229,85 @@ class JobSchedulerSchedulerTest {
   }
 
   @Test
-  fun `synchronous rearming persists before pending executor work is drained`() {
-    scheduler.schedule(2.hours.inWholeMilliseconds, emptyList())
+  fun `rearm persists the earliest offline successor when stored constraints share an Android ID`() {
+    val unlocked = MasterSecretConstraint()
+    val charging = ChargingConstraint.Factory().create()
+    val chargingId = "CHARGING".hashCode()
+    scheduler.schedule(2.minutes.inWholeMilliseconds, listOf(unlocked))
+    runAll()
+    val early = pending()
+    now = early.wakeupAt
 
-    assertTrue(scheduler.scheduleSynchronously(2.minutes.inWholeMilliseconds, emptyList()))
+    scheduler.schedule(3.hours.inWholeMilliseconds, emptyList())
+    val firstReminder = wakeup(1.hours.inWholeMilliseconds, unlocked)
+    val laterReminder = wakeup(2.hours.inWholeMilliseconds)
+    val chargingWakeup = wakeup(10.minutes.inWholeMilliseconds, charging)
+
+    assertTrue(scheduler.rearmWakeup(early.id, early.extras, listOf(firstReminder, chargingWakeup, laterReminder)))
     val successor = pending()
-    assertEquals(now + 2.minutes.inWholeMilliseconds, successor.wakeupAt)
 
+    assertNotEquals(early.generation, successor.generation)
+    assertEquals(now + 1.hours.inWholeMilliseconds, successor.wakeupAt)
+    assertNull(successor.requiredNetwork)
+    assertEquals(now + 10.minutes.inWholeMilliseconds, pending(chargingId).wakeupAt)
     runAll()
     assertEquals(successor.generation, pending().generation)
-    assertEquals(1, system.allPendingJobs.size)
   }
 
   @Test
-  fun `retrying a consumed generation restores its protection against later timers`() {
+  fun `async offline successor cannot consume the running job during a partial rearm failure`() {
+    val unlocked = MasterSecretConstraint()
+    scheduler.schedule(2.minutes.inWholeMilliseconds, listOf(unlocked))
+    runAll()
+    val early = pending()
+    now = early.wakeupAt
+
+    scheduler.schedule(2.hours.inWholeMilliseconds, listOf(unlocked))
+    val charging = ChargingConstraint.Factory().create()
+    val chargingId = "CHARGING".hashCode()
+    shadowOf(system).failOnJob(chargingId)
+    val duringRearm = object : Constraint by charging {
+      override fun getJobSchedulerKeyPart(): String? = charging.getJobSchedulerKeyPart()
+
+      override fun applyToJobInfo(jobInfoBuilder: JobInfo.Builder) {
+        charging.applyToJobInfo(jobInfoBuilder)
+        // Drain the queued executor while the other ID is being submitted to Android.
+        runAll()
+        assertEquals(early.generation, pending().generation)
+      }
+    }
+
+    val reminder = wakeup(1.hours.inWholeMilliseconds, unlocked)
+    val battery = BatteryNotLowConstraint.Factory().create()
+    val wakeups = listOf(reminder, wakeup(5, battery), wakeup(10, duringRearm))
+    assertFalse(scheduler.rearmWakeup(early.id, early.extras, wakeups))
+    assertEquals(now + 5, pending("BATTERY_NOT_LOW".hashCode()).wakeupAt)
+    assertEquals(early.generation, pending().generation)
+    assertEquals(early.wakeupAt, pending().wakeupAt)
+
+    // A subsequent queue drain can persist the original offline successor.
+    assertTrue(scheduler.rearmWakeup(early.id, early.extras, listOf(reminder)))
+    assertEquals(now + 1.hours.inWholeMilliseconds, pending().wakeupAt)
+    assertNotEquals(early.generation, pending().generation)
+  }
+
+  @Test
+  fun `failure to persist the successor leaves the running job available for Android retry`() {
     scheduler.schedule(2.minutes.inWholeMilliseconds, emptyList())
     runAll()
-    val retrying = pending()
-    now = retrying.wakeupAt
+    val early = pending()
+    now = early.wakeupAt
 
-    scheduler.onWakeupFinished(retrying.id, retrying.extras)
-    scheduler.onWakeupRetrying(retrying.id, retrying.extras)
-    scheduler.schedule(2.hours.inWholeMilliseconds, emptyList())
+    shadowOf(system).failOnJob(early.id)
+    assertFalse(scheduler.rearmWakeup(early.id, early.extras, listOf(wakeup(2.hours.inWholeMilliseconds))))
+
+    scheduler.schedule(3.hours.inWholeMilliseconds, emptyList())
     runAll()
-
-    assertEquals(retrying.generation, pending().generation)
-    assertEquals(retrying.wakeupAt, pending().wakeupAt)
+    assertEquals(early.generation, pending().generation)
   }
 
-  @Test
-  fun `other groups are scheduled before replacing the current wakeup`() {
-    val events = mutableListOf<String>()
-    val current = JobManager.PendingWakeup(20, listOf(constraint("current")))
-    val other = JobManager.PendingWakeup(10, listOf(constraint("other")))
-
-    val succeeded = JobManager.scheduleWakeupsForRetry(current.jobId(), listOf(current, other)) { delay, constraints ->
-      events.add("${constraints.single().getJobSchedulerKeyPart()}:$delay")
-      true
-    }
-
-    assertTrue(succeeded)
-    assertEquals(listOf("other:10", "current:20"), events)
-  }
-
-  @Test
-  fun `failed other group leaves the current wakeup available for framework retry`() {
-    val events = mutableListOf<String>()
-    val current = JobManager.PendingWakeup(20, listOf(constraint("current")))
-    val other = JobManager.PendingWakeup(10, listOf(constraint("other")))
-
-    val succeeded = JobManager.scheduleWakeupsForRetry(current.jobId(), listOf(current, other)) { _, constraints ->
-      events.add(constraints.single().getJobSchedulerKeyPart()!!)
-      false
-    }
-
-    assertFalse(succeeded)
-    assertEquals(listOf("other"), events)
-  }
-
-  private fun constraint(key: String): Constraint = object : Constraint {
-    override fun isMet(): Boolean = true
-    override fun getFactoryKey(): String = key
-    override fun applyToJobInfo(jobInfoBuilder: JobInfo.Builder) = Unit
-    override fun getJobSchedulerKeyPart(): String = key
-  }
+  private fun wakeup(delay: Long, vararg constraints: Constraint): JobSchedulerScheduler.PendingWakeup =
+    JobSchedulerScheduler.PendingWakeup(now + delay, constraints.toList())
 
   private fun runAll() {
     while (commands.isNotEmpty()) {

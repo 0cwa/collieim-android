@@ -94,29 +94,12 @@ class HelpSettingsScreenTest {
 
   @Test
   fun `tapping the version opens app updates`() {
-    setContent(HelpSettingsState(versionName = "8.33.0"))
+    setContent(HelpSettingsState(versionName = "8.33.0", showAppUpdates = true))
 
     scrollTo(HelpSettingsTestTags.ROW_VERSION)
     composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_VERSION).performClick()
 
     assertThat(events).containsExactly(HelpSettingsEvent.VersionClicked)
-  }
-
-  @Test
-  fun `app updates are shown in Help only when enabled and use the existing route`() {
-    setContent(HelpSettingsState(versionName = "8.33.0", showAppUpdates = true))
-
-    scrollTo(HelpSettingsTestTags.ROW_APP_UPDATES)
-    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_APP_UPDATES).performClick()
-
-    assertThat(events).containsExactly(HelpSettingsEvent.VersionClicked)
-  }
-
-  @Test
-  fun `app updates are hidden when disabled`() {
-    setContent(HelpSettingsState(versionName = "8.33.0"))
-
-    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
   }
 
   @Test

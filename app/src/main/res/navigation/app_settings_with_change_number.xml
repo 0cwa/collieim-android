@@ -1032,7 +1032,16 @@
     <fragment
         android:id="@+id/collieSettingsFragment"
         android:name="org.thoughtcrime.securesms.components.settings.app.collie.CollieSettingsFragment"
-        android:label="@string/CollieSettings__title" />
+        android:label="@string/CollieSettings__title">
+
+        <action
+            android:id="@+id/action_collieSettingsFragment_to_appUpdatesFragment"
+            app:destination="@id/appUpdatesFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
 
     <!-- Labs Settings -->
 

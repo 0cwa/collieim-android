@@ -19,6 +19,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.signal.appsettings.collie.CollieSettingsScreen
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
+import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.appsettings.routes.navigateTo
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 import org.thoughtcrime.securesms.components.settings.app.labs.LabsSettingsViewModel
 
 /** Reuses the existing Labs preferences and toggle handling for Collie's selected features. */
@@ -34,6 +37,8 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
   CollieSettingsScreen(
     state = state,
     onEvent = viewModel::onEvent,
+    showAppUpdates = AppSettingsRepository.showAppUpdates(),
+    onAppUpdatesClick = { parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates) },
     protectBackupKey = protectBackupKey,
     onProtectBackupKeyChanged = { desired ->
       authenticate {

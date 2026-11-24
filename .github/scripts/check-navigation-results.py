@@ -19,7 +19,10 @@ HOST_METHODS = {
     'a route the host opens as an activity stays off the back stack',
     'home selection follows a replaced section',
 }
-DEVICE_CASES = {'org.thoughtcrime.securesms.maps.MapLibreOfflinePickerProofTest': {'pickerRendersVectorRailInTheSharePreview'}}
+DEVICE_CASES = {
+    'org.thoughtcrime.securesms.maps.MapLibreOfflinePickerProofTest': {'pickerRendersVectorRailInTheSharePreview'},
+    'org.thoughtcrime.securesms.maps.MapLibreProxyRouteProofTest': {'realMapClientUsesConfiguredSocksForDnsAndClosesTransportOnRouteChange'},
+}
 SCREENSHOTS = {
     'maplibre-offline-picker.png',
     'maplibre-offline-landscape.png',
@@ -94,7 +97,7 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized bulk attachment removal screenshot: {path.name}')
-    print('Passed eight host navigation cases and one API 35 MapLibre picker case with matching APKs and decoded MapLibre picker screenshots')
+    print('Passed eight host navigation cases and the API 35 MapLibre picker and loopback SOCKS cases with matching APKs and decoded MapLibre picker screenshots')
 
 
 if __name__ == '__main__':

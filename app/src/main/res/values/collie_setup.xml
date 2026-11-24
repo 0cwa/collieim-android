@@ -47,6 +47,7 @@
     <string name="CollieSetup__notifications_todo">Turn them on so you see new messages.</string>
 
     <string name="CollieSetup__delivery_title">How messages reach you</string>
+    <string name="CollieSetup__delivery_settings_hint">Choose how Collie receives messages. Tap Delivery service below.</string>
     <string name="CollieSetup__delivery_google">Google push</string>
     <string name="CollieSetup__delivery_unifiedpush">UnifiedPush</string>
     <string name="CollieSetup__delivery_unifiedpush_tested">UnifiedPush · test passed %1$s</string>

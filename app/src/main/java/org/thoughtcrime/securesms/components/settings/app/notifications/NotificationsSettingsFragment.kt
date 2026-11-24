@@ -11,23 +11,32 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.launch
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -35,6 +44,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -54,6 +67,7 @@ import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosur
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
 import org.signal.core.util.eventbus.ThreadMode
@@ -147,7 +161,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun FragmentContent() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NotificationsSettingsScreen(state = state, callbacks = callbacks)
+    NotificationsSettingsScreen(state = state, callbacks = callbacks, focusPushNotifications = args.focusPushNotifications)
   }
 }
 
@@ -508,9 +522,11 @@ interface NotificationsSettingsCallbacks {
 fun NotificationsSettingsScreen(
   state: NotificationsSettingsState,
   callbacks: NotificationsSettingsCallbacks,
-  deviceState: DeviceState = remember { DeviceState() }
+  deviceState: DeviceState = remember { DeviceState() },
+  focusPushNotifications: Boolean = false
 ) {
   var showDialog by remember { mutableStateOf(false) }
+  var hasFocusedPushNotifications by rememberSaveable { mutableStateOf(false) }
 
   if (showDialog) {
     Dialogs.SimpleAlertDialog(
@@ -531,6 +547,7 @@ fun NotificationsSettingsScreen(
   ) {
     val errorCode = state.playServicesErrorCode
     val hasPlayServicesError = errorCode != null && errorCode != ConnectionResult.SUCCESS
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = if (hasPlayServicesError) 99 else 0)
 
     LaunchedEffect(errorCode) {
       if (hasPlayServicesError) {
@@ -538,8 +555,17 @@ fun NotificationsSettingsScreen(
       }
     }
 
+    LaunchedEffect(focusPushNotifications) {
+      if (focusPushNotifications && !hasFocusedPushNotifications) {
+        // Push notifications is one keyed, final item. Earlier rows vary with Android and permission state.
+        val itemCount = snapshotFlow { listState.layoutInfo.totalItemsCount }.first { count -> count > 0 }
+        hasFocusedPushNotifications = true
+        listState.scrollToItem(itemCount - 1)
+      }
+    }
+
     LazyColumn(
-      state = rememberLazyListState(initialFirstVisibleItemIndex = if (hasPlayServicesError) 99 else 0),
+      state = listState,
       modifier = Modifier.padding(it)
     ) {
       if (!state.messageNotificationsState.canEnableNotifications) {
@@ -820,64 +846,113 @@ fun NotificationsSettingsScreen(
         Dividers.Default()
       }
 
-      item {
-        Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__push_notifications))
+      // Keep this section last so setup can target it without counting conditional settings rows.
+      item(key = "push-notifications") {
+        PushNotificationsSection(state, callbacks, highlightForSetup = focusPushNotifications)
       }
+    }
+  }
+}
 
-      item {
+@Composable
+private fun PushNotificationsSection(
+  state: NotificationsSettingsState,
+  callbacks: NotificationsSettingsCallbacks,
+  highlightForSetup: Boolean
+) {
+  Surface(
+    color = if (highlightForSetup) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+    contentColor = if (highlightForSetup) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+    shape = RoundedCornerShape(if (highlightForSetup) 16.dp else 0.dp),
+    border = if (highlightForSetup) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(if (highlightForSetup) 12.dp else 0.dp)
+  ) {
+    Column {
+      if (highlightForSetup) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 4.dp)
+        ) {
+          Icon(
+            imageVector = SignalIcons.Bell.imageVector,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+          )
+          Text(
+            text = stringResource(R.string.CollieSetup__delivery_title),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier
+              .padding(start = 8.dp)
+              .semantics { liveRegion = LiveRegionMode.Polite }
+          )
+        }
+        Text(
+          text = stringResource(R.string.NotificationsSettingsFragment__push_notifications),
+          style = MaterialTheme.typography.titleLarge,
+          modifier = Modifier
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .semantics { heading() }
+        )
+        Text(
+          text = stringResource(R.string.CollieSetup__delivery_settings_hint),
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp)
+        )
+      } else {
+        Texts.SectionHeader(
+          text = stringResource(R.string.NotificationsSettingsFragment__push_notifications),
+          modifier = Modifier.semantics { heading() }
+        )
         Rows.TextRow(
           text = {
             Text(
               text = stringResource(R.string.NotificationsSettingsFragment__select_your_preferred_service_for_push_notifications),
               style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              color = MaterialTheme.colorScheme.onSurfaceVariant
             )
           }
         )
       }
 
       val notificationMethods = availableNotificationMethods(state.isLinkedDevice, FcmUtil.isSupported())
-
       val showAlertIcon = when (state.preferredNotificationMethod) {
         NotificationDeliveryMethod.FCM -> !state.canReceiveFcm
         NotificationDeliveryMethod.WEBSOCKET -> false
         NotificationDeliveryMethod.UNIFIEDPUSH -> !state.canReceiveUnifiedPush
       }
 
-      item {
-        Rows.RadioListRow(
-          text = stringResource(R.string.NotificationsSettingsFragment__delivery_service),
-          labels = notificationMethods.map { method -> stringResource(method.stringId) }.toTypedArray(),
-          values = notificationMethods.map { method -> method.serialize() }.toTypedArray(),
-          selectedValue = state.preferredNotificationMethod.name,
-          trailingIcon = if (showAlertIcon) {
-            {
-              Icon(
-                painter = painterResource(android.R.drawable.ic_dialog_alert),
-                contentDescription = stringResource(R.string.notification_delivery_service_unavailable),
-                tint = colorResource(R.color.signal_alert_primary)
-              )
-            }
-          } else {
-            null
-          },
-          onSelected = { selected ->
-            callbacks.onNotificationMethodChanged(
-              state.preferredNotificationMethod to NotificationDeliveryMethod.deserialize(selected),
-              state.relayDisclosure,
+      Rows.RadioListRow(
+        text = stringResource(R.string.NotificationsSettingsFragment__delivery_service),
+        labels = notificationMethods.map { method -> stringResource(method.stringId) }.toTypedArray(),
+        values = notificationMethods.map { method -> method.serialize() }.toTypedArray(),
+        selectedValue = state.preferredNotificationMethod.name,
+        trailingIcon = if (showAlertIcon) {
+          {
+            Icon(
+              painter = painterResource(android.R.drawable.ic_dialog_alert),
+              contentDescription = stringResource(R.string.notification_delivery_service_unavailable),
+              tint = colorResource(R.color.signal_alert_primary)
             )
-          },
-        )
-      }
-
-      if (!state.isLinkedDevice) {
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.NotificationsSettingsFragment__configure_unifiedpush),
-            enabled = state.preferredNotificationMethod == NotificationDeliveryMethod.UNIFIEDPUSH,
-            onClick = callbacks::onNavigationUnifiedPushSettings
+          }
+        } else {
+          null
+        },
+        onSelected = { selected ->
+          callbacks.onNotificationMethodChanged(
+            state.preferredNotificationMethod to NotificationDeliveryMethod.deserialize(selected),
+            state.relayDisclosure
           )
         }
+      )
+
+      if (!state.isLinkedDevice) {
+        Rows.TextRow(
+          text = stringResource(R.string.NotificationsSettingsFragment__configure_unifiedpush),
+          enabled = state.preferredNotificationMethod == NotificationDeliveryMethod.UNIFIEDPUSH,
+          onClick = callbacks::onNavigationUnifiedPushSettings
+        )
       }
     }
   }

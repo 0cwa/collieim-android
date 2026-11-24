@@ -22,6 +22,7 @@ import org.thoughtcrime.securesms.util.navigation.safeNavigate
 private const val START_ROUTE = "app.settings.args.START_ROUTE"
 private const val NOTIFICATION_CATEGORY = "android.intent.category.NOTIFICATION_PREFERENCES"
 internal const val EXTRA_PERFORM_ACTION_ON_CREATE = "extra_perform_action_on_create"
+internal const val EXTRA_FOCUS_PUSH_NOTIFICATIONS = "app.settings.args.FOCUS_PUSH_NOTIFICATIONS"
 
 class AppSettingsActivity : NavGraphHostActivity() {
 
@@ -50,6 +51,7 @@ class AppSettingsActivity : NavGraphHostActivity() {
           .setStartCategoryIndex(appSettingsRoute.startCategoryIndex)
         AppSettingsRoute.DataAndStorageRoute.Proxy -> AppSettingsFragmentDirections.actionDirectToNetworkPreferenceFragment()
         AppSettingsRoute.NotificationsRoute.Notifications -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
+          .setFocusPushNotifications(intent.getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false))
         AppSettingsRoute.NotificationsRoute.UnifiedPushSettings -> AppSettingsFragmentDirections.actionDirectToUnifiedPushFragment()
         AppSettingsRoute.AppUpdates -> AppSettingsFragmentDirections.actionDirectToAppUpdatesSettingsFragment()
         is AppSettingsRoute.NotificationsRoute.PlayServicesProblem -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
@@ -87,6 +89,7 @@ class AppSettingsActivity : NavGraphHostActivity() {
     }
 
     intent = intent.putExtra(START_ROUTE, AppSettingsRoute.Empty)
+    intent.removeExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS)
 
     startingAction?.let {
       navController.safeNavigate(it)
@@ -136,6 +139,11 @@ class AppSettingsActivity : NavGraphHostActivity() {
     fun notifications(context: Context): Intent = Intent(context, AppSettingsActivity::class.java)
       .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
       .putExtra(START_ROUTE, AppSettingsRoute.NotificationsRoute.Notifications)
+
+    /** Opens the delivery controls from Finish setup without changing ordinary Notifications entry. */
+    @JvmStatic
+    fun pushNotifications(context: Context): Intent = notifications(context)
+      .putExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, true)
 
     @JvmStatic
     fun playServicesProblem(context: Context, errorCode: Int): Intent {

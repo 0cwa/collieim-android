@@ -343,6 +343,24 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `completed coherent account transition hands off an invalidated endpoint`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    val endpoint = "https://push.example.invalid/replacement"
+    val pending = mockPendingEndpointStorage(LockedPushState.Endpoint(endpoint, "p", "a", "default"))
+    synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushLifecycle.invalidateLocked()
+    }
+
+    runBlocking { UnifiedPushAccountTransition.withTransition {} }
+
+    verify(timeout = 3000) { values.setEndpointRegistration(endpoint, "p", "a", "default") }
+    awaitLifecycleReady()
+    assertNull(pending.get())
+    assertEquals(endpoint, values.endpoint)
+  }
+
+  @Test
   fun `queued endpoint application preserves pending tuple when the app locks before it runs`() {
     fakeAccount()
     val pending = LockedPushState.Endpoint("https://push.example.invalid/pending", "p", "a", "default")

@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -232,11 +233,16 @@ class UnifiedPushRefreshJobTest {
       assertEquals(device.deviceId, id)
       assertSame(device, storedDevice)
       assertSame(retainedUpdate, controlState.update)
+      assertEquals(device, pendingCleanup?.device)
+      assertEquals(false, pendingCleanup?.unlinkConfirmed)
+      assertFalse(transitionMarker)
       true
     }
 
     assertTrue(removed)
     assertNull(storedDevice)
+    assertNull(pendingCleanup)
+    assertTrue(UnifiedPushLifecycle.isReady())
     assertNull(controlState.update)
     assertEquals("retained-control-key", controlState.key)
     assertEquals(7L, controlState.importSequence)
@@ -250,6 +256,10 @@ class UnifiedPushRefreshJobTest {
     }
 
     assertFalse(removed)
+    assertEquals(device, pendingCleanup?.device)
+    assertEquals(false, pendingCleanup?.unlinkConfirmed)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+    assertFalse(transitionMarker)
     assertSame(device, storedDevice)
     assertSame(retainedUpdate, controlState.update)
     assertEquals("retained-control-key", controlState.key)
@@ -265,6 +275,7 @@ class UnifiedPushRefreshJobTest {
     }
 
     assertTrue(removed)
+    assertNull(pendingCleanup)
     assertSame(device, storedDevice)
     assertSame(retainedUpdate, controlState.update)
     assertEquals("retained-control-key", controlState.key)
@@ -344,12 +355,7 @@ class UnifiedPushRefreshJobTest {
   fun `manual unlink finishes local transition after caller cancellation during lease drain`() = runBlocking {
     val lease = UnifiedPushAccountTransition.acquireLease()!!
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    val transitionStarted = CountDownLatch(1)
     val serverRemovalStarted = CountDownLatch(1)
-    every { unifiedPush.setIncompleteAccountTransition(any()) } answers {
-      transitionMarker = firstArg()
-      if (transitionMarker) transitionStarted.countDown()
-    }
 
     val removal = scope.launch {
       UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
@@ -359,7 +365,9 @@ class UnifiedPushRefreshJobTest {
     }
 
     try {
-      assertTrue(transitionStarted.await(5, TimeUnit.SECONDS))
+      withTimeout(5_000) {
+        while (UnifiedPushLifecycle.isReady()) delay(1)
+      }
       assertEquals("server removal must wait for the active push lease", 1L, serverRemovalStarted.count)
 
       removal.cancel()
@@ -1040,6 +1048,67 @@ class UnifiedPushRefreshJobTest {
     assertTrue(store.rebuilt().hasIncompleteAccountTransition)
     assertNull(UnifiedPushAccountTransition.acquireLease())
     verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
+  }
+
+  @Test
+  fun `manual unlink with a lost response recovers from the durable intent after restart`() = runBlocking {
+    val store = provisioningStore()
+    store.values.enabled = false
+    store.values.device = device
+    store.values.mutateControl {
+      val update = ControlUpdate(5, "https://push.example.invalid/old", "p", "a", ByteArray(ControlFrame.HEADER_SIZE), 1)
+      it.copy(key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", activeEpoch = 4, highestEpoch = 5, importSequence = 7, update = update)
+    }
+
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+      val durable = store.rebuilt()
+      val intent = checkNotNull(durable.pendingRelayCleanup)
+      assertEquals("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", intent.accountId)
+      assertEquals(1, intent.localDeviceId)
+      assertEquals(device, intent.device)
+      assertFalse(intent.unlinkConfirmed)
+      assertFalse(durable.hasIncompleteAccountTransition)
+      assertEquals(device, durable.device)
+      assertNull(UnifiedPushAccountTransition.acquireLease())
+      throw IOException("synthetic lost unlink response")
+    }
+    assertFalse(removed)
+
+    val restarted = store.rebuilt()
+    every { SignalStore.unifiedpush } returns restarted
+    UnifiedPushAccountTransition.initializeFromSignalStore()
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.UNKNOWN
+    assertTrue(runRefresh() is IOException)
+    assertEquals(device, store.rebuilt().device)
+    assertNotNull(store.rebuilt().controlState.update)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.NOT_LINKED
+    assertNull(runRefresh())
+    assertNull(store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertNull(store.rebuilt().controlState.update)
+    assertEquals("https://molly.example.invalid", store.rebuilt().mollySocketUrl)
+    assertTrue(UnifiedPushLifecycle.isReady())
+    verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
+  }
+
+  @Test
+  fun `manual unlink waits for a durable intent before calling the server`() = runBlocking {
+    val store = provisioningStore()
+    store.values.device = device
+    store.storage.delegate.nextWriteFailure = IllegalStateException("synthetic intent write failure")
+
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+      error("server removal cannot start without an acknowledged intent")
+    }
+
+    assertFalse(removed)
+    assertEquals(device, store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
   }
 
   @Test

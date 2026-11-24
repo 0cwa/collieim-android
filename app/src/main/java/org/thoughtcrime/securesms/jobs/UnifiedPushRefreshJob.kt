@@ -379,12 +379,12 @@ class UnifiedPushRefreshJob private constructor(
   ): UnifiedPushLifecycle.TransitionResult<Boolean> = runBlocking {
     UnifiedPushAccountTransition.withTransitionAndGeneration(
       expectedGeneration = expectedGeneration,
-      relayCleanup = cleanup,
+      relayCleanup = { cleanup },
     ) {
       val values = SignalStore.unifiedpush
       val intent = synchronized(UnifiedPushLifecycle.monitor) {
         val pending = values.pendingRelayCleanup
-        if (pending == null || !pending.hasSameOwner(cleanup) || !ownsRelayCleanupLocked(pending)) {
+        if (pending == null || !pending.hasSameOwner(cleanup) || !UnifiedPushAccountTransition.ownsRelayCleanupLocked(pending)) {
           return@withTransitionAndGeneration false
         }
         // A prior write may have failed before acknowledgement. Require a durable intent before advancing.
@@ -401,27 +401,9 @@ class UnifiedPushRefreshJob private constructor(
       }
 
       synchronized(UnifiedPushLifecycle.monitor) {
-        if (!ownsRelayCleanupLocked(intent)) return@synchronized false
-        val current = values.device
-        val clearControlUpdate = intent.clearControlUpdate || current != null
-        if (!intent.unlinkConfirmed || clearControlUpdate != intent.clearControlUpdate) {
-          values.setRelayCleanup(intent.copy(unlinkConfirmed = true, clearControlUpdate = clearControlUpdate), pending = true)
-        }
-        // An earlier clear may have landed without acknowledgement. The cleanup still owns the control update.
-        if (current != null) values.commitClearedDevice()
-        if (clearControlUpdate) values.mutateControl { it.copy(update = null) }
-        true
+        UnifiedPushAccountTransition.clearConfirmedRelayCleanupLocked(intent)
       }
     }
-  }
-
-  private fun ownsRelayCleanupLocked(cleanup: UnifiedPushValues.RelayCleanup): Boolean {
-    val values = SignalStore.unifiedpush
-    val current = values.device
-    if (!UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(cleanup.accountId, cleanup.localDeviceId) ||
-      (current != null && current != cleanup.device)) return false
-    if (values.hasIncompleteAccountTransition) throw IOException("UnifiedPush account context is transitioning")
-    return true
   }
 
   private class UnacknowledgedDeviceException(val failure: Exception) : Exception(failure)

@@ -28,14 +28,17 @@ import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
+import org.thoughtcrime.securesms.util.SingleLiveEvent
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.unifiedpush.android.connector.UnifiedPush
 
 class UnifiedPushSettingsViewModel(private val application: Application) : ViewModel() {
 
   private val store = Store(getState())
+  private val exportSuccess = SingleLiveEvent<String>()
 
   val state: LiveData<UnifiedPushSettingsState> = store.stateLiveData
+  val exportSuccessResult: LiveData<String> = exportSuccess
 
   fun refresh() {
     store.update { getState() }
@@ -145,20 +148,22 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     writeTextToClipboard(context, "Account ID", aci)
   }
 
-  /** Writes the CollieSocket enrollment file off the main thread and reports the outcome as a toast. */
+  /** Writes the CollieSocket enrollment file off the main thread and reports its result. */
   fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null) {
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
       // Before anything can fail, so a refused or overflowing epoch never leaves the old password file behind.
       EnrollmentExporter.removeFiles(app)
-      val message = try {
+      var successMessage: String? = null
+      val failureMessage = try {
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
         val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
-        if (export.collides) {
+        successMessage = if (export.collides) {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, export.file.absolutePath, export.epoch, export.highestUsed)
         } else {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, export.file.absolutePath)
         }
+        null
       } catch (e: EnrollmentFile.Invalid) {
         app.getString(
           when (e.code) {
@@ -177,7 +182,10 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       } catch (e: IOException) {
         app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
       }
-      ThreadUtil.runOnMain { Toast.makeText(app, message, Toast.LENGTH_LONG).show() }
+      ThreadUtil.runOnMain {
+        if (successMessage != null) exportSuccess.value = successMessage
+        else Toast.makeText(app, failureMessage, Toast.LENGTH_LONG).show()
+      }
       refresh()
     }
   }

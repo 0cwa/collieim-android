@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
 import android.app.Application
+import android.os.Looper
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
 import im.molly.unifiedpush.control.ControlState
@@ -9,6 +10,7 @@ import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.enrollment.ExportMode
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
@@ -21,6 +23,7 @@ import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowToast
 import org.signal.core.util.logging.Log
@@ -36,6 +39,7 @@ import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.util.livedata.LiveDataRule
 import org.unifiedpush.android.connector.UnifiedPush
+import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -119,6 +123,39 @@ class UnifiedPushSettingsViewModelPersistenceTest {
 
     assertTrue(values.controlState.intents.isEmpty())
     assertEquals(application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed), ShadowToast.getTextOfLatestToast().toString())
+  }
+
+  @Test
+  fun `successful export and collision emit the complete result message`() {
+    val file = File(application.getExternalFilesDir(null), EnrollmentExporter.FILE_NAME)
+    val requestId = "22222222-2222-4222-8222-222222222222"
+    val viewModel = UnifiedPushSettingsViewModel(application)
+    val messages = mutableListOf<String>()
+    val observer = Observer<String> { messages.add(it) }
+    mockkStatic(EnrollmentExporter::class)
+    viewModel.exportSuccessResult.observeForever(observer)
+    try {
+      for (highestUsed in listOf(1L, 3L)) {
+        val result = EnrollmentExporter.Export(file, 2L, highestUsed, requestId)
+        every { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) } returns result
+        val expected = if (result.collides) {
+          application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, file.absolutePath, 2L, highestUsed)
+        } else {
+          application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, file.absolutePath)
+        }
+        val count = messages.size
+        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (messages.size == count && System.nanoTime() < deadline) {
+          shadowOf(Looper.getMainLooper()).idle()
+          if (messages.size == count) Thread.sleep(10)
+        }
+        assertEquals(listOf(expected), messages.drop(count))
+      }
+    } finally {
+      viewModel.exportSuccessResult.removeObserver(observer)
+      unmockkStatic(EnrollmentExporter::class)
+    }
   }
 
   private fun awaitRefresh(

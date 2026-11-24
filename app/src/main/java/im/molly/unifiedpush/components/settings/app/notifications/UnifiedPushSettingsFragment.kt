@@ -44,6 +44,13 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
     }
+    viewModel.exportSuccessResult.observe(viewLifecycleOwner) { message ->
+      MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
+        .setMessage(message)
+        .setPositiveButton(android.R.string.ok, null)
+        .show()
+    }
 
     RestartableSubscription { EventBus.default.subscribe<PushServiceEvent>(ThreadMode.MAIN, ::onPushServiceEvent) }
       .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)

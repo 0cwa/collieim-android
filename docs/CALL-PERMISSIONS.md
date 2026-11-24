@@ -170,6 +170,12 @@ overrides, or bypass the absolute calling prohibition. Extend the relevant
 settings/state surface without redesigning the main Collie screen or exposing
 controls for unfinished capabilities.
 
+Dependent feature branches need this complete `call-safety` layer, including
+its account, restore, recipient-merge and queued-job hooks. The settings facade
+alone does not establish those lifecycle guarantees. While this PR is open,
+dependent work can build on its feature branch; after review and merge, use the
+updated `trailblazer-beta` baseline.
+
 Managed link-key parsing, formatting, room-ID derivation and era-ID conversion
 track the exact RingRTC source selected in `build-inputs/native-lock.json`.
 `tooling/ci/test_call_admission_schema.py` checks the source pins for the schema
@@ -191,6 +197,16 @@ compare managed helpers to packaged RingRTC on Android. App and instrumentation
 APKs must come from the same build; a zero-test run is a failure. Follow
 `TRAILBLAZER-DEVELOPMENT.md` for the `prodWebsiteBeta` build and account-free smoke
 test. Retain actual runtime evidence outside Git and link it in the PR.
+
+The **Call permissions API 35** workflow builds the Beta variant directly and
+launches a separately signed disposable test copy on API 35. It then runs the
+three instrumentation classes above using matching isolated IMO app/test APKs.
+Its evidence gate requires all four methods to pass, all nine settings captures
+to decode, and source, APK and device identity to match. The workflow retains
+the results as an Actions artifact; it does not prepare or publish a release.
+This account-free check covers startup, settings and native metadata parity.
+Ordinary calls and notification/acceptance latency still require two enrolled
+accounts and comparison with the unchanged Beta baseline.
 
 Test source alone is not execution evidence. The PR records the exact tests and
 builds that ran, plus any remaining API 35 or two-account ordinary-call timing

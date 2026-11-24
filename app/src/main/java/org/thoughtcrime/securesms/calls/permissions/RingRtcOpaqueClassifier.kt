@@ -20,7 +20,9 @@ object RingRtcOpaqueClassifier {
     val kind: GroupMessageKind,
     val groupId: ByteArray,
     val ringId: Long?,
-    val opaque: ByteArray
+    val opaque: ByteArray,
+    val demuxId: Long? = null,
+    val isMediaKey: Boolean = false
   )
 
   @JvmStatic
@@ -69,6 +71,7 @@ object RingRtcOpaqueClassifier {
 
     // Re-encoding prevents different duplicate-field merge behavior in Wire and
     // RingRTC's protobuf decoder from changing the context after admission.
-    return Classified(GroupMessageKind.GROUP_DATA, group.groupId.toByteArray(), null, message.encode())
+    val demuxId = (group.mediaKey?.demuxId ?: group.leaving!!.demuxId!!).toLong() and 0xffff_ffffL
+    return Classified(GroupMessageKind.GROUP_DATA, group.groupId.toByteArray(), null, message.encode(), demuxId, group.mediaKey != null)
   }
 }

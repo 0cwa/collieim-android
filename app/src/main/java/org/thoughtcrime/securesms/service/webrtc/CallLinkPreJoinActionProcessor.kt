@@ -14,6 +14,9 @@ import org.signal.libsignal.zkgroup.calllinks.CallLinkSecretParams
 import org.signal.remoteconfig.RemoteConfig
 import org.signal.ringrtc.CallException
 import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
+import org.thoughtcrime.securesms.calls.permissions.GroupCallAdmission
+import org.thoughtcrime.securesms.components.webrtc.CallLinkProfileKeySender
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.callLinks
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.WebRtcViewModel
@@ -42,11 +45,20 @@ class CallLinkPreJoinActionProcessor(
 
   override fun handlePreJoinCall(currentState: WebRtcServiceState, remotePeer: RemotePeer): WebRtcServiceState {
     Log.i(TAG, "handlePreJoinCall():")
+    val generation = CallPermissions.generation()
+    if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.id)) return currentState
 
     if (currentState.callInfoState.groupCall != null) {
       Log.w(TAG, "handlePreJoinCall(): Group call already exists, ignoring duplicate pre-join request")
       return currentState
     }
+
+    // A reconnect keeps the explicit local call session, but its replacement
+    // native client must receive a fresh SFU roster before media or sharing.
+    val sessionKey = CallPermissions.currentCallLinkSession(remotePeer.id) ?: return currentState
+    if (!CallPermissions.updateCallLinkMembers(sessionKey, emptyMap(), emptyList())) return currentState
+    GroupCallAdmission.clearPending()
+    CallLinkProfileKeySender.clear()
 
     val groupCall = try {
       val callLink = callLinks.getCallLinkByRoomId(remotePeer.recipient.requireCallLinkRoomId())
@@ -54,7 +66,6 @@ class CallLinkPreJoinActionProcessor(
         return groupCallFailure(currentState, "No access to this call link.", Exception())
       }
 
-      val callLinkRootKey = CallLinkRootKey(callLink.credentials.linkKeyBytes)
       val callLinkSecretParams = CallLinkSecretParams.deriveFromRootKey(callLink.credentials.linkKeyBytes)
       val genericServerPublicParams = GenericServerPublicParams(
         AppDependencies.signalServiceNetworkAccess
@@ -73,6 +84,11 @@ class CallLinkPreJoinActionProcessor(
 
       val dredDuration: Byte = RemoteConfig.dredDuration.toByte()
 
+      // Credential retrieval can outlive permission revocation. Retain the
+      // original request generation before constructing or entering RingRTC.
+      if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.id)) return currentState
+      val callLinkRootKey = CallLinkRootKey(callLink.credentials.linkKeyBytes)
+      if (!CallPermissions.isCurrent(generation)) return currentState
       webRtcInteractor.callManager.createCallLinkCall(
         SignalStore.internal.groupCallingServer,
         WebRtcUtil.getProxyInfo(),
@@ -98,10 +114,18 @@ class CallLinkPreJoinActionProcessor(
     } ?: return groupCallFailure(currentState, "Failed to create group call object for call link.", Exception())
 
     try {
+      if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.id)) {
+        groupCall.disconnect()
+        return currentState
+      }
       groupCall.setOutgoingAudioMuted(true)
       groupCall.setOutgoingVideoMuted(true, false)
       groupCall.setDataMode(NetworkUtil.getCallingDataMode(context, groupCall.localDeviceState.networkRoute.localAdapterType))
       Log.i(TAG, "Connecting to group call: " + currentState.callInfoState.callRecipient.id)
+      if (!CallPermissions.isCurrent(generation)) {
+        groupCall.disconnect()
+        return currentState
+      }
       groupCall.connect()
     } catch (e: CallException) {
       return groupCallFailure(currentState, "Unable to connect to call link", e)

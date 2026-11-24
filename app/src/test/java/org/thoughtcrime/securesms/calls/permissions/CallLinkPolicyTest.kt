@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.calls.permissions
 
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.reactivex.rxjava3.core.Single
 import org.junit.After
@@ -17,6 +18,7 @@ class CallLinkPolicyTest {
   @Before
   fun setUp() {
     mockkObject(CallPermissions)
+    mockkStatic(CallPermissions::class)
     every { CallPermissions.generation() } answers { generation }
     every { CallPermissions.runIfCurrent(any(), any()) } answers {
       if (enabled && firstArg<Long>() == generation) {

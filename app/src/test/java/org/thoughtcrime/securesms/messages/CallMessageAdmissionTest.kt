@@ -1,12 +1,12 @@
 package org.thoughtcrime.securesms.messages
 
 import android.app.Application
+import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import io.mockk.Runs
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -21,11 +21,15 @@ import org.robolectric.annotation.Config
 import org.signal.core.models.ServiceId
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
+import org.signal.libsignal.protocol.IdentityKey
 import org.thoughtcrime.securesms.calls.permissions.CallPermission
 import org.thoughtcrime.securesms.calls.permissions.CallPermissionTestEnvironment
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.calls.permissions.DirectMessageKind
 import org.thoughtcrime.securesms.calls.permissions.GroupCallAdmission
+import org.thoughtcrime.securesms.crypto.storage.SignalServiceAccountDataStoreImpl
+import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
+import org.thoughtcrime.securesms.database.model.IdentityRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ProfileKeySendJob
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -35,6 +39,7 @@ import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.internal.push.CallMessage
 import org.whispersystems.signalservice.internal.push.Content
 import org.whispersystems.signalservice.internal.push.Envelope
+import java.util.Optional
 import java.util.UUID
 
 /** The ingress tests count dependency acquisition, not merely the eventual native invocation. */
@@ -122,7 +127,7 @@ class CallMessageAdmissionTest {
 
   @Test
   fun `existing trust refusal is managed and releases its admission slot`() {
-    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    CallPermissions.setOverride(sender, CallPermission.INHERIT)
     every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns false
     process(deniedMessages().first())
 
@@ -152,6 +157,36 @@ class CallMessageAdmissionTest {
 
     verify(exactly = 0) { AppDependencies.signalCallManager }
     verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `explicit allow admits an authenticated ACI without chat or address book heuristics`() {
+    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns false
+    val key: IdentityKey = mockk { every { serialize() } returns byteArrayOf(1) }
+    val record: IdentityRecord = mockk { every { component2() } returns key }
+    val accountStore = mockk<SignalServiceAccountDataStoreImpl>()
+    val protocolStore = mockk<SignalServiceDataStoreImpl>()
+    every { accountStore.identities().getIdentityRecord(blockedId) } returns Optional.of(record)
+    every { protocolStore.get(any<ServiceId>()) } returns accountStore
+    every { AppDependencies.protocolStore } returns protocolStore
+
+    process(deniedMessages().first())
+
+    verify(exactly = 1) { AppDependencies.signalCallManager.receivedOffer(any(), any(), any(), any()) }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `explicit call allow never grants PNI profile sharing to an unknown caller`() {
+    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns false
+    val pniMetadata = EnvelopeMetadata(metadata.sourceServiceId, null, 2, true, null, policy.pniId, 1)
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = deniedMessages().first()), pniMetadata, 1_000)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+    verify(exactly = 0) { ProfileKeySendJob.createForCall(any(), any()) }
   }
 
   private fun process(message: CallMessage) = CallMessageProcessor.process(sender, envelope, Content(callMessage = message), metadata, 1_000)

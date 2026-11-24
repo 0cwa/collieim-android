@@ -12,6 +12,7 @@ import io.mockk.unmockkObject
 import org.junit.rules.ExternalResource
 import org.signal.remoteconfig.RemoteConfig
 import org.signal.storage.keyvalue.EmojiValues
+import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.NotificationProfileValues
 import org.signal.storage.keyvalue.PhoneNumberPrivacyValues
 import org.signal.storage.keyvalue.RegistrationValues
@@ -22,6 +23,7 @@ import org.signal.storage.keyvalue.UiHintValues
 import org.thoughtcrime.securesms.dependencies.AppRemoteConfigDependencies
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.BackupValues
+import org.thoughtcrime.securesms.keyvalue.CallPermissionValues
 import org.thoughtcrime.securesms.keyvalue.InAppPaymentValues
 import org.thoughtcrime.securesms.keyvalue.InternalValues
 import org.thoughtcrime.securesms.keyvalue.MiscellaneousValues
@@ -29,6 +31,8 @@ import org.thoughtcrime.securesms.keyvalue.PaymentsValues
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.StoryValues
+import java.io.File
+import java.nio.file.Files
 import kotlin.reflect.KClass
 
 /**
@@ -91,6 +95,12 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
   lateinit var notificationProfile: NotificationProfileValues
     private set
 
+  /** Real local policy state so recipient merge and restore hooks remain exercised by DB tests. */
+  lateinit var callPermissions: CallPermissionValues
+    private set
+
+  private lateinit var callPermissionDirectory: File
+
   override fun before() {
     account = mockk(relaxed = relaxed.contains(AccountValues::class), relaxUnitFun = true)
     phoneNumberPrivacy = mockk(relaxed = relaxed.contains(PhoneNumberPrivacyValues::class), relaxUnitFun = true)
@@ -108,6 +118,8 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
     uiHints = mockk(relaxed = relaxed.contains(UiHintValues::class), relaxUnitFun = true)
     payments = mockk(relaxed = relaxed.contains(PaymentsValues::class), relaxUnitFun = true)
     notificationProfile = mockk(relaxed = relaxed.contains(NotificationProfileValues::class), relaxUnitFun = true)
+    callPermissionDirectory = Files.createTempDirectory("call-permission-test-store").toFile()
+    callPermissions = CallPermissionValues(KeyValueStore(SnapshotKeyValuePersistentStorage(), DirectExecutor()), callPermissionDirectory)
 
     mockkObject(SignalStore)
     RemoteConfig.initDependencies(AppRemoteConfigDependencies)
@@ -127,9 +139,12 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
     every { SignalStore.uiHints } returns uiHints
     every { SignalStore.payments } returns payments
     every { SignalStore.notificationProfile } returns notificationProfile
+    every { SignalStore.isInitialized } returns true
+    every { SignalStore.callPermissions } returns callPermissions
   }
 
   override fun after() {
     unmockkObject(SignalStore)
+    callPermissionDirectory.deleteRecursively()
   }
 }

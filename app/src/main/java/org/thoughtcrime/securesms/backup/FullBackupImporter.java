@@ -134,9 +134,16 @@ public class FullBackupImporter extends FullBackupBase {
 
     db.setForeignKeyConstraintsEnabled(false);
     db.beginTransaction();
-    keyValueDatabase.beginTransaction();
+    boolean keyValueTransactionStarted = false;
     try {
       BackupRecordInputStream inputStream = new BackupRecordInputStream(is, passphrase);
+
+      // Recipient IDs will be replaced. Persist the conservative reset while holding their
+      // writer, before opening the key-value transaction that would block policy persistence.
+      // A later import rollback must never restore grants for these obsolete identities.
+      org.thoughtcrime.securesms.calls.permissions.CallPermissions.onRestore();
+      keyValueDatabase.beginTransaction();
+      keyValueTransactionStarted = true;
 
       dropAllTables(db, excludeKeyTables);
 
@@ -172,7 +179,7 @@ public class FullBackupImporter extends FullBackupBase {
       }
 
       db.endTransaction();
-      keyValueDatabase.endTransaction();
+      if (keyValueTransactionStarted) keyValueDatabase.endTransaction();
       db.setForeignKeyConstraintsEnabled(true);
     }
 

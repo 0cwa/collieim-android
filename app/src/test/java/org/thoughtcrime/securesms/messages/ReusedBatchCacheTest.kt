@@ -15,6 +15,7 @@ import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobManager
@@ -30,37 +31,38 @@ class ReusedBatchCacheTest {
     val jobManager = mockk<JobManager>(relaxed = true) {
       every { add(any()) } answers { addedJobs += firstArg<Job>() }
     }
-    mockkStatic(AppDependencies::class)
+    mockkStatic(AppDependencies::class, CallPermissions::class)
     every { AppDependencies.jobManager } returns jobManager
+    every { CallPermissions.isGroupPeekPermitValid("current", any(), any()) } returns true
   }
 
   @After
   fun tearDown() {
-    unmockkStatic(AppDependencies::class)
+    unmockkStatic(AppDependencies::class, CallPermissions::class)
   }
 
   @Test
   fun givenMultipleGroupCallPeeksPerGroup_whenIFlush_thenIExpectOneJobPerGroupWithTheLatestData() {
     val cache = ReusedBatchCache()
 
-    cache.addGroupCallPeek(GroupCallPeekJobData(groupRecipientId = 1, senderRecipientId = 10, serverTimestamp = 100))
-    cache.addGroupCallPeek(GroupCallPeekJobData(groupRecipientId = 2, senderRecipientId = 20, serverTimestamp = 200))
-    cache.addGroupCallPeek(GroupCallPeekJobData(groupRecipientId = 1, senderRecipientId = 11, serverTimestamp = 300))
+    cache.addGroupCallPeek(admittedPeek(groupRecipientId = 1, senderRecipientId = 10, serverTimestamp = 100))
+    cache.addGroupCallPeek(admittedPeek(groupRecipientId = 2, senderRecipientId = 20, serverTimestamp = 200))
+    cache.addGroupCallPeek(admittedPeek(groupRecipientId = 1, senderRecipientId = 11, serverTimestamp = 300))
 
     assertThat(addedJobs).isEmpty()
 
     cache.flushAndClear()
 
     assertThat(addedJobs.map { GroupCallPeekJobData.ADAPTER.decode((it as GroupCallPeekJob).serialize()) }).containsExactlyInAnyOrder(
-      GroupCallPeekJobData(groupRecipientId = 1, senderRecipientId = 11, serverTimestamp = 300),
-      GroupCallPeekJobData(groupRecipientId = 2, senderRecipientId = 20, serverTimestamp = 200)
+      admittedPeek(groupRecipientId = 1, senderRecipientId = 11, serverTimestamp = 300),
+      admittedPeek(groupRecipientId = 2, senderRecipientId = 20, serverTimestamp = 200)
     )
   }
 
   @Test
   fun givenFlushedGroupCallPeeks_whenIFlushAgain_thenIExpectNoNewJobs() {
     val cache = ReusedBatchCache()
-    cache.addGroupCallPeek(GroupCallPeekJobData(groupRecipientId = 1, senderRecipientId = 10, serverTimestamp = 100))
+    cache.addGroupCallPeek(admittedPeek(groupRecipientId = 1, senderRecipientId = 10, serverTimestamp = 100))
     cache.flushAndClear()
     addedJobs.clear()
 
@@ -68,4 +70,11 @@ class ReusedBatchCacheTest {
 
     assertThat(addedJobs).isEmpty()
   }
+
+  private fun admittedPeek(groupRecipientId: Long, senderRecipientId: Long, serverTimestamp: Long) = GroupCallPeekJobData(
+    groupRecipientId = groupRecipientId,
+    senderRecipientId = senderRecipientId,
+    serverTimestamp = serverTimestamp,
+    callPermissionPermit = "current"
+  )
 }

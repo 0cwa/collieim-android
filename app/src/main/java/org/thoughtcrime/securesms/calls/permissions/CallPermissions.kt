@@ -4,10 +4,14 @@ package org.thoughtcrime.securesms.calls.permissions
 import android.os.SystemClock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import org.signal.core.models.ServiceId
 import org.signal.core.models.recipients.RecipientId
+import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.recipients.RecipientIds
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -54,14 +58,28 @@ object CallPermissions {
 
   @JvmStatic
   fun setOverride(recipient: Recipient, permission: CallPermission) {
-    val resolved = Recipient.resolved(recipient.id)
-    require(resolved.isIndividual || resolved.isPushV2Group)
-    mutate { it.withOverride(context(resolved), resolved.id.toLong(), permission) }
+    // Serialize identity resolution and the durable write with recipient merges. The live
+    // recipient cache may still expose the secondary ID until a merge's transaction commits.
+    // Keep the same database -> values lock order as onRecipientMerge, without the session lock.
+    SignalDatabase.runInTransaction {
+      val record = SignalDatabase.recipients.getRecord(recipient.id)
+      val context = when (record.recipientType) {
+        RecipientTable.RecipientType.INDIVIDUAL -> CallContext.DIRECT
+        RecipientTable.RecipientType.GV2 -> CallContext.GROUP
+        else -> throw IllegalArgumentException("Call permission overrides require a contact or v2 group")
+      }
+      mutate { it.withOverride(context, record.id.toLong(), permission) }
+    }
   }
 
   @JvmStatic
-  fun isCallingAllowed(): Boolean = runCatching {
-    state()?.allCallingDisabled == false && SignalStore.account.isRegistered && SignalStore.account.aci != null && !SignalStore.account.isUnauthorizedReceived
+  fun isCallingAllowed(): Boolean {
+    val snapshot = policySnapshot() ?: return false
+    return !snapshot.state.allCallingDisabled && accountReady() && snapshotCurrent(snapshot)
+  }
+
+  private fun accountReady(): Boolean = runCatching {
+    SignalStore.isInitialized && SignalStore.account.isRegistered && SignalStore.account.aci != null && !SignalStore.account.isUnauthorizedReceived
   }.getOrDefault(false)
 
   @JvmStatic
@@ -85,8 +103,9 @@ object CallPermissions {
   @JvmStatic
   fun canReceiveGroup(recipientId: RecipientId): Boolean = runCatching {
     val recipient = Recipient.resolved(recipientId)
+    val snapshot = policySnapshot() ?: return false
     recipient.isPushV2Group && !recipient.isBlocked && SignalDatabase.groups.getGroup(recipient.id).orElse(null)?.isActive == true &&
-      state()?.allowsIncoming(CallContext.GROUP, recipient.id.toLong()) == true
+      snapshot.state.allowsIncoming(CallContext.GROUP, recipient.id.toLong()) && accountReady() && snapshotCurrent(snapshot)
   }.getOrDefault(false)
 
   @JvmStatic
@@ -100,8 +119,11 @@ object CallPermissions {
     val recipient = Recipient.resolved(recipientId)
     if (!canStartCall(recipient)) return false
     synchronized(lock) {
+      val snapshot = policySnapshot() ?: return false
       syncGeneration()
-      isCallingAllowed() && writes.get() == 0 && sessions.beginOutgoing(context(recipient), recipient.id.toLong())
+      if (snapshot.state.allCallingDisabled || !accountReady() || !snapshotCurrent(snapshot)) return false
+      val began = sessions.beginOutgoing(context(recipient), recipient.id.toLong())
+      if (snapshotCurrent(snapshot)) began else { syncGeneration(); false }
     }
   }.getOrDefault(false)
 
@@ -128,23 +150,153 @@ object CallPermissions {
   }.getOrDefault(false)
 
   @JvmStatic
+  fun currentCallLinkSession(recipientId: RecipientId): CallSessionKey? = runCatching {
+    val recipient = Recipient.resolved(recipientId)
+    if (!recipient.isCallLink || recipient.isBlocked) return null
+    synchronized(lock) {
+      if (!isCallingAllowed()) return null
+      syncGeneration()
+      sessions.callLinkSession(recipient.id.toLong())
+    }
+  }.getOrNull()
+
+  /** Called only from the serialized observer of the exact currently authorized GroupCall. */
+  @JvmStatic
+  fun updateCallLinkMembers(key: CallSessionKey, devices: Map<Long, UUID>, joinedMembers: Collection<UUID>): Boolean = runCatching {
+    if (devices.size > 1024 || joinedMembers.size > 1024 || currentCallLinkSession(RecipientId.from(key.recipient)) != key) return false
+    // The SFU has authenticated these joined users. Resolve the same local identities used by
+    // incoming envelopes, outside the policy lock; no message request/profile is accepted here.
+    val recipients = joinedMembers.distinct().mapNotNull { uuid ->
+      val aci = ServiceId.ACI.from(uuid)
+      if (aci == ServiceId.ACI.UNKNOWN) null else uuid to Recipient.resolved(RecipientIds.from(aci)).id.toLong()
+    }.toMap()
+    val members = devices.mapNotNull { (demux, uuid) ->
+      recipients[uuid]?.takeIf { demux in 1..0xffff_ffffL }?.let { CallLinkMember(it, demux) }
+    }.toSet()
+    synchronized(lock) {
+      if (!isCallingAllowed()) return false
+      syncGeneration()
+      sessions.updateCallLinkMembers(key, members, recipients.values.toSet())
+    }
+  }.getOrDefault(false)
+
+  @JvmStatic
+  fun bindCallLinkDevice(ticket: CallAuthorization, demuxId: Long): CallAuthorization? {
+    if (!identityAllowed(ticket)) return null
+    return synchronized(lock) {
+      if (!isCallingAllowed()) return null
+      syncGeneration()
+      sessions.bindCallLinkDevice(ticket, demuxId)
+    }
+  }
+
+  @JvmStatic
+  fun isPendingCallLinkCurrent(ticket: CallAuthorization): Boolean {
+    if (!identityAllowed(ticket)) return false
+    return synchronized(lock) {
+      if (!isCallingAllowed()) return false
+      syncGeneration()
+      sessions.validPendingLink(ticket)
+    }
+  }
+
+  @JvmStatic
+  fun authorizePendingCallLink(ticket: CallAuthorization): CallAuthorization? {
+    if (!identityAllowed(ticket)) return null
+    return synchronized(lock) {
+      if (!isCallingAllowed()) return null
+      syncGeneration()
+      sessions.authorizePendingLink(ticket)
+    }
+  }
+
+  @JvmStatic
+  fun isCallLinkParticipant(recipientId: RecipientId): Boolean = runCatching {
+    val recipient = Recipient.resolved(recipientId)
+    if (recipient.isBlocked) return false
+    synchronized(lock) {
+      if (!isCallingAllowed()) return false
+      syncGeneration()
+      sessions.hasCallLinkParticipant(recipient.id.toLong())
+    }
+  }.getOrDefault(false)
+
+  /** Stamp remote-triggered peeks at message admission, before batching or persisted job queues. */
+  @JvmStatic
+  fun createGroupPeekPermit(recipientId: RecipientId, senderId: RecipientId): String? = runCatching {
+    val generation = generation()
+    val recipient = Recipient.resolved(recipientId)
+    val sender = Recipient.resolved(senderId)
+    if (!recipient.isPushV2Group || !canUseGroup(recipient.id) || !groupIdentityAllowed(recipient, sender, GroupMessageKind.GROUP_DATA) || !isCurrent(generation)) return null
+    listOf("peek", processId, generation, recipient.id.toLong(), sender.id.toLong(), SystemClock.elapsedRealtime() + CallSessionAuthorizer.MAX_MESSAGE_AGE_MS).joinToString("|")
+  }.getOrNull()
+
+  @JvmStatic
+  fun isGroupPeekPermitValid(permit: String?, recipientId: RecipientId, senderId: RecipientId): Boolean = runCatching {
+    val parts = permit?.split('|') ?: return false
+    if (parts.size != 6 || parts[0] != "peek" || parts[1] != processId || !isCurrent(parts[2].toLong()) || SystemClock.elapsedRealtime() >= parts[5].toLong()) return false
+    val recipient = Recipient.resolved(recipientId)
+    val sender = Recipient.resolved(senderId)
+    parts[3].toLong() == recipient.id.toLong() && parts[4].toLong() == sender.id.toLong() && recipient.isPushV2Group &&
+      canUseGroup(recipient.id) && groupIdentityAllowed(recipient, sender, GroupMessageKind.GROUP_DATA) && isCurrent(parts[2].toLong())
+  }.getOrDefault(false)
+
+  @JvmStatic
   fun endCall(recipientId: RecipientId, callId: Long) = synchronized(lock) { sessions.end(recipientId.toLong(), callId) }
 
   @JvmStatic
-  fun endAllSessions() = synchronized(lock) { sessions.clear() }
+  fun isIncomingGroupRingCurrent(recipientId: RecipientId, ringId: Long, senderId: RecipientId): Boolean = synchronized(lock) {
+    if (!isCallingAllowed()) return false
+    syncGeneration()
+    sessions.incomingGroupRingCurrent(recipientId.toLong(), ringId, senderId.toLong())
+  }
+
+  @JvmStatic
+  fun endIncomingGroupRing(recipientId: RecipientId, ringId: Long) = synchronized(lock) {
+    sessions.endIncomingGroupRing(recipientId.toLong(), ringId)
+  }
+
+  @JvmStatic
+  fun endAllSessions() {
+    synchronized(lock) { sessions.clear() }
+    GroupCallAdmission.clearPending()
+  }
 
   @JvmStatic
   fun setRevocationListener(listener: Runnable) { revocationListener = listener }
+
+  /** A deliberate contact grant can accept a call without accepting a message request or sharing a profile. */
+  @JvmStatic
+  fun hasExplicitIncomingAllow(recipientId: RecipientId): Boolean = runCatching {
+    val recipient = Recipient.resolved(recipientId)
+    val snapshot = policySnapshot() ?: return false
+    recipient.isIndividual && !recipient.isBlocked && !snapshot.state.allCallingDisabled && accountReady() &&
+      snapshot.state.override(CallContext.DIRECT, recipient.id.toLong()) == CallPermission.ALLOW && snapshotCurrent(snapshot)
+  }.getOrDefault(false)
+
+  @JvmStatic
+  fun shouldSendBusy(recipientId: RecipientId): Boolean = runCatching {
+    val recipient = Recipient.resolved(recipientId)
+    if (!recipient.isIndividual || recipient.isBlocked || !isCallingAllowed()) return false
+    synchronized(lock) {
+      val snapshot = policySnapshot() ?: return false
+      syncGeneration()
+      snapshot.state.allowsIncoming(CallContext.DIRECT, recipient.id.toLong()) && sessions.hasSession() && snapshotCurrent(snapshot)
+    }
+  }.getOrDefault(false)
 
   @JvmStatic
   fun admitDirect(recipientId: RecipientId, callId: Long, sourceDeviceId: Int, kind: DirectMessageKind, messageAgeMillis: Long): CallAuthorization? {
     val recipient = runCatching { Recipient.resolved(recipientId) }.getOrNull() ?: return null
     if (!recipient.isIndividual || recipient.isBlocked || recipient.isSelf) return null
     return synchronized(lock) {
-      val state = state() ?: return null
+      val snapshot = policySnapshot() ?: return null
       syncGeneration()
-      if (state.allCallingDisabled || writes.get() != 0 || !isCallingAllowed()) return null
-      sessions.direct(recipient.id.toLong(), callId, sourceDeviceId, kind, messageAgeMillis, state.allowsIncoming(CallContext.DIRECT, recipient.id.toLong()))
+      if (snapshot.state.allCallingDisabled || !accountReady() || !snapshotCurrent(snapshot)) return null
+      val ticket = sessions.direct(recipient.id.toLong(), callId, sourceDeviceId, kind, messageAgeMillis, snapshot.state.allowsIncoming(CallContext.DIRECT, recipient.id.toLong())) ?: return null
+      // Security writes deliberately do not take this lock (recipient merges hold a DB
+      // transaction). Never stamp an old permission decision with a newer session generation.
+      if (snapshotCurrent(snapshot)) ticket else { sessions.discard(ticket); null }
     }
   }
 
@@ -155,23 +307,32 @@ object CallPermissions {
     val context = context(recipient)
     if (!runCatching { groupIdentityAllowed(recipient, sender, kind) }.getOrDefault(false)) return null
     return synchronized(lock) {
-      val state = state() ?: return null
+      val snapshot = policySnapshot() ?: return null
       syncGeneration()
-      if (state.allCallingDisabled || writes.get() != 0 || !isCallingAllowed()) return null
-      sessions.group(context, recipient.id.toLong(), sender.id.toLong(), ringId, sourceDeviceId, kind, messageAgeMillis, state.allowsIncoming(context, recipient.id.toLong()))
+      if (snapshot.state.allCallingDisabled || !accountReady() || !snapshotCurrent(snapshot)) return null
+      val ticket = sessions.group(context, recipient.id.toLong(), sender.id.toLong(), ringId, sourceDeviceId, kind, messageAgeMillis, snapshot.state.allowsIncoming(context, recipient.id.toLong())) ?: return null
+      if (snapshotCurrent(snapshot)) ticket else { sessions.discard(ticket); null }
     }
   }
 
   @JvmStatic
   fun isAuthorized(authorization: CallAuthorization): Boolean {
-    if (!identityAllowed(authorization)) return false
+    if (!identityAllowed(authorization)) {
+      // A changed direct recipient invalidates that call. A removed/blocked group member's
+      // queued packet must not terminate the otherwise authorized group or link session.
+      if (authorization.context == CallContext.DIRECT) synchronized(lock) { sessions.discard(authorization) }
+      return false
+    }
     return synchronized(lock) { valid(authorization) }
   }
 
   @JvmStatic
   fun runAuthorized(authorization: CallAuthorization, action: Runnable): Boolean {
     // Resolve identities outside the policy lock. Recipient merges hold the database transaction.
-    if (!identityAllowed(authorization)) return false
+    if (!identityAllowed(authorization)) {
+      if (authorization.context == CallContext.DIRECT) synchronized(lock) { sessions.discard(authorization) }
+      return false
+    }
     if (!synchronized(lock) { valid(authorization) }) return false
     val previous = dispatchAuthorization.get()
     dispatchAuthorization.set(authorization)
@@ -199,7 +360,7 @@ object CallPermissions {
   /** Transport-only decline may run while calling is disabled; account/generation still must match. */
   @JvmStatic
   fun runForGeneration(generation: Long, action: Runnable): Boolean {
-    if (!synchronized(lock) { state() != null && writes.get() == 0 && generation == epoch.get() }) return false
+    if (!synchronized(lock) { state() != null && accountReady() && writes.get() == 0 && generation == epoch.get() }) return false
     action.run()
     return true
   }
@@ -233,13 +394,39 @@ object CallPermissions {
     if (!isSharingPermitValid(permit)) return false
     return runCatching {
       val parts = permit.split('|')
-      parts[3] != CallContext.DIRECT.name || parts[4].toLong() == Recipient.resolved(recipientId).id.toLong()
+      when (CallContext.valueOf(parts[3])) {
+        CallContext.DIRECT -> parts[4].toLong() == Recipient.resolved(recipientId).id.toLong()
+        CallContext.CALL_LINK -> isCallLinkParticipant(recipientId)
+        CallContext.GROUP -> true
+      }
     }.getOrDefault(false)
   }
 
+  /** A final group presence update may finish after normal teardown, never after revocation. */
+  @JvmStatic
+  fun createGroupCleanupPermit(recipientId: RecipientId): String? = createSharingPermit(CallContext.GROUP, recipientId)
+
+  @JvmStatic
+  fun isGroupCleanupPermitValid(permit: String, recipientId: RecipientId): Boolean = runCatching {
+    val parts = permit.split('|')
+    val group = Recipient.resolved(recipientId)
+    group.isPushV2Group && !group.isBlocked && SignalDatabase.groups.getGroup(group.id).orElse(null)?.isActive == true &&
+      parts.size == 6 && parts[0] == processId && parts[3] == CallContext.GROUP.name &&
+      parts[4].toLong() == group.id.toLong() && isCallingAllowed() && writes.get() == 0 &&
+      parts[1].toLong() == epoch.get() && SystemClock.elapsedRealtime() < parts[5].toLong()
+  }.getOrDefault(false)
+
   /** May be called inside a recipient DB transaction. It never waits for the dispatch lock. */
   @JvmStatic
-  fun onRecipientMerge(primary: RecipientId, secondary: RecipientId) = mutate { it.merge(primary.toLong(), secondary.toLong()) }
+  fun onRecipientMerge(primary: RecipientId, secondary: RecipientId) {
+    val before = SignalStore.callPermissions.read()
+    val merged = before.merge(primary.toLong(), secondary.toLong())
+    if (merged != before) {
+      mutate { it.merge(primary.toLong(), secondary.toLong()) }
+    } else if (sessions.involvesRecipient(primary.toLong()) || sessions.involvesRecipient(secondary.toLong())) {
+      invalidate(true)
+    }
+  }
 
   @JvmStatic
   fun onAccountChanged(account: String?) = mutate { if (it.account == account) it else it.resetRecipients(account) }
@@ -289,6 +476,17 @@ object CallPermissions {
     null
   }
 
+  private data class PolicySnapshot(val state: CallPolicyState, val generation: Long)
+
+  private fun policySnapshot(): PolicySnapshot? {
+    val generation = epoch.get()
+    val state = state() ?: return null
+    val snapshot = PolicySnapshot(state, generation)
+    return snapshot.takeIf(::snapshotCurrent)
+  }
+
+  private fun snapshotCurrent(snapshot: PolicySnapshot): Boolean = writes.get() == 0 && epoch.get() == snapshot.generation
+
   private fun mutate(transform: (CallPolicyState) -> CallPolicyState) {
     writes.incrementAndGet()
     invalidate(true)
@@ -303,7 +501,9 @@ object CallPermissions {
 
   private fun invalidate(notify: Boolean) {
     val generation = epoch.incrementAndGet()
-    changed.value = generation
+    GroupCallAdmission.clearPending()
+    // Concurrent settings/account writes may finish publishing in the opposite order.
+    changed.update { maxOf(it, generation) }
     // Listener only schedules shutdown on an already-created manager. It must not wait for it.
     if (notify) revocationListener?.run()
   }

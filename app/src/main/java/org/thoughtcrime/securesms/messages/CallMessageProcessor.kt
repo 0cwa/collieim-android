@@ -116,7 +116,7 @@ object CallMessageProcessor {
       return
     }
 
-    if (offer != null && !RecipientUtil.isCallRequestAccepted(senderRecipient)) {
+    if (offer != null && !RecipientUtil.isCallRequestAccepted(senderRecipient) && !CallPermissions.hasExplicitIncomingAllow(senderRecipient.id)) {
       declineAdmittedOffer(senderRecipient, envelope, metadata, offer, serverDeliveredTimestamp)
       return
     }

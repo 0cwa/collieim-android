@@ -1,15 +1,19 @@
 package org.thoughtcrime.securesms.calls.permissions
 
 import android.app.Application
+import android.os.SystemClock
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import okio.ByteString.Companion.toByteString
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,9 +52,12 @@ class GroupCallAdmissionTest {
   @Before
   fun setUp() {
     mockkObject(CallPermissions, SignalDatabase, Recipient, AppDependencies)
+    mockkStatic(CallPermissions::class, AppDependencies::class)
     every { AppDependencies.signalCallManager } throws AssertionError("Admission must not obtain the native call manager")
     every { CallPermissions.isCallingAllowed() } returns true
     every { CallPermissions.authorizeGroup(any(), any(), any(), any(), any(), any()) } returns ticket
+    every { CallPermissions.bindCallLinkDevice(ticket, any()) } returns ticket
+    every { CallPermissions.isAuthorized(ticket) } returns true
     every { SignalDatabase.groups } returns groups
     every { SignalDatabase.recipients } returns recipients
     every { groups.getGroup(any<GroupId>()) } returns Optional.of(group)
@@ -68,7 +75,10 @@ class GroupCallAdmissionTest {
   }
 
   @After
-  fun tearDown() = unmockkAll()
+  fun tearDown() {
+    GroupCallAdmission.clearPending()
+    unmockkAll()
+  }
 
   @Test
   fun `ordinary authorized group ring carries authenticated sender to policy`() {
@@ -124,8 +134,57 @@ class GroupCallAdmissionTest {
   }
 
   @Test
+  fun `early key from an unknown link participant stays managed while another participant is allowed`() {
+    val linkId = RecipientId.from(11)
+    val sessions = CallSessionAuthorizer(SystemClock::elapsedRealtime)
+    sessions.beginOutgoing(CallContext.CALL_LINK, linkId.toLong())
+    val key = sessions.callLinkSession(linkId.toLong())!!
+    sessions.updateCallLinkMembers(key, setOf(CallLinkMember(99, 32)))
+    val existingPeer = sessions.bindCallLinkDevice(sessions.group(CallContext.CALL_LINK, 11, 99, null, 3, GroupMessageKind.GROUP_DATA, 0, false)!!, 32)!!
+    val unbound = sessions.group(CallContext.CALL_LINK, 11, senderId.toLong(), null, 2, GroupMessageKind.GROUP_DATA, 0, false)!!
+    val existingUuid = UUID(0, 99)
+    every { groups.getGroup(any<GroupId>()) } returns Optional.empty()
+    every { recipients.getByCallLinkRoomId(any()) } returns Optional.of(linkId)
+    every { CallPermissions.authorizeGroup(linkId, senderId, null, 2, GroupMessageKind.GROUP_DATA, 0) } returns unbound
+    every { CallPermissions.bindCallLinkDevice(unbound, 16) } answers { sessions.bindCallLinkDevice(unbound, 16) }
+    every { CallPermissions.isAuthorized(any()) } answers { sessions.valid(firstArg()) }
+    every { CallPermissions.isPendingCallLinkCurrent(any()) } answers { sessions.validPendingLink(firstArg()) }
+    every { CallPermissions.authorizePendingCallLink(any()) } answers { sessions.authorizePendingLink(firstArg()) }
+    every { CallPermissions.updateCallLinkMembers(key, any(), any()) } answers {
+      val devices = secondArg<Map<Long, UUID>>()
+      sessions.updateCallLinkMembers(key, devices.map { (demux, uuid) -> CallLinkMember(if (uuid == senderAci.rawUuid) senderId.toLong() else 99L, demux) }.toSet())
+    }
+
+    val media = OpaqueCallMessage(groupCallMessage = GroupDeviceMessage(groupId, mediaKey = GroupDeviceMessage.MediaKey(0, ByteArray(32) { 7 }.toByteString(), 16))).encode()
+    assertNull(GroupCallAdmission.admit(sender, metadata(), media, 0))
+    assertTrue(sessions.valid(existingPeer))
+    assertTrue(GroupCallAdmission.updateCallLinkParticipants(key, mapOf(32L to existingUuid), listOf(existingUuid)).isEmpty())
+    val ready = GroupCallAdmission.updateCallLinkParticipants(key, mapOf(32L to existingUuid, 16L to senderAci.rawUuid), listOf(existingUuid, senderAci.rawUuid))
+    assertEquals(1, ready.size)
+    assertTrue(sessions.valid(ready.single().authorization))
+    assertTrue(sessions.valid(existingPeer))
+
+    // The SFU callback can publish between binding a candidate and inserting it in the queue.
+    val racingCandidate = sessions.group(CallContext.CALL_LINK, 11, senderId.toLong(), null, 2, GroupMessageKind.GROUP_DATA, 0, false)!!
+    every { CallPermissions.authorizeGroup(linkId, senderId, null, 2, GroupMessageKind.GROUP_DATA, 0) } returns racingCandidate
+    every { CallPermissions.bindCallLinkDevice(racingCandidate, 48) } answers { sessions.bindCallLinkDevice(racingCandidate, 48) }
+    every { CallPermissions.isPendingCallLinkCurrent(any()) } answers {
+      sessions.updateCallLinkMembers(key, setOf(CallLinkMember(99, 32), CallLinkMember(senderId.toLong(), 16), CallLinkMember(senderId.toLong(), 48)))
+      sessions.validPendingLink(firstArg())
+    }
+    val racingMedia = OpaqueCallMessage(groupCallMessage = GroupDeviceMessage(groupId, mediaKey = GroupDeviceMessage.MediaKey(0, ByteArray(32) { 7 }.toByteString(), 48))).encode()
+    val admittedWithoutLostWakeup = GroupCallAdmission.admit(sender, metadata(), racingMedia, 0)
+    assertNotNull(admittedWithoutLostWakeup)
+    assertTrue(sessions.valid(admittedWithoutLostWakeup!!.authorization))
+    assertTrue(GroupCallAdmission.updateCallLinkParticipants(key, mapOf(32L to existingUuid, 16L to senderAci.rawUuid, 48L to senderAci.rawUuid), listOf(existingUuid, senderAci.rawUuid)).isEmpty())
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+  }
+
+  @Test
   fun `unavailable group data and denied policy never obtain native manager`() {
     every { groups.getGroup(any<GroupId>()) } throws IllegalStateException("Unavailable")
+    assertNull(GroupCallAdmission.admit(sender, metadata(), ring(), 0))
+    every { sender.resolve() } throws IllegalStateException("Unavailable")
     assertNull(GroupCallAdmission.admit(sender, metadata(), ring(), 0))
     every { CallPermissions.isCallingAllowed() } returns false
     assertNull(GroupCallAdmission.admit(sender, metadata(), ring(), 0))

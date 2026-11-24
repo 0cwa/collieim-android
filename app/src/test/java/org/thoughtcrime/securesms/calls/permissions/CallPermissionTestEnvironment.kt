@@ -8,12 +8,19 @@ import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import org.signal.core.models.ServiceId
 import org.signal.core.models.recipients.RecipientId
+import org.thoughtcrime.securesms.database.GroupTable
+import org.thoughtcrime.securesms.database.RecipientTable
+import org.thoughtcrime.securesms.database.SQLiteDatabase
+import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.database.model.GroupRecord
+import org.thoughtcrime.securesms.database.model.RecipientRecord
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.CallPermissionValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import java.util.Optional
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
 
 /** Runs the production facade and session engine while replacing only disk and recipient lookup. */
 internal class CallPermissionTestEnvironment {
@@ -22,11 +29,18 @@ internal class CallPermissionTestEnvironment {
   private val account: AccountValues = mockk()
   private val values: CallPermissionValues = mockk()
   private val recipients = HashMap<RecipientId, Recipient>()
-  private var state = CallPolicyState(account = accountId.toString())
+  private val recipientTable: RecipientTable = mockk()
+  private val groupTable: GroupTable = mockk()
+  private val database: SQLiteDatabase = mockk()
+  private val recipientTransactionLock = Any()
+  private val recipientRemaps = HashMap<RecipientId, RecipientId>()
+  private val nextPolicyRead = AtomicReference<(() -> Unit)?>(null)
+  private val nextRecipientTransaction = AtomicReference<(() -> Unit)?>(null)
+  @Volatile private var state = CallPolicyState(account = accountId.toString())
 
   fun setUp() {
-    mockkStatic(SignalStore::class, Recipient::class)
-    mockkObject(SignalStore.Companion)
+    mockkStatic(SignalStore::class, Recipient::class, SignalDatabase::class)
+    mockkObject(SignalStore.Companion, SignalDatabase.Companion)
     every { SignalStore.isInitialized } returns true
     every { SignalStore.account } returns account
     every { SignalStore.callPermissions } returns values
@@ -37,12 +51,34 @@ internal class CallPermissionTestEnvironment {
     every { account.isUnauthorizedReceived } returns false
     every { account.isMultiDevice } returns false
     every { account.isPrimaryDevice } returns true
-    every { values.read() } answers { state }
+    every { values.read() } answers {
+      val snapshot = state
+      nextPolicyRead.getAndSet(null)?.invoke()
+      snapshot
+    }
     every { values.update(any()) } answers {
       state = firstArg<(CallPolicyState) -> CallPolicyState>()(state)
       state
     }
     every { Recipient.resolved(any()) } answers { recipient(firstArg<RecipientId>().toLong()) }
+    every { SignalDatabase.recipients } returns recipientTable
+    every { SignalDatabase.groups } returns groupTable
+    every { SignalDatabase.runInTransaction<Unit>(any()) } answers {
+      nextRecipientTransaction.getAndSet(null)?.invoke()
+      synchronized(recipientTransactionLock) {
+        firstArg<(SQLiteDatabase) -> Unit>()(database)
+      }
+    }
+    every { recipientTable.getRecord(any()) } answers {
+      check(Thread.holdsLock(recipientTransactionLock))
+      var canonical = firstArg<RecipientId>()
+      while (recipientRemaps[canonical] != null) canonical = recipientRemaps.getValue(canonical)
+      val recipient = recipient(canonical.toLong())
+      mockk<RecipientRecord> {
+        every { id } returns canonical
+        every { recipientType } returns if (recipient.isPushV2Group) RecipientTable.RecipientType.GV2 else RecipientTable.RecipientType.INDIVIDUAL
+      }
+    }
     CallPermissions.setRevocationListener(Runnable {})
     CallPermissions.endAllSessions()
   }
@@ -50,8 +86,37 @@ internal class CallPermissionTestEnvironment {
   fun tearDown() {
     CallPermissions.setRevocationListener(Runnable {})
     CallPermissions.endAllSessions()
-    unmockkObject(SignalStore.Companion)
-    unmockkStatic(SignalStore::class, Recipient::class)
+    unmockkObject(SignalStore.Companion, SignalDatabase.Companion)
+    unmockkStatic(SignalStore::class, Recipient::class, SignalDatabase::class)
+  }
+
+  /** Delivers the old immutable read result after an interleaved policy write has completed. */
+  fun onNextPolicyRead(action: () -> Unit) { nextPolicyRead.set(action) }
+
+  fun onNextRecipientTransaction(action: () -> Unit) { nextRecipientTransaction.set(action) }
+
+  /** Models the recipient database's single-writer transaction, retaining a deliberately stale UI cache. */
+  fun mergeRecipients(primary: RecipientId, secondary: RecipientId) {
+    SignalDatabase.runInTransaction {
+      CallPermissions.onRecipientMerge(primary, secondary)
+      recipientRemaps[secondary] = primary
+    }
+  }
+
+  fun storedPolicy(): CallPolicyState = state
+
+  fun group(id: Long): Recipient {
+    val recipient = recipient(id)
+    every { recipient.isIndividual } returns false
+    every { recipient.isPushV2Group } returns true
+    every { recipient.isGroup } returns true
+    val record = mockk<GroupRecord> {
+      every { isActive } returns true
+      every { isAnnouncementGroup } returns false
+      every { memberLevel(any()) } returns GroupTable.MemberLevel.FULL_MEMBER
+    }
+    every { groupTable.getGroup(recipient.id) } returns Optional.of(record)
+    return recipient
   }
 
   fun recipient(id: Long): Recipient {
@@ -64,6 +129,7 @@ internal class CallPermissionTestEnvironment {
         every { isSelf } returns false
         every { isBlocked } returns false
         every { isPushV2Group } returns false
+        every { isGroup } returns false
         every { isCallLink } returns false
         every { aci } returns Optional.of(serviceId)
         every { pni } returns Optional.empty()

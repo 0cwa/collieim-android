@@ -15,6 +15,7 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientUtil
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException
+import org.whispersystems.signalservice.api.messages.calls.BusyMessage
 import org.whispersystems.signalservice.api.messages.calls.HangupMessage
 import org.whispersystems.signalservice.api.messages.calls.SignalServiceCallMessage
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
@@ -23,6 +24,7 @@ import java.util.Optional
 
 /** A refusal is ordinary encrypted Signal transport, with no RingRTC callbacks or profile sharing. */
 internal object CallPolicyRejector {
+  private val TAG = Log.tag(CallPolicyRejector::class.java)
   private const val MAX_PENDING_REFUSALS = 32
   private const val REFUSAL_INTERVAL_MILLIS = 5_000L
   private val recentRecipients = LinkedHashMap<String, Long>()
@@ -54,20 +56,24 @@ internal object CallPolicyRejector {
     val senderId = recipient.id
     val address = SignalServiceAddress(metadata.sourceServiceId, Optional.ofNullable(metadata.sourceE164))
     val type = if (trusted) HangupMessage.Type.NORMAL else HangupMessage.Type.NEED_PERMISSION
-    val message = SignalServiceCallMessage.forHangup(HangupMessage(callId, type, 0), metadata.sourceDeviceId)
+    val message = if (policyDenied && trusted && CallPermissions.shouldSendBusy(senderId)) {
+      SignalServiceCallMessage.forBusy(BusyMessage(callId), metadata.sourceDeviceId)
+    } else {
+      SignalServiceCallMessage.forHangup(HangupMessage(callId, type, 0), metadata.sourceDeviceId)
+    }
 
     SignalExecutors.BOUNDED_IO.execute {
       val current = Recipient.resolved(senderId)
-      if (current.isBlocked || CallPermissions.generation() != generation) return@execute
+      if (current.isBlocked || CallPermissions.generation() != generation || SystemClock.elapsedRealtime() - now + messageAgeMillis > 120_000L) return@execute
       CallPermissions.runForGeneration(generation) {
         try {
           AppDependencies.signalServiceMessageSender.sendCallMessage(address, SealedSenderAccessUtil.getSealedSenderAccessFor(current), message)
         } catch (e: UntrustedIdentityException) {
-          Log.w("CallPolicyRejector", "Could not send call refusal to an untrusted identity")
+          Log.w(TAG, "Could not send call refusal to an untrusted identity")
         } catch (e: NoSessionException) {
-          Log.w("CallPolicyRejector", "Could not send call refusal without a session")
+          Log.w(TAG, "Could not send call refusal without a session")
         } catch (e: IOException) {
-          Log.w("CallPolicyRejector", "Could not send call refusal", e)
+          Log.w(TAG, "Could not send call refusal", e)
         }
       }
     }

@@ -31,6 +31,7 @@ class CallPermissionValues(store: KeyValueStore, noBackupDirectory: File) : Sign
   @Synchronized
   internal fun read(): CallPolicyState {
     val record = getString(RECORD, null)
+    check(record != null || !store.containsKey(RECORD)) { "Null call permission record" }
     val state = if (cachedState != null && record == cachedRecord) cachedState!! else {
       (record?.let(CallPolicyCodec::decode) ?: CallPolicyState()).also { cachedRecord = record; cachedState = it }
     }

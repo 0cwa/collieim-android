@@ -203,6 +203,20 @@ class CallPermissionValuesTest {
   }
 
   @Test
+  fun `a present null or wrong-type record is corrupt rather than a new installation`() {
+    val malformedRecords = listOf(
+      KeyValueDataSet().apply { putString(CallPermissionValues.RECORD, null) },
+      KeyValueDataSet().apply { putBoolean(CallPermissionValues.RECORD, false) }
+    )
+    for (record in malformedRecords) {
+      val values = open(temporary.newFolder(), SnapshotKeyValuePersistentStorage(record))
+
+      assertThrows(RuntimeException::class.java) { values.read() }
+      assertThrows(RuntimeException::class.java) { values.update { it.copy(allCallingDisabled = false) } }
+    }
+  }
+
+  @Test
   fun `unavailable backing storage cannot masquerade as an empty policy`() {
     val unavailable = object : KeyValuePersistentStorage {
       override fun writeDataSet(dataSet: KeyValueDataSet, removes: Collection<String>) = error("unavailable")

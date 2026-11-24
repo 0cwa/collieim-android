@@ -4,17 +4,45 @@
  */
 package org.thoughtcrime.securesms.calls.permissions
 
+import android.os.SystemClock
 import org.signal.core.models.ServiceId
 import org.signal.core.util.orNull
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.service.webrtc.WebRtcData
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
+import java.util.UUID
 
 /** No native call manager, profile sharing, or recipient creation is needed for admission. */
 object GroupCallAdmission {
   data class AdmittedOpaque(val authorization: CallAuthorization, val opaque: ByteArray)
+  data class DeferredOpaque(val authorization: CallAuthorization, val metadata: WebRtcData.OpaqueMessageMetadata)
+
+  private val pendingLinkMessages = PendingCallLinkMessages(SystemClock::elapsedRealtime)
+
+  @JvmStatic
+  fun clearPending() = pendingLinkMessages.clear()
+
+  /** Only the exact current GroupCall's serialized SFU callbacks may publish this roster. */
+  @JvmStatic
+  fun updateCallLinkParticipants(key: CallSessionKey, devices: Map<Long, UUID>, joinedMembers: Collection<UUID>): List<DeferredOpaque> {
+    if (!CallPermissions.updateCallLinkMembers(key, devices, joinedMembers)) return emptyList()
+    val ready = ArrayList<DeferredOpaque>()
+    for (message in pendingLinkMessages.take(key)) {
+      val authorization = CallPermissions.authorizePendingCallLink(message.authorization)
+      if (authorization != null) {
+        ready += DeferredOpaque(
+          authorization,
+          WebRtcData.OpaqueMessageMetadata(message.sender, message.opaque, authorization.sourceDevice, message.ageAt(SystemClock.elapsedRealtime()) / 1000)
+        )
+      } else if (CallPermissions.isPendingCallLinkCurrent(message.authorization)) {
+        pendingLinkMessages.put(message)
+      }
+    }
+    return ready
+  }
 
   @JvmStatic
   fun admit(
@@ -24,7 +52,11 @@ object GroupCallAdmission {
     messageAgeMillis: Long
   ): AdmittedOpaque? {
     if (!CallPermissions.isCallingAllowed() || metadata.sourceDeviceId <= 0) return null
-    val sender = senderRecipient.resolve()
+    val sender = try {
+      senderRecipient.resolve()
+    } catch (_: RuntimeException) {
+      return null
+    }
     val authenticatedSender = metadata.sourceServiceId as? ServiceId.ACI ?: return null
     if (sender.aci.orNull() != authenticatedSender || sender.isBlocked) return null
 
@@ -47,7 +79,7 @@ object GroupCallAdmission {
         SignalDatabase.recipients.getByCallLinkRoomId(CallLinkRoomId.fromBytes(classified.groupId)).orNull() ?: return null
       }
 
-      val authorization = CallPermissions.authorizeGroup(
+      var authorization = CallPermissions.authorizeGroup(
         contextId,
         sender.id,
         classified.ringId,
@@ -55,6 +87,28 @@ object GroupCallAdmission {
         classified.kind,
         messageAgeMillis
       ) ?: return null
+      if (group == null) {
+        authorization = CallPermissions.bindCallLinkDevice(authorization, classified.demuxId ?: return null) ?: return null
+        if (!CallPermissions.isAuthorized(authorization)) {
+          val promoted = CallPermissions.authorizePendingCallLink(authorization)
+          if (promoted != null) {
+            return AdmittedOpaque(promoted, classified.opaque)
+          }
+          if (classified.isMediaKey && CallPermissions.isPendingCallLinkCurrent(authorization) &&
+            pendingLinkMessages.offer(authorization, authenticatedSender.rawUuid, classified.opaque, messageAgeMillis)
+          ) {
+            // Close the race where a roster callback drains the queue just before this frame
+            // is inserted. Claiming ownership also prevents duplicate native dispatch if the
+            // callback has already taken this frame for promotion.
+            val afterEnqueue = CallPermissions.authorizePendingCallLink(authorization)
+            if (afterEnqueue != null && pendingLinkMessages.remove(authorization)) {
+              return AdmittedOpaque(afterEnqueue, classified.opaque)
+            }
+            if (!CallPermissions.isPendingCallLinkCurrent(authorization)) pendingLinkMessages.remove(authorization)
+          }
+          return null
+        }
+      }
       AdmittedOpaque(authorization, classified.opaque)
     } catch (e: RuntimeException) {
       // An unavailable/transitioning database never grants a new calling capability.

@@ -4,6 +4,7 @@ import android.app.Application
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
@@ -31,6 +32,7 @@ class ProfileKeySendJobCallPermissionTest {
   fun setUp() {
     Log.initialize(SystemOutLogger())
     mockkObject(CallPermissions, Recipient)
+    mockkStatic(CallPermissions::class)
   }
 
   @After

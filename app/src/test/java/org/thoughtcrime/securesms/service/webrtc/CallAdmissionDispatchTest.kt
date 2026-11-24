@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +19,7 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallId
 import org.signal.ringrtc.CallManager
+import org.signal.ringrtc.GroupCall
 import org.thoughtcrime.securesms.calls.permissions.CallAuthorization
 import org.thoughtcrime.securesms.calls.permissions.CallPermission
 import org.thoughtcrime.securesms.calls.permissions.CallPermissionTestEnvironment
@@ -107,6 +109,127 @@ class CallAdmissionDispatchTest {
     queue.drain()
 
     verifyNoRemoteDispatch()
+  }
+
+  @Test
+  fun `late group callbacks cannot update a subsequent group call`() {
+    val oldGroup: GroupCall = mockk(relaxed = true)
+    val newGroup: GroupCall = mockk(relaxed = true)
+    val processor = object : WebRtcActionProcessor(mockk(relaxed = true), "GroupCallbackTest") {
+      var updates = 0
+      override fun handleGroupRequestUpdateMembers(currentState: WebRtcServiceState): WebRtcServiceState {
+        updates++
+        return currentState
+      }
+      override fun handleGroupRemoteDeviceStateChanged(currentState: WebRtcServiceState): WebRtcServiceState {
+        updates++
+        return currentState
+      }
+    }
+    val oldState = WebRtcServiceState(processor).apply { callInfoState.groupCall = oldGroup }
+    installCallbackState(oldState)
+    manager.requestGroupMembers(oldGroup)
+
+    // Normal hangup/new call does not need a policy mutation. Both callbacks
+    // queued before teardown and callbacks arriving afterward are stale.
+    val newState = WebRtcServiceState(processor).apply { callInfoState.groupCall = newGroup }
+    installCallbackState(newState)
+    manager.onRemoteDeviceStatesChanged(oldGroup)
+    queue.drain()
+    assertEquals(0, processor.updates)
+
+    manager.requestGroupMembers(newGroup)
+    manager.onRemoteDeviceStatesChanged(newGroup)
+    queue.drain()
+    assertEquals(2, processor.updates)
+  }
+
+  @Test
+  fun `late direct media callbacks cannot update a subsequent call to the same contact`() {
+    val newPeer = RemotePeer(peer.id, CallId(42))
+    val processor = object : WebRtcActionProcessor(mockk(relaxed = true), "PeerCallbackTest") {
+      var updates = 0
+      override fun handleRemoteAudioEnable(currentState: WebRtcServiceState, enable: Boolean): WebRtcServiceState {
+        updates++
+        return currentState
+      }
+    }
+    val state = WebRtcServiceState(processor).apply {
+      // The old object remains mapped until onCallConcluded performs cleanup.
+      callInfoState.peerMap[peer.hashCode()] = peer
+      callInfoState.peerMap[newPeer.hashCode()] = newPeer
+      callInfoState.activePeer = newPeer
+    }
+    installCallbackState(state)
+    manager.onCallEvent(peer, CallManager.CallEvent.REMOTE_AUDIO_ENABLE)
+    queue.drain()
+    assertEquals(0, processor.updates)
+
+    manager.onCallEvent(newPeer, CallManager.CallEvent.REMOTE_AUDIO_ENABLE)
+    queue.drain()
+    assertEquals(1, processor.updates)
+  }
+
+  @Test
+  fun `old native object cannot acquire a new policy generation while reset is pending`() {
+    val oldGroup: GroupCall = mockk(relaxed = true)
+    val processor = object : WebRtcActionProcessor(mockk(relaxed = true), "GroupOriginTest") {
+      var updates = 0
+      override fun handleGroupRequestUpdateMembers(currentState: WebRtcServiceState): WebRtcServiceState {
+        updates++
+        return currentState
+      }
+    }
+    installCallbackState(WebRtcServiceState(processor).apply { callInfoState.groupCall = oldGroup })
+    // Model a native callback racing ahead of the queued reset listener.
+    CallPermissions.setRevocationListener { }
+    CallPermissions.setAllCallingDisabled(true)
+    CallPermissions.setAllCallingDisabled(false)
+
+    manager.requestGroupMembers(oldGroup)
+    queue.drain()
+    assertEquals(0, processor.updates)
+  }
+
+  @Test
+  fun `late start of an old mapped peer cannot bind a new pending call`() {
+    policy.recipient(peer.id.toLong())
+    check(CallPermissions.beginOutgoing(peer.id))
+    val state = WebRtcServiceState(object : WebRtcActionProcessor(mockk(relaxed = true), "OldStartTest") {})
+    state.callInfoState.peerMap[peer.hashCode()] = peer
+    installCallbackState(state)
+
+    manager.onStartCall(peer, CallId(42), true, CallManager.CallMediaType.AUDIO_CALL)
+    queue.drain()
+    check(CallPermissions.bindOutgoing(peer.id, 43))
+  }
+
+  @Test
+  fun `async completions retain request generation even after calling is enabled again`() {
+    val requestGeneration = CallPermissions.generation()
+    CallPermissions.setAllCallingDisabled(true)
+    CallPermissions.setAllCallingDisabled(false)
+    queue.drain()
+    var completions = 0
+    val completion = SignalCallManager.ProcessAction { state, _ -> completions++; state }
+    val process = SignalCallManager::class.java.getDeclaredMethod("process", java.lang.Long.TYPE, SignalCallManager.ProcessAction::class.java)
+    process.isAccessible = true
+
+    process.invoke(manager, requestGeneration, completion)
+    queue.drain()
+    assertEquals(0, completions)
+
+    process.invoke(manager, CallPermissions.generation(), completion)
+    queue.drain()
+    assertEquals(1, completions)
+  }
+
+  private fun installCallbackState(state: WebRtcServiceState) {
+    ReflectionHelpers.setField(manager, "serviceState", state)
+    ReflectionHelpers.setField(manager, "groupCallGeneration", CallPermissions.generation())
+    val origins = ReflectionHelpers.getField<MutableMap<RemotePeer, Long>>(manager, "peerGenerations")
+    origins.clear()
+    state.callInfoState.peerMap.values.forEach { origins[it] = CallPermissions.generation() }
   }
 
   private fun authorizedOutgoingIce(): CallAuthorization {

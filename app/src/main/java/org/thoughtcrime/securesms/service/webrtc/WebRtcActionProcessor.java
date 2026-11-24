@@ -192,7 +192,8 @@ public abstract class WebRtcActionProcessor {
       return currentState;
     }
 
-    if (!RecipientUtil.isCallRequestAccepted(callMetadata.getRemotePeer().getRecipient())) {
+    if (!RecipientUtil.isCallRequestAccepted(callMetadata.getRemotePeer().getRecipient()) &&
+        !CallPermissions.hasExplicitIncomingAllow(callMetadata.getRemotePeer().getId())) {
       Log.w(tag, "Caller is untrusted.");
       currentState = currentState.getActionProcessor().handleSendHangup(currentState, callMetadata, WebRtcData.HangupMetadata.fromType(HangupMessage.Type.NEED_PERMISSION), true);
       webRtcInteractor.insertMissedCall(callMetadata.getRemotePeer(), receivedOfferMetadata.getServerReceivedTimestamp(), offerMetadata.getOfferType() == OfferMessage.Type.VIDEO_CALL);
@@ -978,7 +979,10 @@ public abstract class WebRtcActionProcessor {
   }
 
   protected synchronized @NonNull WebRtcServiceState terminateGroupCall(@NonNull WebRtcServiceState currentState, boolean terminateVideo) {
-    CallPermissions.endAllSessions();
+    // The false path is the existing reconnect-to-lobby transition, not a new
+    // remote call. Preserve its exact authorization until normal teardown or
+    // explicit revocation; otherwise reconnecting would silently lose media.
+    if (terminateVideo) CallPermissions.endAllSessions();
     webRtcInteractor.updatePhoneState(LockManager.PhoneState.PROCESSING);
     boolean playDisconnectSound = currentState.getCallInfoState().getCallState() == WebRtcViewModel.State.CALL_DISCONNECTED;
     webRtcInteractor.stopAudio(playDisconnectSound);

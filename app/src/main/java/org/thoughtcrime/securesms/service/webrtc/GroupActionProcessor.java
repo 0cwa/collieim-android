@@ -11,6 +11,7 @@ import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.logging.Log;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallManager;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.signal.ringrtc.GroupCall;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
 import org.thoughtcrime.securesms.events.CallParticipant;
@@ -320,6 +321,10 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
       Log.i(tag, "Group call ended unexpectedly, reinitializing and dropping back to lobby");
       Recipient  currentRecipient = currentState.getCallInfoState().getCallRecipient();
       VideoState videoState       = currentState.getVideoState();
+
+      if (currentRecipient == null || !CallPermissions.canContinueCall(currentRecipient.getId())) {
+        return terminateGroupCall(currentState);
+      }
 
       currentState = terminateGroupCall(currentState, false).builder()
                                                             .actionProcessor(actionProcessorFactory.createNetworkUnavailableActionProcessor(webRtcInteractor))

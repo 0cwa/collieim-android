@@ -41,17 +41,17 @@ final class GroupCallPeekWorkerJob extends BaseJob {
   @Override
   protected void onRun() {
     RecipientId groupRecipientId = RecipientId.from(groupCallPeekJobData.groupRecipientId);
+    RecipientId senderRecipientId = RecipientId.from(groupCallPeekJobData.senderRecipientId);
     long generation = CallPermissions.generation();
-    if (!CallPermissions.canUseGroup(groupRecipientId)) {
+    if (!CallPermissions.isGroupPeekPermitValid(groupCallPeekJobData.callPermissionPermit, groupRecipientId, senderRecipientId)) {
       return;
     }
 
     CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().peekGroupCall(groupRecipientId, (peekInfo) -> {
-      if (groupCallPeekJobData.senderRecipientId == RecipientId.UNKNOWN.toLong()) {
+      if (!CallPermissions.isCurrent(generation) || !CallPermissions.isGroupPeekPermitValid(groupCallPeekJobData.callPermissionPermit, groupRecipientId, senderRecipientId)) {
         return;
       }
 
-      RecipientId senderRecipientId = RecipientId.from(groupCallPeekJobData.senderRecipientId);
       SignalDatabase.calls().insertOrUpdateGroupCallFromLocalEvent(
           groupRecipientId,
           senderRecipientId,

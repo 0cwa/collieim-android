@@ -48,6 +48,8 @@ import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 import org.thoughtcrime.securesms.backup.v2.importer.ChatItemArchiveImporter
 import org.thoughtcrime.securesms.backup.v2.processor.ChatItemArchiveProcessor
+import org.thoughtcrime.securesms.calls.permissions.CallContext
+import org.thoughtcrime.securesms.calls.permissions.CallPermission
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -265,5 +267,57 @@ class BackupAliasImportTest {
     verify(exactly = 1) { reader.getHeader() }
     verify(exactly = 1) { reader.next() }
     verify(exactly = 1) { reader.close() }
+  }
+
+  @Test fun `same account local restore drops old recipient grants before importing frames`() {
+    seedLocalCallPermissions()
+    every { reader.next() } answers {
+      assertTrue(SignalDatabase.writableDatabase.inTransaction())
+      assertLocalCallPermissionsReset()
+      Frame(recipient = ArchiveRecipient(id = 17, self = Self()))
+    }
+
+    val result = BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+
+    assertTrue(result is ImportResult.Success)
+    assertLocalCallPermissionsReset()
+  }
+
+  @Test fun `link and sync restore cannot reuse a local recipient grant`() {
+    seedLocalCallPermissions()
+    every { EncryptedBackupReader.createForLocalOrLinking(backupKey, expected, any(), any()) } returns reader
+
+    val result = BackupRepository.importLinkAndSyncSignalBackup(0, { byteArrayOf().inputStream() }, BackupRepository.SelfData(expected, null, null, profileKey), backupKey)
+
+    assertTrue(result is ImportResult.Success)
+    assertLocalCallPermissionsReset()
+  }
+
+  @Test fun `failed restore rolls back SQL without restoring obsolete call grants`() {
+    seedLocalCallPermissions()
+    every { reader.next() } throws IllegalStateException("synthetic archive failure")
+
+    assertThrows(IllegalStateException::class.java) {
+      BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+    }
+
+    assertFalse(SignalDatabase.writableDatabase.inTransaction())
+    assertLocalCallPermissionsReset()
+  }
+
+  private fun seedLocalCallPermissions() {
+    store.callPermissions.update {
+      it.copy(account = expected.toString(), directDefault = CallPermission.BLOCK)
+        .withOverride(CallContext.DIRECT, 73, CallPermission.ALLOW)
+        .withOverride(CallContext.GROUP, 74, CallPermission.BLOCK)
+    }
+  }
+
+  private fun assertLocalCallPermissionsReset() {
+    val policy = store.callPermissions.read()
+    assertTrue(policy.overrides.isEmpty())
+    assertEquals(CallPermission.BLOCK, policy.directDefault)
+    assertEquals(CallPermission.BLOCK, policy.groupDefault)
+    assertFalse(policy.allCallingDisabled)
   }
 }

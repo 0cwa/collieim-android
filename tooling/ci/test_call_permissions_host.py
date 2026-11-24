@@ -169,6 +169,23 @@ class CallPermissionsHostTest(unittest.TestCase):
         self.assertFalse(list((self.root / host.SDK_DIRECTORY).glob('*.jar')))
         self.assertFalse((self.root / host.EVIDENCE / 'sdk-receipt.json').exists())
 
+    def test_jar_download_uses_mirror_before_canonical_fallback(self):
+        url = host.MAVEN + '/artifact.jar'
+        mirror = 'https://maven-central.storage-download.googleapis.com/maven2/org/robolectric/android-all-instrumented/artifact.jar'
+        failure = subprocess.CompletedProcess([], 22, '', 'HTTP 429')
+        success = subprocess.CompletedProcess([], 0, '', '')
+        with patch.object(host.time, 'monotonic', return_value=1), patch.object(host.subprocess, 'run', side_effect=[failure, success]) as run:
+            host.download(url, self.root / 'partial', 1000)
+        self.assertEqual([mirror, url], [call.args[0][-1] for call in run.call_args_list])
+
+    def test_checksum_download_stays_on_canonical_maven_central(self):
+        url = host.MAVEN + '/artifact.jar.sha512'
+        failure = subprocess.CompletedProcess([], 22, '', 'HTTP 429')
+        success = subprocess.CompletedProcess([], 0, '', '')
+        with patch.object(host.time, 'monotonic', return_value=1), patch.object(host.subprocess, 'run', side_effect=[failure, success]) as run:
+            host.download(url, self.root / 'checksum', 1000)
+        self.assertEqual([url, url], [call.args[0][-1] for call in run.call_args_list])
+
     def test_all_three_verified_sdks_are_recorded_without_network_fallback(self):
         (self.root / host.EVIDENCE).mkdir(parents=True)
         payload = b'test fixture bytes'

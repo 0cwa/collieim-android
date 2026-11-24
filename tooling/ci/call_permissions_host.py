@@ -30,6 +30,7 @@ REPORTS = {
 }
 TEST_METHOD = re.compile(r'(?m)^\s*@Test(?:\([^\n]*\))?\s+fun\s+(?:`([^`]+)`|(\w+))\s*\(\s*\)')
 MAVEN = 'https://repo.maven.apache.org/maven2/org/robolectric/android-all-instrumented'
+MAVEN_MIRROR = 'https://maven-central.storage-download.googleapis.com/maven2/org/robolectric/android-all-instrumented'
 PREFETCH_SECONDS = 600
 ATTEMPT_SECONDS = 180
 
@@ -105,8 +106,11 @@ def prepare(root):
 def download(url, target, deadline):
     """Two finite attempts, with a shared deadline for the entire SDK prefetch."""
     require(url.startswith(MAVEN + '/'), 'SDK downloads must use official Maven Central')
+    # Match the general unit-test workflow's mirror-first route for large jars.
+    # Checksums still come from canonical Central and are verified before install.
+    candidates = [MAVEN_MIRROR + url[len(MAVEN):], url] if url.endswith('.jar') else [url, url]
     last_error = ''
-    for _ in range(2):
+    for candidate in candidates:
         remaining = deadline - time.monotonic()
         require(remaining > 1, 'SDK prefetch exceeded its total time budget')
         limit = min(ATTEMPT_SECONDS, int(remaining))
@@ -115,7 +119,7 @@ def download(url, target, deadline):
                 'curl', '--fail', '--silent', '--show-error', '--proto', '=https',
                 '--location', '--max-redirs', '0', '--connect-timeout', str(min(15, limit)),
                 '--max-time', str(limit), '--max-filesize', str(512 * 1024 * 1024),
-                '--output', str(target), url,
+                '--output', str(target), candidate,
             ], capture_output=True, text=True, timeout=limit + 1)
             if result.returncode == 0:
                 return

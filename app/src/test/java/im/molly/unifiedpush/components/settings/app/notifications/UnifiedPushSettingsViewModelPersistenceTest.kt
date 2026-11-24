@@ -11,7 +11,9 @@ import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -28,6 +30,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowToast
+import org.signal.core.models.ServiceId
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValuePersistentStorage
@@ -36,6 +39,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
@@ -129,6 +133,14 @@ class UnifiedPushSettingsViewModelPersistenceTest {
 
   @Test
   fun `successful export and collision emit the complete result message`() {
+    UnifiedPushLifecycle.resetForTests()
+    val account = mockk<ServiceId.ACI>()
+    every { account.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { signalStore.account.aci } returns account
+    every { signalStore.account.isRegistered } returns true
+    every { signalStore.account.isUnauthorizedReceived } returns false
+    mockkStatic(KeyCachingService::class)
+    every { KeyCachingService.isLocked() } returns false
     val file = File(application.getExternalFilesDir(null), EnrollmentExporter.FILE_NAME)
     val requestId = "22222222-2222-4222-8222-222222222222"
     val viewModel = UnifiedPushSettingsViewModel(application)
@@ -158,6 +170,9 @@ class UnifiedPushSettingsViewModelPersistenceTest {
         assertEquals(listOf(expected), messages.drop(count))
         val unread = checkNotNull(UnifiedPushSettingsViewModel.unreadExport())
         assertEquals(expected, unread.message)
+        every { signalStore.account.isRegistered } returns false
+        assertEquals(null, UnifiedPushSettingsViewModel.unreadExport())
+        every { signalStore.account.isRegistered } returns true
         reopenedSettings.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
         UnifiedPushSettingsViewModel.acknowledgeExportResult(unread.id)
         assertEquals(null, UnifiedPushSettingsViewModel.unreadExport())
@@ -167,6 +182,7 @@ class UnifiedPushSettingsViewModelPersistenceTest {
     } finally {
       reopenedSettings.exportState.removeObserver(observer)
       unmockkStatic(EnrollmentExporter::class)
+      unmockkStatic(KeyCachingService::class)
     }
   }
 

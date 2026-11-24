@@ -15,6 +15,7 @@ import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
@@ -30,6 +31,7 @@ import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.unifiedpush.android.connector.UnifiedPush
 import java.util.UUID
@@ -43,11 +45,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   internal data class ExportState(
     val id: String,
-    val accountId: String?,
+    val accountId: String,
     val deviceId: Int,
+    val generation: Long,
     val message: String? = null,
   ) {
-    fun belongsToCurrentAccount() = accountId == SignalStore.account.aci?.toString() && deviceId == SignalStore.account.deviceId
+    fun belongsToCurrentAccount() = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushLifecycle.isCurrentGeneration(generation) && !KeyCachingService.isLocked() &&
+        SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived &&
+        accountId == SignalStore.account.aci?.toString() && deviceId == SignalStore.account.deviceId
+    }
   }
 
   internal fun isExportPending(): Boolean = pendingExport.value?.let { it.message == null || it.belongsToCurrentAccount() } == true
@@ -160,17 +167,30 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   @MainThread
   fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null) {
     if (isExportPending()) return
-    val request = ExportState(UUID.randomUUID().toString(), SignalStore.account.aci?.toString(), SignalStore.account.deviceId)
+    val request = synchronized(UnifiedPushLifecycle.monitor) {
+      val accountId = SignalStore.account.aci?.toString() ?: return@synchronized null
+      ExportState(UUID.randomUUID().toString(), accountId, SignalStore.account.deviceId, UnifiedPushLifecycle.currentGeneration())
+        .takeIf { it.belongsToCurrentAccount() }
+    }
+    if (request == null) {
+      Toast.makeText(context.applicationContext, R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready, Toast.LENGTH_LONG).show()
+      return
+    }
     pendingExport.value = request
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
       var successMessage: String? = null
       val failureMessage = try {
-        if (!request.belongsToCurrentAccount()) throw EnrollmentFile.Invalid("not_ready")
-        // A refused or overflowing epoch must never leave the old password file behind.
-        EnrollmentExporter.removeFiles(app)
-        val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-        val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
+        val lease = UnifiedPushLifecycle.acquireLease(request.generation) { request.takeIf { it.belongsToCurrentAccount() } }
+          ?: throw EnrollmentFile.Invalid("not_ready")
+        val export = lease.use {
+          // A refused or overflowing epoch must never leave the old password file behind.
+          EnrollmentExporter.removeFiles(app)
+          val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
+          EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId).also {
+            if (!request.belongsToCurrentAccount()) EnrollmentExporter.removeFiles(app)
+          }
+        }
         successMessage = if (export.collides) {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, export.file.absolutePath, export.epoch, export.highestUsed)
         } else {
@@ -205,7 +225,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
           Toast.makeText(app, failureMessage, Toast.LENGTH_LONG).show()
         }
       }
-      refresh()
     }
   }
 

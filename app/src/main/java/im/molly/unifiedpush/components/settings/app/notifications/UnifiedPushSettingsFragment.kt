@@ -49,8 +49,9 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
     }
-    viewModel.exportState.observe(viewLifecycleOwner) {
-      viewModel.state.value?.let { adapter.submitList(getConfiguration(it).toMappingModelList()) }
+    viewModel.exportState.observe(viewLifecycleOwner) { result ->
+      if (result == null || result.message != null) viewModel.refresh()
+      else viewModel.state.value?.let { adapter.submitList(getConfiguration(it).toMappingModelList()) }
       showPendingExportResult()
     }
 

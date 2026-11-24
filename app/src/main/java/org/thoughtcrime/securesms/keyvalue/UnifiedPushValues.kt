@@ -28,6 +28,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val RELAY_CLEANUP_LOCAL_DEVICE = "mollysocket.cleanup.localDevice"
     private const val RELAY_CLEANUP_DEVICE = "mollysocket.cleanup.device"
     private const val RELAY_CLEANUP_PASSWORD = "mollysocket.cleanup.password"
+    private const val RELAY_CLEANUP_UNLINK_CONFIRMED = "mollysocket.cleanup.unlinkConfirmed"
+    private const val RELAY_CLEANUP_CLEAR_CONTROL_UPDATE = "mollysocket.cleanup.clearControlUpdate"
     private const val MOLLYSOCKET_STATUS = "mollysocket.status"
     private const val MOLLYSOCKET_AIR_GAPPED = "mollysocket.airGapped"
     private const val MOLLYSOCKET_URL = "mollysocket.url"
@@ -118,7 +120,14 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     val device: MollySocketDevice,
     // Lifecycle generations are process-local. Startup has no in-memory invalidation to complete.
     val invalidationGeneration: Long? = null,
+    val unlinkConfirmed: Boolean = true,
+    // An unpublished credential that never reached storage does not own the saved control update.
+    val clearControlUpdate: Boolean = true,
   ) {
+    fun hasSameOwner(other: RelayCleanup): Boolean =
+      accountId == other.accountId && localDeviceId == other.localDeviceId && device == other.device &&
+        invalidationGeneration == other.invalidationGeneration
+
     override fun toString() = "RelayCleanup(localDeviceId=$localDeviceId)"
   }
 
@@ -135,10 +144,13 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
         accountId,
         snapshot.getInteger(RELAY_CLEANUP_LOCAL_DEVICE, 0),
         MollySocketDevice(snapshot.getInteger(RELAY_CLEANUP_DEVICE, 0), password),
+        // Records from before intent persistence were written only after unlink was confirmed.
+        unlinkConfirmed = snapshot.getBoolean(RELAY_CLEANUP_UNLINK_CONFIRMED, true),
+        clearControlUpdate = snapshot.getBoolean(RELAY_CLEANUP_CLEAR_CONTROL_UPDATE, true),
       )
     }
 
-  /** Begin before clearing the credential, retire only after the clear and control update were acknowledged. */
+  /** Persist the cleanup phase before advancing to its next remote or local effect. */
   fun setRelayCleanup(cleanup: RelayCleanup, pending: Boolean) {
     val write = store.beginWrite()
     if (pending) {
@@ -147,9 +159,12 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
         .putInteger(RELAY_CLEANUP_LOCAL_DEVICE, cleanup.localDeviceId)
         .putInteger(RELAY_CLEANUP_DEVICE, cleanup.device.deviceId)
         .putString(RELAY_CLEANUP_PASSWORD, cleanup.device.password)
+        .putBoolean(RELAY_CLEANUP_UNLINK_CONFIRMED, cleanup.unlinkConfirmed)
+        .putBoolean(RELAY_CLEANUP_CLEAR_CONTROL_UPDATE, cleanup.clearControlUpdate)
     } else {
       write.remove(RELAY_CLEANUP_ACCOUNT).remove(RELAY_CLEANUP_LOCAL_DEVICE)
         .remove(RELAY_CLEANUP_DEVICE).remove(RELAY_CLEANUP_PASSWORD)
+        .remove(RELAY_CLEANUP_UNLINK_CONFIRMED).remove(RELAY_CLEANUP_CLEAR_CONTROL_UPDATE)
     }
     write.commitAndWaitForPersistence()
     if (!pending) activeRelayCleanup = null

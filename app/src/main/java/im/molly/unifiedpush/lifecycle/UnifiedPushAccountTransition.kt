@@ -81,7 +81,13 @@ object UnifiedPushAccountTransition {
       hasIncompleteMarker = { relayCleanup == null && values.hasIncompleteAccountTransition },
       persistIncompleteMarker = { pending ->
         if (relayCleanup == null) values.setIncompleteAccountTransition(pending)
-        else values.setRelayCleanup(relayCleanup, pending)
+        // The relay intent is managed by the refresh job. Retire only the record owned by this transition.
+        else if (!pending) {
+          synchronized(UnifiedPushLifecycle.monitor) {
+            val current = values.pendingRelayCleanup
+            if (current != null && current.hasSameOwner(relayCleanup)) values.setRelayCleanup(current, pending = false)
+          }
+        }
       },
       readyAfter = { readyAfter() && (relayCleanup == null || !values.hasIncompleteAccountTransition) },
       expectedGeneration = expectedGeneration,

@@ -84,6 +84,7 @@ class UnifiedPushRefreshJobTest {
   private var storedDevice: MollySocketDevice? = device
   private var storedStatus = RegistrationStatus.UNKNOWN
   private var transitionMarker = false
+  private var pendingCleanup: UnifiedPushValues.RelayCleanup? = null
   private val retainedUpdate = ControlUpdate(5, "https://push.example.invalid/old", "p", "a", byteArrayOf(1), 1)
   private var controlState = ControlState(key = "retained-control-key", activeEpoch = 4, highestEpoch = 5, importSequence = 7, update = retainedUpdate)
 
@@ -112,7 +113,10 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.mollySocketUrl } returns "https://molly.example.invalid"
     every { unifiedPush.device } answers { storedDevice }
     every { unifiedPush.device = any() } answers { storedDevice = firstArg() }
-    every { unifiedPush.pendingRelayCleanup } returns null
+    every { unifiedPush.pendingRelayCleanup } answers { pendingCleanup }
+    every { unifiedPush.setRelayCleanup(any(), any()) } answers {
+      pendingCleanup = if (secondArg<Boolean>()) firstArg() else null
+    }
     every { unifiedPush.isProvisioningPending(any()) } returns false
     every { unifiedPush.commitProvisionedDevice(any()) } answers { storedDevice = firstArg() }
     every { unifiedPush.commitClearedDevice() } answers { storedDevice = null }
@@ -556,10 +560,13 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.enabled } returns true
     val removeEntered = CountDownLatch(1)
     val markerSet = CountDownLatch(1)
-    every { unifiedPush.setRelayCleanup(any(), true) } answers { markerSet.countDown() }
+    every { unifiedPush.setRelayCleanup(any(), true) } answers {
+      pendingCleanup = firstArg()
+      markerSet.countDown()
+    }
     every { MollySocketRepository.removeDevice(device) } answers {
       removeEntered.countDown()
-      // The refresh must reach local transition only after the remote removal succeeds.
+      check(markerSet.count == 0L)
       check(sendEntered.await(5, TimeUnit.SECONDS))
       Unit
     }
@@ -576,7 +583,6 @@ class UnifiedPushRefreshJobTest {
       }
 
       assertTrue(removeEntered.await(5, TimeUnit.SECONDS))
-      assertTrue("local mutation must enter the lifecycle transition", markerSet.await(5, TimeUnit.SECONDS))
       // Remote removal has succeeded, but local authority remains intact until the send lease drains.
       assertEquals(device, storedDevice)
       assertEquals(update, controlState.update)
@@ -862,7 +868,7 @@ class UnifiedPushRefreshJobTest {
           runBlocking { UnifiedPushAccountTransition.withTransition(completesInvalidation = replaceInvalidation) {} }
           if (replaceInvalidation) {
             synchronized(UnifiedPushLifecycle.monitor) {
-              assertTrue(UnifiedPushLifecycle.isReadyLocked())
+              assertFalse(UnifiedPushLifecycle.isReadyLocked())
               UnifiedPushLifecycle.invalidateLocked()
             }
           }
@@ -1020,7 +1026,7 @@ class UnifiedPushRefreshJobTest {
     val store = provisioningStore()
     val replacement = MollySocketDevice(device.deviceId, "replacement-relay-credential")
     store.values.device = replacement
-    val cleanup = UnifiedPushValues.RelayCleanup("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", 1, device)
+    val cleanup = UnifiedPushValues.RelayCleanup("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", 1, device, unlinkConfirmed = false)
     store.values.setRelayCleanup(cleanup, pending = true)
     store.values.setIncompleteAccountTransition(true)
     val restarted = store.rebuilt()
@@ -1033,6 +1039,114 @@ class UnifiedPushRefreshJobTest {
     assertNull(store.rebuilt().pendingRelayCleanup)
     assertTrue(store.rebuilt().hasIncompleteAccountTransition)
     assertNull(UnifiedPushAccountTransition.acquireLease())
+    verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
+  }
+
+  @Test
+  fun `restart after remote unlink confirms absence before clearing the saved relay`() {
+    val store = provisioningStore()
+    store.values.enabled = false
+    store.values.device = device
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.LINKED
+    every { MollySocketRepository.removeDevice(device) } answers {
+      val durable = store.rebuilt()
+      assertEquals(device, durable.device)
+      assertEquals(false, durable.pendingRelayCleanup?.unlinkConfirmed)
+      assertNull(UnifiedPushAccountTransition.acquireLease())
+      // Simulate the server removing the device before this process receives the result.
+      throw IOException("synthetic lost unlink response")
+    }
+
+    assertTrue(runRefresh() is IOException)
+
+    val restarted = store.rebuilt()
+    every { SignalStore.unifiedpush } returns restarted
+    UnifiedPushAccountTransition.initializeFromSignalStore()
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.UNKNOWN
+    assertTrue(runRefresh() is IOException)
+    assertEquals(device, store.rebuilt().device)
+    assertEquals(false, store.rebuilt().pendingRelayCleanup?.unlinkConfirmed)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.NOT_LINKED
+    assertNull(runRefresh())
+
+    assertNull(store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertTrue(UnifiedPushLifecycle.isReady())
+    verify(exactly = 1) { MollySocketRepository.removeDevice(device) }
+  }
+
+  @Test
+  fun `failed intent persistence never calls remote unlink`() {
+    val store = provisioningStore()
+    store.values.enabled = false
+    store.values.device = device
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.LINKED
+    store.storage.delegate.nextWriteFailure = IllegalStateException("synthetic intent write failure")
+
+    assertTrue(runRefresh() is KeyValuePersistenceException)
+
+    assertEquals(device, store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+    verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
+  }
+
+  @Test
+  fun `restart retries a linked relay after compensating removal was ambiguous`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 23, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } answers {
+      assertEquals(created, store.rebuilt().pendingRelayCleanup?.device)
+      assertEquals(false, store.rebuilt().pendingRelayCleanup?.unlinkConfirmed)
+      throw IOException("synthetic lost compensation response")
+    }
+    store.storage.failReadAfterNextWrite = true
+
+    assertTrue(runRefresh() is KeyValuePersistenceException)
+
+    val restarted = store.rebuilt()
+    restarted.enabled = false
+    every { SignalStore.unifiedpush } returns restarted
+    UnifiedPushAccountTransition.initializeFromSignalStore()
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+    every { MollySocketRepository.getDeviceStatus(created) } returns LinkStatus.LINKED
+    every { MollySocketRepository.removeDevice(created) } returns Unit
+
+    assertNull(runRefresh())
+
+    assertNull(store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertTrue(UnifiedPushLifecycle.isReady())
+    verify(exactly = 2) { MollySocketRepository.removeDevice(created) }
+  }
+
+  @Test
+  fun `restart completes a legacy cleanup without querying or repeating unlink`() {
+    val store = provisioningStore()
+    store.values.enabled = false
+    store.values.device = device
+    store.storage.delegate.writeDataSet(KeyValueDataSet().apply {
+      putString("mollysocket.cleanup.account", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+      putInteger("mollysocket.cleanup.localDevice", 1)
+      putInteger("mollysocket.cleanup.device", device.deviceId)
+      putString("mollysocket.cleanup.password", device.password)
+    }, emptyList())
+    val restarted = store.rebuilt()
+    every { SignalStore.unifiedpush } returns restarted
+    UnifiedPushAccountTransition.initializeFromSignalStore()
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+
+    assertNull(runRefresh())
+
+    assertNull(store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertTrue(UnifiedPushLifecycle.isReady())
+    verify(exactly = 0) { MollySocketRepository.getDeviceStatus(any()) }
     verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
   }
 

@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
@@ -14,7 +16,7 @@ import java.lang.ref.WeakReference
 import java.util.UUID
 
 class UnifiedPushDefaultDistributorLinkActivity : AppCompatActivity() {
-  private val helper = LinkActivityHelper(this)
+  private val link by lazy { ViewModelProvider(this)[LinkSession::class.java] }
   private val setupId: String? get() = intent.getStringExtra(KEY_SETUP_ID)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,14 +26,17 @@ class UnifiedPushDefaultDistributorLinkActivity : AppCompatActivity() {
     val current = synchronized(UnifiedPushLifecycle.monitor) { isCurrentSetupLocked(setupId) }
     if (!current) {
       finish()
-    } else if (savedInstanceState == null && !helper.startLinkActivityForResult()) {
-      finishWithResult(false)
+    } else if (savedInstanceState == null) {
+      val helper = LinkActivityHelper(this)
+      link.helper = helper
+      if (!helper.startLinkActivityForResult()) finishWithResult(false)
     }
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     val found = synchronized(UnifiedPushLifecycle.monitor) {
+      val helper = link.helper ?: return@synchronized null
       if (!isCurrentSetupLocked(setupId)) return@synchronized null
       // The connector saves its choice synchronously. Consume this launch before handing it the result.
       pendingSetup.clear()
@@ -44,10 +49,21 @@ class UnifiedPushDefaultDistributorLinkActivity : AppCompatActivity() {
   }
 
   private fun finishWithResult(found: Boolean?) {
+    link.helper = null
     val result = Intent().putExtra(KEY_SETUP_ID, setupId)
     if (found != null) result.putExtra(KEY_FOUND, found)
     setResult(RESULT_OK, result)
     finish()
+  }
+
+  class LinkSession : ViewModel() {
+    // Connector 3.0.10 generates its request code when the helper is constructed.
+    // Keep that helper for this outstanding result through configuration changes only.
+    internal var helper: LinkActivityHelper? = null
+
+    override fun onCleared() {
+      helper = null
+    }
   }
 
   class Setup internal constructor(internal val authorization: RelayDisclosure.RefreshAuthorization) {

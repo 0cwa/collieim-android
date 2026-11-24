@@ -691,10 +691,7 @@ class UnifiedPushReceiverTest {
     return AtomicReference(initial).also { pending ->
       every { LockedPushState.savePending(any(), any()) } answers { pending.set(secondArg()) }
       every { LockedPushState.peekPending(any()) } answers { pending.get() }
-      every { LockedPushState.clearPending(any()) } answers {
-        pending.set(null)
-        true
-      }
+      every { LockedPushState.clearPending(any()) } answers { pending.set(null) }
     }
   }
 

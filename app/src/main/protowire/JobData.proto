@@ -187,6 +187,8 @@ message BackupMessagesJobData {
 message NewLinkedDeviceNotificationJobData {
   uint32 deviceId = 1;
   uint64 deviceCreatedAt = 2;
+  // Absent in existing persisted jobs, which must remain delayed reminders.
+  bool isEarlyNotification = 3;
 }
 
 message MultiDeviceAttachmentBackfillMissingJobData {

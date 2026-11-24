@@ -155,15 +155,15 @@ fun FilePointer?.toLocalAttachment(
 fun DatabaseAttachment.toRemoteFilePointer(contentTypeOverride: String? = null, backupMode: BackupMode): FilePointer {
   val builder = FilePointer.Builder()
   builder.contentType = contentTypeOverride ?: this.contentType?.takeUnless { it.isBlank() }
-  builder.incrementalMac = this.incrementalDigest?.takeIf { it.isNotEmpty() && this.incrementalMacChunkSize > 0 }?.toByteString()
+  builder.incrementalMac = this.incrementalDigest?.takeIf { !isLocallyRemoved && it.isNotEmpty() && this.incrementalMacChunkSize > 0 }?.toByteString()
   builder.incrementalMacChunkSize = this.incrementalMacChunkSize.takeIf { it > 0 && builder.incrementalMac != null }
   builder.fileName = this.fileName
   builder.width = this.width.takeIf { it > 0 }
   builder.height = this.height.takeIf { it > 0 }
   builder.caption = this.caption
-  builder.blurHash = this.blurHash?.hash
-  builder.audioWaveform = this.audioHash?.waveFormBytes?.toByteString()
-  builder.audioDurationSeconds = this.audioHash?.durationSeconds
+  builder.blurHash = this.blurHash?.hash?.takeUnless { isLocallyRemoved }
+  builder.audioWaveform = this.audioHash?.waveFormBytes?.takeUnless { isLocallyRemoved }?.toByteString()
+  builder.audioDurationSeconds = this.audioHash?.durationSeconds?.takeUnless { isLocallyRemoved }
   builder.locatorInfo = this.toLocatorInfo(backupMode)
 
   return builder.build()
@@ -257,6 +257,12 @@ fun ChatColors.Id.isValid(exportState: ExportState): Boolean {
 }
 
 private fun DatabaseAttachment.toRemoteAttachmentType(): AttachmentType {
+  // Keep a missing-attachment marker in the archive so media-only messages retain their history.
+  // A stale archive or transit locator must never make deliberately removed media restorable.
+  if (this.isLocallyRemoved) {
+    return AttachmentType.INVALID
+  }
+
   if (this.remoteKey.isNullOrBlank()) {
     return AttachmentType.INVALID
   }

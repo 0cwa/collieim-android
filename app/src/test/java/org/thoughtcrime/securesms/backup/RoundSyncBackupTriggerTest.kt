@@ -1,10 +1,12 @@
 package org.thoughtcrime.securesms.backup
 
 import android.app.Application
+import android.app.BackgroundServiceStartNotAllowedException
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -17,6 +19,8 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger.TriggerResult
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -24,11 +28,32 @@ class RoundSyncBackupTriggerTest {
   private val component = ComponentName("de.felixnuesse.extract", "ca.pkay.rcloneexplorer.Services.SyncService")
   private var startedIntent: Intent? = null
   private var startFailure: RuntimeException? = null
+  private var allowBinding = false
+  private var boundConnection: ServiceConnection? = null
+  private var unbindCount = 0
   private val context: Context = object : ContextWrapper(RuntimeEnvironment.getApplication()) {
     override fun startService(service: Intent): ComponentName {
-      startFailure?.let { throw it }
+      if (boundConnection == null) {
+        startFailure?.let { throw it }
+      }
       startedIntent = service
       return component
+    }
+
+    override fun bindService(service: Intent, connection: ServiceConnection, flags: Int): Boolean {
+      assertEquals(component, service.component)
+      assertEquals(Context.BIND_AUTO_CREATE, flags)
+      if (allowBinding) {
+        boundConnection = connection
+        connection.onNullBinding(component)
+      }
+      return allowBinding
+    }
+
+    override fun unbindService(connection: ServiceConnection) {
+      assertTrue(boundConnection == null || boundConnection === connection)
+      boundConnection = null
+      unbindCount++
     }
   }
 
@@ -78,6 +103,30 @@ class RoundSyncBackupTriggerTest {
   }
 
   @Test
+  @Config(sdk = [35])
+  fun retriesDeniedStartWhileBoundAndReleasesConnection() {
+    installRoundSync()
+    startFailure = BackgroundServiceStartNotAllowedException("Background start denied")
+    allowBinding = true
+
+    assertEquals(TriggerResult.TRIGGERED, startFromWorker())
+    assertEquals(24, startedIntent?.getIntExtra("task", -1))
+    assertEquals(1, unbindCount)
+    assertNull(boundConnection)
+  }
+
+  @Test
+  @Config(sdk = [35])
+  fun reportsFailureAndCleansUpWhenBindingIsRejected() {
+    installRoundSync()
+    startFailure = BackgroundServiceStartNotAllowedException("Background start denied")
+
+    assertEquals(TriggerResult.FAILED, startFromWorker())
+    assertEquals(1, unbindCount)
+    assertNull(startedIntent)
+  }
+
+  @Test
   fun reportsSecurityFailure() {
     installRoundSync()
     startFailure = SecurityException("Service start denied")
@@ -87,4 +136,8 @@ class RoundSyncBackupTriggerTest {
   private fun installRoundSync() {
     shadowOf(context.packageManager).installPackage(PackageInfo().apply { packageName = component.packageName })
   }
+
+  private fun startFromWorker(): TriggerResult = CompletableFuture.supplyAsync {
+    RoundSyncBackupTrigger.triggerTask(context, 24)
+  }.get(10, TimeUnit.SECONDS)
 }

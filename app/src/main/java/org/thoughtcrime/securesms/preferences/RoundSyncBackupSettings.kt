@@ -7,6 +7,8 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.signal.core.util.ThreadUtil
+import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger
 import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger.TriggerResult
@@ -75,12 +77,20 @@ internal object RoundSyncBackupSettings {
 
     dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
       val taskId = readTaskId() ?: return@setOnClickListener
-      val message = when (RoundSyncBackupTrigger.triggerTask(context, taskId)) {
-        TriggerResult.TRIGGERED -> R.string.RoundSyncBackup__requested
-        TriggerResult.NOT_INSTALLED -> R.string.RoundSyncBackup__not_installed
-        else -> R.string.RoundSyncBackup__failed
+      val application = context.applicationContext
+      val button = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+      button.isEnabled = false
+      SignalExecutors.BOUNDED.execute {
+        val message = when (RoundSyncBackupTrigger.triggerTask(application, taskId)) {
+          TriggerResult.TRIGGERED -> R.string.RoundSyncBackup__requested
+          TriggerResult.NOT_INSTALLED -> R.string.RoundSyncBackup__not_installed
+          else -> R.string.RoundSyncBackup__failed
+        }
+        ThreadUtil.runOnMain {
+          button.isEnabled = true
+          Toast.makeText(application, message, Toast.LENGTH_SHORT).show()
+        }
       }
-      Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
   }
 }

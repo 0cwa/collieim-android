@@ -65,6 +65,7 @@ class AppSettingsViewModel(
           parentEventEmitter.openSection(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
         }
       }
+      AppSettingsEvent.CollieClicked -> parentEventEmitter.openSection(AppSettingsRoute.Collie)
       AppSettingsEvent.DonateClicked -> _actions.send(AppSettingsAction.OpenDonateUrl)
       AppSettingsEvent.DonateLongClicked -> Unit
       AppSettingsEvent.AppearanceClicked -> parentEventEmitter.openSection(AppSettingsRoute.AppearanceRoute.Appearance)

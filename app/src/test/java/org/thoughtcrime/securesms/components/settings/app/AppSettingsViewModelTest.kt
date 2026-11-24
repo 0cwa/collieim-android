@@ -125,6 +125,16 @@ class AppSettingsViewModelTest {
   }
 
   @Test
+  fun `CollieClicked opens Collie settings for ordinary users`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+
+    assertThat(viewModel.state.value.showInternalPreferences).isFalse()
+    viewModel.onEvent(AppSettingsEvent.CollieClicked)
+
+    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.Collie, replacesDetail = true))
+  }
+
+  @Test
   fun `row clicks navigate to their routes`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
 

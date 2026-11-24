@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.keyvalue
 
 import org.json.JSONObject
 import org.signal.core.util.StringSerializer
-import org.signal.remoteconfig.RemoteConfig
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
 import org.signal.storage.keyvalue.booleanValue
@@ -92,7 +91,7 @@ class StoryValues(store: KeyValueStore) : SignalStoreValues(store) {
   var userHasSeenGroupStoryEducationSheet: Boolean by booleanValue(USER_HAS_SEEN_GROUP_STORY_EDUCATION_SHEET, false)
 
   var isArchiveEnabled: Boolean
-    get() = RemoteConfig.internalUser && getBoolean(ARCHIVE_ENABLED, false)
+    get() = getBoolean(ARCHIVE_ENABLED, false)
     set(value) {
       putBoolean(ARCHIVE_ENABLED, value)
     }

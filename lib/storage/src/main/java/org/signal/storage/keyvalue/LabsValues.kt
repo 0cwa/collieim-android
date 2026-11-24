@@ -18,13 +18,13 @@ class LabsValues(store: KeyValueStore, private val isInternalUser: () -> Boolean
 
   var individualChatPlaintextExport by booleanValue(INDIVIDUAL_CHAT_PLAINTEXT_EXPORT, true).falseForExternalUsers()
 
-  var storyArchive by booleanValue(STORY_ARCHIVE, true).falseForExternalUsers()
+  var storyArchive by booleanValue(STORY_ARCHIVE, false)
 
   var incognito by booleanValue(INCOGNITO, true).falseForExternalUsers()
 
-  var betterSearch by booleanValue(BETTER_SEARCH, true).falseForExternalUsers()
+  var betterSearch by booleanValue(BETTER_SEARCH, false)
 
-  var starredMessages by booleanValue(STARRED_MESSAGES, true).falseForExternalUsers()
+  var starredMessages by booleanValue(STARRED_MESSAGES, false)
 
   var improvedMessageDeletion by booleanValue(IMPROVED_MESSAGE_DELETION, true).falseForExternalUsers()
 

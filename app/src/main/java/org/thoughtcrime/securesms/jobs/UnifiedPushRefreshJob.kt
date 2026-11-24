@@ -313,7 +313,6 @@ class UnifiedPushRefreshJob private constructor(
     allowRouteTransition: Boolean = false,
   ): Long? {
     var shouldClear = false
-    var ownInvalidation = false
     var expectedGeneration: Long? = null
     try {
       synchronized(UnifiedPushLifecycle.monitor) {
@@ -323,8 +322,7 @@ class UnifiedPushRefreshJob private constructor(
           SignalStore.unifiedpush.device == device) {
           if (readyOnLeaseGeneration) {
             UnifiedPushLifecycle.invalidateLocked()
-            ownInvalidation = true
-            expectedGeneration = if (allowRouteTransition) null else UnifiedPushLifecycle.currentGeneration()
+            expectedGeneration = UnifiedPushLifecycle.currentGeneration()
           }
           shouldClear = true
         }
@@ -334,11 +332,10 @@ class UnifiedPushRefreshJob private constructor(
     }
     if (!shouldClear) return null
 
-    var cleared = false
-    val transition = runBlocking {
+    suspend fun clearInTransition(generation: Long?) =
       UnifiedPushAccountTransition.withTransitionAndGeneration(
-        expectedGeneration = expectedGeneration,
-        completesInvalidation = ownInvalidation,
+        expectedGeneration = generation,
+        completesInvalidation = generation != null,
       ) {
         synchronized(UnifiedPushLifecycle.monitor) {
           if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
@@ -347,12 +344,23 @@ class UnifiedPushRefreshJob private constructor(
             // Stop dispatching a frame addressed to the removed device while retaining keys, replay, import sequence,
             // and every pending import identity that an old file can still satisfy.
             SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
-            cleared = true
+            true
+          } else {
+            false
           }
         }
       }
+
+    val transition = runBlocking {
+      try {
+        clearInTransition(expectedGeneration)
+      } catch (stale: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
+        if (!allowRouteTransition || expectedGeneration == null) throw stale
+        // A different transition took over the invalidation. Clear only the matching credential.
+        clearInTransition(null)
+      }
     }
-    return if (cleared) transition.generation else null
+    return if (transition.value) transition.generation else null
   }
 
   override fun onFailure() = Unit

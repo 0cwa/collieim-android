@@ -69,6 +69,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 @RunWith(RobolectricTestRunner::class)
@@ -812,6 +813,38 @@ class UnifiedPushRefreshJobTest {
     assertTrue(UnifiedPushLifecycle.isReady())
     verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
     verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `compensating cleanup does not complete an invalidation that supersedes its own`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 22, password = "fresh-relay-credential")
+    val transitionRan = AtomicBoolean()
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.removeDevice(created) } answers {
+      every { SignalStore.unifiedpush } answers {
+        val cleanupHasInvalidated = !Thread.holdsLock(UnifiedPushLifecycle.monitor) &&
+          synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.hasPendingInvalidationLocked() }
+        if (cleanupHasInvalidated && transitionRan.compareAndSet(false, true)) {
+          runBlocking { UnifiedPushAccountTransition.withTransition(completesInvalidation = true) {} }
+          synchronized(UnifiedPushLifecycle.monitor) {
+            assertTrue(UnifiedPushLifecycle.isReadyLocked())
+            UnifiedPushLifecycle.invalidateLocked()
+          }
+        }
+        store.values
+      }
+    }
+    store.storage.failReadAfterNextWrite = true
+
+    val failure = runRefresh()
+
+    assertTrue(transitionRan.get())
+    assertTrue(failure is KeyValuePersistenceException)
+    assertEquals(0, failure!!.suppressed.size)
+    assertNull(store.rebuilt().device)
+    assertFalse(UnifiedPushLifecycle.isReady())
+    assertTrue(synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.hasPendingInvalidationLocked() })
   }
 
   @Test

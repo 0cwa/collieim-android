@@ -118,7 +118,7 @@ import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.mms.SignalGlideModule;
 import org.thoughtcrime.securesms.net.NetworkManager;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
-import org.thoughtcrime.securesms.osm.SingleSessionDiskTileWriter;
+import org.thoughtcrime.securesms.maps.MapResourceCache;
 import org.thoughtcrime.securesms.ratelimit.RateLimitUtil;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.registration.util.RegistrationUtil;
@@ -521,7 +521,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   private void cleanCacheDir() {
     SignalExecutors.BOUNDED.execute(
-        () -> FileUtils.deleteDirectoryContents(SingleSessionDiskTileWriter.Companion.getTileCacheDir(this))
+        () -> FileUtils.deleteDirectoryContents(MapResourceCache.getTileCacheDir(this))
     );
   }
 

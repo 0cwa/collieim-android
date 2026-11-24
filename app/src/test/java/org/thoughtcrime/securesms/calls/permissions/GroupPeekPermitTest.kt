@@ -12,6 +12,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.thoughtcrime.securesms.database.GroupTable
+import org.thoughtcrime.securesms.database.SignalDatabase
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [35])
@@ -63,5 +65,40 @@ class GroupPeekPermitTest {
     assertTrue(CallPermissions.isGroupPeekPermitValid(permit, group.id, sender.id))
     CallPermissions.endAllSessions()
     assertFalse(CallPermissions.isGroupPeekPermitValid(permit, group.id, sender.id))
+  }
+
+  @Test
+  fun `announcement admin demotion invalidates a ringing peek without changing group data permission`() {
+    val group = environment.group(9)
+    val sender = environment.recipient(1)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    every { record.isAnnouncementGroup } returns true
+    every { record.isAdmin(sender) } returns true
+    assertNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.RING, 0))
+    val dataPermit = CallPermissions.createGroupPeekPermit(group.id, sender.id)!!
+    assertTrue(CallPermissions.isIncomingGroupRingCurrent(group.id, 41, sender.id))
+
+    every { record.isAdmin(sender) } returns false
+
+    assertFalse(CallPermissions.isIncomingGroupRingCurrent(group.id, 41, sender.id))
+    assertTrue(CallPermissions.isGroupPeekPermitValid(dataPermit, group.id, sender.id))
+  }
+
+  @Test
+  fun `ring recheck respects current membership and blocked identities`() {
+    val group = environment.group(9)
+    val sender = environment.recipient(1)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    assertNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.RING, 0))
+    assertTrue(CallPermissions.isIncomingGroupRingCurrent(group.id, 41, sender.id))
+
+    every { record.memberLevel(sender) } returns GroupTable.MemberLevel.NOT_A_MEMBER
+    assertFalse(CallPermissions.isIncomingGroupRingCurrent(group.id, 41, sender.id))
+    every { record.memberLevel(sender) } returns GroupTable.MemberLevel.FULL_MEMBER
+    every { sender.isBlocked } returns true
+    assertFalse(CallPermissions.isIncomingGroupRingCurrent(group.id, 41, sender.id))
+    every { sender.isBlocked } returns false
+    every { group.isBlocked } returns true
+    assertFalse(CallPermissions.isIncomingGroupRingCurrent(group.id, 41, sender.id))
   }
 }

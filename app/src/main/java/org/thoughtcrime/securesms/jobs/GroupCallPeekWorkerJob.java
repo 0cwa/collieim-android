@@ -60,7 +60,7 @@ final class GroupCallPeekWorkerJob extends BaseJob {
           peekInfo.getJoinedMembers(),
           WebRtcUtil.isCallFull(peekInfo)
       );
-    }));
+    }, () -> CallPermissions.isGroupPeekPermitValid(groupCallPeekJobData.callPermissionPermit, groupRecipientId, senderRecipientId)));
   }
 
   @Override

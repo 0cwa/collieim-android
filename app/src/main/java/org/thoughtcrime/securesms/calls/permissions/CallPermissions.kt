@@ -245,11 +245,18 @@ object CallPermissions {
   fun endCall(recipientId: RecipientId, callId: Long) = synchronized(lock) { sessions.end(recipientId.toLong(), callId) }
 
   @JvmStatic
-  fun isIncomingGroupRingCurrent(recipientId: RecipientId, ringId: Long, senderId: RecipientId): Boolean = synchronized(lock) {
-    if (!isCallingAllowed()) return false
-    syncGeneration()
-    sessions.incomingGroupRingCurrent(recipientId.toLong(), ringId, senderId.toLong())
-  }
+  fun isIncomingGroupRingCurrent(recipientId: RecipientId, ringId: Long, senderId: RecipientId): Boolean = runCatching {
+    // Ring-specific authority can change while credentials are being fetched without a policy
+    // write (for example, an announcement-group admin is demoted). Resolve outside the lock.
+    val recipient = Recipient.resolved(recipientId)
+    val sender = Recipient.resolved(senderId)
+    if (recipient.id != recipientId || sender.id != senderId || !groupIdentityAllowed(recipient, sender, GroupMessageKind.RING)) return false
+    synchronized(lock) {
+      if (!isCallingAllowed()) return false
+      syncGeneration()
+      sessions.incomingGroupRingCurrent(recipientId.toLong(), ringId, senderId.toLong())
+    }
+  }.getOrDefault(false)
 
   @JvmStatic
   fun endIncomingGroupRing(recipientId: RecipientId, ringId: Long) = synchronized(lock) {
@@ -286,12 +293,14 @@ object CallPermissions {
   }.getOrDefault(false)
 
   @JvmStatic
-  fun admitDirect(recipientId: RecipientId, callId: Long, sourceDeviceId: Int, kind: DirectMessageKind, messageAgeMillis: Long): CallAuthorization? {
+  @JvmOverloads
+  fun admitDirect(recipientId: RecipientId, callId: Long, sourceDeviceId: Int, kind: DirectMessageKind, messageAgeMillis: Long, expectedGeneration: Long? = null): CallAuthorization? {
     val recipient = runCatching { Recipient.resolved(recipientId) }.getOrNull() ?: return null
     if (!recipient.isIndividual || recipient.isBlocked || recipient.isSelf) return null
     return synchronized(lock) {
       val snapshot = policySnapshot() ?: return null
       syncGeneration()
+      if (expectedGeneration != null && snapshot.generation != expectedGeneration) return null
       if (snapshot.state.allCallingDisabled || !accountReady() || !snapshotCurrent(snapshot)) return null
       val ticket = sessions.direct(recipient.id.toLong(), callId, sourceDeviceId, kind, messageAgeMillis, snapshot.state.allowsIncoming(CallContext.DIRECT, recipient.id.toLong())) ?: return null
       // Security writes deliberately do not take this lock (recipient merges hold a DB
@@ -301,7 +310,8 @@ object CallPermissions {
   }
 
   @JvmStatic
-  fun authorizeGroup(recipientId: RecipientId, senderId: RecipientId, ringId: Long?, sourceDeviceId: Int, kind: GroupMessageKind, messageAgeMillis: Long): CallAuthorization? {
+  @JvmOverloads
+  fun authorizeGroup(recipientId: RecipientId, senderId: RecipientId, ringId: Long?, sourceDeviceId: Int, kind: GroupMessageKind, messageAgeMillis: Long, expectedGeneration: Long? = null): CallAuthorization? {
     val recipient = runCatching { Recipient.resolved(recipientId) }.getOrNull() ?: return null
     val sender = runCatching { Recipient.resolved(senderId) }.getOrNull() ?: return null
     val context = context(recipient)
@@ -309,6 +319,7 @@ object CallPermissions {
     return synchronized(lock) {
       val snapshot = policySnapshot() ?: return null
       syncGeneration()
+      if (expectedGeneration != null && snapshot.generation != expectedGeneration) return null
       if (snapshot.state.allCallingDisabled || !accountReady() || !snapshotCurrent(snapshot)) return null
       val ticket = sessions.group(context, recipient.id.toLong(), sender.id.toLong(), ringId, sourceDeviceId, kind, messageAgeMillis, snapshot.state.allowsIncoming(context, recipient.id.toLong())) ?: return null
       if (snapshotCurrent(snapshot)) ticket else { sessions.discard(ticket); null }

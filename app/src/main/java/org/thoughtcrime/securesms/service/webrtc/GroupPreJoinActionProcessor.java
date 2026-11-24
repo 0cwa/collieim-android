@@ -60,7 +60,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
   protected @NonNull WebRtcServiceState handlePreJoinCall(@NonNull WebRtcServiceState currentState, @NonNull RemotePeer remotePeer) {
     Log.i(tag, "handlePreJoinCall():");
     long generation = CallPermissions.generation();
-    if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.getId())) return currentState;
+    if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) return currentState;
 
     if (GroupAdmission.isHeld(remotePeer.getRecipient())) {
       return groupCallFailure(currentState, "Group requires local approval before calling.", null);
@@ -73,7 +73,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
 
     byte      dredDuration = (byte) RemoteConfig.dredDuration();
     byte[]    groupId      = currentState.getCallInfoState().getCallRecipient().requireGroupId().getDecodedId();
-    if (!CallPermissions.isCurrent(generation)) return currentState;
+    if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) return currentState;
     GroupCall groupCall    = webRtcInteractor.getCallManager().createGroupCall(groupId,
                                                                                SignalStore.internal().getGroupCallingServer(),
                                                                                WebRtcUtil.getProxyInfo(),
@@ -88,18 +88,18 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
     }
 
     try {
-      if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.getId())) {
+      if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) {
         groupCall.disconnect();
-        return currentState;
+        return terminateGroupCall(currentState);
       }
       groupCall.setOutgoingAudioMuted(true);
       groupCall.setOutgoingVideoMuted(true, false);
       groupCall.setDataMode(NetworkUtil.getCallingDataMode(context, groupCall.getLocalDeviceState().getNetworkRoute().getLocalAdapterType()));
 
       Log.i(tag, "Connecting to group call: " + currentState.getCallInfoState().getCallRecipient().getId());
-      if (!CallPermissions.isCurrent(generation)) {
+      if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) {
         groupCall.disconnect();
-        return currentState;
+        return terminateGroupCall(currentState);
       }
       groupCall.connect();
     } catch (CallException e) {
@@ -205,7 +205,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
   {
     Log.i(tag, "handleOutgoingCall():");
     long generation = CallPermissions.generation();
-    if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.getId())) return currentState;
+    if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) return currentState;
 
     if (GroupAdmission.isHeld(remotePeer.getRecipient())) {
       return groupCallFailure(currentState, "Group requires local approval before calling.", null);
@@ -215,7 +215,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
 
     currentState = WebRtcVideoUtil.reinitializeCamera(context, webRtcInteractor.getCameraEventListener(), currentState);
 
-    if (!CallPermissions.isCurrent(generation)) return currentState;
+    if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) return currentState;
     webRtcInteractor.setCallInProgressNotification(TYPE_OUTGOING_RINGING, currentState.getCallInfoState().getCallRecipient(), true);
     webRtcInteractor.updatePhoneState(WebRtcUtil.getInCallPhoneState(context));
     webRtcInteractor.initializeAudioForCall(true);
@@ -226,7 +226,9 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
       groupCall.setOutgoingAudioMuted(!currentState.getLocalDeviceState().isMicrophoneEnabled());
       groupCall.setDataMode(NetworkUtil.getCallingDataMode(context, groupCall.getLocalDeviceState().getNetworkRoute().getLocalAdapterType()));
 
-      if (!CallPermissions.isCurrent(generation)) return currentState;
+      if (!CallPermissions.canContinueCall(remotePeer.getId()) || !CallPermissions.isCurrent(generation)) {
+        return groupCallFailure(currentState, "Calling authorization changed before joining", null);
+      }
       groupCall.join();
     } catch (CallException e) {
       return groupCallFailure(currentState, "Unable to join group call", e);

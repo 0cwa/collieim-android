@@ -206,8 +206,8 @@ public class WebRtcInteractor {
     return AndroidTelecomUtil.addOutgoingCall(recipientId, callId, isVideoCall);
   }
 
-  public void requestGroupMembershipProof(GroupId.V2 groupId, int groupCallHashCode) {
-    signalCallManager.requestGroupMembershipToken(groupId, groupCallHashCode);
+  public void requestGroupMembershipProof(GroupId.V2 groupId, GroupCall groupCall) {
+    signalCallManager.requestGroupMembershipToken(groupId, groupCall);
   }
 
   public void sendAcceptedCallEventSyncMessage(@NonNull RemotePeer remotePeer, boolean isOutgoing, boolean isVideoCall) {

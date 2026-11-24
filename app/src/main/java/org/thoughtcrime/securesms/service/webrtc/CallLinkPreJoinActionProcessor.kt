@@ -46,7 +46,7 @@ class CallLinkPreJoinActionProcessor(
   override fun handlePreJoinCall(currentState: WebRtcServiceState, remotePeer: RemotePeer): WebRtcServiceState {
     Log.i(TAG, "handlePreJoinCall():")
     val generation = CallPermissions.generation()
-    if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.id)) return currentState
+    if (!CallPermissions.canContinueCall(remotePeer.id) || !CallPermissions.isCurrent(generation)) return currentState
 
     if (currentState.callInfoState.groupCall != null) {
       Log.w(TAG, "handlePreJoinCall(): Group call already exists, ignoring duplicate pre-join request")
@@ -86,9 +86,9 @@ class CallLinkPreJoinActionProcessor(
 
       // Credential retrieval can outlive permission revocation. Retain the
       // original request generation before constructing or entering RingRTC.
-      if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.id)) return currentState
+      if (!CallPermissions.canContinueCall(remotePeer.id) || !CallPermissions.isCurrent(generation)) return currentState
       val callLinkRootKey = CallLinkRootKey(callLink.credentials.linkKeyBytes)
-      if (!CallPermissions.isCurrent(generation)) return currentState
+      if (!CallPermissions.canContinueCall(remotePeer.id) || !CallPermissions.isCurrent(generation)) return currentState
       webRtcInteractor.callManager.createCallLinkCall(
         SignalStore.internal.groupCallingServer,
         WebRtcUtil.getProxyInfo(),
@@ -114,17 +114,17 @@ class CallLinkPreJoinActionProcessor(
     } ?: return groupCallFailure(currentState, "Failed to create group call object for call link.", Exception())
 
     try {
-      if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.id)) {
+      if (!CallPermissions.canContinueCall(remotePeer.id) || !CallPermissions.isCurrent(generation)) {
         groupCall.disconnect()
-        return currentState
+        return terminateGroupCall(currentState)
       }
       groupCall.setOutgoingAudioMuted(true)
       groupCall.setOutgoingVideoMuted(true, false)
       groupCall.setDataMode(NetworkUtil.getCallingDataMode(context, groupCall.localDeviceState.networkRoute.localAdapterType))
       Log.i(TAG, "Connecting to group call: " + currentState.callInfoState.callRecipient.id)
-      if (!CallPermissions.isCurrent(generation)) {
+      if (!CallPermissions.canContinueCall(remotePeer.id) || !CallPermissions.isCurrent(generation)) {
         groupCall.disconnect()
-        return currentState
+        return terminateGroupCall(currentState)
       }
       groupCall.connect()
     } catch (e: CallException) {

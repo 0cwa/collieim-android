@@ -37,7 +37,9 @@ internal object CallPolicyRejector {
     }
   }
 
-  fun declineOffer(recipient: Recipient, metadata: EnvelopeMetadata, callId: Long, messageAgeMillis: Long, policyDenied: Boolean = true) {
+  fun declineOffer(recipient: Recipient, metadata: EnvelopeMetadata, callId: Long, messageAgeMillis: Long, policyDenied: Boolean = true, expectedGeneration: Long? = null) {
+    val generation = expectedGeneration ?: CallPermissions.generation()
+    if (CallPermissions.generation() != generation) return
     if (recipient.isBlocked || metadata.sourceDeviceId <= 0 || messageAgeMillis !in 0..120_000L) return
     if (!shouldReply(policyDenied, SignalStore.account.isMultiDevice || !SignalStore.account.isPrimaryDevice)) return
     val trusted = RecipientUtil.isCallRequestAccepted(recipient)
@@ -52,7 +54,6 @@ internal object CallPolicyRejector {
       recentRecipients[key] = now
     }
 
-    val generation = CallPermissions.generation()
     val senderId = recipient.id
     val address = SignalServiceAddress(metadata.sourceServiceId, Optional.ofNullable(metadata.sourceE164))
     val type = if (trusted) HangupMessage.Type.NORMAL else HangupMessage.Type.NEED_PERMISSION

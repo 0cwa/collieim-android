@@ -25,4 +25,10 @@ message CompleteMessage {
   required bytes            content                  = 2;
   required EnvelopeMetadata metadata                 = 3;
   required int64            serverDeliveredTimestamp = 4;
+
+  // Local job metadata, never sent over Signal. Calling work from another process or policy
+  // generation cannot be restored as a fresh incoming call; ordinary messages omit these fields.
+  optional string           callQueueProcess         = 5;
+  optional int64            callQueueGeneration      = 6;
+  optional int64            callQueueReceivedAt      = 7;
 }

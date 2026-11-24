@@ -89,6 +89,17 @@ The call manager checks the ticket on serialized dispatch and immediately before
 each native receive method. A policy snapshot is paired with its generation;
 an older decision cannot acquire a newer generation during a concurrent write.
 
+Calling messages deferred behind ordinary message jobs carry a
+`CallMessageQueueReceipt` stamped before deferral. It binds the originating
+process, policy generation and monotonic arrival time. Time in that local queue
+consumes the same message-freshness budget; job rehydration never restarts it.
+Unstamped legacy calling jobs, receipts from another process, expired receipts
+and work revoked before admission are dropped. Ordinary data and sync message
+persistence keeps its existing behavior. Admission checks the expected generation
+again under the policy lock, so a change after dequeue validation cannot grant
+old bytes the new policy. Transport-only refusals retain that generation too;
+new arrivals can still be refused while the absolute calling prohibition is on.
+
 Offers, answers, ICE updates, hangups, busy messages and opaque messages all use
 this boundary. A different active caller does not authorize a denied peer. A
 direct outgoing offer can receive continuation from the peer's authenticated
@@ -145,6 +156,7 @@ process restart.
 | `canStartCall`, `canReceiveGroup`, `canUseGroup`, `canPeekGroup`, `canUseCallLinks` | Narrow preflight checks before call-specific work or manager acquisition. |
 | `beginOutgoing`, `bindOutgoing`, `activateCall`, `endCall`, `endAllSessions` | Explicit session lifecycle. A preflight boolean is not a dispatch grant. |
 | `admitDirect`, `authorizeGroup`, `isAuthorized`, `runAuthorized`, `isDispatchAuthorized` | Managed admission and mandatory serialized/native-adjacent validation. |
+| `CallMessageQueueReceipt`, `admitDirect(expectedGeneration)`, `authorizeGroup(expectedGeneration)` | Preserve arrival generation and remaining freshness when calling work is deferred; a receipt is not an admission grant. |
 | `generation`, `isCurrent`, `runIfCurrent` | Keep asynchronous work bound to the policy generation that initiated it. |
 | `createGroupPeekPermit`, `isGroupPeekPermitValid` | Bind a remote-triggered group peek before batching or job persistence. |
 | `CallSessionKey`, `currentCallLinkSession`, `updateCallLinkMembers` | Bind SFU roster updates to the exact current link session. |

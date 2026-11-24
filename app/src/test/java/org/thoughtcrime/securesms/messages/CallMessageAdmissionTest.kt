@@ -18,10 +18,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowSystemClock
 import org.signal.core.models.ServiceId
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.IdentityKey
+import org.thoughtcrime.securesms.calls.permissions.CallMessageQueueReceipt
 import org.thoughtcrime.securesms.calls.permissions.CallPermission
 import org.thoughtcrime.securesms.calls.permissions.CallPermissionTestEnvironment
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
@@ -39,6 +41,7 @@ import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.internal.push.CallMessage
 import org.whispersystems.signalservice.internal.push.Content
 import org.whispersystems.signalservice.internal.push.Envelope
+import java.time.Duration
 import java.util.Optional
 import java.util.UUID
 
@@ -64,7 +67,7 @@ class CallMessageAdmissionTest {
     every { RecipientUtil.shareProfileIfFirstSecureMessage(any()) } just Runs
     every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns true
     every { ProfileKeySendJob.createForCall(any(), any()) } returns null
-    every { CallPolicyRejector.declineOffer(any(), any(), any(), any(), any()) } just Runs
+    every { CallPolicyRejector.declineOffer(any(), any(), any(), any(), any(), any()) } just Runs
     every { CallPolicyRejector.recordMissedCall(any(), any(), any(), any()) } just Runs
     every { GroupCallAdmission.admit(any(), any(), any(), any()) } returns null
   }
@@ -111,6 +114,35 @@ class CallMessageAdmissionTest {
     verify(exactly = 0) { AppDependencies.signalCallManager }
 
     process(CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY))))
+    verify(exactly = 1) { AppDependencies.signalCallManager.receivedIceCandidates(any(), any(), any()) }
+  }
+
+  @Test
+  fun `time deferred before admission consumes the original message freshness budget`() {
+    check(CallPermissions.beginOutgoing(blockedId))
+    check(CallPermissions.bindOutgoing(blockedId, 41))
+    val receipt = CallMessageQueueReceipt.capture()
+    ShadowSystemClock.advanceBy(Duration.ofMillis(119_001))
+    val ice = CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY)))
+
+    // The message was already one second old on arrival and waited another 119.001 seconds.
+    // The outgoing session itself remains live, so only the message's stale age denies it.
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = ice), metadata, 2_000, receipt)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    assertNotNull(CallPermissions.admitDirect(blockedId, 41, 2, DirectMessageKind.ICE, 0))
+  }
+
+  @Test
+  fun `fresh deferred continuation keeps the ordinary incoming transport path`() {
+    check(CallPermissions.beginOutgoing(blockedId))
+    check(CallPermissions.bindOutgoing(blockedId, 41))
+    val receipt = CallMessageQueueReceipt.capture()
+    ShadowSystemClock.advanceBy(Duration.ofMillis(10_000))
+    val ice = CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY)))
+
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = ice), metadata, 2_000, receipt)
+
     verify(exactly = 1) { AppDependencies.signalCallManager.receivedIceCandidates(any(), any(), any()) }
   }
 

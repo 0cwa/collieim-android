@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -18,11 +20,14 @@ import org.robolectric.shadows.ShadowSystemClock
 import org.robolectric.util.ReflectionHelpers
 import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.recipients.RecipientId
+import org.signal.core.util.concurrent.KeyedSerialMonoLifoExecutor
 import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallId
 import org.signal.ringrtc.CallManager
 import org.signal.ringrtc.GroupCall
+import org.signal.storageservice.storage.protos.groups.ExternalGroupCredential
 import org.thoughtcrime.securesms.calls.permissions.CallAuthorization
+import org.thoughtcrime.securesms.calls.permissions.CallContext
 import org.thoughtcrime.securesms.calls.permissions.CallPermission
 import org.thoughtcrime.securesms.calls.permissions.CallPermissionTestEnvironment
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
@@ -31,12 +36,17 @@ import org.thoughtcrime.securesms.calls.permissions.DirectMessageKind
 import org.thoughtcrime.securesms.calls.permissions.GroupMessageKind
 import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.groups.GroupManager
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.ringrtc.RemotePeer
 import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceState
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.whispersystems.signalservice.api.messages.calls.HangupMessage
 import org.whispersystems.signalservice.api.messages.calls.OfferMessage
 import java.time.Duration
+import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.TimeUnit
@@ -63,6 +73,7 @@ class CallAdmissionDispatchTest {
 
   @After
   fun tearDown() {
+    unmockkStatic(GroupManager::class)
     policy.tearDown()
     queue.shutdownNow()
   }
@@ -162,6 +173,144 @@ class CallAdmissionDispatchTest {
 
     verifyNoRemoteDispatch()
     assertNotNull(CallPermissions.authorizeGroup(group.id, otherMember.id, null, 3, GroupMessageKind.GROUP_DATA, 0))
+  }
+
+  @Test
+  fun `group blocked while fetching peek credentials cannot reach native peek`() {
+    val group = policy.group(8)
+    prepareGroupPeek(group) { every { group.isBlocked } returns true }
+
+    manager.peekGroupCall(group.id)
+    queue.drain()
+
+    verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
+    verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `group left while fetching ringing credentials cannot reach native peek`() {
+    val group = policy.group(8)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    val groupId = prepareGroupPeek(group) { every { record.isActive } returns false }
+
+    manager.peekGroupCallForRingingCheck(prepareRingingPeek(group, groupId))
+    queue.drain()
+
+    verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
+    verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `unchanged default group permission still reaches native peek`() {
+    val group = policy.group(8)
+    prepareGroupPeek(group)
+
+    manager.peekGroupCall(group.id)
+    queue.drain()
+
+    verify(exactly = 1) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `policy change during final group lookup invalidates the original peek`() {
+    val group = policy.group(8)
+    prepareGroupPeek(group) {
+      var changePolicy = true
+      every { Recipient.resolved(group.id) } answers {
+        if (changePolicy) {
+          changePolicy = false
+          CallPermissions.setDefault(CallContext.DIRECT, CallPermission.BLOCK)
+        }
+        group
+      }
+    }
+
+    manager.peekGroupCall(group.id)
+    queue.drain()
+
+    verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
+    verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+    // The group remains allowed; it is the original request that was revoked.
+    check(CallPermissions.canReceiveGroup(group.id))
+  }
+
+  @Test
+  fun `remote peek loses its sender permit during credential fetch`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    val permit = requireNotNull(CallPermissions.createGroupPeekPermit(group.id, sender.id))
+    prepareGroupPeek(group) { every { record.memberLevel(sender) } returns GroupTable.MemberLevel.NOT_A_MEMBER }
+
+    manager.peekGroupCall(group.id, null) { CallPermissions.isGroupPeekPermitValid(permit, group.id, sender.id) }
+    queue.drain()
+
+    verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
+    verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `ringing peek loses its ringer permission during credential fetch`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    val groupId = prepareGroupPeek(group) { every { record.memberLevel(sender) } returns GroupTable.MemberLevel.NOT_A_MEMBER }
+
+    manager.peekGroupCallForRingingCheck(prepareRingingPeek(group, groupId))
+    queue.drain()
+
+    verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
+    verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `unchanged authorized incoming ring still reaches native peek`() {
+    val group = policy.group(8)
+    val groupId = prepareGroupPeek(group)
+
+    manager.peekGroupCallForRingingCheck(prepareRingingPeek(group, groupId))
+    queue.drain()
+
+    verify(exactly = 1) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `announcement group ringer demoted during credentials cannot reach native peek`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    every { record.isAnnouncementGroup } returns true
+    every { record.isAdmin(sender) } returns true
+    val groupId = prepareGroupPeek(group) { every { record.isAdmin(sender) } returns false }
+
+    manager.peekGroupCallForRingingCheck(prepareRingingPeek(group, groupId))
+    queue.drain()
+
+    verify(exactly = 1) { GroupManager.getExternalGroupCredential(any(), any()) }
+    verify(exactly = 0) { native.peekGroupCall(any(), any(), any(), any()) }
+  }
+
+  private fun prepareRingingPeek(group: Recipient, groupId: GroupId.V2): GroupCallRingCheckInfo {
+    val sender = policy.recipient(7)
+    val aci = ACI.from(UUID(0, 7))
+    every { Recipient.externalPush(aci) } returns sender
+    requireNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.RING, 0))
+    return GroupCallRingCheckInfo(group.id, groupId, 41, aci, CallManager.RingUpdate.REQUESTED)
+  }
+
+  private fun prepareGroupPeek(group: Recipient, duringCredentials: () -> Unit = {}): GroupId.V2 {
+    val groupId = GroupId.push(ByteArray(32) { 3 }).requireV2()
+    every { group.groupId } returns Optional.of(groupId)
+    every { group.requireGroupId() } returns groupId
+    every { SignalStore.internal } returns mockk { every { groupCallingServer } returns "https://calling.invalid" }
+    mockkStatic(GroupManager::class)
+    every { GroupManager.getExternalGroupCredential(any(), any()) } answers {
+      duringCredentials()
+      ExternalGroupCredential(token = "test-credential")
+    }
+    every { GroupManager.getUuidCipherTexts(any(), any()) } returns emptyMap()
+    ReflectionHelpers.setField(manager, "keyedExecutor", KeyedSerialMonoLifoExecutor(queue))
+    return groupId
   }
 
   @Test

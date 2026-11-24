@@ -45,11 +45,13 @@ object GroupCallAdmission {
   }
 
   @JvmStatic
+  @JvmOverloads
   fun admit(
     senderRecipient: Recipient,
     metadata: EnvelopeMetadata,
     opaqueBytes: ByteArray,
-    messageAgeMillis: Long
+    messageAgeMillis: Long,
+    expectedGeneration: Long? = null
   ): AdmittedOpaque? {
     if (!CallPermissions.isCallingAllowed() || metadata.sourceDeviceId <= 0) return null
     val sender = try {
@@ -85,7 +87,8 @@ object GroupCallAdmission {
         classified.ringId,
         metadata.sourceDeviceId,
         classified.kind,
-        messageAgeMillis
+        messageAgeMillis,
+        expectedGeneration
       ) ?: return null
       if (group == null) {
         authorization = CallPermissions.bindCallLinkDevice(authorization, classified.demuxId ?: return null) ?: return null

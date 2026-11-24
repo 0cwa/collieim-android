@@ -5,6 +5,7 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.orNull
 import org.signal.ringrtc.CallId
 import org.thoughtcrime.securesms.calls.permissions.CallAuthorization
+import org.thoughtcrime.securesms.calls.permissions.CallMessageQueueReceipt
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.calls.permissions.DirectMessageKind
 import org.thoughtcrime.securesms.calls.permissions.GroupCallAdmission
@@ -39,8 +40,12 @@ object CallMessageProcessor {
     envelope: Envelope,
     content: Content,
     metadata: EnvelopeMetadata,
-    serverDeliveredTimestamp: Long
+    serverDeliveredTimestamp: Long,
+    callQueueReceipt: CallMessageQueueReceipt? = null
   ) {
+    val queueDelay = if (callQueueReceipt == null) 0L else callQueueReceipt.queueDelayMillis() ?: return
+    if (serverDeliveredTimestamp > Long.MAX_VALUE - queueDelay) return
+    val dispatchDeliveredTimestamp = serverDeliveredTimestamp + queueDelay
     val callMessage = content.callMessage!!
     val shape = CallMessageShape.parse(callMessage) ?: return
     val recipient = runCatching { senderRecipient.resolve() }.getOrNull() ?: return
@@ -62,26 +67,26 @@ object CallMessageProcessor {
 
     val serverTimestamp = envelope.serverTimestamp
     val ageMillis = if (serverTimestamp != null && serverTimestamp in 1..serverDeliveredTimestamp) {
-      serverDeliveredTimestamp - serverTimestamp
+      dispatchDeliveredTimestamp - serverTimestamp
     } else {
       Long.MAX_VALUE
     }
 
     if (shape.kind == null) {
       if (metadata.destinationServiceId is ServiceId.PNI) return
-      val admitted = GroupCallAdmission.admit(recipient, metadata, callMessage.opaque!!.data_!!.toByteArray(), ageMillis) ?: return
+      val admitted = GroupCallAdmission.admit(recipient, metadata, callMessage.opaque!!.data_!!.toByteArray(), ageMillis, callQueueReceipt?.generation) ?: return
       CallPermissions.runAuthorized(admitted.authorization) {
         // Use the managed decoder's canonical bytes, so admission and native
         // dispatch agree even for duplicate or otherwise ambiguous wire fields.
-        handleCallOpaqueMessage(envelope, metadata, admitted.opaque, metadata.sourceServiceId, serverDeliveredTimestamp, admitted.authorization)
+        handleCallOpaqueMessage(envelope, metadata, admitted.opaque, metadata.sourceServiceId, dispatchDeliveredTimestamp, admitted.authorization)
       }
       return
     }
 
-    val authorization = CallPermissions.admitDirect(recipient.id, shape.callId!!, metadata.sourceDeviceId, shape.kind, ageMillis)
+    val authorization = CallPermissions.admitDirect(recipient.id, shape.callId!!, metadata.sourceDeviceId, shape.kind, ageMillis, callQueueReceipt?.generation)
     if (authorization == null) {
       if (shape.kind == DirectMessageKind.OFFER) {
-        CallPolicyRejector.declineOffer(recipient, metadata, shape.callId, ageMillis)
+        CallPolicyRejector.declineOffer(recipient, metadata, shape.callId, ageMillis, expectedGeneration = callQueueReceipt?.generation)
       }
       return
     }
@@ -89,7 +94,7 @@ object CallMessageProcessor {
     // This check covers manager construction and the PNI profile handshake.
     // SignalCallManager checks the same ticket again on its serialized queue.
     CallPermissions.runAuthorized(authorization) {
-      processAdmitted(recipient, envelope, callMessage, metadata, serverDeliveredTimestamp, authorization)
+      processAdmitted(recipient, envelope, callMessage, metadata, dispatchDeliveredTimestamp, authorization, callQueueReceipt?.generation)
     }
   }
 
@@ -99,7 +104,8 @@ object CallMessageProcessor {
     callMessage: CallMessage,
     metadata: EnvelopeMetadata,
     serverDeliveredTimestamp: Long,
-    authorization: CallAuthorization
+    authorization: CallAuthorization,
+    expectedGeneration: Long?
   ) {
     val offer = callMessage.offer
     if (metadata.destinationServiceId is ServiceId.PNI) {
@@ -112,17 +118,17 @@ object CallMessageProcessor {
       }
       // A PNI offer is a profile/ACI handshake, never a native call. Preserve
       // its missed-call record and trusted-only reply without creating RingRTC.
-      declineAdmittedOffer(senderRecipient, envelope, metadata, offer, serverDeliveredTimestamp)
+      declineAdmittedOffer(senderRecipient, envelope, metadata, offer, serverDeliveredTimestamp, expectedGeneration)
       return
     }
 
     if (offer != null && !RecipientUtil.isCallRequestAccepted(senderRecipient) && !CallPermissions.hasExplicitIncomingAllow(senderRecipient.id)) {
-      declineAdmittedOffer(senderRecipient, envelope, metadata, offer, serverDeliveredTimestamp)
+      declineAdmittedOffer(senderRecipient, envelope, metadata, offer, serverDeliveredTimestamp, expectedGeneration)
       return
     }
 
     when {
-      callMessage.offer != null -> handleCallOfferMessage(envelope, metadata, callMessage.offer!!, senderRecipient.id, serverDeliveredTimestamp, authorization)
+      callMessage.offer != null -> handleCallOfferMessage(envelope, metadata, callMessage.offer!!, senderRecipient.id, serverDeliveredTimestamp, authorization, expectedGeneration)
       callMessage.answer != null -> handleCallAnswerMessage(envelope, metadata, callMessage.answer!!, senderRecipient.id, authorization)
       callMessage.iceUpdate.isNotEmpty() -> handleCallIceUpdateMessage(envelope, metadata, callMessage.iceUpdate, senderRecipient.id, authorization)
       callMessage.hangup != null -> handleCallHangupMessage(envelope, metadata, callMessage.hangup!!, senderRecipient.id, authorization)
@@ -130,14 +136,14 @@ object CallMessageProcessor {
     }
   }
 
-  private fun declineAdmittedOffer(recipient: Recipient, envelope: Envelope, metadata: EnvelopeMetadata, offer: Offer, serverDeliveredTimestamp: Long) {
+  private fun declineAdmittedOffer(recipient: Recipient, envelope: Envelope, metadata: EnvelopeMetadata, offer: Offer, serverDeliveredTimestamp: Long, expectedGeneration: Long?) {
     if (!CallPermissions.isDispatchAuthorized()) return
-    CallPolicyRejector.declineOffer(recipient, metadata, offer.id!!, serverDeliveredTimestamp - envelope.serverTimestamp!!, policyDenied = false)
+    CallPolicyRejector.declineOffer(recipient, metadata, offer.id!!, serverDeliveredTimestamp - envelope.serverTimestamp!!, policyDenied = false, expectedGeneration = expectedGeneration)
     CallPolicyRejector.recordMissedCall(recipient, offer.id!!, envelope.serverTimestamp!!, offer.type == Offer.Type.OFFER_VIDEO_CALL)
     CallPermissions.endCall(recipient.id, offer.id!!)
   }
 
-  private fun handleCallOfferMessage(envelope: Envelope, metadata: EnvelopeMetadata, offer: Offer, senderRecipientId: RecipientId, serverDeliveredTimestamp: Long, authorization: CallAuthorization) {
+  private fun handleCallOfferMessage(envelope: Envelope, metadata: EnvelopeMetadata, offer: Offer, senderRecipientId: RecipientId, serverDeliveredTimestamp: Long, authorization: CallAuthorization, expectedGeneration: Long?) {
     log(envelope.clientTimestamp!!, "handleCallOfferMessage...")
 
     val offerId = if (offer.id != null && offer.type != null && offer.opaque != null) {
@@ -150,7 +156,7 @@ object CallMessageProcessor {
     val remotePeer = RemotePeer(senderRecipientId, CallId(offerId))
     val remoteIdentityKey = AppDependencies.protocolStore.get(metadata.destinationServiceId).identities().getIdentityRecord(senderRecipientId).map { (_, identityKey): IdentityRecord -> identityKey.serialize() }.orNull()
     if (remoteIdentityKey == null) {
-      declineAdmittedOffer(Recipient.resolved(senderRecipientId), envelope, metadata, offer, serverDeliveredTimestamp)
+      declineAdmittedOffer(Recipient.resolved(senderRecipientId), envelope, metadata, offer, serverDeliveredTimestamp, expectedGeneration)
       return
     }
 

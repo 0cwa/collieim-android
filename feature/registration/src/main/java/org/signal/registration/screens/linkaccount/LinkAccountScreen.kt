@@ -50,9 +50,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -82,6 +86,7 @@ import org.signal.core.ui.compose.SmallTabletLandscapeDayPreview
 import org.signal.core.ui.fonts.SignalSymbols
 import org.signal.core.ui.fonts.SignalSymbols.SignalSymbol
 import org.signal.core.ui.rememberWindowBreakpoint
+import org.signal.core.util.Util
 import org.signal.registration.R
 import org.signal.registration.screens.OnePaneRegistrationScaffold
 import org.signal.registration.screens.RegistrationScaffold
@@ -205,7 +210,13 @@ private fun OnePane(
       ) {
         Title()
 
-        QrCodeContent(state = state, onEvent = onEvent, isPhone = isPhone, expandButtonVisible = expandButtonVisible)
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = spacedBy(16.dp)
+        ) {
+          QrCodeContent(state = state, onEvent = onEvent, isPhone = isPhone, expandButtonVisible = expandButtonVisible)
+          LinkingCodeSection(state)
+        }
 
         Steps(
           verticalArrangement = spacedBy(if (isPhone) 20.dp else 32.dp),
@@ -247,14 +258,21 @@ private fun TwoPane(
       )
     },
     secondPane = { paddingValues ->
-      QrCodeContent(
-        state = state,
-        onEvent = onEvent,
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = spacedBy(16.dp),
         modifier = Modifier
           .weight(1f)
-          .padding(paddingValues),
-        expandButtonVisible = expandButtonVisible
-      )
+          .verticalScroll(rememberScrollState())
+          .padding(paddingValues)
+      ) {
+        QrCodeContent(
+          state = state,
+          onEvent = onEvent,
+          expandButtonVisible = expandButtonVisible
+        )
+        LinkingCodeSection(state)
+      }
     },
     footer = if (state.showCreateAccount) {
       {
@@ -288,12 +306,51 @@ private fun FirstPaneContent(
 @Composable
 private fun Title(twoPane: Boolean = false) {
   Text(
-    text = stringResource(R.string.LinkAccountScreen__scan_this_code_to_link_your_account),
+    text = stringResource(R.string.LinkAccountScreen__link_this_device),
     style = if (twoPane) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
     modifier = Modifier
       .fillMaxWidth()
       .attachDebugLogHelper()
   )
+}
+
+@Composable
+private fun LinkingCodeSection(state: LinkAccountScreenState) {
+  val context = LocalContext.current
+  val linkingCode = state.linkingCode
+  var copied by remember(linkingCode) { mutableStateOf(false) }
+
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = spacedBy(8.dp)
+  ) {
+    Buttons.MediumTonal(
+      enabled = linkingCode != null && state.qrCodeState is QrState.Loaded && !state.isRegistering && !state.isWaitingForPrimary && !state.showError && !state.showDeleteDataDialog,
+      onClick = {
+        linkingCode?.let {
+          Util.copyToClipboardSensitive(context, it)
+          copied = true
+        }
+      },
+      modifier = Modifier
+        .testTag(TestTags.LINK_ACCOUNT_COPY_CODE_BUTTON)
+        .semantics { liveRegion = LiveRegionMode.Polite }
+    ) {
+      Text(stringResource(if (copied) R.string.LinkAccountScreen__code_copied else R.string.LinkAccountScreen__copy_linking_code))
+    }
+    Text(
+      text = stringResource(R.string.LinkAccountScreen__paste_linking_code_instructions),
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.Center
+    )
+    Text(
+      text = stringResource(R.string.LinkAccountScreen__keep_linking_code_open),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.Center
+    )
+  }
 }
 
 @Composable
@@ -693,7 +750,8 @@ private fun LinkAccountScreenPreview() {
   Previews.Preview {
     LinkAccountScreen(
       state = LinkAccountScreenState(
-        qrCodeState = QrState.Loaded(qrCodeData = QrCodeData.forData("sgnl://rereg?uuid=test&pub_key=test", true)),
+        qrCodeState = QrState.Loaded(qrCodeData = QrCodeData.forData("sgnl://linkdevice?uuid=test&pub_key=test", true)),
+        linkingCode = "sgnl://linkdevice?uuid=test&pub_key=test",
         displayQrOverlay = displayQrOverlay
       ),
       onEvent = {

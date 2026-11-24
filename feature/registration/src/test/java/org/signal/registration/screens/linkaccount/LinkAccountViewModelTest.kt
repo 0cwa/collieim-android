@@ -5,12 +5,14 @@
 
 package org.signal.registration.screens.linkaccount
 
+import androidx.compose.ui.unit.IntOffset
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -30,6 +32,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.signal.core.ui.compose.QrCodeData
 import org.signal.libsignal.net.RequestResult
 import org.signal.network.api.RegistrationApiV2.RegisterAsLinkedDeviceError
 import org.signal.registration.LinkAndSyncWaitResult
@@ -43,6 +46,10 @@ import org.signal.registration.screens.quickrestore.QrState
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LinkAccountViewModelTest {
+
+  companion object {
+    private const val LINKING_CODE = "sgnl://linkdevice?uuid=temporary%2Bid&pub_key=key%2Bvalue%3D&capabilities=backup5"
+  }
 
   private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -103,6 +110,88 @@ class LinkAccountViewModelTest {
     flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady("sgnl://linkdevice"))
 
     assertThat(viewModel.state.value.qrCodeState).isInstanceOf<QrState.Loaded>()
+  }
+
+  @Test
+  fun `linking code preserves exactly the live QR payload`() = runTest(testDispatcher) {
+    val flow = givenProvisioningFlow()
+    val viewModel = createViewModel()
+
+    assertThat(viewModel.state.value.linkingCode).isNull()
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady(LINKING_CODE))
+
+    val state = viewModel.state.value
+    assertThat(state.linkingCode).isEqualTo(LINKING_CODE)
+    val expected = QrCodeData.forData(state.linkingCode!!, supportIconOverlay = false)
+    val actual = (state.qrCodeState as QrState.Loaded).qrCodeData
+    assertThat(actual.width).isEqualTo(expected.width)
+    assertThat(actual.height).isEqualTo(expected.height)
+    for (x in 0 until actual.width) {
+      for (y in 0 until actual.height) {
+        assertThat(actual.get(IntOffset(x, y))).isEqualTo(expected.get(IntOffset(x, y)))
+      }
+    }
+  }
+
+  @Test
+  fun `socket rotation replaces the linking code`() = runTest(testDispatcher) {
+    val flow = givenProvisioningFlow()
+    val viewModel = createViewModel()
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady(LINKING_CODE))
+
+    val rotatedCode = LINKING_CODE.replace("temporary", "rotated")
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady(rotatedCode))
+
+    assertThat(viewModel.state.value.linkingCode).isEqualTo(rotatedCode)
+  }
+
+  @Test
+  fun `provisioning error makes the previous linking code unavailable`() = runTest(testDispatcher) {
+    val flow = givenProvisioningFlow()
+    val viewModel = createViewModel()
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady(LINKING_CODE))
+
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.Error(null))
+
+    assertThat(viewModel.state.value.linkingCode).isNull()
+    assertThat(viewModel.state.value.qrCodeState).isEqualTo(QrState.Failed)
+  }
+
+  @Test
+  fun `linking code is cleared before registration starts`() = runTest(testDispatcher) {
+    val flow = givenProvisioningFlow()
+    val message = mockk<NetworkController.LinkDeviceProvisioningMessage>(relaxed = true)
+    val viewModel = createViewModel()
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady(LINKING_CODE))
+    coEvery { mockRepository.registerAsLinkedDevice(message, any()) } coAnswers {
+      assertThat(viewModel.state.value.linkingCode).isNull()
+      assertThat(viewModel.state.value.qrCodeState).isEqualTo(QrState.Scanned)
+      RequestResult.Success(LinkedDeviceResult(hasLinkAndSyncBackup = false))
+    }
+
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.MessageReceived(message))
+
+    coVerify { mockRepository.registerAsLinkedDevice(message, any()) }
+  }
+
+  @Test
+  fun `linking code does not appear in state logs`() {
+    val state = LinkAccountScreenState(linkingCode = LINKING_CODE)
+
+    assertThat(state.toString().contains(LINKING_CODE)).isFalse()
+    assertThat(state.toString().contains("temporary")).isFalse()
+    assertThat(state.toString().contains("key%2Bvalue")).isFalse()
+  }
+
+  @Test
+  fun `retry and dismissal clear the previous linking code`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+    val staleState = LinkAccountScreenState(qrCodeState = QrState.Failed, linkingCode = LINKING_CODE, showError = true, showDeleteDataDialog = true)
+
+    for (event in listOf(LinkAccountScreenEvent.RetryQrCode, LinkAccountScreenEvent.DismissError, LinkAccountScreenEvent.CancelDeleteAndRelink, LinkAccountScreenEvent.ConfirmDeleteAndRelink)) {
+      viewModel.applyEvent(staleState, event, stateEmitter)
+      assertThat(emittedStates.last().linkingCode).isNull()
+    }
   }
 
   @Test
@@ -287,10 +376,12 @@ class LinkAccountViewModelTest {
     coEvery { mockRepository.isProvisioningForDifferentAccount(message) } returns true
 
     val viewModel = createViewModel()
+    flow.emit(NetworkController.LinkDeviceProvisioningEvent.QrCodeReady(LINKING_CODE))
     flow.emit(NetworkController.LinkDeviceProvisioningEvent.MessageReceived(message))
 
     assertThat(viewModel.state.value.showDeleteDataDialog).isTrue()
     assertThat(viewModel.state.value.isRegistering).isFalse()
+    assertThat(viewModel.state.value.linkingCode).isNull()
     coVerify(exactly = 0) { mockRepository.registerAsLinkedDevice(any(), any()) }
   }
 

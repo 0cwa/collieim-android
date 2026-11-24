@@ -10,16 +10,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.R
 import org.signal.core.util.ThreadUtil
@@ -67,7 +72,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     AppDependencies.jobManager.add(UnifiedPushRefreshJob(pingOnRegister))
   }
 
-  private fun getState(): UnifiedPushSettingsState {
+  private fun getState(): UnifiedPushSettingsState = synchronized(UnifiedPushLifecycle.monitor) {
     val distributorIds = UnifiedPush.getDistributors(application)
     val saved = UnifiedPush.getSavedDistributor(application)
     val ack = saved != null && UnifiedPush.getAckDistributor(application) == saved
@@ -97,7 +102,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val mollySocketUrl = SignalStore.unifiedpush.mollySocketUrl
 
     val controlRead = SignalStore.unifiedpush.controlStateRead.stateOrNull
-    return UnifiedPushSettingsState(
+    UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
       device = SignalStore.unifiedpush.device?.takeUnless(SignalStore.unifiedpush::isProvisioningPending),
       aci = SignalStore.account.aci?.toString(),
@@ -118,6 +123,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       savedExports = controlRead?.intents?.map { SavedExport(it.requestId, it.epoch, it.eligible) } ?: emptyList(),
       pendingExportCount = controlRead?.pendingIntentCount ?: 0,
       hasLegacyPendingExport = controlRead?.legacyPending != null,
+      relayDisclosure = RelayDisclosure.capture(application),
     )
   }
 
@@ -131,8 +137,10 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   fun setUnifiedPushDistributor(distributor: String) {
-    SignalStore.unifiedpush.endpoint = null
-    UnifiedPushDistributor.saveDistributor(application, distributor)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      SignalStore.unifiedpush.endpoint = null
+      UnifiedPushDistributor.saveDistributor(application, distributor)
+    }
     refresh()
     updateRegistration()
   }
@@ -142,10 +150,17 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     updateRegistration()
   }
 
-  fun setMollySocket(mollySocket: MollySocket) {
-    SignalStore.unifiedpush.updateMollySocket(mollySocket)
-    refresh()
-    updateRegistration()
+  fun setMollySocket(mollySocket: MollySocket, disclosure: RelayDisclosure.Snapshot?) {
+    viewModelScope.launch {
+      val completed = RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket) { authorization ->
+          AppDependencies.jobManager.add(UnifiedPushRefreshJob(authorization))
+        }
+      currentCoroutineContext().ensureActive()
+      if (!completed) {
+        showStaleDisclosure()
+      }
+      refresh()
+    }
   }
 
   fun pingMollySocket() {
@@ -153,16 +168,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     updateRegistration(pingOnRegister = true)
   }
 
-  fun copyParamsToClipboard(context: Context) {
-    synchronized(UnifiedPushLifecycle.monitor) {
-      if (!UnifiedPushLifecycle.isReadyLocked() || KeyCachingService.isLocked()) return
-      val snapshot = state.value ?: return
-      val values = SignalStore.unifiedpush
-      val device = values.device ?: return
-      if (values.isProvisioningPending(device) || device != snapshot.device ||
-        values.endpoint != snapshot.endpoint || SignalStore.account.aci?.toString() != snapshot.aci) return
-      val parameters = snapshot.serverParameters ?: return
-      writeTextToClipboard(context, "Server parameters", parameters)
+  fun copyParamsToClipboard(context: Context, disclosure: RelayDisclosure.Snapshot?) {
+    if (!RelayDisclosure.runIfCurrent(disclosure) {
+        val account = checkNotNull(disclosure).account
+        val device = account.pushDevice
+        val endpoint = account.endpoint
+        if (device != null && endpoint != null && !SignalStore.unifiedpush.isProvisioningPending(device)) {
+          writeTextToClipboard(context, "Server parameters", "connection add ${account.accountId} ${device.deviceId} ${device.password} $endpoint")
+        }
+      }) {
+      showStaleDisclosure()
     }
   }
 
@@ -173,17 +188,10 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   /** Writes the CollieSocket enrollment file off the main thread and reports its result. */
   @MainThread
-  fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null) {
+  fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null, disclosure: RelayDisclosure.Snapshot?) {
     if (isExportPending()) return
-    val request = synchronized(UnifiedPushLifecycle.monitor) {
-      val accountId = SignalStore.account.aci?.toString() ?: return@synchronized null
-      ExportState(UUID.randomUUID().toString(), accountId, SignalStore.account.deviceId, UnifiedPushLifecycle.currentGeneration())
-        .takeIf { it.belongsToCurrentAccount() }
-    }
-    if (request == null) {
-      Toast.makeText(context.applicationContext, R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready, Toast.LENGTH_LONG).show()
-      return
-    }
+    if (disclosure == null || !RelayDisclosure.runIfCurrent(disclosure) {}) return showStaleDisclosure()
+    val request = ExportState(UUID.randomUUID().toString(), disclosure.account.accountId, disclosure.account.localDeviceId, disclosure.generation)
     pendingExport.value = request
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
@@ -192,11 +200,11 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
         val lease = UnifiedPushLifecycle.acquireLease(request.generation) { request.takeIf { it.belongsToCurrentAccount() } }
           ?: throw EnrollmentFile.Invalid("not_ready")
         val export = lease.use {
-          // A refused or overflowing epoch must never leave the old password file behind.
-          EnrollmentExporter.removeFiles(app)
-          val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-          EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId).also {
-            if (!request.belongsToCurrentAccount()) EnrollmentExporter.removeFiles(app)
+          RelayDisclosure.exportIfCurrent(disclosure, mode, requestId) {
+            // An authorized invalid epoch still removes the old password file.
+            EnrollmentExporter.removeFiles(app)
+            val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
+            EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
           }
         }
         successMessage = if (export.collides) {
@@ -208,6 +216,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       } catch (e: EnrollmentFile.Invalid) {
         app.getString(
           when (e.code) {
+            "disclosure_changed" -> R.string.UnifiedPushSettingsFragment__disclosure_stale
             "not_ready" -> R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready
             "invalid_epoch" -> R.string.UnifiedPushSettingsFragment__export_enrollment_invalid_epoch
             "unsupported_android" -> R.string.UnifiedPushSettingsFragment__export_enrollment_unsupported_android
@@ -234,6 +243,10 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
         }
       }
     }
+  }
+
+  private fun showStaleDisclosure() {
+    Toast.makeText(application, R.string.UnifiedPushSettingsFragment__disclosure_stale, Toast.LENGTH_LONG).show()
   }
 
   /** Clears unreadable local control state only after the user confirms server-side removal. */

@@ -235,7 +235,7 @@ class ReleaseReadinessTest(unittest.TestCase):
                      ".github/ci-required-tests.json", ".github/ci-required-tests-stable-8.35.json",
                      "gradlew", "gradle/wrapper", "build-logic",
                      ".github/scripts/check-archive-device-results.py", gate.CLASSIC_WEBVIEW_CHECKER,
-                     "tooling/fastlane/check_metadata.py"):
+                     "tooling/fastlane/check_metadata.py", "tooling/collie-log/stamp.py"):
             with self.subTest(replaced_input=path):
                 entry = candidate_inputs[path]
                 original = entry["sha"]

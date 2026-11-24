@@ -35,6 +35,7 @@ TRUSTED_CI_PATHS = (
     ".github/scripts/check-archive-device-results.py",
     CLASSIC_WEBVIEW_CHECKER,
     "tooling/fastlane/check_metadata.py",
+    "tooling/collie-log/stamp.py",
     "tooling/ci",
     "tooling/git-hooks",
     "tooling/host-tests",

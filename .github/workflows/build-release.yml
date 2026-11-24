@@ -6,6 +6,8 @@ on:
   pull_request:
     paths:
       - tooling/reproducible-builds/**
+      - tooling/collie-log/stamp.py
+      - tooling/collie-log/test_*.py
       - .github/workflows/build-release.yml
   workflow_dispatch:
     inputs:
@@ -70,6 +72,10 @@ jobs:
         if: ${{ inputs.edition == 'beta' }}
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: ./.github/actions/disk-cleanup
+      - name: Test release preparation and the build recipe
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/collie-log -p 'test_*.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/reproducible-builds -p 'test_*.py'
       - name: Build the candidate
         env:
           EVENT_NAME: ${{ github.event_name }}

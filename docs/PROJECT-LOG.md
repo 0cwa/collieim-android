@@ -34,6 +34,10 @@ Pending files are preparation inputs and are not packaged in the APK. A
 development preview shows its development heading and finalized history.
 A prepared release cannot have unassigned fragments.
 
+When updating a PR written before this layout, move its pending note from
+`app/src/main/assets/collie-log/unreleased/` to the authoring directory above.
+Preparation refuses legacy pending assets before writing release metadata.
+
 ## Release records
 
 Each product's directory contains `<versionName>.txt` records:
@@ -50,7 +54,9 @@ What's new includes a history of changes in Collie.
 ```
 
 `version` is the exact version name, and `date` is an explicit release date.
-`tag` optionally selects an exact release page in the Collie GitHub repository.
+`tag` optionally selects an exact release page in the Collie GitHub repository:
+`v<version>` for Stable or `trailblazer-v<version>` for Beta. Preparation rejects
+a tag that names another product or version.
 `highlights` optionally selects a known content edition in `CollieReleaseNotes`;
 missing highlights means no feature announcement. An empty maintenance record
 is valid. Keep highlight wording in Android string resources and retain its
@@ -62,10 +68,33 @@ preparation verifier accepts the source. Direct Gradle builds default to a
 use the same selection; missing or inconsistent prepared metadata shows a
 neutral unavailable state instead of another release's highlights.
 
-Prepare notes after the intended feature changes have merged. Correct old
-history in an ordinary PR before the final source pin; final preparation only
-creates the new release record. See [RELEASING.md](RELEASING.md) for the existing
-source, build and publication boundaries.
+## Preparing a release
+
+Prepare notes from a clean commit after the intended feature changes have
+merged. The existing stamper takes the selected product and release identity:
+
+```text
+python3 tooling/collie-log/stamp.py <version> --edition <stable|beta> \
+  --version-code <code> --date <YYYY-MM-DD> \
+  [--tag <release-tag>] [--highlights <content-id>]
+```
+
+It validates the inputs and destinations before writing the release record,
+the selected product's Fastlane draft, and the four existing release properties.
+The source revision and timestamp come from the clean commit; the release date
+is explicit. It consumes both numbered and named fragments. With no fragments,
+it creates a valid empty maintenance record.
+
+Review the Fastlane draft before committing. It is a short ASCII summary of at
+most 500 bytes; the complete bundled record keeps every pending change. The
+existing preparation verifier checks that those changes are preserved and
+that the product, version and build identity agree. Only its successful result
+enables the prepared-build flag in the release recipe.
+
+Correct old history in an ordinary PR before the final source pin. Final
+preparation creates the new release record, and a later feature change requires
+fresh preparation. See [RELEASING.md](RELEASING.md) for the existing source,
+build and publication boundaries.
 
 ## Promoting features to Stable
 

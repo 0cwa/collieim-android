@@ -11,7 +11,7 @@ numeric revision such as `-4`, and an optional `-alphaN`, `-betaN` or `-rcN`
 suffix. Development labels, custom suffixes and `+build` metadata cannot enter
 this publication path.
 
-1. **Prepare.** Merge a PR that sets `releaseVersionName` and `releaseVersionCode` in `gradle.properties` and adds `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (plain ASCII, at most 500 bytes; draft it and the project log's release file with `tooling/collie-log/stamp.py`, see [PROJECT-LOG.md](PROJECT-LOG.md)), and add `distribution/release-notes/<version>.md` to `collie-release-engineering` main. The exact source commit must pass `tooling/ci/verify_release_readiness.py` on `main` or the exact `release/stable/8.35` branch. The maintenance route requires the CI workflow and its verification inputs to match the trusted main revision. Select the source branch in prerelease publication. Promotion reads that same branch from the publication record. Both workflows run on `main`.
+1. **Prepare.** After the intended changes have merged, prepare the clean source with the command below and merge its metadata in a PR. Add `distribution/release-notes/<version>.md` to `collie-release-engineering` main. The exact source commit must pass `tooling/ci/verify_release_readiness.py` on `main` or the exact `release/stable/8.35` branch. The maintenance route requires the CI workflow and its verification inputs to match the trusted main revision. Select the source branch in prerelease publication. Promotion reads that same branch from the publication record. Both workflows run on `main`.
 2. **Build, sign, upload.** On the maintainer machine run the release helper, `release/release.sh v<version> [--build-on local|github] [--source-branch <branch>]`. By default it builds `origin/main`; choose the maintenance branch explicitly when using that source. It builds with `tooling/reproducible-builds/build-release.sh` (here, or on GitHub via `build-release.yml`), signs `collie.apk` with the APK key, tags with the publication key (`.github/release-signers`), uploads the APK to a draft release and starts `release.yml` on main.
 3. **Prerelease.** `release.yml` verifies the approved SSH-signed annotated tag, source version, production APK identity and certificate, exact-commit CI, and release notes. It uploads the four identical profile copies (`collie-foss`, `molly-continued`, `molly-foss-continued`, `molly-minimal`) and `publication.json` while the release is still a draft, then explicitly publishes a prerelease without changing Latest. It never replaces an existing asset or demotes a full release on retry.
 4. **Full release.** An independent rebuild must match the published APK first:
@@ -26,6 +26,44 @@ Security readiness jobs for the same SHA and attempt. The existing historical
 verify-only path still uses main.
 
 `collie-release-engineering` picks up full releases on its schedule and updates the F-Droid repo and Pages.
+
+## Preparing the source and notes
+
+From the clean source commit, with the selected version, reserved code and release date:
+
+```sh
+python3 tooling/collie-log/stamp.py "$VERSION" --edition stable \
+  --version-code "$VERSION_CODE" --date "$RELEASE_DATE" --tag "v$VERSION"
+```
+
+The command sets the four release properties in `gradle.properties`, pinning the
+current source commit and its commit time. It consumes every tracked fragment in
+`tooling/collie-log/unreleased/`, writes the complete record under
+`app/src/main/assets/collie-log/releases/stable/`, and drafts the matching
+Fastlane changelog. Named fragments and an empty maintenance release are valid.
+All inputs and destination collisions are checked before files change. Existing
+release records and changelogs are never overwritten.
+
+Review the complete notes, then trim only the Fastlane draft if needed; it must
+remain ASCII and at most 500 bytes. To change a complete entry, correct its source
+fragment before preparing. Optional `--highlights <content-id>` selects a known
+content edition; omit it when there is no feature announcement. The optional
+`--tag` must match the product and version. See [PROJECT-LOG.md](PROJECT-LOG.md)
+for authoring and promotion between products.
+
+For TrailBlazer, use `--edition beta` and `--tag "trailblazer-v$VERSION"`; the same
+operation writes the Beta record and `fastlane/metadata/trailblazer-beta/` draft.
+Its release recipe uses `COLLIE_BUILD_EDITION=beta`. This selects preparation and
+build inputs; Beta still follows its separate signing and publication route.
+
+Commit preparation before building. The existing release verifier requires the
+matching product record and changelog, no unassigned fragments, preservation of
+every source entry, and only the permitted metadata changes after the source pin.
+The recipe supplies `collieReleasePrepared=true` only after those checks pass,
+identically for host and container builds. Direct Gradle builds and ordinary PR
+builds that retain old release properties remain development builds. Do not set
+the prepared flag in tracked properties or local overrides. If more source
+changes land, prepare again from that source instead of relabelling the old build.
 
 ## Publication identity and version codes
 

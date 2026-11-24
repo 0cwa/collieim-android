@@ -18,7 +18,8 @@
 set -euo pipefail
 export GIT_NO_REPLACE_OBJECTS=1
 
-case "${COLLIE_BUILD_EDITION:-stable}" in
+edition=${COLLIE_BUILD_EDITION:-stable}
+case "$edition" in
   stable) task=:app:assembleProdWebsiteRelease; apk_dir=app/build/outputs/apk/prodWebsite/release ;;
   beta)   task=:app:assembleProdWebsiteBeta; apk_dir=app/build/outputs/apk/prodWebsite/beta ;;
   *) echo "build-release: COLLIE_BUILD_EDITION must be stable or beta" >&2; exit 1 ;;
@@ -33,7 +34,9 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   exit 1
 fi
 commit=$(git rev-parse HEAD)
-python3 tooling/reproducible-builds/verify-release-prep.py ${COLLIE_DEVELOPMENT_BASE:+--development-base "$COLLIE_DEVELOPMENT_BASE"}
+prepared=$(python3 tooling/reproducible-builds/verify-release-prep.py --edition "$edition" --build-state \
+  ${COLLIE_DEVELOPMENT_BASE:+--development-base "$COLLIE_DEVELOPMENT_BASE"})
+case "$prepared" in true|false) ;; *) echo "build-release: invalid preparation result" >&2; exit 1 ;; esac
 dockerfile=tooling/reproducible-builds/Dockerfile
 mkdir -p "$out"
 
@@ -62,7 +65,7 @@ if [ "${BUILD_MODE:-container}" = host ]; then
   fi
   env JAVA_HOME="$jdk" ANDROID_HOME="$sdk" ANDROID_SDK_ROOT="$sdk" ANDROID_NDK_HOME="$sdk/ndk/$ndk" \
       GRADLE_USER_HOME="$build_home" GRADLE_RO_DEP_CACHE="$HOME/.gradle/caches" \
-      ./gradlew --no-daemon --gradle-user-home "$build_home" "$cache_flag" "$task"
+      ./gradlew --no-daemon --gradle-user-home "$build_home" "$cache_flag" "-PcollieReleasePrepared=$prepared" "$task"
   cp "$apk_dir"/*.apk "$out/"
 else
   engine=${CONTAINER:-docker}
@@ -72,9 +75,9 @@ else
   "$engine" build "${ignore[@]}" -f "$dockerfile" --target builder -t "$image" .
   "$engine" run --rm -e GIT_NO_REPLACE_OBJECTS=1 -v "$out:/out" --entrypoint sh "$image" -c '
     set -eu
-    ./gradlew --no-daemon "$1"
+    ./gradlew --no-daemon "-PcollieReleasePrepared=$3" "$1"
     cp "$2"/*.apk /out/
-  ' sh "$task" "$apk_dir"
+  ' sh "$task" "$apk_dir" "$prepared"
 fi
 echo "commit $commit"
 sha256sum "$out"/*.apk

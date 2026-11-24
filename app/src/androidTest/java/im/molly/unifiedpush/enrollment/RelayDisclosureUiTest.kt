@@ -3,12 +3,16 @@ package im.molly.unifiedpush.enrollment
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.ContentValues
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -37,7 +41,6 @@ import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.testing.actions.scrollToDescendant
 import java.io.File
-import java.io.FileOutputStream
 
 /** Real settings routes with synthetic account data only; `ep_screenshot` optionally saves each changed screen. */
 @RunWith(AndroidJUnit4::class)
@@ -90,18 +93,19 @@ class RelayDisclosureUiTest {
     scenario.onActivity { activity ->
       RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), relayUrl)) { confirmed++ }
     }
-    onView(withId(android.R.id.message)).check(matches(withText(containsString(relayOrigin))))
-    onView(withId(android.R.id.message)).check(matches(withText(not(containsString(relayUrl)))))
+    onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(containsString(relayOrigin))))
+    onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(not(containsString(relayUrl)))))
     assertTrustVisible()
     screenshot("02-web-relay-trust")
     cancelDialog()
     assertEquals(0, confirmed)
+    onView(withId(R.id.recycler)).check(matches(isDisplayed()))
 
     scenario.onActivity { activity ->
       RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87))) { confirmed++ }
     }
-    onView(withId(android.R.id.message)).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__manual_destination)))))
-    onView(withId(android.R.id.message)).check(matches(withText(not(containsString(relayOrigin)))))
+    onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__manual_destination)))))
+    onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(not(containsString(relayOrigin)))))
     assertTrustVisible()
     screenshot("03-manual-relay-trust")
     cancelDialog()
@@ -132,15 +136,15 @@ class RelayDisclosureUiTest {
           ExportMode.RECOVERY -> R.string.UnifiedPushSettingsFragment__export_recovery_intent
           ExportMode.RERENDER -> R.string.UnifiedPushSettingsFragment__export_rerender_intent
         }
-        onView(withText(choice)).perform(click())
-        if (mode == ExportMode.RECOVERY) onView(withText(R.string.UnifiedPushSettingsFragment__export_continue)).perform(click())
+        onView(withText(choice)).inRoot(isDialog()).perform(click())
+        if (mode == ExportMode.RECOVERY) onView(withText(R.string.UnifiedPushSettingsFragment__export_continue)).inRoot(isDialog()).perform(click())
         if (mode == ExportMode.RERENDER) {
-          onView(withText(context.getString(R.string.UnifiedPushSettingsFragment__saved_export_label, 1, 1L))).perform(click())
+          onView(withText(context.getString(R.string.UnifiedPushSettingsFragment__saved_export_label, 1, 1L))).inRoot(isDialog()).perform(click())
         } else {
-          onView(withText(R.string.UnifiedPushSettingsFragment__export_enrollment_export)).perform(click())
+          onView(withText(R.string.UnifiedPushSettingsFragment__export_enrollment_export)).inRoot(isDialog()).perform(click())
         }
         assertTrustVisible()
-        onView(withId(android.R.id.message)).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__export_message)))))
+        onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__export_message)))))
         screenshot("05-export-trust-${mode.name.lowercase()}")
         cancelDialog()
         assertAuthorizationUnchanged()
@@ -149,7 +153,7 @@ class RelayDisclosureUiTest {
       // A configuration change after opening confirmation cannot authorize a different clipboard payload.
       clickSetting(R.string.UnifiedPushSettingsFragment__server_parameters)
       values.endpoint = "https://push.example.invalid/replaced-endpoint"
-      onView(withText(R.string.RelayDisclosureDialog__copy_confirm)).perform(click())
+      onView(withText(R.string.RelayDisclosureDialog__copy_confirm)).inRoot(isDialog()).perform(click())
       scenario.onActivity { assertEquals("clipboard unchanged", clipboard.primaryClip!!.getItemAt(0).text.toString()) }
       assertAuthorizationUnchanged()
     } finally {
@@ -165,9 +169,9 @@ class RelayDisclosureUiTest {
     onView(withText(R.string.UnifiedPushSettingsFragment__relay_trust_summary)).check(matches(isDisplayed()))
     screenshot("06-settings-guidance")
     clickSetting(R.string.UnifiedPushSettingsFragment__remove_relay_access_title)
-    onView(withText(R.string.UnifiedPushSettingsFragment__remove_relay_access_message)).check(matches(isDisplayed()))
+    onView(withText(R.string.UnifiedPushSettingsFragment__remove_relay_access_message)).inRoot(isDialog()).check(matches(isDisplayed()))
     screenshot("07-remove-relay-access")
-    onView(withText(android.R.string.ok)).perform(click())
+    onView(withText(android.R.string.ok)).inRoot(isDialog()).perform(click())
     assertAuthorizationUnchanged()
   }
 
@@ -205,12 +209,12 @@ class RelayDisclosureUiTest {
   }
 
   private fun assertTrustVisible() {
-    onView(withId(android.R.id.message)).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__trust_message)))))
-    onView(withText(android.R.string.cancel)).check(matches(isDisplayed()))
+    onView(withId(android.R.id.message)).inRoot(isDialog()).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__trust_message)))))
+    onView(withText(android.R.string.cancel)).inRoot(isDialog()).check(matches(isDisplayed()))
   }
 
   private fun cancelDialog() {
-    onView(withText(android.R.string.cancel)).perform(click())
+    onView(withText(android.R.string.cancel)).inRoot(isDialog()).perform(click())
   }
 
   private fun assertAuthorizationUnchanged() {
@@ -223,9 +227,17 @@ class RelayDisclosureUiTest {
     val prefix = screenshotPrefix ?: return
     val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
     try {
-      FileOutputStream(File(context.getExternalFilesDir(null), "$prefix-$suffix.png")).use {
+      val resolver = context.contentResolver
+      val uri = checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, "$prefix-$suffix.png")
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+        put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/collie-relay-disclosure/")
+        put(MediaStore.MediaColumns.IS_PENDING, 1)
+      }))
+      checkNotNull(resolver.openOutputStream(uri)).use {
         check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
       }
+      resolver.update(uri, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null)
     } finally {
       bitmap.recycle()
     }

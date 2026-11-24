@@ -19,13 +19,23 @@ HOST_METHODS = {
     'a route the host opens as an activity stays off the back stack',
     'home selection follows a replaced section',
 }
-DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
+DEVICE_CLASS = 'im.molly.unifiedpush.enrollment.RelayDisclosureUiTest'
 DEVICE_METHODS = {
-    'splitPaneHomeSelectionFollowsSectionChange',
-    'settingsHomeOpensAppearanceAndBackMatchesLayout',
-    'accountAndSupportRemainAvailableWithoutSignalCheckout',
+    'knownAndManualRelayDialogsCanBeCancelled',
+    'actualCopyAndAllExportModesRequireConfirmation',
+    'guidanceDistinguishesLocalCleanupFromSignalUnlink',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+SCREENSHOTS = {
+    'relay-disclosure-01-settings.png',
+    'relay-disclosure-02-web-relay-trust.png',
+    'relay-disclosure-03-manual-relay-trust.png',
+    'relay-disclosure-04-clipboard-trust.png',
+    'relay-disclosure-05-export-trust-new_intent.png',
+    'relay-disclosure-05-export-trust-recovery.png',
+    'relay-disclosure-05-export-trust-rerender.png',
+    'relay-disclosure-06-settings-guidance.png',
+    'relay-disclosure-07-remove-relay-access.png',
+}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 

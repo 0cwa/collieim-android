@@ -33,6 +33,8 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.Socket
+import javax.net.ssl.SSLSocket
+import javax.net.ssl.SSLSocketFactory
 import java.net.UnknownHostException
 import java.util.function.BooleanSupplier
 
@@ -221,7 +223,6 @@ class MapResourceClientTest {
     client.newCall(tileRequest()).execute().close()
     val chain = mockk<Interceptor.Chain>()
     every { chain.request() } returns requests.single()
-    every { chain.connection() } returns null
     Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
     Networking.socksProxy = null
     assertEquals(Proxy.NO_PROXY, Networking.routing.proxy)
@@ -242,7 +243,6 @@ class MapResourceClientTest {
     val response = Response.Builder().request(request).protocol(Protocol.HTTP_1_1)
       .code(200).message("OK").body(ByteArray(0).toResponseBody()).build()
     every { chain.request() } returns request
-    every { chain.connection() } returns mockk { every { socket() } returns Socket() }
     every { chain.proceed(request) } returns response
 
     client.networkInterceptors.single().intercept(chain).use { assertSame(response, it) }
@@ -278,26 +278,41 @@ class MapResourceClientTest {
   }
 
   @Test
-  fun `route change directly closes tile exchange even if call cancellation does not`() {
+  fun `route change closes the socket from the tile factory before cancellation`() {
     val call = mockk<Call>(relaxed = true)
-    val socket = Socket()
     route.track(call)
-    val chain = mockk<Interceptor.Chain>()
-    val request = tileRequest()
-    every { chain.request() } returns request
-    every { chain.connection() } returns mockk { every { socket() } returns socket }
-    every { call.cancel() } answers {
-      assertTrue(socket.isClosed)
-      assertSame(route, Networking.routing)
-    }
-    every { chain.proceed(request) } answers {
-      Networking.isEnabled = false
-      assertTrue(socket.isClosed)
-      throw IOException("Synthetic interrupted request")
-    }
+    client.socketFactory.createSocket().use { transport ->
+      every { call.cancel() } answers {
+        assertTrue(transport.isClosed)
+        assertSame(route, Networking.routing)
+      }
 
-    assertThrows(IOException::class.java) { client.networkInterceptors.single().intercept(chain) }
+      Networking.isEnabled = false
+
+      assertTrue(transport.isClosed)
+    }
     verify(exactly = 1) { call.cancel() }
+  }
+
+  @Test
+  fun `route change closes the transport passed to TLS without closing the wrapper`() {
+    Socket().use { transport ->
+      val delegate = mockk<SSLSocketFactory>()
+      val tlsSocket = mockk<SSLSocket>(relaxed = true)
+      every { delegate.createSocket(transport, "tile.openstreetmap.org", 443, true) } returns tlsSocket
+      val factory = route.bindTls(delegate)
+      assertSame(tlsSocket, factory.createSocket(transport, "tile.openstreetmap.org", 443, true))
+
+      Networking.isEnabled = false
+
+      assertTrue(transport.isClosed)
+      verify(exactly = 0) { tlsSocket.close() }
+      Socket().use { superseded ->
+        assertThrows(IOException::class.java) {
+          factory.createSocket(superseded, "tile.openstreetmap.org", 443, true)
+        }
+      }
+    }
   }
 
   @Test

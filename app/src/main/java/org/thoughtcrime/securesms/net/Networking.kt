@@ -4,6 +4,7 @@ import okhttp3.Call
 import okhttp3.Dns
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import org.signal.network.util.Tls12SocketFactory
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -17,7 +18,9 @@ import java.util.Collections
 import java.util.WeakHashMap
 import java.util.function.BooleanSupplier
 import java.util.function.Consumer
+import java.util.function.UnaryOperator
 import javax.net.SocketFactory
+import javax.net.ssl.SSLSocketFactory
 
 object Networking {
 
@@ -107,8 +110,8 @@ object Networking {
     synchronized(routeLock) {
       val replacement = update(routing)
       if (replacement === routing) return
-      // A concurrent Call.cancel() can return before its socket is closed. Close sockets ourselves before publishing.
-      routing.closeExchangeSockets()
+      // Close TCP before publication, even if a concurrent TLS shutdown or call cancellation is still in progress.
+      routing.closeTransportSockets()
       routeCalls.forEach(Call::cancel)
       routeCalls.clear()
       routing = replacement
@@ -120,13 +123,15 @@ object Networking {
    * than proxy equality, distinguishes a superseded route even after switching back.
    */
   internal class Routing(val enabled: Boolean, val socksProxy: SocksProxy?) {
-    private val exchangeSockets = Collections.newSetFromMap(WeakHashMap<Socket, Boolean>())
+    private val transportSockets = Collections.newSetFromMap(WeakHashMap<Socket, Boolean>())
 
     val proxy: Proxy = socksProxy?.let { it.makeProxy() ?: DUMMY_PROXY } ?: Proxy.NO_PROXY
     val socketFactory: SocketFactory by lazy {
-      ProxySocketFactory {
-        ensureCurrent()
-        proxy
+      object : ProxySocketFactory({ proxy }) {
+        override fun createSocket(): Socket = synchronized(routeLock) {
+          ensureCurrent()
+          super.createSocket().also { transportSockets.add(it) }
+        }
       }
     }
     val proxySelector: ProxySelector by lazy {
@@ -145,7 +150,7 @@ object Networking {
     }
     val dns: Dns by lazy {
       // System DNS would bypass the pinned call machinery. Both map routes use bound DoH.
-      DnsProxyAware(socketFactory, proxySelector, ::configureDoh) {
+      DnsProxyAware(socketFactory, proxySelector, ::configureDoh, ::bindTls) {
         ensureCurrent()
         true
       }
@@ -161,26 +166,32 @@ object Networking {
           untrack(call)
         }
       }.addNetworkInterceptor { chain ->
-        trackExchange(chain.connection()?.socket())
+        ensureCurrent()
         chain.proceed(chain.request())
       }
     }
 
-    fun trackExchange(socket: Socket?) = synchronized(routeLock) {
-      ensureCurrent()
-      exchangeSockets.add(checkNotNull(socket))
+    fun bindTls(delegate: SSLSocketFactory): SSLSocketFactory = object : Tls12SocketFactory(delegate) {
+      override fun createSocket(socket: Socket, host: String, port: Int, autoClose: Boolean): Socket {
+        // OkHttp constructs a SOCKS socket itself when the system selector returns SOCKS.
+        synchronized(routeLock) {
+          ensureCurrent()
+          transportSockets.add(socket)
+        }
+        return super.createSocket(socket, host, port, autoClose)
+      }
     }
 
-    fun closeExchangeSockets() {
+    fun closeTransportSockets() {
       check(Thread.holdsLock(routeLock))
-      for (socket in exchangeSockets) {
+      for (socket in transportSockets) {
         try {
           socket.close()
         } catch (failure: IOException) {
           if (!socket.isClosed) throw failure
         }
       }
-      exchangeSockets.clear()
+      transportSockets.clear()
     }
 
     fun ensureCurrent() {
@@ -233,10 +244,11 @@ object Networking {
     socketFactory: SocketFactory,
     proxySelectorForSocks: ProxySelector,
     configure: Consumer<OkHttpClient.Builder> = Consumer {},
+    secureSocketFactory: UnaryOperator<SSLSocketFactory> = UnaryOperator(::Tls12SocketFactory),
     private val useDohOnly: () -> Boolean
   ) : Dns {
-    private val cloudflare: Dns = DohClient("https://1.1.1.1/dns-query", socketFactory, proxySelectorForSocks, configure)
-    private val quad9: Dns = DohClient("https://9.9.9.9/dns-query", socketFactory, proxySelectorForSocks, configure)
+    private val cloudflare: Dns = DohClient("https://1.1.1.1/dns-query", socketFactory, proxySelectorForSocks, configure, secureSocketFactory)
+    private val quad9: Dns = DohClient("https://9.9.9.9/dns-query", socketFactory, proxySelectorForSocks, configure, secureSocketFactory)
 
     private val systemDnsResolver: Dns = SequentialDns(Dns.SYSTEM, cloudflare, quad9)
     private val dohDnsResolver: Dns = SequentialDns(cloudflare, quad9)

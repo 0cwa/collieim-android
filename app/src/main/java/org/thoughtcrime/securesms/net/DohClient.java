@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.net;
 
 import androidx.annotation.NonNull;
 
-import org.signal.network.util.Tls12SocketFactory;
 import org.whispersystems.signalservice.internal.util.BlacklistingTrustManager;
 
 import java.net.InetAddress;
@@ -12,9 +11,11 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -27,14 +28,11 @@ public class DohClient implements Dns {
 
   private final DnsOverHttps client;
 
-  public DohClient(@NonNull String url, SocketFactory socketFactory, ProxySelector proxySelector) {
-    this(url, socketFactory, proxySelector, builder -> {});
-  }
-
-  public DohClient(@NonNull String url, SocketFactory socketFactory, ProxySelector proxySelector, Consumer<OkHttpClient.Builder> configure) {
+  public DohClient(@NonNull String url, SocketFactory socketFactory, ProxySelector proxySelector,
+                   Consumer<OkHttpClient.Builder> configure, UnaryOperator<SSLSocketFactory> secureSocketFactory) {
     this.client = new DnsOverHttps.Builder()
                                   .url(HttpUrl.get(url))
-                                  .client(buildHttpClient(socketFactory, proxySelector, configure))
+                                  .client(buildHttpClient(socketFactory, proxySelector, configure, secureSocketFactory))
                                   .includeIPv6(false)
                                   .build();
   }
@@ -44,7 +42,8 @@ public class DohClient implements Dns {
     return client.lookup(hostname);
   }
 
-  static private OkHttpClient buildHttpClient(SocketFactory socketFactory, ProxySelector proxySelector, Consumer<OkHttpClient.Builder> configure) {
+  static private OkHttpClient buildHttpClient(SocketFactory socketFactory, ProxySelector proxySelector,
+                                               Consumer<OkHttpClient.Builder> configure, UnaryOperator<SSLSocketFactory> secureSocketFactory) {
     try {
       X509TrustManager trustManager = BlacklistingTrustManager.createForDefaultTrustStore();
       SSLContext       sslContext   = SSLContext.getInstance("TLS");
@@ -52,7 +51,7 @@ public class DohClient implements Dns {
       sslContext.init(null, new TrustManager[] { trustManager }, null);
 
       OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                             .sslSocketFactory(new Tls12SocketFactory(sslContext.getSocketFactory()), trustManager)
+                             .sslSocketFactory(secureSocketFactory.apply(sslContext.getSocketFactory()), trustManager)
                              .socketFactory(socketFactory)
                              .proxySelector(proxySelector)
                              .cache(null);

@@ -38,8 +38,11 @@ object MapResourceClient {
     }
   }
 
+  private val defaultTls by lazy { OkHttpClient() }
+
   internal fun createClient(context: Context, route: Networking.Routing): OkHttpClient = OkHttpClient.Builder()
     .socketFactory(route.socketFactory)
+    .sslSocketFactory(route.bindTls(defaultTls.sslSocketFactory), checkNotNull(defaultTls.x509TrustManager))
     .proxySelector(route.proxySelector)
     .dns(route.dns)
     // Only share connections within one route and avoid retaining them between tile calls.
@@ -69,7 +72,7 @@ object MapResourceClient {
     .addInterceptor(MapResourceCache(context.applicationContext))
     .addNetworkInterceptor { chain ->
       // Check after DNS and connection setup, immediately before sending tile headers.
-      route.trackExchange(chain.connection()?.socket())
+      route.ensureCurrent()
       chain.proceed(chain.request())
     }
     .build()

@@ -78,7 +78,7 @@ class AttachmentBackfillTest {
     messages = mockk(relaxed = true)
     mockkObject(SignalDatabase.Companion)
     every { SignalDatabase.attachments } returns attachments
-    every { attachments.getAttachment(any()) } returns null
+    every { attachments.getAttachment(any<AttachmentId>()) } returns null
     every { SignalDatabase.messages } returns messages
 
     record = mockk(relaxed = true)

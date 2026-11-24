@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.signal.core.models.recipients.RecipientId;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.NoSessionException;
 import org.thoughtcrime.securesms.database.GroupTable;
@@ -48,17 +49,24 @@ public class GroupCallUpdateSendJob extends BaseJob {
   private static final String KEY_ERA_ID                  = "era_id";
   private static final String KEY_RECIPIENTS              = "recipients";
   private static final String KEY_INITIAL_RECIPIENT_COUNT = "initial_recipient_count";
+  private static final String KEY_CLEANUP_PERMIT          = "call_cleanup_permit";
   static final String KEY_SYNC_TIMESTAMP          = "sync_timestamp";
 
   private final RecipientId       recipientId;
   private final String            eraId;
   private final List<RecipientId> recipients;
   private final int               initialRecipientCount;
+  private final @Nullable String cleanupPermit;
 
   private long syncTimestamp;
 
   @WorkerThread
   public static @NonNull GroupCallUpdateSendJob create(@NonNull RecipientId recipientId, @Nullable String eraId) {
+    return create(recipientId, eraId, CallPermissions.createGroupCleanupPermit(recipientId));
+  }
+
+  @WorkerThread
+  public static @NonNull GroupCallUpdateSendJob create(@NonNull RecipientId recipientId, @Nullable String eraId, @Nullable String cleanupPermit) {
     RecipientRecord conversationRecipient = SignalDatabase.recipients().getRecord(recipientId);
 
     if (conversationRecipient.getGroupId() == null || !conversationRecipient.getGroupId().isV2()) {
@@ -73,6 +81,7 @@ public class GroupCallUpdateSendJob extends BaseJob {
                                       recipientIds,
                                       recipientIds.size(),
                                       0L,
+                                      cleanupPermit,
                                       new Parameters.Builder()
                                                     .setQueue(conversationRecipient.getId().toQueueKey())
                                                     .addConstraint(SealedSenderConstraint.KEY)
@@ -86,6 +95,7 @@ public class GroupCallUpdateSendJob extends BaseJob {
                                  @NonNull List<RecipientId> recipients,
                                  int initialRecipientCount,
                                  long syncTimestamp,
+                                 @Nullable String cleanupPermit,
                                  @NonNull Parameters parameters)
   {
     super(parameters);
@@ -95,6 +105,7 @@ public class GroupCallUpdateSendJob extends BaseJob {
     this.recipients            = recipients;
     this.initialRecipientCount = initialRecipientCount;
     this.syncTimestamp         = syncTimestamp;
+    this.cleanupPermit         = cleanupPermit;
   }
 
   @Override
@@ -104,6 +115,7 @@ public class GroupCallUpdateSendJob extends BaseJob {
                                     .putString(KEY_RECIPIENTS, RecipientId.toSerializedList(recipients))
                                     .putInt(KEY_INITIAL_RECIPIENT_COUNT, initialRecipientCount)
                                     .putLong(KEY_SYNC_TIMESTAMP, syncTimestamp)
+                                    .putString(KEY_CLEANUP_PERMIT, cleanupPermit)
                                     .serialize();
   }
 
@@ -114,11 +126,10 @@ public class GroupCallUpdateSendJob extends BaseJob {
 
   @Override
   protected void onRun() throws Exception {
-    if (GroupAdmission.isHeld(recipientId)) {
-      Log.i(TAG, "Not sending a call update for a group awaiting local approval.");
+    long generation = CallPermissions.generation();
+    if (!isAllowed()) {
       return;
     }
-
     if (!Recipient.self().isRegistered()) {
       throw new NotPushRegisteredException();
     }
@@ -140,6 +151,9 @@ public class GroupCallUpdateSendJob extends BaseJob {
     }
 
     List<Recipient> destinations = recipients.stream().map(Recipient::resolved).collect(Collectors.toList());
+    if (!CallPermissions.isCurrent(generation) || !isAllowed()) {
+      return;
+    }
     List<Recipient> completions  = deliver(conversationRecipient.getGroupId(), destinations);
 
     for (Recipient completion : completions) {
@@ -189,6 +203,10 @@ public class GroupCallUpdateSendJob extends BaseJob {
 
     GroupUtil.setDataMessageGroupContext(context, dataMessageBuilder, groupId.requirePush());
 
+    if (!isAllowed()) {
+      return destinations;
+    }
+
     SignalServiceDataMessage dataMessage         = dataMessageBuilder.build();
     List<Recipient>          nonSelfDestinations = destinations.stream().filter(r -> !r.isSelf()).collect(Collectors.toList());
     boolean                  includesSelf        = nonSelfDestinations.size() != destinations.size();
@@ -201,12 +219,22 @@ public class GroupCallUpdateSendJob extends BaseJob {
                                                                                              false,
                                                                                              null);
 
-    if (includesSelf) {
+    if (includesSelf && isAllowed()) {
       results.add(AppDependencies.getSignalServiceMessageSender().sendSyncMessage(dataMessage));
       syncTimestamp = dataMessage.getTimestamp();
     }
 
     return GroupSendJobHelper.getCompletedSends(destinations, results).completed;
+  }
+
+  private boolean isAllowed() {
+    if (GroupAdmission.isHeld(recipientId)) {
+      return false;
+    }
+
+    // A normal local hangup must still notify this exact explicitly joined group.
+    // The cleanup permit never admits incoming data and is invalid after revocation/restart.
+    return cleanupPermit != null ? CallPermissions.isGroupCleanupPermitValid(cleanupPermit, recipientId) : CallPermissions.canReceiveGroup(recipientId);
   }
 
   public static class Factory implements Job.Factory<GroupCallUpdateSendJob> {
@@ -221,8 +249,9 @@ public class GroupCallUpdateSendJob extends BaseJob {
       List<RecipientId> recipients            = RecipientId.fromSerializedList(data.getString(KEY_RECIPIENTS));
       int               initialRecipientCount = data.getInt(KEY_INITIAL_RECIPIENT_COUNT);
       long              syncTimestamp         = data.getLongOrDefault(KEY_SYNC_TIMESTAMP, 0L);
+      String            cleanupPermit         = data.getStringOrDefault(KEY_CLEANUP_PERMIT, null);
 
-      return new GroupCallUpdateSendJob(recipientId, eraId, recipients, initialRecipientCount, syncTimestamp, parameters);
+      return new GroupCallUpdateSendJob(recipientId, eraId, recipients, initialRecipientCount, syncTimestamp, cleanupPermit, parameters);
     }
   }
 }

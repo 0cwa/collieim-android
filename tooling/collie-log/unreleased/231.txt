@@ -1,0 +1,3 @@
+topic: privacy
+pr: 231
+Choose who can call you, set group-call permissions, or disable all calling in Collie's Hardening settings.

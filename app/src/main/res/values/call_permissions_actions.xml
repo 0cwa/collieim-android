@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CallPermissions__calling_restricted">Calling is unavailable under your current call permissions. Review Settings → Collie → Hardening → Calls.</string>
+</resources>

@@ -11,6 +11,7 @@ import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.logging.Log;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallManager;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.signal.ringrtc.GroupCall;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
 import org.thoughtcrime.securesms.events.CallParticipant;
@@ -149,7 +150,7 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
   protected @NonNull WebRtcServiceState handleGroupRequestMembershipProof(@NonNull WebRtcServiceState currentState, int groupCallHashCode) {
     Log.i(tag, "handleGroupRequestMembershipProof():");
     Recipient recipient = currentState.getCallInfoState().getCallRecipient();
-    if (!recipient.isPushV2Group()) {
+    if (!recipient.isPushV2Group() || !CallPermissions.canContinueCall(recipient.getId())) {
       Log.i(tag, "Request membership proof for non-group");
       return currentState;
     }
@@ -162,7 +163,7 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
     }
 
     //noinspection OptionalGetWithoutIsPresent
-    webRtcInteractor.requestGroupMembershipProof(recipient.getGroupId().get().requireV2(), groupCallHashCode);
+    webRtcInteractor.requestGroupMembershipProof(recipient.getGroupId().get().requireV2(), currentGroupCall);
 
     return currentState;
   }
@@ -175,9 +176,12 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
       return terminateGroupCall(currentState);
     }
 
+    long generation = CallPermissions.generation();
     GroupCall groupCall = currentState.getCallInfoState().getGroupCall();
+    Recipient recipient = currentState.getCallInfoState().getCallRecipient();
 
-    if (groupCall == null || groupCall.hashCode() != groupCallHash) {
+    if (groupCall == null || groupCall.hashCode() != groupCallHash || recipient == null ||
+        !CallPermissions.canContinueCall(recipient.getId()) || !CallPermissions.isCurrent(generation)) {
       return currentState;
     }
 
@@ -193,17 +197,19 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
   @Override
   protected @NonNull WebRtcServiceState handleGroupRequestUpdateMembers(@NonNull WebRtcServiceState currentState) {
     Log.i(tag, "handleGroupRequestUpdateMembers():");
-
+    long generation = CallPermissions.generation();
     Recipient group     = currentState.getCallInfoState().getCallRecipient();
     if (GroupAdmission.isHeld(group)) {
       return terminateGroupCall(currentState);
     }
     GroupCall groupCall = currentState.getCallInfoState().requireGroupCall();
+    if (!CallPermissions.canContinueCall(group.getId()) || !CallPermissions.isCurrent(generation)) return currentState;
 
     List<GroupCall.GroupMemberInfo> members = GroupManager.getUuidCipherTexts(context, group.requireGroupId().requireV2()).entrySet().stream()
                                                           .map(entry -> new GroupCall.GroupMemberInfo(entry.getKey(), entry.getValue().serialize())).collect(Collectors.toList());
 
     try {
+      if (!CallPermissions.canContinueCall(group.getId()) || !CallPermissions.isCurrent(generation)) return currentState;
       groupCall.setGroupMembers(new ArrayList<>(members));
     } catch (CallException e) {
       return groupCallFailure(currentState, "Unable set group members", e);
@@ -320,6 +326,10 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
       Log.i(tag, "Group call ended unexpectedly, reinitializing and dropping back to lobby");
       Recipient  currentRecipient = currentState.getCallInfoState().getCallRecipient();
       VideoState videoState       = currentState.getVideoState();
+
+      if (currentRecipient == null || !CallPermissions.canContinueCall(currentRecipient.getId())) {
+        return terminateGroupCall(currentState);
+      }
 
       currentState = terminateGroupCall(currentState, false).builder()
                                                             .actionProcessor(actionProcessorFactory.createNetworkUnavailableActionProcessor(webRtcInteractor))

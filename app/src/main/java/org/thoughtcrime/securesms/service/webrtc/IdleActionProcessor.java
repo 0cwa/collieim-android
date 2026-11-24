@@ -7,6 +7,7 @@ import org.signal.remoteconfig.RemoteConfig;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallManager;
 import org.signal.ringrtc.PeekInfo;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.components.webrtc.EglBaseWrapper;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
@@ -104,11 +105,13 @@ public class IdleActionProcessor extends WebRtcActionProcessor {
     int groupSize = remotePeerGroup.getRecipient().getParticipantIds().size();
     if (groupSize > RemoteConfig.maxGroupCallRingSize()) {
       Log.w(TAG, "Received ring request for large group, dropping. size: " + groupSize + " max: " + RemoteConfig.maxGroupCallRingSize());
+      CallPermissions.endIncomingGroupRing(remotePeerGroup.getId(), ringId);
       return currentState;
     }
 
     if (ringUpdate != CallManager.RingUpdate.REQUESTED) {
       SignalDatabase.calls().insertOrUpdateGroupCallFromRingState(ringId, remotePeerGroup.getId(), sender, System.currentTimeMillis(), ringUpdate);
+      CallPermissions.endIncomingGroupRing(remotePeerGroup.getId(), ringId);
       return currentState;
     } else if (SignalDatabase.calls().isRingCancelled(ringId, remotePeerGroup.getId())) {
       try {
@@ -117,6 +120,7 @@ public class IdleActionProcessor extends WebRtcActionProcessor {
       } catch (CallException e) {
         Log.w(TAG, "Error while trying to cancel ring: " + ringId, e);
       }
+      CallPermissions.endIncomingGroupRing(remotePeerGroup.getId(), ringId);
       return currentState;
     }
 
@@ -129,6 +133,7 @@ public class IdleActionProcessor extends WebRtcActionProcessor {
       } catch (CallException e) {
         Log.w(TAG, "Error while trying to cancel ring: " + ringId, e);
       }
+      CallPermissions.endIncomingGroupRing(remotePeerGroup.getId(), ringId);
       return currentState;
     }
 
@@ -148,16 +153,19 @@ public class IdleActionProcessor extends WebRtcActionProcessor {
       } catch (CallException e) {
         Log.w(TAG, "Error while trying to cancel ring: " + info.getRingId(), e);
       }
+      CallPermissions.endIncomingGroupRing(info.getRecipientId(), info.getRingId());
       return currentState;
     }
 
     if (peekInfo.getDeviceCount() == 0) {
       Log.i(TAG, "No one in the group call, mark as expired and do not ring");
       SignalDatabase.calls().insertOrUpdateGroupCallFromRingState(info.getRingId(), info.getRecipientId(), info.getRingerAci(), System.currentTimeMillis(), CallManager.RingUpdate.EXPIRED_REQUEST);
+      CallPermissions.endIncomingGroupRing(info.getRecipientId(), info.getRingId());
       return currentState;
     } else if (peekInfo.getJoinedMembers().contains(Recipient.self().requireServiceId().getRawUuid())) {
       Log.i(TAG, "We are already in the call, mark accepted on another device and do not ring");
       SignalDatabase.calls().insertOrUpdateGroupCallFromRingState(info.getRingId(), info.getRecipientId(), info.getRingerAci(), System.currentTimeMillis(), CallManager.RingUpdate.ACCEPTED_ON_ANOTHER_DEVICE);
+      CallPermissions.endIncomingGroupRing(info.getRecipientId(), info.getRingId());
       return currentState;
     }
 

@@ -33,6 +33,7 @@ import org.signal.core.util.orNull
 import org.thoughtcrime.securesms.MainNavigator
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.calls.links.create.CreateCallLinkBottomSheetDialogFragment
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.components.ProgressCardDialogFragment
 import org.thoughtcrime.securesms.components.ScrollToPositionDelegate
 import org.thoughtcrime.securesms.components.ViewBinderDelegate
@@ -314,6 +315,10 @@ class CallLogFragment : Fragment(R.layout.call_log_fragment), CallLogAdapter.Cal
   }
 
   override fun onCreateACallLinkClicked() {
+    if (!CallPermissions.isCallingAllowed()) {
+      Toast.makeText(requireContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show()
+      return
+    }
     CreateCallLinkBottomSheetDialogFragment().show(parentFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
   }
 

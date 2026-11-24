@@ -12,6 +12,7 @@ import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallManager;
 import org.signal.ringrtc.GroupCall;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
 import org.thoughtcrime.securesms.components.webrtc.EglBaseWrapper;
 import org.thoughtcrime.securesms.database.RecipientTable;
@@ -222,10 +223,13 @@ public final class IncomingGroupCallActionProcessor extends DeviceAwareActionPro
       return terminateGroupCall(currentState);
     }
 
+    long generation = CallPermissions.generation();
+    if (!CallPermissions.canContinueCall(currentState.getCallInfoState().getCallRecipient().getId()) || !CallPermissions.isCurrent(generation)) return currentState;
     currentState = WebRtcVideoUtil.reinitializeCamera(context, webRtcInteractor.getCameraEventListener(), currentState);
 
     byte      dredDuration = (byte) RemoteConfig.dredDuration();
     byte[]    groupId      = currentState.getCallInfoState().getCallRecipient().requireGroupId().getDecodedId();
+    if (!CallPermissions.canContinueCall(currentState.getCallInfoState().getCallRecipient().getId()) || !CallPermissions.isCurrent(generation)) return currentState;
     GroupCall groupCall    = webRtcInteractor.getCallManager().createGroupCall(groupId,
                                                                                SignalStore.internal().getGroupCallingServer(),
                                                                                WebRtcUtil.getProxyInfo(),
@@ -240,11 +244,19 @@ public final class IncomingGroupCallActionProcessor extends DeviceAwareActionPro
     }
 
     try {
+      if (!CallPermissions.canContinueCall(currentState.getCallInfoState().getCallRecipient().getId()) || !CallPermissions.isCurrent(generation)) {
+        groupCall.disconnect();
+        return terminateGroupCall(currentState);
+      }
       groupCall.setOutgoingAudioMuted(true);
       groupCall.setOutgoingVideoMuted(true, false);
       groupCall.setDataMode(NetworkUtil.getCallingDataMode(context, groupCall.getLocalDeviceState().getNetworkRoute().getLocalAdapterType()));
 
       Log.i(TAG, "Connecting to group call: " + currentState.getCallInfoState().getCallRecipient().getId());
+      if (!CallPermissions.canContinueCall(currentState.getCallInfoState().getCallRecipient().getId()) || !CallPermissions.isCurrent(generation)) {
+        groupCall.disconnect();
+        return terminateGroupCall(currentState);
+      }
       groupCall.connect();
     } catch (CallException e) {
       return groupCallFailure(currentState, "Unable to connect to group call", e);
@@ -270,6 +282,9 @@ public final class IncomingGroupCallActionProcessor extends DeviceAwareActionPro
       groupCall.setOutgoingAudioMuted(!currentState.getLocalDeviceState().isMicrophoneEnabled());
       groupCall.setDataMode(NetworkUtil.getCallingDataMode(context, groupCall.getLocalDeviceState().getNetworkRoute().getLocalAdapterType()));
 
+      if (!CallPermissions.canContinueCall(currentState.getCallInfoState().getCallRecipient().getId()) || !CallPermissions.isCurrent(generation)) {
+        return groupCallFailure(currentState, "Calling authorization changed before joining", null);
+      }
       groupCall.join();
     } catch (CallException e) {
       return groupCallFailure(currentState, "Unable to join group call", e);

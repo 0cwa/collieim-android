@@ -15,6 +15,7 @@ import org.thoughtcrime.securesms.BaseActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.calls.links.CallLinks
 import org.thoughtcrime.securesms.calls.links.EditCallLinkNameDialogFragment
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.components.settings.conversation.ConversationSettingsNavigator
 import org.thoughtcrime.securesms.components.webrtc.controls.CallInfoView
 import org.thoughtcrime.securesms.components.webrtc.controls.ControlsAndInfoViewModel
@@ -32,6 +33,7 @@ class CallInfoCallbacks(
 ) : CallInfoView.Callbacks {
 
   override fun onShareLinkClicked() {
+    if (!isCallingAvailable()) return
     val mimeType = Intent.normalizeMimeType("text/plain")
     val shareIntent = ShareCompat.IntentBuilder(activity)
       .setText(CallLinks.url(controlsAndInfoViewModel.rootKeySnapshot))
@@ -46,37 +48,43 @@ class CallInfoCallbacks(
   }
 
   override fun onEditNameClicked(name: String) {
+    if (!isCallingAvailable()) return
     EditCallLinkNameDialogFragment().apply {
       arguments = bundleOf(EditCallLinkNameDialogFragment.ARG_NAME to name)
     }.show(activity.supportFragmentManager, null)
   }
 
   override fun onBlock(callParticipant: CallParticipant) {
+    if (!isCallingAvailable()) return
+    val generation = CallPermissions.generation()
     MaterialAlertDialogBuilder(activity)
       .setNegativeButton(android.R.string.cancel, null)
       .setMessage(activity.resources.getString(R.string.CallLinkInfoSheet__remove_s_from_the_call, callParticipant.recipient.getShortDisplayName(activity)))
       .setPositiveButton(R.string.CallLinkInfoSheet__remove) { _, _ ->
-        AppDependencies.signalCallManager.removeFromCallLink(callParticipant)
+        CallPermissions.runIfCurrent(generation) { AppDependencies.signalCallManager.removeFromCallLink(callParticipant) }
       }
       .setNeutralButton(R.string.CallLinkInfoSheet__block_from_call) { _, _ ->
-        AppDependencies.signalCallManager.blockFromCallLink(callParticipant)
+        CallPermissions.runIfCurrent(generation) { AppDependencies.signalCallManager.blockFromCallLink(callParticipant) }
       }
       .show()
   }
 
   override fun onMuteAudio(callParticipant: CallParticipant) {
-    AppDependencies.signalCallManager.sendRemoteMuteRequest(callParticipant)
+    if (!isCallingAvailable()) return
+    CallPermissions.runIfCurrent(CallPermissions.generation()) { AppDependencies.signalCallManager.sendRemoteMuteRequest(callParticipant) }
   }
 
   override fun onRemoveFromCall(callParticipant: CallParticipant) {
+    if (!isCallingAvailable()) return
+    val generation = CallPermissions.generation()
     MaterialAlertDialogBuilder(activity)
       .setNegativeButton(android.R.string.cancel, null)
       .setMessage(activity.resources.getString(R.string.CallLinkInfoSheet__remove_s_from_the_call, callParticipant.recipient.getShortDisplayName(activity)))
       .setPositiveButton(R.string.CallLinkInfoSheet__remove) { _, _ ->
-        AppDependencies.signalCallManager.removeFromCallLink(callParticipant)
+        CallPermissions.runIfCurrent(generation) { AppDependencies.signalCallManager.removeFromCallLink(callParticipant) }
       }
       .setNeutralButton(R.string.CallLinkInfoSheet__block_from_call) { _, _ ->
-        AppDependencies.signalCallManager.blockFromCallLink(callParticipant)
+        CallPermissions.runIfCurrent(generation) { AppDependencies.signalCallManager.blockFromCallLink(callParticipant) }
       }
       .show()
   }
@@ -92,5 +100,11 @@ class CallInfoCallbacks(
 
   override fun onGoToChat(callParticipant: CallParticipant) {
     CommunicationActions.startConversation(activity, callParticipant.recipient, null)
+  }
+
+  private fun isCallingAvailable(): Boolean {
+    if (CallPermissions.isCallingAllowed()) return true
+    Toast.makeText(activity, R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show()
+    return false
   }
 }

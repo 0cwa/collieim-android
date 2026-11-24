@@ -7,6 +7,7 @@ package org.thoughtcrime.securesms.jobs
 
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -45,13 +46,17 @@ internal class CallLinkPeekJob private constructor(
   )
 
   override fun onRun() {
+    val generation = CallPermissions.generation()
+    if (!CallPermissions.isCallingAllowed()) return
     val recipient = SignalDatabase.recipients.getRecord(callLinkRecipientId)
     if (recipient.callLinkRoomId == null) {
       Log.w(TAG, "Recipient was not a call link. Ignoring.")
       return
     }
 
-    AppDependencies.signalCallManager.peekCallLinkCall(callLinkRecipientId)
+    CallPermissions.runIfCurrent(generation) {
+      AppDependencies.signalCallManager.peekCallLinkCall(callLinkRecipientId)
+    }
   }
 
   override fun onShouldRetry(e: Exception): Boolean = false

@@ -3,6 +3,8 @@ package org.thoughtcrime.securesms.jobs;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.signal.core.models.recipients.RecipientId;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -24,6 +26,9 @@ public final class GroupCallPeekJob extends BaseJob {
   @NonNull private final GroupCallPeekJobData groupCallPeekJobData;
 
   public static void enqueue(@NonNull GroupCallPeekJobData groupCallPeekJobData) {
+    if (!isAllowed(groupCallPeekJobData)) {
+      return;
+    }
     JobManager         jobManager = AppDependencies.getJobManager();
     String             queue      = QUEUE + groupCallPeekJobData.groupRecipientId;
     Parameters.Builder parameters = new Parameters.Builder()
@@ -44,7 +49,13 @@ public final class GroupCallPeekJob extends BaseJob {
 
   @Override
   protected void onRun() {
-    AppDependencies.getJobManager().add(new GroupCallPeekWorkerJob(groupCallPeekJobData));
+    if (isAllowed(groupCallPeekJobData)) {
+      AppDependencies.getJobManager().add(new GroupCallPeekWorkerJob(groupCallPeekJobData));
+    }
+  }
+
+  private static boolean isAllowed(@NonNull GroupCallPeekJobData data) {
+    return CallPermissions.isGroupPeekPermitValid(data.callPermissionPermit, RecipientId.from(data.groupRecipientId), RecipientId.from(data.senderRecipientId));
   }
 
   @Override

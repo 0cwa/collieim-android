@@ -79,7 +79,7 @@ import org.signal.core.util.eventbus.RestartableSubscription;
 import org.signal.core.util.eventbus.ThreadMode;
 import org.signal.core.util.logging.Log;
 import org.signal.remoteconfig.RemoteConfig;
-import org.signal.ringrtc.CallLinkRootKey;
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey;
 import org.thoughtcrime.securesms.BindableConversationItem;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.Attachment;
@@ -1384,7 +1384,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       //noinspection ConstantConditions
       LinkPreview linkPreview = ((MmsMessageRecord) messageRecord).getLinkPreviews().get(0);
 
-      CallLinkRootKey                callLinkRootKey = CallLinks.isCallLink(linkPreview.getUrl()) ? CallLinks.parseUrl(linkPreview.getUrl()) : null;
+      ManagedCallLinkRootKey                callLinkRootKey = CallLinks.isCallLink(linkPreview.getUrl()) ? CallLinks.parseUrl(linkPreview.getUrl()) : null;
       Optional<Pair<String, String>> stickerPack     = StickerUrl.parseShareLink(linkPreview.getUrl());
       if (callLinkRootKey != null) {
         presentLinkPreviewAction(R.string.ConversationItem__join_call, v -> {

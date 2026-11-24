@@ -18,6 +18,7 @@ import org.signal.emoji.EmojiUtil
 import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialPresentation
 import org.signal.network.util.Preconditions
 import org.signal.remoteconfig.RemoteConfig
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.attachments.Attachment
 import org.thoughtcrime.securesms.attachments.LocalStickerAttachment
 import org.thoughtcrime.securesms.attachments.PointerAttachment
@@ -983,12 +984,14 @@ object DataMessageProcessor {
     }
 
     val groupRecipientId = SignalDatabase.recipients.getOrInsertFromPossiblyMigratedGroupId(groupId)
+    val permit = CallPermissions.createGroupPeekPermit(groupRecipientId, senderRecipientId) ?: return
 
     batchCache.addGroupCallPeek(
       GroupCallPeekJobData(
         groupRecipientId.toLong(),
         senderRecipientId.toLong(),
-        envelope.serverTimestamp!!
+        envelope.serverTimestamp!!,
+        callPermissionPermit = permit
       )
     )
   }

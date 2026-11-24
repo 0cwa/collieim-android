@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.processors.PublishProcessor
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.conversation.v2.ConversationRecipientRepository
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.GroupCallPeekEvent
@@ -60,7 +61,12 @@ class ConversationGroupCallViewModel(
       .subscribeBy { s: ConversationGroupCallState ->
         if (s.recipientId != null && s.activeV2Group) {
           Log.i(TAG, "Peek call for ${s.recipientId}")
-          AppDependencies.signalCallManager.peekGroupCall(s.recipientId)
+          val generation = CallPermissions.generation()
+          if (CallPermissions.canUseGroup(s.recipientId)) {
+            CallPermissions.runIfCurrent(generation) {
+              AppDependencies.signalCallManager.peekGroupCall(s.recipientId)
+            }
+          }
         }
       }
       .addTo(disposables)

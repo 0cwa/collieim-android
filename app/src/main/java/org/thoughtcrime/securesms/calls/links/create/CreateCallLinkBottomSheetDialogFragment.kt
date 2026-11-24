@@ -23,7 +23,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -53,6 +55,7 @@ import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar.YouAreAlrea
 import org.thoughtcrime.securesms.calls.links.CallLinks
 import org.thoughtcrime.securesms.calls.links.EditCallLinkNameDialogFragment
 import org.thoughtcrime.securesms.calls.links.SignalCallRow
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.database.CallLinkTable
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
 import org.thoughtcrime.securesms.service.webrtc.links.CreateCallLinkResult
@@ -88,6 +91,15 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
 
   @Composable
   override fun SheetContent() {
+    val generation by CallPermissions.changes.collectAsStateWithLifecycle()
+    if (!remember(generation) { CallPermissions.isCallingAllowed() }) {
+      LaunchedEffect(generation) {
+        Toast.makeText(requireContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show()
+        dismissAllowingStateLoss()
+      }
+      return
+    }
+
     val callLink: CallLinkTable.CallLink by viewModel.callLink
     val displayAlreadyInACallSnackbar: Boolean by viewModel.showAlreadyInACall.collectAsStateWithLifecycle(false)
     val isLoadingAdminApprovalChange: Boolean by viewModel.isLoadingAdminApprovalChange.collectAsStateWithLifecycle(false)
@@ -107,6 +119,7 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
   }
 
   private fun setCallName(callName: String) {
+    if (!isCallingAvailable()) return
     lifecycleDisposable += viewModel.setCallName(callName).subscribeBy(onSuccess = {
       if (it !is UpdateCallLinkResult.Update) {
         Log.w(TAG, "Failed to update call link name")
@@ -116,6 +129,7 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
   }
 
   private fun setApproveAllMembers(approveAllMembers: Boolean) {
+    if (!isCallingAvailable()) return
     lifecycleDisposable += viewModel.setApproveAllMembers(approveAllMembers).subscribeBy(onSuccess = {
       if (it !is UpdateCallLinkResult.Update) {
         Log.w(TAG, "Failed to update call link restrictions")
@@ -125,6 +139,7 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
   }
 
   private fun onAddACallNameClicked() {
+    if (!isCallingAvailable()) return
     val snapshot = viewModel.callLink.value
     EditCallLinkNameDialogFragment().apply {
       arguments = bundleOf(EditCallLinkNameDialogFragment.ARG_NAME to snapshot.state.name)
@@ -132,7 +147,7 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
   }
 
   private fun onJoinClicked() {
-    lifecycleDisposable += viewModel.commitCallLink().subscribeBy(onSuccess = {
+    withCommittedCallLink {
       when (it) {
         is EnsureCallLinkCreatedResult.Success -> {
           CommunicationActions.startVideoCall(requireActivity(), it.recipient) {
@@ -143,20 +158,20 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
 
         is EnsureCallLinkCreatedResult.Failure -> handleCreateCallLinkFailure(it.failure)
       }
-    }, onError = this::handleError)
+    }
   }
 
   private fun onDoneClicked() {
-    lifecycleDisposable += viewModel.commitCallLink().subscribeBy(onSuccess = {
+    withCommittedCallLink {
       when (it) {
         is EnsureCallLinkCreatedResult.Success -> dismissAllowingStateLoss()
         is EnsureCallLinkCreatedResult.Failure -> handleCreateCallLinkFailure(it.failure)
       }
-    }, onError = this::handleError)
+    }
   }
 
   private fun onShareViaSignalClicked() {
-    lifecycleDisposable += viewModel.commitCallLink().subscribeBy(onSuccess = {
+    withCommittedCallLink {
       when (it) {
         is EnsureCallLinkCreatedResult.Success -> {
           startActivity(
@@ -169,11 +184,11 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
 
         is EnsureCallLinkCreatedResult.Failure -> handleCreateCallLinkFailure(it.failure)
       }
-    }, onError = this::handleError)
+    }
   }
 
   private fun onCopyLinkClicked() {
-    lifecycleDisposable += viewModel.commitCallLink().subscribeBy(onSuccess = {
+    withCommittedCallLink {
       when (it) {
         is EnsureCallLinkCreatedResult.Success -> {
           Util.copyToClipboard(requireContext(), CallLinks.url(viewModel.linkKeyBytes))
@@ -182,11 +197,11 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
 
         is EnsureCallLinkCreatedResult.Failure -> handleCreateCallLinkFailure(it.failure)
       }
-    }, onError = this::handleError)
+    }
   }
 
   private fun onShareLinkClicked() {
-    lifecycleDisposable += viewModel.commitCallLink().subscribeBy {
+    withCommittedCallLink {
       when (it) {
         is EnsureCallLinkCreatedResult.Success -> {
           val mimeType = Intent.normalizeMimeType("text/plain")
@@ -208,6 +223,21 @@ class CreateCallLinkBottomSheetDialogFragment : ComposeBottomSheetDialogFragment
         }
       }
     }
+  }
+
+  private fun withCommittedCallLink(onSuccess: (EnsureCallLinkCreatedResult) -> Unit) {
+    if (!isCallingAvailable()) return
+    val generation = CallPermissions.generation()
+    lifecycleDisposable += viewModel.commitCallLink().subscribeBy(
+      onSuccess = { if (CallPermissions.isCurrent(generation)) onSuccess(it) },
+      onError = { if (CallPermissions.isCurrent(generation)) handleError(it) }
+    )
+  }
+
+  private fun isCallingAvailable(): Boolean {
+    if (CallPermissions.isCallingAllowed()) return true
+    Toast.makeText(requireContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show()
+    return false
   }
 
   private fun handleCreateCallLinkFailure(failure: CreateCallLinkResult.Failure) {

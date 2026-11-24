@@ -117,6 +117,8 @@ message GroupCallPeekJobData {
   uint64 groupRecipientId  = 1;
   uint64 senderRecipientId = 2;
   uint64 serverTimestamp   = 3;
+  // Installation/process-local authorization captured before remote work is batched.
+  optional string callPermissionPermit = 4;
 }
 
 message RestoreLocalAttachmentJobData {

@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.storage
 import okio.ByteString.Companion.EMPTY
 import okio.ByteString.Companion.toByteString
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.Test
 import org.signal.core.util.logging.Log
@@ -33,7 +34,7 @@ class CallLinkRecordProcessorTest {
 
   private val testSubject = CallLinkRecordProcessor()
   private val mockCredentials = CallLinkCredentials(
-    "root key".toByteArray(),
+    ByteArray(16) { (it + 1).toByte() },
     "admin pass".toByteArray()
   )
 
@@ -89,5 +90,16 @@ class CallLinkRecordProcessorTest {
 
     // THEN
     assertFalse(result)
+  }
+
+  @Test
+  fun `malformed remote root key is rejected without loading RingRTC`() {
+    val proto = CallLinkRecord.Builder().apply {
+      rootKey = ByteArray(15).toByteString()
+      adminPasskey = EMPTY
+      deletedAtTimestampMs = 0L
+    }.build()
+
+    assertTrue(testSubject.isInvalid(SignalCallLinkRecord(STORAGE_ID, proto)))
   }
 }

@@ -1283,6 +1283,11 @@ object BackupRepository {
       importDatabase.beginTransaction()
       transactionStarted = true
 
+      // Every v2 restore mode replaces recipient IDs, including a same-account local restore.
+      // Reset local grants durably while the recipient writer excludes concurrent settings
+      // changes. Keep this restrictive reset even if the archive transaction later rolls back.
+      org.thoughtcrime.securesms.calls.permissions.CallPermissions.onRestore()
+
       Log.d(TAG, "[import] Inside transaction.")
       stopwatch.split("get-transaction")
 

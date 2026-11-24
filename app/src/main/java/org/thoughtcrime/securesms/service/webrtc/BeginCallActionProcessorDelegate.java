@@ -6,6 +6,7 @@ import org.signal.core.util.logging.Log;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallManager;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
 import org.thoughtcrime.securesms.database.CallTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
@@ -40,10 +41,15 @@ public class BeginCallActionProcessorDelegate extends WebRtcActionProcessor {
                                                            @NonNull RemotePeer remotePeer,
                                                            @NonNull OfferMessage.Type offerType)
   {
+    long generation = CallPermissions.generation();
+    if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.getId())) return currentState;
     if (!remotePeer.getRecipient().getHasAci()) {
       Log.w(tag, "1:1 outgoing recipient is PNI only, send pseudo-call offer and terminate call");
 
       remotePeer.setCallId(new CallId(ByteBuffer.wrap(Util.getSecretBytes(8)).getLong()));
+      // This managed permission request has no native onStartCall callback.
+      // Bind its exact ID so normal teardown cannot leave a pending session.
+      if (!CallPermissions.bindOutgoing(remotePeer.getId(), remotePeer.getCallId().longValue())) return currentState;
 
       currentState = currentState.builder()
                                  .actionProcessor(new IdleActionProcessor(webRtcInteractor))
@@ -65,6 +71,7 @@ public class BeginCallActionProcessorDelegate extends WebRtcActionProcessor {
 
       webRtcInteractor.insertMissedCall(remotePeer, System.currentTimeMillis(), isVideoOffer, CallTable.Event.NOT_ACCEPTED);
       webRtcInteractor.postStateUpdate(currentState);
+      if (!CallPermissions.isCurrent(generation)) return terminate(currentState, remotePeer);
       webRtcInteractor.sendCallMessage(remotePeer, SignalServiceCallMessage.forOffer(new OfferMessage(remotePeer.getCallId().longValue(),
                                                                                                       offerType,
                                                                                                       new byte[0]),
@@ -103,6 +110,7 @@ public class BeginCallActionProcessorDelegate extends WebRtcActionProcessor {
 
     CallManager.CallMediaType callMediaType = WebRtcUtil.getCallMediaTypeFromOfferType(offerType);
     try {
+      if (!CallPermissions.isCurrent(generation) || !CallPermissions.canContinueCall(remotePeer.getId())) return currentState;
       webRtcInteractor.getCallManager().call(remotePeer, callMediaType, SignalStore.account().getDeviceId());
     } catch (CallException e) {
       return callFailure(currentState, "Unable to create outgoing call: ", e);

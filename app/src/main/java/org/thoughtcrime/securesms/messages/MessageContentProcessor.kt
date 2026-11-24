@@ -14,6 +14,7 @@ import org.signal.libsignal.protocol.ecc.ECPublicKey
 import org.signal.libsignal.protocol.message.DecryptionErrorMessage
 import org.signal.libsignal.zkgroup.groups.GroupSecretParams
 import org.signal.remoteconfig.RemoteConfig
+import org.thoughtcrime.securesms.calls.permissions.CallMessageQueueReceipt
 import org.thoughtcrime.securesms.database.MessageType
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.GroupRecord
@@ -371,12 +372,13 @@ open class MessageContentProcessor(private val context: Context) {
     serverDeliveredTimestamp: Long,
     processingEarlyContent: Boolean = false,
     localMetric: SignalLocalMetrics.MessageReceive? = null,
-    batchCache: BatchCache = OneTimeBatchCache()
+    batchCache: BatchCache = OneTimeBatchCache(),
+    callQueueReceipt: CallMessageQueueReceipt? = null
   ) {
     val senderRecipient = Recipient.externalPush(SignalServiceAddress(metadata.sourceServiceId, metadata.sourceE164))
 
     SignalTrace.beginSection("MessageContentProcessor#handleMessage")
-    handleMessage(senderRecipient, envelope, content, metadata, serverDeliveredTimestamp, processingEarlyContent, localMetric, batchCache)
+    handleMessage(senderRecipient, envelope, content, metadata, serverDeliveredTimestamp, processingEarlyContent, localMetric, batchCache, callQueueReceipt)
     SignalTrace.endSection()
 
     val earlyCacheEntries: List<EarlyMessageCacheEntry>? = AppDependencies
@@ -468,7 +470,8 @@ open class MessageContentProcessor(private val context: Context) {
     serverDeliveredTimestamp: Long,
     processingEarlyContent: Boolean,
     localMetric: SignalLocalMetrics.MessageReceive?,
-    batchCache: BatchCache
+    batchCache: BatchCache,
+    callQueueReceipt: CallMessageQueueReceipt? = null
   ) {
     val threadRecipient = getMessageDestination(content, senderRecipient)
 
@@ -523,7 +526,10 @@ open class MessageContentProcessor(private val context: Context) {
           return
         }
 
-        CallMessageProcessor.process(senderRecipient, envelope, content, metadata, serverDeliveredTimestamp)
+        // senderRecipient was resolved from authenticated EnvelopeMetadata above.
+        // CallMessageProcessor admits the entire message before obtaining calling
+        // dependencies or sharing a profile; payload fields never choose the sender.
+        CallMessageProcessor.process(senderRecipient, envelope, content, metadata, serverDeliveredTimestamp, callQueueReceipt)
       }
 
       content.receiptMessage != null -> {

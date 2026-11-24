@@ -8,6 +8,8 @@ package org.thoughtcrime.securesms.calls.links.create
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.signal.core.models.recipients.RecipientId
+import org.thoughtcrime.securesms.calls.permissions.CallLinkPolicy
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.database.CallLinkTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -24,18 +26,29 @@ import org.whispersystems.signalservice.internal.push.SyncMessage
  * but will also ensure the database is updated.
  */
 class CreateCallLinkRepository(
-  private val callLinkManager: SignalCallLinkManager = AppDependencies.signalCallManager.callLinkManager
+  private val callLinkManager: SignalCallLinkManager? = null
 ) {
   fun ensureCallLinkCreated(credentials: CallLinkCredentials): Single<EnsureCallLinkCreatedResult> {
+    val generation = CallPermissions.generation()
+    return CallLinkPolicy.guarded<EnsureCallLinkCreatedResult>(EnsureCallLinkCreatedResult.Failure(CreateCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS)), generation) {
+      ensureAllowedCallLinkCreated(credentials, generation)
+    }
+  }
+
+  private fun ensureAllowedCallLinkCreated(credentials: CallLinkCredentials, generation: Long): Single<EnsureCallLinkCreatedResult> {
     val callLinkRecipientId = Single.fromCallable {
       SignalDatabase.recipients.getByCallLinkRoomId(credentials.roomId)
     }
 
     return callLinkRecipientId.flatMap { recipientId ->
-      if (recipientId.isPresent) {
+      if (!CallPermissions.isCurrent(generation)) {
+        Single.just(EnsureCallLinkCreatedResult.Failure(CreateCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS)))
+      } else if (recipientId.isPresent) {
         Single.just(EnsureCallLinkCreatedResult.Success(Recipient.resolved(recipientId.get())))
       } else {
-        callLinkManager.createCallLink(credentials).map {
+        CallLinkPolicy.guarded<CreateCallLinkResult>(CreateCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS), generation) {
+          (callLinkManager ?: AppDependencies.signalCallManager.callLinkManager).createCallLink(credentials)
+        }.map {
           when (it) {
             is CreateCallLinkResult.Success -> {
               SignalDatabase.callLinks.insertCallLink(

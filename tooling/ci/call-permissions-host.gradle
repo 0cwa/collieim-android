@@ -1,0 +1,54 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.gradle.api.tasks.testing.Test
+
+// Explicitly applied only by the call-permissions host job. Included builds and
+// every other Test task keep their normal configuration.
+if (gradle.parent == null) {
+  def root = gradle.startParameter.currentDir
+  def evidence = new File(root, 'build/call-permissions-host')
+  def inventory = new JsonSlurper().parse(new File(evidence, 'inventory.json'))
+  def suitesByTask = inventory.suites.groupBy { it.task }
+  def sdkDirectory = new File(root, 'build/call-permissions-host-sdks').canonicalPath
+  def nativeDirectory = new File(root, 'build/host-tests/resources').canonicalPath
+
+  gradle.beforeProject { project ->
+    project.tasks.withType(Test).configureEach { task ->
+      def selected = suitesByTask[task.path]
+      if (selected != null) {
+        def classes = selected.collect { it.class_name }.sort()
+        task.filter.setIncludePatterns(*(classes as String[]))
+        task.filter.setFailOnNoMatchingTests(true)
+        task.maxParallelForks = 1
+        task.maxHeapSize = '1g'
+        task.outputs.upToDateWhen { false }
+        task.outputs.cacheIf { false }
+        task.systemProperty('robolectric.offline', 'true')
+        task.systemProperty('robolectric.dependency.dir', sdkDirectory)
+        task.systemProperty('robolectric.usePreinstrumentedJars', 'true')
+        task.doFirst {
+          if (task.systemProperties['robolectric-deps.properties'] ||
+              task.systemProperties['robolectric.offline'] != 'true' ||
+              task.systemProperties['robolectric.dependency.dir'] != sdkDirectory ||
+              task.systemProperties['robolectric.usePreinstrumentedJars'] != 'true' ||
+              task.filter.includePatterns != classes.toSet() ||
+              project.findProperty('collieHostJniDir') == null ||
+              new File(root, project.findProperty('collieHostJniDir').toString()).canonicalPath != nativeDirectory ||
+              !task.classpath.files.any { it.canonicalPath == nativeDirectory }) {
+            throw new GradleException('Call-permissions test selection or offline resolver changed')
+          }
+          new File(evidence, task.path.replace(':', '_') + '.json').text = JsonOutput.toJson([
+            task: task.path, classes: classes, offline: true,
+            sdk_directory: sdkDirectory, preinstrumented: true, host_jni_directory: nativeDirectory
+          ])
+        }
+      }
+    }
+  }
+  gradle.taskGraph.whenReady { graph ->
+    def actual = graph.allTasks.findAll { it instanceof Test }.collect { it.path }.toSet()
+    if (actual != suitesByTask.keySet()) {
+      throw new GradleException("Unexpected host Test tasks: ${actual}")
+    }
+  }
+}

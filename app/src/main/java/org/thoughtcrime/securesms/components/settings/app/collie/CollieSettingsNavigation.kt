@@ -23,4 +23,8 @@ fun EntryProviderScope<NavKey>.registerCollieRoutes(parentEventEmitter: (AppSett
   detailEntry<AppSettingsRoute.CollieRoute.ChooseGroupPeople> {
     ChooseGroupPeopleEntry(parentEventEmitter = parentEventEmitter)
   }
+
+  detailEntry<AppSettingsRoute.CollieCalls> {
+    CallsSettingsEntry(parentEventEmitter = parentEventEmitter)
+  }
 }

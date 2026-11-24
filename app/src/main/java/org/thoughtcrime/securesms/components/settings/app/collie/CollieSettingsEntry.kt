@@ -40,6 +40,7 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
     showAppUpdates = AppSettingsRepository.showAppUpdates(),
     onAppUpdatesClick = { parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates) },
     onGroupPrivacyClicked = { parentEventEmitter.navigateTo(AppSettingsRoute.CollieRoute.GroupPrivacy) },
+    onCallsClicked = { parentEventEmitter.navigateTo(AppSettingsRoute.CollieCalls) },
     protectBackupKey = protectBackupKey,
     onProtectBackupKeyChanged = { desired ->
       authenticate {

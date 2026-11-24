@@ -1,0 +1,240 @@
+package org.thoughtcrime.securesms.messages
+
+import android.app.Application
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import okio.ByteString
+import org.junit.After
+import org.junit.Assert.assertNotNull
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowSystemClock
+import org.signal.core.models.ServiceId
+import org.signal.core.models.recipients.RecipientId
+import org.signal.core.util.logging.Log
+import org.signal.libsignal.protocol.IdentityKey
+import org.thoughtcrime.securesms.calls.permissions.CallMessageQueueReceipt
+import org.thoughtcrime.securesms.calls.permissions.CallPermission
+import org.thoughtcrime.securesms.calls.permissions.CallPermissionTestEnvironment
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
+import org.thoughtcrime.securesms.calls.permissions.DirectMessageKind
+import org.thoughtcrime.securesms.calls.permissions.GroupCallAdmission
+import org.thoughtcrime.securesms.crypto.storage.SignalServiceAccountDataStoreImpl
+import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
+import org.thoughtcrime.securesms.database.model.IdentityRecord
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobs.ProfileKeySendJob
+import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.recipients.RecipientUtil
+import org.thoughtcrime.securesms.service.webrtc.SignalCallManager
+import org.thoughtcrime.securesms.testutil.SystemOutLogger
+import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
+import org.whispersystems.signalservice.internal.push.CallMessage
+import org.whispersystems.signalservice.internal.push.Content
+import org.whispersystems.signalservice.internal.push.Envelope
+import java.time.Duration
+import java.util.Optional
+import java.util.UUID
+
+/** The ingress tests count dependency acquisition, not merely the eventual native invocation. */
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, application = Application::class, instrumentedPackages = ["org.signal.ringrtc"])
+class CallMessageAdmissionTest {
+  private val policy = CallPermissionTestEnvironment()
+  private val blockedId = RecipientId.from(9)
+  private lateinit var sender: Recipient
+  private lateinit var callManager: SignalCallManager
+  private val envelope = Envelope(clientTimestamp = 1_000, serverTimestamp = 1_000)
+  private val metadata = EnvelopeMetadata(ServiceId.ACI.from(UUID(0, 9)), null, 2, true, null, policy.accountId, 1)
+
+  @Before
+  fun setUp() {
+    Log.initialize(SystemOutLogger())
+    policy.setUp()
+    sender = policy.recipient(9)
+    CallPermissions.setOverride(sender, CallPermission.BLOCK)
+    mockkStatic(AppDependencies::class, RecipientUtil::class, GroupCallAdmission::class, ProfileKeySendJob::class)
+    mockkObject(CallPolicyRejector, GroupCallAdmission)
+    callManager = mockk(relaxed = true)
+    every { AppDependencies.signalCallManager } returns callManager
+    every { RecipientUtil.shareProfileIfFirstSecureMessage(any()) } just Runs
+    every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns true
+    every { ProfileKeySendJob.createForCall(any(), any()) } returns null
+    every { CallPolicyRejector.declineOffer(any(), any(), any(), any(), any(), any()) } just Runs
+    every { CallPolicyRejector.recordMissedCall(any(), any(), any(), any()) } just Runs
+    every { GroupCallAdmission.admit(any(), any(), any(), any()) } returns null
+  }
+
+  @After
+  fun tearDown() {
+    unmockkObject(CallPolicyRejector, GroupCallAdmission)
+    unmockkStatic(AppDependencies::class, RecipientUtil::class, GroupCallAdmission::class, ProfileKeySendJob::class)
+    policy.tearDown()
+  }
+
+  @Test
+  fun `all denied categories avoid acquiring the native manager`() {
+    deniedMessages().forEach { process(it) }
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `another contacts authorized call never opens admission for blocked callers`() {
+    check(CallPermissions.beginOutgoing(RecipientId.from(7)))
+    check(CallPermissions.bindOutgoing(RecipientId.from(7), 41))
+    deniedMessages().forEach { process(it) }
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `blocked PNI offer does not share a profile`() {
+    val pniMetadata = EnvelopeMetadata(metadata.sourceServiceId, null, 2, true, null, policy.pniId, 1)
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = deniedMessages().first()), pniMetadata, 1_000)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `explicit outgoing call permits only its own continuation despite incoming block`() {
+    check(CallPermissions.beginOutgoing(blockedId))
+    check(CallPermissions.bindOutgoing(blockedId, 41))
+    process(CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 42, opaque = ByteString.EMPTY))))
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+
+    process(CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY))))
+    verify(exactly = 1) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { callManager.receivedIceCandidates(any(), any(), any()) }
+  }
+
+  @Test
+  fun `time deferred before admission consumes the original message freshness budget`() {
+    check(CallPermissions.beginOutgoing(blockedId))
+    check(CallPermissions.bindOutgoing(blockedId, 41))
+    val receipt = CallMessageQueueReceipt.capture()
+    ShadowSystemClock.advanceBy(Duration.ofMillis(119_001))
+    val ice = CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY)))
+
+    // The message was already one second old on arrival and waited another 119.001 seconds.
+    // The outgoing session itself remains live, so only the message's stale age denies it.
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = ice), metadata, 2_000, receipt)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    assertNotNull(CallPermissions.admitDirect(blockedId, 41, 2, DirectMessageKind.ICE, 0))
+  }
+
+  @Test
+  fun `fresh deferred continuation keeps the ordinary incoming transport path`() {
+    check(CallPermissions.beginOutgoing(blockedId))
+    check(CallPermissions.bindOutgoing(blockedId, 41))
+    val receipt = CallMessageQueueReceipt.capture()
+    ShadowSystemClock.advanceBy(Duration.ofMillis(10_000))
+    val ice = CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY)))
+
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = ice), metadata, 2_000, receipt)
+
+    verify(exactly = 1) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { callManager.receivedIceCandidates(any(), any(), any()) }
+  }
+
+  @Test
+  fun `authenticated envelope identity must match the resolved recipient`() {
+    check(CallPermissions.beginOutgoing(blockedId))
+    check(CallPermissions.bindOutgoing(blockedId, 41))
+    val wrongSender = EnvelopeMetadata(ServiceId.ACI.from(UUID(0, 7)), null, 2, true, null, metadata.destinationServiceId, 1)
+    val ice = CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY)))
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = ice), wrongSender, 1_000)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+  }
+
+  @Test
+  fun `existing trust refusal is managed and releases its admission slot`() {
+    CallPermissions.setOverride(sender, CallPermission.INHERIT)
+    every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns false
+    process(deniedMessages().first())
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+    verify(exactly = 1) { CallPolicyRejector.recordMissedCall(sender, 41, 1_000, false) }
+    assertNotNull(CallPermissions.admitDirect(RecipientId.from(7), 42, 1, DirectMessageKind.OFFER, 0))
+  }
+
+  @Test
+  fun `trusted PNI handshake preserves profile reply without constructing RingRTC`() {
+    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    val pniMetadata = EnvelopeMetadata(metadata.sourceServiceId, null, 2, true, null, policy.pniId, 1)
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = deniedMessages().first()), pniMetadata, 1_000)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { RecipientUtil.shareProfileIfFirstSecureMessage(sender) }
+    verify(exactly = 1) { ProfileKeySendJob.createForCall(sender, false) }
+    verify(exactly = 1) { CallPolicyRejector.recordMissedCall(sender, 41, 1_000, false) }
+  }
+
+  @Test
+  fun `an old account envelope is not newly admitted after account replacement`() {
+    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    val oldAccount = EnvelopeMetadata(metadata.sourceServiceId, null, 2, true, null, ServiceId.ACI.from(UUID(0, 99)), 1)
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = deniedMessages().first()), oldAccount, 1_000)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `explicit allow admits an authenticated ACI without chat or address book heuristics`() {
+    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns false
+    val key: IdentityKey = mockk { every { serialize() } returns byteArrayOf(1) }
+    val record: IdentityRecord = mockk { every { component2() } returns key }
+    val accountStore = mockk<SignalServiceAccountDataStoreImpl>()
+    val protocolStore = mockk<SignalServiceDataStoreImpl>()
+    every { accountStore.identities().getIdentityRecord(blockedId) } returns Optional.of(record)
+    every { protocolStore.get(any<ServiceId>()) } returns accountStore
+    every { AppDependencies.protocolStore } returns protocolStore
+
+    process(deniedMessages().first())
+
+    verify(exactly = 1) { AppDependencies.signalCallManager }
+    verify(exactly = 1) { callManager.receivedOffer(any(), any(), any(), any()) }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+  }
+
+  @Test
+  fun `explicit call allow never grants PNI profile sharing to an unknown caller`() {
+    CallPermissions.setOverride(sender, CallPermission.ALLOW)
+    every { RecipientUtil.isCallRequestAccepted(any<Recipient>()) } returns false
+    val pniMetadata = EnvelopeMetadata(metadata.sourceServiceId, null, 2, true, null, policy.pniId, 1)
+    CallMessageProcessor.process(sender, envelope, Content(callMessage = deniedMessages().first()), pniMetadata, 1_000)
+
+    verify(exactly = 0) { AppDependencies.signalCallManager }
+    verify(exactly = 0) { RecipientUtil.shareProfileIfFirstSecureMessage(any()) }
+    verify(exactly = 0) { ProfileKeySendJob.createForCall(any(), any()) }
+  }
+
+  private fun process(message: CallMessage) = CallMessageProcessor.process(sender, envelope, Content(callMessage = message), metadata, 1_000)
+
+  private fun deniedMessages() = listOf(
+    CallMessage(offer = CallMessage.Offer(id = 41, type = CallMessage.Offer.Type.OFFER_AUDIO_CALL, opaque = ByteString.EMPTY)),
+    CallMessage(answer = CallMessage.Answer(id = 41, opaque = ByteString.EMPTY)),
+    CallMessage(iceUpdate = listOf(CallMessage.IceUpdate(id = 41, opaque = ByteString.EMPTY))),
+    CallMessage(hangup = CallMessage.Hangup(id = 41)),
+    CallMessage(busy = CallMessage.Busy(id = 41)),
+    CallMessage(opaque = CallMessage.Opaque(data_ = ByteString.EMPTY))
+  )
+}

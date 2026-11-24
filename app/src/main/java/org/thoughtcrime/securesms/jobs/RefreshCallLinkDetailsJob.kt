@@ -6,13 +6,13 @@
 package org.thoughtcrime.securesms.jobs
 
 import org.signal.core.util.concurrent.safeBlockingGet
+import org.thoughtcrime.securesms.calls.permissions.CallLinkPolicy
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkCredentials
 import org.thoughtcrime.securesms.service.webrtc.links.ReadCallLinkResult
-import org.thoughtcrime.securesms.service.webrtc.links.SignalCallLinkManager
 import org.whispersystems.signalservice.internal.push.SyncMessage.CallLinkUpdate
 import java.util.concurrent.TimeUnit
 
@@ -45,13 +45,15 @@ class RefreshCallLinkDetailsJob private constructor(
   override fun onFailure() = Unit
 
   override fun onRun() {
-    val manager: SignalCallLinkManager = AppDependencies.signalCallManager.callLinkManager
     val credentials = CallLinkCredentials(
       linkKeyBytes = callLinkUpdate.rootKey!!.toByteArray(),
       adminPassBytes = callLinkUpdate.adminPasskey?.toByteArray()
     )
 
-    when (val result = manager.readCallLink(credentials).safeBlockingGet()) {
+    val read = CallLinkPolicy.guarded<ReadCallLinkResult>(ReadCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS)) {
+      AppDependencies.signalCallManager.callLinkManager.readCallLink(credentials)
+    }
+    when (val result = read.safeBlockingGet()) {
       is ReadCallLinkResult.Success -> {
         SignalDatabase.callLinks.updateCallLinkState(credentials.roomId, result.callLinkState)
       }

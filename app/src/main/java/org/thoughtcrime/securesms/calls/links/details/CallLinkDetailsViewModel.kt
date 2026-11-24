@@ -19,8 +19,9 @@ import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallLinkState
 import org.thoughtcrime.securesms.calls.links.CallLinks
 import org.thoughtcrime.securesms.calls.links.UpdateCallLinkRepository
-import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.calls.permissions.CallPeekState
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.service.webrtc.CallLinkPeekInfo
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId
 import org.thoughtcrime.securesms.service.webrtc.links.UpdateCallLinkResult
 import kotlin.coroutines.resume
@@ -70,12 +71,10 @@ class CallLinkDetailsViewModel(
       .map { it.id }
       .distinctUntilChanged()
       .flatMap { recipientId ->
-        AppDependencies.signalCallManager.peekInfoCache
+        CallPeekState.observe()
           .distinctUntilChanged()
-          .filter { it.containsKey(recipientId) }
-          .map { it[recipientId]!! }
+          .map { it[recipientId] ?: CallLinkPeekInfo(null, false, false) }
           .distinctUntilChanged()
-          .toObservable()
       }
       .subscribeOn(Schedulers.io())
       .subscribeBy { callLinkPeekInfo ->

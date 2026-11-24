@@ -21,12 +21,14 @@ import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.InvalidMessageException;
 import org.signal.libsignal.zkgroup.VerificationFailedException;
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey;
-import org.signal.ringrtc.CallLinkRootKey;
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey;
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupJoinInfo;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.Attachment;
 import org.thoughtcrime.securesms.attachments.UriAttachment;
 import org.thoughtcrime.securesms.calls.links.CallLinks;
+import org.thoughtcrime.securesms.calls.permissions.CallLinkPolicy;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.GroupRecord;
@@ -372,15 +374,19 @@ public class LinkPreviewRepository {
                                                         @NonNull String callLinkUrl,
                                                         @NonNull Callback callback) {
 
-    CallLinkRootKey callLinkRootKey = CallLinks.parseUrl(callLinkUrl);
+    ManagedCallLinkRootKey callLinkRootKey = CallLinks.parseUrl(callLinkUrl);
     if (callLinkRootKey == null) {
       callback.onError(Error.PREVIEW_NOT_AVAILABLE);
       return () -> { };
     }
 
-    Disposable disposable = AppDependencies.getSignalCallManager()
-                                           .getCallLinkManager()
-                                           .readCallLink(new CallLinkCredentials(callLinkRootKey.getKeyBytes(), null))
+    Disposable disposable = CallLinkPolicy.INSTANCE.<ReadCallLinkResult>guarded(
+                                               new ReadCallLinkResult.Failure(CallLinkPolicy.DENIED_STATUS),
+                                               CallPermissions.generation(),
+                                               () -> AppDependencies.getSignalCallManager()
+                                                                    .getCallLinkManager()
+                                                                    .readCallLink(new CallLinkCredentials(callLinkRootKey.getKeyBytes(), null))
+                                           )
                                            .observeOn(Schedulers.io())
                                            .subscribe(
                                                         result -> {
@@ -394,7 +400,7 @@ public class LinkPreviewRepository {
                                                               return;
                                                             }
 
-                                                            // Note: thumbnails are generated recv-side using the CallLinkRootKey
+                                                            // Note: thumbnails are generated recv-side using the ManagedCallLinkRootKey
                                                             callback.onSuccess(new LinkPreview(
                                                                 callLinkUrl,
                                                                 success.getCallLinkState().getName(),

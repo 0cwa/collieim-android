@@ -34,9 +34,10 @@ import org.signal.core.util.concurrent.JvmRxExtensions;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.concurrent.SimpleTask;
 import org.signal.core.util.logging.Log;
-import org.signal.ringrtc.CallLinkRootKey;
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.calls.links.CallLinks;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.components.webrtc.v2.CallIntent;
 import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery;
 import org.thoughtcrime.securesms.conversation.ConversationIntents;
@@ -85,11 +86,15 @@ public class CommunicationActions {
   }
 
   private static void startVoiceCall(@NonNull CallContext callContext, @NonNull Recipient recipient, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
+    long generation = CallPermissions.generation();
+    if (showToastIfCallRestricted(callContext, recipient)) {
+      return;
+    }
     if (recipient.isRegistered()) {
-      AppDependencies.getSignalCallManager().isCallActive(new ResultReceiver(new Handler(Looper.getMainLooper())) {
+      CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().isCallActive(new ResultReceiver(new Handler(Looper.getMainLooper())) {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-          if (!callContext.isAvailable()) {
+          if (!callContext.isAvailable() || !CallPermissions.isCurrent(generation)) {
             Log.w(TAG, "Call context is no longer available, ignoring voice call.");
             return;
           }
@@ -108,14 +113,18 @@ public class CommunicationActions {
 
             MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(callContext.getContext())
                 .setMessage(R.string.CommunicationActions_start_voice_call)
-                .setPositiveButton(R.string.CommunicationActions_call, (d, w) -> startCallInternal(callContext, recipient, false, false))
+                .setPositiveButton(R.string.CommunicationActions_call, (d, w) -> {
+                  if (CallPermissions.isCurrent(generation)) {
+                    startCallInternal(callContext, recipient, false, false);
+                  }
+                })
                 .setNegativeButton(R.string.CommunicationActions_cancel, (d, w) -> d.dismiss())
                 .setCancelable(true);
 
             showDialogBoundToCallContext(callContext, dialogBuilder);
           }
         }
-      });
+      }));
     } else if (!showToastIfPstnLineBusy(callContext)) {
       startInsecureCall(callContext, recipient);
     }
@@ -136,10 +145,14 @@ public class CommunicationActions {
   }
 
   private static void startVideoCall(@NonNull CallContext callContext, @NonNull Recipient recipient, boolean fromCallLink, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
-    AppDependencies.getSignalCallManager().isCallActive(new ResultReceiver(new Handler(Looper.getMainLooper())) {
+    long generation = CallPermissions.generation();
+    if (showToastIfCallRestricted(callContext, recipient)) {
+      return;
+    }
+    CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().isCallActive(new ResultReceiver(new Handler(Looper.getMainLooper())) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
-        if (!callContext.isAvailable()) {
+        if (!callContext.isAvailable() || !CallPermissions.isCurrent(generation)) {
           Log.w(TAG, "Call context is no longer available, ignoring video call.");
           return;
         }
@@ -155,7 +168,7 @@ public class CommunicationActions {
           startCallInternal(callContext, recipient, true, fromCallLink);
         }
       }
-    });
+    }));
   }
 
   /**
@@ -192,6 +205,10 @@ public class CommunicationActions {
   }
 
   public static void startInsecureCall(@NonNull CallContext callContext, @NonNull Recipient recipient) {
+    if (!CallPermissions.isCallingAllowed()) {
+      Toast.makeText(callContext.getContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show();
+      return;
+    }
     MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(callContext.getContext())
         .setTitle(R.string.CommunicationActions_insecure_call)
         .setMessage(R.string.CommunicationActions_carrier_charges_may_apply)
@@ -320,7 +337,12 @@ public class CommunicationActions {
       return;
     }
 
-    CallLinkRootKey callLinkRootKey = CallLinks.parseUrl(potentialUrl);
+    if (!CallPermissions.isCallingAllowed()) {
+      Toast.makeText(activity, R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show();
+      return;
+    }
+
+    ManagedCallLinkRootKey callLinkRootKey = CallLinks.parseUrl(potentialUrl);
     if (callLinkRootKey == null) {
       Log.w(TAG, "Failed to parse root key from call link");
       new MaterialAlertDialogBuilder(activity)
@@ -360,13 +382,21 @@ public class CommunicationActions {
    *
    * @param fragment The fragment, which will be used for context and permissions routing.
    */
-  public static void startVideoCall(@NonNull Fragment fragment, @NonNull CallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
+  public static void startVideoCall(@NonNull Fragment fragment, @NonNull ManagedCallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
     startVideoCall(new FragmentCallContext(fragment), rootKey, onUserAlreadyInAnotherCall);
   }
 
-  private static void startVideoCall(@NonNull CallContext callContext, @NonNull CallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
+  private static void startVideoCall(@NonNull CallContext callContext, @NonNull ManagedCallLinkRootKey rootKey, @NonNull OnUserAlreadyInAnotherCall onUserAlreadyInAnotherCall) {
+    long generation = CallPermissions.generation();
+    if (!CallPermissions.isCallingAllowed()) {
+      Toast.makeText(callContext.getContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show();
+      return;
+    }
     SimpleTask.run(() -> {
-      CallLinkRoomId         roomId   = CallLinkRoomId.fromBytes(rootKey.deriveRoomId());
+      if (!CallPermissions.isCurrent(generation)) {
+        return Optional.<Recipient>empty();
+      }
+      CallLinkRoomId         roomId   = rootKey.getRoomId();
       CallLinkTable.CallLink callLink = SignalDatabase.callLinks().getOrCreateCallLinkByRootKey(rootKey);
 
       if (callLink.getState().hasBeenRevoked()) {
@@ -375,7 +405,7 @@ public class CommunicationActions {
 
       return SignalDatabase.recipients().getByCallLinkRoomId(roomId).map(Recipient::resolved);
     }, callLinkRecipient -> {
-      if (!callContext.isAvailable()) {
+      if (!callContext.isAvailable() || !CallPermissions.isCurrent(generation)) {
         Log.w(TAG, "Call context is no longer available, ignoring call link.");
         return;
       }
@@ -394,6 +424,10 @@ public class CommunicationActions {
   }
 
   private static void startInsecureCallInternal(@NonNull CallContext callContext, @NonNull Recipient recipient) {
+    if (!CallPermissions.isCallingAllowed()) {
+      Toast.makeText(callContext.getContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show();
+      return;
+    }
     try {
       Intent dialIntent = buildInsecureCallIntent(recipient);
       if (dialIntent == null) {
@@ -429,11 +463,15 @@ public class CommunicationActions {
   }
 
   private static void startCallInternal(@NonNull CallContext callContext, @NonNull Recipient recipient, boolean isVideo, boolean fromCallLink) {
+    if (showToastIfCallRestricted(callContext, recipient)) {
+      return;
+    }
     if (isVideo) startVideoCallInternal(callContext, recipient, fromCallLink);
     else         startAudioCallInternal(callContext, recipient);
   }
 
   private static void startAudioCallInternal(@NonNull CallContext callContext, @NonNull Recipient recipient) {
+    long generation = CallPermissions.generation();
     callContext.getPermissionsBuilder()
                .request(Manifest.permission.RECORD_AUDIO)
                .ifNecessary()
@@ -441,7 +479,13 @@ public class CommunicationActions {
                .withPermanentDenialDialog(callContext.getContext().getString(R.string.ConversationActivity__to_call_signal_needs_access_to_your_microphone), null, R.string.ConversationActivity_allow_access_microphone, R.string.ConversationActivity__to_start_call, callContext.getFragmentManager())
                .onAnyDenied(() -> Toast.makeText(callContext.getContext(), R.string.ConversationActivity_signal_needs_microphone_access_voice_call, Toast.LENGTH_LONG).show())
                .onAllGranted(() -> {
-                 AppDependencies.getSignalCallManager().startOutgoingAudioCall(recipient);
+                 if (!CallPermissions.isCurrent(generation) || showToastIfCallRestricted(callContext, recipient)) {
+                   return;
+                 }
+                 boolean dispatched = CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().startOutgoingAudioCall(recipient));
+                 if (!dispatched) {
+                   return;
+                 }
 
                  MessageSender.onMessageSent();
 
@@ -455,7 +499,14 @@ public class CommunicationActions {
   }
 
   private static void startVideoCallInternal(@NonNull CallContext callContext, @NonNull Recipient recipient, boolean fromCallLink) {
-    AppDependencies.getSignalCallManager().startPreJoinCall(recipient);
+    long generation = CallPermissions.generation();
+    if (showToastIfCallRestricted(callContext, recipient)) {
+      return;
+    }
+    boolean dispatched = CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().startPreJoinCall(recipient));
+    if (!dispatched) {
+      return;
+    }
 
     callContext.startActivity(
         new CallIntent.Builder(callContext.getContext())
@@ -464,6 +515,14 @@ public class CommunicationActions {
             .withStartedFromCallLink(fromCallLink)
             .build()
     );
+  }
+
+  private static boolean showToastIfCallRestricted(@NonNull CallContext callContext, @NonNull Recipient recipient) {
+    if (!CallPermissions.canStartCall(recipient)) {
+      Toast.makeText(callContext.getContext(), R.string.CallPermissions__calling_restricted, Toast.LENGTH_LONG).show();
+      return true;
+    }
+    return false;
   }
 
   private static void handleE164Link(Activity activity, String e164) {
@@ -620,8 +679,9 @@ public class CommunicationActions {
    * false otherwise.
    */
   public static @NonNull Single<Boolean> isDeviceInCallWithRecipient(@NonNull RecipientId recipientId) {
+    long generation = CallPermissions.generation();
     return Single.create(emitter -> {
-      AppDependencies.getSignalCallManager().isCallActive(new ResultReceiver(new Handler(Looper.getMainLooper())) {
+      boolean dispatched = CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().isCallActive(new ResultReceiver(new Handler(Looper.getMainLooper())) {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
           if (resultCode == 1 && resultData != null) {
@@ -631,7 +691,10 @@ public class CommunicationActions {
             emitter.onSuccess(false);
           }
         }
-      });
+      }));
+      if (!dispatched) {
+        emitter.onSuccess(false);
+      }
     });
   }
 

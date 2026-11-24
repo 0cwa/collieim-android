@@ -4640,6 +4640,8 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     val primaryRecord = getRecord(primaryId)
     val secondaryRecord = getRecord(secondaryId)
 
+    org.thoughtcrime.securesms.calls.permissions.CallPermissions.onRecipientMerge(primaryId, secondaryId)
+
     // Clean up any E164-based identities (legacy stuff)
     if (secondaryRecord.e164 != null) {
       AppDependencies.protocolStore.aci().identities().delete(secondaryRecord.e164)

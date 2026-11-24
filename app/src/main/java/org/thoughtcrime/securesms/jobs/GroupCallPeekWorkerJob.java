@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.signal.core.models.recipients.RecipientId;
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
@@ -40,13 +41,17 @@ final class GroupCallPeekWorkerJob extends BaseJob {
   @Override
   protected void onRun() {
     RecipientId groupRecipientId = RecipientId.from(groupCallPeekJobData.groupRecipientId);
+    RecipientId senderRecipientId = RecipientId.from(groupCallPeekJobData.senderRecipientId);
+    long generation = CallPermissions.generation();
+    if (!CallPermissions.isGroupPeekPermitValid(groupCallPeekJobData.callPermissionPermit, groupRecipientId, senderRecipientId)) {
+      return;
+    }
 
-    AppDependencies.getSignalCallManager().peekGroupCall(groupRecipientId, (peekInfo) -> {
-      if (groupCallPeekJobData.senderRecipientId == RecipientId.UNKNOWN.toLong()) {
+    CallPermissions.runIfCurrent(generation, () -> AppDependencies.getSignalCallManager().peekGroupCall(groupRecipientId, (peekInfo) -> {
+      if (!CallPermissions.isCurrent(generation) || !CallPermissions.isGroupPeekPermitValid(groupCallPeekJobData.callPermissionPermit, groupRecipientId, senderRecipientId)) {
         return;
       }
 
-      RecipientId senderRecipientId = RecipientId.from(groupCallPeekJobData.senderRecipientId);
       SignalDatabase.calls().insertOrUpdateGroupCallFromLocalEvent(
           groupRecipientId,
           senderRecipientId,
@@ -55,7 +60,7 @@ final class GroupCallPeekWorkerJob extends BaseJob {
           peekInfo.getJoinedMembers(),
           WebRtcUtil.isCallFull(peekInfo)
       );
-    });
+    }, () -> CallPermissions.isGroupPeekPermitValid(groupCallPeekJobData.callPermissionPermit, groupRecipientId, senderRecipientId)));
   }
 
   @Override

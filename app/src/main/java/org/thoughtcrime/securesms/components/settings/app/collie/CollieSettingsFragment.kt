@@ -27,6 +27,7 @@ class CollieSettingsFragment : ComposeFragment() {
     when (route) {
       AppSettingsRoute.AppUpdates -> findNavController().safeNavigate(R.id.action_collieSettingsFragment_to_appUpdatesFragment)
       AppSettingsRoute.CollieRoute.GroupPrivacy -> startActivity(AppSettingsNavigationActivity.createIntent(requireContext(), route))
+      AppSettingsRoute.CollieCalls -> findNavController().safeNavigate(R.id.callsSettingsFragment)
       else -> error("Unexpected route: ${route.javaClass.name}")
     }
   }

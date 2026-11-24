@@ -1,0 +1,310 @@
+name: Call permissions API 35
+
+on:
+  pull_request:
+    branches: [trailblazer-beta]
+    paths:
+      - .github/workflows/call-permissions.yml
+      - .github/scripts/check-call-permissions-results.py
+      - app/build.gradle.kts
+      - app/src/**/calls/**
+      - app/src/**/service/webrtc/**
+      - app/src/**/components/settings/**
+      - app/src/**/keyvalue/**
+      - app/src/**/messages/**
+      - app/src/**/jobs/*Call*
+      - app/src/**/jobs/*GroupRing*
+      - app/src/**/jobs/PushProcessMessageJob*
+      - app/src/**/database/RecipientTable*
+      - app/src/**/backup/**
+      - app/src/**/testing/**
+      - app/src/androidTest/java/org/thoughtcrime/securesms/*ApplicationContext*
+      - app/src/main/protowire/**
+      - app/src/main/res/**/call_permissions*.xml
+      - feature/app-settings/**
+      - lib/libsignal-service/src/main/protowire/MessageProcessing.proto
+      - build-inputs/native-lock.json
+      - gradle/**
+      - docs/CALL-PERMISSIONS.md
+      - tooling/ci/test_call_admission_schema.py
+      - tooling/ci/call-permissions-host-tests.json
+      - tooling/ci/call-permissions-host.gradle
+      - tooling/ci/call_permissions_host.py
+      - tooling/ci/test_call_permissions_host.py
+      - tooling/host-tests/**
+      - build-inputs/engineering.json
+      - build-inputs/host-test-inputs.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: call-permissions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host:
+    name: Call permission admission and settings host tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Check the host-test recipe and scoped evidence gate
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/host-tests -p 'test_*.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/ci -p 'test_call_permissions_host.py'
+      - name: Record source and the complete feature test inventory
+        run: python3 tooling/ci/call_permissions_host.py prepare
+      # Reuse pr.yml's exact canonical cache key, source builder and verifier.
+      - name: Cache test-only libsignal JNI
+        id: host-jni-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            build/host-tests/resources
+            build/host-tests/receipt.json
+          key: host-libsignal-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('build-inputs/native-lock.json', 'build-inputs/engineering.json', 'build-inputs/host-test-inputs.json', 'tooling/host-tests/build_libsignal.py') }}
+      - name: Build pinned Linux JNI on a cache miss
+        if: steps.host-jni-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang libclang-dev cmake make protobuf-compiler libprotobuf-dev binutils
+          rust_version=$(python3 -c 'import json; print(json.load(open("build-inputs/native-lock.json"))["toolchain_reference"]["rust_version"])')
+          rustup toolchain install "$rust_version" --profile minimal
+          python3 tooling/host-tests/build_libsignal.py
+      - name: Verify test-only libsignal JNI
+        run: |
+          python3 tooling/host-tests/build_libsignal.py --verify-only
+          cp build/host-tests/receipt.json build/call-permissions-host/native-before.json
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - name: Fetch and verify the three pinned Robolectric SDKs
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A hard total deadline also bounds checksum/IO work; each transfer has
+          # its own finite attempts. No general PR cache or runtime download fallback.
+          timeout --kill-after=5s 610s python3 tooling/ci/call_permissions_host.py prefetch \
+            2>&1 | tee build/call-permissions-host/prefetch.log
+      - name: Run every inventoried calling and settings method
+        id: host-tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=build/call-permissions-host
+          collect() {
+            status=$?
+            trap - EXIT
+            printf '%s\n' "$status" > "$evidence/test-exit-code.txt"
+            git rev-parse HEAD HEAD^{tree} > "$evidence/source-after.txt"
+            exit "$status"
+          }
+          trap collect EXIT
+          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+          timeout --kill-after=30s 50m ./gradlew --no-daemon --console=plain --continue \
+            -PcollieHostJniDir=build/host-tests/resources \
+            -I tooling/ci/call-permissions-host.gradle \
+            :app:testProdWebsiteDebugUnitTest :feature:app-settings:testDebugUnitTest \
+            2>&1 | tee "$evidence/host-tests.log"
+      - name: Require all 309 methods with matching source and runtime inputs
+        if: always() && !cancelled()
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: python3 tooling/ci/call_permissions_host.py check
+      - name: Retain scoped host execution evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: call-permissions-host-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/call-permissions-host
+            build/host-tests/receipt.json
+            app/build/test-results/testProdWebsiteDebugUnitTest
+            app/build/reports/tests/testProdWebsiteDebugUnitTest
+            feature/app-settings/build/test-results/testDebugUnitTest
+            feature/app-settings/build/reports/tests/testDebugUnitTest
+          retention-days: 14
+          if-no-files-found: error
+
+  api35:
+    name: Beta smoke and call permissions on API 35
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Install the pinned screenshot decoder
+        run: |
+          printf '%s\n' 'Pillow==13.0.0 --hash=sha256:42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca' > "$RUNNER_TEMP/png-requirements.txt"
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r "$RUNNER_TEMP/png-requirements.txt"
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - name: Build Beta and the matching isolated instrumentation APKs
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=build/call-permissions-api35
+          mkdir -p "$evidence"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git rev-parse HEAD HEAD^{tree} > "$evidence/source.txt"
+          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+          test -z "${CI_KEYSTORE_PATH:-}"
+          # Direct development build, as documented in TRAILBLAZER-DEVELOPMENT.md.
+          # This does not invoke or change release preparation, signing or publication.
+          ./gradlew --no-daemon --console=plain :app:assembleProdWebsiteBeta \
+            2>&1 | tee "$evidence/beta-build.log"
+          ./gradlew -PimoTests --no-daemon --console=plain \
+            :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest \
+            2>&1 | tee "$evidence/instrumentation-build.log"
+          beta_apks=(app/build/outputs/apk/prodWebsite/beta/*.apk)
+          app_apks=(app/build/outputs/apk/prodWebsite/debug/*.apk)
+          test_apks=(app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk)
+          for apks in beta_apks app_apks test_apks; do
+            declare -n selected="$apks"
+            test "${#selected[@]}" = 1 && test -f "${selected[0]}"
+          done
+          build_tools=$(python3 -c 'import tomllib; print(tomllib.load(open("gradle/libs.versions.toml", "rb"))["versions"]["buildTools"])')
+          signer="$ANDROID_HOME/build-tools/$build_tools/apksigner"
+          keytool -genkeypair -noprompt -keystore "$RUNNER_TEMP/call-permissions-test.p12" \
+            -storetype PKCS12 -storepass android -keypass android -alias api35 \
+            -keyalg RSA -keysize 2048 -validity 2 -dname 'CN=Collie API35 disposable test'
+          keytool -exportcert -keystore "$RUNNER_TEMP/call-permissions-test.p12" \
+            -storepass android -alias api35 -file "$RUNNER_TEMP/call-permissions-test.der"
+          sha256sum "$RUNNER_TEMP/call-permissions-test.der" | cut -d ' ' -f1 > "$evidence/beta-test-signer-sha256.txt"
+          "$signer" sign --ks "$RUNNER_TEMP/call-permissions-test.p12" --ks-key-alias api35 \
+            --ks-pass pass:android --key-pass pass:android --out "$evidence/beta-smoke.apk" "${beta_apks[0]}"
+          "$signer" verify --verbose --print-certs "$evidence/beta-smoke.apk" > "$evidence/beta-signer.txt"
+          "$signer" verify --verbose --print-certs "${app_apks[0]}" > "$evidence/app-signer.txt"
+          "$signer" verify --verbose --print-certs "${test_apks[0]}" > "$evidence/test-signer.txt"
+          analyzer="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
+          "$analyzer" manifest print "$evidence/beta-smoke.apk" > "$evidence/beta-manifest.xml"
+          "$analyzer" manifest print "${app_apks[0]}" > "$evidence/app-manifest.xml"
+          "$analyzer" manifest print "${test_apks[0]}" > "$evidence/test-manifest.xml"
+          sha256sum "${beta_apks[0]}" "$evidence/beta-smoke.apk" "${app_apks[0]}" "${test_apks[0]}" > "$evidence/apk-before.txt"
+          printf '%s\n' ':app:assembleProdWebsiteBeta' '-PimoTests :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest' 'disposable-test-signer-only' > "$evidence/configuration.txt"
+          git diff --exit-code
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prepare the exact APK run
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/reuse-call-permissions-apks.gradle" <<'GRADLE'
+          def packageTasks = [':app:packageProdWebsiteDebug', ':app:packageProdWebsiteDebugAndroidTest']
+          if (gradle.parent == null) {
+            gradle.beforeProject { project ->
+              project.tasks.configureEach { task ->
+                if (packageTasks.contains(task.path)) {
+                  task.onlyIf('reuse the previously built and hashed APK') { false }
+                }
+              }
+            }
+            gradle.taskGraph.whenReady { graph ->
+              packageTasks.each { path ->
+                if (!graph.hasTask(path)) throw new GradleException("Missing APK packaging task: $path")
+              }
+            }
+          }
+          GRADLE
+          cat > "$RUNNER_TEMP/run-call-permissions.sh" <<'SH'
+          set -euo pipefail
+          evidence=build/call-permissions-api35
+          collect() {
+            status=$?
+            trap - EXIT
+            printf '%s\n' "$status" > "$evidence/exit-code.txt"
+            timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
+            timeout 10s adb devices -l > "$evidence/devices.txt" 2>&1 || true
+            sha256sum app/build/outputs/apk/prodWebsite/beta/*.apk "$evidence/beta-smoke.apk" \
+              app/build/outputs/apk/prodWebsite/debug/*.apk \
+              app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
+            git rev-parse HEAD HEAD^{tree} > "$evidence/source-after.txt"
+            exit "$status"
+          }
+          trap collect EXIT
+          timeout 10s adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/device-api.txt"
+          test "$(cat "$evidence/device-api.txt")" = 35
+          timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          timeout 10s adb shell cmd connectivity airplane-mode enable
+          timeout 10s adb shell cmd wifi set-wifi-enabled disabled
+          timeout 10s adb logcat -c
+          timeout 120s adb install "$evidence/beta-smoke.apk" | tee "$evidence/beta-install.txt"
+          timeout 60s adb shell am start -W -n im.collie.app.trailblazer/org.thoughtcrime.securesms.RoutingActivity \
+            | tee "$evidence/beta-launch.txt"
+          grep -q '^Status: ok' "$evidence/beta-launch.txt"
+          for i in {1..5}; do
+            sleep 2
+            timeout 10s adb shell pidof im.collie.app.trailblazer | tr -d '\r' >> "$evidence/beta-pids.txt"
+          done
+          timeout 10s adb shell dumpsys activity activities > "$evidence/beta-activities.txt"
+          timeout 30s adb shell uiautomator dump /sdcard/call-permissions-beta-smoke.xml
+          timeout 10s adb pull /sdcard/call-permissions-beta-smoke.xml "$evidence/beta-ui.xml"
+          timeout 10s adb logcat -b all -d -v threadtime > "$evidence/beta-logcat.txt"
+          timeout 10s adb shell am force-stop im.collie.app.trailblazer
+          timeout 10s adb logcat -c
+          # Orchestrator keeps each method isolated. Test storage preserves the nine PNGs
+          # across app-data clearing, and AGP collects the service output after the suite.
+          # The suite preserves the three selectors through AGP's comma-delimited argument map.
+          ./gradlew -PimoTests --no-daemon --console=plain \
+            :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
+            :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-call-permissions-apks.gradle" \
+            '-Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true' \
+            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.calls.permissions.CallPermissionsApi35Suite' \
+            2>&1 | tee "$evidence/connected.log"
+          git diff --exit-code
+          SH
+      - name: Launch Beta and run the three selected classes on API 35
+        id: device
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7_pro
+          ram-size: 2048M
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash "$RUNNER_TEMP/run-call-permissions.sh"
+      - name: Require Beta smoke, four passing methods and nine screenshots
+        if: always() && !cancelled()
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          DEVICE_OUTCOME: ${{ steps.device.outcome }}
+        run: python3 .github/scripts/check-call-permissions-results.py
+      - name: Retain source, API 35, APK hashes and runtime evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: call-permissions-api35-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/call-permissions-api35
+            app/build/reports/androidTests
+            app/build/outputs/androidTest-results
+            app/build/outputs/connected_android_test_additional_output
+          retention-days: 14
+          if-no-files-found: error

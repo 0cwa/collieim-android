@@ -39,6 +39,7 @@ import org.thoughtcrime.securesms.PushContactSelectionActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
+import org.thoughtcrime.securesms.components.settings.app.collie.CallPermissionOverrideEntry
 import org.thoughtcrime.securesms.components.settings.conversation.group.GroupSettingsEvent
 import org.thoughtcrime.securesms.components.settings.conversation.group.GroupSettingsScreen
 import org.thoughtcrime.securesms.components.settings.conversation.group.GroupSettingsViewModel
@@ -200,7 +201,8 @@ class ConversationSettingsFragment : ComposeFragment() {
       state = state,
       onEvent = individualViewModel::onEvent,
       onNavigationClick = { requireActivity().onBackPressedDispatcher.onBackPressed() },
-      onAvatarViewCreated = { avatarView = it }
+      onAvatarViewCreated = { avatarView = it },
+      callPermissionContent = { CallPermissionOverrideEntry(state.recipient) }
     )
   }
 
@@ -245,7 +247,12 @@ class ConversationSettingsFragment : ComposeFragment() {
       state = state,
       onEvent = groupViewModel::onEvent,
       onNavigationClick = { requireActivity().onBackPressedDispatcher.onBackPressed() },
-      onAvatarViewCreated = { avatarView = it }
+      onAvatarViewCreated = { avatarView = it },
+      callPermissionContent = if (state.recipient.isPushV2Group) {
+        { CallPermissionOverrideEntry(state.recipient) }
+      } else {
+        null
+      }
     )
   }
 

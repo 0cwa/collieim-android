@@ -61,7 +61,8 @@ fun IndividualSettingsScreen(
   onEvent: (IndividualSettingsEvent) -> Unit,
   onNavigationClick: () -> Unit,
   onAvatarViewCreated: (View) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  callPermissionContent: (@Composable () -> Unit)? = null
 ) {
   val context = LocalContext.current
 
@@ -151,6 +152,8 @@ fun IndividualSettingsScreen(
         onClick = { onEvent(IndividualSettingsEvent.SoundsAndNotificationsClicked) }
       )
     }
+
+    callPermissionContent?.let { content -> item { content() } }
 
     if (state.starredMessagesEnabled) {
       item {

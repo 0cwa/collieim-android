@@ -11,11 +11,15 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.spyk
+import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.Base64
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.database.CallTable.Direction
 import org.thoughtcrime.securesms.database.CallTable.Event
 import org.thoughtcrime.securesms.database.CallTable.Type
@@ -37,6 +41,10 @@ class CallEventCacheTest {
 
   @Before
   fun setUp() {
+    mockkObject(CallPermissions)
+    mockkStatic(CallPermissions::class)
+    every { CallPermissions.generation() } returns 1L
+    every { CallPermissions.runIfCurrent(1L, any()) } answers { secondArg<Runnable>().run(); true }
     mockkObject(Recipient.Companion)
     every { Recipient.resolved(any()) } answers {
       spyk(
@@ -52,6 +60,12 @@ class CallEventCacheTest {
 
     mockkStatic(AppDependencies::class)
     every { AppDependencies.signalCallManager } returns signalCallManagerMock
+  }
+
+  @After
+  fun tearDownCallPolicy() {
+    unmockkObject(CallPermissions)
+    unmockkStatic(CallPermissions::class)
   }
 
   @Test

@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.service.webrtc.links
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.calls.permissions.ManagedCallLinkRootKey
 
 /**
  * Holds onto the credentials for a given call link.
@@ -19,7 +20,7 @@ data class CallLinkCredentials(
 ) : Parcelable {
 
   val roomId: CallLinkRoomId by lazy {
-    CallLinkRoomId.fromCallLinkRootKey(CallLinkRootKey(linkKeyBytes))
+    requireNotNull(ManagedCallLinkRootKey.fromBytes(linkKeyBytes)).roomId
   }
 
   override fun equals(other: Any?): Boolean {

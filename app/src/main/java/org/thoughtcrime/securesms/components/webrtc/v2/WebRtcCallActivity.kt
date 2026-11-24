@@ -411,7 +411,7 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
     val state: CallParticipantsState = viewModel.callParticipantsStateSnapshot ?: return
 
     if (state.isCallLink) {
-      CallLinkProfileKeySender.onSendAnyway(HashSet(changedRecipients))
+      CallLinkProfileKeySender.onSendAnyway(viewModel.recipient.get().id, HashSet(changedRecipients))
     }
 
     if (state.groupCallState.isConnected) {

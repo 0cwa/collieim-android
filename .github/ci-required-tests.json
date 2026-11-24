@@ -143,6 +143,11 @@
     },
     {
       "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.database.RecipientTableGroupAdmissionTest",
+      "min_executed": 3
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
       "class": "org.thoughtcrime.securesms.components.settings.app.collie.groups.ChooseGroupPeopleViewModelTest",
       "min_executed": 8
     },

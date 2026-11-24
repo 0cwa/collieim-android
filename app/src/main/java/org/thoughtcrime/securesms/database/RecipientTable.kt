@@ -2272,9 +2272,19 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
   }
 
   fun setProfileSharing(id: RecipientId, enabled: Boolean) {
-    if (enabled && GroupAdmission.isHeld(id)) {
-      Log.i(TAG, "Ignoring profile-sharing enablement for a group awaiting local admission.")
-      return
+    if (enabled) {
+      // Read the group identifier directly. Resolving a Recipient here can populate its cache
+      // partway through a recipient update, before registration and other fields are finalized.
+      val groupId = readableDatabase
+        .select(GROUP_ID)
+        .from(TABLE_NAME)
+        .where("$ID = ?", id)
+        .run()
+        .readToSingleObject { GroupId.parseNullableOrThrow(it.requireString(GROUP_ID)) }
+      if (groupId?.isV2 == true && GroupAdmission.isHeld(groupId.requireV2())) {
+        Log.i(TAG, "Ignoring profile-sharing enablement for a group awaiting local admission.")
+        return
+      }
     }
 
     val contentValues = ContentValues(1).apply {

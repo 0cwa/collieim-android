@@ -22,7 +22,7 @@ sealed interface HelpSettingsEvent {
   /** The user tapped the contact us row. */
   data object ContactUsClicked : HelpSettingsEvent
 
-  /** The user tapped the version row (or the app updates row) to open app update settings. */
+  /** The user tapped the version row to open app update settings. */
   data object VersionClicked : HelpSettingsEvent
 
   /** The user tapped the What's new row. */

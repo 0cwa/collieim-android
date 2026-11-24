@@ -22,6 +22,7 @@ import org.signal.storage.keyvalue.StorageServiceValues
 import org.signal.storage.keyvalue.SvrValues
 import org.signal.storage.keyvalue.UiHintValues
 import org.thoughtcrime.securesms.dependencies.AppRemoteConfigDependencies
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionValues
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.BackupValues
 import org.thoughtcrime.securesms.keyvalue.CallPermissionValues
@@ -127,6 +128,7 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
     val localStore = KeyValueStore(SnapshotKeyValuePersistentStorage(), DirectExecutor())
     callPermissions = CallPermissionValues(localStore, callPermissionDirectory)
     remoteConfig = RemoteConfigValues(localStore)
+    val groupAdmission = GroupAdmissionValues(localStore)
 
     mockkObject(SignalStore)
     RemoteConfig.initDependencies(AppRemoteConfigDependencies)
@@ -149,6 +151,7 @@ class MockSignalStoreRule(private val relaxed: Set<KClass<*>> = emptySet()) : Ex
     every { SignalStore.remoteConfig } returns remoteConfig
     every { SignalStore.isInitialized } returns true
     every { SignalStore.callPermissions } returns callPermissions
+    every { SignalStore.groupAdmission } returns groupAdmission
   }
 
   override fun after() {

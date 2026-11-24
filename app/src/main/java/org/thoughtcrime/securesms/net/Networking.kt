@@ -9,9 +9,12 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.ProxySelector
+import java.net.Socket
 import java.net.SocketAddress
 import java.net.URI
 import java.net.UnknownHostException
+import java.util.Collections
+import java.util.WeakHashMap
 import java.util.function.BooleanSupplier
 import java.util.function.Consumer
 import javax.net.SocketFactory
@@ -104,7 +107,8 @@ object Networking {
     synchronized(routeLock) {
       val replacement = update(routing)
       if (replacement === routing) return
-      // HTTP/1.1 cancellation closes the established socket before the new route is visible.
+      // A concurrent Call.cancel() can return before its socket is closed. Close sockets ourselves before publishing.
+      routing.closeExchangeSockets()
       routeCalls.forEach(Call::cancel)
       routeCalls.clear()
       routing = replacement
@@ -116,6 +120,8 @@ object Networking {
    * than proxy equality, distinguishes a superseded route even after switching back.
    */
   internal class Routing(val enabled: Boolean, val socksProxy: SocksProxy?) {
+    private val exchangeSockets = Collections.newSetFromMap(WeakHashMap<Socket, Boolean>())
+
     val proxy: Proxy = socksProxy?.let { it.makeProxy() ?: DUMMY_PROXY } ?: Proxy.NO_PROXY
     val socketFactory: SocketFactory by lazy {
       ProxySocketFactory {
@@ -155,9 +161,26 @@ object Networking {
           untrack(call)
         }
       }.addNetworkInterceptor { chain ->
-        ensureCurrent()
+        trackExchange(chain.connection()?.socket())
         chain.proceed(chain.request())
       }
+    }
+
+    fun trackExchange(socket: Socket?) = synchronized(routeLock) {
+      ensureCurrent()
+      exchangeSockets.add(checkNotNull(socket))
+    }
+
+    fun closeExchangeSockets() {
+      check(Thread.holdsLock(routeLock))
+      for (socket in exchangeSockets) {
+        try {
+          socket.close()
+        } catch (failure: IOException) {
+          if (!socket.isClosed) throw failure
+        }
+      }
+      exchangeSockets.clear()
     }
 
     fun ensureCurrent() {

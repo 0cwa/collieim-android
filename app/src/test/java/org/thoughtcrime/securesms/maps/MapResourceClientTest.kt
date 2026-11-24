@@ -32,6 +32,7 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.Socket
 import java.net.UnknownHostException
 import java.util.function.BooleanSupplier
 
@@ -220,6 +221,7 @@ class MapResourceClientTest {
     client.newCall(tileRequest()).execute().close()
     val chain = mockk<Interceptor.Chain>()
     every { chain.request() } returns requests.single()
+    every { chain.connection() } returns null
     Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
     Networking.socksProxy = null
     assertEquals(Proxy.NO_PROXY, Networking.routing.proxy)
@@ -240,6 +242,7 @@ class MapResourceClientTest {
     val response = Response.Builder().request(request).protocol(Protocol.HTTP_1_1)
       .code(200).message("OK").body(ByteArray(0).toResponseBody()).build()
     every { chain.request() } returns request
+    every { chain.connection() } returns mockk { every { socket() } returns Socket() }
     every { chain.proceed(request) } returns response
 
     client.networkInterceptors.single().intercept(chain).use { assertSame(response, it) }
@@ -272,6 +275,29 @@ class MapResourceClientTest {
     assertThrows(IOException::class.java) { route.track(mockk()) }
     assertThrows(IOException::class.java) { route.socketFactory.createSocket() }
     assertThrows(IOException::class.java) { route.dns.lookup("tile.openstreetmap.org") }
+  }
+
+  @Test
+  fun `route change directly closes tile exchange even if call cancellation does not`() {
+    val call = mockk<Call>(relaxed = true)
+    val socket = Socket()
+    route.track(call)
+    val chain = mockk<Interceptor.Chain>()
+    val request = tileRequest()
+    every { chain.request() } returns request
+    every { chain.connection() } returns mockk { every { socket() } returns socket }
+    every { call.cancel() } answers {
+      assertTrue(socket.isClosed)
+      assertSame(route, Networking.routing)
+    }
+    every { chain.proceed(request) } answers {
+      Networking.isEnabled = false
+      assertTrue(socket.isClosed)
+      throw IOException("Synthetic interrupted request")
+    }
+
+    assertThrows(IOException::class.java) { client.networkInterceptors.single().intercept(chain) }
+    verify(exactly = 1) { call.cancel() }
   }
 
   @Test

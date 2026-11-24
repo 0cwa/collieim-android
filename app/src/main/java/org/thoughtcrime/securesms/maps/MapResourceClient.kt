@@ -69,7 +69,7 @@ object MapResourceClient {
     .addInterceptor(MapResourceCache(context.applicationContext))
     .addNetworkInterceptor { chain ->
       // Check after DNS and connection setup, immediately before sending tile headers.
-      route.ensureCurrent()
+      route.trackExchange(chain.connection()?.socket())
       chain.proceed(chain.request())
     }
     .build()

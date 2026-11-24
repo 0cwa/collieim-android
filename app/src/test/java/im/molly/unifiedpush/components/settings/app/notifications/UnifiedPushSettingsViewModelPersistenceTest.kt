@@ -56,6 +56,7 @@ import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [35])
@@ -211,6 +212,39 @@ class UnifiedPushSettingsViewModelPersistenceTest {
       }
     } finally {
       reopenedSettings.exportState.removeObserver(observer)
+      unmockkStatic(EnrollmentExporter::class)
+      unmockkStatic(KeyCachingService::class)
+    }
+  }
+
+  @Test
+  fun `locking during export removes the written file and clears the result`() {
+    seedDisclosureAccount()
+    val locked = AtomicBoolean()
+    val file = File(application.getExternalFilesDir(null), EnrollmentExporter.FILE_NAME)
+    mockkStatic(KeyCachingService::class, EnrollmentExporter::class)
+    try {
+      every { KeyCachingService.isLocked() } answers { locked.get() }
+      every { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) } answers {
+        file.writeText("synthetic enrollment")
+        locked.set(true)
+        EnrollmentExporter.Export(file, 2L, 1L, "22222222-2222-4222-8222-222222222222")
+      }
+      val viewModel = UnifiedPushSettingsViewModel(application)
+      val disclosure = checkNotNull(viewModel.state.value?.relayDisclosure)
+      viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT, disclosure = disclosure)
+      val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+      while (viewModel.exportState.value != null && System.nanoTime() < deadline) {
+        shadowOf(Looper.getMainLooper()).idle()
+        if (viewModel.exportState.value != null) Thread.sleep(10)
+      }
+
+      assertTrue(locked.get())
+      assertFalse(file.exists())
+      assertEquals(null, viewModel.exportState.value)
+      locked.set(false)
+      assertEquals(null, UnifiedPushSettingsViewModel.unreadExport())
+    } finally {
       unmockkStatic(EnrollmentExporter::class)
       unmockkStatic(KeyCachingService::class)
     }

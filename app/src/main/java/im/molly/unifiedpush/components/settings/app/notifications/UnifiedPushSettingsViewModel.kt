@@ -204,7 +204,12 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
             // An authorized invalid epoch still removes the old password file.
             EnrollmentExporter.removeFiles(app)
             val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-            EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
+            EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId).also {
+              if (!request.belongsToCurrentAccount()) {
+                EnrollmentExporter.removeFiles(app)
+                throw EnrollmentFile.Invalid("disclosure_changed")
+              }
+            }
           }
         }
         successMessage = if (export.collides) {

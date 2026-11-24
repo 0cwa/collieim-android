@@ -85,7 +85,7 @@ object AttachmentBackfill {
    */
   @JvmStatic
   fun maybeRequest(messageId: Long, attachment: DatabaseAttachment) {
-    if (SignalStore.account.isPrimaryDevice) {
+    if (SignalStore.account.isPrimaryDevice || attachment.isLocallyRemoved || SignalDatabase.attachments.getAttachment(attachment.attachmentId)?.isLocallyRemoved == true) {
       return
     }
 

@@ -37,6 +37,8 @@ object AttachmentUtil {
       return true
     }
 
+    if (attachment.isLocallyRemoved) return false
+
     val contentType = attachment.contentType ?: return false
     if (!MediaUtil.isImageType(contentType)) {
       return false
@@ -52,6 +54,8 @@ object AttachmentUtil {
     if (attachment == null) {
       return true
     }
+
+    if (attachment.isLocallyRemoved) return false
 
     if (!isFromTrustedConversation(context, attachment)) {
       Log.w(TAG, "Not allowing download due to untrusted conversation")

@@ -2,7 +2,6 @@ package com.google.android.gms.maps;
 
 import android.app.Activity;
 import android.app.Application;
-import android.os.Looper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +20,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.robolectric.Shadows.shadowOf;
+import static org.robolectric.shadows.ShadowLooper.idleMainLooper;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(application = Application.class, manifest = Config.NONE, sdk = 35)
@@ -36,7 +35,7 @@ public class MapViewCallbackTest {
     controller = Robolectric.buildActivity(Activity.class).setup();
     mapView = new MapView(controller.get());
     controller.get().setContentView(mapView);
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
     assertTrue(mapView.isAttachedToWindow());
 
     // Exercise the wrapper's dispatch queue without constructing a native renderer.
@@ -56,7 +55,7 @@ public class MapViewCallbackTest {
     mapView.setOnMapLoadedCallback(() -> callbacks.add("replacement"));
 
     assertTrue(callbacks.isEmpty());
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
 
     assertEquals(Collections.singletonList("replacement"), callbacks);
   }
@@ -66,7 +65,7 @@ public class MapViewCallbackTest {
     mapView.setOnMapLoadedCallback(() -> callbacks.add("cancelled"));
     mapView.setOnMapLoadedCallback(null);
 
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
 
     assertTrue(callbacks.isEmpty());
   }
@@ -77,11 +76,11 @@ public class MapViewCallbackTest {
     mapView.onPause();
     mapView.setOnMapLoadedCallback(() -> callbacks.add("replacement"));
 
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
     assertTrue(callbacks.isEmpty());
 
     mapView.onResume();
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
 
     assertEquals(Collections.singletonList("replacement"), callbacks);
   }
@@ -91,13 +90,13 @@ public class MapViewCallbackTest {
     mapView.setOnMapLoadedCallback(() -> callbacks.add("loaded"));
     mapView.invalidateRenderedFrame();
 
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
     assertTrue(callbacks.isEmpty());
 
     // Supply the same state change as a later complete-frame notification.
     ReflectionHelpers.setField(mapView, "fullyRendered", true);
     ReflectionHelpers.callInstanceMethod(mapView, "dispatchLoadedCallback");
-    shadowOf(Looper.getMainLooper()).idle();
+    idleMainLooper();
 
     assertEquals(Collections.singletonList("loaded"), callbacks);
   }

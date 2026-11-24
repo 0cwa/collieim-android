@@ -30,7 +30,7 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 35)
 class HeldGroupReviewProofTest {
-  @get:Rule val harness = SignalActivityRule(othersCount = 1, createGroup = true, networkEnabled = false)
+  @get:Rule val harness = SignalActivityRule(othersCount = 2, createGroup = true, networkEnabled = false)
 
   @Test
   fun heldGroupOffersReviewAndCancelKeepsItHeld() {

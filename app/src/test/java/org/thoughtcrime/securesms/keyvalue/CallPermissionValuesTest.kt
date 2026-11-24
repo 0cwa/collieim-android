@@ -42,6 +42,7 @@ class CallPermissionValuesTest {
 
     val state = values.read()
 
+    assertFalse(values.isOnDemandCallingEnabled())
     assertFalse(state.allCallingDisabled)
     assertEquals(CallPermission.ALLOW, state.directDefault)
     assertEquals(CallPermission.ALLOW, state.groupDefault)
@@ -54,10 +55,75 @@ class CallPermissionValuesTest {
   fun `calling policy is excluded from backup and device-transfer key lists`() {
     val values = open(temporary.newFolder())
     values.update { it.copy(account = account, allCallingDisabled = true) }
+    values.setOnDemandCallingEnabled(true)
 
     assertTrue(values.keysToIncludeInBackup.isEmpty())
     assertTrue(backing.getDataSet().containsKey(CallPermissionValues.RECORD))
+    assertTrue(backing.getDataSet().containsKey(CallPermissionValues.ON_DEMAND))
     assertTrue(backing.lastWriteKeys.all { it.startsWith(CallPermissionValues.KEY_PREFIX) })
+  }
+
+  @Test
+  fun `on demand choice survives restart without altering call grants or absolute prohibition`() {
+    val directory = temporary.newFolder()
+    val values = open(directory)
+    val original = values.update {
+      it.copy(account = account, allCallingDisabled = true, groupDefault = CallPermission.BLOCK)
+        .withOverride(CallContext.DIRECT, 12L, CallPermission.ALLOW)
+    }
+    val anchored = values.read()
+
+    values.setOnDemandCallingEnabled(true)
+
+    val restarted = open(directory)
+    assertTrue(restarted.isOnDemandCallingEnabled())
+    assertEquals(anchored, restarted.read())
+    assertEquals(original.overrides, restarted.read().overrides)
+    assertEquals(1L, values.onDemandChanges.value)
+  }
+
+  @Test
+  fun `failed on demand opt in keeps ordinary startup visible and emits no success`() {
+    val directory = temporary.newFolder()
+    val values = open(directory)
+    backing.nextWriteFailure = IllegalStateException("disk full")
+
+    assertThrows(KeyValuePersistenceException::class.java) { values.setOnDemandCallingEnabled(true) }
+
+    assertFalse(values.isOnDemandCallingEnabled())
+    assertFalse(open(directory).isOnDemandCallingEnabled())
+    assertEquals(0L, values.onDemandChanges.value)
+  }
+
+  @Test
+  fun `failed on demand opt out retains the saved background startup restriction`() {
+    val directory = temporary.newFolder()
+    val values = open(directory)
+    values.setOnDemandCallingEnabled(true)
+    backing.nextWriteFailure = IllegalStateException("disk full")
+
+    assertThrows(KeyValuePersistenceException::class.java) { values.setOnDemandCallingEnabled(false) }
+
+    assertTrue(values.isOnDemandCallingEnabled())
+    assertTrue(open(directory).isOnDemandCallingEnabled())
+    assertEquals(1L, values.onDemandChanges.value)
+  }
+
+  @Test
+  fun `a malformed startup choice is not treated as ordinary eager startup`() {
+    val data = KeyValueDataSet().apply { putString(CallPermissionValues.ON_DEMAND, "invalid") }
+    val values = open(temporary.newFolder(), SnapshotKeyValuePersistentStorage(data))
+
+    assertThrows(RuntimeException::class.java) { values.isOnDemandCallingEnabled() }
+  }
+
+  @Test
+  fun `unchanged startup selection does not write or publish a change`() {
+    val values = open(temporary.newFolder())
+    values.setOnDemandCallingEnabled(false)
+
+    assertTrue(backing.getDataSet().values.isEmpty())
+    assertEquals(0L, values.onDemandChanges.value)
   }
 
   @Test

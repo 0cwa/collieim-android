@@ -48,8 +48,8 @@ jobs:
           persist-credentials: false
       - name: Check the metadata of the edition this change targets
         env:
-          # Beta for a PR into trailblazer-beta or a direct run on that branch; Stable otherwise.
-          COLLIE_FASTLANE_EDITION: ${{ (github.event_name == 'pull_request' && github.base_ref == 'trailblazer-beta' || github.event_name != 'pull_request' && github.ref == 'refs/heads/trailblazer-beta') && 'beta' || 'stable' }}
+          # Beta for its branch and the temporary call-permissions stack; Stable otherwise.
+          COLLIE_FASTLANE_EDITION: ${{ (github.event_name == 'pull_request' && (github.base_ref == 'trailblazer-beta' || github.base_ref == 'feat/beta-call-permissions') || github.event_name != 'pull_request' && github.ref == 'refs/heads/trailblazer-beta') && 'beta' || 'stable' }}
         run: python3 tooling/fastlane/check_metadata.py --edition "$COLLIE_FASTLANE_EDITION"
       - name: Test the metadata checker
         run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/fastlane -p 'test_*.py'
@@ -318,7 +318,7 @@ jobs:
       - uses: ./.github/actions/disk-cleanup
       - name: Build the exact candidate with the release recipe
         env:
-          COLLIE_BUILD_EDITION: ${{ github.base_ref == 'trailblazer-beta' && 'beta' || 'stable' }}
+          COLLIE_BUILD_EDITION: ${{ (github.base_ref == 'trailblazer-beta' || github.base_ref == 'feat/beta-call-permissions') && 'beta' || 'stable' }}
           # A PR that keeps its base's release properties builds as development (build-release.sh).
           COLLIE_DEVELOPMENT_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
         run: |

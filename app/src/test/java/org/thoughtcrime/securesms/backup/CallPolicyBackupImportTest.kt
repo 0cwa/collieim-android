@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.backup
 import android.app.Application
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,6 +31,15 @@ class CallPolicyBackupImportTest {
   }
 
   @Test
+  fun `an archive cannot turn off this devices saved on demand startup choice`() {
+    val storage = SnapshotKeyValuePersistentStorage(KeyValueDataSet().apply { putBoolean(CallPermissionValues.ON_DEMAND, true) })
+
+    FullBackupImporter.processKeyValue(KeyValue.Builder().key(CallPermissionValues.ON_DEMAND).booleanValue(false).build(), storage)
+
+    assertTrue(storage.getDataSet().getBoolean(CallPermissionValues.ON_DEMAND, false))
+  }
+
+  @Test
   fun `an archived policy cannot overwrite the local restriction record`() {
     val storage = SnapshotKeyValuePersistentStorage(KeyValueDataSet().apply { putString(CallPermissionValues.RECORD, "local restricted record") })
     val imported = KeyValue.Builder().key(CallPermissionValues.RECORD).stringValue("restored grant record").build()
@@ -42,7 +52,7 @@ class CallPolicyBackupImportTest {
   @Test
   fun `reserved call-policy keys cannot arrive through old or malformed archives`() {
     val storage = SnapshotKeyValuePersistentStorage()
-    for (key in listOf(CallPermissionValues.RECORD, CallPermissionValues.KEY_PREFIX + "future_version")) {
+    for (key in listOf(CallPermissionValues.RECORD, CallPermissionValues.ON_DEMAND, CallPermissionValues.KEY_PREFIX + "future_version")) {
       FullBackupImporter.processKeyValue(KeyValue.Builder().key(key).booleanValue(false).build(), storage)
       assertFalse(storage.getDataSet().containsKey(key))
     }

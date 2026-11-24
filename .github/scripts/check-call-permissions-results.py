@@ -1,28 +1,66 @@
 #!/usr/bin/env python3
 """Require real Beta smoke and the exact call-permissions API 35 instrumentation evidence."""
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
 import sys
 import xml.etree.ElementTree as ET
 
-from PIL import Image, ImageStat
-
 PREFIX = 'org.thoughtcrime.securesms.calls.permissions.'
 METHODS = {
     (PREFIX + 'CallPermissionsScreenshotTest', 'callsSettingsAndContactGroupOverrides'),
     (PREFIX + 'CallLinkKeyNativeParityTest', 'canonicalVersionsAndRoomIdentityMatchPinnedNative'),
     (PREFIX + 'CallLinkKeyNativeParityTest', 'malformedBinaryKeysAreRejectedWithoutBroadeningNativeAcceptance'),
+    (PREFIX + 'CallLinkKeyNativeParityTest', 'generatedCredentialsUsePinnedV1FormatAndNativeMetadata'),
     (PREFIX + 'CallEraIdNativeParityTest', 'managedEraIdMatchesPinnedNative'),
+    (PREFIX + 'ColdCallRuntimeTest', 'onDemandColdStartKeepsPassiveRoutesAndDeniedTrafficUnloaded'),
+    (PREFIX + 'ColdCallRuntimeTest', 'absoluteDisablePreventsLoadingEvenWhenOrdinaryStartupIsEnabled'),
+    (PREFIX + 'ColdCallRuntimeTest', 'authorizedAcquisitionLoadsEngineAndRevocationBlocksFurtherWork'),
 }
 SCREENSHOTS = {
     '01-collie-hardening.png', '02-calls-defaults.png', '03-calls-disabled.png',
     '04-separate-group-default.png', '05-contact-inherit.png', '06-contact-choices.png',
     '07-contact-blocked.png', '08-group-choices.png', '09-group-allowed.png',
+    '10-on-demand-off.png', '11-on-demand-on.png', '12-on-demand-with-all-calling-disabled.png',
 }
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 EVIDENCE = 'build/call-permissions-api35'
+PASSIVE_STEPS = [
+    'after-application-and-account-setup', 'facade-and-cached-state', 'ordinary-direct-and-group-messaging',
+    'linked-device-call-history', 'link-metadata-sync-and-storage', 'link-preview-refresh-group-peek-and-cleanup',
+    'calls-settings-screen', 'group-settings-browsing', 'six-denied-signaling-categories',
+]
+
+
+def check_runtime_probes(outputs):
+    expected = {
+        'on-demand-cold.json': (True, False, PASSIVE_STEPS),
+        'all-calling-disabled.json': (False, True, PASSIVE_STEPS + ['denied-explicit-acquisition']),
+        'authorized-acquisition.json': (True, False, ['before-authorized-acquisition', 'authorized-then-revoked']),
+    }
+    paths = list(outputs.rglob('call-runtime-proof/*.json'))
+    if len(paths) != len(expected) or {path.name for path in paths} != set(expected):
+        raise ValueError('missing, duplicate or unexpected clean-process runtime probes')
+    processes = set()
+    for path in paths:
+        proof = json.loads(path.read_text())
+        on_demand, disabled, steps = expected[path.name]
+        if proof.get('schema') != 1 or type(proof.get('pid')) is not int or proof['pid'] <= 0 or proof['pid'] in processes:
+            raise ValueError('runtime probes must come from distinct app processes')
+        processes.add(proof['pid'])
+        if proof.get('onDemandAtStart') is not on_demand or proof.get('allDisabledAtStart') is not disabled or proof.get('realCallTimingSamples') != 0:
+            raise ValueError('unexpected runtime startup policy or real-call timing claim')
+        checkpoints = proof.get('checkpoints', [])
+        if [row.get('step') for row in checkpoints] != steps:
+            raise ValueError('missing or changed runtime route checkpoints')
+        for row in checkpoints:
+            if row['step'] == 'authorized-then-revoked':
+                if row.get('nativeMapped') is not True or row.get('dispatched') != 2:
+                    raise ValueError('missing successful native acquisition and post-revocation rejection')
+            elif row.get('nativeMapped') is not False or row.get('initialized') is not False:
+                raise ValueError('a cold or disabled route loaded the calling engine')
 
 
 def apk_hashes(path):
@@ -51,6 +89,8 @@ def signer_digest(path):
 
 
 def check(root, build_outcome, device_outcome, expected_sha):
+    from PIL import Image, ImageStat
+
     evidence = root / EVIDENCE
     if (build_outcome, device_outcome) != ('success', 'success'):
         raise ValueError('build or API 35 device step failed')
@@ -119,9 +159,10 @@ def check(root, build_outcome, device_outcome, expected_sha):
                 raise ValueError('nonpassing instrumentation case')
             cases.append((case.get('classname'), case.get('name')))
     if total != len(METHODS) or len(cases) != len(METHODS) or set(cases) != METHODS:
-        raise ValueError(f'expected exactly four methods in the three selected classes; found {cases}')
+        raise ValueError(f'expected exactly {len(METHODS)} methods in the selected classes; found {cases}')
 
     outputs = root / 'app/build/outputs/connected_android_test_additional_output'
+    check_runtime_probes(outputs)
     captures = list(outputs.rglob('call-permissions-proof/*.png'))
     if len(captures) != len(SCREENSHOTS) or {path.name for path in captures} != SCREENSHOTS:
         raise ValueError('missing, duplicate or unexpected call-permissions screenshots')
@@ -132,7 +173,7 @@ def check(root, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized screenshot: {path.name}')
-    print('Passed real Beta startup, four isolated instrumentation methods and nine API 35 screenshots with matching source and APK hashes')
+    print(f'Passed real Beta startup, {len(METHODS)} isolated methods, {len(SCREENSHOTS)} API 35 screenshots and three clean-process runtime probes with matching source and APK hashes')
 
 
 if __name__ == '__main__':

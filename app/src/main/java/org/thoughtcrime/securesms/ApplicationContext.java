@@ -57,7 +57,6 @@ import org.signal.libsignal.net.ChatServiceException;
 import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider;
 import org.signal.registration.RegistrationDependencies;
 import org.signal.remoteconfig.RemoteConfig;
-import org.signal.ringrtc.CallManager;
 import org.signal.storage.database.DatabaseSecretProvider;
 import org.signal.storage.database.SqlCipherLibraryLoader;
 import org.signal.storage.keyvalue.PlainTextKeyValueStore;
@@ -125,7 +124,8 @@ import org.thoughtcrime.securesms.registration.util.RegistrationUtil;
 import org.thoughtcrime.securesms.registration.v2.AppContactSupportController;
 import org.thoughtcrime.securesms.registration.v2.AppRegistrationNetworkController;
 import org.thoughtcrime.securesms.registration.v2.AppRegistrationStorageController;
-import org.thoughtcrime.securesms.ringrtc.RingRtcLogger;
+import org.thoughtcrime.securesms.calls.runtime.CallRuntimePolicy;
+import org.thoughtcrime.securesms.calls.runtime.RingRtcLibrary;
 import org.thoughtcrime.securesms.service.AnalyzeDatabaseAlarmListener;
 import org.thoughtcrime.securesms.service.ArchiveCredentialRefreshListener;
 import org.thoughtcrime.securesms.service.DirectoryRefreshListener;
@@ -153,8 +153,6 @@ import org.whispersystems.signalservice.api.websocket.SignalWebSocket;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.security.Security;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import im.molly.app.base.ApkInfo;
@@ -744,12 +742,9 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   private void initializeRingRtc() {
+    if (!CallRuntimePolicy.shouldInitializeAtStartup()) return;
     try {
-      Map<String, String> fieldTrials = new HashMap<>();
-      if (RemoteConfig.callingFieldTrialAnyAddressPortsKillSwitch()) {
-        fieldTrials.put("RingRTC-AnyAddressPortsKillSwitch", "Enabled");
-      }
-      CallManager.initialize(this, new RingRtcLogger(), fieldTrials);
+      RingRtcLibrary.initialize(this);
     } catch (UnsatisfiedLinkError e) {
       throw new AssertionError("Unable to load ringrtc library", e);
     }

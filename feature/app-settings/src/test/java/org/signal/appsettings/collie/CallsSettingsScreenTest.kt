@@ -36,18 +36,51 @@ class CallsSettingsScreenTest {
   val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<CallsSettingsEvent>()
-  private val defaults = CallsSettingsState(loading = false, available = true)
+  private val defaults = CallsSettingsState(loading = false, available = true, onDemandAvailable = true)
 
   @Test
   fun `ordinary defaults display allowed calls and an off absolute restriction`() {
     setContent(defaults)
 
     switch().assertIsOff()
+    scrollTo(CallsSettingsTestTags.ON_DEMAND)
+    startupSwitch().assertIsOff()
+    composeTestRule.onNodeWithText("Start the calling engine only for allowed calls and actions. Reduces background calling activity, but calls may take longer to connect.").assertIsDisplayed()
     scrollTo(CallsSettingsTestTags.INCOMING)
     composeTestRule.onNodeWithText("Allow incoming calls").assertIsDisplayed()
     scrollTo(CallsSettingsTestTags.GROUPS)
     composeTestRule.onNodeWithText("Allow group calls").assertIsDisplayed()
     composeTestRule.onNodeWithText("Ask first").assertDoesNotExist()
+  }
+
+  @Test
+  fun `on demand opt in requests persistence without optimistically changing the switch`() {
+    setContent(defaults)
+    scrollTo(CallsSettingsTestTags.ON_DEMAND)
+
+    composeTestRule.onNodeWithTag(CallsSettingsTestTags.ON_DEMAND).performClick()
+
+    assertThat(events).containsExactly(CallsSettingsEvent.OnDemandChanged(true))
+    startupSwitch().assertIsOff()
+  }
+
+  @Test
+  fun `a saved startup choice stays visible but is unavailable during absolute prohibition`() {
+    setContent(defaults.copy(allCallingDisabled = true, onDemandCalling = true))
+    scrollTo(CallsSettingsTestTags.ON_DEMAND)
+
+    startupSwitch().assertIsOn()
+    composeTestRule.onNodeWithTag(CallsSettingsTestTags.ON_DEMAND).assertIsNotEnabled()
+    assertThat(events).isEmpty()
+  }
+
+  @Test
+  fun `the startup experiment is not shown when unavailable for this product`() {
+    setContent(defaults.copy(onDemandAvailable = false))
+    scrollTo(CallsSettingsTestTags.GROUPS)
+
+    composeTestRule.onNodeWithTag(CallsSettingsTestTags.ON_DEMAND).assertDoesNotExist()
+    composeTestRule.onNodeWithText("Calling startup").assertDoesNotExist()
   }
 
   @Test
@@ -155,7 +188,7 @@ class CallsSettingsScreenTest {
     }
 
     composeTestRule.onNodeWithTag(CallsSettingsTestTags.OVERRIDE).assertIsNotEnabled()
-    composeTestRule.onNodeWithText("All calling is disabled on this device. Turn off the device restriction in Settings → Collie → Calls to change incoming-call permissions.").assertIsDisplayed()
+    composeTestRule.onNodeWithText("All calling is disabled on this device. Turn off the device restriction in Settings → Collie → Hardening → Calls to change incoming-call permissions.").assertIsDisplayed()
   }
 
   @Test
@@ -186,6 +219,8 @@ class CallsSettingsScreenTest {
   }
 
   private fun switch() = composeTestRule.onNode(isToggleable() and hasAnyAncestor(hasTestTag(CallsSettingsTestTags.DISABLE_ALL)))
+
+  private fun startupSwitch() = composeTestRule.onNode(isToggleable() and hasAnyAncestor(hasTestTag(CallsSettingsTestTags.ON_DEMAND)))
 
   private fun scrollTo(tag: String) {
     composeTestRule.onNodeWithTag(CallsSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(tag))

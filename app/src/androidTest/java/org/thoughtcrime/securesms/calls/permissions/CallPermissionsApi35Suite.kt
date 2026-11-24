@@ -8,11 +8,12 @@ package org.thoughtcrime.securesms.calls.permissions
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
-/** One runner selector keeps all three classes intact through AGP's comma-delimited argument map. */
+/** One runner selector keeps the classes intact through AGP's comma-delimited argument map. */
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
   CallPermissionsScreenshotTest::class,
   CallLinkKeyNativeParityTest::class,
-  CallEraIdNativeParityTest::class
+  CallEraIdNativeParityTest::class,
+  ColdCallRuntimeTest::class
 )
 class CallPermissionsApi35Suite

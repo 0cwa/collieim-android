@@ -50,6 +50,7 @@ import org.signal.network.service.TwoFactorMethodService
 import org.signal.network.service.UsernameService
 import org.signal.video.exo.ExoPlayerPool
 import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.calls.runtime.CallRuntime
 import org.thoughtcrime.securesms.components.TypingStatusRepository
 import org.thoughtcrime.securesms.components.TypingStatusSender
 import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
@@ -214,6 +215,11 @@ object AppDependencies {
   val signalCallManager: SignalCallManager by lazy {
     provider.provideSignalCallManager()
   }
+
+  /** Passive runtime state and authorized acquisition; neither getter initializes RingRTC. */
+  @JvmStatic
+  val callRuntime: CallRuntime
+    get() = signalCallManager.callRuntime
 
   @JvmStatic
   val pendingRetryReceiptManager: PendingRetryReceiptManager by lazy {

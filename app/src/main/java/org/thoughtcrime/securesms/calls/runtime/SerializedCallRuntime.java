@@ -52,6 +52,10 @@ public final class SerializedCallRuntime implements CallRuntime {
       complete.accept(Result.DENIED);
       return;
     }
+    if (request.cancelled.get()) {
+      complete.accept(Result.CANCELLED);
+      return;
+    }
     if (state == State.FAILED) {
       complete.accept(Result.FAILED);
       return;
@@ -65,10 +69,13 @@ public final class SerializedCallRuntime implements CallRuntime {
       try {
         initializer.initialize();
         state = State.READY;
-      } catch (Exception | LinkageError failure) {
+      } catch (Exception | LinkageError | AssertionError failure) {
         state = State.FAILED;
-        failureHandler.accept(failure);
-        complete.accept(Result.FAILED);
+        try {
+          failureHandler.accept(failure);
+        } finally {
+          complete.accept(Result.FAILED);
+        }
         return;
       }
     }
@@ -76,9 +83,17 @@ public final class SerializedCallRuntime implements CallRuntime {
       complete.accept(Result.CANCELLED);
     } else if (!isAuthorized.getAsBoolean()) {
       complete.accept(Result.DENIED);
+    } else if (request.cancelled.get()) {
+      complete.accept(Result.CANCELLED);
     } else {
-      action.run();
-      complete.accept(Result.DISPATCHED);
+      Result result = Result.FAILED;
+      try {
+        action.run();
+        result = Result.DISPATCHED;
+      } finally {
+        // Preserve the backend's existing exception behavior without abandoning a waiting caller.
+        complete.accept(result);
+      }
     }
   }
 

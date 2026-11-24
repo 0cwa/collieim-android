@@ -2,12 +2,15 @@ name: Call permissions API 35
 
 on:
   pull_request:
-    branches: [trailblazer-beta]
+    branches: [trailblazer-beta, feat/beta-call-permissions]
     paths:
       - .github/workflows/call-permissions.yml
       - .github/scripts/check-call-permissions-results.py
       - app/build.gradle.kts
       - app/src/**/calls/**
+      - app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
+      - app/src/main/java/org/thoughtcrime/securesms/dependencies/AppDependencies.kt
+      - app/src/main/java/org/thoughtcrime/securesms/linkpreview/**
       - app/src/**/service/webrtc/**
       - app/src/**/components/settings/**
       - app/src/**/keyvalue/**
@@ -31,6 +34,7 @@ on:
       - tooling/ci/call-permissions-host.gradle
       - tooling/ci/call_permissions_host.py
       - tooling/ci/test_call_permissions_host.py
+      - tooling/ci/test_call_runtime_evidence.py
       - tooling/host-tests/**
       - build-inputs/engineering.json
       - build-inputs/host-test-inputs.json
@@ -60,6 +64,7 @@ jobs:
         run: |
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/host-tests -p 'test_*.py'
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/ci -p 'test_call_permissions_host.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/ci -p 'test_call_runtime_evidence.py'
       - name: Record source and the complete feature test inventory
         run: python3 tooling/ci/call_permissions_host.py prepare
       # Reuse pr.yml's exact canonical cache key, source builder and verifier.
@@ -117,7 +122,7 @@ jobs:
             -I tooling/ci/call-permissions-host.gradle \
             :app:testProdWebsiteDebugUnitTest :feature:app-settings:testDebugUnitTest \
             2>&1 | tee "$evidence/host-tests.log"
-      - name: Require all 309 methods with matching source and runtime inputs
+      - name: Require every inventoried method with matching source and runtime inputs
         if: always() && !cancelled()
         env:
           EXPECTED_SHA: ${{ github.sha }}
@@ -265,9 +270,9 @@ jobs:
           timeout 10s adb logcat -b all -d -v threadtime > "$evidence/beta-logcat.txt"
           timeout 10s adb shell am force-stop im.collie.app.trailblazer
           timeout 10s adb logcat -c
-          # Orchestrator keeps each method isolated. Test storage preserves the nine PNGs
+          # Orchestrator keeps each method isolated. Test storage preserves the twelve PNGs and runtime probes
           # across app-data clearing, and AGP collects the service output after the suite.
-          # The suite preserves the three selectors through AGP's comma-delimited argument map.
+          # The suite preserves all four selectors through AGP's comma-delimited argument map.
           ./gradlew -PimoTests --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
             :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-call-permissions-apks.gradle" \
@@ -276,7 +281,7 @@ jobs:
             2>&1 | tee "$evidence/connected.log"
           git diff --exit-code
           SH
-      - name: Launch Beta and run the three selected classes on API 35
+      - name: Launch Beta and run settings, parity and cold-start probes on API 35
         id: device
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
@@ -289,7 +294,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: bash "$RUNNER_TEMP/run-call-permissions.sh"
-      - name: Require Beta smoke, four passing methods and nine screenshots
+      - name: Require Beta smoke, eight passing methods, twelve screenshots and runtime probes
         if: always() && !cancelled()
         env:
           EXPECTED_SHA: ${{ github.sha }}

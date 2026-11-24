@@ -4,6 +4,7 @@
  */
 package org.thoughtcrime.securesms.calls.permissions
 
+import java.security.SecureRandom
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -12,8 +13,8 @@ import javax.crypto.spec.SecretKeySpec
  * bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f (build-inputs/native-lock.json).
  * Source: https://github.com/signalapp/ringrtc/tree/bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f/src/rust/src/lite/call_links
  *
- * This only validates/formats keys and derives their public room identifier. Native creation,
- * credential presentation, encryption and call operations remain behind call admission.
+ * This validates/formats keys, creates local key material and derives the public room identifier.
+ * Credential presentation, encryption and server-side call creation remain behind call admission.
  */
 internal object CallLinkKeyCodec {
   private const val ALPHABET = "bcdfghkmnpqrstxz"
@@ -21,6 +22,23 @@ internal object CallLinkKeyCodec {
   private val ROOM_INFO = "20230501-Signal-CallLinkRootKey-RoomId".toByteArray(Charsets.US_ASCII)
   private val V0_GROUPS = intArrayOf(2, 2, 2, 2, 2, 2, 2, 2)
   private val V1_GROUPS = intArrayOf(4, 4, 4, 4, 1, 4)
+
+  /**
+   * Exact pinned root_key.rs generation format: random CRN, pending V1 marker and an empty epoch.
+   * Rejecting the same aligned repeated chunks as native preserves its uniform accepted key
+   * distribution. A broken entropy source fails after a finite number of draws; it never gets a
+   * deterministic fallback key. The server supplies the epoch when the link is actually created.
+   */
+  fun generate(random: SecureRandom): ByteArray {
+    val crn = ByteArray(CRN_LENGTH)
+    repeat(16) {
+      random.nextBytes(crn)
+      if (valid(crn)) {
+        return crn.copyOf(21).also { it[CRN_LENGTH] = 0x81.toByte() }
+      }
+    }
+    error("Unable to generate a valid call link key")
+  }
 
   fun valid(bytes: ByteArray): Boolean {
     if (bytes.size != CRN_LENGTH && (bytes.size != 21 || (bytes[CRN_LENGTH].toInt() and 0x7f) != 1)) return false

@@ -5,6 +5,7 @@ import org.signal.core.util.logging.AndroidLogger
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil
+import org.thoughtcrime.securesms.calls.permissions.CallStartupTestConfiguration
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider
@@ -38,6 +39,9 @@ class IncomingMessageObserverInstrumentationApplicationContext : ApplicationCont
   }
 
   override fun initializeAppDependencies() {
+    // The production SignalStore step has run, but the production calling startup step has not.
+    // Seed durable choices, never replace or skip the production native initialization decision.
+    CallStartupTestConfiguration.applyBeforeAppDependencies()
     val default = ApplicationDependencyProvider(this)
     AppDependencies.init(IncomingMessageObserverDependencyProvider(this, default))
     AppDependencies.deadlockDetector.start()

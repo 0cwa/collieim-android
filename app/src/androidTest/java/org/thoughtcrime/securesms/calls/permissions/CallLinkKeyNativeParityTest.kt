@@ -10,10 +10,30 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.ringrtc.CallException
 import org.signal.ringrtc.CallLinkRootKey
+import org.thoughtcrime.securesms.service.webrtc.links.CallLinkCredentials
 
 /** Compare metadata handling with the exact RingRTC library packaged in the tested Beta APK. */
 @RunWith(AndroidJUnit4::class)
 class CallLinkKeyNativeParityTest {
+  @Test
+  fun generatedCredentialsUsePinnedV1FormatAndNativeMetadata() {
+    repeat(64) {
+      val credentials = CallLinkCredentials.generate()
+      val nativeGenerated = CallLinkRootKey.generate()
+      val nativeParsed = CallLinkRootKey(credentials.linkKeyBytes)
+      val managed = requireNotNull(ManagedCallLinkRootKey.fromBytes(credentials.linkKeyBytes))
+
+      assertEquals(nativeGenerated.keyBytes.size, credentials.linkKeyBytes.size)
+      assertEquals(21, credentials.linkKeyBytes.size)
+      assertArrayEquals(nativeGenerated.keyBytes.copyOfRange(16, 21), credentials.linkKeyBytes.copyOfRange(16, 21))
+      assertArrayEquals(byteArrayOf(0x81.toByte(), 0, 0, 0, 0), credentials.linkKeyBytes.copyOfRange(16, 21))
+      assertEquals(CallLinkRootKey.generateAdminPasskey().size, credentials.adminPassBytes!!.size)
+      assertArrayEquals(nativeParsed.keyBytes, managed.keyBytes)
+      assertEquals(nativeParsed.toUnredactedString(), managed.toFormattedString())
+      assertArrayEquals(nativeParsed.deriveRoomId(), managed.roomId.encodeForProto().toByteArray())
+    }
+  }
+
   @Test
   fun canonicalVersionsAndRoomIdentityMatchPinnedNative() {
     val vectors = listOf(

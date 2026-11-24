@@ -29,6 +29,7 @@ import org.signal.core.ui.compose.horizontalGutters
 object CallsSettingsTestTags {
   const val SCROLLER = "collie-calls-scroller"
   const val DISABLE_ALL = "collie-calls-disable-all"
+  const val ON_DEMAND = "collie-calls-on-demand"
   const val INCOMING = "collie-calls-incoming"
   const val GROUPS = "collie-calls-groups"
   const val OVERRIDE = "collie-calls-override"
@@ -69,6 +70,22 @@ fun CallsSettingsScreen(state: CallsSettingsState, onEvent: (CallsSettingsEvent)
           onCheckChanged = { onEvent(CallsSettingsEvent.DisableAllChanged(it)) },
           modifier = Modifier.testTag(CallsSettingsTestTags.DISABLE_ALL)
         )
+      }
+
+      if (state.onDemandAvailable) {
+        item { Dividers.Default() }
+        item { Texts.SectionHeader(stringResource(R.string.CollieCalls__startup)) }
+        item {
+          Rows.ToggleRow(
+            checked = state.onDemandCalling,
+            text = stringResource(R.string.CollieCalls__on_demand),
+            label = stringResource(R.string.CollieCalls__on_demand_description),
+            enabled = editable && !state.allCallingDisabled,
+            onCheckChanged = { onEvent(CallsSettingsEvent.OnDemandChanged(it)) },
+            modifier = Modifier.testTag(CallsSettingsTestTags.ON_DEMAND)
+          )
+          CallPermissionDescription(stringResource(R.string.CollieCalls__engine_lifetime))
+        }
       }
 
       item { Dividers.Default() }
@@ -133,5 +150,5 @@ internal fun CallPermissionSaveError(visible: Boolean, onDismiss: () -> Unit) {
 @DayNightPreviews
 @Composable
 private fun CallsSettingsScreenPreview() {
-  CallsSettingsScreen(state = CallsSettingsState(loading = false, available = true), onEvent = {})
+  CallsSettingsScreen(state = CallsSettingsState(loading = false, available = true, onDemandAvailable = true), onEvent = {})
 }

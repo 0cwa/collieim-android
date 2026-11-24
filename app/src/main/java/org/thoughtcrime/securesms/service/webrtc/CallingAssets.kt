@@ -9,6 +9,7 @@ import android.content.Context
 import okio.IOException
 import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallException
+import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.s3.S3
 import java.io.File
@@ -44,8 +45,17 @@ object CallingAssets {
    * Safe to call multiple times -- assets already registered are skipped.
    */
   @JvmStatic
+  @Synchronized
   fun registerAssetsIfNeeded() {
+    val generation = CallPermissions.generation()
+    if (!CallPermissions.isCurrent(generation)) return
+    val manager = AppDependencies.signalCallManager
+    // The managed facade is safe to obtain; asset bookkeeping must never acquire the engine.
+    // A skipped cold registration is not a native failure and must remain eligible after startup.
+    if (!manager.isEngineReady()) return
+
     ASSETS.forEach { entry ->
+      if (!CallPermissions.isCurrent(generation)) return
       if (registeredLog.contains(entry.name)) {
         return@forEach
       }
@@ -53,9 +63,10 @@ object CallingAssets {
       try {
         val content = getFromFile(entry.name) ?: return@forEach
         if (verify(content, entry)) {
-          AppDependencies.signalCallManager.addAsset(entry.assetGroup, content)
-          registeredLog.add(entry.name)
-          Log.i(TAG, "Registered calling asset: ${entry.name}")
+          if (CallPermissions.runIfCurrent(generation) { manager.addAsset(entry.assetGroup, content) }) {
+            registeredLog.add(entry.name)
+            Log.i(TAG, "Registered calling asset: ${entry.name}")
+          }
         } else {
           Log.w(TAG, "Invalid calling asset on disk, skipping registration: ${entry.name}")
         }
@@ -63,8 +74,8 @@ object CallingAssets {
         Log.e(TAG, "Failed to register calling asset ${entry.name}", e)
       } catch (e: CallException) {
         Log.w(TAG, "RingRTC rejected calling asset ${entry.name}: ${e.message}")
-        // Asset couldn't be registered, don't retry for this process.
-        registeredLog.add(entry.name)
+        // Native rejections are terminal for this process; revocation is not a registration.
+        if (CallPermissions.isCurrent(generation)) registeredLog.add(entry.name)
       }
     }
   }

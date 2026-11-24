@@ -7,6 +7,8 @@ source-to-binary provenance or replace the signed-tag/APK checks.
 from __future__ import annotations
 
 import argparse
+import ast
+import base64
 import hashlib
 import io
 import json
@@ -26,6 +28,8 @@ MAINTENANCE_POLICY = ".github/ci-required-tests-stable-8.35.json"
 CLASSIC_WEBVIEW_CHECKER = ".github/scripts/check-webview-acceptance.py"
 CLASSIC_WEBVIEW_CHECKER_BLOB = "e448152de272f7403b329ad8822c52df4142f7de"
 RELEASE_SOURCE_BRANCHES = ("main", MAINTENANCE_BRANCH)
+RELEASE_BUILD_TOOLS = "tooling/reproducible-builds"
+RELEASE_STAMP = "tooling/collie-log/stamp.py"
 TRUSTED_CI_PATHS = (
     WORKFLOW_PATH,
     ".github/actions/disk-cleanup",
@@ -39,7 +43,7 @@ TRUSTED_CI_PATHS = (
     "tooling/git-hooks",
     "tooling/host-tests",
     "tooling/gradle.properties.docker",
-    "tooling/reproducible-builds",
+    RELEASE_BUILD_TOOLS,
     "build.gradle.kts",
     "settings.gradle.kts",
     "buildSrc",
@@ -151,12 +155,12 @@ def bind_main_policy(repository, sha, trusted_main, reader):
             trees[oid] = {entry["path"]: entry for entry in tree["tree"]}
         return trees[oid]
 
-    def path_objects(commit):
+    def path_objects(commit, paths):
         identity = reader(f"{prefix}/git/commits/{commit}")
         require(identity["sha"] == commit, "CI input commit identity changed")
         root_tree = identity["tree"]["sha"]
         objects = {}
-        for path in TRUSTED_CI_PATHS:
+        for path in paths:
             parts = path.split("/")
             parent = root_tree
             for part in parts[:-1]:
@@ -168,11 +172,26 @@ def bind_main_policy(repository, sha, trusted_main, reader):
             objects[path] = (entry["mode"], entry["type"], entry["sha"])
         return objects
 
-    policy = path_objects(trusted_main)
-    candidate = path_objects(sha)
-    for path in TRUSTED_CI_PATHS:
+    policy = path_objects(trusted_main, TRUSTED_CI_PATHS)
+    verifier = entries(policy[RELEASE_BUILD_TOOLS][2]).get("verify-release-prep.py")
+    if verifier:
+        require(verifier["type"] == "blob" and verifier["mode"] in ("100644", "100755"),
+                "Invalid trusted release preparation verifier")
+        source = reader(f"{prefix}/git/blobs/{verifier['sha']}")
+        require(source["sha"] == verifier["sha"] and source["encoding"] == "base64",
+                "Invalid trusted release preparation verifier blob")
+        try:
+            content = base64.b64decode("".join(source["content"].split()), validate=True)
+            syntax = ast.parse(content)
+        except (SyntaxError, ValueError) as error:
+            raise Failure("Cannot read trusted release preparation verifier") from error
+        # Older authoring tools sometimes shipped the stamper before the build verifier loaded it.
+        if any(isinstance(node, ast.Constant) and node.value == "collie-log/stamp.py" for node in ast.walk(syntax)):
+            policy.update(path_objects(trusted_main, (RELEASE_STAMP,)))
+    candidate = path_objects(sha, policy)
+    for path in policy:
         expected = (policy[path][0], "blob", CLASSIC_WEBVIEW_CHECKER_BLOB) if path == CLASSIC_WEBVIEW_CHECKER else policy[path]
-        require(expected == candidate[path], f"Maintenance CI input differs from trusted main: {path}")
+        require(expected == candidate.get(path), f"Maintenance CI input differs from trusted main: {path}")
     return policy[MAINTENANCE_POLICY][2]
 
 

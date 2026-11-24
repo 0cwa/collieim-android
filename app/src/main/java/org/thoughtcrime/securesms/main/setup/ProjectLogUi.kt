@@ -59,7 +59,7 @@ object ProjectLogRepository {
       val product = if (BuildConfig.BUILD_TYPE == "beta") "beta" else "stable"
       ProjectLog.notes(
         releaseFiles = read(context, "${ProjectLog.RELEASES_DIR}/$product"),
-        unreleasedFiles = read(context, ProjectLog.UNRELEASED_DIR),
+        unreleasedFiles = emptyList(),
         installedVersion = ApkInfo.versionName,
         prepared = BuildConfig.COLLIE_RELEASE_PREPARED
       )

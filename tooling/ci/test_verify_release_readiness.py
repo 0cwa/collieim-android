@@ -1,4 +1,5 @@
 """Exercise the release boundary with missing, stale and failed CI evidence."""
+import base64
 import unittest
 import hashlib
 import io
@@ -182,7 +183,7 @@ class ReleaseReadinessTest(unittest.TestCase):
             directories = {"": f"{number:040x}"}
             api_responses[f"{prefix}/git/commits/{commit}"] = {"sha": commit, "tree": {"sha": directories[""]}}
             by_parent = {"": []}
-            for index, path in enumerate(gate.TRUSTED_CI_PATHS, 20):
+            for index, path in enumerate((*gate.TRUSTED_CI_PATHS, gate.RELEASE_STAMP), 20):
                 parts = path.split("/")
                 folder = ""
                 for part in parts[:-1]:
@@ -202,9 +203,18 @@ class ReleaseReadinessTest(unittest.TestCase):
                 by_parent[folder].append(entry)
                 if commit == SHA:
                     candidate_inputs[path] = entry
+                if path == gate.RELEASE_BUILD_TOOLS:
+                    verifier = {"path": "verify-release-prep.py", "mode": "100644", "type": "blob", "sha": "f" * 40}
+                    directories[path] = entry["sha"]
+                    by_parent[path] = [verifier]
             for parent, values in by_parent.items():
                 oid = directories[parent]
                 api_responses[f"{prefix}/git/trees/{oid}"] = {"sha": oid, "truncated": False, "tree": values}
+        verifier_blob = f"{prefix}/git/blobs/{'f' * 40}"
+        api_responses[verifier_blob] = {
+            "sha": "f" * 40, "encoding": "base64",
+            "content": base64.b64encode(b'notes = runpy.run_path(str(tools / "collie-log/stamp.py"))').decode(),
+        }
         calls = []
 
         def reader(endpoint, **kwargs):
@@ -235,7 +245,7 @@ class ReleaseReadinessTest(unittest.TestCase):
                      ".github/ci-required-tests.json", ".github/ci-required-tests-stable-8.35.json",
                      "gradlew", "gradle/wrapper", "build-logic",
                      ".github/scripts/check-archive-device-results.py", gate.CLASSIC_WEBVIEW_CHECKER,
-                     "tooling/fastlane/check_metadata.py"):
+                     "tooling/fastlane/check_metadata.py", "tooling/collie-log/stamp.py"):
             with self.subTest(replaced_input=path):
                 entry = candidate_inputs[path]
                 original = entry["sha"]
@@ -245,6 +255,21 @@ class ReleaseReadinessTest(unittest.TestCase):
                     gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
                 self.assertFalse(any("/actions/" in endpoint for endpoint in calls))
                 entry["sha"] = original
+        tooling_trees = [tree for tree in api_responses.values()
+                         if isinstance(tree, dict) and isinstance(tree.get("tree"), list)
+                         and any(isinstance(entry, dict) and entry.get("path") == "collie-log"
+                                 for entry in tree["tree"])]
+        self.assertEqual(len(tooling_trees), 2)
+        tooling_trees[0]["tree"] = [entry for entry in tooling_trees[0]["tree"] if entry.get("path") != "collie-log"]
+        with self.assertRaisesRegex(gate.Failure, "Missing trusted CI directory"):
+            gate.bind_main_policy(REPO, SHA, policy, reader)
+        api_responses[verifier_blob]["content"] = base64.b64encode(b"def verify():\n    return None\n").decode()
+        # The old policy contains the authoring script but its verifier does not load it.
+        self.assertEqual(gate.bind_main_policy(REPO, SHA, policy, reader),
+                         candidate_inputs[gate.MAINTENANCE_POLICY]["sha"])
+        tooling_trees[1]["tree"] = [entry for entry in tooling_trees[1]["tree"] if entry.get("path") != "collie-log"]
+        self.assertEqual(gate.bind_main_policy(REPO, SHA, policy, reader),
+                         candidate_inputs[gate.MAINTENANCE_POLICY]["sha"])
         api_responses[f"{prefix}/compare/{policy}...{live_main}"]["status"] = "diverged"
         with self.assertRaisesRegex(gate.Failure, "outside protected main"):
             gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)

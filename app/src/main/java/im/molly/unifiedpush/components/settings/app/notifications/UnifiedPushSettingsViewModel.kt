@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,12 +37,17 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   private val store = Store(getState())
   private val exportSuccess = MutableLiveData<String?>()
+  private val exportPending = MutableLiveData(false)
 
   val state: LiveData<UnifiedPushSettingsState> = store.stateLiveData
   val exportSuccessResult: LiveData<String?> = exportSuccess
+  val isExportPending: LiveData<Boolean> = exportPending
 
   fun acknowledgeExportResult(message: String) {
-    if (exportSuccess.value == message) exportSuccess.value = null
+    if (exportSuccess.value == message) {
+      exportSuccess.value = null
+      exportPending.value = false
+    }
   }
 
   fun refresh() {
@@ -153,13 +159,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   /** Writes the CollieSocket enrollment file off the main thread and reports its result. */
+  @MainThread
   fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null) {
+    if (exportPending.value == true) return
+    exportPending.value = true
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
-      // Before anything can fail, so a refused or overflowing epoch never leaves the old password file behind.
-      EnrollmentExporter.removeFiles(app)
       var successMessage: String? = null
       val failureMessage = try {
+        // A refused or overflowing epoch must never leave the old password file behind.
+        EnrollmentExporter.removeFiles(app)
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
         val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
         successMessage = if (export.collides) {
@@ -187,8 +196,12 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
         app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
       }
       ThreadUtil.runOnMain {
-        if (successMessage != null) exportSuccess.value = successMessage
-        else Toast.makeText(app, failureMessage, Toast.LENGTH_LONG).show()
+        if (successMessage != null) {
+          exportSuccess.value = successMessage
+        } else {
+          exportPending.value = false
+          Toast.makeText(app, failureMessage, Toast.LENGTH_LONG).show()
+        }
       }
       refresh()
     }

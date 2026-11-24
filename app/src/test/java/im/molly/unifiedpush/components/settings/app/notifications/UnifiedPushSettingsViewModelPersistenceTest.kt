@@ -14,6 +14,7 @@ import im.molly.unifiedpush.enrollment.ExportMode
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -135,7 +136,7 @@ class UnifiedPushSettingsViewModelPersistenceTest {
     mockkStatic(EnrollmentExporter::class)
     viewModel.exportSuccessResult.observeForever(observer)
     try {
-      for (highestUsed in listOf(1L, 3L)) {
+      for ((index, highestUsed) in listOf(1L, 3L).withIndex()) {
         val result = EnrollmentExporter.Export(file, 2L, highestUsed, requestId)
         every { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) } returns result
         val expected = if (result.collides) {
@@ -145,6 +146,8 @@ class UnifiedPushSettingsViewModelPersistenceTest {
         }
         val count = messages.size
         viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        assertEquals(true, viewModel.isExportPending.value)
+        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
         while (messages.size == count && System.nanoTime() < deadline) {
           shadowOf(Looper.getMainLooper()).idle()
@@ -152,8 +155,11 @@ class UnifiedPushSettingsViewModelPersistenceTest {
         }
         assertEquals(listOf(expected), messages.drop(count))
         assertEquals(expected, viewModel.exportSuccessResult.value)
+        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
         viewModel.acknowledgeExportResult(expected)
         assertEquals(null, viewModel.exportSuccessResult.value)
+        assertEquals(false, viewModel.isExportPending.value)
+        verify(exactly = index + 1) { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) }
       }
     } finally {
       viewModel.exportSuccessResult.removeObserver(observer)

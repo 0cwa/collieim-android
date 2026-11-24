@@ -49,6 +49,9 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
     }
+    viewModel.isExportPending.observe(viewLifecycleOwner) {
+      viewModel.state.value?.let { adapter.submitList(getConfiguration(it).toMappingModelList()) }
+    }
     viewModel.exportSuccessResult.observe(viewLifecycleOwner) {
       showPendingExportResult()
     }
@@ -318,7 +321,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           if (state.controlStateCorrupt) R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
           else R.string.UnifiedPushSettingsFragment__export_enrollment_summary
         ),
-        isEnabled = !state.controlStateCorrupt,
+        isEnabled = !state.controlStateCorrupt && viewModel.isExportPending.value != true,
         onClick = { showExportModeDialog(state) },
       )
     }

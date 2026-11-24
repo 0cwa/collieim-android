@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment
 import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -122,8 +123,9 @@ class UnifiedPushSettingsScreenshotTest {
             val stored = model.exportState as MutableLiveData<UnifiedPushSettingsViewModel.ExportState?>
             stored.value = UnifiedPushSettingsViewModel.ExportState(
               java.util.UUID.randomUUID().toString(),
-              SignalStore.account.aci?.toString(),
+              checkNotNull(SignalStore.account.aci).toString(),
               SignalStore.account.deviceId,
+              UnifiedPushLifecycle.currentGeneration(),
               message,
             )
           }

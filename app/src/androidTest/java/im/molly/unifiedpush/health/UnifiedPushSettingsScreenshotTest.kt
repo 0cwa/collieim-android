@@ -119,10 +119,13 @@ class UnifiedPushSettingsScreenshotTest {
             val fragment = host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment
             val model = ViewModelProvider(fragment)[UnifiedPushSettingsViewModel::class.java]
             // Exercise the real settings presentation without provisioning a distributor or a relay.
-            val field = model.javaClass.getDeclaredField("exportSuccess").apply { isAccessible = true }
-            @Suppress("UNCHECKED_CAST")
-            val result = field.get(model) as MutableLiveData<String?>
-            result.value = message
+            val stored = model.exportState as MutableLiveData<UnifiedPushSettingsViewModel.ExportState?>
+            stored.value = UnifiedPushSettingsViewModel.ExportState(
+              java.util.UUID.randomUUID().toString(),
+              SignalStore.account.aci?.toString(),
+              SignalStore.account.deviceId,
+              message,
+            )
           }
           onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
             .check(matches(withText(message)))
@@ -152,6 +155,7 @@ class UnifiedPushSettingsScreenshotTest {
             image.recycle()
           }
           onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).perform(click())
+          scenario.onActivity { check(UnifiedPushSettingsViewModel.unreadExport() == null) }
         }
       }
     } finally {

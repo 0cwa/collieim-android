@@ -50,6 +50,8 @@ jobs:
       - name: Run eight Robolectric navigation cases
         id: host
         shell: bash
+        env:
+          JAVA_TOOL_OPTIONS: -Drobolectric.dependency.repo.url=https://maven-central.storage-download.googleapis.com/maven2
         run: |
           set -euo pipefail
           ./gradlew --no-daemon --console=plain :feature:app-settings:testDebugUnitTest --rerun \

@@ -598,6 +598,8 @@ class UnifiedPushRefreshJobTest {
   @Test
   fun `relay learns a fresh credential only after its delayed write is acknowledged`() {
     val store = provisioningStore()
+    store.values.vapidKeySynced = false
+    assertFalse(store.rebuilt().vapidKeySynced)
     val created = MollySocketDevice(deviceId = 11, password = "fresh-relay-credential")
     every { MollySocketRepository.createDevice() } returns created
     val gate = CountDownLatch(1)

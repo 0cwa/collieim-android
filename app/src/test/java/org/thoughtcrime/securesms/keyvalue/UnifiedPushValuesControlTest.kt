@@ -323,11 +323,12 @@ class UnifiedPushValuesControlTest {
     val storage = SnapshotKeyValuePersistentStorage(KeyValueDataSet())
     val values = UnifiedPushValues(KeyValueStore(storage, Executor { it.run() }))
     val device = MollySocketDevice(deviceId = 7, password = "synthetic-relay-credential")
+    values.vapidKeySynced = false
 
     values.commitProvisionedDevice(device)
-    assertEquals(device, values.device)
-    assertTrue(values.vapidKeySynced)
-    assertEquals(device, UnifiedPushValues(KeyValueStore(storage, Executor { it.run() })).device)
+    val rebuilt = UnifiedPushValues(KeyValueStore(storage, Executor { it.run() }))
+    assertEquals(device, rebuilt.device)
+    assertTrue(rebuilt.vapidKeySynced)
 
     val writeFailure = IllegalStateException("synthetic clear write failure")
     storage.nextWriteFailure = writeFailure

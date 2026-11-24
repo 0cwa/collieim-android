@@ -32,6 +32,6 @@ The value must be a full, lowercase, nonzero SHA of the commit, not a tag object
 
 ## Patch evidence
 
-The [patch explorer record](../tooling/site/receipt/subjects/signal-donation-removal.json) binds this change and the literal deletion list to the source tree. Select it when reviewing a release tag that contains the removal and run the normal receipt freeze. The older reviewed release keeps its existing source pins. The [unreleased Project Log entry](../app/src/main/assets/collie-log/unreleased/210.txt) records the change for a future release.
+The [patch explorer record](../tooling/site/receipt/subjects/signal-donation-removal.json) binds this change and the literal deletion list to the source tree. Select it when reviewing a release tag that contains the removal and run the normal receipt freeze. The older reviewed release keeps its existing source pins. The [Stable 8.36.3-1 RC1 Project log](../app/src/main/assets/collie-log/releases/stable/8.36.3-1-rc1.txt) records the release that shipped the removal.
 
 The API 35 navigation job verifies the built APK before installation. It checks the removed checkout classes and resources and confirms the retained backup classes. The output digest identifies the APK checked.

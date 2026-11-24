@@ -6,6 +6,10 @@
 package org.signal.appsettings.home
 
 import android.app.Application
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
@@ -18,10 +22,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isLessThanOrEqualTo
+import assertk.assertions.isTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +36,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.appsettings.R
 import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.core.ui.compose.Rows
 import org.signal.emoji.EmojiDependenciesRule
 
 @RunWith(RobolectricTestRunner::class)
@@ -59,6 +67,42 @@ class AppSettingsScreenTest {
   fun `settings does not supply a Signal donation checkout row`() {
     setContent(createState())
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_DONATE).assertDoesNotExist()
+  }
+
+  @Test
+  fun `Collie opens for ordinary users without exposing internal settings`() {
+    setContent(createState())
+
+    scrollTo(AppSettingsTestTags.ROW_COLLIE)
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).assertIsDisplayed().performClick()
+
+    assertThat(interactionEvents).containsExactly(AppSettingsEvent.CollieClicked)
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_LABS).assertDoesNotExist()
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_INTERNAL).assertDoesNotExist()
+  }
+
+  @Test
+  @Config(qualifiers = "w411dp-h1000dp")
+  fun `the bold Collie row appears above the host donation content`() {
+    val donationTag = "host-donation"
+    setContent(
+      state = createState(),
+      donationContent = {
+        Rows.TextRow(
+          text = "Donate to Collie",
+          onClick = {},
+          modifier = Modifier.testTag(donationTag)
+        )
+      }
+    )
+
+    scrollTo(AppSettingsTestTags.ROW_COLLIE)
+    val collie = composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).assertIsDisplayed().fetchSemanticsNode()
+    val donation = composeTestRule.onNodeWithTag(donationTag).assertIsDisplayed().fetchSemanticsNode()
+
+    assertThat(collie.boundsInRoot.bottom).isLessThanOrEqualTo(donation.boundsInRoot.top)
+    val label = composeTestRule.onNodeWithText("Collie").fetchSemanticsNode().config[SemanticsProperties.Text].single()
+    assertThat(label.spanStyles.any { it.start == 0 && it.end == label.length && it.item.fontWeight == FontWeight.Bold }).isTrue()
   }
 
   @Test
@@ -119,6 +163,7 @@ class AppSettingsScreenTest {
 
     val rows = listOf(
       AppSettingsTestTags.ROW_ACCOUNT to AppSettingsEvent.AccountClicked,
+      AppSettingsTestTags.ROW_COLLIE to AppSettingsEvent.CollieClicked,
       AppSettingsTestTags.ROW_APPEARANCE to AppSettingsEvent.AppearanceClicked,
       AppSettingsTestTags.ROW_CHATS to AppSettingsEvent.ChatsClicked,
       AppSettingsTestTags.ROW_STORIES to AppSettingsEvent.StoriesClicked,
@@ -243,12 +288,25 @@ class AppSettingsScreenTest {
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_CHATS).assertIsSelected()
   }
 
-  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null) {
+  @Test
+  fun `the Collie route selects the Collie row`() {
+    setContent(createState(), selectedRoute = AppSettingsRoute.Collie)
+    scrollTo(AppSettingsTestTags.ROW_COLLIE)
+
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).assertIsSelected()
+  }
+
+  private fun setContent(
+    state: AppSettingsState,
+    selectedRoute: AppSettingsRoute? = null,
+    donationContent: (@Composable () -> Unit)? = null
+  ) {
     composeTestRule.setContent {
       AppSettingsScreen(
         state = state,
         onEvent = { events += it },
-        selectedRoute = selectedRoute
+        selectedRoute = selectedRoute,
+        donationContent = donationContent
       )
     }
   }

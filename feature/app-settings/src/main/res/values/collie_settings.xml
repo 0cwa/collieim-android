@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CollieSettings__title" translatable="false">Collie</string>
+    <string name="CollieSettings__labs">Labs</string>
+    <string name="CollieSettings__labs_description">Try experimental features from Signal. These features may change as they are developed.</string>
+    <string name="CollieSettings__story_archive">Story Archive</string>
+    <string name="CollieSettings__story_archive_description">Show archive controls in Stories settings. Turn on “Keep stories in archive” there to save your own stories. Hiding these controls does not change your archive settings.</string>
+    <string name="CollieSettings__better_search">Better Search</string>
+    <string name="CollieSettings__better_search_description">Filter search results by date and sender using the filter button in the search toolbar.</string>
+    <string name="CollieSettings__starred_messages">Starred Messages</string>
+    <string name="CollieSettings__starred_messages_description">Star messages from the long-press menu to find them later in conversation settings or the main menu.</string>
+</resources>

@@ -179,11 +179,13 @@ class ReleasePreparationTests(unittest.TestCase):
         base = self.develop()
         recipe = str(self.root / "tooling/reproducible-builds/build-release.sh")
         with tempfile.TemporaryDirectory() as out:
-            env = {**os.environ, "CONTAINER": "no-such-container", "COLLIE_DEVELOPMENT_BASE": base}
+            env = {**os.environ, "CONTAINER": "no-such-container", "COLLIE_DEVELOPMENT_BASE": base,
+                   "COLLIE_REQUIRE_RELEASE_PREP": "1"}
             result = subprocess.run([recipe, out], cwd=self.root, text=True, capture_output=True, env=env)
+        self.assertNotEqual(result.returncode, 0)
         self.assertNotIn("development change", result.stderr)
-        self.assertNotIn("unapproved preparation change", result.stderr)
-        self.assertIn("no-such-container", result.stderr)
+        self.assertIn("unapproved preparation change: app.txt", result.stderr)
+        self.assertNotIn("no-such-container", result.stderr)
 
     def test_development_build_does_not_require_preparation(self):
         result = self.check()

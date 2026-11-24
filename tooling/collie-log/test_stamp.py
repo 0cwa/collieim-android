@@ -1,5 +1,6 @@
 """The preparation command works on a complete Git source without consuming invalid notes."""
 from contextlib import redirect_stderr
+import fcntl
 from io import StringIO
 from pathlib import Path
 import os
@@ -122,6 +123,41 @@ class StampTests(unittest.TestCase):
         self.git("clean", "-fd")
         self.assertEqual(self.stamp().returncode, 0)
         self.assertEqual(self.snapshot(), expected)
+
+    def test_inactive_product_wiring_does_not_consume_pending_notes(self):
+        build = self.root / "app/build.gradle.kts"
+        active = build.read_text()
+        note = self.pending("keep.txt", "topic: fixes\nKeep this pending note.\n")
+        for line in active.splitlines():
+            edition = "stable" if line.startswith("val basePackageId") else "beta"
+            for inactive in ("// " + line, "/* outer /* inner */\n" + line + "\n*/"):
+                with self.subTest(edition=edition, line=line, inactive=inactive):
+                    build.write_text(active.replace(line, inactive))
+                    self.commit()
+                    before = self.snapshot()
+                    result = self.stamp(edition=edition)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("build configuration", result.stderr)
+                    self.assertEqual(self.snapshot(), before)
+                    self.assertTrue(note.is_file())
+
+    def test_preparation_waits_for_checkout_lock_before_testing_cleanliness(self):
+        lock_path = self.root / ".git/collie-release-prep.lock"
+        command = [sys.executable, str(self.root / "tooling/collie-log/stamp.py"), VERSION,
+                   "--edition", "beta", "--version-code", CODE, "--date", "2026-11-24"]
+        with lock_path.open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            with subprocess.Popen(command, cwd=self.root, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True) as process:
+                try:
+                    with self.assertRaises(subprocess.TimeoutExpired):
+                        process.communicate(timeout=0.2)
+                    self.pending("in-progress.txt", "topic: fixes\nOther preparation in progress.\n")
+                finally:
+                    fcntl.flock(lock, fcntl.LOCK_UN)
+                _, error = process.communicate(timeout=10)
+                self.assertNotEqual(process.returncode, 0)
+                self.assertIn("release checkout is not clean", error)
 
     def test_invalid_fragment_does_not_write_or_consume_anything(self):
         invalid = ("", "topic: unknown\nA change.\n", "topic: fixes\ntopic: fixes\nA change.\n",

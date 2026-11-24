@@ -95,23 +95,51 @@ def check_clean_checkout():
         raise Invalid("release checkout has hidden or sparse tracked files")
 
 
+def kotlin_configuration_lines(source):
+    # Keep quoted literals intact, but ignore comments and multiline string contents.
+    tokens = re.compile(r"""\"\"\"[\s\S]*?\"\"\"|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|//[^\n]*|/\*""")
+    block_tokens = re.compile(r"/\*|\*/")
+    chunks = []
+    end = 0
+    while match := tokens.search(source, end):
+        chunks.append(source[end:match.start()])
+        token = match.group()
+        end = match.end()
+        if token.startswith("/*"):
+            depth = 1
+            while depth:
+                delimiter = block_tokens.search(source, end)
+                if delimiter is None:
+                    raise Invalid("unterminated Kotlin block comment")
+                end = delimiter.end()
+                depth += 1 if delimiter.group() == "/*" else -1
+            token = source[match.start():end]
+            chunks.append(" " + "\n" * token.count("\n"))
+        elif token.startswith("//") or token.startswith('"""'):
+            chunks.append(" " + "\n" * token.count("\n"))
+        else:
+            chunks.append(token)
+    chunks.append(source[end:])
+    return {line.strip() for line in "".join(chunks).splitlines()}
+
+
 def check_product_package(edition):
     """Bind release metadata to the corresponding installed Android package."""
     path = Path("app/build.gradle.kts")
     if any(parent.is_symlink() for parent in (path, *path.parents)) or not path.is_file():
         raise Invalid("Android product build configuration must be a regular file")
-    build = path.read_text(encoding="utf-8")
-    if not re.search(r'val basePackageId = "im\.collie\.app"', build):
+    lines = kotlin_configuration_lines(path.read_text(encoding="utf-8"))
+    if 'val basePackageId = "im.collie.app"' not in lines:
         raise Invalid("Stable package identity is missing from the Android build configuration")
     if edition == "beta":
-        beta_contract = (
-            r'applicationIdSuffix = "\.trailblazer"',
-            r'val betaReleaseVersionCode = providers\.gradleProperty\("betaReleaseVersionCode"\)',
-            r'val betaReleaseVersionName = providers\.gradleProperty\("betaReleaseVersionName"\)',
-            r'output\.versionCode\.set\(betaReleaseVersionCode\.get\(\)\.toInt\(\)\)',
-            r'output\.versionName\.set\(betaReleaseVersionName\.get\(\)\)',
-        )
-        if any(not re.search(pattern, build) for pattern in beta_contract):
+        beta_contract = {
+            'applicationIdSuffix = ".trailblazer"',
+            'val betaReleaseVersionCode = providers.gradleProperty("betaReleaseVersionCode")',
+            'val betaReleaseVersionName = providers.gradleProperty("betaReleaseVersionName")',
+            'output.versionCode.set(betaReleaseVersionCode.get().toInt())',
+            'output.versionName.set(betaReleaseVersionName.get())',
+        }
+        if not beta_contract.issubset(lines):
             raise Invalid("Beta package and version must use the independent TrailBlazer build configuration")
 
 

@@ -19,3 +19,8 @@ python3 tooling/collie-log/stamp.py 8.36.3-3-beta1 --edition beta --version-code
 Review and commit the generated Beta release record, changelog, and version properties. The normal build keeps preparation optional. To require it locally, run `COLLIE_BUILD_EDITION=beta COLLIE_REQUIRE_RELEASE_PREP=1 tooling/reproducible-builds/build-release.sh <output-dir>`; the verifier must report a prepared Beta build before Gradle receives `-PcollieReleasePrepared=true`.
 
 The workflow enables that strict check only for a direct `workflow_dispatch` on `0cwa/collieim-android` main, with edition `beta`, the caller workflow matching the running workflow, and the requested `ref` exactly equal to the dispatch SHA. Dispatch `Build unsigned release APK` on `main`, choose `beta`, and enter the full SHA of the prepared commit. Other workflow calls and ordinary Stable builds do not opt into strict preparation.
+
+If unrelated changes land on `main` before the preparation merges, recreate the
+preparation from the updated clean `main` with the pending fragments still present.
+Dispatch the new prepared commit after it lands. Changing the dispatch SHA alone
+leaves the recorded preparation source unchanged.

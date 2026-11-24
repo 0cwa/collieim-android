@@ -13,6 +13,7 @@ Fastlane changelog is a 500-byte ASCII draft; trim that draft before committing 
 import argparse
 from collections import Counter
 import datetime
+import fcntl
 import os
 from pathlib import Path
 import re
@@ -183,9 +184,17 @@ def prepare(version, code, date, edition, *, highlights=None, tag=None):
         raise ValueError("version code must be between 1 and 2100000000")
     os.environ["GIT_NO_REPLACE_OBJECTS"] = "1"
     provenance = runpy.run_path(str(ROOT / "tooling/reproducible-builds/verify-release-prep.py"))
+    git_dir = Path(provenance["git"]("rev-parse", "--absolute-git-dir"))
+    with (git_dir / "collie-release-prep.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        install_preparation(provenance, header, version, code, edition)
+
+
+def install_preparation(provenance, header, version, code, edition):
     _, other_properties = provenance["configuration"](edition)
     provenance["check_history"]()
     provenance["check_clean_checkout"]()
+    provenance["check_product_package"](edition)
     git = provenance["git"]
     source = git("rev-parse", "--verify", "HEAD^{commit}")
     timestamp = git("show", "-s", "--format=%ct", source)

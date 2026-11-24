@@ -208,6 +208,7 @@ class ArchiveUploadProgressTest {
 
   @Test
   fun `onAttachmentSectionStarted - sets upload media state with total bytes`() {
+    hasPendingArchiveUpload = true
     pendingArchiveUploadBytes = 7000
 
     ArchiveUploadProgress.onAttachmentSectionStarted(totalAttachmentBytes = 7000)
@@ -235,6 +236,7 @@ class ArchiveUploadProgressTest {
   fun `onMessageBackupFinishedEarly - with pending media reverts to upload media`() {
     backsUpMedia = true
     every { AppDependencies.jobManager.areQueuesEmpty(any()) } returns false
+    hasPendingArchiveUpload = true
     pendingArchiveUploadBytes = 2000
     setUploadProgress(ArchiveUploadProgressState(state = State.UploadBackupFile, backupFileTotalBytes = 100))
 
@@ -262,6 +264,7 @@ class ArchiveUploadProgressTest {
   fun `onMainBackupFileUploadFailure - with pending media reverts to upload media`() {
     backsUpMedia = true
     every { AppDependencies.jobManager.areQueuesEmpty(any()) } returns false
+    hasPendingArchiveUpload = true
     pendingArchiveUploadBytes = 3000
     setUploadProgress(ArchiveUploadProgressState(state = State.UploadBackupFile, backupFileTotalBytes = 100))
 

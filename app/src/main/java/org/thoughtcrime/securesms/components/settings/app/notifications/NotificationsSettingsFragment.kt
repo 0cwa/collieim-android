@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -52,6 +53,7 @@ import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrS
 import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
 import org.signal.core.util.eventbus.ThreadMode
@@ -100,7 +102,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    callbacks = DefaultNotificationsSettingsCallbacks(requireActivity(), viewModel, appSettingsRouter, DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this))
+    callbacks = DefaultNotificationsSettingsCallbacks(requireActivity(), viewModel, appSettingsRouter, DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this), viewLifecycleOwner)
 
     viewLifecycleOwner.lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -157,7 +159,8 @@ open class DefaultNotificationsSettingsCallbacks(
   val activity: FragmentActivity,
   val viewModel: NotificationsSettingsViewModel,
   val appSettingsRouter: AppSettingsRouter,
-  activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity)
+  activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity),
+  private val owner: LifecycleOwner = activity,
 ) : NotificationsSettingsCallbacks {
 
   companion object {
@@ -165,7 +168,6 @@ open class DefaultNotificationsSettingsCallbacks(
   }
 
   private var scanDisclosure: RelayDisclosure.Snapshot? = null
-  private var setupAuthorization: RelayDisclosure.RefreshAuthorization? = null
 
   interface ActivityResultRegisterer {
     fun <I, O> registerForActivityResult(
@@ -210,23 +212,9 @@ open class DefaultNotificationsSettingsCallbacks(
   private val linkDefaultDistributorLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
     callback = { success ->
-      val authorization = setupAuthorization
-      setupAuthorization = null
+      val authorization = viewModel.pendingMollySocketSetup
       if (authorization != null) {
-        activity.lifecycleScope.launch {
-          activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
-            // Activity results may arrive before onResume. Check authorization after that lifecycle wait.
-            viewModel.completeMollySocketSetup(authorization) {
-              if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                if (success != true) {
-                  // Preserve fallback for distributors that do not implement the default-picker contract.
-                  viewModel.selectFirstDistributor()
-                }
-                onNavigationUnifiedPushSettings()
-              }
-            }
-          }
-        }
+        viewModel.pendingMollySocketResult.value = NotificationsSettingsViewModel.PendingMollySocketResult(authorization, success)
       }
     }
   )
@@ -242,8 +230,8 @@ open class DefaultNotificationsSettingsCallbacks(
         } else {
           RelayDisclosureDialogs.showRelay(activity, mollySocket) {
             viewModel.initializeMollySocket(mollySocket, disclosure) { authorization ->
-              if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                setupAuthorization = authorization
+              if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                viewModel.pendingMollySocketSetup = authorization
                 linkDefaultDistributorLauncher.launch()
               }
             }
@@ -253,6 +241,40 @@ open class DefaultNotificationsSettingsCallbacks(
     }
   )
 
+  init {
+    owner.lifecycleScope.launch {
+      owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.pendingMollySocketResult.collectLatest { pending ->
+          if (pending != null) resumePendingMollySocketResult(pending)
+        }
+      }
+    }
+  }
+
+  private suspend fun resumePendingMollySocketResult(pending: NotificationsSettingsViewModel.PendingMollySocketResult) {
+    while (viewModel.pendingMollySocketResult.value === pending) {
+      owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) { }
+      val completed = viewModel.completeMollySocketSetup(pending.authorization) {
+        if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult.value === pending) {
+          viewModel.pendingMollySocketResult.value = null
+          viewModel.pendingMollySocketSetup = null
+          if (pending.success != true) viewModel.selectFirstDistributor()
+          onNavigationUnifiedPushSettings()
+        }
+      }
+      if (completed && viewModel.pendingMollySocketResult.value !== pending) return
+      if (!completed && !viewModel.isCurrentMollySocketSetup(pending.authorization)) {
+        owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+          if (viewModel.pendingMollySocketResult.value === pending) {
+            viewModel.pendingMollySocketResult.value = null
+            viewModel.pendingMollySocketSetup = null
+            RelayDisclosureDialogs.showStaleAction(activity)
+          }
+        }
+        return
+      }
+    }
+  }
   override fun onTurnOnNotificationsActionClick() {
     TurnOnNotificationsBottomSheet.turnOnSystemNotificationsFragment(activity).show(activity.supportFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
   }

@@ -2,23 +2,34 @@ package org.thoughtcrime.securesms.components.settings.app.notifications
 
 import android.app.Application
 import android.os.Looper
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.model.MollySocket
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.MutableStateFlow
 import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,10 +55,15 @@ class MollyNotificationCallbacksTest {
   private val results = RecordingResults()
   private val disclosure = mockk<RelayDisclosure.Snapshot>()
   private val authorization = mockk<RelayDisclosure.RefreshAuthorization>()
+  private var pendingSetup: RelayDisclosure.RefreshAuthorization? = null
+  private val pendingResult = MutableStateFlow<NotificationsSettingsViewModel.PendingMollySocketResult?>(null)
   private val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org/relay")
 
   @Before
   fun setUp() {
+    every { viewModel.pendingMollySocketResult } returns pendingResult
+    every { viewModel.pendingMollySocketSetup } answers { pendingSetup }
+    every { viewModel.pendingMollySocketSetup = any() } answers { pendingSetup = firstArg() }
     controller = Robolectric.buildActivity(FragmentActivity::class.java)
     activity = controller.get()
     activity.setTheme(R.style.Theme_Molly_Material3_Light)
@@ -142,7 +158,7 @@ class MollyNotificationCallbacksTest {
     confirmScannedRelay()
     returnDistributorResult(true)
 
-    verify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
@@ -154,7 +170,7 @@ class MollyNotificationCallbacksTest {
     confirmScannedRelay()
     returnDistributorResult(false)
 
-    io.mockk.verifyOrder {
+    io.mockk.coVerifyOrder {
       viewModel.completeMollySocketSetup(refEq(authorization), any())
       viewModel.selectFirstDistributor()
       router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
@@ -178,7 +194,7 @@ class MollyNotificationCallbacksTest {
     confirmScannedRelay()
     returnDistributorResult(false)
 
-    verify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
   }
@@ -187,7 +203,7 @@ class MollyNotificationCallbacksTest {
   fun `distributor result without accepted setup is ignored`() {
     returnDistributorResult(false)
 
-    verify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
   }
@@ -200,14 +216,14 @@ class MollyNotificationCallbacksTest {
     controller.pause()
     returnDistributorResult(false)
 
-    verify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
 
     controller.resume()
     shadowOf(Looper.getMainLooper()).idle()
 
-    verify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
@@ -219,14 +235,14 @@ class MollyNotificationCallbacksTest {
     confirmScannedRelay()
     controller.pause()
     returnDistributorResult(false)
-    verify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
 
     // Represent an account or relay change while stopped: the current-context guard rejects on resume.
-    every { viewModel.completeMollySocketSetup(any(), any()) } returns Unit
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } returns false
     controller.resume()
     shadowOf(Looper.getMainLooper()).idle()
 
-    verify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
   }
@@ -239,9 +255,123 @@ class MollyNotificationCallbacksTest {
     returnDistributorResult(true)
     returnDistributorResult(false)
 
-    verify(exactly = 1) { viewModel.completeMollySocketSetup(any(), any()) }
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(any(), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `distributor result survives activity recreation and remains single use`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+
+    controller.recreate()
+    activity = controller.get()
+    val recreatedResults = RecordingResults()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, recreatedResults)
+    recreatedResults.distributorResult.onActivityResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+    recreatedResults.distributorResult.onActivityResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `delivered distributor result survives recreation before resume`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    controller.pause()
+    returnDistributorResult(false)
+
+    controller.recreate()
+    activity = controller.get()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults())
+    if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) controller.resume()
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `distributor result survives recreation while completion is suspended`() {
+    allowSelection()
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers { awaitCancellation() }
+    confirmScannedRelay()
+    returnDistributorResult(false)
+
+    controller.recreate()
+    activity = controller.get()
+    allowCompletion()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults())
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `replaced fragment view cannot consume a suspended distributor result`() {
+    controller.recreate()
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
+    val first = TestFragment()
+    activity.supportFragmentManager.beginTransaction().add(android.R.id.content, first).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, first.viewLifecycleOwner)
+    allowSelection()
+    var cancelled = false
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers {
+      try { awaitCancellation() } finally { cancelled = true }
+    }
+    confirmScannedRelay()
+    returnDistributorResult(false)
+
+    val second = TestFragment()
+    activity.supportFragmentManager.beginTransaction().replace(android.R.id.content, second).commitNow()
+    shadowOf(Looper.getMainLooper()).idle()
+    assertTrue("old view completion must be cancelled", cancelled)
+    assertNotNull("pending result must survive replacement", pendingResult.value)
+    allowCompletion()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), second.viewLifecycleOwner)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `picker result delivered after the same fragment recreates its view reaches the new owner`() {
+    controller.recreate()
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
+    val fragment = TestFragment()
+    activity.supportFragmentManager.beginTransaction().add(android.R.id.content, fragment).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, fragment.viewLifecycleOwner)
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+
+    activity.supportFragmentManager.beginTransaction().detach(fragment).commitNow()
+    activity.supportFragmentManager.beginTransaction().attach(fragment).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), fragment.viewLifecycleOwner)
+    results.distributorResult.onActivityResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  class TestFragment : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = FrameLayout(requireContext())
   }
 
   private fun returnDistributorResult(result: Boolean?) {
@@ -267,7 +397,7 @@ class MollyNotificationCallbacksTest {
   }
 
   private fun allowCompletion() {
-    every { viewModel.completeMollySocketSetup(any(), any()) } answers { secondArg<() -> Unit>()() }
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers { secondArg<() -> Unit>()(); true }
   }
 
   private fun verifyNoSelection() {

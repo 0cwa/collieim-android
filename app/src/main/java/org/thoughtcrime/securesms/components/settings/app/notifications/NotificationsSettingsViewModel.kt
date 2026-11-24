@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import android.widget.Toast
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
@@ -36,6 +37,11 @@ import org.thoughtcrime.securesms.recipients.RecipientForeverObserver
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 
 class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
+
+  // Kept only in memory across configuration changes; the result is still revalidated before use.
+  internal var pendingMollySocketSetup: RelayDisclosure.RefreshAuthorization? = null
+  internal data class PendingMollySocketResult(val authorization: RelayDisclosure.RefreshAuthorization, val success: Boolean?)
+  internal val pendingMollySocketResult = MutableStateFlow<PendingMollySocketResult?>(null)
 
   companion object {
     private val TAG = Log.tag(NotificationsSettingsViewModel::class)
@@ -171,27 +177,25 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
     onSelected: (RelayDisclosure.RefreshAuthorization) -> Unit,
   ) {
     viewModelScope.launch {
-      val authorization = withContext(SignalDispatchers.IO) {
-        RelayDisclosure.selectRelay(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH)
-      }
-      if (authorization == null || !RelayDisclosure.completeSelection(authorization) {
+      val completed = RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
           SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
           ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices(UnifiedPushRefreshJob(authorization))
           AppDependencies.resetNetwork(true)
           onSelected(authorization)
-        }) {
+        }
+      currentCoroutineContext().ensureActive()
+      if (!completed) {
         showStaleDisclosure()
       }
       refresh()
     }
   }
 
-  fun completeMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit) {
-    viewModelScope.launch {
-      if (!RelayDisclosure.completeSelection(authorization, onCurrent)) showStaleDisclosure()
-      refresh()
-    }
-  }
+  suspend fun completeMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit): Boolean =
+    RelayDisclosure.completeSelection(authorization, onCurrent)
+
+  fun isCurrentMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization): Boolean =
+    RelayDisclosure.isCurrentAuthorization(authorization)
 
   private fun showStaleDisclosure() {
     Toast.makeText(AppDependencies.application, R.string.UnifiedPushSettingsFragment__disclosure_stale, Toast.LENGTH_LONG).show()

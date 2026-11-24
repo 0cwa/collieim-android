@@ -152,7 +152,7 @@ class LinkDeviceFragment : ComposeFragment() {
 
     LaunchedEffect(state.dialogState) {
       when (state.dialogState) {
-        DialogState.None, is DialogState.SyncingFailed, DialogState.SyncingTimedOut -> {
+        DialogState.None, is DialogState.SyncingFailed, DialogState.SyncingTimedOut, is DialogState.DeviceUnlinked -> {
           Log.i(TAG, "Releasing wake lock for linked device")
           linkDeviceWakeLock.release()
         }
@@ -160,7 +160,7 @@ class LinkDeviceFragment : ComposeFragment() {
           Log.i(TAG, "Acquiring wake lock for linked device")
           linkDeviceWakeLock.acquire()
         }
-        DialogState.Unlinking, is DialogState.DeviceUnlinked, DialogState.ContactSupport, DialogState.LoadingDebugLog -> Unit
+        DialogState.Unlinking, DialogState.ContactSupport, DialogState.LoadingDebugLog -> Unit
       }
     }
 

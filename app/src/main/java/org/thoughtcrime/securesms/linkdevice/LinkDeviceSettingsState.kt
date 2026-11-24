@@ -11,6 +11,7 @@ data class LinkDeviceSettingsState(
   val devices: List<Device> = emptyList(),
   val deviceToRemove: Device? = null,
   val dialogState: DialogState = DialogState.None,
+  val pendingDeviceUnlinked: DialogState.DeviceUnlinked? = null,
   val deviceListLoading: Boolean = false,
   val oneTimeEvent: OneTimeEvent = OneTimeEvent.None,
   val qrCodeState: QrCodeState = QrCodeState.NONE,

@@ -8,8 +8,11 @@ package org.thoughtcrime.securesms.linkdevice
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
@@ -39,12 +42,18 @@ import org.signal.core.models.ServiceId.PNI
 import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
+import org.thoughtcrime.securesms.jobs.NewLinkedDeviceNotificationJob
 import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository.LinkDeviceResult
+import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository.LinkUploadArchiveResult
+import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository.getPlaintextDevice
 import org.thoughtcrime.securesms.linkdevice.LinkDeviceSettingsState.DialogState
+import org.thoughtcrime.securesms.linkdevice.LinkDeviceSettingsState.OneTimeEvent
 import org.thoughtcrime.securesms.linkdevice.LinkDeviceSettingsState.QrCodeState
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
+import org.whispersystems.signalservice.api.link.WaitForLinkedDeviceResponse
+import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -298,6 +307,153 @@ class LinkDeviceViewModelTest {
 
     viewModel.stopExistingPolling()
     completeRequest()
+  }
+
+  @Test
+  fun `missing linked device during linking is retained and shown once linking closes`() {
+    var storedId = 7
+    var storedCreatedAt = 1_700_000_000_000L
+    every { signalStore.misc.newLinkedDeviceId } answers { storedId }
+    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedId = firstArg() }
+    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
+    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+    coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()
+
+    viewModel.onQrCodeScanned(CODE)
+    viewModel.addDevice(shouldSync = false)
+    assertTrue("The approved request should start", requestStarted.await(5, TimeUnit.SECONDS))
+
+    viewModel.initialize()
+    runBlocking {
+      withTimeout(5_000) { viewModel.state.first { !it.deviceListLoading } }
+    }
+
+    assertEquals(DialogState.Linking, viewModel.state.value.dialogState)
+    assertEquals(DialogState.DeviceUnlinked(1_700_000_000_000L), viewModel.state.value.pendingDeviceUnlinked)
+    assertEquals(0, storedId)
+    assertEquals(0L, storedCreatedAt)
+
+    finishRequest.countDown()
+    runBlocking {
+      withTimeout(5_000) {
+        viewModel.state.first {
+          it.linkDeviceResult == LinkDeviceResult.NoDevice &&
+            it.dialogState == DialogState.DeviceUnlinked(1_700_000_000_000L)
+        }
+      }
+    }
+    assertNull(viewModel.state.value.pendingDeviceUnlinked)
+
+    viewModel.onDialogDismissed()
+    assertEquals(DialogState.None, viewModel.state.value.dialogState)
+    viewModel.stopExistingPolling()
+  }
+
+  @Test
+  fun `missing linked device during sync failure is retained and shown when failure is ignored`() {
+    val waitResult = WaitForLinkedDeviceResponse(
+      id = 9,
+      name = null,
+      lastSeen = 1_700_000_100_000L,
+      registrationId = 99,
+      createdAtCiphertext = null
+    )
+    var storedId = 0
+    var storedCreatedAt = 0L
+    every { signalStore.misc.newLinkedDeviceId } answers { storedId }
+    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedId = firstArg() }
+    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
+    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+
+    mockkObject(NewLinkedDeviceNotificationJob)
+    try {
+      every { NewLinkedDeviceNotificationJob.enqueue(any(), any()) } just Runs
+      every { LinkDeviceRepository.addDevice(any(), any()) } returns LinkDeviceResult.Success("token")
+      coEvery { LinkDeviceRepository.waitForDeviceToBeLinked(any(), any()) } returns waitResult
+      every { with(LinkDeviceRepository) { waitResult.getPlaintextDevice() } } returns Device(
+        id = 9,
+        name = "Desktop",
+        createdMillis = 1_700_000_100_000L,
+        lastSeenMillis = 1_700_000_100_000L,
+        registrationId = 99
+      )
+      coEvery { LinkDeviceRepository.createAndUploadArchive(any(), any(), any(), any()) } returns
+        LinkUploadArchiveResult.BackupCreationFailure(IOException("backup failed"))
+      every { LinkDeviceRepository.sendTransferArchiveError(any(), any(), any()) } just Runs
+      coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()
+
+      viewModel.onQrCodeScanned(SYNC_CODE)
+      viewModel.addDevice(shouldSync = true)
+      runBlocking {
+        withTimeout(5_000) { viewModel.state.first { it.dialogState is DialogState.SyncingFailed } }
+      }
+
+      storedId = 7
+      storedCreatedAt = 1_700_000_000_000L
+      viewModel.initialize()
+      runBlocking {
+        withTimeout(5_000) { viewModel.state.first { !it.deviceListLoading } }
+      }
+
+      assertTrue(viewModel.state.value.dialogState is DialogState.SyncingFailed)
+      assertEquals(DialogState.DeviceUnlinked(1_700_000_000_000L), viewModel.state.value.pendingDeviceUnlinked)
+
+      viewModel.onSyncErrorIgnored()
+      runBlocking {
+        withTimeout(5_000) { viewModel.state.first { it.dialogState == DialogState.DeviceUnlinked(1_700_000_000_000L) } }
+      }
+      assertNull(viewModel.state.value.pendingDeviceUnlinked)
+
+      viewModel.onDialogDismissed()
+      assertEquals(DialogState.None, viewModel.state.value.dialogState)
+      viewModel.stopExistingPolling()
+    } finally {
+      unmockkObject(NewLinkedDeviceNotificationJob)
+    }
+  }
+
+  @Test
+  fun `retry launching scanner keeps pending warning off until returning to device list`() {
+    var storedId = 7
+    var storedCreatedAt = 1_700_000_000_000L
+    every { signalStore.misc.newLinkedDeviceId } answers { storedId }
+    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedId = firstArg() }
+    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
+    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+    every { LinkDeviceRepository.addDevice(any(), any()) } returns LinkDeviceResult.Success("token")
+    coEvery { LinkDeviceRepository.waitForDeviceToBeLinked(any(), any()) } returns null
+    coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()
+
+    viewModel.onQrCodeScanned(SYNC_CODE)
+    viewModel.addDevice(shouldSync = true)
+    runBlocking {
+      withTimeout(5_000) { viewModel.state.first { it.dialogState == DialogState.SyncingTimedOut } }
+    }
+
+    viewModel.initialize()
+    runBlocking {
+      withTimeout(5_000) { viewModel.state.first { !it.deviceListLoading } }
+    }
+    assertEquals(DialogState.SyncingTimedOut, viewModel.state.value.dialogState)
+    assertEquals(DialogState.DeviceUnlinked(1_700_000_000_000L), viewModel.state.value.pendingDeviceUnlinked)
+
+    viewModel.onSyncErrorRetryRequested()
+    runBlocking {
+      withTimeout(5_000) { viewModel.state.first { it.oneTimeEvent == OneTimeEvent.LaunchQrCodeScanner } }
+    }
+    assertEquals(DialogState.None, viewModel.state.value.dialogState)
+    assertEquals(DialogState.DeviceUnlinked(1_700_000_000_000L), viewModel.state.value.pendingDeviceUnlinked)
+
+    viewModel.onQrCodeScanned(CODE)
+    assertEquals(QrCodeState.VALID_WITHOUT_SYNC, viewModel.state.value.qrCodeState)
+    viewModel.onQrCodeDismissed()
+
+    viewModel.initialize()
+    runBlocking {
+      withTimeout(5_000) { viewModel.state.first { it.dialogState == DialogState.DeviceUnlinked(1_700_000_000_000L) } }
+    }
+    assertNull(viewModel.state.value.pendingDeviceUnlinked)
+    viewModel.stopExistingPolling()
   }
 
   private fun assertNoProvisioning() {

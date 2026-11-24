@@ -106,9 +106,12 @@ fun LinkDeviceManualEntryScreen(
             val clip = clipboard.primaryClip
             // Only read plain text after the user asks to paste; do not open clipboard URIs.
             val text = if (clip != null && clip.itemCount > 0) clip.getItemAt(0).text?.toString() else null
-            clipboardEmpty = text.isNullOrBlank()
-            if (!text.isNullOrBlank()) {
+            if (text.isNullOrBlank()) {
+              linkingCode = ""
+              clipboardEmpty = true
+            } else {
               linkingCode = text
+              clipboardEmpty = false
             }
           }
         ) {

@@ -136,6 +136,9 @@ class CameraScreenViewModel : ViewModel() {
   /** Hides the shutter after a capture. Each capture restarts it, so a burst keeps the shutter up for its own full length. */
   private var shutterJob: Job? = null
 
+  /** Retries initial camera binding when the hardware HAL has not finished releasing a previous session. */
+  private var bindRetryJob: Job? = null
+
   /** Hands photos over one at a time, in the order they were taken, however long each takes to process. */
   private val photoDeliveryLock = Mutex()
 
@@ -226,6 +229,9 @@ class CameraScreenViewModel : ViewModel() {
       is CameraScreenEvents.SetDeviceRotation -> {
         handleSetDeviceRotation(event.rotation, event.isSmallScreen)
       }
+      is CameraScreenEvents.UnbindCamera -> {
+        handleUnbindCameraEvent()
+      }
     }
   }
 
@@ -243,6 +249,7 @@ class CameraScreenViewModel : ViewModel() {
       is CameraScreenEvents.NextFlashMode -> Log.d(TAG, "[Event] NextFlashMode")
       is CameraScreenEvents.ClearCaptureError -> Log.d(TAG, "[Event] ClearCaptureError")
       is CameraScreenEvents.SetDeviceRotation -> Log.d(TAG, "[Event] SetDeviceRotation(rotation=${event.rotation}, isSmallScreen=${event.isSmallScreen})")
+      is CameraScreenEvents.UnbindCamera -> Log.d(TAG, "[Event] UnbindCamera")
     }
   }
 
@@ -523,6 +530,8 @@ class CameraScreenViewModel : ViewModel() {
 
   override fun onCleared() {
     super.onCleared()
+    bindRetryJob?.cancel()
+    bindRetryJob = null
     stopRecording()
     observedZoomState?.removeObserver(zoomRangeObserver)
     observedZoomState = null
@@ -532,6 +541,9 @@ class CameraScreenViewModel : ViewModel() {
     state: CameraScreenState,
     event: CameraScreenEvents.BindCamera
   ) {
+    bindRetryJob?.cancel()
+    bindRetryJob = null
+
     if (tryBindCamera(state, event)) {
       return
     }
@@ -539,7 +551,7 @@ class CameraScreenViewModel : ViewModel() {
     // Initial binding failed. On some devices (e.g. Fairphone 6), the camera HAL may not
     // release resources promptly after a previous session ends, causing CameraX to report
     // zero available cameras. Retry with exponential backoff to give the hardware time to recover.
-    viewModelScope.launch {
+    bindRetryJob = viewModelScope.launch {
       for (retry in 1..CAMERA_BIND_MAX_RETRIES) {
         Log.d(TAG, "Retrying camera binding (retry $retry of $CAMERA_BIND_MAX_RETRIES) after $CAMERA_BIND_RETRY_DELAY_MS ms")
         delay(CAMERA_BIND_RETRY_DELAY_MS)
@@ -552,6 +564,38 @@ class CameraScreenViewModel : ViewModel() {
 
       Log.e(TAG, "All camera binding retries exhausted")
     }
+  }
+
+  private fun handleUnbindCameraEvent() {
+    bindRetryJob?.cancel()
+    bindRetryJob = null
+    stopRecording()
+    hideSelfieFlash()
+    zoomAnimation?.cancel()
+    zoomAnimation = null
+    observedZoomState?.removeObserver(zoomRangeObserver)
+    observedZoomState = null
+
+    lastSuccessfulAttempt?.imageAnalysis?.clearAnalyzer()
+    val boundUseCases = listOfNotNull(
+      preview,
+      imageCapture,
+      videoCapture,
+      lastSuccessfulAttempt?.imageAnalysis
+    ).distinct().toTypedArray()
+
+    if (boundUseCases.isNotEmpty()) {
+      cameraProvider?.unbind(*boundUseCases)
+    }
+
+    camera = null
+    lifecycleOwner = null
+    cameraProvider = null
+    lastSuccessfulAttempt = null
+    preview = null
+    imageCapture = null
+    videoCapture = null
+    surfaceProvider = null
   }
 
   /**

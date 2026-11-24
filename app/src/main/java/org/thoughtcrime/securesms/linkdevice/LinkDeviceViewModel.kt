@@ -10,6 +10,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,19 +62,41 @@ class LinkDeviceViewModel : ViewModel() {
     val (newLinkedDeviceId, newLinkedDeviceCreatedAt) = SignalStore.misc.takeNewLinkedDeviceWarning()
 
     val hasNewLinkedDevice = newLinkedDeviceId > 0
+    val warning = if (hasNewLinkedDevice) {
+      val isMissingNewLinkedDevice = devices.none { device -> device.id == newLinkedDeviceId && device.createdMillis == newLinkedDeviceCreatedAt }
+      if (isMissingNewLinkedDevice) DialogState.DeviceUnlinked(newLinkedDeviceCreatedAt) else null
+    } else {
+      null
+    }
+
+    // Returning from the linking screen reloads this list while provisioning may
+    // still be running. Keep active dialogs intact and show unlinked warnings once they close.
+    _state.update { state ->
+      when {
+        warning != null && state.dialogState == DialogState.None -> state.copy(dialogState = warning, pendingDeviceUnlinked = null)
+        warning != null && state.dialogState == warning -> state
+        warning != null -> state.copy(pendingDeviceUnlinked = warning)
+        state.dialogState == DialogState.None && state.pendingDeviceUnlinked != null -> state.copy(dialogState = state.pendingDeviceUnlinked, pendingDeviceUnlinked = null)
+        else -> state
+      }
+    }
+
     if (hasNewLinkedDevice) {
       ServiceUtil.getNotificationManager(AppDependencies.application).cancel(NotificationIds.NEW_LINKED_DEVICE)
     }
+  }
 
-    val isMissingNewLinkedDevice = devices.none { device -> device.id == newLinkedDeviceId && device.createdMillis == newLinkedDeviceCreatedAt }
-
-    val dialogState = if (hasNewLinkedDevice && isMissingNewLinkedDevice) {
-      DialogState.DeviceUnlinked(newLinkedDeviceCreatedAt)
+  private fun LinkDeviceSettingsState.closeDialog(
+    deliverPendingUnlinked: Boolean = true
+  ): LinkDeviceSettingsState {
+    return if (deliverPendingUnlinked && pendingDeviceUnlinked != null) {
+      copy(
+        dialogState = pendingDeviceUnlinked,
+        pendingDeviceUnlinked = null
+      )
     } else {
-      DialogState.None
+      copy(dialogState = DialogState.None)
     }
-
-    _state.update { it.copy(dialogState = dialogState) }
   }
 
   fun setDeviceToRemove(device: Device?) {
@@ -91,16 +114,14 @@ class LinkDeviceViewModel : ViewModel() {
       if (success) {
         loadDevices()
         _state.update {
-          it.copy(
+          it.closeDialog().copy(
             oneTimeEvent = OneTimeEvent.ToastUnlinked(device.name ?: ""),
-            dialogState = DialogState.None,
             deviceToRemove = null
           )
         }
       } else {
         _state.update {
-          it.copy(
-            dialogState = DialogState.None,
+          it.closeDialog().copy(
             deviceToRemove = null
           )
         }
@@ -160,17 +181,17 @@ class LinkDeviceViewModel : ViewModel() {
 
   fun requestLinkWithoutQrCode(value: Boolean) {
     _state.update {
-      it.copy(linkWithoutQrCode = value)
+      it.copy(linkWithoutQrCode = value, qrCodeState = QrCodeState.NONE, linkUri = null)
     }
   }
 
   fun onQrCodeScanned(url: String) {
-    if (_state.value.qrCodeState != QrCodeState.NONE) {
+    if (_state.value.qrCodeState != QrCodeState.NONE || !_state.value.canLinkDevices || _state.value.dialogState != DialogState.None) {
       return
     }
 
-    val uri = Uri.parse(url)
-    if (LinkDeviceRepository.isValidQr(uri)) {
+    val uri = LinkDeviceRepository.parseLinkingCode(url)
+    if (uri != null) {
       val capabilities = uri.getCapabilities()
       val qrCodeState = when {
         Capability.Numberless !in capabilities && SignalStore.account.pni == null -> QrCodeState.OUTDATED_DEVICE
@@ -187,7 +208,7 @@ class LinkDeviceViewModel : ViewModel() {
       _state.update {
         it.copy(
           qrCodeState = QrCodeState.INVALID,
-          linkUri = uri
+          linkUri = null
         )
       }
     }
@@ -196,33 +217,44 @@ class LinkDeviceViewModel : ViewModel() {
   fun onQrCodeDismissed() {
     _state.update {
       it.copy(
-        qrCodeState = QrCodeState.NONE
+        qrCodeState = QrCodeState.NONE,
+        linkUri = null
       )
     }
   }
 
   fun onDialogDismissed() {
-    _state.update { it.copy(dialogState = DialogState.None) }
+    _state.update { it.closeDialog() }
   }
 
-  fun addDevice(shouldSync: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-    val linkUri: Uri = _state.value.linkUri!!
-
-    _state.update {
-      it.copy(
-        qrCodeState = QrCodeState.NONE,
-        linkUri = null,
-        dialogState = DialogState.Linking,
-        shouldCancelArchiveUpload = false
-      )
+  fun addDevice(shouldSync: Boolean) {
+    fun canLink(state: LinkDeviceSettingsState): Boolean {
+      return state.linkUri != null && state.canLinkDevices && state.dialogState == DialogState.None &&
+        (state.qrCodeState == QrCodeState.VALID_WITH_SYNC || (!shouldSync && state.qrCodeState == QrCodeState.VALID_WITHOUT_SYNC))
     }
 
-    if (shouldSync) {
-      Log.i(TAG, "Adding device with sync.")
-      addDeviceWithSync(linkUri)
-    } else {
-      Log.i(TAG, "Adding device without sync. (backup5: ${Capability.LinkAndSync in linkUri.getCapabilities()})")
-      addDeviceWithoutSync(linkUri)
+    // Consume the approved code before scheduling IO or dismissing its sheet.
+    // A second tap or a sheet-dismiss callback must not reuse or clear this operation's code.
+    val pending = _state.getAndUpdate {
+      if (canLink(it)) {
+        it.copy(qrCodeState = QrCodeState.NONE, linkUri = null, dialogState = DialogState.Linking, shouldCancelArchiveUpload = false)
+      } else {
+        it
+      }
+    }
+    if (!canLink(pending)) {
+      return
+    }
+    val linkUri = pending.linkUri ?: return
+
+    viewModelScope.launch(Dispatchers.IO) {
+      if (shouldSync) {
+        Log.i(TAG, "Adding device with sync.")
+        addDeviceWithSync(linkUri)
+      } else {
+        Log.i(TAG, "Adding device without sync. (backup5: ${Capability.LinkAndSync in linkUri.getCapabilities()})")
+        addDeviceWithoutSync(linkUri)
+      }
     }
   }
 
@@ -276,9 +308,7 @@ class LinkDeviceViewModel : ViewModel() {
     if (result !is LinkDeviceResult.Success) {
       Log.w(TAG, "[addDeviceWithSync] Unable to link device $result", if (result is LinkDeviceResult.NetworkError) result.error else null)
       _state.update {
-        it.copy(
-          dialogState = DialogState.None
-        )
+        it.closeDialog()
       }
       return
     }
@@ -320,9 +350,8 @@ class LinkDeviceViewModel : ViewModel() {
       LinkDeviceRepository.LinkUploadArchiveResult.Success -> {
         Log.i(TAG, "[addDeviceWithSync] Successfully uploaded archive.")
         _state.update {
-          it.copy(
-            oneTimeEvent = OneTimeEvent.ToastLinked(waitResult.getPlaintextDevice().name ?: ""),
-            dialogState = DialogState.None
+          it.closeDialog().copy(
+            oneTimeEvent = OneTimeEvent.ToastLinked(waitResult.getPlaintextDevice().name ?: "")
           )
         }
         loadDevices()
@@ -367,9 +396,11 @@ class LinkDeviceViewModel : ViewModel() {
       LinkDeviceRepository.LinkUploadArchiveResult.BackupCreationCancelled -> {
         Log.i(TAG, "[addDeviceWithoutSync] Cancelling archive upload")
         _state.update {
-          it.copy(
-            dialogState = DialogState.None
-          )
+          if (it.dialogState is DialogState.SyncingMessages) {
+            it.closeDialog()
+          } else {
+            it
+          }
         }
       }
     }
@@ -389,9 +420,7 @@ class LinkDeviceViewModel : ViewModel() {
     if (result !is LinkDeviceResult.Success) {
       Log.w(TAG, "Unable to link device $result", if (result is LinkDeviceResult.NetworkError) result.error else null)
       _state.update {
-        it.copy(
-          dialogState = DialogState.None
-        )
+        it.closeDialog()
       }
       return
     }
@@ -410,9 +439,8 @@ class LinkDeviceViewModel : ViewModel() {
     }
 
     _state.update {
-      it.copy(
-        linkDeviceResult = LinkDeviceResult.None,
-        dialogState = DialogState.None
+      it.closeDialog().copy(
+        linkDeviceResult = LinkDeviceResult.None
       )
     }
 
@@ -443,9 +471,8 @@ class LinkDeviceViewModel : ViewModel() {
     loadDevices()
 
     _state.update {
-      it.copy(
-        linkDeviceResult = LinkDeviceResult.None,
-        dialogState = DialogState.None
+      it.closeDialog().copy(
+        linkDeviceResult = LinkDeviceResult.None
       )
     }
   }
@@ -477,9 +504,8 @@ class LinkDeviceViewModel : ViewModel() {
     val shouldLaunchQrScanner = !(dialogState is DialogState.SyncingFailed && dialogState.syncFailType != LinkDeviceSettingsState.SyncFailType.NOT_ENOUGH_SPACE)
 
     _state.update {
-      it.copy(
+      it.closeDialog(deliverPendingUnlinked = !shouldLaunchQrScanner).copy(
         linkDeviceResult = LinkDeviceResult.None,
-        dialogState = DialogState.None,
         oneTimeEvent = if (shouldLaunchQrScanner) OneTimeEvent.LaunchQrCodeScanner else OneTimeEvent.None
       )
     }
@@ -496,9 +522,8 @@ class LinkDeviceViewModel : ViewModel() {
       if (success) {
         Log.i(TAG, "Removing device after cancelling sync")
         _state.update {
-          it.copy(
+          it.closeDialog().copy(
             oneTimeEvent = OneTimeEvent.SnackbarLinkCancelled,
-            dialogState = DialogState.None,
             shouldCancelArchiveUpload = true
           )
         }
@@ -545,18 +570,16 @@ class LinkDeviceViewModel : ViewModel() {
         submitDebugLogRepository.buildAndSubmitLog { result ->
           val url = result.getOrNull()
           _state.update {
-            it.copy(
+            it.closeDialog().copy(
               debugLogUrl = url,
-              oneTimeEvent = OneTimeEvent.LaunchEmail,
-              dialogState = DialogState.None
+              oneTimeEvent = OneTimeEvent.LaunchEmail
             )
           }
         }
       } else {
         _state.update {
-          it.copy(
-            oneTimeEvent = OneTimeEvent.LaunchEmail,
-            dialogState = DialogState.None
+          it.closeDialog().copy(
+            oneTimeEvent = OneTimeEvent.LaunchEmail
           )
         }
       }

@@ -500,6 +500,14 @@
 
     <!-- Title for the screen that shows a QR code the user scans with their existing primary device to link this device as a secondary -->
     <string name="LinkAccountScreen__scan_this_code_to_link_your_account">Scan this code to link your account</string>
+    <!-- Title for linking this device with either a QR code or a copied linking code. -->
+    <string name="LinkAccountScreen__link_this_device">Link this device</string>
+    <!-- Copies the same temporary linking information shown in the QR code. -->
+    <string name="LinkAccountScreen__copy_linking_code">Copy linking code</string>
+    <string name="LinkAccountScreen__code_copied">Code copied</string>
+    <!-- The quoted labels match the primary phone's existing Linked devices flow. -->
+    <string name="LinkAccountScreen__paste_linking_code_instructions">To paste instead of scanning, open Collie Settings on your primary phone, then “Linked devices” → “Link a new device” → “Link with code”.</string>
+    <string name="LinkAccountScreen__keep_linking_code_open">Keep this screen open. Codes expire, so copy a fresh one if needed. Only use this code to link your own device.</string>
     <!-- Step in the link-account instructions: open Signal on the user\'s existing phone -->
     <string mollyify="true" name="LinkAccountScreen__open_signal_on_your_phone">Open Collie on your phone</string>
     <!-- Step in the link-account instructions: tap profile picture to open Signal Settings -->

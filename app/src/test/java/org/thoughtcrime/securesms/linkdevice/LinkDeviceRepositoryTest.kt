@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.linkdevice
 
 import android.app.Application
+import android.net.Uri
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -37,12 +38,12 @@ class LinkDeviceRepositoryTest {
 
   private val attachments = mockk<AttachmentApi>()
   private val cdn = mockk<CdnService>()
+  private val signalNetwork = mockk<SignalNetwork>()
 
   @Before
   fun setUp() {
     Log.initialize(SystemOutLogger())
 
-    val signalNetwork = mockk<SignalNetwork>()
     every { signalNetwork.attachmentApi } returns attachments
     every { signalNetwork.cdnService } returns cdn
 
@@ -52,6 +53,14 @@ class LinkDeviceRepositoryTest {
   @After
   fun tearDown() {
     SignalNetwork.init(SignalNetwork())
+  }
+
+  @Test
+  fun `invalid linking codes do not request a verification code`() {
+    val result = LinkDeviceRepository.addDevice(Uri.parse("sgnl://linkdevice?uuid=test&pub_key=invalid"), null)
+
+    assertEquals(LinkDeviceRepository.LinkDeviceResult.BadCode, result)
+    verify(exactly = 0) { signalNetwork.linkDeviceApi }
   }
 
   @Test

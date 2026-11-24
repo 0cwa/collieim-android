@@ -1,21 +1,21 @@
 package org.thoughtcrime.securesms.linkdevice
 
+import android.content.ClipboardManager
 import android.content.Context
-import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,48 +23,40 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository.LinkDeviceResult
 
 @Composable
 fun LinkDeviceManualEntryScreen(
   onLinkNewDeviceWithUrl: (String) -> Unit,
-  linkDeviceResult: LinkDeviceResult,
-  onLinkDeviceSuccess: () -> Unit,
-  onLinkDeviceFailure: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val context = LocalContext.current
-
-  LaunchedEffect(linkDeviceResult) {
-    when (linkDeviceResult) {
-      is LinkDeviceResult.Success -> onLinkDeviceSuccess()
-      is LinkDeviceResult.NoDevice -> makeToast(context, R.string.DeviceProvisioningActivity_content_progress_no_device, onLinkDeviceFailure)
-      is LinkDeviceResult.NetworkError -> makeToast(context, R.string.DeviceProvisioningActivity_content_progress_network_error, onLinkDeviceFailure)
-      is LinkDeviceResult.KeyError -> makeToast(context, R.string.DeviceProvisioningActivity_content_progress_key_error, onLinkDeviceFailure)
-      is LinkDeviceResult.LimitExceeded -> makeToast(context, R.string.DeviceProvisioningActivity_sorry_you_have_too_many_devices_linked_already, onLinkDeviceFailure)
-      is LinkDeviceResult.BadCode -> makeToast(context, R.string.DeviceActivity_sorry_this_is_not_a_valid_device_link_qr_code, onLinkDeviceFailure)
-      is LinkDeviceResult.None -> Unit
+  val keyboard = LocalSoftwareKeyboardController.current
+  // Provisioning codes are temporary: never save them in instance state.
+  var linkingCode by remember { mutableStateOf("") }
+  var clipboardEmpty by remember { mutableStateOf(false) }
+  val parsedCode = remember(linkingCode) { LinkDeviceRepository.parseLinkingCode(linkingCode) }
+  val invalidCode = linkingCode.isNotBlank() && parsedCode == null
+  val onContinue: () -> Unit = {
+    parsedCode?.let {
+      keyboard?.hide()
+      onLinkNewDeviceWithUrl(it.toString())
     }
   }
-
-  var qrLink by remember { mutableStateOf("") }
-  var isValid by remember { mutableStateOf(false) }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier
-      .fillMaxWidth()
-      .fillMaxHeight()
+      .fillMaxSize()
+      .imePadding()
   ) {
     LazyColumn(
       modifier = Modifier
@@ -73,83 +65,92 @@ fun LinkDeviceManualEntryScreen(
     ) {
       item {
         Text(
-          text = stringResource(id = R.string.enter_device_link_dialog__if_your_phone_cant_scan_the_qr_code_you_can_manually_enter_the_link_encoded_in_the_qr_code),
-          style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-          ),
+          text = stringResource(R.string.LinkDeviceCode__paste_instructions),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.padding(vertical = 12.dp)
         )
       }
 
       item {
-        val textFieldStyle = MaterialTheme.typography.bodyLarge.copy(
-          fontFamily = FontFamily.Monospace,
-          fontSize = 12.sp
-        )
-        TextField(
-          value = qrLink,
+        OutlinedTextField(
+          value = linkingCode,
           onValueChange = {
-            isValid = LinkDeviceRepository.isValidQr(Uri.parse(it))
-            qrLink = it
+            linkingCode = it
+            clipboardEmpty = false
           },
-          isError = !isValid,
-          placeholder = {
-            Text(
-              text = stringResource(id = R.string.enter_device_link_dialog__url),
-              style = textFieldStyle
-            )
+          label = { Text(stringResource(R.string.LinkDeviceCode__linking_code)) },
+          isError = invalidCode || clipboardEmpty,
+          supportingText = if (invalidCode || clipboardEmpty) {
+            {
+              Text(stringResource(if (clipboardEmpty) R.string.LinkDeviceCode__clipboard_empty else R.string.LinkDeviceCode__invalid_code))
+            }
+          } else {
+            null
           },
-          keyboardOptions = KeyboardOptions.Default.copy(
+          keyboardOptions = KeyboardOptions(
+            autoCorrectEnabled = false,
             keyboardType = KeyboardType.Uri,
             imeAction = ImeAction.Done
           ),
-          textStyle = textFieldStyle,
+          keyboardActions = KeyboardActions(onDone = { onContinue() }),
+          minLines = 3,
+          maxLines = 5,
           modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
-            .defaultMinSize(minHeight = 40.dp)
+            .padding(top = 12.dp)
         )
+        TextButton(
+          onClick = {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = clipboard.primaryClip
+            // Only read plain text after the user asks to paste; do not open clipboard URIs.
+            val text = if (clip != null && clip.itemCount > 0) clip.getItemAt(0).text?.toString() else null
+            if (text.isNullOrBlank()) {
+              linkingCode = ""
+              clipboardEmpty = true
+            } else {
+              linkingCode = text
+              clipboardEmpty = false
+            }
+          }
+        ) {
+          Text(stringResource(R.string.LinkDeviceCode__paste_code))
+        }
       }
 
       item {
         Text(
-          text = stringResource(id = R.string.AddLinkDeviceFragment__this_device_will_see_your_groups_contacts),
-          style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-          ),
+          text = stringResource(R.string.LinkDeviceCode__only_link_your_devices),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(top = 12.dp)
+        )
+        Text(
+          text = stringResource(R.string.AddLinkDeviceFragment__this_device_will_see_your_groups_contacts),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.padding(vertical = 12.dp)
         )
       }
     }
 
-    Row {
-      Buttons.LargeTonal(
-        enabled = isValid,
-        onClick = { onLinkNewDeviceWithUrl(qrLink) },
-        modifier = Modifier
-          .defaultMinSize(minWidth = 220.dp)
-          .padding(vertical = 16.dp)
-      ) {
-        Text(text = stringResource(id = R.string.device_list_fragment__link_new_device))
-      }
+    Buttons.LargeTonal(
+      enabled = parsedCode != null,
+      onClick = onContinue,
+      modifier = Modifier
+        .defaultMinSize(minWidth = 220.dp)
+        .padding(16.dp)
+    ) {
+      Text(stringResource(R.string.DeviceProvisioningActivity_continue))
     }
   }
-}
-
-private fun makeToast(context: Context, messageId: Int, onLinkDeviceFailure: () -> Unit) {
-  Toast.makeText(context, messageId, Toast.LENGTH_LONG).show()
-  onLinkDeviceFailure()
 }
 
 @DayNightPreviews
 @Composable
 private fun LinkDeviceManualEntryScreenPreview() {
   Previews.Preview {
-    LinkDeviceManualEntryScreen(
-      onLinkNewDeviceWithUrl = {},
-      linkDeviceResult = LinkDeviceResult.None,
-      onLinkDeviceSuccess = {},
-      onLinkDeviceFailure = {},
-    )
+    LinkDeviceManualEntryScreen(onLinkNewDeviceWithUrl = {})
   }
 }

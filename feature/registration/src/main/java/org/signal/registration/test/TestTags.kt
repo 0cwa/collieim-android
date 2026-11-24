@@ -37,6 +37,7 @@ object TestTags {
   const val LINK_ACCOUNT_CREATE_ACCOUNT_LINK = "link_account_create_account_link"
   const val LINK_ACCOUNT_DISPLAY_OVERLAY_BUTTON = "link_account_display_overlay_button"
   const val LINK_ACCOUNT_HIDE_OVERLAY_BUTTON = "link_account_hide_overlay_button"
+  const val LINK_ACCOUNT_COPY_CODE_BUTTON = "link_account_copy_code_button"
 
   // Message Sync Screen
   const val MESSAGE_SYNC_SCREEN = "message_sync_screen"

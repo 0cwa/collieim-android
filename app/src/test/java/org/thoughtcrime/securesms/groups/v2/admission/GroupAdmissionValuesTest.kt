@@ -132,14 +132,23 @@ class GroupAdmissionValuesTest {
   }
 
   @Test
-  fun `malformed granted membership cannot enable group use`() {
-    values().update(account) { it.copy(records = mapOf(group to AdmissionRecord(membership, AdmissionStatus.AUTOMATIC))) }
+  fun `one old malformed promotion leaves the policy and other grants intact across writes`() {
+    values().update(account) {
+      it.copy(
+        settings = GroupAdmissionSettings(GroupAdmissionMode.SELECTED_PEOPLE, setOf(otherAccount)),
+        records = mapOf(group to AdmissionRecord(membership, AdmissionStatus.AUTOMATIC), "other" to AdmissionRecord(membership, AdmissionStatus.LOCAL_CONSENT))
+      )
+    }
     val document = JSONObject(store().getString(GroupAdmissionValues.KEY, null)!!)
-    document.getJSONObject("records").getJSONObject(group).put("episode", "member:12")
+    document.getJSONObject("records").getJSONObject(group).put("episode", "member:-1").put("joinedAt", -1)
     store().beginWrite().putString(GroupAdmissionValues.KEY, document.toString()).commitAndWaitForPersistence()
 
-    assertThat(values().read(account).isHeld(group)).isTrue()
-    assertThat(values().read(account).settings.mode).isEqualTo(GroupAdmissionMode.ASK_EVERY_TIME)
+    values().update(account) { it.copy(settings = it.settings.copy(allowedPeople = emptySet())) }
+    val recovered = values().read(account)
+
+    assertThat(recovered.isHeld(group)).isTrue()
+    assertThat(recovered.isHeld("other")).isFalse()
+    assertThat(recovered.settings.mode).isEqualTo(GroupAdmissionMode.SELECTED_PEOPLE)
   }
 
   @Test

@@ -67,10 +67,7 @@ object GroupPrivacySettingsRepository {
     GroupAdmission.setAllowedPeople(GroupAdmission.getSettings().allowedPeople + selected.values)
   }
 
-  internal fun selectableAci(recipient: Recipient): String? {
-    if (!recipient.isIndividual || recipient.isSelf || recipient.isBlocked || recipient.isHidden || !recipient.isRegistered) return null
-    return recipient.aci.orNull()?.takeIf { it.isValid }?.toString()
-  }
+  internal fun selectableAci(recipient: Recipient): String? = GroupAdmission.selectableAci(recipient)
 
   class SelectionChangedException : IllegalStateException("A chosen group inviter is no longer eligible")
 }

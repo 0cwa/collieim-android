@@ -97,6 +97,7 @@ class GroupMessageService @JvmOverloads constructor(
     timestamp: Long,
     isOnline: Boolean = false,
     urgent: Boolean,
+    beforeSend: (() -> Unit)? = null,
     onResult: (RecipientSendResult) -> Unit = {}
   ): Either<GroupSendError, List<RecipientSendResult>> = withContext(Dispatchers.IO) {
     either {
@@ -138,6 +139,7 @@ class GroupMessageService @JvmOverloads constructor(
           authorization = senderKeySend.authorization,
           isOnline = isOnline,
           urgent = urgent,
+          beforeSend = beforeSend,
           onResults = { batch -> batch.forEach(onResult) }
         ).mapLeft { GroupSendError.SendFailed(it) }.bind()
 
@@ -155,6 +157,7 @@ class GroupMessageService @JvmOverloads constructor(
           timestamp = timestamp,
           isOnline = isOnline,
           urgent = urgent,
+          beforeSend = beforeSend,
           onResult = onResult
         )
       }
@@ -175,6 +178,7 @@ class GroupMessageService @JvmOverloads constructor(
     timestamp: Long,
     isOnline: Boolean,
     urgent: Boolean,
+    beforeSend: (() -> Unit)? = null,
     onResult: (RecipientSendResult) -> Unit = {}
   ): List<RecipientSendResult> = coroutineScope {
     val permits = Semaphore(MAX_CONCURRENT_SENDS)
@@ -184,7 +188,7 @@ class GroupMessageService @JvmOverloads constructor(
     targets.map { target ->
       async {
         permits.withPermit {
-          val result = individualMessageService.sendMessage(target.serviceId, envelopeContent, timestamp, target.sealedSenderAccess, isOnline, urgent)
+          val result = individualMessageService.sendMessage(target.serviceId, envelopeContent, timestamp, target.sealedSenderAccess, isOnline, urgent, beforeSend = beforeSend)
           RecipientSendResult(target.serviceId, result).also(onResult)
         }
       }
@@ -225,6 +229,7 @@ class GroupMessageService @JvmOverloads constructor(
     authorization: SenderKeyAuthorization,
     isOnline: Boolean,
     urgent: Boolean,
+    beforeSend: (() -> Unit)? = null,
     onResults: (List<RecipientSendResult>) -> Unit = {}
   ): Either<SendError, SenderKeySendResult> = withContext(Dispatchers.IO) {
     either {
@@ -245,7 +250,7 @@ class GroupMessageService @JvmOverloads constructor(
       while (state.hasRemaining()) {
         Log.d(TAG, "[$timestamp] Starting sender key send to ${state.remaining.size} targets with $distributionId")
 
-        state.settle(distributeSenderKey(distributionId, state.remaining, groupId, urgent))
+        state.settle(distributeSenderKey(distributionId, state.remaining, groupId, urgent, beforeSend))
         if (!state.hasRemaining()) {
           break
         }
@@ -284,6 +289,7 @@ class GroupMessageService @JvmOverloads constructor(
           is SenderKeyAuthorization.Story -> MultiRecipientSendAuthorization.Story
         }
 
+        beforeSend?.invoke()
         when (val result = messageApi.sendMultiRecipientMessage(ciphertext, timestamp, multiRecipientAuth, isOnline, urgent)) {
           is RequestResult.Success -> {
             val unregistered = result.result.unregisteredIds.map { ServiceId.fromLibSignal(it) }.toSet()
@@ -367,7 +373,13 @@ class GroupMessageService @JvmOverloads constructor(
     }
   }
 
-  private suspend fun distributeSenderKey(distributionId: DistributionId, targets: List<SendTarget>, groupId: ByteArray?, urgent: Boolean): List<RecipientSendResult> {
+  private suspend fun distributeSenderKey(
+    distributionId: DistributionId,
+    targets: List<SendTarget>,
+    groupId: ByteArray?,
+    urgent: Boolean,
+    beforeSend: (() -> Unit)?
+  ): List<RecipientSendResult> {
     val sharedWith = protocolStore.getSenderKeySharedWith(distributionId)
     val targetInfo = buildSenderKeyTargetInfo(targets)
     val needsKey = targets.filter { target ->
@@ -392,7 +404,7 @@ class GroupMessageService @JvmOverloads constructor(
       Optional.ofNullable(groupId)
     )
 
-    val results = sendFanOut(needsKey, skdmContent, timestamp, isOnline = false, urgent = urgent)
+    val results = sendFanOut(needsKey, skdmContent, timestamp, isOnline = false, urgent = urgent, beforeSend = beforeSend)
 
     val sharedAddresses = results.flatMap { result ->
       result.result.getOrNull()?.devices.orEmpty().map { SignalProtocolAddress(result.serviceId.toString(), it) }

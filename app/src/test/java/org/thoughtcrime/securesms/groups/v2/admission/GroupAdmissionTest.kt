@@ -17,6 +17,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertThrows
 import org.junit.Before
@@ -24,9 +25,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.signal.core.models.ServiceId
 import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.ServiceId.PNI
+import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.ThreadUtil
 import org.signal.core.util.groups.GroupChangeFailedException
@@ -39,11 +40,11 @@ import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChang
 import org.signal.storageservice.storage.protos.groups.local.DecryptedMember
 import org.signal.storageservice.storage.protos.groups.local.DecryptedPendingMember
 import org.signal.storageservice.storage.protos.groups.local.DecryptedRequestingMember
+import org.signal.storageservice.storage.protos.groups.Member
 import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.RecipientDatabaseTestUtils
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.groupRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.v2.processing.GroupStateDiff
@@ -52,6 +53,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientUtil
 import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
+import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupUtil
 import org.whispersystems.signalservice.api.push.ServiceIds
 import java.util.Optional
 import java.util.UUID
@@ -70,6 +72,7 @@ class GroupAdmissionTest {
   private val accountValues = mockk<AccountValues>()
   private val groups = mockk<GroupTable>()
   private val recipients = mockk<RecipientTable>()
+  private val aliceId = RecipientId.from(123)
   private var current: DecryptedGroup? = null
   private var previousAssertions = true
 
@@ -89,7 +92,7 @@ class GroupAdmissionTest {
     every { SignalDatabase.groups } returns groups
     every { SignalDatabase.recipients } returns recipients
     every { recipients.getByGroupId(any()) } returns Optional.empty()
-    every { groups.getGroup(groupId) } answers { current?.let { groupRecord(masterKey, it) } ?: Optional.empty() }
+    every { groups.getGroupAdmissionState(groupId) } answers { current?.let { it to true } }
     every { groups.getAllGroupV2Ids() } returns emptyList()
 
     mockkStatic(AppDependencies::class)
@@ -97,7 +100,11 @@ class GroupAdmissionTest {
 
     mockkObject(Recipient)
     mockkStatic(Recipient::class)
-    every { Recipient.externalPush(any<ServiceId>()) } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, serviceId = alice)
+    every { recipients.getByAci(any()) } returns Optional.empty()
+    every { recipients.getByAci(alice) } returns Optional.of(aliceId)
+    val person = mockk<Recipient>()
+    every { Recipient.resolved(aliceId) } returns person
+    every { person.fresh() } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, recipientId = aliceId, serviceId = alice)
     every { Recipient.externalGroupExact(any()) } answers { RecipientDatabaseTestUtils.createRecipient(resolved = true, groupId = firstArg(), groupType = RecipientTable.RecipientType.GV2, profileSharing = true) }
   }
 
@@ -152,7 +159,7 @@ class GroupAdmissionTest {
     assertThat(GroupAdmission.isHeld(groupId)).isTrue()
 
     val full = full(6)
-    observe(invited, full, DecryptedGroupChange(revision = 6, editorServiceIdBytes = selfPni.toByteString(), promotePendingPniAciMembers = full.members))
+    observe(invited, full, DecryptedGroupChange(revision = 6, editorServiceIdBytes = selfPni.toByteString(), promotePendingPniAciMembers = full.members.map { it.copy(pniBytes = selfPni.toByteString()) }))
 
     assertThat(GroupAdmission.isHeld(groupId)).isTrue()
     assertThat(GroupAdmission.shouldEnableProfileSharing(groupId)).isFalse()
@@ -166,7 +173,7 @@ class GroupAdmissionTest {
     val consent = GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
     GroupAdmission.beforeMutation(groupId, 6)
     val full = full(6)
-    observe(invited, full, DecryptedGroupChange(revision = 6, editorServiceIdBytes = selfPni.toByteString(), promotePendingPniAciMembers = full.members))
+    observe(invited, full, DecryptedGroupChange(revision = 6, editorServiceIdBytes = selfPni.toByteString(), promotePendingPniAciMembers = full.members.map { it.copy(pniBytes = selfPni.toByteString()) }))
     GroupAdmission.endOperation(consent)
 
     assertThat(GroupAdmission.isHeld(groupId)).isFalse()
@@ -221,8 +228,8 @@ class GroupAdmissionTest {
     val pendingId = GroupId.v2(pendingKey)
     current = full(5)
     every { groups.getAllGroupV2Ids() } returns listOf(groupId, heldId, pendingId)
-    every { groups.getGroup(heldId) } returns groupRecord(heldKey, full(6))
-    every { groups.getGroup(pendingId) } returns groupRecord(pendingKey, pending())
+    every { groups.getGroupAdmissionState(heldId) } returns (full(6) to true)
+    every { groups.getGroupAdmissionState(pendingId) } returns (pending() to true)
     mockkStatic(RecipientUtil::class)
     // Old sharing/history can still say yes; the independent held decision must take precedence.
     every { RecipientUtil.isMessageRequestAccepted(any<Recipient>()) } returns true
@@ -286,8 +293,8 @@ class GroupAdmissionTest {
     GroupAdmission.endOperation(consent)
     assertThat(values.read(selfAci.toString()).records[groupId.toString()]?.membership?.episode).isEqualTo("request:1234")
 
-    val approved = full(8)
-    observe(requested, approved, DecryptedGroupChange(revision = 8, editorServiceIdBytes = alice.toByteString(), promoteRequestingMembers = listOf(DecryptedApproveMember(aciBytes = selfAci.toByteString()))))
+    val approval = DecryptedGroupChange(revision = 6, editorServiceIdBytes = alice.toByteString(), promoteRequestingMembers = listOf(DecryptedApproveMember(aciBytes = selfAci.toByteString(), role = Member.Role.DEFAULT)))
+    observe(requested, DecryptedGroupUtil.apply(requested, approval), approval)
 
     assertThat(GroupAdmission.isHeld(groupId)).isFalse()
   }
@@ -295,13 +302,118 @@ class GroupAdmissionTest {
   @Test
   fun `contacts permission loss prevents automatic admission despite a cached contact URI`() {
     settings(GroupAdmissionMode.DEVICE_CONTACTS)
-    every { Recipient.externalPush(any<ServiceId>()) } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, serviceId = alice, systemContactUri = "content://contacts/1")
+    every { Recipient.resolved(aliceId).fresh() } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, serviceId = alice, systemContactUri = "content://contacts/1")
     mockkStatic(Permissions::class)
     every { Permissions.hasAll(any(), Manifest.permission.READ_CONTACTS) } returns false
     val full = full(5)
     observe(null, full, added(full))
 
     assertThat(GroupAdmission.isHeld(groupId)).isTrue()
+  }
+
+  @Test
+  fun `ACI acceptance persists consent only for the committed promotion`() {
+    settings(GroupAdmissionMode.ASK_EVERY_TIME)
+    val invited = pending().let { it.copy(pendingMembers = it.pendingMembers.map { invite -> invite.copy(serviceIdBytes = selfAci.toByteString()) }) }
+    observe(null, invited, null)
+    val attempt = GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
+    GroupAdmission.beforeMutation(groupId, 6)
+    val change = DecryptedGroupChange(
+      revision = 6,
+      editorServiceIdBytes = selfAci.toByteString(),
+      promotePendingMembers = listOf(DecryptedMember(aciBytes = selfAci.toByteString(), role = Member.Role.DEFAULT, joinedAtRevision = -1))
+    )
+    val promoted = DecryptedGroupUtil.apply(invited, change)
+    val first = GroupAdmission.prepareStateUpdate(groupId, self, GroupStateDiff(invited, promoted, change), promoted)
+
+    assertThat(GroupAdmission.completeStateUpdate(first)).isFalse()
+    assertThat(GroupAdmission.isHeld(groupId)).isTrue()
+    current = promoted
+    assertThat(GroupAdmission.completeStateUpdate(first)).isTrue()
+    GroupAdmission.endOperation(attempt)
+
+    val stored = GroupAdmissionValues(KeyValueStore(storage) { it.run() }).read(selfAci.toString())
+    assertThat(stored.records[groupId.toString()]?.membership?.joinedAtRevision).isEqualTo(6)
+    assertThat(stored.isHeld(groupId.toString())).isFalse()
+  }
+
+  @Test
+  fun `a different invitation cannot reuse the local acceptance`() {
+    settings(GroupAdmissionMode.ASK_EVERY_TIME)
+    val invited = pending()
+    observe(null, invited, null)
+    val attempt = GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
+    GroupAdmission.beforeMutation(groupId, 7)
+    val changed = invited.copy(revision = 6, pendingMembers = invited.pendingMembers.map { it.copy(timestamp = 200) })
+    observe(invited, changed, null)
+    val promoted = full(7)
+    val change = DecryptedGroupChange(
+      revision = 7,
+      editorServiceIdBytes = selfPni.toByteString(),
+      promotePendingPniAciMembers = promoted.members.map { it.copy(pniBytes = selfPni.toByteString()) }
+    )
+
+    observe(changed, promoted, change)
+    GroupAdmission.endOperation(attempt)
+
+    assertThat(GroupAdmission.isHeld(groupId)).isTrue()
+  }
+
+  @Test
+  fun `a hold and readmission invalidate a send even when the send only observes the readmission`() {
+    settings(GroupAdmissionMode.ASK_EVERY_TIME)
+    val initial = full(5)
+    observe(null, initial, added(initial))
+    GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
+    val send = GroupAdmissionSendGate.bind(groupId, null, null, null)
+    val renamed = initial.copy(revision = 6, title = "Updated")
+    observe(initial, renamed, null)
+    assertThat(send.isCanceled).isFalse()
+
+    val absent = DecryptedGroup(revision = 7)
+    observe(renamed, absent, null)
+    val readmitted = full(8)
+    observe(absent, readmitted, added(readmitted))
+    GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
+
+    assertThat(GroupAdmission.isHeld(groupId)).isFalse()
+    assertThat(send.isCanceled).isTrue()
+    assertThrows(GroupAdmissionSendGate.HeldGroupException::class.java) { send.requireCurrent() }
+  }
+
+  @Test
+  fun `a later grant for the same join revision cannot revive a send`() {
+    settings(GroupAdmissionMode.ASK_EVERY_TIME)
+    val original = full(5)
+    observe(null, original, added(original))
+    GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
+    val send = GroupAdmissionSendGate.bind(groupId, null, null, null)
+
+    val unconfirmed = original.copy(revision = 6, needsServerSnapshot = true)
+    observe(original, unconfirmed, null)
+    assertThat(GroupAdmission.isHeld(groupId)).isTrue()
+    val confirmed = unconfirmed.copy(needsServerSnapshot = false)
+    observe(unconfirmed, confirmed, null)
+    GroupAdmission.beginAccept(groupId, GroupAdmission.consentToken(groupId))
+
+    assertThat(GroupAdmission.isHeld(groupId)).isFalse()
+    assertThat(send.isCanceled).isTrue()
+  }
+
+  @Test
+  fun `allowlist writes require a current exact registered recipient without inserting one`() {
+    settings(GroupAdmissionMode.SELECTED_PEOPLE)
+    val current = Recipient.resolved(aliceId)
+    every { current.fresh() } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, serviceId = alice, registered = RecipientTable.RegisteredState.NOT_REGISTERED)
+    assertThrows(IllegalArgumentException::class.java) { GroupAdmission.setAllowedPeople(setOf(alice.toString())) }
+
+    every { current.fresh() } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, serviceId = selfAci)
+    assertThrows(IllegalArgumentException::class.java) { GroupAdmission.setAllowedPeople(setOf(alice.toString())) }
+
+    every { current.fresh() } returns RecipientDatabaseTestUtils.createRecipient(resolved = true, serviceId = alice)
+    GroupAdmission.setAllowedPeople(setOf(alice.toString()))
+    assertThat(GroupAdmission.getAllowedPeople()).isEqualTo(setOf(alice.toString()))
+    verify(exactly = 3) { recipients.getByAci(alice) }
   }
 
   private fun settings(mode: GroupAdmissionMode, people: Set<String> = emptySet()) {

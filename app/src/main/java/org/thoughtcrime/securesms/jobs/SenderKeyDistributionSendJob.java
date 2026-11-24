@@ -13,6 +13,8 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.DistributionListRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
@@ -44,8 +46,11 @@ public final class SenderKeyDistributionSendJob extends BaseJob {
   private static final String KEY_TARGET_RECIPIENT_ID = "recipient_id";
   private static final String KEY_THREAD_RECIPIENT_ID = "thread_recipient_id";
 
+  private static final String KEY_ADMISSION_EPISODE = "admission_episode";
+
   private final RecipientId targetRecipientId;
   private final RecipientId threadRecipientId;
+  private final String      admissionEpisode;
 
   public SenderKeyDistributionSendJob(@NonNull RecipientId targetRecipientId, RecipientId threadRecipientId) {
     this(targetRecipientId, threadRecipientId, new Parameters.Builder()
@@ -55,20 +60,23 @@ public final class SenderKeyDistributionSendJob extends BaseJob {
                                                              .setLifespan(TimeUnit.DAYS.toMillis(1))
                                                              .setMaxAttempts(Parameters.UNLIMITED)
                                                              .setMaxInstancesForQueue(1)
-                                                             .build());
+                                                             .build(),
+         Recipient.resolved(threadRecipientId).getGroupId().filter(GroupId::isV2).map(GroupId::requireV2).map(GroupAdmission::sendEpisode).map(GroupAdmission.SendEpisode::key).orElse(null));
   }
 
-  private SenderKeyDistributionSendJob(@NonNull RecipientId targetRecipientId, @NonNull RecipientId threadRecipientId, @NonNull Parameters parameters) {
+  private SenderKeyDistributionSendJob(@NonNull RecipientId targetRecipientId, @NonNull RecipientId threadRecipientId, @NonNull Parameters parameters, @Nullable String admissionEpisode) {
     super(parameters);
 
     this.targetRecipientId = targetRecipientId;
     this.threadRecipientId = threadRecipientId;
+    this.admissionEpisode = admissionEpisode;
   }
 
   @Override
   public @Nullable byte[] serialize() {
     return new JsonJobData.Builder().putString(KEY_TARGET_RECIPIENT_ID, targetRecipientId.serialize())
                                     .putString(KEY_THREAD_RECIPIENT_ID, threadRecipientId.serialize())
+                                    .putString(KEY_ADMISSION_EPISODE, admissionEpisode)
                                     .serialize();
   }
 
@@ -90,9 +98,14 @@ public final class SenderKeyDistributionSendJob extends BaseJob {
     GroupId.V2                              groupId;
     DistributionId                          distributionId;
     SealedSenderAccess.CreateGroupSendToken createGroupSendFullToken = null;
+    GroupAdmissionSendGate.EpisodeCancellation admission = null;
 
     if (threadRecipient.isPushV2Group()) {
-      groupId                  = threadRecipient.requireGroupId().requireV2();
+      groupId = threadRecipient.requireGroupId().requireV2();
+      GroupAdmission.SendEpisode episode = GroupAdmission.sendEpisode(groupId);
+      if (episode.getHeld()) return;
+      admission = new GroupAdmissionSendGate.EpisodeCancellation(groupId, admissionEpisode != null ? admissionEpisode : episode.key(), null);
+      admission.requireCurrent();
       distributionId           = SignalDatabase.groups().getOrCreateDistributionId(groupId);
       createGroupSendFullToken = () -> SignalDatabase.groups().getGroupSendFullToken(groupId, targetRecipientId);
     } else if (threadRecipient.isDistributionList()) {
@@ -125,7 +138,7 @@ public final class SenderKeyDistributionSendJob extends BaseJob {
     SenderKeyDistributionMessage message       = messageSender.getOrCreateNewGroupSession(distributionId);
     List<SealedSenderAccess>     access        = Collections.singletonList(SealedSenderAccessUtil.getSealedSenderAccessFor(targetRecipient, createGroupSendFullToken));
 
-    SendMessageResult result = messageSender.sendSenderKeyDistributionMessage(distributionId, address, access, message, Optional.ofNullable(groupId).map(GroupId::getDecodedId), false, false, null).get(0);
+    SendMessageResult result = messageSender.sendSenderKeyDistributionMessage(distributionId, address, access, message, Optional.ofNullable(groupId).map(GroupId::getDecodedId), false, false, admission).get(0);
 
     if (result.isSuccess()) {
       List<SignalProtocolAddress> addresses = result.getSuccess()
@@ -156,7 +169,8 @@ public final class SenderKeyDistributionSendJob extends BaseJob {
 
       return new SenderKeyDistributionSendJob(RecipientId.from(data.getString(KEY_TARGET_RECIPIENT_ID)),
                                               RecipientId.from(data.getString(KEY_THREAD_RECIPIENT_ID)),
-                                              parameters);
+                                              parameters,
+                                              data.getStringOrDefault(KEY_ADMISSION_EPISODE, null));
     }
   }
 }

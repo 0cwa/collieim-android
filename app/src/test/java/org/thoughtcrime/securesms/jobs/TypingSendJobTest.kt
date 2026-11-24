@@ -39,7 +39,6 @@ import org.signal.network.service.SendRequest
 import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
-import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -66,8 +65,7 @@ class TypingSendJobTest {
   @Before
   fun setUp() {
     mockkStatic(GroupAdmission::class)
-    every { GroupAdmission.isHeld(any<Recipient>()) } returns false
-    every { GroupAdmission.isHeld(any<GroupId.V2>()) } returns false
+    every { GroupAdmission.sendEpisode(any()) } returns GroupAdmission.SendEpisode("local", "first", "member:1", false)
 
     every { recipients.signalStore.settings.isTypingIndicatorsEnabled } returns true
 
@@ -76,7 +74,7 @@ class TypingSendJobTest {
     every { SealedSenderAccessUtil.getAccessMapFor(any(), any()) } answers { firstArg<List<Recipient>>().associate { it.id to Optional.empty() } }
 
     coEvery { messageService.sendMessage(any(), any(), any(), any()) } returns MessageService.SendSuccess(mockk(), true, listOf(1)).right()
-    coEvery { messageService.sendGroupMessage(any(), any(), any(), any()) } returns emptyList<MessageService.RecipientSendResult>().right()
+    coEvery { messageService.sendGroupMessage(any(), any(), any(), any(), any()) } returns emptyList<MessageService.RecipientSendResult>().right()
 
     alice = recipients.createRecipient("Alice")
     bob = recipients.createRecipient("Bob")
@@ -118,7 +116,8 @@ class TypingSendJobTest {
         destination = GroupSendDestination.Group(GroupIdentifier(group.groupId.decodedId)),
         recipients = capture(sentTo),
         request = capture(request),
-        messageId = null
+        messageId = null,
+        beforeSend = any()
       )
     }
     assertThat(sentTo.captured.map { it.id }).containsExactlyInAnyOrder(alice.toLong(), bob.toLong())
@@ -157,16 +156,19 @@ class TypingSendJobTest {
   @Test
   fun `held group does not emit typing despite an old sharing flag`() {
     val group = recipients.createGroup(alice, bob)
-    every { GroupAdmission.isHeld(any<Recipient>()) } answers { firstArg<Recipient>().id == group.recipientId }
+    every { GroupAdmission.sendEpisode(group.groupId) } returns GroupAdmission.SendEpisode("local", "first", "member:1", true)
 
     assertThat(runJob(threadFor(group.recipientId), typing = true).isSuccess).isTrue()
     verifyNothingSent()
   }
 
   @Test
-  fun `hold is checked again immediately before group typing transport`() {
+  fun `episode change cancels typing before group transport even after readmission`() {
     val group = recipients.createGroup(alice, bob)
-    every { GroupAdmission.isHeld(group.groupId) } returns true
+    every { GroupAdmission.sendEpisode(group.groupId) } returnsMany listOf(
+      GroupAdmission.SendEpisode("local", "first", "member:1", false),
+      GroupAdmission.SendEpisode("local", "readded", "member:3", false)
+    )
 
     assertThat(runJob(threadFor(group.recipientId), typing = true).isSuccess).isTrue()
     verifyNothingSent()
@@ -206,6 +208,6 @@ class TypingSendJobTest {
 
   private fun verifyNothingSent() {
     coVerify(exactly = 0) { messageService.sendMessage(any(), any(), any(), any()) }
-    coVerify(exactly = 0) { messageService.sendGroupMessage(any(), any(), any(), any()) }
+    coVerify(exactly = 0) { messageService.sendGroupMessage(any(), any(), any(), any(), any()) }
   }
 }

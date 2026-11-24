@@ -5,6 +5,7 @@
 package org.thoughtcrime.securesms.groups.v2.admission
 
 import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.models.ServiceId.ACI
+import org.signal.core.models.recipients.RecipientId
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChange
@@ -34,12 +36,16 @@ import org.thoughtcrime.securesms.database.model.MessageId
 import org.thoughtcrime.securesms.database.model.StoryType
 import org.thoughtcrime.securesms.database.model.databaseprotos.DecryptedGroupV2Context
 import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.jobs.ResendMessageJob
 import org.thoughtcrime.securesms.mms.MessageGroupContext
 import org.thoughtcrime.securesms.mms.OutgoingMessage
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
+import org.whispersystems.signalservice.api.crypto.ContentHint
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage
 import org.whispersystems.signalservice.api.messages.SignalServiceGroupV2
+import org.whispersystems.signalservice.internal.push.Content
+import org.whispersystems.signalservice.internal.push.DataMessage
 import org.whispersystems.signalservice.internal.push.GroupContextV2
 import java.util.UUID
 
@@ -95,6 +101,19 @@ class GroupAdmissionSendGateTest {
     assertFalse(GroupAdmissionSendGate.canSend(message))
     every { GroupAdmission.isHeld(recipient) } returns false
     assertTrue(GroupAdmissionSendGate.canSend(message))
+  }
+
+  @Test
+  fun legacyGroupResendUsesTheEpisodeFromItsStoredContent() {
+    val content = Content(dataMessage = DataMessage(groupV2 = GroupContextV2(masterKey = masterKey.serialize().toByteString(), revision = 4)))
+    every { GroupAdmission.sendEpisode(groupId) } returns GroupAdmission.SendEpisode(self.toString(), "original", "member:2", false, 2)
+    val job = ResendMessageJob(RecipientId.from(123), 1234L, content, ContentHint.RESENDABLE, false, groupId = null, distributionId = null)
+    job.setContext(ApplicationProvider.getApplicationContext())
+
+    every { GroupAdmission.sendEpisode(groupId) } returns GroupAdmission.SendEpisode(self.toString(), "readmitted", "member:2", false, 2)
+
+    assertTrue(job.run().isFailure)
+    verify { GroupAdmission.sendEpisode(groupId) }
   }
 
   @Test

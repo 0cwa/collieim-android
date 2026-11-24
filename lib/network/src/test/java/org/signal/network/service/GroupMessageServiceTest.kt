@@ -65,12 +65,12 @@ class GroupMessageServiceTest {
 
   @Before
   fun setUp() {
-    coEvery { service.sendFanOut(capture(sendTargets), any(), any(), any(), any(), any()) } answers {
-      firstArg<List<SendTarget>>().map { success(it.serviceId) }.onEach { arg<(RecipientSendResult) -> Unit>(5)(it) }
+    coEvery { service.sendFanOut(capture(sendTargets), any(), any(), any(), any(), onResult = any()) } answers {
+      firstArg<List<SendTarget>>().map { success(it.serviceId) }.onEach { arg<(RecipientSendResult) -> Unit>(6)(it) }
     }
-    coEvery { service.sendMessageViaSenderKey(any(), capture(senderKeyTargets), any(), any(), any(), any(), capture(senderKeyAuth), any(), any(), any()) } answers {
+    coEvery { service.sendMessageViaSenderKey(any(), capture(senderKeyTargets), any(), any(), any(), any(), capture(senderKeyAuth), any(), any(), onResults = any()) } answers {
       val results = secondArg<List<SendTarget>>().map { success(it.serviceId) }
-      arg<(List<RecipientSendResult>) -> Unit>(9)(results)
+      arg<(List<RecipientSendResult>) -> Unit>(10)(results)
       SenderKeySendResult(results, fanOut = emptyList()).right()
     }
   }
@@ -84,13 +84,13 @@ class GroupMessageServiceTest {
     assertThat(senderKeyTargets.captured.map { it.serviceId }).containsExactlyInAnyOrder(alice.serviceId, bob.serviceId, carol.serviceId)
     assertThat(senderKeyAuth.captured).isInstanceOf(SenderKeyAuthorization.GroupSend::class)
     assertThat(outcome.results().size).isEqualTo(3)
-    coVerify(exactly = 0) { service.sendFanOut(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { service.sendFanOut(any(), any(), any(), any(), any(), onResult = any()) }
   }
 
   @Test
   fun `targets sender key hands back are fanned out`() = runTest {
     dependencies.sendInfo = sendInfo(alice, bob, carol)
-    coEvery { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } answers {
+    coEvery { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), onResults = any()) } answers {
       val targets = secondArg<List<SendTarget>>()
       SenderKeySendResult(targets.filter { it.serviceId != carol.serviceId }.map { success(it.serviceId) }, fanOut = targets.filter { it.serviceId == carol.serviceId }).right()
     }
@@ -108,7 +108,7 @@ class GroupMessageServiceTest {
     groupSend(alice, bob)
 
     assertThat(sendTargets.captured.map { it.serviceId }).containsExactlyInAnyOrder(alice.serviceId, bob.serviceId)
-    coVerify(exactly = 0) { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), onResults = any()) }
   }
 
   @Test
@@ -157,7 +157,7 @@ class GroupMessageServiceTest {
 
   @Test
   fun `distribution list story uses story access for sender key distribution and any fan-out`() = runTest {
-    coEvery { service.sendMessageViaSenderKey(any(), capture(senderKeyTargets), any(), any(), any(), any(), capture(senderKeyAuth), any(), any(), any()) } answers {
+    coEvery { service.sendMessageViaSenderKey(any(), capture(senderKeyTargets), any(), any(), any(), any(), capture(senderKeyAuth), any(), any(), onResults = any()) } answers {
       val targets = secondArg<List<SendTarget>>()
       SenderKeySendResult(listOf(success(alice.serviceId)), fanOut = targets.filter { it.serviceId == bob.serviceId }).right()
     }
@@ -177,13 +177,13 @@ class GroupMessageServiceTest {
 
     assertThat(senderKeyTargets.captured.map { it.serviceId }).containsExactly(alice.serviceId)
     assertThat(outcome.results().map { it.serviceId }).containsExactly(alice.serviceId)
-    coVerify(exactly = 0) { service.sendFanOut(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { service.sendFanOut(any(), any(), any(), any(), any(), onResult = any()) }
   }
 
   @Test
   fun `group story distributes our sender key with group access but fans out as a story`() = runTest {
     dependencies.sendInfo = sendInfo(alice, bob)
-    coEvery { service.sendMessageViaSenderKey(any(), capture(senderKeyTargets), any(), any(), any(), any(), capture(senderKeyAuth), any(), any(), any()) } answers {
+    coEvery { service.sendMessageViaSenderKey(any(), capture(senderKeyTargets), any(), any(), any(), any(), capture(senderKeyAuth), any(), any(), onResults = any()) } answers {
       val targets = secondArg<List<SendTarget>>()
       SenderKeySendResult(listOf(success(alice.serviceId)), fanOut = targets.filter { it.serviceId == bob.serviceId }).right()
     }
@@ -217,7 +217,7 @@ class GroupMessageServiceTest {
   @Test
   fun `sender key failure for the whole send is returned`() = runTest {
     dependencies.sendInfo = sendInfo(alice, bob)
-    coEvery { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns MessageService.SendError.SessionAttemptsExhausted().left()
+    coEvery { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), onResults = any()) } returns MessageService.SendError.SessionAttemptsExhausted().left()
 
     val outcome = groupSend(alice, bob)
 
@@ -227,10 +227,10 @@ class GroupMessageServiceTest {
   @Test
   fun `every sent result is reported to onResult`() = runTest {
     dependencies.sendInfo = sendInfo(alice, bob, carol)
-    coEvery { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } answers {
+    coEvery { service.sendMessageViaSenderKey(any(), any(), any(), any(), any(), any(), any(), any(), any(), onResults = any()) } answers {
       val targets = secondArg<List<SendTarget>>()
       val results = targets.filter { it.serviceId != carol.serviceId }.map { success(it.serviceId) }
-      arg<(List<RecipientSendResult>) -> Unit>(9)(results)
+      arg<(List<RecipientSendResult>) -> Unit>(10)(results)
       SenderKeySendResult(results, fanOut = targets.filter { it.serviceId == carol.serviceId }).right()
     }
     val reported = mutableListOf<ServiceId>()

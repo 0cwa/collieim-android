@@ -18,8 +18,8 @@ import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.logging.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -328,9 +328,22 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
 
   public void endTransaction() {
     Long holdStartNs = TRANSACTION_HOLD_START_NS.get();
-    trace("endTransaction()", wrapped::endTransaction);
-    traceLockEnd();
-    if (holdStartNs != null && !wrapped.inTransaction()) {
+    try {
+      trace("endTransaction()", wrapped::endTransaction);
+    } catch (RuntimeException e) {
+      if (!wrapped.inTransaction()) {
+        getPendingPostSuccessfulTransactionTasks().clear();
+        getPostSuccessfulTransactionTasks().clear();
+        TRANSACTION_HOLD_START_NS.remove();
+      }
+      throw e;
+    } finally {
+      traceLockEnd();
+    }
+    if (wrapped.inTransaction()) {
+      return;
+    }
+    if (holdStartNs != null) {
       TRANSACTION_HOLD_START_NS.remove();
       long holdMs = (System.nanoTime() - holdStartNs) / 1_000_000L;
       if (holdMs >= IssueReporter.SLOW_WRITE_LOW_PRIORITY_MS) {
@@ -340,10 +353,11 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
       }
     }
     Set<Runnable> tasks = getPostSuccessfulTransactionTasks();
-    for (Runnable r : new HashSet<>(tasks)) {
+    List<Runnable> committedTasks = new ArrayList<>(tasks);
+    tasks.clear();
+    for (Runnable r : committedTasks) {
       r.run();
     }
-    tasks.clear();
   }
 
   public void setTransactionSuccessful() {

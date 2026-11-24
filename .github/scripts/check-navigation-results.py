@@ -20,12 +20,8 @@ HOST_METHODS = {
     'home selection follows a replaced section',
 }
 DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
-DEVICE_METHODS = {
-    'splitPaneHomeSelectionFollowsSectionChange',
-    'settingsHomeOpensAppearanceAndBackMatchesLayout',
-    'accountAndSupportRemainAvailableWithoutSignalCheckout',
-}
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+DEVICE_METHODS = {'colliePrivacyOpensGroupChoicesAndPeoplePicker'}
+SCREENSHOTS = {'beta-collie-privacy.png', 'beta-group-privacy-choices.png', 'beta-group-privacy-chosen-people.png', 'beta-group-privacy-picker.png'}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
@@ -94,7 +90,7 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases and three API 35 device cases with matching APKs and decoded Settings screenshots')
+    print('Passed eight host navigation cases and one API 35 group privacy case with matching APKs and decoded Settings screenshots')
 
 
 if __name__ == '__main__':

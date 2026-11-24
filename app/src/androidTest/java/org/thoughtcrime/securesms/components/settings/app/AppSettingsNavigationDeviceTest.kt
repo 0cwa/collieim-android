@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -31,6 +32,10 @@ import org.junit.runner.RunWith
 import org.signal.appsettings.account.AccountSettingsTestTags
 import org.signal.appsettings.appearance.AppearanceSettingsTestTags
 import org.signal.appsettings.home.AppSettingsTestTags
+import org.signal.appsettings.collie.CollieSettingsTestTags
+import org.signal.appsettings.collie.groups.ChooseGroupPeopleTestTags
+import org.signal.appsettings.collie.groups.GroupPrivacyMode
+import org.signal.appsettings.collie.groups.GroupPrivacySettingsTestTags
 import org.signal.appsettings.routes.AppSettingsNavigation
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
@@ -144,6 +149,38 @@ class AppSettingsNavigationDeviceTest {
         awaitNode(AccountSettingsTestTags.ROW_LINKED_DEVICES)
         compose.onNodeWithText("Manage existing Signal donations").assertDoesNotExist()
         captureScreenshot(scenario, "account-settings")
+      }
+    }
+  }
+
+  @Test
+  fun colliePrivacyOpensGroupChoicesAndPeoplePicker() {
+    val context = harness.context
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(context)).use { scenario ->
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        awaitNode(AppSettingsTestTags.SCROLLER)
+        compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_COLLIE))
+        compose.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).performClick()
+        awaitNode(CollieSettingsTestTags.ROW_GROUP_PRIVACY)
+        compose.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertIsDisplayed()
+        captureScreenshot(scenario, "beta-collie-privacy")
+        compose.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).performClick()
+
+        val selectedMode = GroupPrivacySettingsTestTags.mode(GroupPrivacyMode.SELECTED_PEOPLE)
+        val scroller = compose.onNodeWithTag(GroupPrivacySettingsTestTags.SCROLLER)
+        awaitNode(GroupPrivacySettingsTestTags.mode(GroupPrivacyMode.SIGNAL_DEFAULT))
+        captureScreenshot(scenario, "beta-group-privacy-choices")
+        scroller.performScrollToNode(hasTestTag(selectedMode))
+        compose.onNodeWithTag(selectedMode).performClick()
+        compose.waitUntil(10_000) {
+          compose.onAllNodes(hasTestTag(selectedMode) and isSelected()).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        scroller.performScrollToNode(hasTestTag(GroupPrivacySettingsTestTags.CHOOSE_PEOPLE))
+        captureScreenshot(scenario, "beta-group-privacy-chosen-people")
+        compose.onNodeWithTag(GroupPrivacySettingsTestTags.CHOOSE_PEOPLE).performClick()
+        awaitNode(ChooseGroupPeopleTestTags.PICKER)
+        compose.onNodeWithTag(ChooseGroupPeopleTestTags.ADD).assertIsDisplayed()
+        captureScreenshot(scenario, "beta-group-privacy-picker")
       }
     }
   }

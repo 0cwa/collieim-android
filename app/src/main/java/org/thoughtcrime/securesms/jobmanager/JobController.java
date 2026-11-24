@@ -102,10 +102,75 @@ class JobController {
   @WorkerThread
   synchronized void init() {
     jobStorage.updateAllJobsToBePending();
+    // The first wakeUp rearms timers after JobManager is initialized. Some constraints query
+    // JobManager themselves and would deadlock if evaluated during its initialization.
     notifyAll();
   }
 
+  /**
+   * Restores future wakeups from stored jobs after startup or a queue drain. Only future deadlines
+   * need timers: runnable work is handled by the runners, and unmet constraints by their observers.
+   */
+  @WorkerThread
+  synchronized void schedulePendingJobs() {
+    schedulePendingJobs(System.currentTimeMillis(), scheduler);
+  }
+
+  @WorkerThread
+  synchronized void schedulePendingJobs(@NonNull Scheduler target) {
+    schedulePendingJobs(System.currentTimeMillis(), target);
+  }
+
+  @VisibleForTesting
+  @WorkerThread
+  synchronized void schedulePendingJobs(long now) {
+    schedulePendingJobs(now, scheduler);
+  }
+
+  private void schedulePendingJobs(long now, @NonNull Scheduler target) {
+    Map<List<String>, Long> nextRunsByConstraints = new HashMap<>();
+
+    for (MinimalJobSpec job : jobStorage.getAllMinimalJobSpecsMatchingFilter(spec -> !spec.isRunning())) {
+      // FastJobStorage treats a clock rollback as immediately eligible, not a future deadline.
+      if (job.getCreateTime() > now || job.getLastRunAttemptTime() > now) {
+        continue;
+      }
+
+      // Eligibility uses strict comparisons, so waking exactly on the deadline is still too early.
+      long nextRun = saturatedAdd(Math.max(saturatedAdd(job.getCreateTime(), job.getInitialDelay()),
+                                          saturatedAdd(job.getLastRunAttemptTime(), job.getNextBackoffInterval())), 1);
+
+      if (nextRun <= now) {
+        continue;
+      }
+
+      List<String> constraintKeys = jobStorage.getConstraintSpecs(job.getId()).stream()
+                                             .map(ConstraintSpec::getFactoryKey)
+                                             .distinct()
+                                             .sorted()
+                                             .collect(Collectors.toList());
+
+      nextRunsByConstraints.merge(constraintKeys, nextRun, Math::min);
+    }
+
+    for (Map.Entry<List<String>, Long> entry : nextRunsByConstraints.entrySet()) {
+      List<Constraint> constraints = entry.getKey().stream()
+                                         .map(constraintInstantiator::instantiate)
+                                         .collect(Collectors.toList());
+      target.schedule(entry.getValue() - now, constraints);
+    }
+  }
+
+  private static long saturatedAdd(long timestamp, long delay) {
+    if (delay > 0 && timestamp > Long.MAX_VALUE - delay) {
+      return Long.MAX_VALUE;
+    }
+    return timestamp + delay;
+  }
+
   synchronized void wakeUp() {
+    // An in-app timer may fire while unrelated work is still running, before any queue drain.
+    schedulePendingJobs();
     notifyAll();
     maybeScaleUpRunners(() -> jobStorage.getEligibleJobCount(System.currentTimeMillis()));
   }

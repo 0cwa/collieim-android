@@ -2,14 +2,18 @@ package org.thoughtcrime.securesms.jobmanager;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 
 import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.logging.Log;
 
 import java.util.List;
+import java.util.function.LongSupplier;
 
 /**
  * Schedules future runs on an in-app handler. Intended to be used in combination with a persistent
@@ -28,23 +32,59 @@ class InAppScheduler implements Scheduler {
 
   private final JobManager jobManager;
   private final Handler     handler;
+  private final LongSupplier clock;
+  private @Nullable Runnable pendingWakeup;
+  private long wakeupAt = Long.MAX_VALUE;
 
   InAppScheduler(@NonNull JobManager jobManager) {
+    this(jobManager, createHandler(), SystemClock::uptimeMillis);
+  }
+
+  @VisibleForTesting
+  InAppScheduler(@NonNull JobManager jobManager, @NonNull Handler handler, @NonNull LongSupplier clock) {
+    this.jobManager = jobManager;
+    this.handler    = handler;
+    this.clock      = clock;
+  }
+
+  private static Handler createHandler() {
     HandlerThread handlerThread = new HandlerThread("InAppScheduler", ThreadUtil.PRIORITY_BACKGROUND_THREAD);
     handlerThread.start();
-
-    this.jobManager = jobManager;
-    this.handler    = new Handler(handlerThread.getLooper());
+    return new Handler(handlerThread.getLooper());
   }
 
   @Override
-  public void schedule(long delay, @NonNull List<Constraint> constraints) {
+  public synchronized void schedule(long delay, @NonNull List<Constraint> constraints) {
     if (delay > 0 && constraints.stream().allMatch(Constraint::isMet)) {
+      long now = clock.getAsLong();
+      long nextWakeupAt = delay > Long.MAX_VALUE - now ? Long.MAX_VALUE : now + delay;
+      if (pendingWakeup != null && wakeupAt <= nextWakeupAt) {
+        return;
+      }
+
+      if (pendingWakeup != null) {
+        handler.removeCallbacks(pendingWakeup);
+      }
+
       Log.i(TAG, "Scheduling a retry in " + delay + " ms.");
-      handler.postDelayed(() -> {
-        Log.i(TAG, "Triggering a job retry.");
-        jobManager.wakeUp();
-      }, delay);
+      wakeupAt = nextWakeupAt;
+      pendingWakeup = new Runnable() {
+        @Override
+        public void run() {
+          synchronized (InAppScheduler.this) {
+            if (pendingWakeup != this) {
+              return;
+            }
+            pendingWakeup = null;
+            wakeupAt = Long.MAX_VALUE;
+          }
+
+          // Draining runnable jobs rearms the next future deadline from the job store.
+          Log.i(TAG, "Triggering a job retry.");
+          jobManager.wakeUp();
+        }
+      };
+      handler.postDelayed(pendingWakeup, delay);
     }
   }
 }

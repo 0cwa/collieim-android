@@ -109,7 +109,7 @@ jobs:
             timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
             mkdir -p "$evidence/screenshots"
             for screen in 01-settings 02-web-relay-trust 03-manual-relay-trust 04-clipboard-trust 05-export-trust-new_intent 05-export-trust-recovery 05-export-trust-rerender 06-settings-guidance 07-remove-relay-access; do
-              timeout 30s adb pull "/sdcard/Android/data/im.collie.app/files/relay-disclosure-$screen.png" "$evidence/screenshots/" || true
+              timeout 30s adb pull "/sdcard/Download/collie-relay-disclosure/relay-disclosure-$screen.png" "$evidence/screenshots/" || true
             done
             sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
               app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
@@ -134,8 +134,8 @@ jobs:
           api-level: 35
           target: google_apis
           arch: x86_64
-          profile: Nexus 10
-          ram-size: 2048M
+          profile: pixel_7_pro
+          ram-size: 3072M
           cores: 2
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none

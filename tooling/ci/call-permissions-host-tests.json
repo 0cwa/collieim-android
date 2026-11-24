@@ -2,7 +2,7 @@
   "schema": 1,
   "robolectric_version": "4.16",
   "expected_classes": 44,
-  "expected_methods": 309,
+  "expected_methods": 316,
   "tasks": {
     ":app:testProdWebsiteDebugUnitTest": {
       "app/src/test/java/org/thoughtcrime/securesms/backup/CallPermissionRestoreBoundaryTest.kt": 2,
@@ -30,7 +30,7 @@
       "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/collie/CallsSettingsViewModelTest.kt": 10,
       "app/src/test/java/org/thoughtcrime/securesms/jobs/BackupTierDowngradeCheckJobTest.kt": 9,
       "app/src/test/java/org/thoughtcrime/securesms/jobs/GroupCallPeekJobCallPermissionTest.kt": 2,
-      "app/src/test/java/org/thoughtcrime/securesms/jobs/GroupCallUpdateSendJobCallPermissionTest.kt": 4,
+      "app/src/test/java/org/thoughtcrime/securesms/jobs/GroupCallUpdateSendJobCallPermissionTest.kt": 5,
       "app/src/test/java/org/thoughtcrime/securesms/jobs/ProfileKeySendJobCallPermissionTest.kt": 5,
       "app/src/test/java/org/thoughtcrime/securesms/jobs/PushProcessMessageJobCallPermissionTest.kt": 5,
       "app/src/test/java/org/thoughtcrime/securesms/keyvalue/CallPermissionValuesTest.kt": 18,
@@ -39,7 +39,7 @@
       "app/src/test/java/org/thoughtcrime/securesms/messages/CallPolicyRefusalTest.kt": 3,
       "app/src/test/java/org/thoughtcrime/securesms/messages/CallPolicyRejectorGenerationTest.kt": 2,
       "app/src/test/java/org/thoughtcrime/securesms/messages/ReusedBatchCacheTest.kt": 2,
-      "app/src/test/java/org/thoughtcrime/securesms/service/webrtc/CallAdmissionDispatchTest.kt": 19,
+      "app/src/test/java/org/thoughtcrime/securesms/service/webrtc/CallAdmissionDispatchTest.kt": 22,
       "app/src/test/java/org/thoughtcrime/securesms/service/webrtc/GroupCallContinuationPermissionTest.kt": 5,
       "app/src/test/java/org/thoughtcrime/securesms/storage/CallLinkRecordProcessorTest.kt": 4,
       "app/src/test/java/org/thoughtcrime/securesms/testutil/MockSignalStoreRuleTest.kt": 2,
@@ -50,7 +50,7 @@
     },
     ":feature:app-settings:testDebugUnitTest": {
       "feature/app-settings/src/test/java/org/signal/appsettings/collie/CallsSettingsScreenTest.kt": 9,
-      "feature/app-settings/src/test/java/org/signal/appsettings/collie/CollieSettingsScreenTest.kt": 8
+      "feature/app-settings/src/test/java/org/signal/appsettings/collie/CollieSettingsScreenTest.kt": 11
     }
   }
 }

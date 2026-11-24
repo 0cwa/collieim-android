@@ -1007,7 +1007,7 @@ class AttachmentTable(
               // current tuple while holding the writer transaction that establishes this reference.
               val currentDuplicate = db.select(*DATA_FILE_INFO_PROJECTION)
                 .from(TABLE_NAME)
-                .where("$ID = ? AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", duplicateAttachment.attachmentId.id, dataFile, duplicateAttachment.remoteKey)
+                .where("$ID = ? AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", duplicateAttachment.attachmentId.id, dataFile, requireNotNull(duplicateAttachment.remoteKey))
                 .run()
                 .readToSingleObject { it.readDataFileInfo() }
                 ?.takeIf { it.random.contentEquals(duplicateAttachmentDataInfo.random) }
@@ -2922,7 +2922,7 @@ class AttachmentTable(
                 // unshared thumbnail. Never publish the thumbnail tuple cached before this lock.
                 val currentDuplicate = db.select(*DATA_FILE_INFO_PROJECTION)
                   .from(TABLE_NAME)
-                  .where("$ID = ? AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", duplicateAttachment.attachmentId.id, dataFile, duplicateAttachment.remoteKey)
+                  .where("$ID = ? AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", duplicateAttachment.attachmentId.id, dataFile, requireNotNull(duplicateAttachment.remoteKey))
                   .run()
                   .readToSingleObject { it.readDataFileInfo() }
                   ?.takeIf { it.random.contentEquals(dataFileInfo.random) }

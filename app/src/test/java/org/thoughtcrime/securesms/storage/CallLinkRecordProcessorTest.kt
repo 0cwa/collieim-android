@@ -95,7 +95,7 @@ class CallLinkRecordProcessorTest {
   @Test
   fun `malformed remote root key is rejected without loading RingRTC`() {
     val proto = CallLinkRecord.Builder().apply {
-      rootKey = "invalid root key".toByteArray().toByteString()
+      rootKey = ByteArray(15).toByteString()
       adminPasskey = EMPTY
       deletedAtTimestampMs = 0L
     }.build()

@@ -7,11 +7,14 @@ package org.thoughtcrime.securesms.components.settings.app.collie
 
 import androidx.compose.runtime.Composable
 import org.signal.core.ui.compose.ComposeFragment
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationActivity
 import org.thoughtcrime.securesms.components.settings.app.appSettingsRouter
 
 class CollieSettingsFragment : ComposeFragment() {
 
-  private val appSettingsRouter by appSettingsRouter()
+  private val appSettingsRouter by appSettingsRouter(
+    onNavigateToScreen = { route -> startActivity(AppSettingsNavigationActivity.createIntent(requireContext(), route)) }
+  )
 
   @Composable
   override fun FragmentContent() {

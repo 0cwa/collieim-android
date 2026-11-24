@@ -10,8 +10,9 @@ shared by another device.
 
 The default preserves existing Signal behavior. Restrictive modes allow
 automatic admission from contacts on this device, from explicitly selected
-people, or require approval every time. Selected people are identified by ACI,
-not a display name or phone number. Blocked and hidden inviters never gain
+people, or require approval every time. Contact matching requires current
+Android contacts permission. Selected people are identified by ACI, not a
+display name or phone number. Blocked and hidden inviters never gain
 automatic permission through a contact or allowlist match. Unattributed
 additions require review in restrictive modes.
 
@@ -36,9 +37,13 @@ membership does not authorize a new addition. A stale screen or queued job must
 recheck the current admission before performing its action.
 
 The policy evaluator has no network, database or job-manager effects. Durable
-storage and application effects are separate from its decision. Failed writes
-must not publish an optimistic permission change. Invalid stored policy must not
-grant broader automatic admission.
+storage and application effects are separate from its decision. The encrypted
+key-value store acknowledges each policy/consent write before it becomes live.
+A held marker precedes a group-table update and is cleared only after that
+update completes. A crash between the two stores leaves the group held.
+Invalid stored policy must not grant broader automatic admission. Settings and
+allowlist writes take the group-processing lock so a removed permission cannot
+be overtaken by a concurrent addition calculated from the old setting.
 
 ## Enforcement
 
@@ -47,12 +52,21 @@ All permission consumers use the same effective admission state, including:
 - Group processing and message-request presentation.
 - Profile sharing and self-profile-key publication.
 - User-message submission, uploads and final transport dispatch.
-- Receipt, avatar, automatic-media and group-call trust checks.
+- Read/view receipt, avatar, automatic-media and group-call trust checks.
 - Storage-service and linked-device imports that change legacy sharing state.
 
-Protocol maintenance, verified membership updates, termination, expiration and
-deletion handling continue normally. Explicit leave keeps its existing behavior.
-Restrictive modes do not enqueue new automatic leave operations.
+Verified incoming membership updates, group termination, expiration and incoming
+deletion handling continue normally. Explicit leave keeps its existing behavior;
+the send gate permits only the matching content-free self-leave, not a generic
+group update. Restrictive modes do not enqueue new automatic leave operations.
+
+Queued sends, uploads and resends check admission again at execution. A held
+send fails normally without retry or an application crash. Automatic transit
+downloads, archive restores and thumbnails remain pending until admission.
+Group calls cannot start, ring or publish membership proof while held. Local
+call termination and incoming cancellation/expiry continue, but outgoing opaque
+group-call signaling is denied too; there is no broad exception for a packet
+that might contain a remote cancellation.
 
 The existing linked-device acceptance message has no membership episode. It and
 storage-service whitelist flags cannot silently release a restrictive local hold.
@@ -62,12 +76,22 @@ protocol.
 
 ## Restore and account changes
 
-Do not use a policy or consent record belonging to another account. Local restore
-must not turn unfinished intent into proof of a completed join, or allow legacy
-imported sharing flags to override an existing hold. Standard Signal sync and v2
-backup records have no group-admission policy field; no unrelated wire field is
-repurposed to carry it. Installation and restore behavior must remain explicit
-in the storage implementation and user-facing descriptions.
+The encrypted document is bound to the account ACI. A different account starts
+with the default policy and cannot reuse another account's people, decisions or
+operation intents.
+
+Legacy local backups and device transfer include the document. Group tables and
+key-value records can be exported at different instants, so restoration preserves
+the policy and chosen people but converts completed custom grants to held
+decisions and clears unfinished operation intents. Restored legacy sharing flags
+cannot release those holds. An unchanged membership requires local acceptance;
+a verified later membership transition receives its own policy decision.
+
+Standard Signal sync and v2 backup records have no group-admission policy field.
+No Signal sync or backup wire field is added. A fresh installation restored
+solely from a v2 backup starts with existing Signal behavior; users must configure
+these local controls again. A retained account-matching local policy is not
+overridden by imported whitelist or acceptance flags.
 
 ## Source and maintenance
 

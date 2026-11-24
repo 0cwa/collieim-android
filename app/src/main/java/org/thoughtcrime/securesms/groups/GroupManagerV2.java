@@ -50,6 +50,8 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.v2.GroupCandidateHelper;
 import org.thoughtcrime.securesms.groups.v2.GroupInviteLinkUrl;
 import org.thoughtcrime.securesms.groups.v2.GroupLinkPassword;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
+import org.thoughtcrime.securesms.groups.v2.processing.GroupStateDiff;
 import org.thoughtcrime.securesms.groups.v2.processing.GroupUpdateResult;
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor;
 import org.thoughtcrime.securesms.groups.v2.processing.TriggeringMessage;
@@ -263,41 +265,49 @@ final class GroupManagerV2 {
         throws GroupChangeFailedException, IOException, MembershipNotSuitableForV2Exception
     {
       GroupSecretParams groupSecretParams = GroupSecretParams.generate();
-      DecryptedGroupResponse createGroupResponse;
-
+      GroupAdmission.ConsentAttempt consent = GroupAdmission.beginCreate(GroupId.v2(groupSecretParams.getMasterKey()));
       try {
-        createGroupResponse = createGroupOnServer(groupSecretParams, name, avatar, members, disappearingMessagesTimer);
-      } catch (GroupAlreadyExistsException e) {
-        throw new GroupChangeFailedException(e);
+        GroupAdmission.beforeMutation(GroupId.v2(groupSecretParams.getMasterKey()), 0);
+        DecryptedGroupResponse createGroupResponse;
+
+        try {
+          createGroupResponse = createGroupOnServer(groupSecretParams, name, avatar, members, disappearingMessagesTimer);
+        } catch (GroupAlreadyExistsException e) {
+          throw new GroupChangeFailedException(e);
+        }
+
+        DecryptedGroup                decryptedGroup        = createGroupResponse.getGroup();
+        GroupMasterKey                masterKey             = groupSecretParams.getMasterKey();
+        ReceivedGroupSendEndorsements groupSendEndorsements = groupsV2Operations.forGroup(groupSecretParams).receiveGroupSendEndorsements(selfAci, decryptedGroup, createGroupResponse.getGroupSendEndorsementsResponse());
+        GroupId.V2                    groupId               = groupDatabase.create(masterKey, decryptedGroup, groupSendEndorsements, GroupTable.computeVerifiedNameHash(decryptedGroup.title));
+
+        if (groupId == null) {
+          throw new GroupChangeFailedException("Unable to create group, group already exists");
+        }
+
+        GroupAdmission.confirmLocalMembership(consent, decryptedGroup);
+
+        RecipientId              groupRecipientId = SignalDatabase.recipients().getOrInsertFromGroupId(groupId);
+        Recipient                groupRecipient   = Recipient.resolved(groupRecipientId);
+
+        AvatarHelper.setAvatar(context, groupRecipientId, avatar != null ? new ByteArrayInputStream(avatar) : null);
+        groupDatabase.onAvatarUpdated(groupId, avatar != null);
+        SignalDatabase.recipients().setProfileSharing(groupRecipient.getId(), true);
+
+        DecryptedGroupChange groupChange = GroupChangeReconstruct.reconstructGroupChange(new DecryptedGroup(), decryptedGroup)
+                                                                 .newBuilder()
+                                                                 .editorServiceIdBytes(selfAci.toByteString())
+                                                                 .build();
+
+        RecipientAndThread recipientAndThread = sendGroupUpdateHelper.sendGroupUpdate(masterKey, new GroupMutation(null, groupChange, decryptedGroup), null);
+
+        return new GroupManager.GroupActionResult(recipientAndThread.groupRecipient,
+                                                  recipientAndThread.threadId,
+                                                  decryptedGroup.members.size() - 1,
+                                                  getPendingMemberRecipientIds(decryptedGroup.pendingMembers));
+      } finally {
+        GroupAdmission.endOperation(consent);
       }
-
-      DecryptedGroup                decryptedGroup        = createGroupResponse.getGroup();
-      GroupMasterKey                masterKey             = groupSecretParams.getMasterKey();
-      ReceivedGroupSendEndorsements groupSendEndorsements = groupsV2Operations.forGroup(groupSecretParams).receiveGroupSendEndorsements(selfAci, decryptedGroup, createGroupResponse.getGroupSendEndorsementsResponse());
-      GroupId.V2                    groupId               = groupDatabase.create(masterKey, decryptedGroup, groupSendEndorsements, GroupTable.computeVerifiedNameHash(decryptedGroup.title));
-
-      if (groupId == null) {
-        throw new GroupChangeFailedException("Unable to create group, group already exists");
-      }
-
-      RecipientId              groupRecipientId = SignalDatabase.recipients().getOrInsertFromGroupId(groupId);
-      Recipient                groupRecipient   = Recipient.resolved(groupRecipientId);
-
-      AvatarHelper.setAvatar(context, groupRecipientId, avatar != null ? new ByteArrayInputStream(avatar) : null);
-      groupDatabase.onAvatarUpdated(groupId, avatar != null);
-      SignalDatabase.recipients().setProfileSharing(groupRecipient.getId(), true);
-
-      DecryptedGroupChange groupChange = GroupChangeReconstruct.reconstructGroupChange(new DecryptedGroup(), decryptedGroup)
-                                                               .newBuilder()
-                                                               .editorServiceIdBytes(selfAci.toByteString())
-                                                               .build();
-
-      RecipientAndThread recipientAndThread = sendGroupUpdateHelper.sendGroupUpdate(masterKey, new GroupMutation(null, groupChange, decryptedGroup), null);
-
-      return new GroupManager.GroupActionResult(recipientAndThread.groupRecipient,
-                                                recipientAndThread.threadId,
-                                                decryptedGroup.members.size() - 1,
-                                                getPendingMemberRecipientIds(decryptedGroup.pendingMembers));
     }
   }
 
@@ -537,6 +547,10 @@ final class GroupManagerV2 {
     @Nullable GroupManager.GroupActionResult updateSelfProfileKeyInGroup()
         throws GroupChangeFailedException, GroupInsufficientRightsException, IOException, GroupNotAMemberException
     {
+      if (GroupAdmission.isHeld(groupId)) {
+        Log.i(TAG, "Not updating a group awaiting local approval");
+        return null;
+      }
       ProfileKey                profileKey  = ProfileKeyUtil.getSelfProfileKey();
       DecryptedGroup            group       = v2GroupProperties.getDecryptedGroup();
       Optional<DecryptedMember> selfInGroup = DecryptedGroupUtil.findMemberByAci(group.members, selfAci);
@@ -786,6 +800,12 @@ final class GroupManagerV2 {
 
       previousGroupState  = v2GroupProperties.getDecryptedGroup();
 
+      if (!changeActions.modifyMemberProfileKeys.isEmpty() && GroupAdmission.isHeld(groupId)) {
+        throw new GroupChangeFailedException("Group approval is required before sharing a profile key");
+      }
+
+      GroupAdmission.beforeMutation(groupId, nextRevision);
+
       GroupChangeResponse changeResponse    = commitToServer(changeActions);
       GroupChange         signedGroupChange = changeResponse.group_change;
       try {
@@ -798,7 +818,9 @@ final class GroupManagerV2 {
 
       RecipientId terminatorRecipientId = (decryptedGroupState.terminated && !previousGroupState.terminated) ? Recipient.self().getId() : null;
       boolean     selfAuthoredTitle     = changeActions.modifyTitle != null;
+      GroupAdmission.PendingUpdate admissionUpdate = GroupAdmission.prepareStateUpdate(groupId, serviceIds, new GroupStateDiff(previousGroupState, decryptedGroupState, decryptedChange), decryptedGroupState);
       groupDatabase.update(groupId, decryptedGroupState, groupsV2Operations.forGroup(groupSecretParams).receiveGroupSendEndorsements(selfAci, decryptedGroupState, changeResponse.group_send_endorsements_response), terminatorRecipientId, selfAuthoredTitle);
+      GroupAdmission.completeStateUpdate(admissionUpdate);
 
       if (selfAuthoredTitle) {
         RecipientId groupRecipientId = SignalDatabase.recipients().getOrInsertFromGroupId(groupId);
@@ -1005,6 +1027,19 @@ final class GroupManagerV2 {
                                                     @Nullable byte[] avatar)
         throws GroupChangeFailedException, IOException, MembershipNotSuitableForV2Exception, GroupLinkNotActiveException
     {
+      GroupAdmission.ConsentAttempt consent = GroupAdmission.beginJoin(groupId, joinInfo.addFromInviteLink == AccessControl.AccessRequired.ADMINISTRATOR);
+      try {
+        return joinGroupWithConsent(joinInfo, avatar, consent);
+      } finally {
+        GroupAdmission.endOperation(consent);
+      }
+    }
+
+    private GroupManager.GroupActionResult joinGroupWithConsent(@NonNull DecryptedGroupJoinInfo joinInfo,
+                                                               @Nullable byte[] avatar,
+                                                               @Nullable GroupAdmission.ConsentAttempt consent)
+        throws GroupChangeFailedException, IOException, MembershipNotSuitableForV2Exception, GroupLinkNotActiveException
+    {
       boolean requestToJoin            = joinInfo.addFromInviteLink == AccessControl.AccessRequired.ADMINISTRATOR;
       boolean alreadyAFullMember       = false;
       boolean groupAlreadyExists       = false;
@@ -1037,7 +1072,7 @@ final class GroupManagerV2 {
         isAlreadyPendingApproval = e.isPending;
       }
 
-      DecryptedGroup decryptedGroup = createPlaceholderGroup(joinInfo, requestToJoin);
+      DecryptedGroup decryptedGroup = createPlaceholderGroup(joinInfo, requestToJoin || isAlreadyPendingApproval, decryptedChange);
 
       Optional<GroupRecord> group = groupDatabase.getGroup(groupId);
 
@@ -1055,7 +1090,7 @@ final class GroupManagerV2 {
         }
       }
 
-      if (groupAlreadyExists && alreadyAFullMember) {
+      if (alreadyAFullMember) {
         Log.i(TAG, "Attempting to update local group with change/server");
         try {
           GroupsV2StateProcessor.forGroup(SignalStore.account().getServiceIds(), groupMasterKey)
@@ -1082,6 +1117,13 @@ final class GroupManagerV2 {
 
       RecipientId groupRecipientId = SignalDatabase.recipients().getOrInsertFromGroupId(groupId);
       Recipient   groupRecipient   = Recipient.resolved(groupRecipientId);
+
+      DecryptedGroup localMembership = groupDatabase.requireGroup(groupId).requireV2GroupProperties().getDecryptedGroup();
+      if (alreadyAFullMember) {
+        GroupAdmission.confirmExistingMembership(consent, localMembership);
+      } else if (requestToJoin && decryptedChange != null) {
+        GroupAdmission.confirmLocalMembership(consent, localMembership, decryptedChange);
+      }
 
       AvatarHelper.setAvatar(context, groupRecipientId, avatar != null ? new ByteArrayInputStream(avatar) : null);
       groupDatabase.onAvatarUpdated(groupId, avatar != null);
@@ -1113,19 +1155,24 @@ final class GroupManagerV2 {
           throw new GroupChangeFailedException("Missing group change data");
         }
 
-        return fetchGroupStateAndSendUpdate(groupRecipient, decryptedGroup, decryptedChange, signedGroupChange);
+        return fetchGroupStateAndSendUpdate(groupRecipient, decryptedGroup, decryptedChange, signedGroupChange, consent);
       }
     }
 
     private GroupManager.GroupActionResult fetchGroupStateAndSendUpdate(@NonNull Recipient groupRecipient,
                                                                         @NonNull DecryptedGroup decryptedGroup,
                                                                         @NonNull DecryptedGroupChange decryptedChange,
-                                                                        @NonNull GroupChange signedGroupChange)
+                                                                        @NonNull GroupChange signedGroupChange,
+                                                                        @Nullable GroupAdmission.ConsentAttempt consent)
         throws GroupChangeFailedException, IOException
     {
       try {
         GroupsV2StateProcessor.forGroup(serviceIds, groupMasterKey)
                               .updateLocalGroupToRevision(GroupsV2StateProcessor.LATEST, System.currentTimeMillis(), null);
+
+        DecryptedGroup verifiedMembership = groupDatabase.requireGroup(groupId).requireV2GroupProperties().getDecryptedGroup();
+        GroupAdmission.confirmLocalMembership(consent, verifiedMembership, decryptedChange);
+        SignalDatabase.recipients().setProfileSharing(groupRecipient.getId(), true);
 
         RecipientAndThread recipientAndThread = sendGroupUpdateHelper.sendGroupUpdate(groupMasterKey, new GroupMutation(null, decryptedChange, decryptedGroup), signedGroupChange);
 
@@ -1168,12 +1215,14 @@ final class GroupManagerV2 {
      * Creates as a placeholder group so that we know not do do a full diff against this group once we learn more about this
      * group as that would create a large update message.
      */
-    private DecryptedGroup createPlaceholderGroup(@NonNull DecryptedGroupJoinInfo joinInfo, boolean requestToJoin) {
+    private DecryptedGroup createPlaceholderGroup(@NonNull DecryptedGroupJoinInfo joinInfo,
+                                                  boolean requestToJoin,
+                                                  @Nullable DecryptedGroupChange confirmedChange) {
       DecryptedGroup.Builder group = new DecryptedGroup.Builder()
                                                        .title(joinInfo.title)
                                                        .avatar(joinInfo.avatar)
                                                        .description(joinInfo.description)
-                                                       .revision(joinInfo.revision)
+                                                       .revision(confirmedChange != null ? confirmedChange.revision : joinInfo.revision)
                                                        .isPlaceholderGroup(true);
 
       Recipient  self         = Recipient.self();
@@ -1181,12 +1230,18 @@ final class GroupManagerV2 {
       ByteString profileKey   = ByteString.of(Objects.requireNonNull(self.getProfileKey()));
 
       if (requestToJoin) {
-        group.requestingMembers(Collections.singletonList(new DecryptedRequestingMember.Builder()
+        DecryptedRequestingMember confirmedRequest = confirmedChange == null ? null : confirmedChange.newRequestingMembers.stream()
+                                                                                                                       .filter(member -> member.aciBytes.equals(selfAciBytes))
+                                                                                                                       .findFirst().orElse(null);
+        group.requestingMembers(Collections.singletonList(confirmedRequest != null ? confirmedRequest : new DecryptedRequestingMember.Builder()
                                                                                        .aciBytes(selfAciBytes)
                                                                                        .profileKey(profileKey)
                                                                                        .build()));
       } else {
-        group.members(Collections.singletonList(new DecryptedMember.Builder()
+        DecryptedMember confirmedMember = confirmedChange == null ? null : confirmedChange.newMembers.stream()
+                                                                                                    .filter(member -> member.aciBytes.equals(selfAciBytes))
+                                                                                                    .findFirst().orElse(null);
+        group.members(Collections.singletonList(confirmedMember != null ? confirmedMember : new DecryptedMember.Builder()
                                                                    .aciBytes(selfAciBytes)
                                                                    .profileKey(profileKey)
                                                                    .build()));
@@ -1231,6 +1286,8 @@ final class GroupManagerV2 {
         try {
           GroupChange.Actions changeActions = change.version(currentRevision + 1)
                                                     .build();
+
+          GroupAdmission.beforeMutation(groupId, changeActions.version);
 
           Log.i(TAG, "Trying to join group at V" + changeActions.version);
           GroupChangeResponse changeResponse = commitJoinToServer(changeActions);
@@ -1342,7 +1399,10 @@ final class GroupManagerV2 {
         DecryptedGroupChange decryptedChange = groupOperations.decryptChange(signedGroupChange, DecryptChangeVerificationMode.alreadyTrusted()).get();
         DecryptedGroup       newGroup        = DecryptedGroupUtil.applyWithoutRevisionCheck(decryptedGroup, decryptedChange);
 
-        groupDatabase.update(groupId, resetRevision(newGroup, decryptedGroup.revision), null, null);
+        DecryptedGroup savedGroup = resetRevision(newGroup, decryptedGroup.revision);
+        GroupAdmission.PendingUpdate admissionUpdate = GroupAdmission.prepareStateUpdate(groupId, serviceIds, new GroupStateDiff(decryptedGroup, savedGroup, decryptedChange), savedGroup);
+        groupDatabase.update(groupId, savedGroup, null, null);
+        GroupAdmission.completeStateUpdate(admissionUpdate);
 
         sendGroupUpdateHelper.sendGroupUpdate(groupMasterKey, new GroupMutation(decryptedGroup, decryptedChange, newGroup), signedGroupChange, false);
       } catch (VerificationFailedException | InvalidGroupStateException | NotAbleToApplyGroupV2ChangeException e) {

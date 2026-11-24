@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -21,6 +22,8 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,7 +48,20 @@ class CollieSettingsScreenTest {
     setContent(LabsSettingsState())
 
     composeTestRule.onNodeWithText("Collie").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.SCROLLER).performScrollToNode(hasText("Labs"))
     composeTestRule.onNodeWithText("Labs").assertIsDisplayed()
+  }
+
+  @Test
+  fun `Privacy section opens group controls without changing a preference`() {
+    var opened = false
+    composeTestRule.setContent {
+      CollieSettingsScreen(state = LabsSettingsState(), onEvent = { events += it }, onGroupPrivacyClicked = { opened = true })
+    }
+    composeTestRule.onNodeWithText("Privacy").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).performClick()
+    assertThat(opened).isEqualTo(true)
+    assertThat(events).isEmpty()
   }
 
   @Test
@@ -54,6 +70,7 @@ class CollieSettingsScreenTest {
     composeTestRule.setContent {
       CollieSettingsScreen(state = LabsSettingsState(), onEvent = {}, onRecoveryPinGuardChanged = { changes += it })
     }
+    scrollTo(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD)
     switchIn(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertIsOff()
     composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).performClick()
     assertThat(changes).containsExactly(true)
@@ -66,6 +83,7 @@ class CollieSettingsScreenTest {
     composeTestRule.setContent {
       CollieSettingsScreen(state = LabsSettingsState(), onEvent = {}, recoveryPinGuardEnabled = true, onRecoveryPinGuardChanged = { changes += it })
     }
+    scrollTo(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD)
     switchIn(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertIsOn()
     composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).performClick()
     assertThat(changes).containsExactly(false)

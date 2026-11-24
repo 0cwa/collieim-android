@@ -39,6 +39,8 @@ import org.signal.network.service.SendRequest
 import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
@@ -63,6 +65,10 @@ class TypingSendJobTest {
 
   @Before
   fun setUp() {
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns false
+    every { GroupAdmission.isHeld(any<GroupId.V2>()) } returns false
+
     every { recipients.signalStore.settings.isTypingIndicatorsEnabled } returns true
 
     mockkStatic(SealedSenderAccessUtil::class)
@@ -78,6 +84,7 @@ class TypingSendJobTest {
 
   @After
   fun tearDown() {
+    unmockkStatic(GroupAdmission::class)
     unmockkStatic(SealedSenderAccessUtil::class)
   }
 
@@ -144,6 +151,24 @@ class TypingSendJobTest {
     Recipient.live(alice).refresh()
 
     assertThat(runJob(threadFor(alice), typing = true).isSuccess).isTrue()
+    verifyNothingSent()
+  }
+
+  @Test
+  fun `held group does not emit typing despite an old sharing flag`() {
+    val group = recipients.createGroup(alice, bob)
+    every { GroupAdmission.isHeld(any<Recipient>()) } answers { firstArg<Recipient>().id == group.recipientId }
+
+    assertThat(runJob(threadFor(group.recipientId), typing = true).isSuccess).isTrue()
+    verifyNothingSent()
+  }
+
+  @Test
+  fun `hold is checked again immediately before group typing transport`() {
+    val group = recipients.createGroup(alice, bob)
+    every { GroupAdmission.isHeld(group.groupId) } returns true
+
+    assertThat(runJob(threadFor(group.recipientId), typing = true).isSuccess).isTrue()
     verifyNothingSent()
   }
 

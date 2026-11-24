@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.signal.core.util.logging.Log;
 import org.signal.remoteconfig.RemoteConfig;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager.Chain;
@@ -29,6 +30,11 @@ public abstract class BaseJob extends Job {
       Log.e(TAG, "Encountered a fatal exception. Crash imminent.", e);
       return Result.fatalFailure(e);
     } catch (Exception e) {
+      if (e instanceof GroupAdmissionSendGate.HeldGroupException) {
+        Log.i(TAG, "Group admission changed; stopping this job without retry.");
+        return Result.failure();
+      }
+
       if (onShouldRetry(e)) {
         Log.i(TAG, JobLogger.format(this, "Encountered a retryable exception."), e);
         return Result.retry(getNextRunAttemptBackoff(getRunAttempt() + 1, e));

@@ -24,6 +24,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.groups.v2.GroupInviteLinkUrl;
 import org.thoughtcrime.securesms.groups.v2.GroupLinkPassword;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.groups.v2.processing.GroupUpdateResult;
 import org.thoughtcrime.securesms.groups.v2.processing.TriggeringMessage;
 import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob;
@@ -131,7 +132,8 @@ public final class GroupManager {
       return;
     }
 
-    boolean sendToMembers = Recipient.externalGroupExact(groupId).resolve().isProfileSharing();
+    Recipient groupRecipient = Recipient.externalGroupExact(groupId).resolve();
+    boolean sendToMembers = !GroupAdmission.isHeld(groupRecipient) && groupRecipient.isProfileSharing();
 
     leaveGroup(context, groupId.requireV2(), sendToMembers);
   }

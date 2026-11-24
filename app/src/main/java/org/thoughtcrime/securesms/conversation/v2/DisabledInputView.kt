@@ -118,7 +118,7 @@ class DisabledInputView @JvmOverloads constructor(
               .setCancelable(false)
               .setPositiveButton(R.string.MessageRequestBottomView_accept) { _, _ ->
                 Log.i(TAG, "[message-request] Individual request confirmed. listener present: ${listener != null}")
-                listener?.onAcceptMessageRequestClicked()
+                listener?.onAcceptMessageRequestClicked(messageRequestState.consentToken)
               }
               .setNegativeButton(android.R.string.cancel) { _, _ -> Log.i(TAG, "[message-request] Individual request canceled.") }
               .show()
@@ -129,12 +129,12 @@ class DisabledInputView @JvmOverloads constructor(
               .setCancelable(false)
               .setPositiveButton(R.string.MessageRequestBottomView_join) { _, _ ->
                 Log.i(TAG, "[message-request] Group join confirmed. listener present: ${listener != null}")
-                listener?.onAcceptMessageRequestClicked()
+                listener?.onAcceptMessageRequestClicked(messageRequestState.consentToken)
               }
               .setNegativeButton(android.R.string.cancel) { _, _ -> Log.i(TAG, "[message-request] Group join canceled.") }
               .show()
           } else {
-            listener?.onAcceptMessageRequestClicked()
+            listener?.onAcceptMessageRequestClicked(messageRequestState.consentToken)
           }
         }
         setDeleteOnClickListener {
@@ -286,7 +286,7 @@ class DisabledInputView @JvmOverloads constructor(
     fun onReLinkDeviceClicked()
     fun onCancelGroupRequestClicked()
     fun onShowAdminsBottomSheetDialog()
-    fun onAcceptMessageRequestClicked()
+    fun onAcceptMessageRequestClicked(expectedGroupEpisode: String?)
     fun onDeleteClicked()
     fun onBlockClicked()
     fun onUnblockClicked()

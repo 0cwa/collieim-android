@@ -29,7 +29,10 @@ import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.net.SocksProxy
 import java.io.IOException
+import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.UnknownHostException
 import java.util.function.BooleanSupplier
 
 @RunWith(RobolectricTestRunner::class)
@@ -259,6 +262,7 @@ class MapResourceClientTest {
   @Test
   fun `route changes cancel admitted tile calls and reject superseded DNS and sockets`() {
     val call = mockk<Call>(relaxed = true)
+    every { call.cancel() } answers { assertSame(route, Networking.routing) }
     route.track(call)
 
     Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
@@ -291,12 +295,28 @@ class MapResourceClientTest {
       assertTrue(chain.call().isCanceled())
       throw IOException("Synthetic DNS transport reached")
     }.build()
+    assertEquals(listOf(Protocol.HTTP_1_1), client.protocols)
     val request = Request.Builder().url("https://1.1.1.1/dns-query").build()
     val admitted = client.newCall(request)
     val queued = client.newCall(request)
 
     assertEquals("Synthetic DNS transport reached", assertThrows(IOException::class.java) { admitted.execute() }.message)
     assertEquals("Map network route changed", assertThrows(IOException::class.java) { queued.execute() }.message)
+  }
+
+  @Test
+  fun `configured HTTP proxy names are resolved locally and failure never adds a direct route`() {
+    val name = "proxy.example.invalid"
+    val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(name, 8080))
+    val localAddress = InetAddress.getByAddress(byteArrayOf(127, 0, 0, 2))
+    val selected = Networking.resolveHttpProxyAddresses(listOf(proxy, Proxy.NO_PROXY)) { host ->
+      assertEquals(name, host)
+      listOf(localAddress)
+    }
+    assertEquals(listOf(Proxy(Proxy.Type.HTTP, InetSocketAddress(localAddress, 8080)), Proxy.NO_PROXY), selected)
+    assertThrows(UnknownHostException::class.java) {
+      Networking.resolveHttpProxyAddresses(listOf(proxy)) { throw UnknownHostException(it) }
+    }
   }
 
   @Test

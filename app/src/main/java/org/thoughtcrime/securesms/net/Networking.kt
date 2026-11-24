@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.net
 import okhttp3.Call
 import okhttp3.Dns
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -10,6 +11,7 @@ import java.net.Proxy
 import java.net.ProxySelector
 import java.net.SocketAddress
 import java.net.URI
+import java.net.UnknownHostException
 import java.util.function.BooleanSupplier
 import java.util.function.Consumer
 import javax.net.SocketFactory
@@ -99,13 +101,14 @@ object Networking {
   }
 
   private fun updateRoute(update: (Routing) -> Routing) {
-    val cancelled = synchronized(routeLock) {
+    synchronized(routeLock) {
       val replacement = update(routing)
       if (replacement === routing) return
+      // HTTP/1.1 cancellation closes the established socket before the new route is visible.
+      routeCalls.forEach(Call::cancel)
+      routeCalls.clear()
       routing = replacement
-      routeCalls.toList().also { routeCalls.clear() }
     }
-    cancelled.forEach(Call::cancel)
   }
 
   /**
@@ -120,7 +123,20 @@ object Networking {
         proxy
       }
     }
-    val proxySelector: ProxySelector by lazy { Networking.proxySelector { socksProxy != null } }
+    val proxySelector: ProxySelector by lazy {
+      val delegate = Networking.proxySelector { socksProxy != null }
+      object : ProxySelector() {
+        override fun select(uri: URI?): List<Proxy> {
+          ensureCurrent()
+          val selected = resolveHttpProxyAddresses(delegate.select(uri), Dns.SYSTEM)
+          ensureCurrent()
+          return selected
+        }
+
+        override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) =
+          delegate.connectFailed(uri, sa, ioe)
+      }
+    }
     val dns: Dns by lazy {
       // System DNS would bypass the pinned call machinery. Both map routes use bound DoH.
       DnsProxyAware(socketFactory, proxySelector, ::configureDoh) {
@@ -130,7 +146,7 @@ object Networking {
     }
 
     fun configureDoh(builder: OkHttpClient.Builder) {
-      builder.addInterceptor { chain ->
+      builder.protocols(listOf(Protocol.HTTP_1_1)).addInterceptor { chain ->
         val call = chain.call()
         track(call)
         try {
@@ -158,6 +174,28 @@ object Networking {
     fun untrack(call: Call) = synchronized(routeLock) {
       routeCalls.remove(call)
     }
+  }
+
+  /** Resolve configured HTTP proxy names locally without sending them to the map DoH providers. */
+  internal fun resolveHttpProxyAddresses(proxies: List<Proxy>, resolver: Dns): List<Proxy> {
+    var failure: UnknownHostException? = null
+    val resolved = proxies.flatMap { proxy ->
+      val address = proxy.address() as? InetSocketAddress
+      if (proxy.type() != Proxy.Type.HTTP || address == null || !address.isUnresolved) {
+        listOf(proxy)
+      } else {
+        try {
+          val addresses = resolver.lookup(address.hostString)
+          if (addresses.isEmpty()) throw UnknownHostException("System HTTP proxy hostname has no addresses")
+          addresses.map { Proxy(Proxy.Type.HTTP, InetSocketAddress(it, address.port)) }
+        } catch (error: UnknownHostException) {
+          failure = error
+          emptyList()
+        }
+      }
+    }
+    if (resolved.isEmpty()) failure?.let { throw it }
+    return resolved
   }
 
   private fun ensureNetworkEnabled() {

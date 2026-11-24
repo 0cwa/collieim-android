@@ -38,6 +38,8 @@ sealed interface ChatsSettingsEvents {
 
   data class GenerateLinkPreviewsChanged(val enabled: Boolean) : ChatsSettingsEvents
 
+  data class WebLinkPreviewImagesChanged(val enabled: Boolean) : ChatsSettingsEvents
+
   data class AutoplayStickersAndGifsChanged(val enabled: Boolean) : ChatsSettingsEvents
 
   data class UseAddressBookChanged(val enabled: Boolean) : ChatsSettingsEvents

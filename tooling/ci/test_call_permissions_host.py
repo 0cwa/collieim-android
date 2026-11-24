@@ -53,10 +53,11 @@ class CallPermissionsHostTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             host.check_reports(self.root, self.selected)
 
-    def test_current_inventory_covers_all_44_classes_and_309_methods(self):
+    def test_current_inventory_covers_every_selected_class_and_method(self):
         actual = host.inventory(host.ROOT)
-        self.assertEqual(44, len(actual['suites']))
-        self.assertEqual(309, sum(len(s['methods']) for s in actual['suites']))
+        manifest = json.loads((host.ROOT / host.MANIFEST).read_text())
+        self.assertEqual(manifest['expected_classes'], len(actual['suites']))
+        self.assertEqual(manifest['expected_methods'], sum(len(s['methods']) for s in actual['suites']))
 
     def test_complete_exact_method_reports_pass(self):
         self.assertEqual(3, sum(row['passed'] for row in host.check_reports(self.root, self.selected)))

@@ -62,12 +62,14 @@ cache. Merge resolution is conservative: `BLOCK` wins over `INHERIT`, and
 database transaction cannot expose an older, broader override. A merge involving
 an active session invalidates that session.
 
-Account transitions and restore invalidate all session grants and discard
-recipient-specific grants. Both backup import paths reset them under the
-recipient database writer before replacing recipient tables, including imports
-that later roll back. Device restrictions survive. If a discarded override
-contained a block, the corresponding device default becomes blocked, preventing
-loss of that restriction when the old recipient IDs no longer have meaning.
+Account identity changes and restore invalidate all session grants and discard
+recipient-specific overrides. Both backup import paths reset overrides under
+the recipient database writer before replacing recipient tables, including
+imports that later roll back. Device restrictions survive. If a discarded
+override contained a block, the corresponding device default becomes blocked,
+preventing loss of that restriction when the old recipient IDs no longer have
+meaning. Registration and authorization transitions for the same account revoke
+session grants while preserving overrides for its unchanged recipient database.
 Unregistered, unauthorized or unavailable account state cannot authorize calling.
 
 ## Admission and session authorization

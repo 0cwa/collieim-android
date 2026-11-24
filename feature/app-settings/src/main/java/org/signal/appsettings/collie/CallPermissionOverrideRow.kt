@@ -18,6 +18,7 @@ fun CallPermissionOverrideRow(
   state: CallPermissionOverrideState,
   onSelected: (CallPermissionChoice) -> Unit,
   onErrorDismissed: () -> Unit,
+  onRetry: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val allow = stringResource(if (state.group) R.string.CollieCalls__allow_group else R.string.CollieCalls__allow_incoming)
@@ -45,5 +46,12 @@ fun CallPermissionOverrideRow(
       }
     )
   )
+  if (!state.loading && !state.available) {
+    Rows.TextRow(
+      text = stringResource(R.string.CollieCalls__try_again),
+      enabled = !state.saving,
+      onClick = onRetry
+    )
+  }
   CallPermissionSaveError(state.saveFailed, onErrorDismissed)
 }

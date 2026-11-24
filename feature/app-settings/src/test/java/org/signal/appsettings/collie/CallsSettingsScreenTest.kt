@@ -7,7 +7,6 @@ package org.signal.appsettings.collie
 
 import android.app.Application
 import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
@@ -23,6 +22,7 @@ import androidx.compose.ui.test.performScrollToNode
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -109,7 +109,8 @@ class CallsSettingsScreenTest {
         CallPermissionOverrideRow(
           state = CallPermissionOverrideState(loading = false, available = true),
           onSelected = choices::add,
-          onErrorDismissed = {}
+          onErrorDismissed = {},
+          onRetry = {}
         )
       }
     }
@@ -129,7 +130,8 @@ class CallsSettingsScreenTest {
         CallPermissionOverrideRow(
           state = CallPermissionOverrideState(loading = false, available = true, group = true),
           onSelected = {},
-          onErrorDismissed = {}
+          onErrorDismissed = {},
+          onRetry = {}
         )
       }
     }
@@ -146,13 +148,37 @@ class CallsSettingsScreenTest {
         CallPermissionOverrideRow(
           state = CallPermissionOverrideState(loading = false, available = true, allCallingDisabled = true, choice = CallPermissionChoice.ALLOW),
           onSelected = {},
-          onErrorDismissed = {}
+          onErrorDismissed = {},
+          onRetry = {}
         )
       }
     }
 
     composeTestRule.onNodeWithTag(CallsSettingsTestTags.OVERRIDE).assertIsNotEnabled()
     composeTestRule.onNodeWithText("All calling is disabled on this device. Turn off the device restriction in Settings → Collie → Calls to change incoming-call permissions.").assertIsDisplayed()
+  }
+
+  @Test
+  fun `unavailable recipient policy offers a read retry while permission choices stay disabled`() {
+    val choices = mutableListOf<CallPermissionChoice>()
+    var retries = 0
+    composeTestRule.setContent {
+      Column {
+        CallPermissionOverrideRow(
+          state = CallPermissionOverrideState(loading = false, available = false),
+          onSelected = choices::add,
+          onErrorDismissed = {},
+          onRetry = { retries++ }
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithTag(CallsSettingsTestTags.OVERRIDE).assertIsNotEnabled()
+    composeTestRule.onNodeWithText("Try again").performClick()
+
+    assertThat(retries).isEqualTo(1)
+    assertThat(choices).isEmpty()
+    composeTestRule.onNodeWithTag(CallsSettingsTestTags.OVERRIDE).assertIsNotEnabled()
   }
 
   private fun setContent(state: CallsSettingsState) {

@@ -149,6 +149,39 @@ class CallsSettingsViewModelTest {
     assertThat(model.state.value.saveFailed).isTrue()
   }
 
+  @Test
+  fun `retrying an unavailable contact policy reads its saved restriction without writing`() = runTest(dispatcher) {
+    val recipient = mockk<Recipient> { every { isGroup } returns false }
+    access.recipient = access.recipient.copy(choice = CallPermissionChoice.BLOCK, defaultAllowsCalls = false)
+    access.readFails = true
+    val model = CallPermissionOverrideViewModel(recipient, access, dispatcher)
+    assertThat(model.state.value.available).isFalse()
+
+    access.readFails = false
+    model.retry()
+
+    assertThat(model.state.value.available).isTrue()
+    assertThat(model.state.value.loading).isFalse()
+    assertThat(model.state.value.choice).isEqualTo(CallPermissionChoice.BLOCK)
+    assertThat(model.state.value.defaultAllowsCalls).isFalse()
+    assertThat(access.writeCount).isEqualTo(0)
+  }
+
+  @Test
+  fun `failed recipient policy retry stays unavailable and cannot grant permission`() = runTest(dispatcher) {
+    val recipient = mockk<Recipient> { every { isGroup } returns true }
+    access.readFails = true
+    val model = CallPermissionOverrideViewModel(recipient, access, dispatcher)
+
+    model.retry()
+    model.select(CallPermissionChoice.ALLOW)
+
+    assertThat(model.state.value.available).isFalse()
+    assertThat(model.state.value.loading).isFalse()
+    assertThat(model.state.value.group).isTrue()
+    assertThat(access.writeCount).isEqualTo(0)
+  }
+
   private class FakeAccess : CallPermissionsSettingsAccess {
     override val changes = MutableStateFlow(0L)
     var device = CallsSettingsState(loading = false, available = true)
@@ -162,7 +195,10 @@ class CallsSettingsViewModelTest {
       return device
     }
 
-    override fun readRecipient(recipient: Recipient): CallPermissionOverrideState = this.recipient
+    override fun readRecipient(recipient: Recipient): CallPermissionOverrideState {
+      if (readFails) throw IOException("unreadable")
+      return this.recipient
+    }
 
     override fun setAllCallingDisabled(disabled: Boolean) = write { device = device.copy(allCallingDisabled = disabled) }
 

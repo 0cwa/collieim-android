@@ -27,5 +27,5 @@ fun CallPermissionOverrideEntry(recipient: Recipient) {
     CallPermissionOverrideViewModel(recipient)
   }
   val state by viewModel.state.collectAsStateWithLifecycle()
-  CallPermissionOverrideRow(state = state, onSelected = viewModel::select, onErrorDismissed = viewModel::dismissError)
+  CallPermissionOverrideRow(state = state, onSelected = viewModel::select, onErrorDismissed = viewModel::dismissError, onRetry = viewModel::retry)
 }

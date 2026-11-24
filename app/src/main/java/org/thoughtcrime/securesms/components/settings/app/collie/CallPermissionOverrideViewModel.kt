@@ -53,6 +53,13 @@ internal class CallPermissionOverrideViewModel(
     mutableState.update { it.copy(saveFailed = false) }
   }
 
+  fun retry() {
+    val current = state.value
+    if (current.loading || current.saving || current.available) return
+    mutableState.update { it.copy(loading = true) }
+    viewModelScope.launch { refresh() }
+  }
+
   private suspend fun refresh() {
     val snapshot = try {
       withContext(ioDispatcher) { access.readRecipient(recipient) }

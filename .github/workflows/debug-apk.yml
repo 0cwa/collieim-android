@@ -119,6 +119,7 @@ jobs:
           timeout 10s adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/device-api.txt"
           test "$(cat "$evidence/device-api.txt")" = 35
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          timeout 10s adb shell am force-stop com.google.android.apps.nexuslauncher
           timeout 10s adb logcat -c
           ./gradlew --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
@@ -134,8 +135,8 @@ jobs:
           api-level: 35
           target: google_apis
           arch: x86_64
-          profile: Nexus 10
-          ram-size: 2048M
+          profile: pixel_7_pro
+          ram-size: 3072M
           cores: 2
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none

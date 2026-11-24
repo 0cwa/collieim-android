@@ -18,6 +18,7 @@ import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -43,7 +44,7 @@ import java.io.FileOutputStream
 class UnifiedPushSettingsScreenshotTest {
 
   @get:Rule
-  val harness = SignalActivityRule(othersCount = 0)
+  val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
 
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
   private val context: Context = instrumentation.targetContext
@@ -124,19 +125,21 @@ class UnifiedPushSettingsScreenshotTest {
             val model = ViewModelProvider(fragment)[UnifiedPushSettingsViewModel::class.java]
             // Exercise the real settings presentation without provisioning a distributor or a relay.
             val stored = model.exportState as MutableLiveData<UnifiedPushSettingsViewModel.ExportState?>
-            stored.value = UnifiedPushSettingsViewModel.ExportState(
+            val result = UnifiedPushSettingsViewModel.ExportState(
               java.util.UUID.randomUUID().toString(),
               checkNotNull(SignalStore.account.aci).toString(),
               SignalStore.account.deviceId,
               UnifiedPushLifecycle.currentGeneration(),
               message,
             )
+            check(result.belongsToCurrentAccount()) { "Synthetic registration is not available for the export-result proof" }
+            stored.value = result
           }
-          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message)).inRoot(isDialog())
             .check(matches(withText(message)))
             .check(matches(isDisplayed()))
           scenario.recreate()
-          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message)).inRoot(isDialog())
             .check(matches(withText(message)))
             .check(matches(isDisplayed()))
           scenario.onActivity { activity ->
@@ -148,7 +151,7 @@ class UnifiedPushSettingsScreenshotTest {
           }
           SignalStore.settings.isScreenSecurityEnabled = false
           scenario.recreate()
-          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message))
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.message)).inRoot(isDialog())
             .check(matches(withText(message)))
             .check(matches(isDisplayed()))
           val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
@@ -167,7 +170,7 @@ class UnifiedPushSettingsScreenshotTest {
           } finally {
             image.recycle()
           }
-          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).perform(click())
+          onView(androidx.test.espresso.matcher.ViewMatchers.withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
           scenario.onActivity { check(UnifiedPushSettingsViewModel.unreadExport() == null) }
         }
       }

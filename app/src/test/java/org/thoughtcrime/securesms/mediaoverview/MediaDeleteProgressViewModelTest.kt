@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +52,7 @@ class MediaDeleteProgressViewModelTest {
     every { SignalDatabase.instance } returns mockk {
       every { attachmentTable } returns attachments
     }
-    mockkObject(AttachmentUtil)
+    mockkStatic(AttachmentUtil::class)
     mockkObject(MultiDeviceDeleteSyncJob.Companion)
     every { MultiDeviceDeleteSyncJob.enqueueMessageDeletes(any()) } just Runs
   }

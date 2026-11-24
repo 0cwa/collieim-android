@@ -12,6 +12,8 @@ import android.database.Cursor
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -317,6 +319,82 @@ class AttachmentTableTest_removeLocally {
   }
 
   @Test
+  fun `key preparation cannot copy a thumbnail removed after duplicate selection`() {
+    val sharedData = file()
+    val thumbnail = file()
+    val source = attachment(message(), data = sharedData, thumbnail = thumbnail)
+    val target = keyPreparationTarget(sharedData)
+    val sourceKey = attachments.getAttachment(source)!!.remoteKey
+
+    removeAfterDuplicateSelection("Found duplicate with full remote data.", source) {
+      attachments.createRemoteKeyIfNecessary(target)
+    }
+
+    assertTrue(sharedData.exists())
+    assertFalse(thumbnail.exists())
+    assertTrue(attachments.getAttachment(source)!!.isLocallyRemoved)
+    assertEquals(sourceKey, attachments.getAttachment(target)!!.remoteKey)
+    assertNull(attachments.getThumbnailFileInfo(target))
+    assertEquals(AttachmentTable.ThumbnailRestoreState.NONE, attachments.getAttachment(target)!!.thumbnailRestoreState)
+  }
+
+  @Test
+  fun `archive key preparation cannot copy a thumbnail removed after duplicate selection`() {
+    val sharedData = file()
+    val thumbnail = file()
+    val source = attachment(message(), data = sharedData, thumbnail = thumbnail)
+    val target = keyPreparationTarget(sharedData)
+    val sourceKey = attachments.getAttachment(source)!!.remoteKey
+
+    removeAfterDuplicateSelection("Missing key but found same data file", source) {
+      assertEquals(1, attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload().totalCount)
+    }
+
+    assertTrue(sharedData.exists())
+    assertFalse(thumbnail.exists())
+    assertTrue(attachments.getAttachment(source)!!.isLocallyRemoved)
+    assertEquals(sourceKey, attachments.getAttachment(target)!!.remoteKey)
+    assertNull(attachments.getThumbnailFileInfo(target))
+    assertEquals(AttachmentTable.ThumbnailRestoreState.NONE, attachments.getAttachment(target)!!.thumbnailRestoreState)
+  }
+
+  @Test
+  fun `thumbnail copied before removal stays available to the other attachment`() {
+    for (archivePreparation in listOf(false, true)) {
+      val sharedData = file()
+      val thumbnail = file()
+      val source = attachment(message(), data = sharedData, thumbnail = thumbnail)
+      val target = keyPreparationTarget(sharedData)
+      if (archivePreparation) {
+        assertEquals(1, attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload().totalCount)
+      } else {
+        attachments.createRemoteKeyIfNecessary(target)
+      }
+      assertEquals(thumbnail.absolutePath, attachments.getThumbnailFileInfo(target)!!.file.absolutePath)
+
+      assertTrue(remove(source))
+
+      assertTrue(sharedData.exists())
+      assertTrue(thumbnail.exists())
+      assertEquals(thumbnail.absolutePath, attachments.getThumbnailFileInfo(target)!!.file.absolutePath)
+      assertEquals(AttachmentTable.ThumbnailRestoreState.FINISHED, attachments.getAttachment(target)!!.thumbnailRestoreState)
+    }
+  }
+
+  @Test
+  fun `key preparation respects disabled thumbnail copying`() {
+    val sharedData = file()
+    val source = attachment(message(), data = sharedData, thumbnail = file())
+    val target = keyPreparationTarget(sharedData)
+
+    attachments.createRemoteKeyIfNecessary(target, copyThumbnailInfo = false)
+
+    assertEquals(attachments.getAttachment(source)!!.remoteKey, attachments.getAttachment(target)!!.remoteKey)
+    assertNull(attachments.getThumbnailFileInfo(target))
+    assertEquals(AttachmentTable.ThumbnailRestoreState.NONE, attachments.getAttachment(target)!!.thumbnailRestoreState)
+  }
+
+  @Test
   fun `cancellation failure does not prevent committed removal cleanup or refresh`() {
     val data = file()
     val messageId = message("Retained text")
@@ -405,6 +483,41 @@ class AttachmentTableTest_removeLocally {
   }))
 
   private fun remove(id: AttachmentId): Boolean = runBlocking(Dispatchers.IO) { attachments.removeAttachmentLocally(id) }
+
+  private fun keyPreparationTarget(data: File): AttachmentId = attachment(message(), data = data).also { id ->
+    db.update(AttachmentTable.TABLE_NAME)
+      .values(
+        AttachmentTable.REMOTE_KEY to null,
+        AttachmentTable.REMOTE_LOCATION to null,
+        AttachmentTable.REMOTE_DIGEST to null,
+        AttachmentTable.ARCHIVE_CDN to null,
+        AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+        AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+        AttachmentTable.THUMBNAIL_RANDOM to null,
+        AttachmentTable.THUMBNAIL_RESTORE_STATE to AttachmentTable.ThumbnailRestoreState.NONE.value
+      )
+      .where("${AttachmentTable.ID} = ?", id.id)
+      .run()
+  }
+
+  private fun removeAfterDuplicateSelection(message: String, source: AttachmentId, action: () -> Unit) {
+    // The same pre-write diagnostic hook used by the key-preparation tests makes this race deterministic.
+    var removed = false
+    mockkStatic(Log::class)
+    try {
+      every { Log.w(any<String>(), match<String> { it.contains(message) }) } answers {
+        if (!removed) {
+          removed = true
+          assertTrue(remove(source))
+        }
+        Unit
+      }
+      action()
+      assertTrue("Expected to remove the source between selection and publication", removed)
+    } finally {
+      unmockkStatic(Log::class)
+    }
+  }
 
   private fun file(): File = files.newFile().apply { writeBytes(ByteArray(128) { 1 }) }
 

@@ -388,9 +388,11 @@ class MediaViewerViewModelTest {
     coEvery { repository.canRemoveAttachment(AttachmentId(1)) } coAnswers { eligibility.await() }
     val viewModel = createViewModel()
     pagedFlow.value = listOf(createItem(1), createItem(2))
+    viewModel.onEvent(MediaViewerEvent.PageSettled(0))
 
     viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
     viewModel.onEvent(MediaViewerEvent.PageScrolled(1))
+    assertThat(viewModel.state.value.currentItem?.attachmentId).isEqualTo(AttachmentId(2))
     eligibility.complete(true.right())
 
     assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.None)
@@ -404,9 +406,11 @@ class MediaViewerViewModelTest {
     val viewModel = createViewModel()
     val actions = collectActions(viewModel.actions)
     pagedFlow.value = listOf(createItem(1), createItem(2))
+    viewModel.onEvent(MediaViewerEvent.PageSettled(0))
 
     viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
     viewModel.onEvent(MediaViewerEvent.PageScrolled(1))
+    assertThat(viewModel.state.value.currentItem?.attachmentId).isEqualTo(AttachmentId(2))
     viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
 
     coVerify(exactly = 1) { repository.removeAttachment(AttachmentId(1)) }

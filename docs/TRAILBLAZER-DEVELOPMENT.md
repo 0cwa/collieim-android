@@ -15,5 +15,6 @@ the exact commit and use a disposable emulator signer. Synthetic relay tests
 use the isolated `im.collie.app.imo` app and matching test APKs. Save physical
 device checks for final validation.
 
-The separate Beta readiness workflow verifies release evidence after development
-validation. Merging to the development branch does not sign or publish a release.
+Merging to the development branch does not sign or publish a release. A Beta
+release is built by `build-release.yml` and published as an immutable prerelease;
+the release engineering feed checks it against that build.

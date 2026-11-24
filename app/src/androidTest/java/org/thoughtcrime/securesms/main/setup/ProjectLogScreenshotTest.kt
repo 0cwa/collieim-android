@@ -368,6 +368,13 @@ class ProjectLogScreenshotTest {
       assertEquals("Screen security must be off only for this fixture", 0, activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE)
     }
 
+    if (name.startsWith("03-dark-") || name.startsWith("04-dark-")) {
+      var appHasFocus = false
+      compose.waitUntil(20_000) {
+        scenario.onActivity { appHasFocus = it.hasWindowFocus() }
+        appHasFocus
+      }
+    }
     saveScreenshot(name)
   }
 

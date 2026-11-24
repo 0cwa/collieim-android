@@ -7,6 +7,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,6 +28,9 @@ import org.thoughtcrime.securesms.calls.permissions.CallPermissionTestEnvironmen
 import org.thoughtcrime.securesms.calls.permissions.CallPermissions
 import org.thoughtcrime.securesms.calls.permissions.CallSessionAuthorizer
 import org.thoughtcrime.securesms.calls.permissions.DirectMessageKind
+import org.thoughtcrime.securesms.calls.permissions.GroupMessageKind
+import org.thoughtcrime.securesms.database.GroupTable
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.ringrtc.RemotePeer
 import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceState
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
@@ -109,6 +114,54 @@ class CallAdmissionDispatchTest {
     queue.drain()
 
     verifyNoRemoteDispatch()
+  }
+
+  @Test
+  fun `contact blocked during dispatch cannot reach JNI or revive its direct session`() {
+    val ticket = authorizedOutgoingIce()
+    val recipient = policy.recipient(peer.id.toLong())
+    val interactor: WebRtcInteractor = mockk(relaxed = true)
+    every { interactor.callManager } returns native
+    val processor = object : WebRtcActionProcessor(interactor, "BlockRaceTest") {
+      override fun handleReceivedIceCandidates(currentState: WebRtcServiceState, callMetadata: WebRtcData.CallMetadata, iceCandidates: List<ByteArray>): WebRtcServiceState {
+        every { recipient.isBlocked } returns true
+        return super.handleReceivedIceCandidates(currentState, callMetadata, iceCandidates)
+      }
+    }
+    ReflectionHelpers.setField(manager, "serviceState", WebRtcServiceState(processor))
+
+    manager.receivedIceCandidates(ticket, metadata, listOf(byteArrayOf(1)))
+    queue.drain()
+
+    verifyNoRemoteDispatch()
+    every { recipient.isBlocked } returns false
+    assertFalse(CallPermissions.isAuthorized(ticket))
+    assertFalse(CallPermissions.canContinueCall(recipient.id))
+  }
+
+  @Test
+  fun `member removed during opaque dispatch cannot reach JNI or end the group session`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    val otherMember = policy.recipient(9)
+    val record = SignalDatabase.groups.getGroup(group.id).get()
+    check(CallPermissions.beginOutgoing(group.id))
+    val ticket = requireNotNull(CallPermissions.authorizeGroup(group.id, sender.id, null, 2, GroupMessageKind.GROUP_DATA, 0))
+    val interactor: WebRtcInteractor = mockk(relaxed = true)
+    every { interactor.callManager } returns native
+    val processor = object : WebRtcActionProcessor(interactor, "MembershipRaceTest") {
+      override fun handleReceivedOpaqueMessage(currentState: WebRtcServiceState, opaqueMessageMetadata: WebRtcData.OpaqueMessageMetadata): WebRtcServiceState {
+        every { record.memberLevel(sender) } returns GroupTable.MemberLevel.NOT_A_MEMBER
+        return super.handleReceivedOpaqueMessage(currentState, opaqueMessageMetadata)
+      }
+    }
+    ReflectionHelpers.setField(manager, "serviceState", WebRtcServiceState(processor))
+
+    manager.receivedOpaqueMessage(ticket, WebRtcData.OpaqueMessageMetadata(UUID(0, 7), byteArrayOf(1), 2, 0))
+    queue.drain()
+
+    verifyNoRemoteDispatch()
+    assertNotNull(CallPermissions.authorizeGroup(group.id, otherMember.id, null, 3, GroupMessageKind.GROUP_DATA, 0))
   }
 
   @Test

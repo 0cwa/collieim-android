@@ -345,9 +345,12 @@ object CallPermissions {
 
   /** Final managed check adjacent to JNI, after action processors' existing trust/identity checks. */
   @JvmStatic
-  fun isDispatchAuthorized(): Boolean = synchronized(lock) {
+  fun isDispatchAuthorized(): Boolean {
     val ticket = dispatchAuthorization.get() ?: return false
-    valid(ticket)
+    // Blocking and group membership can change independently of the call-policy generation
+    // while an action is running. Recheck them here too, outside the session lock: recipient
+    // merges hold the database writer and must never wait for a lock that encloses a DB read.
+    return isAuthorized(ticket)
   }
 
   @JvmStatic

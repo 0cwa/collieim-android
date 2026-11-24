@@ -112,6 +112,8 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.mollySocketUrl } returns "https://molly.example.invalid"
     every { unifiedPush.device } answers { storedDevice }
     every { unifiedPush.device = any() } answers { storedDevice = firstArg() }
+    every { unifiedPush.pendingRelayCleanup } returns null
+    every { unifiedPush.isProvisioningPending(any()) } returns false
     every { unifiedPush.commitProvisionedDevice(any()) } answers { storedDevice = firstArg() }
     every { unifiedPush.commitClearedDevice() } answers { storedDevice = null }
     every { unifiedPush.controlState } answers { controlState }
@@ -554,10 +556,7 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.enabled } returns true
     val removeEntered = CountDownLatch(1)
     val markerSet = CountDownLatch(1)
-    every { unifiedPush.setIncompleteAccountTransition(any()) } answers {
-      transitionMarker = firstArg()
-      if (transitionMarker) markerSet.countDown()
-    }
+    every { unifiedPush.setRelayCleanup(any(), true) } answers { markerSet.countDown() }
     every { MollySocketRepository.removeDevice(device) } answers {
       removeEntered.countDown()
       // The refresh must reach local transition only after the remote removal succeeds.
@@ -688,6 +687,8 @@ class UnifiedPushRefreshJobTest {
     every { MollySocketRepository.createDevice() } returns created
     every { MollySocketRepository.removeDevice(created) } answers {
       assertEquals("the write took effect even though it was not acknowledged", created, store.rebuilt().device)
+      assertTrue("the current process must reject the exact credential during removal", store.values.isProvisioningPending(created))
+      assertTrue("a reopened store must also reject it", store.rebuilt().isProvisioningPending(created))
       Unit
     }
     store.storage.failReadAfterNextWrite = true
@@ -699,6 +700,27 @@ class UnifiedPushRefreshJobTest {
     assertNull(store.rebuilt().device)
     verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
     verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `failed acknowledgement of guard removal does not unlink an acknowledged credential`() {
+    val store = provisioningStore()
+    val created = MollySocketDevice(deviceId = 16, password = "fresh-relay-credential")
+    every { MollySocketRepository.createDevice() } returns created
+    every { MollySocketRepository.getDeviceStatus(created) } returns LinkStatus.LINKED
+    store.storage.afterWrite = { dataSet ->
+      if (dataSet.containsKey("mollysocket.deviceId")) store.storage.failReadAfterNextWrite = true
+    }
+
+    assertTrue(runRefresh() is KeyValuePersistenceException)
+    assertEquals(created, store.rebuilt().device)
+    assertFalse(store.rebuilt().isProvisioningPending(created))
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+
+    assertNull(runRefresh())
+
+    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), created, any(), any()) }
+    verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
   }
 
   @Test
@@ -937,7 +959,14 @@ class UnifiedPushRefreshJobTest {
     assertEquals(created, store.values.device)
     assertEquals(created, store.rebuilt().device)
     assertFalse(UnifiedPushLifecycle.isReady())
-    assertTrue(store.rebuilt().hasIncompleteAccountTransition)
+    assertNotNull(store.rebuilt().pendingRelayCleanup)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+    store.storage.beforeWrite = null
+    store.values.enabled = false
+    assertNull(runRefresh())
+    assertTrue(UnifiedPushLifecycle.isReady())
+    assertNull(store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
     verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
     verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
   }
@@ -963,9 +992,48 @@ class UnifiedPushRefreshJobTest {
     val suppressed = failure!!.suppressed.single()
     assertTrue(suppressed is KeyValuePersistenceException)
     assertFalse(UnifiedPushLifecycle.isReady())
-    assertTrue(store.rebuilt().hasIncompleteAccountTransition)
+    assertNotNull(store.rebuilt().pendingRelayCleanup)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+    assertNull("the unacknowledged clear actually landed", store.rebuilt().device)
+    val restarted = store.rebuilt()
+    restarted.enabled = false
+    restarted.mutateControl {
+      val update = ControlUpdate(5, "https://push.example.invalid/old", "p", "a", ByteArray(ControlFrame.HEADER_SIZE), 1)
+      it.copy(key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", activeEpoch = 4, highestEpoch = 5, importSequence = 7, update = update)
+    }
+    every { SignalStore.unifiedpush } returns restarted
+    UnifiedPushAccountTransition.initializeFromSignalStore()
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+
+    assertNull(runRefresh())
+
+    assertNull(restarted.controlState.update)
+    assertEquals(7L, restarted.controlState.importSequence)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertTrue(UnifiedPushLifecycle.isReady())
     verify(exactly = 1) { MollySocketRepository.removeDevice(created) }
     verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `resumed cleanup preserves a replacement credential and an unrelated account marker`() {
+    val store = provisioningStore()
+    val replacement = MollySocketDevice(device.deviceId, "replacement-relay-credential")
+    store.values.device = replacement
+    val cleanup = UnifiedPushValues.RelayCleanup("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", 1, device)
+    store.values.setRelayCleanup(cleanup, pending = true)
+    store.values.setIncompleteAccountTransition(true)
+    val restarted = store.rebuilt()
+    every { SignalStore.unifiedpush } returns restarted
+    UnifiedPushAccountTransition.initializeFromSignalStore()
+
+    assertNull(runRefresh())
+
+    assertEquals(replacement, store.rebuilt().device)
+    assertNull(store.rebuilt().pendingRelayCleanup)
+    assertTrue(store.rebuilt().hasIncompleteAccountTransition)
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+    verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
   }
 
   private class ProvisioningStore(val storage: AckFailingStorage, val executor: ControlledExecutor, val values: UnifiedPushValues) {

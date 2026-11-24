@@ -9,6 +9,8 @@ import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
+import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.receiver.EncryptedPush
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.ReplayStateUnavailableException
@@ -78,23 +80,32 @@ object EnrollmentExporter {
         val savedId = requestId ?: throw EnrollmentFile.Invalid("intent_unavailable")
         val saved = before.intents.firstOrNull { it.requestId == savedId && it.eligible }
           ?: throw EnrollmentFile.Invalid("intent_unavailable")
+        synchronized(UnifiedPushLifecycle.monitor) {
+          if (values.isProvisioningPending(MollySocketDevice(saved.deviceId, saved.password))) {
+            throw EnrollmentFile.Invalid("not_ready")
+          }
+        }
         intent = saved
         contents = EnrollmentFile.render(saved.toInput())
         requireReplayStateAvailability { store.ensureReplayStateIfAbsent(replayIfAbsent) }
       }
       ExportMode.NEW_INTENT, ExportMode.RECOVERY -> {
         if (requestId != null) throw EnrollmentFile.Invalid("invalid_enrollment")
-        val device = values.device
-        val endpoint = values.endpoint
-        val p256dh = values.endpointP256dh
-        val auth = values.endpointAuth
-        val aci = SignalStore.account.aci
-        if (aci == null || device == null || endpoint == null || p256dh == null || auth == null) throw EnrollmentFile.Invalid("not_ready")
-
+        val (device, accountId, route) = synchronized(UnifiedPushLifecycle.monitor) {
+          val aci = SignalStore.account.aci
+          val device = values.device
+          val endpoint = values.endpoint
+          val p256dh = values.endpointP256dh
+          val auth = values.endpointAuth
+          if (aci == null || device == null || endpoint == null || p256dh == null || auth == null ||
+            values.isProvisioningPending(device)) {
+            throw EnrollmentFile.Invalid("not_ready")
+          }
+          Triple(device, aci.toString(), Target(endpoint, p256dh, auth) to (values.endpointInstance ?: "default"))
+        }
         val epoch = EndpointUpdates.exportEpoch(serverEpoch)
-        val accountId = aci.toString()
-        val instance = values.endpointInstance ?: "default"
-        val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
+        val (target, instance) = route
+        val exported = Target(target.endpoint, EnrollmentFile.canonicalKey(target.p256dh, 65), EnrollmentFile.canonicalKey(target.auth, 16))
         val activeNow = mode == ExportMode.RECOVERY
         var rendered: String? = null
         intent = requireReplayStateAvailability {

@@ -23,6 +23,11 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
     private const val MOLLYSOCKET_DEVICE_ID = "mollysocket.deviceId"
     private const val MOLLYSOCKET_PASSWORD = "mollysocket.passwd"
+    private const val MOLLYSOCKET_PROVISIONING_PENDING = "mollysocket.provisioning.pending"
+    private const val RELAY_CLEANUP_ACCOUNT = "mollysocket.cleanup.account"
+    private const val RELAY_CLEANUP_LOCAL_DEVICE = "mollysocket.cleanup.localDevice"
+    private const val RELAY_CLEANUP_DEVICE = "mollysocket.cleanup.device"
+    private const val RELAY_CLEANUP_PASSWORD = "mollysocket.cleanup.password"
     private const val MOLLYSOCKET_STATUS = "mollysocket.status"
     private const val MOLLYSOCKET_AIR_GAPPED = "mollysocket.airGapped"
     private const val MOLLYSOCKET_URL = "mollysocket.url"
@@ -69,31 +74,85 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       store.beginWrite()
         .putInteger(MOLLYSOCKET_DEVICE_ID, device?.deviceId ?: 0)
         .putString(MOLLYSOCKET_PASSWORD, device?.password)
+        .remove(MOLLYSOCKET_PROVISIONING_PENDING)
         .apply()
     }
 
-  /**
-   * Stores a freshly linked relay device and marks the VAPID key as synced in one batch, returning only after the
-   * backing store confirms it. On failure the batch may still have been written, so the caller owns the compensation.
-   */
+  /** The exact credential must remain unavailable even if the write landed but its acknowledgement failed. */
+  fun isProvisioningPending(device: MollySocketDevice): Boolean {
+    if (!getBoolean(MOLLYSOCKET_PROVISIONING_PENDING, false)) return false
+    val snapshot = store.beginRead()
+    return snapshot.getBoolean(MOLLYSOCKET_PROVISIONING_PENDING, false) &&
+      snapshot.getInteger(MOLLYSOCKET_DEVICE_ID, 0) == device.deviceId &&
+      snapshot.getString(MOLLYSOCKET_PASSWORD, null) == device.password
+  }
+
   @Throws(KeyValuePersistenceException::class)
   fun commitProvisionedDevice(device: MollySocketDevice) {
     store.beginWrite()
       .putInteger(MOLLYSOCKET_DEVICE_ID, device.deviceId)
       .putString(MOLLYSOCKET_PASSWORD, device.password)
       .putBoolean(MOLLYSOCKET_VAPID_SYNCED, true)
+      .putBoolean(MOLLYSOCKET_PROVISIONING_PENDING, true)
       .commitAndWaitForPersistence()
   }
 
-  /**
-   * Clears the stored relay device only after the backing store confirms the write.
-   */
+  /** Release only after the credential write returned successfully. A failed release must never trigger unlink. */
+  @Throws(KeyValuePersistenceException::class)
+  fun acknowledgeProvisionedDevice() {
+    store.beginWrite().remove(MOLLYSOCKET_PROVISIONING_PENDING).commitAndWaitForPersistence()
+  }
+
   @Throws(KeyValuePersistenceException::class)
   fun commitClearedDevice() {
     store.beginWrite()
       .putInteger(MOLLYSOCKET_DEVICE_ID, 0)
       .putString(MOLLYSOCKET_PASSWORD, null)
+      .remove(MOLLYSOCKET_PROVISIONING_PENDING)
       .commitAndWaitForPersistence()
+  }
+
+  data class RelayCleanup(
+    val accountId: String,
+    val localDeviceId: Int,
+    val device: MollySocketDevice,
+    // Lifecycle generations are process-local. Startup has no in-memory invalidation to complete.
+    val invalidationGeneration: Long? = null,
+  ) {
+    override fun toString() = "RelayCleanup(localDeviceId=$localDeviceId)"
+  }
+
+  @Volatile private var activeRelayCleanup: RelayCleanup? = null
+
+  val pendingRelayCleanup: RelayCleanup?
+    get() {
+      activeRelayCleanup?.let { return it }
+      if (!store.containsKey(RELAY_CLEANUP_ACCOUNT)) return null
+      val snapshot = store.beginRead()
+      val accountId = snapshot.getString(RELAY_CLEANUP_ACCOUNT, null) ?: return null
+      val password = checkNotNull(snapshot.getString(RELAY_CLEANUP_PASSWORD, null))
+      return RelayCleanup(
+        accountId,
+        snapshot.getInteger(RELAY_CLEANUP_LOCAL_DEVICE, 0),
+        MollySocketDevice(snapshot.getInteger(RELAY_CLEANUP_DEVICE, 0), password),
+      )
+    }
+
+  /** Begin before clearing the credential, retire only after the clear and control update were acknowledged. */
+  fun setRelayCleanup(cleanup: RelayCleanup, pending: Boolean) {
+    val write = store.beginWrite()
+    if (pending) {
+      activeRelayCleanup = cleanup
+      write.putString(RELAY_CLEANUP_ACCOUNT, cleanup.accountId)
+        .putInteger(RELAY_CLEANUP_LOCAL_DEVICE, cleanup.localDeviceId)
+        .putInteger(RELAY_CLEANUP_DEVICE, cleanup.device.deviceId)
+        .putString(RELAY_CLEANUP_PASSWORD, cleanup.device.password)
+    } else {
+      write.remove(RELAY_CLEANUP_ACCOUNT).remove(RELAY_CLEANUP_LOCAL_DEVICE)
+        .remove(RELAY_CLEANUP_DEVICE).remove(RELAY_CLEANUP_PASSWORD)
+    }
+    write.commitAndWaitForPersistence()
+    if (!pending) activeRelayCleanup = null
   }
 
   fun isMollySocketDevice(deviceId: Int): Boolean =

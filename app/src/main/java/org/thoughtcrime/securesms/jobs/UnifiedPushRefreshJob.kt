@@ -20,6 +20,7 @@ import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.whispersystems.signalservice.internal.push.DeviceLimitExceededException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -57,7 +58,15 @@ class UnifiedPushRefreshJob private constructor(
 
   @Throws(Exception::class)
   public override fun onRun() {
-    val lease = UnifiedPushAccountTransition.acquireLease()
+    val pendingCleanup = synchronized(UnifiedPushLifecycle.monitor) {
+      SignalStore.unifiedpush.pendingRelayCleanup?.let { it to UnifiedPushLifecycle.currentGeneration() }
+    }
+    val cleanupGeneration = pendingCleanup?.let { (cleanup, generation) ->
+      val result = finishDeviceClear(cleanup, expectedGeneration = generation)
+      if (!result.value) return
+      result.generation
+    }
+    val lease = UnifiedPushAccountTransition.acquireLease(cleanupGeneration)
     if (lease == null) {
       val hasAccount = synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushAccountTransition.isRegisteredLocked() }
       if (hasAccount) throw IOException("UnifiedPush account context is transitioning")
@@ -156,16 +165,23 @@ class UnifiedPushRefreshJob private constructor(
       val created = MollySocketRepository.createDevice()
       val published = try {
         synchronized(UnifiedPushLifecycle.monitor) {
-          UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
-            UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
-            SignalStore.unifiedpush.device == null && run {
-              // The relay may only learn this credential once a rebuilt store would still have it.
-              SignalStore.unifiedpush.commitProvisionedDevice(created)
-              true
+          val values = SignalStore.unifiedpush
+          if (UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
+            UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && values.device == null) {
+            try {
+              values.commitProvisionedDevice(created)
+            } catch (e: Exception) {
+              throw UnacknowledgedDeviceException(e)
             }
+            // A failure here cannot revoke an already acknowledged credential that may now be visible.
+            values.acknowledgeProvisionedDevice()
+            true
+          } else {
+            false
+          }
         }
-      } catch (e: Exception) {
-        removeUnpublishedDevice(created, lease, e)
+      } catch (e: UnacknowledgedDeviceException) {
+        removeUnpublishedDevice(created, lease, e.failure)
       }
       if (!published) {
         // The linked-device request completed for an obsolete context. Remove it while this lease still pins the old account.
@@ -236,14 +252,15 @@ class UnifiedPushRefreshJob private constructor(
     lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
   ): UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> {
     val device = lease.snapshot.pushDevice ?: return lease
-    val vapidSynced = SignalStore.unifiedpush.vapidKeySynced
+    val values = SignalStore.unifiedpush
+    val needsReplacement = !values.vapidKeySynced || values.isProvisioningPending(device)
     var cleared = false
 
     var clearGeneration: Long? = null
     when (MollySocketRepository.getDeviceStatus(device)) {
       LinkStatus.LINKED -> {
-        if (!vapidSynced) {
-          Log.w(TAG, "VAPID key mismatch, will remove previous linked $device.")
+        if (needsReplacement) {
+          Log.w(TAG, "Relay credential needs replacement. Removing linked $device.")
           clearGeneration = removeAndClearDevice(device, lease)
           cleared = true
         }
@@ -256,8 +273,8 @@ class UnifiedPushRefreshJob private constructor(
       }
 
       LinkStatus.UNKNOWN -> {
-        if (!vapidSynced) {
-          throw IOException("VAPID key mismatch, but cannot determine $device link status.")
+        if (needsReplacement) {
+          throw IOException("Relay credential needs replacement, but cannot determine $device link status.")
         }
         return lease // Optimistically assume the device is linked
       }
@@ -312,56 +329,58 @@ class UnifiedPushRefreshJob private constructor(
     lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
     allowRouteTransition: Boolean = false,
   ): Long? {
-    var shouldClear = false
-    var expectedGeneration: Long? = null
-    try {
+    val cleanup = try {
       synchronized(UnifiedPushLifecycle.monitor) {
-        val readyOnLeaseGeneration = UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation
-        if ((readyOnLeaseGeneration || allowRouteTransition) &&
-          UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
-          SignalStore.unifiedpush.device == device) {
-          if (readyOnLeaseGeneration) {
-            UnifiedPushLifecycle.invalidateLocked()
-            expectedGeneration = UnifiedPushLifecycle.currentGeneration()
-          }
-          shouldClear = true
+        val ownsReadyGeneration = UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation
+        if ((!ownsReadyGeneration && !allowRouteTransition) ||
+          !UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) ||
+          SignalStore.unifiedpush.device != device) return null
+        val invalidationGeneration = if (ownsReadyGeneration) {
+          UnifiedPushLifecycle.invalidateLocked(credentialOnly = true)
+          UnifiedPushLifecycle.currentGeneration()
+        } else {
+          null
         }
+        UnifiedPushValues.RelayCleanup(lease.snapshot.accountId, lease.snapshot.localDeviceId, device, invalidationGeneration)
       }
     } finally {
       lease.close()
     }
-    if (!shouldClear) return null
 
-    suspend fun clearInTransition(generation: Long?) =
-      UnifiedPushAccountTransition.withTransitionAndGeneration(
-        expectedGeneration = generation,
-        invalidationGenerationToComplete = expectedGeneration,
-      ) {
-        synchronized(UnifiedPushLifecycle.monitor) {
-          if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
-            SignalStore.unifiedpush.device == device) {
-            SignalStore.unifiedpush.commitClearedDevice()
-            // Stop dispatching a frame addressed to the removed device while retaining keys, replay, import sequence,
-            // and every pending import identity that an old file can still satisfy.
-            SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
-            true
-          } else {
-            false
-          }
-        }
-      }
+    val transition = try {
+      finishDeviceClear(cleanup, cleanup.invalidationGeneration)
+    } catch (stale: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
+      if (cleanup.invalidationGeneration == null) throw stale
+      finishDeviceClear(cleanup, expectedGeneration = null)
+    }
+    return transition.generation.takeIf { transition.value }
+  }
 
-    val transition = runBlocking {
-      try {
-        clearInTransition(expectedGeneration)
-      } catch (stale: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
-        if (!allowRouteTransition || expectedGeneration == null) throw stale
-        // A different transition advanced the lifecycle. Finish only our original invalidation.
-        clearInTransition(null)
+  /** Only the cleanup record can authorize completing a clear after restart or a lost acknowledgement. */
+  private fun finishDeviceClear(
+    cleanup: UnifiedPushValues.RelayCleanup,
+    expectedGeneration: Long?,
+  ): UnifiedPushLifecycle.TransitionResult<Boolean> = runBlocking {
+    UnifiedPushAccountTransition.withTransitionAndGeneration(
+      expectedGeneration = expectedGeneration,
+      relayCleanup = cleanup,
+    ) {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        val values = SignalStore.unifiedpush
+        val current = values.device
+        if (!UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(cleanup.accountId, cleanup.localDeviceId) ||
+          (current != null && current != cleanup.device)) return@synchronized false
+        if (values.hasIncompleteAccountTransition) throw IOException("UnifiedPush account context is transitioning")
+
+        // An earlier clear may have landed without acknowledgement. The cleanup still owns the pending control update.
+        if (current != null) values.commitClearedDevice()
+        values.mutateControl { it.copy(update = null) }
+        true
       }
     }
-    return if (transition.value) transition.generation else null
   }
+
+  private class UnacknowledgedDeviceException(val failure: Exception) : Exception(failure)
 
   override fun onFailure() = Unit
 

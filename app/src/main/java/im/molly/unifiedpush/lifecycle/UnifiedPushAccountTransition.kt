@@ -43,7 +43,7 @@ object UnifiedPushAccountTransition {
   @JvmStatic
   fun initializeFromSignalStore() {
     val values = SignalStore.unifiedpush
-    val marker = values.hasIncompleteAccountTransition
+    val marker = values.hasIncompleteAccountTransition || values.pendingRelayCleanup != null
     UnifiedPushLifecycle.initialize(
       incompleteTransition = marker,
       legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
@@ -73,18 +73,24 @@ object UnifiedPushAccountTransition {
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
     readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
-    invalidationGenerationToComplete: Long? = null,
+    relayCleanup: UnifiedPushValues.RelayCleanup? = null,
     block: suspend () -> T,
   ): UnifiedPushLifecycle.TransitionResult<T> {
+    val values = SignalStore.unifiedpush
     val result = UnifiedPushLifecycle.withTransitionAndGeneration(
-      hasIncompleteMarker = SignalStore.unifiedpush::hasIncompleteAccountTransition,
-      persistIncompleteMarker = SignalStore.unifiedpush::setIncompleteAccountTransition,
-      readyAfter = readyAfter,
+      hasIncompleteMarker = { relayCleanup == null && values.hasIncompleteAccountTransition },
+      persistIncompleteMarker = { pending ->
+        if (relayCleanup == null) values.setIncompleteAccountTransition(pending)
+        else values.setRelayCleanup(relayCleanup, pending)
+      },
+      readyAfter = { readyAfter() && (relayCleanup == null || !values.hasIncompleteAccountTransition) },
       expectedGeneration = expectedGeneration,
       keepIncompleteMarker = keepIncompleteMarker,
       completesAccountRegistration = completesAccountRegistration,
       completesInvalidation = completesInvalidation,
-      invalidationGenerationToComplete = invalidationGenerationToComplete,
+      invalidationGenerationToComplete = relayCleanup?.invalidationGeneration,
+      credentialOnly = relayCleanup != null,
+      admissionAllowed = { values.pendingRelayCleanup == null },
       afterTransitionStarted = {
         if (AppDependencies.isInitialized) {
           AppDependencies.incomingMessageObserver.notifyUnifiedPushFetchStateChanged()
@@ -282,8 +288,13 @@ object UnifiedPushAccountTransition {
   /** Account/device match used to decide whether a remote device-creation result can be published. */
   fun accountAndLocalDeviceMatchLocked(expected: AccountContext): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    return accountAndLocalDeviceMatchLocked(expected.accountId, expected.localDeviceId)
+  }
+
+  fun accountAndLocalDeviceMatchLocked(accountId: String, localDeviceId: Int): Boolean {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val account = SignalStore.account
-    return account.isRegistered && account.aci?.toString() == expected.accountId && account.deviceId == expected.localDeviceId &&
+    return account.isRegistered && account.aci?.toString() == accountId && account.deviceId == localDeviceId &&
       account.hasAciIdentityKey() && account.servicePassword != null
   }
 }

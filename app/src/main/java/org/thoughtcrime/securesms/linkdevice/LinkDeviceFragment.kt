@@ -74,6 +74,7 @@ import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository.LinkDeviceResult
 import org.thoughtcrime.securesms.linkdevice.LinkDeviceSettingsState.DialogState
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.DateUtils
@@ -132,6 +133,22 @@ class LinkDeviceFragment : ComposeFragment() {
     val navController: NavController by remember { mutableStateOf(findNavController()) }
     val context = LocalContext.current
     val atDeviceLimit = state.devices.size >= RemoteConfig.maxLinkedDevices
+
+    // Linking continues here after the input/confirmation screens have closed.
+    LaunchedEffect(state.linkDeviceResult) {
+      val message = when (state.linkDeviceResult) {
+        is LinkDeviceResult.NoDevice -> R.string.LinkDeviceCode__expired_code
+        is LinkDeviceResult.NetworkError -> R.string.DeviceProvisioningActivity_content_progress_network_error
+        is LinkDeviceResult.KeyError -> R.string.DeviceProvisioningActivity_content_progress_key_error
+        is LinkDeviceResult.LimitExceeded -> R.string.DeviceProvisioningActivity_sorry_you_have_too_many_devices_linked_already
+        is LinkDeviceResult.BadCode -> R.string.LinkDeviceCode__invalid_code
+        is LinkDeviceResult.Success, LinkDeviceResult.None -> null
+      }
+      if (message != null) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        viewModel.onLinkDeviceResult(showSheet = false)
+      }
+    }
 
     LaunchedEffect(state.dialogState) {
       when (state.dialogState) {

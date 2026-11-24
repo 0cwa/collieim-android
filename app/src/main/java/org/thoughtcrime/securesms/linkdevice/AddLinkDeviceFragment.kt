@@ -3,14 +3,14 @@ package org.thoughtcrime.securesms.linkdevice
 import android.Manifest
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,18 +33,23 @@ import org.signal.camera.CameraScreenState
 import org.signal.camera.CameraScreenViewModel
 import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.ui.compose.DayNightPreviews
+import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.permissions.Permissions
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.linkdevice.LinkDeviceSettingsState.QrCodeState
 import org.thoughtcrime.securesms.util.VibrateUtil
+import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.signal.core.ui.R as CoreUiR
 import org.signal.mediasend.R as MediaSendR
 
 /**
- * Fragment that allows users to scan a QR code from their camera to link a device
+ * Links a device using its QR code or the same provisioning code pasted as text.
  */
 class AddLinkDeviceFragment : ComposeFragment() {
+
+  override val autofillEnabled: Boolean = false
 
   companion object {
     private const val VIBRATE_DURATION_MS = 50
@@ -56,14 +61,14 @@ class AddLinkDeviceFragment : ComposeFragment() {
   @Composable
   override fun FragmentContent() {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val cameraViewModel: CameraScreenViewModel = viewModel { CameraScreenViewModel() }
-    val cameraState by cameraViewModel.state
+    val cameraViewModel: CameraScreenViewModel? = if (state.linkWithoutQrCode) null else viewModel { CameraScreenViewModel() }
+    val cameraState = cameraViewModel?.state?.value ?: CameraScreenState()
     val context = LocalContext.current
     val navController: NavController by remember { mutableStateOf(findNavController()) }
     val cameraPermissionState: PermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
 
     LaunchedEffect(cameraViewModel) {
-      cameraViewModel.qrCodeDetected.collect { data ->
+      cameraViewModel?.qrCodeDetected?.collect { data ->
         if (VibrateUtil.isHapticFeedbackEnabled(requireContext())) {
           VibrateUtil.vibrate(requireContext(), VIBRATE_DURATION_MS)
         }
@@ -71,29 +76,28 @@ class AddLinkDeviceFragment : ComposeFragment() {
       }
     }
 
-    MainScreen(
+    val onClose: () -> Unit = {
+      viewModel.onQrCodeDismissed()
+      navController.popBackStack()
+    }
+    BackHandler(onBack = onClose)
+
+    AddLinkDeviceScreen(
       state = state,
       cameraState = cameraState,
-      cameraEmitter = cameraViewModel::onEvent,
-      navController = navController,
+      cameraEmitter = { cameraViewModel?.onEvent(it) },
+      onClose = onClose,
       hasPermissions = cameraPermissionState.status.isGranted,
-      linkWithoutQrCode = state.linkWithoutQrCode,
       onRequestPermissions = { askPermissions() },
-      onSwitchCamera = { cameraViewModel.onEvent(CameraScreenEvents.SwitchCamera(context)) },
-      onLinkNewDeviceWithUrl = { url ->
-        navController.popBackStack()
-        viewModel.onQrCodeScanned(url)
-        viewModel.addDevice(shouldSync = false)
-      },
+      onSwitchCamera = { cameraViewModel?.onEvent(CameraScreenEvents.SwitchCamera(context)) },
+      onLinkNewDeviceWithUrl = viewModel::onQrCodeScanned,
+      onLinkWithCode = { viewModel.requestLinkWithoutQrCode(true) },
       onQrCodeApproved = {
-        navController.popBackStack()
         viewModel.addDevice(shouldSync = false)
+        navController.popBackStack()
       },
       onQrCodeDismissed = { viewModel.onQrCodeDismissed() },
-      onLinkDeviceSuccess = {
-        viewModel.onLinkDeviceResult(showSheet = true)
-      },
-      onLinkDeviceFailure = { viewModel.onLinkDeviceResult(showSheet = false) }
+      onShowTransferChoices = { navController.safeNavigate(R.id.action_addLinkDeviceFragment_to_linkDeviceSyncBottomSheet) }
     )
   }
 
@@ -113,57 +117,92 @@ class AddLinkDeviceFragment : ComposeFragment() {
 }
 
 @Composable
-private fun MainScreen(
+internal fun AddLinkDeviceScreen(
   state: LinkDeviceSettingsState,
   cameraState: CameraScreenState = CameraScreenState(),
   cameraEmitter: (CameraScreenEvents) -> Unit = {},
-  navController: NavController? = null,
+  onClose: () -> Unit = {},
   hasPermissions: Boolean = false,
-  linkWithoutQrCode: Boolean = false,
   onLinkNewDeviceWithUrl: (String) -> Unit = {},
+  onLinkWithCode: () -> Unit = {},
   onRequestPermissions: () -> Unit = {},
   onSwitchCamera: () -> Unit = {},
   onQrCodeApproved: () -> Unit = {},
   onQrCodeDismissed: () -> Unit = {},
-  onLinkDeviceSuccess: () -> Unit = {},
-  onLinkDeviceFailure: () -> Unit = {}
+  onShowTransferChoices: () -> Unit = {}
 ) {
+  LinkDeviceConfirmation(
+    qrCodeState = state.qrCodeState,
+    onQrCodeApproved = onQrCodeApproved,
+    onQrCodeDismissed = onQrCodeDismissed,
+    onShowTransferChoices = onShowTransferChoices
+  )
+
   Scaffolds.Settings(
-    title = if (linkWithoutQrCode) stringResource(id = R.string.DeviceAddFragment__link_without_scanning) else "",
-    onNavigationClick = { navController?.popBackStack() },
+    title = if (state.linkWithoutQrCode) stringResource(id = R.string.LinkDeviceCode__link_with_code) else "",
+    onNavigationClick = onClose,
     navigationIcon = ImageVector.vectorResource(id = R.drawable.ic_x),
     navigationContentDescription = stringResource(id = CoreUiR.string.CloseButton__content_description),
     actions = {
-      if (!linkWithoutQrCode) {
+      if (!state.linkWithoutQrCode && hasPermissions) {
         IconButton(onClick = onSwitchCamera) {
           Icon(painterResource(id = R.drawable.symbol_switch_24), contentDescription = null)
         }
       }
     }
   ) { contentPadding: PaddingValues ->
-    if (!linkWithoutQrCode) {
+    if (!state.linkWithoutQrCode) {
       LinkDeviceQrScanScreen(
         hasPermission = hasPermissions,
         onRequestPermissions = onRequestPermissions,
         cameraState = cameraState,
-      cameraEmitter = cameraEmitter,
-        qrCodeState = state.qrCodeState,
-
-        onQrCodeAccepted = onQrCodeApproved,
-        onQrCodeDismissed = onQrCodeDismissed,
-        linkDeviceResult = state.linkDeviceResult,
-        onLinkDeviceSuccess = onLinkDeviceSuccess,
-        onLinkDeviceFailure = onLinkDeviceFailure,
-        navController = navController,
+        cameraEmitter = cameraEmitter,
+        onLinkWithCode = onLinkWithCode,
         modifier = Modifier.padding(contentPadding)
       )
     } else {
       LinkDeviceManualEntryScreen(
         onLinkNewDeviceWithUrl = onLinkNewDeviceWithUrl,
-        linkDeviceResult = state.linkDeviceResult,
-        onLinkDeviceSuccess = onLinkDeviceSuccess,
-        onLinkDeviceFailure = onLinkDeviceFailure,
         modifier = Modifier.padding(contentPadding)
+      )
+    }
+  }
+}
+
+@Composable
+internal fun LinkDeviceConfirmation(
+  qrCodeState: QrCodeState,
+  onQrCodeApproved: () -> Unit,
+  onQrCodeDismissed: () -> Unit,
+  onShowTransferChoices: () -> Unit
+) {
+  when (qrCodeState) {
+    QrCodeState.NONE -> Unit
+    QrCodeState.VALID_WITH_SYNC -> {
+      LaunchedEffect(qrCodeState) { onShowTransferChoices() }
+    }
+    QrCodeState.VALID_WITHOUT_SYNC -> {
+      Dialogs.SimpleAlertDialog(
+        title = stringResource(R.string.DeviceProvisioningActivity_link_this_device),
+        body = stringResource(R.string.AddLinkDeviceFragment__this_device_will_see_your_groups_contacts),
+        confirm = stringResource(R.string.device_list_fragment__link_new_device),
+        onConfirm = onQrCodeApproved,
+        dismiss = stringResource(android.R.string.cancel),
+        // SimpleAlertDialog invokes onDismiss before onConfirm. Clear the pending
+        // code only when the user cancels, so approval can consume it first.
+        onDismissRequest = onQrCodeDismissed,
+        onDeny = onQrCodeDismissed
+      )
+    }
+    QrCodeState.INVALID, QrCodeState.OUTDATED_DEVICE -> {
+      Dialogs.SimpleAlertDialog(
+        title = stringResource(R.string.AddLinkDeviceFragment__linking_device_failed),
+        body = stringResource(
+          if (qrCodeState == QrCodeState.INVALID) R.string.LinkDeviceCode__invalid_code else R.string.AddLinkDeviceFragment__the_device_you_are_trying_to_link_is_out_of_date
+        ),
+        confirm = stringResource(android.R.string.ok),
+        onConfirm = { },
+        onDismiss = onQrCodeDismissed
       )
     }
   }
@@ -173,7 +212,7 @@ private fun MainScreen(
 @Composable
 private fun LinkDeviceAddScreenPreview() {
   Previews.Preview {
-    MainScreen(
+    AddLinkDeviceScreen(
       state = LinkDeviceSettingsState()
     )
   }

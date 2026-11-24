@@ -10,6 +10,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,7 +74,9 @@ class LinkDeviceViewModel : ViewModel() {
       DialogState.None
     }
 
-    _state.update { it.copy(dialogState = dialogState) }
+    // Returning from the linking screen reloads this list while provisioning may
+    // still be running. Do not replace its progress or failure dialog.
+    _state.update { if (it.dialogState == DialogState.None) it.copy(dialogState = dialogState) else it }
   }
 
   fun setDeviceToRemove(device: Device?) {
@@ -160,17 +163,17 @@ class LinkDeviceViewModel : ViewModel() {
 
   fun requestLinkWithoutQrCode(value: Boolean) {
     _state.update {
-      it.copy(linkWithoutQrCode = value)
+      it.copy(linkWithoutQrCode = value, qrCodeState = QrCodeState.NONE, linkUri = null)
     }
   }
 
   fun onQrCodeScanned(url: String) {
-    if (_state.value.qrCodeState != QrCodeState.NONE) {
+    if (_state.value.qrCodeState != QrCodeState.NONE || !_state.value.canLinkDevices || _state.value.dialogState != DialogState.None) {
       return
     }
 
-    val uri = Uri.parse(url)
-    if (LinkDeviceRepository.isValidQr(uri)) {
+    val uri = LinkDeviceRepository.parseLinkingCode(url)
+    if (uri != null) {
       val capabilities = uri.getCapabilities()
       val qrCodeState = when {
         Capability.Numberless !in capabilities && SignalStore.account.pni == null -> QrCodeState.OUTDATED_DEVICE
@@ -187,7 +190,7 @@ class LinkDeviceViewModel : ViewModel() {
       _state.update {
         it.copy(
           qrCodeState = QrCodeState.INVALID,
-          linkUri = uri
+          linkUri = null
         )
       }
     }
@@ -196,7 +199,8 @@ class LinkDeviceViewModel : ViewModel() {
   fun onQrCodeDismissed() {
     _state.update {
       it.copy(
-        qrCodeState = QrCodeState.NONE
+        qrCodeState = QrCodeState.NONE,
+        linkUri = null
       )
     }
   }
@@ -205,24 +209,34 @@ class LinkDeviceViewModel : ViewModel() {
     _state.update { it.copy(dialogState = DialogState.None) }
   }
 
-  fun addDevice(shouldSync: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-    val linkUri: Uri = _state.value.linkUri!!
-
-    _state.update {
-      it.copy(
-        qrCodeState = QrCodeState.NONE,
-        linkUri = null,
-        dialogState = DialogState.Linking,
-        shouldCancelArchiveUpload = false
-      )
+  fun addDevice(shouldSync: Boolean) {
+    fun canLink(state: LinkDeviceSettingsState): Boolean {
+      return state.linkUri != null && state.canLinkDevices && state.dialogState == DialogState.None &&
+        (state.qrCodeState == QrCodeState.VALID_WITH_SYNC || (!shouldSync && state.qrCodeState == QrCodeState.VALID_WITHOUT_SYNC))
     }
 
-    if (shouldSync) {
-      Log.i(TAG, "Adding device with sync.")
-      addDeviceWithSync(linkUri)
-    } else {
-      Log.i(TAG, "Adding device without sync. (backup5: ${Capability.LinkAndSync in linkUri.getCapabilities()})")
-      addDeviceWithoutSync(linkUri)
+    // Consume the approved code before scheduling IO or dismissing its sheet.
+    // A second tap or a sheet-dismiss callback must not reuse or clear this operation's code.
+    val pending = _state.getAndUpdate {
+      if (canLink(it)) {
+        it.copy(qrCodeState = QrCodeState.NONE, linkUri = null, dialogState = DialogState.Linking, shouldCancelArchiveUpload = false)
+      } else {
+        it
+      }
+    }
+    if (!canLink(pending)) {
+      return
+    }
+    val linkUri = pending.linkUri ?: return
+
+    viewModelScope.launch(Dispatchers.IO) {
+      if (shouldSync) {
+        Log.i(TAG, "Adding device with sync.")
+        addDeviceWithSync(linkUri)
+      } else {
+        Log.i(TAG, "Adding device without sync. (backup5: ${Capability.LinkAndSync in linkUri.getCapabilities()})")
+        addDeviceWithoutSync(linkUri)
+      }
     }
   }
 

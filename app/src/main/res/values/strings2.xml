@@ -202,4 +202,13 @@
     <string name="UnifiedPushSettingsFragment__control_state_recovery_confirm">I removed the server enrollment</string>
     <string name="CollieUpdates__available_notification">Collie %1$s is available. Tap to view the official release in your browser.</string>
     <string name="CollieUpdates__checks_megaphone">Collie can notify you when a new release is available. You choose when to open the official release page.</string>
+    <string name="LinkDeviceCode__link_with_code">Link with code</string>
+    <string name="LinkDeviceCode__scan_or_paste">Scan the QR code on the device you want to link, or copy its linking code and paste it here.</string>
+    <string name="LinkDeviceCode__paste_instructions">On the device you want to link, open Collie and choose “Link to existing device”. Tap “Copy linking code”, then paste it below. Keep that screen open.</string>
+    <string name="LinkDeviceCode__linking_code">Linking code</string>
+    <string name="LinkDeviceCode__paste_code">Paste code</string>
+    <string name="LinkDeviceCode__clipboard_empty">Copy a linking code from the device you want to link first.</string>
+    <string name="LinkDeviceCode__invalid_code">This is not a valid linking code. Copy the full code from the device you want to link.</string>
+    <string name="LinkDeviceCode__expired_code">This linking code has expired or is no longer available. Copy a new code from the device you want to link.</string>
+    <string name="LinkDeviceCode__only_link_your_devices">Only paste a code from a device you own and trust.</string>
 </resources>

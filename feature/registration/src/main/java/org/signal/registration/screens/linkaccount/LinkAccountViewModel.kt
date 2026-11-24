@@ -87,15 +87,15 @@ class LinkAccountViewModel(
       LinkAccountScreenEvent.HideOverlayClick -> state.copy(displayQrOverlay = false)
       LinkAccountScreenEvent.RetryQrCode, LinkAccountScreenEvent.DismissError -> {
         startProvisioning()
-        state.copy(qrCodeState = QrState.Loading, showError = false)
+        state.copy(qrCodeState = QrState.Loading, linkingCode = null, showError = false)
       }
       LinkAccountScreenEvent.ConfirmDeleteAndRelink -> {
         viewModelScope.launch { repository.clearLocalDataAndRestart() }
-        state.copy(showDeleteDataDialog = false)
+        state.copy(linkingCode = null, showDeleteDataDialog = false)
       }
       LinkAccountScreenEvent.CancelDeleteAndRelink -> {
         startProvisioning()
-        state.copy(qrCodeState = QrState.Loading, showDeleteDataDialog = false)
+        state.copy(qrCodeState = QrState.Loading, linkingCode = null, showDeleteDataDialog = false)
       }
     }
     stateEmitter(result)
@@ -109,16 +109,20 @@ class LinkAccountViewModel(
           is NetworkController.LinkDeviceProvisioningEvent.QrCodeReady -> {
             Log.d(TAG, "[Provisioning] QR code ready")
             _state.update {
-              it.copy(qrCodeState = QrState.Loaded(qrCodeData = QrCodeData.forData(data = event.url, supportIconOverlay = false)))
+              it.copy(
+                qrCodeState = QrState.Loaded(qrCodeData = QrCodeData.forData(data = event.url, supportIconOverlay = false)),
+                linkingCode = event.url
+              )
             }
           }
           is NetworkController.LinkDeviceProvisioningEvent.MessageReceived -> {
             Log.i(TAG, "[Provisioning] Message received from primary device")
+            _state.update { it.copy(qrCodeState = QrState.Scanned, linkingCode = null) }
             handleProvisioningMessage(event.message)
           }
           is NetworkController.LinkDeviceProvisioningEvent.Error -> {
             Log.w(TAG, "[Provisioning] Error", event.cause)
-            _state.update { it.copy(qrCodeState = QrState.Failed) }
+            _state.update { it.copy(qrCodeState = QrState.Failed, linkingCode = null) }
           }
         }
       }

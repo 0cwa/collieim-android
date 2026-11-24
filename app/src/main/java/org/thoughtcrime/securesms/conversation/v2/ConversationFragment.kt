@@ -313,6 +313,7 @@ import org.thoughtcrime.securesms.keyboard.sticker.StickerSearchDialogFragment
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.MediaKeyboardMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.linkpreview.LinkPreview
+import org.thoughtcrime.securesms.linkpreview.LinkPreviewImagePolicy
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewViewModelV2
 import org.thoughtcrime.securesms.longmessage.LongMessageFragment
 import org.thoughtcrime.securesms.main.MainDetailRoute
@@ -1276,6 +1277,7 @@ class ConversationFragment :
 
   override fun onResume() {
     super.onResume()
+    linkPreviewViewModel.refreshImagePreference()
 
     // Reselects which gifs play, since a gif whose tapped playback was dropped on pause may now autoplay.
     binding.conversationItemRecycler.requestLayout()
@@ -3057,7 +3059,7 @@ class ConversationFragment :
       mentions = mentions,
       bodyRanges = bodyRanges,
       contacts = contacts,
-      linkPreviews = linkPreviews ?: linkPreviewViewModel.onSend(),
+      linkPreviews = (linkPreviews ?: linkPreviewViewModel.onSend()).mapNotNull { LinkPreviewImagePolicy.sanitize(it) },
       preUploadResults = preUploadResults,
       isViewOnce = isViewOnce
     )

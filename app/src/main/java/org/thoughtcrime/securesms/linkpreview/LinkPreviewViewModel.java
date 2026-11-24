@@ -33,6 +33,8 @@ public class LinkPreviewViewModel extends ViewModel {
   private boolean           userCanceled;
   private Debouncer         debouncer;
   private boolean           enabled;
+  private boolean           webImagesEnabled;
+  private long              requestGeneration;
 
   private final boolean enablePlaceholder;
 
@@ -42,6 +44,7 @@ public class LinkPreviewViewModel extends ViewModel {
     this.linkPreviewState     = new MutableLiveData<>();
     this.debouncer            = new Debouncer(250);
     this.enabled              = SignalStore.settings().isLinkPreviewsEnabled();
+    this.webImagesEnabled     = SignalStore.settings().isWebLinkPreviewImagesEnabled();
     this.linkPreviewSafeState = Transformations.map(linkPreviewState, state -> cleanseState(state));
   }
 
@@ -53,12 +56,9 @@ public class LinkPreviewViewModel extends ViewModel {
    * Gets the current state for use in the UI, then resets local state to prepare for the next message send.
    */
   public @NonNull List<LinkPreview> onSend() {
-    final LinkPreviewState currentState = linkPreviewSafeState.getValue();
+    final LinkPreviewState currentState = linkPreviewState.getValue() == null ? null : cleanseState(linkPreviewState.getValue());
 
-    if (activeRequest != null) {
-      activeRequest.cancel();
-      activeRequest = null;
-    }
+    cancelActiveRequest();
 
     userCanceled = false;
     activeUrl    = null;
@@ -77,12 +77,9 @@ public class LinkPreviewViewModel extends ViewModel {
    * Gets the current state for use in the UI, then resets local state to prepare for the next message send.
    */
   public @NonNull List<LinkPreview> onSendWithErrorUrl() {
-    final LinkPreviewState currentState = linkPreviewSafeState.getValue();
+    final LinkPreviewState currentState = linkPreviewState.getValue() == null ? null : cleanseState(linkPreviewState.getValue());
 
-    if (activeRequest != null) {
-      activeRequest.cancel();
-      activeRequest = null;
-    }
+    cancelActiveRequest();
 
     userCanceled = false;
     activeUrl    = null;
@@ -109,6 +106,7 @@ public class LinkPreviewViewModel extends ViewModel {
   }
 
   public void onTextChanged(@NonNull String text, int cursorStart, int cursorEnd) {
+    refreshImagePreference();
     if (!enabled && !enablePlaceholder) return;
 
     debouncer.publish(() -> {
@@ -127,10 +125,7 @@ public class LinkPreviewViewModel extends ViewModel {
         return;
       }
 
-      if (activeRequest != null) {
-        activeRequest.cancel();
-        activeRequest = null;
-      }
+      cancelActiveRequest();
 
       if (!link.isPresent() || !isCursorPositionValid(text, link.get(), cursorStart, cursorEnd)) {
         activeUrl = null;
@@ -146,10 +141,7 @@ public class LinkPreviewViewModel extends ViewModel {
   }
 
   public void onUserCancel() {
-    if (activeRequest != null) {
-      activeRequest.cancel();
-      activeRequest = null;
-    }
+    cancelActiveRequest();
 
     userCanceled = true;
     activeUrl    = null;
@@ -169,15 +161,47 @@ public class LinkPreviewViewModel extends ViewModel {
   public void onEnabled() {
     userCanceled = false;
     enabled      = SignalStore.settings().isLinkPreviewsEnabled();
+    refreshImagePreference();
+  }
+
+  /** Applies a setting changed while this composer was in the background. */
+  public void refreshImagePreference() {
+    boolean includeImages = SignalStore.settings().isWebLinkPreviewImagesEnabled();
+    if (includeImages == webImagesEnabled) {
+      return;
+    }
+
+    webImagesEnabled = includeImages;
+    if (activeUrl != null && !LinkPreviewImagePolicy.isWebLinkPreview(activeUrl)) {
+      return;
+    }
+
+    cancelActiveRequest();
+    debouncer.clear();
+
+    LinkPreviewState currentState = linkPreviewState.getValue();
+    if (currentState != null) {
+      linkPreviewState.setValue(cleanseState(currentState));
+    }
+    if (activeUrl != null && enabled && !userCanceled && (includeImages || (currentState != null && currentState.isLoading))) {
+      activeRequest = performRequest(activeUrl);
+    }
   }
 
   @Override
   protected void onCleared() {
-    if (activeRequest != null) {
-      activeRequest.cancel();
-    }
-
+    cancelActiveRequest();
     debouncer.clear();
+  }
+
+  private void cancelActiveRequest() {
+    // Transport cancellation cannot remove callbacks that already reached the main-thread queue.
+    requestGeneration++;
+    RequestController request = activeRequest;
+    activeRequest = null;
+    if (request != null) {
+      request.cancel();
+    }
   }
 
   private boolean isCursorPositionValid(@NonNull String text, @NonNull Link link, int cursorStart, int cursorEnd) {
@@ -193,7 +217,13 @@ public class LinkPreviewViewModel extends ViewModel {
   }
 
   private @Nullable RequestController createPlaceholder(String url) {
+    final long generation = ++requestGeneration;
     ThreadUtil.runOnMain(() -> {
+      if (generation != requestGeneration) {
+        return;
+      }
+
+      activeRequest = null;
       if (!userCanceled) {
         if (activeUrl != null && activeUrl.equals(url)) {
           linkPreviewState.setValue(LinkPreviewState.forLinksWithNoPreview(url, LinkPreviewRepository.Error.PREVIEW_NOT_AVAILABLE));
@@ -201,18 +231,22 @@ public class LinkPreviewViewModel extends ViewModel {
           linkPreviewState.setValue(LinkPreviewState.forNoLinks());
         }
       }
-
-      activeRequest = null;
     });
 
     return null;
   }
 
   private @Nullable RequestController performRequest(String url) {
+    final long generation = ++requestGeneration;
     return repository.getLinkPreview(AppDependencies.getApplication(), url, new LinkPreviewRepository.Callback() {
       @Override
       public void onSuccess(@NonNull LinkPreview linkPreview) {
         ThreadUtil.runOnMain(() -> {
+          if (generation != requestGeneration) {
+            return;
+          }
+
+          activeRequest = null;
           if (!userCanceled) {
             if (activeUrl != null && activeUrl.equals(linkPreview.getUrl())) {
               linkPreviewState.setValue(LinkPreviewState.forPreview(linkPreview));
@@ -220,13 +254,17 @@ public class LinkPreviewViewModel extends ViewModel {
               linkPreviewState.setValue(LinkPreviewState.forNoLinks());
             }
           }
-          activeRequest = null;
         });
       }
 
       @Override
       public void onError(@NonNull LinkPreviewRepository.Error error) {
         ThreadUtil.runOnMain(() -> {
+          if (generation != requestGeneration) {
+            return;
+          }
+
+          activeRequest = null;
           if (!userCanceled) {
             if (activeUrl != null) {
               linkPreviewState.setValue(LinkPreviewState.forLinksWithNoPreview(activeUrl, error));
@@ -234,7 +272,6 @@ public class LinkPreviewViewModel extends ViewModel {
               linkPreviewState.setValue(LinkPreviewState.forNoLinks());
             }
           }
-          activeRequest = null;
         });
       }
     });
@@ -242,7 +279,13 @@ public class LinkPreviewViewModel extends ViewModel {
 
   private @NonNull LinkPreviewState cleanseState(@NonNull LinkPreviewState state) {
     if (enabled) {
-      return state;
+      if (!state.linkPreview.isPresent()) {
+        return state;
+      }
+
+      LinkPreview preview = LinkPreviewImagePolicy.sanitize(state.linkPreview.get());
+      return preview != null ? LinkPreviewState.forPreview(preview)
+                             : LinkPreviewState.forLinksWithNoPreview(state.linkPreview.get().getUrl(), LinkPreviewRepository.Error.PREVIEW_NOT_AVAILABLE);
     }
 
     if (enablePlaceholder) {

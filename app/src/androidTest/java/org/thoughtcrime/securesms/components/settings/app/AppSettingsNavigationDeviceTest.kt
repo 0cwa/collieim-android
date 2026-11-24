@@ -30,6 +30,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.appsettings.account.AccountSettingsTestTags
 import org.signal.appsettings.appearance.AppearanceSettingsTestTags
+import org.signal.appsettings.chats.ChatsSettingsTestTags
+import org.signal.appsettings.collie.CollieSettingsTestTags
 import org.signal.appsettings.home.AppSettingsTestTags
 import org.signal.appsettings.routes.AppSettingsNavigation
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
@@ -144,6 +146,37 @@ class AppSettingsNavigationDeviceTest {
         awaitNode(AccountSettingsTestTags.ROW_LINKED_DEVICES)
         compose.onNodeWithText("Manage existing Signal donations").assertDoesNotExist()
         captureScreenshot(scenario, "account-settings")
+      }
+    }
+  }
+
+  @Test
+  fun chatsShowsTheSeparateLinkPreviewImageControl() {
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(harness.context)).use { scenario ->
+      awaitNode(AppSettingsTestTags.ROW_ACCOUNT)
+      compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_CHATS))
+      compose.onNodeWithTag(AppSettingsTestTags.ROW_CHATS).performClick()
+      awaitNode(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES)
+      compose.onNodeWithTag(ChatsSettingsTestTags.ROW_GENERATE_LINK_PREVIEWS).assertIsDisplayed()
+      compose.onNodeWithTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES).assertIsDisplayed()
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        captureScreenshot(scenario, "stable-web-link-preview-images")
+      }
+    }
+  }
+
+  @Test
+  fun collieSettingsShowsTheThreePromotedControls() {
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(harness.context)).use { scenario ->
+      awaitNode(AppSettingsTestTags.ROW_ACCOUNT)
+      compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_COLLIE))
+      compose.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).performClick()
+      awaitNode(CollieSettingsTestTags.ROW_STORY_ARCHIVE)
+      compose.onNodeWithTag(CollieSettingsTestTags.ROW_STORY_ARCHIVE).assertIsDisplayed()
+      compose.onNodeWithTag(CollieSettingsTestTags.ROW_BETTER_SEARCH).assertIsDisplayed()
+      compose.onNodeWithTag(CollieSettingsTestTags.ROW_STARRED_MESSAGES).assertIsDisplayed()
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        captureScreenshot(scenario, "stable-collie-settings")
       }
     }
   }

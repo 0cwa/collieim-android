@@ -24,8 +24,13 @@ DEVICE_METHODS = {
     'splitPaneHomeSelectionFollowsSectionChange',
     'settingsHomeOpensAppearanceAndBackMatchesLayout',
     'accountAndSupportRemainAvailableWithoutSignalCheckout',
+    'chatsShowsTheSeparateLinkPreviewImageControl',
+    'collieSettingsShowsTheThreePromotedControls',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+SCREENSHOTS = {
+    'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png',
+    'stable-web-link-preview-images.png', 'stable-collie-settings.png',
+}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 

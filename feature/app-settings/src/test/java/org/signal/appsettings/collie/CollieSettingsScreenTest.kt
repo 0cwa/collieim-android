@@ -21,6 +21,8 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
+import assertk.assertions.isLessThanOrEqualTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,6 +41,34 @@ class CollieSettingsScreenTest {
   val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<LabsSettingsEvent>()
+
+  @Test
+  fun `app updates are first when enabled and open on click`() {
+    var clicks = 0
+    composeTestRule.setContent {
+      CollieSettingsScreen(
+        state = LabsSettingsState(),
+        onEvent = {},
+        showAppUpdates = true,
+        onAppUpdatesClick = { clicks++ }
+      )
+    }
+
+    val updates = composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertIsDisplayed()
+    val hardening = composeTestRule.onNodeWithText("Hardening").assertIsDisplayed()
+    assertThat(updates.fetchSemanticsNode().boundsInRoot.bottom)
+      .isLessThanOrEqualTo(hardening.fetchSemanticsNode().boundsInRoot.top)
+    updates.performClick()
+
+    assertThat(clicks).isEqualTo(1)
+  }
+
+  @Test
+  fun `app updates are hidden when disabled`() {
+    setContent(LabsSettingsState())
+
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
+  }
 
   @Test
   fun `the Collie screen contains a Labs section`() {

@@ -20,7 +20,8 @@ class CollieSettingsLayoutTest : SignalLayoutStressTest() {
   fun `all on`() = assertPassesLayoutChecks {
     CollieSettingsScreen(
       state = LabsSettingsState(storyArchive = true, betterSearch = true, starredMessages = true),
-      onEvent = {}
+      onEvent = {},
+      showAppUpdates = true
     )
   }
 }

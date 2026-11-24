@@ -78,8 +78,7 @@ class NewLinkedDeviceNotificationJob private constructor(
 
     // Restore the in-app warning for each alert, even if the earlier alert was acknowledged.
     // Save before posting so an immediate tap can also detect a device that was since unlinked.
-    SignalStore.misc.newLinkedDeviceId = data.deviceId
-    SignalStore.misc.newLinkedDeviceCreatedTime = data.deviceCreatedAt
+    SignalStore.misc.setNewLinkedDeviceWarning(data.deviceId, data.deviceCreatedAt)
 
     if (NotificationChannels.getInstance().areNotificationsEnabled()) {
       val pendingIntent = PendingIntent.getActivity(context, 0, AppSettingsActivity.linkedDevices(context), cancelCurrent())

@@ -28,12 +28,17 @@ import org.robolectric.annotation.Config
 import org.signal.core.util.ServiceUtil
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
+import org.signal.storage.keyvalue.KeyValueDataSet
+import org.signal.storage.keyvalue.KeyValueStore
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
+import org.thoughtcrime.securesms.keyvalue.MiscellaneousValues
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
+import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.util.DateUtils
 import java.util.Locale
@@ -49,8 +54,7 @@ class NewLinkedDeviceNotificationJobTest {
   private val manager: NotificationManager get() = context.getSystemService(NotificationManager::class.java)
   private lateinit var channels: NotificationChannels
   private lateinit var self: Recipient
-  private var storedDeviceId = 0
-  private var storedCreatedAt = 0L
+  private lateinit var misc: MiscellaneousValues
 
   @Before
   fun setUp() {
@@ -60,10 +64,9 @@ class NewLinkedDeviceNotificationJobTest {
     every { Recipient.self() } returns self
     every { self.isRegistered } returns true
     every { RemoteConfig.useAppSettingsNavigation } returns false
-    every { signalStore.misc.newLinkedDeviceId } answers { storedDeviceId }
-    every { signalStore.misc.newLinkedDeviceId = any() } answers { storedDeviceId = firstArg() }
-    every { signalStore.misc.newLinkedDeviceCreatedTime } answers { storedCreatedAt }
-    every { signalStore.misc.newLinkedDeviceCreatedTime = any() } answers { storedCreatedAt = firstArg() }
+    val seededStore = KeyValueDataSet().apply { putInteger("misc.first_install_version", 1) }
+    misc = MiscellaneousValues(KeyValueStore(SnapshotKeyValuePersistentStorage(seededStore), Runnable::run), context)
+    every { SignalStore.misc } returns misc
 
     mockkStatic(NotificationChannels::class)
     every { NotificationChannels.supported() } returns false
@@ -94,8 +97,8 @@ class NewLinkedDeviceNotificationJobTest {
     assertEquals(channels.NEW_LINKED_DEVICE, notification.channelId)
     assertTrue(notification.flags and Notification.FLAG_AUTO_CANCEL != 0)
     assertFalse(notification.flags and Notification.FLAG_ONLY_ALERT_ONCE != 0)
-    assertEquals(DEVICE_ID, storedDeviceId)
-    assertEquals(CREATED_AT, storedCreatedAt)
+    assertEquals(DEVICE_ID, misc.newLinkedDeviceId)
+    assertEquals(CREATED_AT, misc.newLinkedDeviceCreatedTime)
 
     val expectedIntent = AppSettingsActivity.linkedDevices(context)
     val actualIntent = shadowOf(notification.contentIntent).savedIntent
@@ -124,16 +127,15 @@ class NewLinkedDeviceNotificationJobTest {
   fun `dismissing or opening the early alert does not consume the later reminder`() {
     assertTrue(runNotification(early = true))
     manager.cancel(NotificationIds.NEW_LINKED_DEVICE)
-    // Linked devices consumes these fields when its initial device list is loaded.
-    storedDeviceId = 0
-    storedCreatedAt = 0
+    // Linked devices consumes the pair atomically when its initial device list is loaded.
+    assertEquals(DEVICE_ID to CREATED_AT, misc.takeNewLinkedDeviceWarning())
 
     assertTrue(runNotification(early = false))
 
     val notification = requireNotNull(shadowOf(manager).getNotification(NotificationIds.NEW_LINKED_DEVICE))
     assertEquals("Reminder: A new device was linked", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
-    assertEquals(DEVICE_ID, storedDeviceId)
-    assertEquals(CREATED_AT, storedCreatedAt)
+    assertEquals(DEVICE_ID, misc.newLinkedDeviceId)
+    assertEquals(CREATED_AT, misc.newLinkedDeviceCreatedTime)
   }
 
   @Test
@@ -141,14 +143,13 @@ class NewLinkedDeviceNotificationJobTest {
     every { channels.areNotificationsEnabled() } returns false
 
     for (early in listOf(true, false)) {
-      storedDeviceId = 0
-      storedCreatedAt = 0
+      misc.takeNewLinkedDeviceWarning()
 
       assertTrue(runNotification(early))
 
       assertTrue(shadowOf(manager).allNotifications.isEmpty())
-      assertEquals(DEVICE_ID, storedDeviceId)
-      assertEquals(CREATED_AT, storedCreatedAt)
+      assertEquals(DEVICE_ID, misc.newLinkedDeviceId)
+      assertEquals(CREATED_AT, misc.newLinkedDeviceCreatedTime)
     }
   }
 
@@ -162,16 +163,16 @@ class NewLinkedDeviceNotificationJobTest {
     }
 
     assertTrue(shadowOf(manager).allNotifications.isEmpty())
-    verify(exactly = 0) { signalStore.misc.newLinkedDeviceId = any() }
-    verify(exactly = 0) { signalStore.misc.newLinkedDeviceCreatedTime = any() }
+    assertEquals(0, misc.newLinkedDeviceId)
+    assertEquals(0L, misc.newLinkedDeviceCreatedTime)
   }
 
   @Test
   fun `device identity and creation time are saved before the notification can be tapped`() {
     val recordingManager = mockk<NotificationManager>()
     every { recordingManager.notify(NotificationIds.NEW_LINKED_DEVICE, any()) } answers {
-      assertEquals(DEVICE_ID, storedDeviceId)
-      assertEquals(CREATED_AT, storedCreatedAt)
+      assertEquals(DEVICE_ID, misc.newLinkedDeviceId)
+      assertEquals(CREATED_AT, misc.newLinkedDeviceCreatedTime)
     }
     mockkStatic(ServiceUtil::class)
     try {

@@ -183,8 +183,8 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
     viewModelScope.launch {
       val completed = RelayDisclosure.selectRelayAndSchedule(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
           SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
-          ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices(UnifiedPushRefreshJob(authorization))
-          AppDependencies.resetNetwork(true)
+          AppDependencies.jobManager.add(UnifiedPushRefreshJob(authorization, configureDelivery = true))
+          pendingMollySocketSetup = null
           pendingMollySocketResult.value = null
           pendingMollySocketLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
         }

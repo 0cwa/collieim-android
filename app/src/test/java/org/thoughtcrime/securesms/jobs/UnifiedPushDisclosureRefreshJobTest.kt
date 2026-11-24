@@ -32,6 +32,7 @@ import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
+import org.thoughtcrime.securesms.ApplicationContext
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -138,6 +139,27 @@ class UnifiedPushDisclosureRefreshJobTest {
     UnifiedPushLifecycle.resetForTests()
     job.onRun()
     verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test fun `setup configures distributor services only after acquiring a ready lease`() {
+    mockkStatic(ApplicationContext::class)
+    try {
+      val app = mockk<ApplicationContext>(relaxed = true)
+      every { ApplicationContext.getInstance(application) } returns app
+      val job = UnifiedPushRefreshJob(authorization(), configureDelivery = true).apply { setContext(application) }
+
+      UnifiedPushLifecycle.resetForTests(initiallyReady = false)
+      assertTrue(runCatching { job.onRun() }.exceptionOrNull() is IOException)
+      verify(exactly = 0) { app.applyPushNotificationServicesFromRefresh() }
+
+      UnifiedPushLifecycle.resetForTests()
+      val data = checkNotNull(job.serialize())
+      val restored = UnifiedPushRefreshJob.Factory().create(Job.Parameters.Builder().build(), data)
+      run(restored)
+      verify(exactly = 1) { app.applyPushNotificationServicesFromRefresh() }
+    } finally {
+      unmockkStatic(ApplicationContext::class)
+    }
   }
 
   @Test fun `serialized setup keeps its binding without serializing a credential`() {

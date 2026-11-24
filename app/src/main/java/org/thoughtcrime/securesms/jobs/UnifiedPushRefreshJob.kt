@@ -15,6 +15,7 @@ import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.logging.Log
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException
 import kotlinx.coroutines.runBlocking
+import org.thoughtcrime.securesms.ApplicationContext
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -40,6 +41,7 @@ class UnifiedPushRefreshJob private constructor(
   private val testPing: Boolean,
   private val fromNewEndpoint: Boolean,
   private val authorization: RelayDisclosure.RefreshAuthorization?,
+  private val configureDelivery: Boolean,
   parameters: Parameters,
 ) : BaseJob(parameters) {
 
@@ -49,12 +51,13 @@ class UnifiedPushRefreshJob private constructor(
 
   constructor(testPing: Boolean, fromNewEndpoint: Boolean) : this(testPing, fromNewEndpoint, null)
 
-  constructor(authorization: RelayDisclosure.RefreshAuthorization) : this(false, false, authorization)
+  constructor(authorization: RelayDisclosure.RefreshAuthorization, configureDelivery: Boolean = false) : this(false, false, authorization, configureDelivery)
 
-  private constructor(testPing: Boolean, fromNewEndpoint: Boolean, authorization: RelayDisclosure.RefreshAuthorization?) : this(
+  private constructor(testPing: Boolean, fromNewEndpoint: Boolean, authorization: RelayDisclosure.RefreshAuthorization?, configureDelivery: Boolean = false) : this(
     testPing = testPing,
     fromNewEndpoint = fromNewEndpoint,
     authorization = authorization,
+    configureDelivery = configureDelivery,
     parameters = Parameters.Builder()
       .setQueue(FcmRefreshJob.QUEUE_KEY)
       .addConstraint(NetworkConstraint.KEY)
@@ -85,6 +88,15 @@ class UnifiedPushRefreshJob private constructor(
       return
     }
     try {
+      if (configureDelivery) {
+        synchronized(UnifiedPushLifecycle.monitor) {
+          if (authorization == null || !RelayDisclosure.matchesRefreshLocked(authorization)) return
+          if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation) {
+            throw IOException("UnifiedPush account context is transitioning")
+          }
+          ApplicationContext.getInstance(context).applyPushNotificationServicesFromRefresh()
+        }
+      }
       runWithLease(lease)
     } finally {
       lease.close()
@@ -430,6 +442,7 @@ class UnifiedPushRefreshJob private constructor(
     return JsonJobData.Builder()
       .putBoolean(KEY_PING, testPing)
       .putBoolean(KEY_FROM_NEW_ENDPOINT, fromNewEndpoint)
+      .putBoolean(KEY_CONFIGURE_DELIVERY, configureDelivery)
       .apply {
         authorization?.let {
           putString(KEY_DISCLOSURE_PROCESS, it.processId)
@@ -466,6 +479,7 @@ class UnifiedPushRefreshJob private constructor(
         testPing = data.getBoolean(KEY_PING),
         fromNewEndpoint = data.getBoolean(KEY_FROM_NEW_ENDPOINT),
         authorization = authorization,
+        configureDelivery = data.getBooleanOrDefault(KEY_CONFIGURE_DELIVERY, false),
         parameters = parameters,
       )
     }
@@ -477,6 +491,7 @@ class UnifiedPushRefreshJob private constructor(
     const val KEY = "UnifiedPushRefreshJob"
     private const val KEY_PING = "ping"
     private const val KEY_FROM_NEW_ENDPOINT = "fromNewEndpoint"
+    private const val KEY_CONFIGURE_DELIVERY = "configureDelivery"
     private const val KEY_DISCLOSURE_PROCESS = "disclosureProcessId"
     private const val KEY_DISCLOSURE_ACCOUNT = "disclosureAccountId"
     private const val KEY_DISCLOSURE_DEVICE = "disclosureLocalDeviceId"

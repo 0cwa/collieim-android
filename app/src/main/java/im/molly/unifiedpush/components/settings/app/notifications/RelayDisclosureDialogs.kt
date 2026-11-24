@@ -7,13 +7,28 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.text.BidiFormatter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.model.MollySocket
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.thoughtcrime.securesms.R
 
 /** Confirmation for actions that disclose the linked-device credential to a chosen relay. */
 object RelayDisclosureDialogs {
-  fun showRelay(context: Context, relay: MollySocket, onConfirm: () -> Unit): AlertDialog {
+  fun showRelay(context: Context, relay: MollySocket, onConfirm: () -> Unit): AlertDialog? {
     val destination = when (relay) {
-      is MollySocket.WebServer -> context.getString(R.string.RelayDisclosureDialog__relay_address, BidiFormatter.getInstance().unicodeWrap(relay.url))
+      is MollySocket.WebServer -> {
+        val url = relay.url.toHttpUrlOrNull()
+        if (url == null || !url.isHttps) {
+          showStaleAction(context)
+          return null
+        }
+        val origin = url.newBuilder()
+          .username("")
+          .password("")
+          .encodedPath("/")
+          .query(null)
+          .fragment(null)
+          .build()
+        context.getString(R.string.RelayDisclosureDialog__relay_address, BidiFormatter.getInstance().unicodeWrap(origin.toString()))
+      }
       is MollySocket.AirGapped -> context.getString(R.string.RelayDisclosureDialog__manual_destination)
     }
     return show(context, R.string.RelayDisclosureDialog__select_title, destination, R.string.RelayDisclosureDialog__select_confirm, onConfirm)

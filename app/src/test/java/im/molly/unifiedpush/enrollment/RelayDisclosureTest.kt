@@ -55,6 +55,7 @@ import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import org.unifiedpush.android.connector.UnifiedPush
 
 @RunWith(RobolectricTestRunner::class)
@@ -292,6 +293,70 @@ class RelayDisclosureTest {
     UnifiedPushLifecycle.resetForTests()
     advanceUntilIdle()
     assertEquals(0, effects)
+  }
+
+  @Test fun `an export waiting for the class monitor does not block an account transition`() {
+    val first = export(capture())
+    val bytes = first.file.readBytes()
+    val snapshot = capture()
+    val sequence = values.controlState.importSequence
+    val exportFailure = AtomicReference<Throwable?>()
+    val transitionFailure = AtomicReference<Throwable?>()
+    val transitionFinished = CountDownLatch(1)
+    val exporter = Thread({
+      try {
+        export(snapshot)
+      } catch (failure: Throwable) {
+        exportFailure.set(failure)
+      }
+    }, "relay-disclosure-export").apply { isDaemon = true }
+    val transition = Thread({
+      try {
+        runBlocking {
+          UnifiedPushAccountTransition.withTransition {
+            synchronized(UnifiedPushLifecycle.monitor) {
+              accountId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+            }
+          }
+        }
+      } catch (failure: Throwable) {
+        transitionFailure.set(failure)
+      } finally {
+        transitionFinished.countDown()
+      }
+    }, "relay-disclosure-account-transition").apply { isDaemon = true }
+    var transitionCompletedWhileClassHeld = false
+
+    try {
+      // @JvmStatic + @Synchronized export methods acquire this monitor before the singleton instance.
+      synchronized(EnrollmentExporter::class.java) {
+        exporter.start()
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        fun waitingForExporterMonitor(): Boolean {
+          if (exporter.state != Thread.State.BLOCKED) return false
+          val frame = exporter.stackTrace.firstOrNull() ?: return false
+          return frame.className == RelayDisclosure::class.java.name || frame.className == EnrollmentExporter::class.java.name
+        }
+        while (exporter.isAlive && !waitingForExporterMonitor() && System.nanoTime() < deadline) Thread.sleep(1)
+        assertTrue("The export must reach the held exporter monitor", waitingForExporterMonitor())
+
+        transition.start()
+        transitionCompletedWhileClassHeld = transitionFinished.await(5, TimeUnit.SECONDS)
+      }
+    } finally {
+      // The class monitor is released before either join, including when the old lock order is detected.
+      exporter.join(5000)
+      transition.join(5000)
+    }
+
+    assertFalse("Export worker must finish after the class monitor is released", exporter.isAlive)
+    assertFalse("Account transition worker must finish", transition.isAlive)
+    assertNull("Account transition must not fail", transitionFailure.get())
+    assertTrue("An export waiting for its class monitor must not hold the lifecycle monitor", transitionCompletedWhileClassHeld)
+    assertTrue("The account change must invalidate the waiting export", exportFailure.get() is EnrollmentFile.Invalid)
+    assertEquals("disclosure_changed", (exportFailure.get() as EnrollmentFile.Invalid).code)
+    assertEquals(bytes.toList(), first.file.readBytes().toList())
+    assertEquals(sequence, values.controlState.importSequence)
   }
 
   @Test fun `a stale export does not delete the existing file or allocate an intent`() {

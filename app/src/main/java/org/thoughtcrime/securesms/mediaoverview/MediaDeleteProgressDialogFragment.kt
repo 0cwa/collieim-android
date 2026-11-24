@@ -16,10 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,11 +57,62 @@ class MediaDeleteProgressDialogFragment : ComposeDialogFragment() {
   @Composable
   override fun DialogContent() {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val removingAttachments = state.operation == MediaDeleteProgressViewModel.Operation.REMOVE_ATTACHMENTS
+
+    // After process recreation the dialog can outlive its in-memory job. Never spin forever or
+    // replay a destructive selection without another confirmation.
+    if (!state.hasStarted) {
+      AlertDialog(
+        onDismissRequest = {},
+        title = { Text(stringResource(R.string.CollieAttachmentRemoval_interrupted)) },
+        text = { Text(stringResource(R.string.CollieAttachmentRemoval_interrupted_message), modifier = Modifier.verticalScroll(rememberScrollState())) },
+        confirmButton = {
+          TextButton(onClick = { dismissAllowingStateLoss() }) { Text(stringResource(android.R.string.ok)) }
+        }
+      )
+      return
+    }
 
     LaunchedEffect(state.isDone) {
-      if (state.isDone) {
+      if (state.isDone && !removingAttachments && state.failed == 0) {
         dismissAllowingStateLoss()
       }
+    }
+
+    if (state.isDone && (removingAttachments || state.failed > 0)) {
+      AlertDialog(
+        onDismissRequest = {},
+        title = {
+          Text(
+            stringResource(
+              when {
+                !removingAttachments -> R.string.MediaPreviewFragment_media_delete_error
+                state.removed == 0 -> R.string.CollieAttachmentRemoval_error
+                state.skipped > 0 || state.failed > 0 -> R.string.CollieAttachmentRemoval_partial
+                else -> R.string.CollieAttachmentRemoval_complete
+              }
+            )
+          )
+        },
+        text = {
+          Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
+            if (removingAttachments) {
+              Text(stringResource(R.string.CollieAttachmentRemoval_result, state.removed, state.total))
+              if (state.skipped > 0 || state.failed > 0) {
+                Text(stringResource(R.string.CollieAttachmentRemoval_skipped, state.skipped, state.failed))
+              }
+            } else {
+              Text(stringResource(R.string.CollieAttachmentRemoval_delete_error))
+            }
+          }
+        },
+        confirmButton = {
+          TextButton(onClick = { dismissAllowingStateLoss() }) {
+            Text(stringResource(android.R.string.ok))
+          }
+        }
+      )
+      return
     }
 
     Surface(
@@ -74,7 +129,7 @@ class MediaDeleteProgressDialogFragment : ComposeDialogFragment() {
           .padding(horizontal = 24.dp, vertical = 24.dp)
       ) {
         Text(
-          text = stringResource(R.string.MediaOverviewActivity_Media_delete_progress_title),
+          text = stringResource(if (removingAttachments) R.string.CollieAttachmentRemoval_progress else R.string.MediaOverviewActivity_Media_delete_progress_title),
           style = MaterialTheme.typography.titleMedium,
           color = MaterialTheme.colorScheme.onSurface
         )

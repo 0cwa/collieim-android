@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CollieAttachmentRemoval_action">Remove attachments, keep messages</string>
+    <string name="CollieAttachmentRemoval_short_action">Remove files</string>
+    <string name="CollieAttachmentRemoval_confirm">Remove attachments?</string>
+    <plurals name="CollieAttachmentRemoval_confirmation">
+        <item quantity="one">Remove this attachment from its message on this device? The message, text and reactions will stay, with an attachment-removed marker.\n\nThis cannot be undone here. Copies on other devices, in other messages, in edit history and in existing backups are kept.</item>
+        <item quantity="other">Remove these %1$d attachments from their messages on this device? The messages, text and reactions will stay, with attachment-removed markers.\n\nThis cannot be undone here. Copies on other devices, in other messages, in edit history and in existing backups are kept.</item>
+    </plurals>
+    <string name="CollieAttachmentRemoval_remove">Remove attachments</string>
+    <string name="CollieAttachmentRemoval_progress">Removing attachments</string>
+    <string name="CollieAttachmentRemoval_complete">Messages kept</string>
+    <string name="CollieAttachmentRemoval_partial">Some attachments were kept</string>
+    <string name="CollieAttachmentRemoval_error">Could not remove attachments</string>
+    <string name="CollieAttachmentRemoval_result">Removed %1$d of %2$d attachments. Your messages and text were kept.</string>
+    <string name="CollieAttachmentRemoval_skipped">%1$d attachments were already removed or are no longer eligible. %2$d could not be removed. You can select the remaining files and try again.</string>
+    <string name="CollieAttachmentRemoval_removed">Attachment removed</string>
+    <string name="CollieAttachmentRemoval_removed_short">Removed</string>
+    <string name="CollieAttachmentRemoval_interrupted">Operation interrupted</string>
+    <string name="CollieAttachmentRemoval_interrupted_message">The operation stopped before its result could be shown. Some items may already have been removed. Check the remaining media before trying again.</string>
+    <string name="CollieAttachmentRemoval_removed_explanation">This attachment was removed from this message on this device. Its message and text were kept.</string>
+    <string name="CollieAttachmentRemoval_unavailable">This attachment cannot be removed now. Its message has not been changed.</string>
+    <string name="CollieAttachmentRemoval_success">Attachment removed. Message and text kept.</string>
+    <string name="CollieAttachmentRemoval_delete_error">Some items could not be deleted. Check the remaining media before trying again.</string>
+</resources>

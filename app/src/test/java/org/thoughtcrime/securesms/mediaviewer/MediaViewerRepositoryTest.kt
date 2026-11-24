@@ -84,6 +84,8 @@ class MediaViewerRepositoryTest {
       Triple("failed without thumbnail", false, insertAttachment(messageId, transferState = AttachmentTable.TRANSFER_PROGRESS_FAILED, dataFile = null)),
       Triple("permanent failure without thumbnail", false, insertAttachment(messageId, transferState = AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE, dataFile = null)),
       Triple("offloaded without thumbnail", false, insertAttachment(messageId, transferState = AttachmentTable.TRANSFER_RESTORE_OFFLOADED, dataFile = null)),
+      Triple("removed with stale data", false, insertAttachment(messageId, transferState = AttachmentTable.TRANSFER_REMOVED_LOCALLY)),
+      Triple("removed with stale thumbnail", false, insertAttachment(messageId, transferState = AttachmentTable.TRANSFER_REMOVED_LOCALLY, dataFile = null, thumbnailFile = "/thumbnail/file", thumbnailRestoreState = AttachmentTable.ThumbnailRestoreState.FINISHED)),
       Triple(
         "pending with thumbnail",
         true,

@@ -68,6 +68,12 @@ sealed interface MediaViewerEvent {
 
   data object DeleteClicked : MediaViewerEvent
 
+  data object RemoveAttachmentClicked : MediaViewerEvent
+
+  data class RemoveAttachmentValidityResolved(val attachmentId: AttachmentId, val canRemove: Boolean, val requestId: Long) : MediaViewerEvent
+
+  data object RemoveAttachmentConfirmed : MediaViewerEvent
+
   data class RailItemClicked(val attachmentId: AttachmentId) : MediaViewerEvent
 
   data class DeleteConfirmed(val deleteForEveryone: Boolean) : MediaViewerEvent
@@ -98,7 +104,7 @@ sealed interface MediaViewerEvent {
   }
 
   /** Whether the current item may be remotely deleted, resolved off the event queue. */
-  data class DeleteForEveryoneValidityResolved(val canDeleteForEveryone: Boolean, val isNoteToSelf: Boolean) : MediaViewerEvent
+  data class DeleteForEveryoneValidityResolved(val canDeleteForEveryone: Boolean, val isNoteToSelf: Boolean, val attachmentId: AttachmentId, val requestId: Long) : MediaViewerEvent
 
   /** The post-playback chrome auto-hide delay elapsed. */
   data object ChromeAutoHideElapsed : MediaViewerEvent

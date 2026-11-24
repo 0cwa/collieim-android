@@ -77,7 +77,11 @@ data class MediaViewerState(
   sealed interface Dialog {
     data object None : Dialog
 
-    data class DeleteConfirmation(val canDeleteForEveryone: Boolean, val isNoteToSelf: Boolean) : Dialog
+    data class DeleteConfirmation(val canDeleteForEveryone: Boolean, val isNoteToSelf: Boolean, val attachmentId: AttachmentId? = null) : Dialog
+
+    data class RemoveAttachmentConfirmation(val attachmentId: AttachmentId) : Dialog
+
+    data object RemovingAttachment : Dialog
 
     data object SaveOffloadedMedia : Dialog
   }

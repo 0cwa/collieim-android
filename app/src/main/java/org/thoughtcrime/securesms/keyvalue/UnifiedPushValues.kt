@@ -9,6 +9,7 @@ import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.receiver.EncryptedPush
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
 import org.signal.storage.keyvalue.booleanValue
@@ -22,6 +23,13 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
     private const val MOLLYSOCKET_DEVICE_ID = "mollysocket.deviceId"
     private const val MOLLYSOCKET_PASSWORD = "mollysocket.passwd"
+    private const val MOLLYSOCKET_PROVISIONING_PENDING = "mollysocket.provisioning.pending"
+    private const val RELAY_CLEANUP_ACCOUNT = "mollysocket.cleanup.account"
+    private const val RELAY_CLEANUP_LOCAL_DEVICE = "mollysocket.cleanup.localDevice"
+    private const val RELAY_CLEANUP_DEVICE = "mollysocket.cleanup.device"
+    private const val RELAY_CLEANUP_PASSWORD = "mollysocket.cleanup.password"
+    private const val RELAY_CLEANUP_UNLINK_CONFIRMED = "mollysocket.cleanup.unlinkConfirmed"
+    private const val RELAY_CLEANUP_CLEAR_CONTROL_UPDATE = "mollysocket.cleanup.clearControlUpdate"
     private const val MOLLYSOCKET_STATUS = "mollysocket.status"
     private const val MOLLYSOCKET_AIR_GAPPED = "mollysocket.airGapped"
     private const val MOLLYSOCKET_URL = "mollysocket.url"
@@ -68,8 +76,99 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       store.beginWrite()
         .putInteger(MOLLYSOCKET_DEVICE_ID, device?.deviceId ?: 0)
         .putString(MOLLYSOCKET_PASSWORD, device?.password)
+        .remove(MOLLYSOCKET_PROVISIONING_PENDING)
         .apply()
     }
+
+  /** The exact credential must remain unavailable even if the write landed but its acknowledgement failed. */
+  fun isProvisioningPending(device: MollySocketDevice): Boolean {
+    if (!getBoolean(MOLLYSOCKET_PROVISIONING_PENDING, false)) return false
+    val snapshot = store.beginRead()
+    return snapshot.getBoolean(MOLLYSOCKET_PROVISIONING_PENDING, false) &&
+      snapshot.getInteger(MOLLYSOCKET_DEVICE_ID, 0) == device.deviceId &&
+      snapshot.getString(MOLLYSOCKET_PASSWORD, null) == device.password
+  }
+
+  @Throws(KeyValuePersistenceException::class)
+  fun commitProvisionedDevice(device: MollySocketDevice) {
+    store.beginWrite()
+      .putInteger(MOLLYSOCKET_DEVICE_ID, device.deviceId)
+      .putString(MOLLYSOCKET_PASSWORD, device.password)
+      .putBoolean(MOLLYSOCKET_VAPID_SYNCED, true)
+      .putBoolean(MOLLYSOCKET_PROVISIONING_PENDING, true)
+      .commitAndWaitForPersistence()
+  }
+
+  /** Release only after the credential write returned successfully. A failed release must never trigger unlink. */
+  @Throws(KeyValuePersistenceException::class)
+  fun acknowledgeProvisionedDevice() {
+    store.beginWrite().remove(MOLLYSOCKET_PROVISIONING_PENDING).commitAndWaitForPersistence()
+  }
+
+  @Throws(KeyValuePersistenceException::class)
+  fun commitClearedDevice() {
+    store.beginWrite()
+      .putInteger(MOLLYSOCKET_DEVICE_ID, 0)
+      .putString(MOLLYSOCKET_PASSWORD, null)
+      .remove(MOLLYSOCKET_PROVISIONING_PENDING)
+      .commitAndWaitForPersistence()
+  }
+
+  data class RelayCleanup(
+    val accountId: String,
+    val localDeviceId: Int,
+    val device: MollySocketDevice,
+    // Lifecycle generations are process-local. Startup has no in-memory invalidation to complete.
+    val invalidationGeneration: Long? = null,
+    val unlinkConfirmed: Boolean = true,
+    // An unpublished credential that never reached storage does not own the saved control update.
+    val clearControlUpdate: Boolean = true,
+  ) {
+    fun hasSameOwner(other: RelayCleanup): Boolean =
+      accountId == other.accountId && localDeviceId == other.localDeviceId && device == other.device &&
+        invalidationGeneration == other.invalidationGeneration
+
+    override fun toString() = "RelayCleanup(localDeviceId=$localDeviceId)"
+  }
+
+  @Volatile private var activeRelayCleanup: RelayCleanup? = null
+
+  val pendingRelayCleanup: RelayCleanup?
+    get() {
+      activeRelayCleanup?.let { return it }
+      if (!store.containsKey(RELAY_CLEANUP_ACCOUNT)) return null
+      val snapshot = store.beginRead()
+      val accountId = snapshot.getString(RELAY_CLEANUP_ACCOUNT, null) ?: return null
+      val password = checkNotNull(snapshot.getString(RELAY_CLEANUP_PASSWORD, null))
+      return RelayCleanup(
+        accountId,
+        snapshot.getInteger(RELAY_CLEANUP_LOCAL_DEVICE, 0),
+        MollySocketDevice(snapshot.getInteger(RELAY_CLEANUP_DEVICE, 0), password),
+        // Records from before intent persistence were written only after unlink was confirmed.
+        unlinkConfirmed = snapshot.getBoolean(RELAY_CLEANUP_UNLINK_CONFIRMED, true),
+        clearControlUpdate = snapshot.getBoolean(RELAY_CLEANUP_CLEAR_CONTROL_UPDATE, true),
+      )
+    }
+
+  /** Persist the cleanup phase before advancing to its next remote or local effect. */
+  fun setRelayCleanup(cleanup: RelayCleanup, pending: Boolean) {
+    val write = store.beginWrite()
+    if (pending) {
+      activeRelayCleanup = cleanup
+      write.putString(RELAY_CLEANUP_ACCOUNT, cleanup.accountId)
+        .putInteger(RELAY_CLEANUP_LOCAL_DEVICE, cleanup.localDeviceId)
+        .putInteger(RELAY_CLEANUP_DEVICE, cleanup.device.deviceId)
+        .putString(RELAY_CLEANUP_PASSWORD, cleanup.device.password)
+        .putBoolean(RELAY_CLEANUP_UNLINK_CONFIRMED, cleanup.unlinkConfirmed)
+        .putBoolean(RELAY_CLEANUP_CLEAR_CONTROL_UPDATE, cleanup.clearControlUpdate)
+    } else {
+      write.remove(RELAY_CLEANUP_ACCOUNT).remove(RELAY_CLEANUP_LOCAL_DEVICE)
+        .remove(RELAY_CLEANUP_DEVICE).remove(RELAY_CLEANUP_PASSWORD)
+        .remove(RELAY_CLEANUP_UNLINK_CONFIRMED).remove(RELAY_CLEANUP_CLEAR_CONTROL_UPDATE)
+    }
+    write.commitAndWaitForPersistence()
+    if (!pending) activeRelayCleanup = null
+  }
 
   fun isMollySocketDevice(deviceId: Int): Boolean =
     deviceId != 0 && getInteger(MOLLYSOCKET_DEVICE_ID, 0) == deviceId

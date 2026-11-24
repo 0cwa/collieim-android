@@ -37,6 +37,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
 
   companion object {
     private val TAG = Log.tag(UnifiedPushReceiver::class.java)
+    private var pendingAirGappedWarning: UnifiedPushLifecycle.TransitionResult<AirGappedWarning>? = null
 
     /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
     @JvmStatic
@@ -46,6 +47,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
         return
       }
       commitPendingEndpoint(context)?.let { publishPendingEndpointEffects(context, it) }
+      publishAirGappedWarning(context)
       // Now that the app can read its state: make sure the server holds the current endpoint, and send an update
       // that was built but never confirmed again.
       if (UnifiedPushLifecycle.isReady()) EndpointReconciler.reconcile(resume = true)
@@ -54,30 +56,36 @@ class UnifiedPushReceiver : MessagingReceiver() {
     /** Commits the pending connector tuple and its generation under the lifecycle transition. */
     internal fun commitPendingEndpoint(context: Context): UnifiedPushLifecycle.TransitionResult<EndpointEffects?>? {
       val receiver = UnifiedPushReceiver()
-      val shouldApply = synchronized(UnifiedPushLifecycle.monitor) {
+      val expectedGeneration = synchronized(UnifiedPushLifecycle.monitor) {
         // Check the lock before inspecting or consuming the sealed endpoint. A callback queued before
         // the app locked must leave the saved endpoint untouched for a later unlock path.
         if (KeyCachingService.isLocked()) return null
-        if (!UnifiedPushLifecycle.isReadyLocked() && !UnifiedPushLifecycle.hasPendingInvalidationLocked()) return null
-        LockedPushState.peekPending(context) != null
+        if (!UnifiedPushLifecycle.isReadyLocked() && !UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked()) return null
+        if (LockedPushState.peekPending(context) == null) return null
+        UnifiedPushLifecycle.currentGeneration()
       }
-      if (!shouldApply) return null
 
-      return runBlocking {
-        UnifiedPushAccountTransition.withTransitionAndGeneration(
-          completesInvalidation = true,
-          readyAfter = { UnifiedPushAccountTransition.hasCoherentRegisteredContext() && !KeyCachingService.isLocked() },
-        ) {
-          synchronized(UnifiedPushLifecycle.monitor) {
-            if (KeyCachingService.isLocked()) {
-              null
-            } else {
-              LockedPushState.peekPending(context)?.let { pending ->
-                receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
+      return try {
+        runBlocking {
+          UnifiedPushAccountTransition.withTransitionAndGeneration(
+            expectedGeneration = expectedGeneration,
+            completesInvalidation = true,
+            readyAfter = { UnifiedPushAccountTransition.hasCoherentRegisteredContext() && !KeyCachingService.isLocked() },
+          ) {
+            synchronized(UnifiedPushLifecycle.monitor) {
+              if (KeyCachingService.isLocked()) {
+                null
+              } else {
+                LockedPushState.peekPending(context)?.let { pending ->
+                  receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
+                }
               }
             }
-            }
+          }
         }
+      } catch (_: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
+        // The winning transition schedules pending connector work after committing.
+        null
       }
     }
 
@@ -87,11 +95,33 @@ class UnifiedPushReceiver : MessagingReceiver() {
       transition: UnifiedPushLifecycle.TransitionResult<EndpointEffects?>,
     ) {
       val effects = transition.value ?: return
-      val lease = UnifiedPushAccountTransition.acquireLease(transition.generation) ?: return
-      try {
+      UnifiedPushAccountTransition.acquireLease(transition.generation)?.use {
         UnifiedPushReceiver().publishEndpointEffects(context, effects)
-      } finally {
-        lease.close()
+      }
+      effects.warning?.let {
+        publishAirGappedWarning(context, UnifiedPushLifecycle.TransitionResult(it, transition.generation))
+      }
+    }
+
+    private fun publishAirGappedWarning(
+      context: Context,
+      warning: UnifiedPushLifecycle.TransitionResult<AirGappedWarning>? = null,
+    ) = synchronized(UnifiedPushLifecycle.monitor) {
+      if (warning != null && UnifiedPushLifecycle.hasOnlyCredentialChangesSinceLocked(warning.generation)) {
+        pendingAirGappedWarning = warning
+      }
+      val pending = pendingAirGappedWarning ?: return@synchronized
+      if (!UnifiedPushLifecycle.hasOnlyCredentialChangesSinceLocked(pending.generation)) {
+        pendingAirGappedWarning = null
+        return@synchronized
+      }
+      if (KeyCachingService.isLocked() || !UnifiedPushLifecycle.isReadyLocked()) return@synchronized
+
+      pendingAirGappedWarning = null
+      val live = UnifiedPushAccountTransition.captureContextLocked()?.copy(pushDevice = null)
+      if (SignalStore.unifiedpush.airGapped && live == pending.value.route &&
+        SignalStore.unifiedpush.endpointInstance == pending.value.storedInstance) {
+        UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
       }
     }
 
@@ -121,7 +151,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       // Store first; the worker consumes it only after closing admission and draining old sends.
       LockedPushState.savePending(context, received)
       if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
-      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked())
     }
     val completed = unchanged
     if (completed != null) {
@@ -137,7 +167,12 @@ class UnifiedPushReceiver : MessagingReceiver() {
       current.endpointAuth == endpoint.auth && current.instance == endpoint.instance
   }
 
-  internal data class EndpointEffects(val failed: Boolean, val changed: Boolean, val airGapped: Boolean)
+  internal data class AirGappedWarning(
+    val route: UnifiedPushAccountTransition.AccountContext,
+    val storedInstance: String?,
+  )
+
+  internal data class EndpointEffects(val failed: Boolean, val changed: Boolean, val warning: AirGappedWarning?)
 
   /** Updates route tuple and control frame under the lifecycle monitor; UI and job callbacks happen after release. */
   private fun applyEndpointLocked(endpoint: LockedPushState.Endpoint): EndpointEffects {
@@ -154,8 +189,13 @@ class UnifiedPushReceiver : MessagingReceiver() {
       auth = endpoint.auth,
       instance = endpoint.instance.takeIf { endpoint.url != null },
     )
-    if (changed && airGapped) updateLastReceivedTime(0)
-    return EndpointEffects(failed, changed, airGapped)
+    val warning = if (changed && airGapped) {
+      updateLastReceivedTime(0)
+      UnifiedPushAccountTransition.captureContextLocked()?.copy(pushDevice = null)?.let {
+        AirGappedWarning(it, values.endpointInstance)
+      }
+    } else null
+    return EndpointEffects(failed, changed, warning)
   }
 
   private fun publishEndpointEffects(context: Context, effects: EndpointEffects) {
@@ -169,9 +209,6 @@ class UnifiedPushReceiver : MessagingReceiver() {
     // reconciliation cannot do that before an encrypted enrollment has a control key.
     if (effects.changed || effects.failed) {
       AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
-    }
-    if (effects.changed && effects.airGapped) {
-      UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
     }
   }
 
@@ -196,7 +233,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
       LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
       if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
-      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked())
     }
     UnifiedPush.forceRemoveDistributor(context)
     if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }

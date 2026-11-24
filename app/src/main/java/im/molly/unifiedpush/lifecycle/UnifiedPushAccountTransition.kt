@@ -3,16 +3,23 @@ package im.molly.unifiedpush.lifecycle
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.util.concurrent.Callable
 import org.signal.core.util.concurrent.SignalExecutors
+import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import im.molly.unifiedpush.receiver.UnifiedPushReceiver
 
 /** SignalStore-facing setup for the dependency-free lifecycle coordinator. */
 object UnifiedPushAccountTransition {
+
+  private val TAG = Log.tag(UnifiedPushAccountTransition::class)
 
   /** Snapshot captured under [UnifiedPushLifecycle.monitor] before a credentialed push operation begins. */
   data class AccountContext(
@@ -43,7 +50,7 @@ object UnifiedPushAccountTransition {
   @JvmStatic
   fun initializeFromSignalStore() {
     val values = SignalStore.unifiedpush
-    val marker = values.hasIncompleteAccountTransition
+    val marker = values.hasIncompleteAccountTransition || values.pendingRelayCleanup != null
     UnifiedPushLifecycle.initialize(
       incompleteTransition = marker,
       legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
@@ -66,23 +73,40 @@ object UnifiedPushAccountTransition {
     block = block,
   ).value
 
-  /** Runs a transition and returns the generation owned by that transition, not a later global sample. */
+  /**
+   * Runs a transition and returns its generation. A non-null [relayCleanup] selects a credential-only
+   * transition. The provider returns the owned intent when it is eligible for retirement.
+   */
   suspend fun <T> withTransitionAndGeneration(
     expectedGeneration: Long? = null,
     keepIncompleteMarker: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
     readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
+    relayCleanup: (() -> UnifiedPushValues.RelayCleanup?)? = null,
     block: suspend () -> T,
   ): UnifiedPushLifecycle.TransitionResult<T> {
+    val values = SignalStore.unifiedpush
     val result = UnifiedPushLifecycle.withTransitionAndGeneration(
-      hasIncompleteMarker = SignalStore.unifiedpush::hasIncompleteAccountTransition,
-      persistIncompleteMarker = SignalStore.unifiedpush::setIncompleteAccountTransition,
-      readyAfter = readyAfter,
+      hasIncompleteMarker = { relayCleanup == null && values.hasIncompleteAccountTransition },
+      persistIncompleteMarker = { pending ->
+        if (relayCleanup == null) values.setIncompleteAccountTransition(pending)
+        else if (!pending) {
+          synchronized(UnifiedPushLifecycle.monitor) {
+            val owned = relayCleanup()
+            val current = values.pendingRelayCleanup
+            if (owned != null && current != null && current.hasSameOwner(owned)) values.setRelayCleanup(current, pending = false)
+          }
+        }
+      },
+      readyAfter = { readyAfter() && (relayCleanup == null || !values.hasIncompleteAccountTransition) },
       expectedGeneration = expectedGeneration,
       keepIncompleteMarker = keepIncompleteMarker,
       completesAccountRegistration = completesAccountRegistration,
       completesInvalidation = completesInvalidation,
+      invalidationGenerationToComplete = relayCleanup?.invoke()?.invalidationGeneration,
+      credentialOnly = relayCleanup != null,
+      admissionAllowed = { values.pendingRelayCleanup == null },
       afterTransitionStarted = {
         if (AppDependencies.isInitialized) {
           AppDependencies.incomingMessageObserver.notifyUnifiedPushFetchStateChanged()
@@ -90,7 +114,12 @@ object UnifiedPushAccountTransition {
       },
       block = block,
     )
-    if (!keepIncompleteMarker && !completesInvalidation && UnifiedPushLifecycle.isReady() && AppDependencies.isInitialized) {
+    val canProcessEndpoint = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushLifecycle.isReadyLocked() ||
+        (UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked() && values.pendingRelayCleanup == null &&
+          !values.hasIncompleteAccountTransition && hasCoherentRegisteredContext())
+    }
+    if (!keepIncompleteMarker && !completesInvalidation && canProcessEndpoint && AppDependencies.isInitialized) {
       SignalExecutors.BOUNDED.execute { UnifiedPushReceiver.applyPendingEndpoint(AppDependencies.application) }
     }
     return result
@@ -115,26 +144,77 @@ object UnifiedPushAccountTransition {
     val savedRelay = context?.pushDevice ?: return false
 
     return withContext(NonCancellable) {
-      withTransition {
-        val stillSelected = synchronized(UnifiedPushLifecycle.monitor) {
-          accountAndLocalDeviceMatchLocked(context) && SignalStore.unifiedpush.device == savedRelay
-        }
-        if (!stillSelected) return@withTransition false
+      val values = SignalStore.unifiedpush
+      var intent: UnifiedPushValues.RelayCleanup? = null
+      var completedIntent: UnifiedPushValues.RelayCleanup? = null
+      try {
+        withTransitionAndGeneration(relayCleanup = { completedIntent }) {
+          val cleanup = synchronized(UnifiedPushLifecycle.monitor) {
+            if (values.hasIncompleteAccountTransition || values.pendingRelayCleanup != null ||
+              !accountAndLocalDeviceMatchLocked(context) || values.device != savedRelay
+            ) return@withTransitionAndGeneration false
 
-        val removed = removeDevice(deviceId)
-
-        if (removed) {
-          synchronized(UnifiedPushLifecycle.monitor) {
-            if (accountAndLocalDeviceMatchLocked(context) && SignalStore.unifiedpush.device == savedRelay) {
-              SignalStore.unifiedpush.device = null
-              SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
+            UnifiedPushValues.RelayCleanup(context.accountId, context.localDeviceId, savedRelay, unlinkConfirmed = false).also {
+              intent = it
+              values.setRelayCleanup(it, pending = true)
             }
           }
-        }
 
-        removed
+          val removed = try {
+            removeDevice(deviceId)
+          } catch (e: CancellationException) {
+            throw e
+          } catch (e: Exception) {
+            Log.w(TAG, "Could not confirm removal of the saved relay")
+            false
+          }
+          if (removed) {
+            synchronized(UnifiedPushLifecycle.monitor) {
+              clearConfirmedRelayCleanupLocked(cleanup)
+              completedIntent = cleanup
+            }
+          }
+          removed
+        }.value
+      } catch (e: KeyValuePersistenceException) {
+        Log.w(TAG, "Could not persist saved relay cleanup", e)
+        false
+      } finally {
+        val needsRecovery = synchronized(UnifiedPushLifecycle.monitor) {
+          intent?.let { values.pendingRelayCleanup?.hasSameOwner(it) } == true
+        }
+        if (needsRecovery && AppDependencies.isInitialized) {
+          AppDependencies.jobManager.add(UnifiedPushRefreshJob())
+        }
       }
     }
+  }
+
+  /** Checks that the cleanup still owns the account and the exact saved credential. */
+  internal fun ownsRelayCleanupLocked(cleanup: UnifiedPushValues.RelayCleanup): Boolean {
+    val values = SignalStore.unifiedpush
+    val current = values.device
+    if (values.pendingRelayCleanup?.hasSameOwner(cleanup) != true ||
+      !accountAndLocalDeviceMatchLocked(cleanup.accountId, cleanup.localDeviceId) ||
+      (current != null && current != cleanup.device)
+    ) return false
+    if (values.hasIncompleteAccountTransition) throw IOException("UnifiedPush account context is transitioning")
+    return true
+  }
+
+  /** Records remote confirmation before clearing the credential and its pending control update. */
+  internal fun clearConfirmedRelayCleanupLocked(cleanup: UnifiedPushValues.RelayCleanup): Boolean {
+    if (!ownsRelayCleanupLocked(cleanup)) return false
+    val values = SignalStore.unifiedpush
+    val current = values.device
+    val clearControlUpdate = cleanup.clearControlUpdate || current != null
+    if (!cleanup.unlinkConfirmed || clearControlUpdate != cleanup.clearControlUpdate) {
+      values.setRelayCleanup(cleanup.copy(unlinkConfirmed = true, clearControlUpdate = clearControlUpdate), pending = true)
+    }
+    if (current != null) values.commitClearedDevice()
+    // An earlier clear may have landed without acknowledgement. The intent still owns the control update.
+    if (clearControlUpdate) values.mutateControl { it.copy(update = null) }
+    return true
   }
 
   fun fetchAuthorization(lease: UnifiedPushLifecycle.Lease<AccountContext>): FetchAuthorization =
@@ -280,8 +360,13 @@ object UnifiedPushAccountTransition {
   /** Account/device match used to decide whether a remote device-creation result can be published. */
   fun accountAndLocalDeviceMatchLocked(expected: AccountContext): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    return accountAndLocalDeviceMatchLocked(expected.accountId, expected.localDeviceId)
+  }
+
+  fun accountAndLocalDeviceMatchLocked(accountId: String, localDeviceId: Int): Boolean {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val account = SignalStore.account
-    return account.isRegistered && account.aci?.toString() == expected.accountId && account.deviceId == expected.localDeviceId &&
+    return account.isRegistered && account.aci?.toString() == accountId && account.deviceId == localDeviceId &&
       account.hasAciIdentityKey() && account.servicePassword != null
   }
 }

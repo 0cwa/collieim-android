@@ -20,6 +20,7 @@ import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.whispersystems.signalservice.internal.push.DeviceLimitExceededException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -57,7 +58,15 @@ class UnifiedPushRefreshJob private constructor(
 
   @Throws(Exception::class)
   public override fun onRun() {
-    val lease = UnifiedPushAccountTransition.acquireLease()
+    val pendingCleanup = synchronized(UnifiedPushLifecycle.monitor) {
+      SignalStore.unifiedpush.pendingRelayCleanup?.let { it to UnifiedPushLifecycle.currentGeneration() }
+    }
+    val cleanupGeneration = pendingCleanup?.let { (cleanup, generation) ->
+      val result = finishDeviceClear(cleanup, expectedGeneration = generation)
+      if (!result.value) return
+      result.generation
+    }
+    val lease = UnifiedPushAccountTransition.acquireLease(cleanupGeneration)
     if (lease == null) {
       val hasAccount = synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushAccountTransition.isRegisteredLocked() }
       if (hasAccount) throw IOException("UnifiedPush account context is transitioning")
@@ -154,14 +163,25 @@ class UnifiedPushRefreshJob private constructor(
 
     val device = lease.snapshot.pushDevice ?: try {
       val created = MollySocketRepository.createDevice()
-      val published = synchronized(UnifiedPushLifecycle.monitor) {
-        UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
-          UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
-          SignalStore.unifiedpush.device == null && run {
-            SignalStore.unifiedpush.device = created
-            SignalStore.unifiedpush.vapidKeySynced = true
+      val published = try {
+        synchronized(UnifiedPushLifecycle.monitor) {
+          val values = SignalStore.unifiedpush
+          if (UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
+            UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && values.device == null) {
+            try {
+              values.commitProvisionedDevice(created)
+            } catch (e: Exception) {
+              throw UnacknowledgedDeviceException(e)
+            }
+            // A failure here cannot revoke an already acknowledged credential that may now be visible.
+            values.acknowledgeProvisionedDevice()
             true
+          } else {
+            false
           }
+        }
+      } catch (e: UnacknowledgedDeviceException) {
+        removeUnpublishedDevice(created, lease, e.failure)
       }
       if (!published) {
         // The linked-device request completed for an obsolete context. Remove it while this lease still pins the old account.
@@ -200,19 +220,46 @@ class UnifiedPushRefreshJob private constructor(
     return result.toRegistrationStatus()
   }
 
+  /**
+   * The store did not acknowledge [created]. Remove the remote device while [lease] still pins its account. The write
+   * may have taken effect before its acknowledgement failed, so once removal is confirmed clear the record only if it
+   * still belongs to the same account and matches [created] exactly, even if a route-only transition invalidated the
+   * lease generation while unlinking ran. Always rethrows [failure], attaching any failed removal or clear as a
+   * suppressed exception.
+   */
+  private fun removeUnpublishedDevice(
+    created: MollySocketDevice,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+    failure: Exception,
+  ): Nothing {
+    Log.w(TAG, "Could not persist new $created, removing it.", failure)
+    // An interrupted acknowledgement re-asserts the flag, which would otherwise abort the blocking removal call.
+    val interrupted = Thread.interrupted()
+    try {
+      removeAndClearDevice(created, lease, compensating = true)
+    } catch (cleanup: Exception) {
+      Log.w(TAG, "Could not remove unpublished $created.", cleanup)
+      failure.addSuppressed(cleanup)
+    } finally {
+      if (interrupted) Thread.currentThread().interrupt()
+    }
+    throw failure
+  }
+
   @Throws(IOException::class)
   private fun validateMollySocketDevice(
     lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
   ): UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> {
     val device = lease.snapshot.pushDevice ?: return lease
-    val vapidSynced = SignalStore.unifiedpush.vapidKeySynced
+    val values = SignalStore.unifiedpush
+    val needsReplacement = !values.vapidKeySynced || values.isProvisioningPending(device)
     var cleared = false
 
     var clearGeneration: Long? = null
     when (MollySocketRepository.getDeviceStatus(device)) {
       LinkStatus.LINKED -> {
-        if (!vapidSynced) {
-          Log.w(TAG, "VAPID key mismatch, will remove previous linked $device.")
+        if (needsReplacement) {
+          Log.w(TAG, "Relay credential needs replacement. Removing linked $device.")
           clearGeneration = removeAndClearDevice(device, lease)
           cleared = true
         }
@@ -225,8 +272,8 @@ class UnifiedPushRefreshJob private constructor(
       }
 
       LinkStatus.UNKNOWN -> {
-        if (!vapidSynced) {
-          throw IOException("VAPID key mismatch, but cannot determine $device link status.")
+        if (needsReplacement) {
+          throw IOException("Relay credential needs replacement, but cannot determine $device link status.")
         }
         return lease // Optimistically assume the device is linked
       }
@@ -264,48 +311,102 @@ class UnifiedPushRefreshJob private constructor(
   }
 
   @Throws(IOException::class)
-  private fun removeAndClearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Long? {
-    MollySocketRepository.removeDevice(device)
-    return clearDevice(device, lease)
-  }
+  private fun removeAndClearDevice(
+    device: MollySocketDevice,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+    compensating: Boolean = false,
+  ): Long? = clearDevice(device, lease, unlinkConfirmed = false, compensating = compensating)
 
   /**
-   * Close admission before dropping this job's lease, then enter the serialized transition with the
-   * generation observed at invalidation. If another transition won the writer first, this one fails
-   * stale instead of waiting for a transition that is itself draining our lease.
+   * Close admission and persist the intent before unlinking under the lease that pins the account.
+   * Drop the lease before entering the serialized transition, which drains any remaining work.
    */
-  internal fun clearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Long? {
-    val expectedGeneration = synchronized(UnifiedPushLifecycle.monitor) {
-      if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation ||
-        !UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) || SignalStore.unifiedpush.device != device) {
-        null
-      } else {
-        UnifiedPushLifecycle.invalidateLocked()
-        UnifiedPushLifecycle.currentGeneration()
+  internal fun clearDevice(
+    device: MollySocketDevice,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+    unlinkConfirmed: Boolean = true,
+    compensating: Boolean = false,
+  ): Long? {
+    val cleanup = try {
+      val intent = synchronized(UnifiedPushLifecycle.monitor) {
+        val values = SignalStore.unifiedpush
+        val current = values.device
+        val ownsReadyGeneration = UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation
+        if (lease.closed || (!ownsReadyGeneration && !compensating) || values.pendingRelayCleanup != null ||
+          !UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) ||
+          (current != device && !(compensating && current == null))) return null
+        val invalidationGeneration = if (ownsReadyGeneration) {
+          UnifiedPushLifecycle.invalidateLocked(credentialOnly = true)
+          UnifiedPushLifecycle.currentGeneration()
+        } else {
+          null
+        }
+        UnifiedPushValues.RelayCleanup(
+          lease.snapshot.accountId,
+          lease.snapshot.localDeviceId,
+          device,
+          invalidationGeneration,
+          unlinkConfirmed = unlinkConfirmed,
+          clearControlUpdate = current != null,
+        ).also { values.setRelayCleanup(it, pending = true) }
       }
-    }
-    lease.close()
-    if (expectedGeneration == null) return null
 
-    var cleared = false
-    val transition = runBlocking {
-      UnifiedPushAccountTransition.withTransitionAndGeneration(
-      expectedGeneration = expectedGeneration,
-      completesInvalidation = true,
-      ) {
+      if (!intent.unlinkConfirmed) {
+        // Recovery may already be waiting on this lease. It reads the latest phase after the drain.
+        MollySocketRepository.removeDevice(device)
         synchronized(UnifiedPushLifecycle.monitor) {
-          if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && SignalStore.unifiedpush.device == device) {
-            SignalStore.unifiedpush.device = null
-            // Stop dispatching a frame addressed to the removed device while retaining keys, replay, import sequence,
-            // and every pending import identity that an old file can still satisfy.
-            SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
-            cleared = true
-          }
+          SignalStore.unifiedpush.setRelayCleanup(intent.copy(unlinkConfirmed = true), pending = true)
         }
       }
+      intent
+    } finally {
+      lease.close()
     }
-    return if (cleared) transition.generation else null
+
+    val transition = try {
+      finishDeviceClear(cleanup, cleanup.invalidationGeneration)
+    } catch (stale: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
+      if (cleanup.invalidationGeneration == null) throw stale
+      finishDeviceClear(cleanup, expectedGeneration = null)
+    }
+    return transition.generation.takeIf { transition.value }
   }
+
+  /** Only the cleanup record can authorize completing a clear after restart or a lost acknowledgement. */
+  private fun finishDeviceClear(
+    cleanup: UnifiedPushValues.RelayCleanup,
+    expectedGeneration: Long?,
+  ): UnifiedPushLifecycle.TransitionResult<Boolean> = runBlocking {
+    UnifiedPushAccountTransition.withTransitionAndGeneration(
+      expectedGeneration = expectedGeneration,
+      relayCleanup = { cleanup },
+    ) {
+      val values = SignalStore.unifiedpush
+      val intent = synchronized(UnifiedPushLifecycle.monitor) {
+        val pending = values.pendingRelayCleanup
+        if (pending == null || !pending.hasSameOwner(cleanup) || !UnifiedPushAccountTransition.ownsRelayCleanupLocked(pending)) {
+          return@withTransitionAndGeneration false
+        }
+        // A prior write may have failed before acknowledgement. Require a durable intent before advancing.
+        values.setRelayCleanup(pending, pending = true)
+        pending
+      }
+
+      if (!intent.unlinkConfirmed) {
+        when (MollySocketRepository.getDeviceStatus(intent.device)) {
+          LinkStatus.NOT_LINKED -> Unit
+          LinkStatus.LINKED -> MollySocketRepository.removeDevice(intent.device)
+          LinkStatus.UNKNOWN -> throw IOException("Cannot confirm the old relay is unlinked during cleanup")
+        }
+      }
+
+      synchronized(UnifiedPushLifecycle.monitor) {
+        UnifiedPushAccountTransition.clearConfirmedRelayCleanupLocked(intent)
+      }
+    }
+  }
+
+  private class UnacknowledgedDeviceException(val failure: Exception) : Exception(failure)
 
   override fun onFailure() = Unit
 

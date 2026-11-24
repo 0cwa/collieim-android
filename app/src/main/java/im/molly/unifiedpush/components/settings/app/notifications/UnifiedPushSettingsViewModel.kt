@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.control.ControlReset
@@ -13,6 +15,7 @@ import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
@@ -28,14 +31,33 @@ import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.unifiedpush.android.connector.UnifiedPush
+import java.util.UUID
 
 class UnifiedPushSettingsViewModel(private val application: Application) : ViewModel() {
 
   private val store = Store(getState())
 
   val state: LiveData<UnifiedPushSettingsState> = store.stateLiveData
+  internal val exportState: LiveData<ExportState?> = pendingExport
+
+  internal data class ExportState(
+    val id: String,
+    val accountId: String,
+    val deviceId: Int,
+    val generation: Long,
+    val message: String? = null,
+  ) {
+    fun belongsToCurrentAccount() = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushLifecycle.isCurrentGeneration(generation) && !KeyCachingService.isLocked() &&
+        SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived &&
+        accountId == SignalStore.account.aci?.toString() && deviceId == SignalStore.account.deviceId
+    }
+  }
+
+  internal fun isExportPending(): Boolean = pendingExport.value?.let { it.message == null || it.belongsToCurrentAccount() } == true
 
   fun refresh() {
     store.update { getState() }
@@ -77,7 +99,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val controlRead = SignalStore.unifiedpush.controlStateRead.stateOrNull
     return UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
-      device = SignalStore.unifiedpush.device,
+      device = SignalStore.unifiedpush.device?.takeUnless(SignalStore.unifiedpush::isProvisioningPending),
       aci = SignalStore.account.aci?.toString(),
       registrationStatus = SignalStore.unifiedpush.registrationStatus,
       registrationFailed = SignalStore.unifiedpush.registrationFailed,
@@ -100,10 +122,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   private var pushTestStartedAt = 0L
-
-  private companion object {
-    const val TEST_GRACE_MS = 15_000L
-  }
 
   /** Runs the end-to-end push test; the verdict arrives through [PushServiceEvent] and is shown on the screen. */
   fun testPush() {
@@ -136,8 +154,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   fun copyParamsToClipboard(context: Context) {
-    val parameters = state.value?.serverParameters ?: ""
-    writeTextToClipboard(context, "Server parameters", parameters)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (!UnifiedPushLifecycle.isReadyLocked() || KeyCachingService.isLocked()) return
+      val snapshot = state.value ?: return
+      val values = SignalStore.unifiedpush
+      val device = values.device ?: return
+      if (values.isProvisioningPending(device) || device != snapshot.device ||
+        values.endpoint != snapshot.endpoint || SignalStore.account.aci?.toString() != snapshot.aci) return
+      val parameters = snapshot.serverParameters ?: return
+      writeTextToClipboard(context, "Server parameters", parameters)
+    }
   }
 
   fun copyAciToClipboard(context: Context) {
@@ -145,20 +171,40 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     writeTextToClipboard(context, "Account ID", aci)
   }
 
-  /** Writes the CollieSocket enrollment file off the main thread and reports the outcome as a toast. */
+  /** Writes the CollieSocket enrollment file off the main thread and reports its result. */
+  @MainThread
   fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null) {
+    if (isExportPending()) return
+    val request = synchronized(UnifiedPushLifecycle.monitor) {
+      val accountId = SignalStore.account.aci?.toString() ?: return@synchronized null
+      ExportState(UUID.randomUUID().toString(), accountId, SignalStore.account.deviceId, UnifiedPushLifecycle.currentGeneration())
+        .takeIf { it.belongsToCurrentAccount() }
+    }
+    if (request == null) {
+      Toast.makeText(context.applicationContext, R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready, Toast.LENGTH_LONG).show()
+      return
+    }
+    pendingExport.value = request
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
-      // Before anything can fail, so a refused or overflowing epoch never leaves the old password file behind.
-      EnrollmentExporter.removeFiles(app)
-      val message = try {
-        val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-        val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
-        if (export.collides) {
+      var successMessage: String? = null
+      val failureMessage = try {
+        val lease = UnifiedPushLifecycle.acquireLease(request.generation) { request.takeIf { it.belongsToCurrentAccount() } }
+          ?: throw EnrollmentFile.Invalid("not_ready")
+        val export = lease.use {
+          // A refused or overflowing epoch must never leave the old password file behind.
+          EnrollmentExporter.removeFiles(app)
+          val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
+          EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId).also {
+            if (!request.belongsToCurrentAccount()) EnrollmentExporter.removeFiles(app)
+          }
+        }
+        successMessage = if (export.collides) {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, export.file.absolutePath, export.epoch, export.highestUsed)
         } else {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, export.file.absolutePath)
         }
+        null
       } catch (e: EnrollmentFile.Invalid) {
         app.getString(
           when (e.code) {
@@ -177,8 +223,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       } catch (e: IOException) {
         app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
       }
-      ThreadUtil.runOnMain { Toast.makeText(app, message, Toast.LENGTH_LONG).show() }
-      refresh()
+      ThreadUtil.runOnMain {
+        if (!request.belongsToCurrentAccount()) {
+          pendingExport.value = null
+        } else if (successMessage != null) {
+          pendingExport.value = request.copy(message = successMessage)
+        } else {
+          pendingExport.value = null
+          Toast.makeText(app, failureMessage, Toast.LENGTH_LONG).show()
+        }
+      }
     }
   }
 
@@ -215,6 +269,19 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   class Factory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       return requireNotNull(modelClass.cast(UnifiedPushSettingsViewModel(application)))
+    }
+  }
+
+  companion object {
+    private const val TEST_GRACE_MS = 15_000L
+
+    // An export can finish after the settings screen is closed. Keep its unread result in memory.
+    private val pendingExport = MutableLiveData<ExportState?>()
+
+    internal fun unreadExport(): ExportState? = pendingExport.value?.takeIf { it.message != null && it.belongsToCurrentAccount() }
+
+    internal fun acknowledgeExportResult(id: String) {
+      if (unreadExport()?.id == id) pendingExport.value = null
     }
   }
 }

@@ -164,8 +164,8 @@
     <string name="UnifiedPushSettingsFragment__forget_export_label">Epoch %1$d pending</string>
     <string name="UnifiedPushSettingsFragment__forget_superseded_export_label">Epoch %1$d superseded</string>
     <string name="UnifiedPushSettingsFragment__forget_legacy_export_label">Unknown older export</string>
-    <string name="UnifiedPushSettingsFragment__export_enrollment_done">Exported to %1$s. It is deleted when the app next starts.</string>
-    <string name="UnifiedPushSettingsFragment__export_enrollment_done_collides">Exported to %1$s at epoch %2$d. Warning: this phone already used epoch %3$d for an endpoint update that CollieSocket may not have received. If it arrived first, this import is refused as out of sequence; check `enrollment status` and export again. The file is deleted when the app next starts.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_done">Exported to %1$s. The app tries to remove this file when it next starts. After you copy it off, delete the copy on this device.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_done_collides">Exported to %1$s at epoch %2$d. Warning: this phone already used epoch %3$d for an endpoint update that CollieSocket may not have received. If it arrived first, this import is refused as out of sequence; check `enrollment status` and export again. The app tries to remove this file when it next starts. After you copy it off, delete the copy on this device.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_not_ready">Not ready: a linked device and a distributor endpoint with keys are needed.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_failed">Export failed</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_recovery_ack_required">This target epoch is at or below the remembered epoch. Choose the explicit recovery export mode to continue.</string>

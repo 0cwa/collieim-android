@@ -17,6 +17,7 @@ import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -376,6 +377,61 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `only the air gapped warning survives a credential only transition`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    every { values.airGapped } returns true
+    mockPendingEndpointStorage(LockedPushState.Endpoint("https://push.example.invalid/new", fixtureP256dh, fixtureAuth, "default"))
+    UnifiedPushReceiver().onRegistrationFailed(context, FailedReason.NETWORK, "default")
+    every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() } returns Unit
+    val committed = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
+    val effects = checkNotNull(committed.value)
+    assertTrue(effects.failed)
+    assertNotNull(effects.warning)
+
+    synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.invalidateLocked(credentialOnly = true) }
+    val invalidation = UnifiedPushLifecycle.currentGeneration()
+    UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
+    verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
+
+    runBlocking {
+      UnifiedPushLifecycle.withTransitionAndGeneration(
+        persistIncompleteMarker = {},
+        readyAfter = { true },
+        invalidationGenerationToComplete = invalidation,
+        credentialOnly = true,
+      ) { values.device = null }
+    }
+    UnifiedPushReceiver.applyPendingEndpoint(context)
+
+    verify(timeout = 3000, exactly = 1) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
+    verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().clearRegistrationFailed() }
+  }
+
+  @Test
+  fun `a credential only transition cannot preserve a warning for different route keys`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    every { values.airGapped } returns true
+    mockPendingEndpointStorage(LockedPushState.Endpoint("https://push.example.invalid/new", fixtureP256dh, fixtureAuth, "default"))
+    every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() } returns Unit
+    val committed = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
+    assertNotNull(committed.value?.warning)
+
+    runBlocking {
+      UnifiedPushLifecycle.withTransitionAndGeneration(
+        persistIncompleteMarker = {},
+        readyAfter = { true },
+        credentialOnly = true,
+      ) { values.device = null }
+    }
+    values.endpointAuth = "different-route-auth"
+    UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
+
+    verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
+  }
+
+  @Test
   fun `push admission and endpoint application defer across account transition`() {
     fakeAccount()
     values.endpoint = "https://example.org/old"
@@ -432,6 +488,24 @@ class UnifiedPushReceiverTest {
       unmockkStatic(UnifiedPush::class)
       unmockkStatic(PushFetchHandler::class)
     }
+  }
+
+  @Test
+  fun `completed coherent account transition hands off an invalidated endpoint`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    val endpoint = "https://push.example.invalid/replacement"
+    val pending = mockPendingEndpointStorage(LockedPushState.Endpoint(endpoint, "p", "a", "default"))
+    synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushLifecycle.invalidateLocked()
+    }
+
+    runBlocking { UnifiedPushAccountTransition.withTransition {} }
+
+    verify(timeout = 3000) { values.setEndpointRegistration(endpoint, "p", "a", "default") }
+    awaitLifecycleReady()
+    assertNull(pending.get())
+    assertEquals(endpoint, values.endpoint)
   }
 
   @Test

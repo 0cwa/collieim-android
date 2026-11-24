@@ -25,8 +25,10 @@ object UnifiedPushLifecycle {
   private var initialized = false
   private var ready = false
   private var generation = 0L
+  private var lastNonCredentialGeneration = 0L
   private var transitionGeneration: Long? = null
-  private var invalidationPending = false
+  private var pendingInvalidationGeneration: Long? = null
+  private var pendingCredentialInvalidation = false
   private var leaseCount = 0
   private var drainSignal: CountDownLatch? = null
   private val pendingFetchAdmissions = LinkedHashSet<FetchAdmission>()
@@ -106,7 +108,9 @@ object UnifiedPushLifecycle {
       check(leaseCount == 0 && transitionGeneration == null) { "Cannot initialize UnifiedPush lifecycle while work is active" }
       initialized = true
       generation = nextGeneration(generation)
-      invalidationPending = false
+      lastNonCredentialGeneration = generation
+      pendingInvalidationGeneration = null
+      pendingCredentialInvalidation = false
       ready = !incompleteTransition && legacyContextIsCoherent
     }
   }
@@ -242,21 +246,32 @@ object UnifiedPushLifecycle {
   /** Must be called from inside [monitor]. */
   fun isReadyLocked(): Boolean {
     check(Thread.holdsLock(monitor))
-    return initialized && ready && transitionGeneration == null && !invalidationPending
+    return initialized && ready && transitionGeneration == null && pendingInvalidationGeneration == null
   }
 
   /** Immediately revokes effect authorization; the caller must queue a transition that completes the invalidation. */
-  fun invalidateLocked() {
+  fun invalidateLocked(credentialOnly: Boolean = false) {
     check(Thread.holdsLock(monitor))
     generation = nextGeneration(generation)
+    if (!credentialOnly) lastNonCredentialGeneration = generation
     ready = false
-    invalidationPending = true
+    pendingCredentialInvalidation = credentialOnly
+    pendingInvalidationGeneration = generation
     revokeFetchAdmissionsForTransitionLocked()
   }
 
   fun hasPendingInvalidationLocked(): Boolean {
     check(Thread.holdsLock(monitor))
-    return invalidationPending
+    return pendingInvalidationGeneration != null
+  }
+
+  fun hasPendingEndpointInvalidationLocked(): Boolean =
+    hasPendingInvalidationLocked() && !pendingCredentialInvalidation
+
+  /** A route warning can survive gaps caused solely by credential cleanup. */
+  fun hasOnlyCredentialChangesSinceLocked(expectedGeneration: Long): Boolean {
+    check(Thread.holdsLock(monitor))
+    return expectedGeneration in lastNonCredentialGeneration..generation
   }
 
   fun currentGeneration(): Long = synchronized(monitor) { generation }
@@ -305,6 +320,9 @@ object UnifiedPushLifecycle {
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
     afterTransitionStarted: () -> Unit = {},
+    invalidationGenerationToComplete: Long? = null,
+    credentialOnly: Boolean = false,
+    admissionAllowed: () -> Boolean = { true },
     block: suspend () -> T,
   ): TransitionResult<T> {
     require(!keepIncompleteMarker || !completesAccountRegistration) {
@@ -316,7 +334,7 @@ object UnifiedPushLifecycle {
       // Store ownership before leaving NonCancellable. withContext has a prompt cancellation guarantee when
       // dispatching back to the caller; cancellation there must still reach cleanup with the acquired token.
       withContext(NonCancellable + Dispatchers.IO) {
-        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration, afterTransitionStarted)
+        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration, credentialOnly, afterTransitionStarted)
       }
       val token = checkNotNull(ownership)
       val result = block()
@@ -330,7 +348,9 @@ object UnifiedPushLifecycle {
           finishTransition(token, readyAfter = false, completesInvalidation = false)
         } else {
           withContext(NonCancellable + Dispatchers.IO) { persistIncompleteMarker(false) }
-          finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration)
+          finishTransition(
+            token, canStartPushWork, completesInvalidation || completesAccountRegistration, invalidationGenerationToComplete, admissionAllowed,
+          )
         }
       }
       return TransitionResult(result, token.generation)
@@ -346,6 +366,7 @@ object UnifiedPushLifecycle {
     hasIncompleteMarker: () -> Boolean,
     persistIncompleteMarker: (Boolean) -> Unit,
     expectedGeneration: Long?,
+    credentialOnly: Boolean,
     afterTransitionStarted: () -> Unit,
   ): TransitionOwnership {
     transitionWriter.acquire()
@@ -358,6 +379,7 @@ object UnifiedPushLifecycle {
         }
         val next = nextGeneration(generation)
         generation = next
+        if (!credentialOnly) lastNonCredentialGeneration = next
         initialized = true
         ready = false
         transitionGeneration = next
@@ -391,12 +413,23 @@ object UnifiedPushLifecycle {
     activeFetchAdmissions.clear()
   }
 
-  private fun finishTransition(token: TransitionOwnership, readyAfter: Boolean, completesInvalidation: Boolean) {
+  private fun finishTransition(
+    token: TransitionOwnership,
+    readyAfter: Boolean,
+    completesInvalidation: Boolean,
+    invalidationGenerationToComplete: Long? = null,
+    admissionAllowed: () -> Boolean = { true },
+  ) {
     synchronized(monitor) {
       check(transitionGeneration == token.generation) { "UnifiedPush lifecycle transition ownership changed" }
-      if (completesInvalidation && readyAfter) invalidationPending = false
+      val ownsPendingInvalidation = invalidationGenerationToComplete != null && invalidationGenerationToComplete == pendingInvalidationGeneration
+      if (readyAfter && (completesInvalidation || ownsPendingInvalidation)) {
+        pendingInvalidationGeneration = null
+        pendingCredentialInvalidation = false
+      }
+      val canAdmit = readyAfter && pendingInvalidationGeneration == null && admissionAllowed()
       transitionGeneration = null
-      ready = readyAfter && !invalidationPending
+      ready = canAdmit
     }
   }
 
@@ -434,7 +467,9 @@ object UnifiedPushLifecycle {
       initialized = true
       ready = initiallyReady
       generation = 1
-      invalidationPending = false
+      lastNonCredentialGeneration = generation
+      pendingInvalidationGeneration = null
+      pendingCredentialInvalidation = false
       drainSignal = null
       pendingFetchAdmissions.clear()
       activeFetchAdmissions.clear()

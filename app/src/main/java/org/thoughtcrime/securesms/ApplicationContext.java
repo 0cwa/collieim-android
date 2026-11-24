@@ -619,6 +619,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
       return;
     }
 
+    if (SignalStore.unifiedpush().getPendingRelayCleanup() != null) {
+      AppDependencies.getJobManager().add(new UnifiedPushRefreshJob());
+    }
+
     NotificationDeliveryMethod method = SignalStore.settings().getPreferredNotificationMethod();
 
     boolean fcmEnabled         = SignalStore.account().isFcmEnabled();

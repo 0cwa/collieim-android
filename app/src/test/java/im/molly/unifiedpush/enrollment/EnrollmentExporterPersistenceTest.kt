@@ -81,6 +81,28 @@ class EnrollmentExporterPersistenceTest {
   }
 
   @Test
+  fun `persisted provisioning guard rejects new recovery and exact saved credentials`() {
+    val original = EnrollmentExporter.exportWithEpoch(context, 4, ExportMode.NEW_INTENT) { true }
+    val credential = checkNotNull(values.device)
+    values.commitProvisionedDevice(credential)
+    val restarted = UnifiedPushValues(KeyValueStore(storage, Executor { it.run() }))
+    every { SignalStore.unifiedpush } returns restarted
+    val control = restarted.controlState
+
+    for (mode in ExportMode.entries) {
+      val requestId = original.requestId.takeIf { mode == ExportMode.RERENDER }
+      val failure = runCatching { EnrollmentExporter.exportWithEpoch(context, 4, mode, requestId) { true } }.exceptionOrNull()
+      assertEquals("not_ready", (failure as? EnrollmentFile.Invalid)?.code)
+      assertFalse(original.file.exists())
+      assertEquals(control, restarted.controlState)
+    }
+
+    restarted.acknowledgeProvisionedDevice()
+    val rerendered = EnrollmentExporter.exportWithEpoch(context, null, ExportMode.RERENDER, original.requestId) { true }
+    assertTrue(rerendered.file.exists())
+  }
+
+  @Test
   fun `new intent is persisted with replay state before publication and survives restart`() {
     resetForFirstEnrollment()
     val export = EnrollmentExporter.exportWithEpoch(context, 4, ExportMode.NEW_INTENT) { true }

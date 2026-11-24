@@ -54,16 +54,31 @@ object MollySocketRepository {
     Log.d(TAG, "Creating device for MollySocket")
 
     val password = Util.getSecret(18)
-    val deviceId = verifyNewDevice(password)
-
-    return MollySocketDevice(
-      deviceId = deviceId,
+    val device = MollySocketDevice(
+      deviceId = registerNewDevice(password),
       password = password,
     )
+
+    try {
+      loadPreKeys(device.deviceId)
+      SignalStore.account.isMultiDevice = true
+    } catch (e: Exception) {
+      // The caller never learns this device ID, so nothing else could remove it. Do it now, under the caller's lease.
+      Log.w(TAG, "Post-registration setup failed for new $device, removing it.", e)
+      try {
+        removeDevice(device)
+      } catch (cleanup: Exception) {
+        Log.w(TAG, "Could not remove $device after failed post-registration setup.", cleanup)
+        e.addSuppressed(cleanup)
+      }
+      throw e
+    }
+
+    return device
   }
 
   @Throws(IOException::class, DeviceLimitExceededException::class)
-  private fun verifyNewDevice(password: String): Int {
+  private fun registerNewDevice(password: String): Int {
     val fetchResult = AppDependencies.linkDeviceApi.getDeviceVerificationCode()
     val verificationCode = fetchResult.successOrThrow()
 
@@ -98,10 +113,7 @@ object MollySocketRepository {
       accountAttributes,
       aciPreKeyCollection, pniPreKeyCollection,
       null
-    ).also { deviceId ->
-      SignalStore.account.isMultiDevice = true
-      loadPreKeys(deviceId)
-    }
+    )
   }
 
   /**

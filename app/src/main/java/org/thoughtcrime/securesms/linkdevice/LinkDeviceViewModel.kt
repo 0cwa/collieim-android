@@ -58,14 +58,11 @@ class LinkDeviceViewModel : ViewModel() {
    * Checks for the existence of a newly linked device and shows a dialog if it has since been unlinked
    */
   private fun checkForNewDevice(devices: List<Device>) {
-    val newLinkedDeviceId = SignalStore.misc.newLinkedDeviceId
-    val newLinkedDeviceCreatedAt = SignalStore.misc.newLinkedDeviceCreatedTime
+    val (newLinkedDeviceId, newLinkedDeviceCreatedAt) = SignalStore.misc.takeNewLinkedDeviceWarning()
 
     val hasNewLinkedDevice = newLinkedDeviceId > 0
     if (hasNewLinkedDevice) {
       ServiceUtil.getNotificationManager(AppDependencies.application).cancel(NotificationIds.NEW_LINKED_DEVICE)
-      SignalStore.misc.newLinkedDeviceId = 0
-      SignalStore.misc.newLinkedDeviceCreatedTime = 0
     }
 
     val isMissingNewLinkedDevice = devices.none { device -> device.id == newLinkedDeviceId && device.createdMillis == newLinkedDeviceCreatedAt }

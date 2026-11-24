@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobmanager;
 
 import android.app.Application;
+import android.app.job.JobParameters;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
@@ -33,7 +34,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -50,6 +53,7 @@ public class JobManager implements ConstraintObserver.Notifier {
   private final Configuration configuration;
   private final JobController jobController;
   private final JobTracker    jobTracker;
+  private final JobSchedulerScheduler systemScheduler;
 
   private final ExecutorService executor;
 
@@ -65,12 +69,13 @@ public class JobManager implements ConstraintObserver.Notifier {
       return ThreadUtil.isMainThread() || Thread.currentThread().getName().equals("Instr: org.thoughtcrime.securesms.testing.SignalTestRunner");
     });
     this.jobTracker    = configuration.getJobTracker();
+    this.systemScheduler = new JobSchedulerScheduler(application);
     this.jobController = new JobController(application,
                                            configuration.getJobStorage(),
                                            configuration.getJobInstantiator(),
                                            configuration.getConstraintFactories(),
                                            configuration.getJobTracker(),
-                                           new CompositeScheduler(new InAppScheduler(this), new JobSchedulerScheduler(application)),
+                                           new CompositeScheduler(new InAppScheduler(this), systemScheduler),
                                            new Debouncer(500),
                                            this::onEmptyQueue,
                                            configuration.getMinGeneralRunners(),
@@ -394,6 +399,17 @@ public class JobManager implements ConstraintObserver.Notifier {
     });
   }
 
+  /** Persists the next deadlines before releasing the platform's current wakeup. */
+  void onSystemJobFinished(@NonNull JobParameters parameters, @NonNull Consumer<Boolean> completion) {
+    runOnExecutor(() -> {
+      long now = System.currentTimeMillis();
+      List<JobSchedulerScheduler.PendingWakeup> pendingWakeups = new ArrayList<>();
+      jobController.schedulePendingJobs(now, (delay, constraints) -> pendingWakeups.add(new JobSchedulerScheduler.PendingWakeup(now + delay, constraints)));
+
+      completion.accept(!systemScheduler.rearmWakeup(parameters.getJobId(), parameters.getExtras(), pendingWakeups));
+    });
+  }
+
   @Override
   public void onConstraintMet(@NonNull String reason) {
     if (!initialized) {
@@ -489,6 +505,7 @@ public class JobManager implements ConstraintObserver.Notifier {
           listener.onQueueEmpty();
         }
       }
+      jobController.schedulePendingJobs();
     });
   }
 

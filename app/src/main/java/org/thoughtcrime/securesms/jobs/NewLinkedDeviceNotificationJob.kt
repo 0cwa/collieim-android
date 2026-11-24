@@ -9,7 +9,6 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
-import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobs.protos.NewLinkedDeviceNotificationJobData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
@@ -22,7 +21,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * Notifies users that a device has been linked to their account at a randomly time 1 - 3 hours after it was created
+ * Notifies users shortly after a device is linked, then reminds them at the original randomized time.
  */
 class NewLinkedDeviceNotificationJob private constructor(
   private val data: NewLinkedDeviceNotificationJobData,
@@ -34,27 +33,34 @@ class NewLinkedDeviceNotificationJob private constructor(
 
     @JvmStatic
     fun enqueue(deviceId: Int, deviceCreatedAt: Long) {
-      AppDependencies.jobManager.add(NewLinkedDeviceNotificationJob(deviceId, deviceCreatedAt))
+      AppDependencies.jobManager.addAll(
+        listOf(
+          NewLinkedDeviceNotificationJob(deviceId, deviceCreatedAt, isEarlyNotification = true),
+          NewLinkedDeviceNotificationJob(deviceId, deviceCreatedAt)
+        )
+      )
     }
 
     /**
-     * Generates a random delay between 1 - 3 hours in milliseconds
+     * The early alert waits 1 - 5 minutes; the reminder keeps the original 60 - 179 minute delay.
      */
-    private fun getRandomDelay(): Long {
-      val delay = Random.nextInt(60, 180)
+    private fun getRandomDelay(isEarlyNotification: Boolean): Long {
+      val delay = if (isEarlyNotification) Random.nextInt(1, 6) else Random.nextInt(60, 180)
       return delay.minutes.inWholeMilliseconds
     }
   }
 
   constructor(
     deviceId: Int,
-    deviceCreatedAt: Long
+    deviceCreatedAt: Long,
+    isEarlyNotification: Boolean = false
   ) : this(
-    NewLinkedDeviceNotificationJobData(deviceId, deviceCreatedAt),
+    NewLinkedDeviceNotificationJobData(deviceId, deviceCreatedAt, isEarlyNotification),
     Parameters.Builder()
-      .addConstraint(NetworkConstraint.KEY)
-      .setQueue("NewLinkedDeviceNotificationJob")
-      .setInitialDelay(getRandomDelay())
+      .setQueue(KEY)
+      // Keep publication serialized, but never leave an early alert behind a delayed reminder.
+      .setQueuePriority(if (isEarlyNotification) Parameters.PRIORITY_HIGH else Parameters.PRIORITY_DEFAULT)
+      .setInitialDelay(getRandomDelay(isEarlyNotification))
       .setLifespan(7.days.inWholeMilliseconds)
       .setMaxAttempts(Parameters.UNLIMITED)
       .build()
@@ -70,25 +76,31 @@ class NewLinkedDeviceNotificationJob private constructor(
       return Result.failure()
     }
 
+    // Restore the in-app warning for each alert, even if the earlier alert was acknowledged.
+    // Save before posting so an immediate tap can also detect a device that was since unlinked.
+    SignalStore.misc.setNewLinkedDeviceWarning(data.deviceId, data.deviceCreatedAt)
+
     if (NotificationChannels.getInstance().areNotificationsEnabled()) {
       val pendingIntent = PendingIntent.getActivity(context, 0, AppSettingsActivity.linkedDevices(context), cancelCurrent())
+      val title = if (data.isEarlyNotification) R.string.NewLinkedDeviceNotification__you_linked_new_device else R.string.NewLinkedDeviceNotification__reminder_new_device_linked
       val builder = NotificationCompat.Builder(context, NotificationChannels.getInstance().NEW_LINKED_DEVICE)
         .setSmallIcon(R.drawable.ic_notification)
-        .setContentTitle(context.getString(R.string.NewLinkedDeviceNotification__you_linked_new_device))
+        .setContentTitle(context.getString(title))
         .setContentText(context.getString(R.string.NewLinkedDeviceNotification__a_new_device_was_linked, DateUtils.getDateTimeString(context, Locale.getDefault(), data.deviceCreatedAt)))
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
 
       ServiceUtil.getNotificationManager(context).notify(NotificationIds.NEW_LINKED_DEVICE, builder.build())
     }
-    SignalStore.misc.newLinkedDeviceId = data.deviceId
-    SignalStore.misc.newLinkedDeviceCreatedTime = data.deviceCreatedAt
     return Result.success()
   }
 
   override fun onFailure() = Unit
 
   class Factory : Job.Factory<NewLinkedDeviceNotificationJob?> {
-    override fun create(parameters: Parameters, serializedData: ByteArray?): NewLinkedDeviceNotificationJob = NewLinkedDeviceNotificationJob(NewLinkedDeviceNotificationJobData.ADAPTER.decode(serializedData!!), parameters)
+    override fun create(parameters: Parameters, serializedData: ByteArray?): NewLinkedDeviceNotificationJob {
+      val data = NewLinkedDeviceNotificationJobData.ADAPTER.decode(serializedData!!)
+      return NewLinkedDeviceNotificationJob(data, parameters)
+    }
   }
 }

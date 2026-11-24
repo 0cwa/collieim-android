@@ -61,6 +61,10 @@ about = "Current-PIN and phone authentication for recovery changes"
 kind = "feature"
 about = "App security behavior not owned by a narrower feature"
 
+[layers.linked-device-alerts]
+kind = "feature"
+about = "Early notifications and delayed reminders for newly linked devices"
+
 [layers.passphrase]
 kind = "feature"
 about = "Passphrase lock and timeout behavior"

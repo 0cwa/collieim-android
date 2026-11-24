@@ -139,6 +139,8 @@
     <string name="NotificationsSettingsFragment__notify_when">Notify when…</string>
     <string name="UsernameShareBottomSheet__copy_or_share_a_username_link">Copy or share a username link</string>
     <!-- Collie -->
+    <!-- Title of the later reminder about the same linked device, not a second linking event. -->
+    <string name="NewLinkedDeviceNotification__reminder_new_device_linked">Reminder: A new device was linked</string>
     <string name="donate_collie_url" translatable="false">https://liberapay.com/Collie</string>
     <string name="donate_molly_url" translatable="false">https://opencollective.com/mollyim</string>
     <string name="AppSettingsFragment__donate_to_collie">Donate to Collie 🧡🦴</string>

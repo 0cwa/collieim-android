@@ -38,6 +38,11 @@ public class AutoDownloadEmojiConstraint implements Constraint {
     return KEY;
   }
 
+  @Override
+  public @NonNull String getJobSchedulerKeyPart() {
+    return KEY;
+  }
+
   @RequiresApi(26)
   @Override
   public void applyToJobInfo(@NonNull JobInfo.Builder jobInfoBuilder) {

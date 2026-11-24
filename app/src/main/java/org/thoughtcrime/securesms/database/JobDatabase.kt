@@ -29,11 +29,13 @@ import org.signal.storage.database.DatabaseSecretProvider
 import org.signal.storage.database.SignalDatabaseOpenHelper
 import org.signal.storage.database.SqlCipherDatabaseHook
 import org.signal.storage.database.SqlCipherLibraryLoader
+import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobmanager.persistence.ConstraintSpec
 import org.thoughtcrime.securesms.jobmanager.persistence.DependencySpec
 import org.thoughtcrime.securesms.jobmanager.persistence.FullSpec
 import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec
 import org.thoughtcrime.securesms.jobs.MinimalJobSpec
+import org.thoughtcrime.securesms.jobs.NewLinkedDeviceNotificationJob
 import java.util.function.Predicate
 
 class JobDatabase(
@@ -155,6 +157,19 @@ class JobDatabase(
 
     if (oldVersion < 5) {
       db.execSQL("ALTER TABLE job_spec ADD COLUMN initial_delay INTEGER DEFAULT 0")
+    }
+
+    if (oldVersion < 6) {
+      // Eligibility is checked before a job is hydrated. Keep the original queue and timing.
+      db.execSQL(
+        """
+          DELETE FROM ${Constraints.TABLE_NAME}
+          WHERE ${Constraints.FACTORY_KEY} = ? AND ${Constraints.JOB_SPEC_ID} IN (
+            SELECT ${Jobs.JOB_SPEC_ID} FROM ${Jobs.TABLE_NAME} WHERE ${Jobs.FACTORY_KEY} = ?
+          )
+        """.trimIndent(),
+        arrayOf(NetworkConstraint.KEY, NewLinkedDeviceNotificationJob.KEY)
+      )
     }
   }
 
@@ -512,7 +527,7 @@ class JobDatabase(
 
   companion object {
     private val TAG = Log.tag(JobDatabase::class.java)
-    private const val DATABASE_VERSION = 5
+    private const val DATABASE_VERSION = 6
     private const val DATABASE_NAME = "signal-jobmanager.db"
 
     @SuppressLint("StaticFieldLeak")

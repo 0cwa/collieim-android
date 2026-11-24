@@ -392,6 +392,23 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
    */
   var newLinkedDeviceCreatedTime: Long by longValue(NEW_LINKED_DEVICE_CREATED_TIME, 0)
 
+  /** Stores the reminder's warning fields as one operation with respect to UI acknowledgment. */
+  @Synchronized
+  fun setNewLinkedDeviceWarning(deviceId: Int, createdAt: Long) {
+    store.beginWrite()
+      .putInteger(NEW_LINKED_DEVICE_ID, deviceId)
+      .putLong(NEW_LINKED_DEVICE_CREATED_TIME, createdAt)
+      .commit()
+  }
+
+  /** Reads and clears the warning atomically so a concurrent reminder cannot be erased. */
+  @Synchronized
+  fun takeNewLinkedDeviceWarning(): Pair<Int, Long> {
+    val warning = newLinkedDeviceId to newLinkedDeviceCreatedTime
+    setNewLinkedDeviceWarning(0, 0)
+    return warning
+  }
+
   /**
    * Whether or not we have started the quote thumbnail migration. We store this so that upon restoring from
    * a local backup, we can know whether or not the user marked all of the quotes that need conversion in

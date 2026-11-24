@@ -1,5 +1,5 @@
 version: 8.36.3-1-beta1
-date: 2026-11-20
+date: 2026-11-21
 
 topic: setup
 pr: 150
@@ -19,7 +19,7 @@ Encrypted push can be set up from an enrollment file, and pushes that fail to de
 
 topic: backups
 pr: 145
-Restoring a backup checks that every message and file is the one that was saved.
+Local backup restores guard against attachment data changing during restoration.
 
 topic: backups
 pr: 112
@@ -35,7 +35,7 @@ A new setting lets link previews show only text, without downloading their image
 
 topic: privacy
 pr: 135
-Your backup passphrase can't be captured in screenshots.
+Your backup passphrase is hidden from screenshots when Screen security is on.
 
 topic: security
 pr: 154
@@ -77,6 +77,17 @@ topic: signal
 pr: 200
 TrailBlazer updates to Signal 8.36.3 with refreshed settings and media browsing.
 
-topic: signal
-pr: 114
-Earlier development builds used Signal 8.35.2.
+topic: look
+Theme changes reach appearance settings and media screens straight away.
+
+topic: settings
+pr: 210
+Collie removes Signal donation checkout. Backup subscriptions and existing Collie support links still work.
+
+topic: settings
+pr: 219
+Changing your proxy resets the connection so the new proxy takes effect.
+
+topic: privacy
+pr: 219
+Molly's privacy settings keep Collie's network controls together on the same screen.

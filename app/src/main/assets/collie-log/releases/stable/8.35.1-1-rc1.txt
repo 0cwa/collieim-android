@@ -1,0 +1,24 @@
+version: 8.35.1-1-rc1
+date: 2026-11-07
+tag: v8.35.1-1-rc1
+
+topic: signal
+Based on Signal 8.35.1.
+
+topic: updates
+One Collie app for everyone. Every download name now holds the same APK, so Obtainium keeps working.
+
+topic: privacy
+Collie is fully open source. Google push uses Molly's open-source version, with no proprietary libraries.
+
+topic: privacy
+The experimental message and media retention options are gone. They were too easy to leave on.
+
+topic: backups
+The restore picker finds backup files that have a date and time in their name.
+
+topic: notifications
+Notifications show the sender's name and message unless you chose otherwise.
+
+topic: look
+The splash screen and automatic bubble colours match Collie. Colours you picked yourself stay.

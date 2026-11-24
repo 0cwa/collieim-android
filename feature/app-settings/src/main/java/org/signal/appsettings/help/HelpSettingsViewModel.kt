@@ -29,6 +29,7 @@ class HelpSettingsViewModel(
   private val setLogEnabled: (Boolean) -> Unit,
   versionName: String,
   showAppUpdates: Boolean = false,
+  showProjectLog: Boolean = false,
   private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
 ) : EventDrivenViewModel<HelpSettingsEvent>(TAG) {
 
@@ -36,7 +37,7 @@ class HelpSettingsViewModel(
     private val TAG = Log.tag(HelpSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = getLogEnabled(), showAppUpdates = showAppUpdates))
+  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = getLogEnabled(), showAppUpdates = showAppUpdates, showProjectLog = showProjectLog))
   private val _actions = Channel<HelpSettingsAction>(Channel.BUFFERED)
 
   val state: StateFlow<HelpSettingsState> = _state.asStateFlow()
@@ -63,6 +64,7 @@ class HelpSettingsViewModel(
       HelpSettingsEvent.DisableDebugLoggingConfirmed -> applyLogEnabled(false)
       HelpSettingsEvent.DebugLogClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.DebugLog)
       HelpSettingsEvent.LicensesClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.Licenses)
+      HelpSettingsEvent.ProjectLogClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.HelpRoute.ProjectLog)
       HelpSettingsEvent.TermsAndPrivacyPolicyClicked -> _actions.send(HelpSettingsAction.OpenTermsAndPrivacyPolicy)
       HelpSettingsEvent.SnackbarDismissed -> _state.update { it.copy(snackbar = HelpSettingsState.Snackbar.None) }
     }

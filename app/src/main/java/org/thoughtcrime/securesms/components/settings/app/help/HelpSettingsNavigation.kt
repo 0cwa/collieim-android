@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.appsettings.routes.navigateBack
 import org.signal.core.ui.compose.split.detailEntry
 import org.thoughtcrime.securesms.help.HelpEntry
 
@@ -27,5 +28,11 @@ fun EntryProviderScope<NavKey>.registerHelpRoutes(parentEventEmitter: (AppSettin
 
   detailEntry<AppSettingsRoute.HelpRoute.Licenses> {
     LicenseEntry(parentEventEmitter = parentEventEmitter)
+  }
+
+  detailEntry<AppSettingsRoute.HelpRoute.ProjectLog> {
+    org.thoughtcrime.securesms.main.setup.ProjectLogEntry(
+      onBack = { parentEventEmitter.navigateBack() }
+    )
   }
 }

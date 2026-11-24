@@ -42,6 +42,7 @@ object HelpSettingsTestTags {
   const val ROW_DEBUG_LOGGING = "row-debug-logging"
   const val ROW_DEBUG_LOG = "row-debug-log"
   const val ROW_LICENSES = "row-licenses"
+  const val ROW_PROJECT_LOG = "row-project-log"
   const val ROW_TERMS_AND_PRIVACY_POLICY = "row-terms-and-privacy-policy"
 }
 
@@ -147,6 +148,14 @@ fun HelpSettingsScreen(
           text = stringResource(R.string.HelpSettingsFragment__licenses),
           onClick = { onEvent(HelpSettingsEvent.LicensesClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_LICENSES)
+        )
+      }
+
+      if (state.showProjectLog) item {
+        Rows.TextRow(
+          text = stringResource(R.string.HelpSettingsFragment__project_log),
+          onClick = { onEvent(HelpSettingsEvent.ProjectLogClicked) },
+          modifier = Modifier.testTag(HelpSettingsTestTags.ROW_PROJECT_LOG)
         )
       }
 

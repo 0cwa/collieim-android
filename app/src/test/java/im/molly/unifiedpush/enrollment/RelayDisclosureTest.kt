@@ -129,6 +129,19 @@ class RelayDisclosureTest {
     assertEquals(1, effects)
   }
 
+  @Test fun `changing the relay discards a buffered endpoint but reselecting it preserves one`() = runBlocking {
+    val pending = application.getSharedPreferences("collie_locked_push", android.content.Context.MODE_PRIVATE)
+    pending.edit().putString("pending_endpoint", "synthetic buffered endpoint").commit()
+
+    val sameRelay = MollySocket.WebServer(proposed.vapid, originalUrl)
+    assertNotNull(RelayDisclosure.selectRelay(capture(), sameRelay))
+    assertTrue(pending.contains("pending_endpoint"))
+
+    assertNotNull(RelayDisclosure.selectRelay(capture(), proposed))
+    assertFalse(pending.contains("pending_endpoint"))
+    assertEquals(proposed.url, values.mollySocketUrl)
+  }
+
   @Test fun `account and destination changes invalidate the displayed confirmation`() {
     val changes: List<Pair<String, () -> Unit>> = listOf(
       "account" to { accountId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb" },

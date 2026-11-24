@@ -6,6 +6,7 @@ import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
+import im.molly.unifiedpush.receiver.LockedPushState
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -93,6 +94,12 @@ object RelayDisclosure {
             if (!caller.isActive || !matchesLocked(snapshot, requireReadyGeneration = false)) {
               null
             } else {
+              val old = snapshot.configuration
+              val destinationChanged = old.manual != (relay is MollySocket.AirGapped) ||
+                old.url != (relay as? MollySocket.WebServer)?.url || old.vapid != relay.vapid
+              // The receiver records and applies endpoints under the same monitor. Invalidate a
+              // buffered endpoint before changing its destination, including after a restart.
+              if (destinationChanged && !LockedPushState.clearPending(AppDependencies.application)) return@synchronized null
               SignalStore.unifiedpush.updateMollySocket(relay)
               if (deliveryMethod != null) SignalStore.settings.preferredNotificationMethod = deliveryMethod
               refreshAuthorizationLocked(snapshot.account)

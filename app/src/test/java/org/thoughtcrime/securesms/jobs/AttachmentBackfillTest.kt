@@ -61,6 +61,7 @@ class AttachmentBackfillTest {
   val appDependencies = MockAppDependenciesRule()
 
   private lateinit var jobManager: JobManager
+  private lateinit var attachments: AttachmentTable
   private lateinit var messages: MessageTable
   private lateinit var record: MessageRecord
 
@@ -73,8 +74,11 @@ class AttachmentBackfillTest {
 
     jobManager = AppDependencies.jobManager
 
+    attachments = mockk()
     messages = mockk(relaxed = true)
     mockkObject(SignalDatabase.Companion)
+    every { SignalDatabase.attachments } returns attachments
+    every { attachments.getAttachment(any<AttachmentId>()) } returns null
     every { SignalDatabase.messages } returns messages
 
     record = mockk(relaxed = true)
@@ -158,6 +162,34 @@ class AttachmentBackfillTest {
     AttachmentBackfill.maybeRequest(messageId, attachmentFor(messageId))
 
     verify(exactly = 0) { jobManager.add(any<MultiDeviceAttachmentBackfillRequestJob>()) }
+  }
+
+  @Test
+  fun `skips a locally removed attachment snapshot without awaiting backfill`() {
+    val messageId = nextMessageId()
+    val attachmentId = AttachmentId(messageId)
+    val removed = databaseAttachment(attachmentId = attachmentId, transferProgress = AttachmentTable.TRANSFER_REMOVED_LOCALLY)
+
+    AttachmentBackfill.maybeRequest(messageId, removed)
+
+    verify(exactly = 0) { jobManager.add(any<MultiDeviceAttachmentBackfillRequestJob>()) }
+    assertFalse(AttachmentBackfill.awaiting.value.contains(attachmentId))
+  }
+
+  @Test
+  fun `skips a stale failed snapshot when the current attachment was removed locally`() {
+    val messageId = nextMessageId()
+    val stale = attachmentFor(messageId)
+    every { attachments.getAttachment(stale.attachmentId) } returns databaseAttachment(
+      attachmentId = stale.attachmentId,
+      transferProgress = AttachmentTable.TRANSFER_REMOVED_LOCALLY
+    )
+
+    AttachmentBackfill.maybeRequest(messageId, stale)
+
+    verify(exactly = 1) { attachments.getAttachment(stale.attachmentId) }
+    verify(exactly = 0) { jobManager.add(any<MultiDeviceAttachmentBackfillRequestJob>()) }
+    assertFalse(AttachmentBackfill.awaiting.value.contains(stale.attachmentId))
   }
 
   @Test

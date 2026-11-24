@@ -58,6 +58,7 @@ class MediaOverviewContextMenu(
           getForwardActionItem(mediaRecord),
           getShareActionItem(mediaRecord),
           getSaveActionItem(mediaRecord),
+          getRemoveAttachmentsActionItem(mediaRecord),
           getDeleteActionItem(mediaRecord),
           getSelectActionItem(mediaRecord),
           getJumpToMessageActionItem(mediaRecord)
@@ -165,6 +166,16 @@ class MediaOverviewContextMenu(
       title = fragment.getString(R.string.delete)
     ) {
       callbacks.onDelete(mediaRecord)
+    }
+  }
+
+  private fun getRemoveAttachmentsActionItem(mediaRecord: MediaTable.MediaRecord): ActionItem? {
+    if (mediaRecord.attachment == null || mediaRecord.linkPreviewJson != null) return null
+    return ActionItem(
+      iconRes = CoreUiR.drawable.symbol_trash_24,
+      title = fragment.getString(R.string.CollieAttachmentRemoval_action)
+    ) {
+      MediaActions.handleRemoveAttachments(fragment, listOf(mediaRecord))
     }
   }
 

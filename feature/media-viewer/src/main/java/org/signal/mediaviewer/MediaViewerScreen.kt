@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -280,6 +282,39 @@ private fun MediaPager(
 private fun MediaViewerDialogs(dialog: MediaViewerState.Dialog, onEvent: (MediaViewerEvent) -> Unit) {
   when (dialog) {
     MediaViewerState.Dialog.None -> Unit
+    is MediaViewerState.Dialog.RemoveAttachmentConfirmation -> {
+      Dialogs.BaseAlertDialog(
+        onDismissRequest = { onEvent(MediaViewerEvent.DialogDismissed) },
+        title = { Text(stringResource(R.string.MediaViewerScreen__remove_attachment_title)) },
+        text = {
+          Text(
+            stringResource(R.string.MediaViewerScreen__remove_attachment_message),
+            modifier = Modifier.verticalScroll(rememberScrollState())
+          )
+        },
+        confirmButton = {
+          TextButton(
+            onClick = { onEvent(MediaViewerEvent.RemoveAttachmentConfirmed) },
+            modifier = Modifier.testTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_BUTTON)
+          ) { Text(stringResource(R.string.MediaViewerScreen__remove)) }
+        },
+        dismissButton = {
+          TextButton(onClick = { onEvent(MediaViewerEvent.DialogDismissed) }) {
+            Text(stringResource(R.string.MediaViewerScreen__cancel))
+          }
+        },
+        modifier = Modifier.testTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG)
+      )
+    }
+    MediaViewerState.Dialog.RemovingAttachment -> {
+      Dialogs.BaseAlertDialog(
+        onDismissRequest = {},
+        title = { Text(stringResource(R.string.MediaViewerScreen__removing_attachment)) },
+        text = { androidx.compose.material3.CircularProgressIndicator() },
+        confirmButton = {},
+        modifier = Modifier.testTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_PROGRESS)
+      )
+    }
     is MediaViewerState.Dialog.DeleteConfirmation -> {
       Dialogs.BaseAlertDialog(
         onDismissRequest = { onEvent(MediaViewerEvent.DialogDismissed) },
@@ -347,6 +382,7 @@ object MediaViewerScreenTestTags {
   const val MENU_EDIT = "media-viewer-menu-edit"
   const val MENU_SAVE = "media-viewer-menu-save"
   const val MENU_DELETE = "media-viewer-menu-delete"
+  const val MENU_REMOVE_ATTACHMENT = "media-viewer-menu-remove-attachment"
   const val SHARE_BUTTON = "media-viewer-share-button"
   const val FORWARD_BUTTON = "media-viewer-forward-button"
   const val PLAY_PAUSE_BUTTON = "media-viewer-play-pause-button"
@@ -358,6 +394,9 @@ object MediaViewerScreenTestTags {
   const val CAPTION = "media-viewer-caption"
   const val ALBUM_RAIL = "media-viewer-album-rail"
   const val DELETE_DIALOG = "media-viewer-delete-dialog"
+  const val REMOVE_ATTACHMENT_DIALOG = "media-viewer-remove-attachment-dialog"
+  const val REMOVE_ATTACHMENT_BUTTON = "media-viewer-remove-attachment-button"
+  const val REMOVE_ATTACHMENT_PROGRESS = "media-viewer-remove-attachment-progress"
   const val DELETE_BUTTON = "media-viewer-delete-button"
   const val DELETE_FOR_EVERYONE_BUTTON = "media-viewer-delete-for-everyone-button"
   const val OFFLOADED_MEDIA_DIALOG = "media-viewer-offloaded-media-dialog"

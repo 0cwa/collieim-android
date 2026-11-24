@@ -29,6 +29,7 @@ val buildRevision = providers.gradleProperty("collieBuildRevision")
 val testShard = providers.gradleProperty("collieAppTestShard")
 val isolatedPushTests = providers.gradleProperty("isolatedPushTests").isPresent
 val imoTests = providers.gradleProperty("imoTests").isPresent
+val collieReleasePrepared = providers.gradleProperty("collieReleasePrepared").map { it.toBoolean() }.orElse(false)
 
 pluginManager.withPlugin("com.android.application") {
   extensions.getByType<ApplicationAndroidComponentsExtension>().finalizeDsl { android ->
@@ -42,6 +43,7 @@ pluginManager.withPlugin("com.android.application") {
       buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/repo\"")
       buildConfigField("long", "BUILD_TIMESTAMP_OR_ZERO", buildTimestamp.get() + "000L")
       buildConfigField("String", "GIT_HASH", "\"${buildRevision.get()}\"")
+      buildConfigField("boolean", "COLLIE_RELEASE_PREPARED", collieReleasePrepared.get().toString())
 
       require(!isolatedPushTests || imoTests) {
         "isolatedPushTests requires imoTests so the isolated runner and package remain test-only"

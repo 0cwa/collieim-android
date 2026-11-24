@@ -1,4 +1,6 @@
 """The preparation command works on a complete Git source without consuming invalid notes."""
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
 import os
 import runpy
@@ -173,15 +175,18 @@ class StampTests(unittest.TestCase):
             return original_unlink(path, **kwargs)
 
         original_cwd = Path.cwd()
+        stderr = StringIO()
         try:
             os.chdir(self.root)
             with mock.patch.object(module["os"], "replace", side_effect=OSError("replace failed")):
                 with mock.patch.object(Path, "unlink", unlink_with_denial):
-                    with self.assertRaisesRegex(OSError, "replace failed") as error:
-                        module["prepare"](VERSION, int(CODE), "2026-11-24", "beta")
+                    with mock.patch.object(sys, "argv", ["stamp.py", VERSION, "--version-code", CODE, "--date", "2026-11-24", "--edition", "beta"]):
+                        with redirect_stderr(stderr):
+                            self.assertEqual(module["main"](), 1)
         finally:
             os.chdir(original_cwd)
-        self.assertTrue(any("fixture denied removal" in note for note in error.exception.__notes__))
+        self.assertIn("Release preparation failed: replace failed", stderr.getvalue())
+        self.assertIn("fixture denied removal", stderr.getvalue())
         self.assertEqual(pending.read_text(), "A change.\n")
         self.assertEqual((self.root / "gradle.properties").read_bytes(), original_properties)
         self.assertFalse((self.root / f"app/src/main/assets/collie-log/releases/beta/{VERSION}.txt").exists())

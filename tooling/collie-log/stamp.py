@@ -298,6 +298,8 @@ def main():
                 highlights=args.highlights, tag=args.tag)
     except (ValueError, OSError, UnicodeError, subprocess.CalledProcessError) as error:
         print(f"Release preparation failed: {error}", file=sys.stderr)
+        for note in getattr(error, "__notes__", ()):
+            print(note, file=sys.stderr)
         return 1
     return 0
 

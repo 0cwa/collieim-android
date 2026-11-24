@@ -286,12 +286,12 @@ public final class PlacePickerActivity extends AppCompatActivity {
     currentAddress = null;
     addressRoute = null;
     // Older Android versions only expose a blocking lookup. Keep coordinate-only picking there.
-    if (target == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !Geocoder.isPresent() || !startAddressLookup(target, lookupId)) {
+    if (target == null || Build.VERSION.SDK_INT < 33 || !Geocoder.isPresent() || !startAddressLookup(target, lookupId)) {
       bottomSheet.hide();
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  @RequiresApi(33)
   private boolean startAddressLookup(@NonNull LatLng target, long lookupId) {
     Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
     return Networking.dispatchPlatformGeocoding(routeIsCurrent -> {

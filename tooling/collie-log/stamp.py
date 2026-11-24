@@ -19,6 +19,7 @@ import re
 import runpy
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 PENDING = Path("tooling/collie-log/unreleased")
@@ -45,7 +46,7 @@ ASCII = {"’": "'", "‘": "'", "“": '"', "”": '"', "–": "-", "—": "-",
 def parse(text, *, release=False):
     """Read the app's block format, rejecting malformed authoring input before it can be consumed."""
     header, items = {}, []
-    for block in re.split(r"\n\s*\n", text.replace("\r\n", "\n")):
+    for block in re.split(r"\n\s*\n", text.replace("\r\n", "\n").replace("\r", "\n")):
         fields, sentence = {}, []
         for line in (line.strip() for line in block.splitlines()):
             if not line:
@@ -223,17 +224,42 @@ def prepare(version, code, date, edition, *, highlights=None, tag=None):
         f"releaseVersionName={version}\nreleaseVersionCode={code}\n"
     )
 
-    # No validation or metadata reads occur after this point. A failed write leaves the
-    # pending inputs intact; rerun only after resolving the reported filesystem failure.
+    # No validation or metadata reads occur after this point. Keep generated files
+    # recoverable until all writes and pending-fragment consumption have succeeded.
     target.parent.mkdir(parents=True, exist_ok=True)
     draft.parent.mkdir(parents=True, exist_ok=True)
-    with target.open("x", encoding="utf-8", newline="\n") as output:
-        output.write(record)
-    with draft.open("x", encoding="ascii", newline="\n") as output:
-        output.write(short_notes)
-    Path("gradle.properties").write_text(properties, encoding="utf-8", newline="\n")
-    for path in waiting:
-        path.unlink()
+    created = []
+    removed = []
+    properties_path = Path("gradle.properties")
+    temporary = None
+    try:
+        with target.open("x", encoding="utf-8", newline="\n") as output:
+            created.append(target)
+            output.write(record)
+        with draft.open("x", encoding="ascii", newline="\n") as output:
+            created.append(draft)
+            output.write(short_notes)
+        fd, temporary_name = tempfile.mkstemp(prefix=".gradle.properties.", dir=properties_path.parent)
+        temporary = Path(temporary_name)
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as output:
+            output.write(properties)
+        os.chmod(temporary, properties_path.stat().st_mode)
+        for path in waiting:
+            content = path.read_bytes()
+            mode = path.stat().st_mode
+            path.unlink()
+            removed.append((path, content, mode))
+        os.replace(temporary, properties_path)
+        temporary = None
+    except BaseException:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+        for path, content, mode in reversed(removed):
+            path.write_bytes(content)
+            os.chmod(path, mode)
+        for path in reversed(created):
+            path.unlink(missing_ok=True)
+        raise
     print(f"Prepared {edition} {version} from {source}: {len(items)} changes.")
     print(f"Wrote {target} and {draft}; review the Fastlane draft before committing.")
 

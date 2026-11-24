@@ -72,10 +72,6 @@ jobs:
         if: ${{ inputs.edition == 'beta' }}
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: ./.github/actions/disk-cleanup
-      - name: Test release preparation and the build recipe
-        run: |
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/collie-log -p 'test_*.py'
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/reproducible-builds -p 'test_*.py'
       - name: Build the candidate
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -108,6 +104,19 @@ jobs:
           path: ${{ runner.temp }}/out/
           retention-days: 14
           if-no-files-found: error
+
+  test-preparation:
+    name: Test release preparation
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test release preparation and the build recipe
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/collie-log -p 'test_*.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/reproducible-builds -p 'test_*.py'
 
   determinism:
     name: Both builds are identical

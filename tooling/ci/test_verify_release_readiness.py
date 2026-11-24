@@ -245,6 +245,14 @@ class ReleaseReadinessTest(unittest.TestCase):
                     gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
                 self.assertFalse(any("/actions/" in endpoint for endpoint in calls))
                 entry["sha"] = original
+        tooling_trees = [tree for tree in api_responses.values()
+                         if isinstance(tree, dict) and isinstance(tree.get("tree"), list)
+                         and any(isinstance(entry, dict) and entry.get("path") == "collie-log"
+                                 for entry in tree["tree"])]
+        self.assertEqual(len(tooling_trees), 2)
+        tooling_trees[1]["tree"] = [entry for entry in tooling_trees[1]["tree"] if entry.get("path") != "collie-log"]
+        self.assertEqual(gate.bind_main_policy(REPO, SHA, policy, reader),
+                         candidate_inputs[gate.MAINTENANCE_POLICY]["sha"])
         api_responses[f"{prefix}/compare/{policy}...{live_main}"]["status"] = "diverged"
         with self.assertRaisesRegex(gate.Failure, "outside protected main"):
             gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)

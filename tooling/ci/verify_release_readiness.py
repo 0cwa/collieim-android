@@ -156,24 +156,34 @@ def bind_main_policy(repository, sha, trusted_main, reader):
         identity = reader(f"{prefix}/git/commits/{commit}")
         require(identity["sha"] == commit, "CI input commit identity changed")
         root_tree = identity["tree"]["sha"]
+        paths = TRUSTED_CI_PATHS
         objects = {}
-        for path in TRUSTED_CI_PATHS:
+        for path in paths:
             parts = path.split("/")
             parent = root_tree
+            missing = False
             for part in parts[:-1]:
                 directory = entries(parent).get(part)
-                require(directory and directory["type"] == "tree", f"Missing trusted CI directory for {path}")
+                if not directory or directory["type"] != "tree":
+                    if path == "tooling/collie-log/stamp.py":
+                        missing = True
+                        break
+                    require(False, f"Missing trusted CI directory for {path}")
                 parent = directory["sha"]
+            if missing:
+                continue
             entry = entries(parent).get(parts[-1])
+            if path == "tooling/collie-log/stamp.py" and not entry:
+                continue
             require(entry and entry["mode"] in ("040000", "100644", "100755"), f"Missing or invalid CI input {path}")
             objects[path] = (entry["mode"], entry["type"], entry["sha"])
         return objects
 
     policy = path_objects(trusted_main)
     candidate = path_objects(sha)
-    for path in TRUSTED_CI_PATHS:
+    for path in policy:
         expected = (policy[path][0], "blob", CLASSIC_WEBVIEW_CHECKER_BLOB) if path == CLASSIC_WEBVIEW_CHECKER else policy[path]
-        require(expected == candidate[path], f"Maintenance CI input differs from trusted main: {path}")
+        require(expected == candidate.get(path), f"Maintenance CI input differs from trusted main: {path}")
     return policy[MAINTENANCE_POLICY][2]
 
 

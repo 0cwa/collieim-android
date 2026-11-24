@@ -1,11 +1,13 @@
 """The preparation command works on a complete Git source without consuming invalid notes."""
 from pathlib import Path
+import os
 import runpy
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 STAMP = Path(__file__).with_name("stamp.py").resolve()
 VERIFIER = STAMP.parents[1] / "reproducible-builds/verify-release-prep.py"
@@ -123,6 +125,38 @@ class StampTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(self.snapshot(), before)
                 self.assertEqual(path.read_text(), text)
+
+    def test_cr_only_pending_fragment_is_prepared_and_verified(self):
+        path = self.root / "tooling/collie-log/unreleased/cr-only.txt"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"topic: fixes\rCR-only line endings work.\r")
+        self.commit()
+        result = self.stamp()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.commit()
+        checked = subprocess.run([sys.executable, str(self.root / "tooling/reproducible-builds/verify-release-prep.py"),
+                                  "--edition", "beta", "--build-state"], cwd=self.root, text=True, capture_output=True)
+        self.assertEqual(checked.returncode, 0, checked.stderr)
+        record = self.root / f"app/src/main/assets/collie-log/releases/beta/{VERSION}.txt"
+        self.assertIn("topic: fixes\nCR-only line endings work.\n", record.read_text())
+
+    def test_failed_atomic_properties_replace_rolls_back_outputs_and_pending(self):
+        pending = self.pending("7.txt", "A change.\n")
+        self.commit()
+        original_properties = (self.root / "gradle.properties").read_bytes()
+        module = runpy.run_path(str(self.root / "tooling/collie-log/stamp.py"))
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(self.root)
+            with mock.patch.object(module["os"], "replace", side_effect=OSError("replace failed")):
+                with self.assertRaisesRegex(OSError, "replace failed"):
+                    module["prepare"](VERSION, int(CODE), "2026-11-24", "beta")
+        finally:
+            os.chdir(original_cwd)
+        self.assertEqual(pending.read_text(), "A change.\n")
+        self.assertEqual((self.root / "gradle.properties").read_bytes(), original_properties)
+        self.assertFalse((self.root / f"app/src/main/assets/collie-log/releases/beta/{VERSION}.txt").exists())
+        self.assertFalse((self.root / f"fastlane/metadata/trailblazer-beta/en-US/changelogs/{CODE}.txt").exists())
 
     def test_existing_record_or_changelog_causes_no_partial_preparation(self):
         self.pending("7.txt", "A change.\n")

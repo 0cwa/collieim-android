@@ -512,6 +512,22 @@ class UnifiedPushRefreshJobTest {
   }
 
   @Test
+  fun `an HTTP relay must not provision a linked device`() {
+    configureEndpointCallbacks()
+    storedDevice = null
+    every { unifiedPush.airGapped } returns false
+    every { unifiedPush.mollySocketUrl } returns "http://relay.example.invalid"
+
+    UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true)
+      .apply { setContext(ApplicationProvider.getApplicationContext()) }
+      .onRun()
+
+    assertEquals(RegistrationStatus.PENDING, unifiedPush.registrationStatus)
+    verify(exactly = 0) { MollySocketRepository.createDevice() }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
   fun `refresh recreates a validated device instead of registering the removed lease snapshot`() {
     val created = MollySocketDevice(deviceId = 6, password = "new-relay-credential")
     storedDevice = device

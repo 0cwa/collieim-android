@@ -43,6 +43,9 @@ import java.util.UUID
 
 class UnifiedPushSettingsViewModel(private val application: Application) : ViewModel() {
 
+  // Keep confirmation bound to the original state across same-process scanner recreation.
+  internal var scanDisclosure: RelayDisclosure.Snapshot? = null
+
   private val store = Store(getState())
 
   val state: LiveData<UnifiedPushSettingsState> = store.stateLiveData
@@ -152,7 +155,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   fun setMollySocket(mollySocket: MollySocket, disclosure: RelayDisclosure.Snapshot?) {
     viewModelScope.launch {
-      val completed = RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket) { authorization ->
+      val completed = RelayDisclosure.selectRelayAndSchedule(disclosure, mollySocket) { authorization ->
           AppDependencies.jobManager.add(UnifiedPushRefreshJob(authorization))
         }
       currentCoroutineContext().ensureActive()

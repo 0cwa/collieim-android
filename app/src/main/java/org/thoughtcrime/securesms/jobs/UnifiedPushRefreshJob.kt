@@ -168,8 +168,8 @@ class UnifiedPushRefreshJob private constructor(
       return RegistrationStatus.PENDING
     }
 
-    if (!airGapped && mollySocketUrl == null) {
-      Log.e(TAG, "Missing MollySocket URL.")
+    if (!airGapped && mollySocketUrl?.isHttps != true) {
+      Log.e(TAG, "Missing or invalid HTTPS MollySocket URL.")
       return RegistrationStatus.PENDING
     }
 

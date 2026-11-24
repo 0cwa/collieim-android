@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.enrollment
 
 import android.app.Application
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -133,7 +134,7 @@ class RelayDisclosureTest {
     val pending = application.getSharedPreferences("collie_locked_push", android.content.Context.MODE_PRIVATE)
     pending.edit().putString("pending_endpoint", "synthetic buffered endpoint").commit()
 
-    val sameRelay = MollySocket.WebServer(proposed.vapid, originalUrl)
+    val sameRelay = MollySocket.WebServer(proposed.vapid, "$originalUrl/")
     assertNotNull(RelayDisclosure.selectRelay(capture(), sameRelay))
     assertTrue(pending.contains("pending_endpoint"))
 
@@ -191,10 +192,12 @@ class RelayDisclosureTest {
     val authorizedText = "connection add $accountId 2 $password ${values.endpoint}"
     assertEquals(authorizedText, clipboard.primaryClip?.getItemAt(0)?.text.toString())
 
+    val replacement = "Unrelated clipboard contents"
+    clipboard.setPrimaryClip(ClipData.newPlainText("fixture", replacement))
     accountId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
     viewModel.refresh()
     viewModel.copyParamsToClipboard(application, snapshot)
-    assertEquals(authorizedText, clipboard.primaryClip?.getItemAt(0)?.text.toString())
+    assertEquals(replacement, clipboard.primaryClip?.getItemAt(0)?.text.toString())
   }
 
   @Test fun `accepting a relay commits only that destination and returns its bound authorization`() = runBlocking {
@@ -256,7 +259,7 @@ class RelayDisclosureTest {
       job.get().cancel()
     }
     val selection = launch(Dispatchers.Default, start = CoroutineStart.LAZY) {
-      RelayDisclosure.selectRelayAndComplete(capture(), proposed) { scheduled.incrementAndGet() }
+      RelayDisclosure.selectRelayAndSchedule(capture(), proposed) { scheduled.incrementAndGet() }
     }
     job.set(selection)
     selection.start()
@@ -271,7 +274,7 @@ class RelayDisclosureTest {
     val admitted = signalAdmission()
     val scheduled = AtomicInteger()
     val selection = launch(Dispatchers.Default) {
-      RelayDisclosure.selectRelayAndComplete(snapshot, proposed) { scheduled.incrementAndGet() }
+      RelayDisclosure.selectRelayAndSchedule(snapshot, proposed) { scheduled.incrementAndGet() }
     }
     try {
       assertTrue(admitted.await(5, TimeUnit.SECONDS))
@@ -282,6 +285,17 @@ class RelayDisclosureTest {
     withTimeout(5000) { selection.join() }
     assertEquals(originalUrl, values.mollySocketUrl)
     assertEquals(0, scheduled.get())
+  }
+
+  @Test fun `committed selection queues refresh while UI completion is unready`() = runBlocking {
+    val authorization = checkNotNull(RelayDisclosure.selectRelay(capture(), proposed))
+    UnifiedPushLifecycle.resetForTests(initiallyReady = false)
+    val queued = mutableListOf<RelayDisclosure.RefreshAuthorization>()
+
+    assertTrue(RelayDisclosure.scheduleRefreshIfCurrent(authorization) { queued += it })
+    accountId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+    assertFalse(RelayDisclosure.scheduleRefreshIfCurrent(authorization) { queued += it })
+    assertEquals(listOf(authorization), queued)
   }
 
   @Test fun `setup continuation survives normal endpoint registration but not another account`() = runBlocking {

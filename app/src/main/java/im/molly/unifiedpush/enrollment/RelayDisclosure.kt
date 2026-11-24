@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -95,8 +96,10 @@ object RelayDisclosure {
               null
             } else {
               val old = snapshot.configuration
+              val oldUrl = old.url?.toHttpUrlOrNull()?.toString() ?: old.url
+              val newUrl = (relay as? MollySocket.WebServer)?.url
               val destinationChanged = old.manual != (relay is MollySocket.AirGapped) ||
-                old.url != (relay as? MollySocket.WebServer)?.url || old.vapid != relay.vapid
+                oldUrl != (newUrl?.toHttpUrlOrNull()?.toString() ?: newUrl) || old.vapid != relay.vapid
               // The receiver records and applies endpoints under the same monitor. Invalidate a
               // buffered endpoint before changing its destination, including after a restart.
               if (destinationChanged && !LockedPushState.discardPending(AppDependencies.application)) return@synchronized null
@@ -112,8 +115,8 @@ object RelayDisclosure {
     }
   }
 
-  /** Once a selection commits, finish its guarded scheduling even if its screen is destroyed. */
-  suspend fun selectRelayAndComplete(
+  /** Schedule the authorized refresh after a committed selection, independent of UI readiness. */
+  suspend fun selectRelayAndSchedule(
     snapshot: Snapshot?,
     relay: MollySocket,
     deliveryMethod: NotificationDeliveryMethod? = null,
@@ -122,8 +125,18 @@ object RelayDisclosure {
     val caller = currentCoroutineContext()
     return withContext(NonCancellable) {
       val authorization = withContext(SignalDispatchers.IO) { selectRelay(snapshot, relay, deliveryMethod, caller) }
-      authorization != null && completeSelection(authorization) { onCurrent(authorization) }
+      authorization != null && scheduleRefreshIfCurrent(authorization, onCurrent)
     }
+  }
+
+  internal fun scheduleRefreshIfCurrent(
+    authorization: RefreshAuthorization,
+    schedule: (RefreshAuthorization) -> Unit,
+  ): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    if (!matchesRefreshLocked(authorization)) return@synchronized false
+    // The refresh job retries while the lifecycle is unready and rechecks this authorization.
+    schedule(authorization)
+    true
   }
 
   /** Check inside the refresh job's lease admission, using the same monitor as account and relay changes. */

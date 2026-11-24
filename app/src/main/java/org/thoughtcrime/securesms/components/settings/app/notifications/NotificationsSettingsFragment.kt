@@ -167,7 +167,6 @@ open class DefaultNotificationsSettingsCallbacks(
     private val TAG = Log.tag(DefaultNotificationsSettingsCallbacks::class)
   }
 
-  private var scanDisclosure: RelayDisclosure.Snapshot? = null
 
   interface ActivityResultRegisterer {
     fun <I, O> registerForActivityResult(
@@ -223,21 +222,14 @@ open class DefaultNotificationsSettingsCallbacks(
   private val qrScanLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = MollySocketQrScannerActivity.Contract(),
     callback = { mollySocket ->
-      val disclosure = scanDisclosure
-      scanDisclosure = null
+      val disclosure = viewModel.scanDisclosure
+      viewModel.scanDisclosure = null
       if (mollySocket != null) {
         if (disclosure == null) {
           RelayDisclosureDialogs.showStaleAction(activity)
         } else {
           RelayDisclosureDialogs.showRelay(activity, mollySocket) {
-            viewModel.initializeMollySocket(mollySocket, disclosure) { authorization ->
-              if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                val setup = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
-                viewModel.pendingMollySocketResult.value = null
-                viewModel.pendingMollySocketSetup = setup
-                linkDefaultDistributorLauncher.launch(setup)
-              }
-            }
+            viewModel.initializeMollySocket(mollySocket, disclosure)
           }
         }
       }
@@ -246,10 +238,35 @@ open class DefaultNotificationsSettingsCallbacks(
 
   init {
     owner.lifecycleScope.launch {
+      owner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+        viewModel.pendingMollySocketLaunch.collectLatest { setup ->
+          if (setup != null) launchPendingMollySocketPicker(setup)
+        }
+      }
+    }
+    owner.lifecycleScope.launch {
       owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
         viewModel.pendingMollySocketResult.collectLatest { pending ->
           if (pending != null) resumePendingMollySocketResult(pending)
         }
+      }
+    }
+  }
+
+  private suspend fun launchPendingMollySocketPicker(setup: UnifiedPushDefaultDistributorLinkActivity.Setup) {
+    while (viewModel.pendingMollySocketLaunch.value === setup) {
+      val completed = viewModel.awaitMollySocketPicker(setup.authorization) {
+        if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketLaunch.value === setup) {
+          viewModel.pendingMollySocketLaunch.value = null
+          viewModel.pendingMollySocketSetup = setup
+          linkDefaultDistributorLauncher.launch(setup)
+        }
+      }
+      if (completed && viewModel.pendingMollySocketLaunch.value !== setup) return
+      if (!completed && !viewModel.isCurrentMollySocketSetup(setup.authorization)) {
+        viewModel.pendingMollySocketLaunch.value = null
+        RelayDisclosureDialogs.showStaleAction(activity)
+        return
       }
     }
   }
@@ -409,7 +426,7 @@ open class DefaultNotificationsSettingsCallbacks(
             .setTitle(R.string.NotificationsSettingsFragment__mollysocket_server)
             .setMessage(R.string.NotificationsSettingsFragment__to_use_unifiedpush_you_need_access_to_a_mollysocket_server)
             .setPositiveButton(R.string.AddLinkDeviceFragment__scan_qr_code) { _, _ ->
-              scanDisclosure = disclosure
+              viewModel.scanDisclosure = disclosure
               qrScanLauncher.launch()
             }
             .setNegativeButton(android.R.string.cancel, null)

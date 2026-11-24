@@ -39,7 +39,11 @@ import org.thoughtcrime.securesms.storage.StorageSyncHelper
 
 class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
+  // Keep confirmation bound to the original state across same-process scanner recreation.
+  internal var scanDisclosure: RelayDisclosure.Snapshot? = null
+
   // Kept only in memory across configuration changes; the result is still revalidated before use.
+  internal val pendingMollySocketLaunch = MutableStateFlow<UnifiedPushDefaultDistributorLinkActivity.Setup?>(null)
   internal var pendingMollySocketSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
   internal data class PendingMollySocketResult(val authorization: RelayDisclosure.RefreshAuthorization, val success: Boolean?)
   internal val pendingMollySocketResult = MutableStateFlow<PendingMollySocketResult?>(null)
@@ -175,14 +179,14 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
   fun initializeMollySocket(
     mollySocket: MollySocket,
     disclosure: RelayDisclosure.Snapshot?,
-    onSelected: (RelayDisclosure.RefreshAuthorization) -> Unit,
   ) {
     viewModelScope.launch {
-      val completed = RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
+      val completed = RelayDisclosure.selectRelayAndSchedule(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
           SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
           ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices(UnifiedPushRefreshJob(authorization))
           AppDependencies.resetNetwork(true)
-          onSelected(authorization)
+          pendingMollySocketResult.value = null
+          pendingMollySocketLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
         }
       currentCoroutineContext().ensureActive()
       if (!completed) {
@@ -191,6 +195,9 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
       refresh()
     }
   }
+
+  internal suspend fun awaitMollySocketPicker(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit): Boolean =
+    RelayDisclosure.completeSelection(authorization, onCurrent)
 
   suspend fun completeMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit): Boolean =
     RelayDisclosure.completeSelection(authorization, onCurrent)

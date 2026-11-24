@@ -172,9 +172,10 @@ object MollySocketRepository {
   }
 
   fun discoverMollySocketServer(url: HttpUrl): Boolean {
+    if (!url.isHttps) return false
     try {
       val request = Request.Builder().url(url).build()
-      val client = AppDependencies.okHttpClient.newBuilder().build()
+      val client = AppDependencies.okHttpClient.newBuilder().followRedirects(false).followSslRedirects(false).build()
       client.newCall(request).execute().use { response ->
         if (!response.isSuccessful) {
           Log.d(TAG, "Unexpected code: $response")

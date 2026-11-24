@@ -34,12 +34,11 @@ import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDeliveryMethod__unifiedpush) {
 
   private lateinit var viewModel: UnifiedPushSettingsViewModel
-  private var scanDisclosure: RelayDisclosure.Snapshot? = null
 
   private val qrScanLauncher: ActivityResultLauncher<Unit> =
     registerForActivityResult(MollySocketQrScannerActivity.Contract()) { mollySocket ->
-      val disclosure = scanDisclosure
-      scanDisclosure = null
+      val disclosure = viewModel.scanDisclosure
+      viewModel.scanDisclosure = null
       if (mollySocket != null) {
         if (disclosure == null) {
           RelayDisclosureDialogs.showStaleAction(requireContext())
@@ -277,7 +276,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           if (disclosure == null) {
             RelayDisclosureDialogs.showStaleAction(requireContext())
           } else {
-            scanDisclosure = disclosure
+            viewModel.scanDisclosure = disclosure
             qrScanLauncher.launch()
           }
         },

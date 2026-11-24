@@ -25,10 +25,10 @@ import io.mockk.every
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -56,6 +56,8 @@ class MollyNotificationCallbacksTest {
   private val results = RecordingResults()
   private val disclosure = mockk<RelayDisclosure.Snapshot>()
   private val authorization = mockk<RelayDisclosure.RefreshAuthorization>()
+  private var scanDisclosure: RelayDisclosure.Snapshot? = null
+  private val pendingLaunch = MutableStateFlow<UnifiedPushDefaultDistributorLinkActivity.Setup?>(null)
   private var pendingSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
   private var lastSetupId = "unrecognized-setup"
   private val pendingResult = MutableStateFlow<NotificationsSettingsViewModel.PendingMollySocketResult?>(null)
@@ -63,6 +65,10 @@ class MollyNotificationCallbacksTest {
 
   @Before
   fun setUp() {
+    every { viewModel.scanDisclosure } answers { scanDisclosure }
+    every { viewModel.scanDisclosure = any() } answers { scanDisclosure = firstArg() }
+    every { viewModel.pendingMollySocketLaunch } returns pendingLaunch
+    coEvery { viewModel.awaitMollySocketPicker(any(), any()) } coAnswers { secondArg<() -> Unit>()(); true }
     every { viewModel.pendingMollySocketResult } returns pendingResult
     every { viewModel.pendingMollySocketSetup } answers { pendingSetup }
     every { viewModel.pendingMollySocketSetup = any() } answers {
@@ -122,7 +128,7 @@ class MollyNotificationCallbacksTest {
     assertFalse(message.contains(socket.url))
     pressButton(AlertDialog.BUTTON_POSITIVE)
 
-    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure), any()) }
+    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure)) }
     verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
     verify(exactly = 1) { results.distributorLauncher.launch(any()) }
   }
@@ -140,22 +146,23 @@ class MollyNotificationCallbacksTest {
   fun `rejected selection does not launch the distributor picker`() {
     confirmScannedRelay()
 
-    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure), any()) }
+    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure)) }
     verify(exactly = 0) { results.distributorLauncher.launch(any()) }
   }
 
   @Test
-  fun `selection completing while activity is paused does not launch after resume`() {
-    val selected = slot<(RelayDisclosure.RefreshAuthorization) -> Unit>()
-    every { viewModel.initializeMollySocket(any(), any(), capture(selected)) } returns Unit
+  fun `selection completing while activity is paused launches once on resume`() {
     confirmScannedRelay()
     controller.pause()
 
-    selected.captured(authorization)
+    pendingLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
+    shadowOf(Looper.getMainLooper()).idle()
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
+
     controller.resume()
     shadowOf(Looper.getMainLooper()).idle()
-
-    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
+    verify(exactly = 1) { results.distributorLauncher.launch(any()) }
+    assertNull(pendingLaunch.value)
   }
 
   @Test
@@ -414,8 +421,8 @@ class MollyNotificationCallbacksTest {
   }
 
   private fun allowSelection() {
-    every { viewModel.initializeMollySocket(any(), any(), any()) } answers {
-      thirdArg<(RelayDisclosure.RefreshAuthorization) -> Unit>()(authorization)
+    every { viewModel.initializeMollySocket(any(), any()) } answers {
+      pendingLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
     }
   }
 
@@ -424,7 +431,7 @@ class MollyNotificationCallbacksTest {
   }
 
   private fun verifyNoSelection() {
-    verify(exactly = 0) { viewModel.initializeMollySocket(any(), any(), any()) }
+    verify(exactly = 0) { viewModel.initializeMollySocket(any(), any()) }
     verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
     verify(exactly = 0) { results.distributorLauncher.launch(any()) }
   }

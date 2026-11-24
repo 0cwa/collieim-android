@@ -117,6 +117,7 @@ jobs:
           timeout 10s adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/device-api.txt"
           test "$(cat "$evidence/device-api.txt")" = 35
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          timeout 10s adb shell am force-stop com.google.android.apps.nexuslauncher
           timeout 10s adb logcat -c
           ./gradlew --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \

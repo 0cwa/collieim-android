@@ -50,6 +50,16 @@ class LinkedDeviceWarningProofTest {
         compose.onNodeWithText(warning).assertDoesNotExist()
         compose.onNodeWithText(context.getString(R.string.LinkDeviceFragment__cancel)).performClick()
         compose.onNodeWithText(warning).assertIsDisplayed()
+        compose.waitUntil(15_000) {
+          var ownsFocusedWindow = false
+          instrumentation.runOnMainSync {
+            ownsFocusedWindow = android.view.inspector.WindowInspector.getGlobalWindowViews().any {
+              it.context.packageName == context.packageName && it.isShown && it.hasWindowFocus()
+            }
+          }
+          ownsFocusedWindow
+        }
+        instrumentation.uiAutomation.waitForIdle(500, 5_000)
         capture("link-device-deferred-warning.png")
       }
     } finally {

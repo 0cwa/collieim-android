@@ -290,7 +290,7 @@ class GroupMessageService @JvmOverloads constructor(
         }
 
         beforeSend?.invoke()
-        when (val result = messageApi.sendMultiRecipientMessage(ciphertext, timestamp, multiRecipientAuth, isOnline, urgent)) {
+        when (val result = messageApi.sendMultiRecipientMessage(ciphertext, timestamp, multiRecipientAuth, isOnline, urgent, beforeSend)) {
           is RequestResult.Success -> {
             val unregistered = result.result.unregisteredIds.map { ServiceId.fromLibSignal(it) }.toSet()
             Log.d(TAG, "[$timestamp] Sent with sender key to ${state.remaining.size - unregistered.size}/${state.remaining.size} targets")

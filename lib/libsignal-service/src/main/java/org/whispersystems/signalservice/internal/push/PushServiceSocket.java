@@ -143,6 +143,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
 
 /**
  * @author Moxie Marlinspike
@@ -387,13 +388,47 @@ public class PushServiceSocket {
   public SendMessageResponse sendMessage(OutgoingPushMessageList bundle, @Nullable SealedSenderAccess sealedSenderAccess, boolean story)
       throws IOException
   {
-    try {
-      String              responseText = makeServiceRequest(String.format("/v1/messages/%s?story=%s", bundle.getDestination(), story ? "true" : "false"), "PUT", JsonUtil.toJson(bundle), NO_HEADERS, NO_HANDLER, sealedSenderAccess);
-      SendMessageResponse response     = JsonUtil.fromJson(responseText, SendMessageResponse.class);
+    return sendMessage(bundle, sealedSenderAccess, story, null);
+  }
+
+  public SendMessageResponse sendMessage(OutgoingPushMessageList bundle, @Nullable SealedSenderAccess sealedSenderAccess, boolean story, @Nullable CancelationSignal cancelationSignal)
+      throws IOException
+  {
+    String      path = String.format("/v1/messages/%s?story=%s", bundle.getDestination(), story ? "true" : "false");
+    RequestBody body = jsonRequestBody(JsonUtil.toJson(bundle));
+
+    if (cancelationSignal != null) {
+      RequestBody payload = body;
+      body = new RequestBody() {
+        @Override
+        public MediaType contentType() {
+          return payload.contentType();
+        }
+
+        @Override
+        public long contentLength() throws IOException {
+          return payload.contentLength();
+        }
+
+        @Override
+        public void writeTo(BufferedSink sink) throws IOException {
+          cancelationSignal.throwIfCanceled();
+          payload.writeTo(sink);
+        }
+      };
+    }
+
+    try (Response serviceResponse = makeServiceRequest(path, "PUT", body, NO_HEADERS, NO_HANDLER, sealedSenderAccess, false)) {
+      SendMessageResponse response = JsonUtil.fromJson(readBodyString(serviceResponse), SendMessageResponse.class);
 
       response.setSentUnidentified(sealedSenderAccess != null);
 
       return response;
+    } catch (PushNetworkException e) {
+      if (e.getCause() instanceof CancelationSignal.SendCanceledException) {
+        throw (CancelationSignal.SendCanceledException) e.getCause();
+      }
+      throw e;
     } catch (NotFoundException nfe) {
       throw new UnregisteredUserException(bundle.getDestination(), nfe);
     }

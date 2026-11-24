@@ -83,7 +83,7 @@ class GroupMessageServiceFanOutTest {
     }
 
     assertThat(result.exceptionOrNull()).isEqualTo(stale)
-    coVerify(exactly = 0) { messageApi.sendSealedSenderMessage(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { messageApi.sendSealedSenderMessage(any(), any(), any(), any(), any(), any(), any()) }
   }
 
   @Test

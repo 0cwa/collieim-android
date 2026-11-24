@@ -22,6 +22,7 @@ import org.whispersystems.signalservice.api.fromWebSocketRequest
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket
 import org.whispersystems.signalservice.internal.push.OutgoingPushMessageList
 import org.whispersystems.signalservice.internal.push.SendMessageResponse
+import org.whispersystems.signalservice.internal.push.http.CancelationSignal
 
 /**
  * Collection of endpoints for operating on messages.
@@ -60,16 +61,23 @@ class MessageApi(
    * - 410: Stale devices
    * - 428: Sender proof required
    */
-  fun sendMessage(messageList: OutgoingPushMessageList, sealedSenderAccess: SealedSenderAccess?, story: Boolean): NetworkResult<SendMessageResponse> {
+  @JvmOverloads
+  fun sendMessage(
+    messageList: OutgoingPushMessageList,
+    sealedSenderAccess: SealedSenderAccess?,
+    story: Boolean,
+    cancelationSignal: CancelationSignal? = null
+  ): NetworkResult<SendMessageResponse> {
+    val beforeSend = cancelationSignal?.let { it::throwIfCanceled }
     val request = WebSocketRequestMessage.put("/v1/messages/${messageList.destination}?story=${story.toQueryParam()}", messageList)
 
     return if (sealedSenderAccess == null) {
-      NetworkResult.fromWebSocket(sendMessageResponseConverter) { authWebSocket.request(request) }
+      NetworkResult.fromWebSocket(sendMessageResponseConverter) { authWebSocket.request(request, beforeSend) }
     } else {
-      NetworkResult.fromWebSocket(sendMessageResponseConverter) { unauthWebSocket.request(request, sealedSenderAccess) }
+      NetworkResult.fromWebSocket(sendMessageResponseConverter) { unauthWebSocket.request(request, sealedSenderAccess, beforeSend) }
         .fallback(
           predicate = { it is NetworkResult.StatusCodeError && it.code == 401 },
-          fallback = { NetworkResult.fromWebSocket(sendMessageResponseConverter) { authWebSocket.request(request) } }
+          fallback = { NetworkResult.fromWebSocket(sendMessageResponseConverter) { authWebSocket.request(request, beforeSend) } }
         )
     }
   }
@@ -77,9 +85,18 @@ class MessageApi(
   /**
    * Sends a common message to multiple recipients using the libsignal-net [UnauthMessagesService].
    */
-  fun sendGroupMessage(body: ByteArray, auth: MultiRecipientSendAuthorization, timestamp: Long, online: Boolean, urgent: Boolean): RequestResult<MultiRecipientMessageResponse, MultiRecipientSendFailure> {
+  @JvmOverloads
+  fun sendGroupMessage(
+    body: ByteArray,
+    auth: MultiRecipientSendAuthorization,
+    timestamp: Long,
+    online: Boolean,
+    urgent: Boolean,
+    cancelationSignal: CancelationSignal? = null
+  ): RequestResult<MultiRecipientMessageResponse, MultiRecipientSendFailure> {
     return runBlocking {
       unauthWebSocket.runCatchingWithChatConnection { chatConnection ->
+        cancelationSignal?.throwIfCanceled()
         UnauthMessagesService(chatConnection).sendMultiRecipientMessage(body, timestamp, auth, online, urgent)
       }
     }

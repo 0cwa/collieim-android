@@ -168,7 +168,7 @@ open class IndividualMessageService(
 
       val contents = encryptedMessages.toSealedSenderContents()
       beforeSend?.invoke()
-      val response = messageApi.sendSealedSenderMessage(serviceId, timestamp, contents, sealedSenderAccess, isOnline, urgent)
+      val response = messageApi.sendSealedSenderMessage(serviceId, timestamp, contents, sealedSenderAccess, isOnline, urgent, beforeSend)
 
       when (handleSealedSendResult(response, sealedSenderAccess, timestamp)) {
         SealedSendResult.Success -> {
@@ -202,7 +202,7 @@ open class IndividualMessageService(
       reportEncrypted()
 
       beforeSend?.invoke()
-      when (sendUnsealed(serviceId, timestamp, encryptedMessages, isOnline, urgent)) {
+      when (sendUnsealed(serviceId, timestamp, encryptedMessages, isOnline, urgent, beforeSend)) {
         UnsealedSendResult.Success -> {
           val devices = encryptedMessages.map { it.destinationDeviceId }
           Log.d(TAG, "[$timestamp] Successfully sent an unsealed message to $serviceId, devices: $devices")
@@ -250,7 +250,8 @@ open class IndividualMessageService(
         val result = messageApi.sendSyncMessage(
           timestamp = timestamp,
           contents = encryptedMessages.map { it.toUnsealedMessage() },
-          urgent = urgent
+          urgent = urgent,
+          beforeSend = beforeSend
         )
 
         when (result) {
@@ -329,14 +330,16 @@ open class IndividualMessageService(
     timestamp: Long,
     encryptedMessages: List<OutgoingPushMessage>,
     online: Boolean,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)?
   ): UnsealedSendResult {
     val result = messageApi.sendUnsealedSenderMessage(
       serviceId = serviceId,
       timestamp = timestamp,
       contents = encryptedMessages.map { it.toUnsealedMessage() },
       onlineOnly = online,
-      urgent = urgent
+      urgent = urgent,
+      beforeSend = beforeSend
     )
 
     return when (result) {

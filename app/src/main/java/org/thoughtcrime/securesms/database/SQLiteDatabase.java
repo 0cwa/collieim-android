@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 
 /**
  * This is a wrapper around {@link net.zetetic.database.sqlcipher.SQLiteDatabase}. There's difficulties
@@ -156,6 +157,30 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
     }
   }
 
+  /**
+   * Like the deduped overload, but combines writes for the same key in registration order.
+   * The combined task is discarded with the transaction on rollback.
+   */
+  public void runPostSuccessfulTransaction(@NonNull String dedupeKey, @NonNull Runnable task, @NonNull BinaryOperator<Runnable> combine) {
+    if (!wrapped.inTransaction()) {
+      task.run();
+      return;
+    }
+
+    Set<Runnable> tasks = getPendingPostSuccessfulTransactionTasks();
+    if (tasks.add(new DedupedRunnable(dedupeKey, task))) {
+      return;
+    }
+
+    for (Runnable pending : tasks) {
+      if (pending instanceof DedupedRunnable && ((DedupedRunnable) pending).key.equals(dedupeKey)) {
+        DedupedRunnable match = (DedupedRunnable) pending;
+        match.runnable = combine.apply(match.runnable, task);
+        return;
+      }
+    }
+  }
+
   private @NonNull Set<Runnable> getPendingPostSuccessfulTransactionTasks() {
     Set<Runnable> tasks = PENDING_POST_SUCCESSFUL_TRANSACTION_TASKS.get();
 
@@ -187,7 +212,7 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
    */
   private static class DedupedRunnable implements Runnable {
     private final String   key;
-    private final Runnable runnable;
+    private Runnable       runnable;
 
     protected DedupedRunnable(@NonNull String key, @NonNull Runnable runnable) {
       this.key      = key;

@@ -22,6 +22,7 @@ import io.mockk.unmockkAll
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import io.mockk.verifyOrder
+import net.zetetic.database.sqlcipher.SQLiteTransactionListener
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -41,6 +42,7 @@ import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.libsignal.zkgroup.groups.GroupSecretParams
 import org.signal.network.NetworkResult
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException
+import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChange
 import org.signal.storageservice.storage.protos.groups.local.DecryptedMember
@@ -48,7 +50,9 @@ import org.signal.storageservice.storage.protos.groups.local.DecryptedString
 import org.signal.storageservice.storage.protos.groups.local.DecryptedTimer
 import org.thoughtcrime.securesms.database.GroupStateTestData
 import org.thoughtcrime.securesms.database.GroupTable
+import org.thoughtcrime.securesms.database.RecipientDatabaseTestUtils
 import org.thoughtcrime.securesms.database.RecipientTable
+import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.ThreadTable
 import org.thoughtcrime.securesms.database.groupRecord
@@ -63,9 +67,13 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupsV2Authorization
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionRecord
+import org.thoughtcrime.securesms.groups.v2.admission.AdmissionStatus
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionEvidence
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionMode
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSettings
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionValues
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor.ProfileAndMessageHelper
 import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
@@ -73,11 +81,13 @@ import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob
 import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob
 import org.thoughtcrime.securesms.jobs.LeaveGroupV2Job
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob
+import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
+import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupResponse
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupUtil
@@ -91,6 +101,7 @@ import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupExcep
 import java.io.IOException
 import java.util.Optional
 import java.util.UUID
+import java.util.function.BinaryOperator
 
 @Suppress("UsePropertyAccessSyntax")
 @SuppressLint("CheckResult")
@@ -150,6 +161,7 @@ class GroupsV2StateProcessorTest {
     every { SignalDatabase.groups } returns groupTable
     every { SignalDatabase.recipients } returns recipientTable
     every { SignalDatabase.threads } returns threadTable
+    every { SignalDatabase.runPostSuccessfulTransaction(any(), any(), any()) } answers { secondArg<Runnable>().run() }
 
     mockkObject(ProfileAndMessageHelper)
     every { ProfileAndMessageHelper.create(any(), any(), any()) } returns profileAndMessageHelper
@@ -428,7 +440,7 @@ class GroupsV2StateProcessorTest {
     mockkStatic(GroupAdmission::class)
     every { GroupAdmission.prepareStateUpdate(groupId, serviceIds, any(), any()) } returns update
     every { GroupAdmission.completeStateUpdate(update) } returns true
-    every { SignalDatabase.runPostSuccessfulTransaction(capture(callback)) } answers {
+    every { SignalDatabase.runPostSuccessfulTransaction(any(), capture(callback), any()) } answers {
       verify { groupTable.update(any<GroupMasterKey>(), any(), anyNullable(), anyNullable(), any()) }
     }
     justRun { profileAndMessageHelper.setProfileSharing(any(), any(), any(), any()) }
@@ -440,6 +452,108 @@ class GroupsV2StateProcessorTest {
     callback.captured.run()
     verify(exactly = 1) { GroupAdmission.completeStateUpdate(update) }
     verify(exactly = 1) { profileAndMessageHelper.setProfileSharing(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `default mode leaves once after an add and later revision commit together`() {
+    applyBlockedAdditionInTransaction(GroupAdmissionMode.SIGNAL_DEFAULT, commit = true)
+    verify(exactly = 1) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+  }
+
+  @Test
+  fun `restrictive mode keeps the hold after an add and later revision commit together`() {
+    applyBlockedAdditionInTransaction(GroupAdmissionMode.SELECTED_PEOPLE, commit = true)
+    assertThat(GroupAdmission.isHeld(groupId)).isTrue()
+    verify(exactly = 0) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+  }
+
+  @Test
+  fun `rolling back a blocked addition and later revision discards the leave`() {
+    applyBlockedAdditionInTransaction(GroupAdmissionMode.SIGNAL_DEFAULT, commit = false)
+    verify(exactly = 0) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+  }
+
+  private fun applyBlockedAdditionInTransaction(mode: GroupAdmissionMode, commit: Boolean) {
+    val initial = DecryptedGroup(revision = 5, members = others)
+    var current = initial
+    given {
+      localState(revision = 5, members = others)
+      expectTableUpdate = true
+    }
+    every { groupTable.getGroup(groupId) } answers { groupRecord(masterKey, current) }
+    every { groupTable.getGroupAdmissionState(groupId) } answers { current to true }
+    every { groupTable.update(any<GroupMasterKey>(), any(), anyNullable(), anyNullable(), any()) } answers {
+      current = secondArg()
+    }
+
+    val values = GroupAdmissionValues(KeyValueStore(SnapshotKeyValuePersistentStorage()) { it.run() })
+    values.update(selfAci.toString()) {
+      it.copy(
+        settings = GroupAdmissionSettings(mode, allowedPeople = setOf(otherAci.toString())),
+        records = mapOf(groupId.toString() to AdmissionRecord(GroupAdmissionEvidence.membership(initial, serviceIds), AdmissionStatus.SIGNAL_DEFAULT))
+      )
+    }
+    val account = mockk<AccountValues>()
+    mockkStatic(SignalStore::class)
+    every { SignalStore.isInitialized } returns true
+    every { SignalStore.account } returns account
+    every { SignalStore.groupAdmission } returns values
+    every { account.aci } returns selfAci
+    every { account.getServiceIds() } returns serviceIds
+    every { recipientTable.getByGroupId(groupId) } returns Optional.empty()
+
+    val inviterId = RecipientId.from(200)
+    val blocked = RecipientDatabaseTestUtils.createRecipient(resolved = true, recipientId = inviterId, serviceId = otherAci, blocked = true)
+    val resolved = mockk<Recipient>()
+    mockkObject(Recipient)
+    mockkStatic(Recipient::class)
+    every { recipientTable.getByAci(otherAci) } returns Optional.of(inviterId)
+    every { Recipient.resolved(inviterId) } returns resolved
+    every { resolved.fresh() } returns blocked
+    every { Recipient.externalPush(otherAci) } returns blocked
+    justRun { jobManager.add(any()) }
+
+    val sqlCipher = mockk<net.zetetic.database.sqlcipher.SQLiteDatabase>()
+    val listener = slot<SQLiteTransactionListener>()
+    val db = SQLiteDatabase(sqlCipher)
+    var inTransaction = false
+    var successful = false
+    every { sqlCipher.inTransaction() } answers { inTransaction }
+    every { sqlCipher.beginTransactionWithListener(capture(listener)) } answers {
+      inTransaction = true
+      successful = false
+      listener.captured.onBegin()
+    }
+    every { sqlCipher.setTransactionSuccessful() } answers { successful = true }
+    every { sqlCipher.endTransaction() } answers {
+      inTransaction = false
+      if (successful) {
+        listener.captured.onCommit()
+      } else {
+        current = initial
+        listener.captured.onRollback()
+      }
+    }
+    every { SignalDatabase.runPostSuccessfulTransaction(any(), any(), any()) } answers {
+      db.runPostSuccessfulTransaction(firstArg(), secondArg(), thirdArg<BinaryOperator<Runnable>>())
+    }
+
+    db.beginTransaction()
+    processor.updateLocalGroupToRevision(6, 0, DecryptedGroupChange(revision = 6, editorServiceIdBytes = otherAci.toByteString(), newMembers = listOf(member(selfAci, joinedAt = 6))))
+    processor.updateLocalGroupToRevision(7, 0, DecryptedGroupChange(revision = 7, editorServiceIdBytes = selfAci.toByteString(), newTimer = DecryptedTimer(duration = 5000)))
+    assertThat(current.revision).isEqualTo(7)
+    verify(exactly = 0) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+    if (commit) db.setTransactionSuccessful()
+    db.endTransaction()
+
+    // A rolled-back callback must also stay discarded during the next successful transaction.
+    db.beginTransaction()
+    db.setTransactionSuccessful()
+    db.endTransaction()
+
+    assertThat(current.revision).isEqualTo(if (commit) 7 else 5)
+    assertThat(values.read(selfAci.toString()).records.getValue(groupId.toString()).pendingWrite == null).isEqualTo(commit)
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
   }
 
   @Test

@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
 import android.app.Application
+import android.os.Looper
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
 import im.molly.unifiedpush.control.ControlState
@@ -9,11 +10,16 @@ import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -21,8 +27,10 @@ import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowToast
+import org.signal.core.models.ServiceId
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValuePersistentStorage
@@ -31,11 +39,13 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.keyvalue.AccountValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.util.livedata.LiveDataRule
 import org.unifiedpush.android.connector.UnifiedPush
+import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -119,6 +129,61 @@ class UnifiedPushSettingsViewModelPersistenceTest {
 
     assertTrue(values.controlState.intents.isEmpty())
     assertEquals(application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed), ShadowToast.getTextOfLatestToast().toString())
+  }
+
+  @Test
+  fun `successful export and collision emit the complete result message`() {
+    UnifiedPushLifecycle.resetForTests()
+    val account = mockk<ServiceId.ACI>()
+    every { account.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { signalStore.account.aci } returns account
+    every { signalStore.account.isRegistered } returns true
+    every { signalStore.account.isUnauthorizedReceived } returns false
+    mockkStatic(KeyCachingService::class)
+    every { KeyCachingService.isLocked() } returns false
+    val file = File(application.getExternalFilesDir(null), EnrollmentExporter.FILE_NAME)
+    val requestId = "22222222-2222-4222-8222-222222222222"
+    val viewModel = UnifiedPushSettingsViewModel(application)
+    val reopenedSettings = UnifiedPushSettingsViewModel(application)
+    val messages = mutableListOf<String>()
+    val observer = Observer<UnifiedPushSettingsViewModel.ExportState?> { result -> result?.message?.let(messages::add) }
+    mockkStatic(EnrollmentExporter::class)
+    reopenedSettings.exportState.observeForever(observer)
+    try {
+      for ((index, highestUsed) in listOf(1L, 3L).withIndex()) {
+        val result = EnrollmentExporter.Export(file, 2L, highestUsed, requestId)
+        every { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) } returns result
+        val expected = if (result.collides) {
+          application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, file.absolutePath, 2L, highestUsed)
+        } else {
+          application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, file.absolutePath)
+        }
+        val count = messages.size
+        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        assertTrue(reopenedSettings.isExportPending())
+        reopenedSettings.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (messages.size == count && System.nanoTime() < deadline) {
+          shadowOf(Looper.getMainLooper()).idle()
+          if (messages.size == count) Thread.sleep(10)
+        }
+        assertEquals(listOf(expected), messages.drop(count))
+        val unread = checkNotNull(UnifiedPushSettingsViewModel.unreadExport())
+        assertEquals(expected, unread.message)
+        every { signalStore.account.isRegistered } returns false
+        assertEquals(null, UnifiedPushSettingsViewModel.unreadExport())
+        every { signalStore.account.isRegistered } returns true
+        reopenedSettings.exportEnrollment(application, "1", ExportMode.NEW_INTENT)
+        UnifiedPushSettingsViewModel.acknowledgeExportResult(unread.id)
+        assertEquals(null, UnifiedPushSettingsViewModel.unreadExport())
+        assertFalse(reopenedSettings.isExportPending())
+        verify(exactly = index + 1) { EnrollmentExporter.exportWithEpoch(application, 1L, ExportMode.NEW_INTENT, null, any()) }
+      }
+    } finally {
+      reopenedSettings.exportState.removeObserver(observer)
+      unmockkStatic(EnrollmentExporter::class)
+      unmockkStatic(KeyCachingService::class)
+    }
   }
 
   private fun awaitRefresh(

@@ -31,6 +31,7 @@ import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.ThreadUtil
 import org.signal.core.util.groups.GroupChangeFailedException
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storageservice.storage.protos.groups.local.DecryptedApproveMember
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
@@ -137,7 +138,7 @@ class GroupAdmissionTest {
     current = full
     storage.nextWriteFailure = IllegalStateException("disk full")
 
-    assertThrows(RuntimeException::class.java) { GroupAdmission.completeStateUpdate(pending) }
+    assertThrows(KeyValuePersistenceException::class.java) { GroupAdmission.completeStateUpdate(pending) }
 
     assertThat(GroupAdmission.isHeld(groupId)).isTrue()
     assertThat(GroupAdmissionValues(KeyValueStore(storage) { it.run() }).read(selfAci.toString()).isHeld(groupId.toString())).isTrue()

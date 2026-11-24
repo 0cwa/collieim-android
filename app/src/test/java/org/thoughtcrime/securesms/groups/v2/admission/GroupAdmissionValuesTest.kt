@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storage.keyvalue.KeyValueStore
 import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 
@@ -60,7 +61,7 @@ class GroupAdmissionValuesTest {
     values.update(account) { it.copy(settings = GroupAdmissionSettings(GroupAdmissionMode.ASK_EVERY_TIME)) }
     storage.nextWriteFailure = IllegalStateException("disk full")
 
-    assertThrows(RuntimeException::class.java) {
+    assertThrows(KeyValuePersistenceException::class.java) {
       values.update(account) { it.copy(records = mapOf(group to AdmissionRecord(membership, AdmissionStatus.LOCAL_CONSENT))) }
     }
 

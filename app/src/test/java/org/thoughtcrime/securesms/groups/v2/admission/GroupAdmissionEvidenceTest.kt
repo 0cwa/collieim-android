@@ -62,10 +62,12 @@ class GroupAdmissionEvidenceTest {
     val joined = DecryptedGroupChange(revision = 5, editorServiceIdBytes = alice.toByteString(), newMembers = current.members)
     val later = DecryptedGroupChange(revision = 10, editorServiceIdBytes = bob.toByteString())
     val diff = GroupStateDiff(null, listOf(DecryptedGroupChangeLog(null, joined), DecryptedGroupChangeLog(current, later)), null)
+    val malformedJoiningEditor = joined.copy(editorServiceIdBytes = "invalid".encodeUtf8())
+    val malformedDiff = GroupStateDiff(null, listOf(DecryptedGroupChangeLog(null, malformedJoiningEditor), DecryptedGroupChangeLog(current, later)), null)
 
     assertThat(GroupAdmissionEvidence.inviter(diff, current, self)).isEqualTo(alice)
     assertThat(GroupAdmissionEvidence.inviter(GroupStateDiff(null, current, later), current, self)).isNull()
-    assertThat(GroupAdmissionEvidence.inviter(GroupStateDiff(null, current, joined.copy(editorServiceIdBytes = "invalid".encodeUtf8())), current, self)).isNull()
+    assertThat(GroupAdmissionEvidence.inviter(malformedDiff, current, self)).isNull()
   }
 
   @Test

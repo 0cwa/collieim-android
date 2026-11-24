@@ -28,8 +28,9 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.After
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,7 +56,8 @@ class MollyNotificationCallbacksTest {
   private val results = RecordingResults()
   private val disclosure = mockk<RelayDisclosure.Snapshot>()
   private val authorization = mockk<RelayDisclosure.RefreshAuthorization>()
-  private var pendingSetup: RelayDisclosure.RefreshAuthorization? = null
+  private var pendingSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
+  private var lastSetupId = "unrecognized-setup"
   private val pendingResult = MutableStateFlow<NotificationsSettingsViewModel.PendingMollySocketResult?>(null)
   private val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org/relay")
 
@@ -63,7 +65,10 @@ class MollyNotificationCallbacksTest {
   fun setUp() {
     every { viewModel.pendingMollySocketResult } returns pendingResult
     every { viewModel.pendingMollySocketSetup } answers { pendingSetup }
-    every { viewModel.pendingMollySocketSetup = any() } answers { pendingSetup = firstArg() }
+    every { viewModel.pendingMollySocketSetup = any() } answers {
+      pendingSetup = firstArg()
+      pendingSetup?.let { lastSetupId = it.id }
+    }
     controller = Robolectric.buildActivity(FragmentActivity::class.java)
     activity = controller.get()
     activity.setTheme(R.style.Theme_Molly_Material3_Light)
@@ -112,12 +117,14 @@ class MollyNotificationCallbacksTest {
     results.qrResult.onActivityResult(socket)
 
     verifyNoSelection()
-    assertTrue(latestDialog().findViewById<TextView>(android.R.id.message)!!.text.contains(socket.url))
+    val message = latestDialog().findViewById<TextView>(android.R.id.message)!!.text
+    assertTrue(message.contains("https://push.example.org"))
+    assertFalse(message.contains(socket.url))
     pressButton(AlertDialog.BUTTON_POSITIVE)
 
     verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure), any()) }
     verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
-    verify(exactly = 1) { results.distributorLauncher.launch(Unit, null) }
+    verify(exactly = 1) { results.distributorLauncher.launch(any()) }
   }
 
   @Test
@@ -134,7 +141,7 @@ class MollyNotificationCallbacksTest {
     confirmScannedRelay()
 
     verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure), any()) }
-    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
   }
 
   @Test
@@ -148,7 +155,7 @@ class MollyNotificationCallbacksTest {
     controller.resume()
     shadowOf(Looper.getMainLooper()).idle()
 
-    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
   }
 
   @Test
@@ -261,6 +268,22 @@ class MollyNotificationCallbacksTest {
   }
 
   @Test
+  fun `superseded result does not consume the current distributor setup`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+    val supersededId = lastSetupId
+    confirmScannedRelay()
+
+    returnDistributorResult(false, supersededId)
+    coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
+
+    returnDistributorResult(true)
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 0) { viewModel.selectFirstDistributor() }
+  }
+
+  @Test
   fun `distributor result survives activity recreation and remains single use`() {
     allowSelection()
     allowCompletion()
@@ -270,9 +293,9 @@ class MollyNotificationCallbacksTest {
     activity = controller.get()
     val recreatedResults = RecordingResults()
     callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, recreatedResults)
-    recreatedResults.distributorResult.onActivityResult(false)
+    recreatedResults.distributorResult.onActivityResult(UnifiedPushDefaultDistributorLinkActivity.LinkResult(lastSetupId, false))
     shadowOf(Looper.getMainLooper()).idle()
-    recreatedResults.distributorResult.onActivityResult(false)
+    recreatedResults.distributorResult.onActivityResult(UnifiedPushDefaultDistributorLinkActivity.LinkResult(lastSetupId, false))
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
@@ -362,7 +385,7 @@ class MollyNotificationCallbacksTest {
     activity.supportFragmentManager.beginTransaction().detach(fragment).commitNow()
     activity.supportFragmentManager.beginTransaction().attach(fragment).commitNow()
     callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), fragment.viewLifecycleOwner)
-    results.distributorResult.onActivityResult(false)
+    returnDistributorResult(false)
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
@@ -374,8 +397,8 @@ class MollyNotificationCallbacksTest {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = FrameLayout(requireContext())
   }
 
-  private fun returnDistributorResult(result: Boolean?) {
-    results.distributorResult.onActivityResult(result)
+  private fun returnDistributorResult(result: Boolean?, setupId: String = lastSetupId) {
+    results.distributorResult.onActivityResult(UnifiedPushDefaultDistributorLinkActivity.LinkResult(setupId, result))
     shadowOf(Looper.getMainLooper()).idle()
   }
 
@@ -403,7 +426,7 @@ class MollyNotificationCallbacksTest {
   private fun verifyNoSelection() {
     verify(exactly = 0) { viewModel.initializeMollySocket(any(), any(), any()) }
     verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
-    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
+    verify(exactly = 0) { results.distributorLauncher.launch(any()) }
   }
 
   private fun latestDialog(): AlertDialog = ShadowDialog.getLatestDialog() as AlertDialog
@@ -415,9 +438,9 @@ class MollyNotificationCallbacksTest {
 
   private class RecordingResults : DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer {
     lateinit var qrResult: ActivityResultCallback<MollySocket?>
-    lateinit var distributorResult: ActivityResultCallback<Boolean?>
+    lateinit var distributorResult: ActivityResultCallback<UnifiedPushDefaultDistributorLinkActivity.LinkResult?>
     val qrLauncher: ActivityResultLauncher<Unit> = mockk(relaxed = true)
-    val distributorLauncher: ActivityResultLauncher<Unit> = mockk(relaxed = true)
+    val distributorLauncher: ActivityResultLauncher<UnifiedPushDefaultDistributorLinkActivity.Setup> = mockk(relaxed = true)
 
     @Suppress("UNCHECKED_CAST")
     override fun <I, O> registerForActivityResult(
@@ -430,7 +453,7 @@ class MollyNotificationCallbacksTest {
           qrLauncher as ActivityResultLauncher<I>
         }
         is UnifiedPushDefaultDistributorLinkActivity.Contract -> {
-          distributorResult = callback as ActivityResultCallback<Boolean?>
+          distributorResult = callback as ActivityResultCallback<UnifiedPushDefaultDistributorLinkActivity.LinkResult?>
           distributorLauncher as ActivityResultLauncher<I>
         }
         else -> mockk(relaxed = true)

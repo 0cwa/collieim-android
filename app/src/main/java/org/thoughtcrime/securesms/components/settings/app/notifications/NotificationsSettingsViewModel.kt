@@ -6,6 +6,7 @@ import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
@@ -39,7 +40,7 @@ import org.thoughtcrime.securesms.storage.StorageSyncHelper
 class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
   // Kept only in memory across configuration changes; the result is still revalidated before use.
-  internal var pendingMollySocketSetup: RelayDisclosure.RefreshAuthorization? = null
+  internal var pendingMollySocketSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
   internal data class PendingMollySocketResult(val authorization: RelayDisclosure.RefreshAuthorization, val success: Boolean?)
   internal val pendingMollySocketResult = MutableStateFlow<PendingMollySocketResult?>(null)
 

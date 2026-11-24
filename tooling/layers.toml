@@ -144,6 +144,10 @@ about = "Call safety behavior"
 kind = "feature"
 about = "Profile sharing in groups"
 
+[layers.group-admission-policy]
+kind = "feature"
+about = "Device-local group invitation policy and explicit admission"
+
 [layers.name-collisions]
 kind = "feature"
 about = "Name collision warnings"

@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,13 +26,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -40,29 +38,40 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.withContext
+import im.molly.app.base.ApkInfo
 import org.signal.core.ui.compose.SignalIcons
-import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.R
 import java.io.IOException
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-/** Reads the project log bundled under assets/collie-log. Nothing is fetched. */
+/** Reads one immutable set of bundled notes for both What's new tabs. Nothing is fetched. */
 object ProjectLogRepository {
   private val TAG = Log.tag(ProjectLogRepository::class)
+  private var cached: ProjectLog.Notes? = null
 
-  fun load(context: Context): List<ProjectLog.Release> {
-    return try {
-      ProjectLog.releases(
-        releaseFiles = read(context, ProjectLog.RELEASES_DIR),
-        unreleasedFiles = read(context, ProjectLog.UNRELEASED_DIR)
+  @Synchronized
+  fun load(context: Context): ProjectLog.Notes {
+    cached?.let { return it }
+    val notes = try {
+      val product = if (BuildConfig.BUILD_TYPE == "beta") "beta" else "stable"
+      ProjectLog.notes(
+        releaseFiles = read(context, "${ProjectLog.RELEASES_DIR}/$product"),
+        unreleasedFiles = read(context, ProjectLog.UNRELEASED_DIR),
+        installedVersion = ApkInfo.versionName,
+        prepared = BuildConfig.COLLIE_RELEASE_PREPARED
       )
     } catch (e: IOException) {
       Log.w(TAG, "Could not read the project log", e)
-      emptyList()
+      ProjectLog.Notes(
+        current = ProjectLog.Current(ApkInfo.versionName, ProjectLog.CurrentKind.UNAVAILABLE, emptyList()),
+        history = emptyList()
+      )
     }
+    cached = notes
+    return notes
   }
 
   private fun read(context: Context, directory: String): List<String> {
@@ -73,36 +82,15 @@ object ProjectLogRepository {
   }
 }
 
-/**
- * The Project log tab: every change, grouped by release, newest first. The newest group and the installed version
- * start open; older releases are one tap away so the page stays short.
- */
+/** The installed build always has one section; earlier releases from the same product follow it. */
 @Composable
 fun ProjectLogTab(
-  installedVersion: String,
+  notes: ProjectLog.Notes,
   onOpenPullRequest: (Int) -> Unit,
   modifier: Modifier = Modifier
 ) {
-  val context = LocalContext.current
-  val releases by produceState<List<ProjectLog.Release>?>(initialValue = null) {
-    value = withContext(SignalDispatchers.IO) { ProjectLogRepository.load(context.applicationContext) }
-  }
-
-  val loaded = releases ?: return
-  ProjectLogList(releases = loaded, installedVersion = installedVersion, onOpenPullRequest = onOpenPullRequest, modifier = modifier)
-}
-
-@Composable
-private fun ProjectLogList(
-  releases: List<ProjectLog.Release>,
-  installedVersion: String,
-  onOpenPullRequest: (Int) -> Unit,
-  modifier: Modifier = Modifier
-) {
-  val initiallyOpen = releases.mapIndexedNotNull { index, release ->
-    (release.version ?: "").takeIf { index == 0 || release.version == installedVersion }
-  }
-  var open by rememberSaveable { mutableStateOf(initiallyOpen.toSet()) }
+  var open by rememberSaveable(notes.current.version, notes.current.kind) { mutableStateOf(setOf("current")) }
+  val current = notes.current
 
   LazyColumn(
     contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
@@ -110,38 +98,69 @@ private fun ProjectLogList(
   ) {
     item {
       Text(
-        text = stringResource(if (releases.isEmpty()) R.string.CollieLog__empty else R.string.CollieLog__intro),
+        text = stringResource(R.string.CollieLog__intro),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
       )
     }
 
-    releases.forEachIndexed { index, release ->
-      val key = release.version ?: ""
+    item(key = "header-current") {
+      ReleaseHeader(
+        version = current.version,
+        detail = when (current.kind) {
+          ProjectLog.CurrentKind.RELEASE -> current.date?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)).orEmpty()
+          ProjectLog.CurrentKind.DEVELOPMENT -> stringResource(R.string.CollieLog__development_build)
+          ProjectLog.CurrentKind.UNAVAILABLE -> stringResource(R.string.CollieLog__unavailable)
+        },
+        changeCount = current.entries.size,
+        isInstalled = true,
+        expanded = "current" in open,
+        onToggle = { open = if ("current" in open) open - "current" else open + "current" },
+        modifier = Modifier.testTag("project-log-current")
+      )
+    }
+
+    if ("current" in open) {
+      itemsIndexed(current.entries, key = { index, _ -> "current/$index" }) { _, entry ->
+        LogEntryRow(entry = entry, onOpenPullRequest = onOpenPullRequest)
+      }
+      if (current.entries.isEmpty() && current.kind != ProjectLog.CurrentKind.UNAVAILABLE) {
+        item(key = "current-empty") {
+          Text(
+            text = stringResource(R.string.CollieLog__no_changes),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+          )
+        }
+      }
+    }
+
+    notes.history.forEach { release ->
+      val key = "release-${release.version}"
       val expanded = key in open
 
-      if (index > 0) {
-        item(key = "divider-$key") { HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp)) }
-      }
-
+      item(key = "divider-$key") { HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp)) }
       item(key = "header-$key") {
         ReleaseHeader(
-          release = release,
-          isInstalled = release.version != null && release.version == installedVersion,
+          version = release.version,
+          detail = release.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
+          changeCount = release.entries.size,
+          isInstalled = false,
           expanded = expanded,
           onToggle = { open = if (expanded) open - key else open + key }
         )
       }
 
       if (expanded) {
-        items(release.entries, key = { "$key/${it.pr}/${it.text}" }) { entry ->
+        itemsIndexed(release.entries, key = { index, _ -> "$key/$index" }) { _, entry ->
           LogEntryRow(entry = entry, onOpenPullRequest = onOpenPullRequest)
         }
       }
     }
 
-    if (releases.isNotEmpty()) {
+    if (current.entries.any { it.pr != null } || notes.history.any { release -> release.entries.any { it.pr != null } }) {
       item {
         Text(
           text = stringResource(R.string.CollieLog__links_note),
@@ -156,56 +175,53 @@ private fun ProjectLogList(
 
 @Composable
 private fun ReleaseHeader(
-  release: ProjectLog.Release,
+  version: String,
+  detail: String,
+  changeCount: Int,
   isInstalled: Boolean,
   expanded: Boolean,
-  onToggle: () -> Unit
+  onToggle: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
+  val canExpand = changeCount > 0
   val rotation by animateFloatAsState(targetValue = if (expanded) 270f else 90f, label = "chevron")
   val expandedText = stringResource(if (expanded) R.string.CollieLog__collapse else R.string.CollieLog__expand)
-  val title = release.version?.let(ProjectLog::displayVersion) ?: stringResource(R.string.CollieLog__this_build)
-  val detail = when {
-    release.version == null -> stringResource(R.string.CollieLog__this_build_detail)
-    else -> release.date?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)).orEmpty()
-  }
 
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth()
-      .clickable(role = Role.Button, onClick = onToggle)
-      .semantics(mergeDescendants = true) { stateDescription = expandedText }
+      .then(if (canExpand) Modifier.clickable(role = Role.Button, onClick = onToggle) else Modifier)
+      .semantics(mergeDescendants = true) { if (canExpand) stateDescription = expandedText }
       .padding(horizontal = 24.dp, vertical = 14.dp)
   ) {
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
-        if (isInstalled) {
-          Spacer(modifier = Modifier.width(8.dp))
-          Surface(color = MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.small) {
-            Text(
-              text = stringResource(R.string.CollieLog__your_version),
-              style = MaterialTheme.typography.labelMedium,
-              color = MaterialTheme.colorScheme.onSecondaryContainer,
-              modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-            )
-          }
+    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+      Text(text = ProjectLog.displayVersion(version), style = MaterialTheme.typography.titleMedium)
+      if (isInstalled) {
+        Surface(color = MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.small) {
+          Text(
+            text = stringResource(R.string.CollieLog__your_version),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+          )
         }
       }
       Text(
-        text = listOf(detail, pluralStringResource(R.plurals.CollieLog__changes, release.entries.size, release.entries.size))
-          .filter { it.isNotEmpty() }
+        text = listOfNotNull(detail.takeIf { it.isNotEmpty() }, if (canExpand) pluralStringResource(R.plurals.CollieLog__changes, changeCount, changeCount) else null)
           .joinToString(" · "),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
       )
     }
-    Icon(
-      imageVector = SignalIcons.ChevronRight.imageVector,
-      contentDescription = null,
-      tint = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.rotate(rotation)
-    )
+    if (canExpand) {
+      Icon(
+        imageVector = SignalIcons.ChevronRight.imageVector,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.rotate(rotation)
+      )
+    }
   }
 }
 

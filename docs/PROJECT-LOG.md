@@ -1,37 +1,86 @@
-# Project log
+# What's new and the Project log
 
-What's new has two tabs. **This update** shows the bundled highlights (`CollieReleaseNotes`, see [FINISH-SETUP.md](FINISH-SETUP.md)). **Project log** lists every change people would notice, one plain sentence each, grouped by release, newest first. Settings → Help → What's new opens straight on the log.
+Both tabs read one selected release record. **This update** shows that record's
+curated highlights; **Project log** shows its full changes, followed by earlier
+releases of the same product. Only the current section has **Your version**.
+Settings → Help → What's new opens the log without marking the highlights seen.
 
-The log ships inside the APK under `app/src/main/assets/collie-log/` and is never fetched. It never takes the status line under "Collie" and has no badge or unread count. Each line with a pull request number opens that PR on GitHub in the browser; the page says the browser doesn't use Collie's proxy.
+The notes are bundled and work offline. Current app and Signal versions come
+from `ApkInfo`. The Beta build reads `collie-log/releases/beta/`; other builds
+read `collie-log/releases/stable/`. Version suffixes and GitHub publication flags
+do not select the product.
 
-## Adding a line in a pull request
+## Authoring changes
 
 Add `app/src/main/assets/collie-log/unreleased/<PR number>.txt`:
 
-```
+```text
 topic: push
 pr: 96
 Collie notices when push stops working. Settings has a Test my push button.
 ```
 
-- One file per PR, so PRs never conflict over the log.
-- The sentence says what changes for the person, in at most 120 characters. No class names or PR jargon. A security fix says what is now protected, never how it could have been attacked.
-- `topic` is one of: setup, push, notifications, backups, privacy, security, updates, settings, devices, look, signal, fixes. `pr` is optional.
-- Lines are English only. Topic labels are translated (`collie_log.xml`).
-- A PR with nothing people would notice (CI, tests, docs, release tooling) gets the **no log entry** label instead. The *Project log* check (`.github/workflows/project-log.yml`) asks for one or the other when `app/`, `feature/` or `lib/` code changes.
+Use one file per PR. Each entry is a plain sentence of at most 120 characters,
+with a benefit or behavior that is true for the selected source. Describe
+security protections with their conditions, without attack instructions.
+`pr` is optional; named fragments are valid when there is no PR number.
 
-Entries in `unreleased/` show in the app as **In this build · Not in a release yet**, since a build from `main` really contains them.
+Topics are setup, push, notifications, backups, privacy, security, updates,
+settings, devices, look, signal and fixes. Entries are English; topic labels
+and highlights use translated Android resources. A PR with no noticeable
+app change uses the **no log entry** label.
 
-## Release prep
+Pending files are preparation inputs. A development preview may show them in
+its one current-build section; they never form a second release. A prepared
+release cannot have unassigned fragments.
 
-In the release-prep PR (see [RELEASING.md](RELEASING.md)):
+## Release records
 
-```sh
-python3 tooling/collie-log/stamp.py <versionName> --version-code <versionCode>
+Each product's directory contains `<versionName>.txt` records:
+
+```text
+version: 8.36.3-1-beta1
+date: 2026-11-21
+tag: trailblazer-v8.36.3-1-beta1
+highlights: 2026-11-setup-and-push-health
+
+topic: settings
+pr: 156
+What's new includes a history of changes in Collie.
 ```
 
-It moves every waiting entry into `releases/<versionName>.txt` (with `version` and `date` at the top, ordered by topic) and drafts `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` from the same sentences, cut to 500 bytes of ASCII. Trim the draft by hand. The installed version is marked **Your version** in the log when its name matches a release file.
+`version` is the exact version name, and `date` is an explicit release date.
+`tag` optionally selects an exact release page in the Collie GitHub repository.
+`highlights` optionally selects a known content edition in `CollieReleaseNotes`;
+missing highlights means no feature announcement. An empty maintenance record
+is valid. Keep highlight wording in Android string resources and retain its
+content ID when the news has not changed.
 
-`ProjectLogTest` checks every bundled file: release files need `version` and `date` and are named after their version, sentences fit in 120 characters, and topics are known.
+The release recipe supplies `collieReleasePrepared=true` only after the existing
+preparation verifier accepts the source. Direct Gradle builds default to a
+**Development build**, even when they retain an old release version. Both tabs
+use the same selection; missing or inconsistent prepared metadata shows a
+neutral unavailable state instead of another release's highlights.
 
-The releases up to 8.35.1-3 RC2 were written by hand from their GitHub release notes.
+Prepare notes after the intended feature changes have merged. Correct old
+history in an ordinary PR before the final source pin; final preparation only
+creates the new release record. See [RELEASING.md](RELEASING.md) for the existing
+source, build and publication boundaries.
+
+## Promoting features to Stable
+
+A feature's Stable promotion PR adds a Stable-facing pending note, retaining
+its original PR reference. Stable preparation assigns it to the first Stable
+release that contains it. Its Beta history remains in the Beta directory.
+Main-to-Beta integrations similarly include notes for the changes newly reaching
+Beta. Review the final feature set instead of copying all of another product's
+history or inferring promotion from a version suffix.
+
+## Verification
+
+`ProjectLogTest` covers one current release, product-scoped inputs, missing and
+duplicate records, development previews, empty maintenance releases, safe links
+and deterministic history order. The existing API 35 screenshot fixture covers
+the rendered tabs and external-browser handoff. Release notes are shown from
+local assets; opening a PR or release page uses the external browser, outside
+Collie's proxy.

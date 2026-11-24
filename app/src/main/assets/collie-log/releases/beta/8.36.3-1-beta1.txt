@@ -1,5 +1,7 @@
 version: 8.36.3-1-beta1
 date: 2026-11-21
+tag: trailblazer-v8.36.3-1-beta1
+highlights: 2026-11-setup-and-push-health
 
 topic: setup
 pr: 150

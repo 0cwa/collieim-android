@@ -35,10 +35,7 @@ object SetupActions {
       Problem.NOTIFICATIONS_OFF -> turnOnNotifications(activity)
       Problem.PUSH_APP_MISSING, Problem.PUSH_FAILING -> activity.startActivity(AppSettingsActivity.unifiedPush(activity))
       Problem.MESSAGES_DELAYED -> allowBackgroundUse(activity)
-      Problem.RELEASE_ACTION -> {
-        CollieReleaseNotes.action?.let { openDestination(activity, it.destination) }
-        SetupStatusRepository.markReleaseActionDone()
-      }
+      Problem.RELEASE_ACTION -> SetupStatusRepository.snapshot.value.releaseNotes?.let { actOnReleaseNotice(activity, it) }
     }
   }
 
@@ -60,8 +57,14 @@ object SetupActions {
     WhatsNewDialogFragment.show(activity.supportFragmentManager)
   }
 
-  fun openReleaseNotes(activity: FragmentActivity) {
-    CommunicationActions.openBrowserLink(activity, CollieReleaseNotes.RELEASES_URL)
+  fun openReleaseNotes(activity: FragmentActivity, releaseUrl: String) {
+    CommunicationActions.openBrowserLink(activity, releaseUrl)
+  }
+
+  fun actOnReleaseNotice(activity: FragmentActivity, edition: CollieReleaseNotes.Edition) {
+    val action = edition.action ?: return
+    openDestination(activity, action.destination)
+    SetupStatusRepository.markReleaseActionDone(edition.id)
   }
 
   /** Opens a pull request in the browser. The browser makes its own connection, outside Collie's proxy. */

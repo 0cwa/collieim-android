@@ -1,0 +1,9 @@
+version: 8.36.3-1-rc2
+date: 2026-11-22
+tag: v8.36.3-1-rc2
+
+topic: settings
+Changing your proxy resets the connection so the new proxy takes effect.
+
+topic: privacy
+Molly 8.34's privacy settings keep Collie's network controls together on the same screen.

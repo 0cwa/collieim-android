@@ -8,8 +8,10 @@ import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
 import org.signal.storage.keyvalue.longValue
 import org.signal.storage.keyvalue.stringValue
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.main.setup.CollieReleaseNotes
 import org.thoughtcrime.securesms.main.setup.Problem
+import org.thoughtcrime.securesms.main.setup.ProjectLogRepository
 import org.thoughtcrime.securesms.main.setup.SetupItem
 
 /**
@@ -29,8 +31,9 @@ class CollieSetupValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /** A new install has nothing to catch up on: its first notes are the ones already bundled. */
   override fun onFirstEverAppLaunch() {
-    notesSeenId = CollieReleaseNotes.ID
-    releaseActionDoneId = CollieReleaseNotes.ID
+    val edition = CollieReleaseNotes.edition(ProjectLogRepository.load(AppDependencies.application).current.highlightsId)
+    notesSeenId = edition?.id
+    releaseActionDoneId = edition?.id
   }
 
   override val keysToIncludeInBackup: List<String> = emptyList()

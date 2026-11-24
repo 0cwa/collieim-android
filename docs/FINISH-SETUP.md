@@ -38,9 +38,9 @@ This replaces the battery-restriction banner (`DozeBanner`) and the notification
 
 The notes ship inside the APK. No network request is made to show them.
 
-1. Write the highlights in `app/src/main/res/values/collie_setup.xml` (`CollieWhatsNew__…`) and list them in `CollieReleaseNotes.highlights`. Each line says what people can do or what got better, in plain words, and must be true for the release that ships it.
-2. Give `CollieReleaseNotes.ID` a new value. It names the content, not the APK version: change it only when the highlights change, so a rebuild never announces old notes again.
-3. Use `CollieReleaseNotes.action` only when people must do something after updating, for example re-select a push app. It shows as a banner until they act or dismiss it. Leave it `null` for feature news.
+1. Write translated highlights in `app/src/main/res/values/collie_setup.xml` (`CollieWhatsNew__…`) and register their content edition in `CollieReleaseNotes`. Each claim must be true for the release that selects it; the current Signal version comes from `ApkInfo`.
+2. Select that edition with the release record's `highlights` field (see [PROJECT-LOG.md](PROJECT-LOG.md)). Its ID names the content, not the APK version: change it only when the news changes. Missing highlights produce no update announcement, including in development builds.
+3. Give an edition an `action` only when people must do something after updating, for example re-select a push app. It shows as a banner until they act or dismiss it. Leave it `null` for feature news.
 4. New installs never see "Updated": `CollieSetupValues.onFirstEverAppLaunch` marks the bundled notes as seen.
 
-What's new is always reachable from the Chats menu and from Settings → Help. Its second tab is the [project log](PROJECT-LOG.md).
+What's new is always reachable from the Chats menu and from Settings → Help. Both tabs use the same selected release. Showing the highlights marks that content edition seen; opening only the Project log does not.

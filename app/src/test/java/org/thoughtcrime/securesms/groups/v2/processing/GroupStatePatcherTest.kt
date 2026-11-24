@@ -86,6 +86,17 @@ class GroupStatePatcherTest {
   }
 
   @Test
+  fun `an authenticated snapshot can repair the join revision at the same group revision`() {
+    val member = DecryptedMember(aciBytes = ServiceId.ACI.from(UUID.randomUUID()).toByteString(), joinedAtRevision = -1)
+    val old = DecryptedGroup(revision = 8, members = listOf(member))
+    val snapshot = old.copy(members = listOf(member.copy(joinedAtRevision = 5)))
+
+    val result = GroupStatePatcher.applyGroupStateDiff(GroupStateDiff(old, snapshot, null), GroupStatePatcher.LATEST)
+
+    assertThat(result.updatedGroupState).isEqualTo(snapshot)
+  }
+
+  @Test
   fun known_group_single_state_to_update() {
     val currentState = state(0)
     val log1 = serverLogEntry(1)

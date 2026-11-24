@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.core.ui.compose.ComposeFragment
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationActivity
 import org.thoughtcrime.securesms.components.settings.app.appSettingsRouter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
@@ -25,6 +26,7 @@ class CollieSettingsFragment : ComposeFragment() {
   private fun navigateToScreen(route: AppSettingsRoute) {
     when (route) {
       AppSettingsRoute.AppUpdates -> findNavController().safeNavigate(R.id.action_collieSettingsFragment_to_appUpdatesFragment)
+      AppSettingsRoute.CollieRoute.GroupPrivacy -> startActivity(AppSettingsNavigationActivity.createIntent(requireContext(), route))
       else -> error("Unexpected route: ${route.javaClass.name}")
     }
   }

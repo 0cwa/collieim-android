@@ -305,7 +305,7 @@ public final class DecryptedGroupUtil {
 
     applyDeleteMemberPendingProfileKeyActions(builder, change.deletePendingMembers);
 
-    applyPromoteMemberPendingProfileKeyActions(builder, change.promotePendingMembers);
+    applyPromoteMemberPendingProfileKeyActions(builder, change.promotePendingMembers, change.revision);
 
     applyModifyTitleAction(builder, change);
 
@@ -329,7 +329,7 @@ public final class DecryptedGroupUtil {
 
     applyDeleteRequestingMembers(builder, change.deleteRequestingMembers);
 
-    applyPromoteMemberPendingAdminApprovalActions(builder, change.promoteRequestingMembers);
+    applyPromoteMemberPendingAdminApprovalActions(builder, change.promoteRequestingMembers, change.revision);
 
     applyInviteLinkPassword(builder, change);
 
@@ -337,7 +337,7 @@ public final class DecryptedGroupUtil {
 
     applyDeleteBannedMembersActions(builder, change.deleteBannedMembers);
 
-    applyPromotePendingPniAciMemberActions(builder, change.promotePendingPniAciMembers);
+    applyPromotePendingPniAciMemberActions(builder, change.promotePendingPniAciMembers, change.revision);
 
     DecryptedGroupExtensions.setModifyMemberLabelActions(builder, change.modifyMemberLabels);
 
@@ -452,7 +452,7 @@ public final class DecryptedGroupUtil {
     builder.pendingMembers(pendingMembers);
   }
 
-  private static void applyPromoteMemberPendingProfileKeyActions(DecryptedGroup.Builder builder, List<DecryptedMember> promotePendingMembersList) throws NotAbleToApplyGroupV2ChangeException {
+  private static void applyPromoteMemberPendingProfileKeyActions(DecryptedGroup.Builder builder, List<DecryptedMember> promotePendingMembersList, int revision) throws NotAbleToApplyGroupV2ChangeException {
     List<DecryptedMember>        members        = new ArrayList<>(builder.members);
     List<DecryptedPendingMember> pendingMembers = new ArrayList<>(builder.pendingMembers);
 
@@ -464,7 +464,7 @@ public final class DecryptedGroupUtil {
       }
 
       pendingMembers.remove(index);
-      members.add(newMember);
+      members.add(newMember.newBuilder().joinedAtRevision(revision).build());
     }
 
     builder.pendingMembers(pendingMembers);
@@ -564,7 +564,7 @@ public final class DecryptedGroupUtil {
     builder.requestingMembers(requestingMembers);
   }
 
-  private static void applyPromoteMemberPendingAdminApprovalActions(DecryptedGroup.Builder builder, List<DecryptedApproveMember> promoteRequestingMembers) throws NotAbleToApplyGroupV2ChangeException {
+  private static void applyPromoteMemberPendingAdminApprovalActions(DecryptedGroup.Builder builder, List<DecryptedApproveMember> promoteRequestingMembers, int revision) throws NotAbleToApplyGroupV2ChangeException {
     List<DecryptedMember>           members           = new ArrayList<>(builder.members);
     List<DecryptedRequestingMember> requestingMembers = new ArrayList<>(builder.requestingMembers);
 
@@ -584,6 +584,7 @@ public final class DecryptedGroupUtil {
       requestingMembers.remove(index);
       members.add(new DecryptedMember.Builder()
                                      .aciBytes(approvedMember.aciBytes)
+                                     .joinedAtRevision(revision)
                                      .profileKey(requestingMember.profileKey)
                                      .role(role)
                                      .build());
@@ -631,7 +632,7 @@ public final class DecryptedGroupUtil {
     builder.bannedMembers(bannedMembers);
   }
 
-  private static void applyPromotePendingPniAciMemberActions(DecryptedGroup.Builder builder, List<DecryptedMember> promotePendingPniAciMembersList) throws NotAbleToApplyGroupV2ChangeException {
+  private static void applyPromotePendingPniAciMemberActions(DecryptedGroup.Builder builder, List<DecryptedMember> promotePendingPniAciMembersList, int revision) throws NotAbleToApplyGroupV2ChangeException {
     List<DecryptedMember>        members        = new ArrayList<>(builder.members);
     List<DecryptedPendingMember> pendingMembers = new ArrayList<>(builder.pendingMembers);
 
@@ -643,7 +644,7 @@ public final class DecryptedGroupUtil {
       }
 
       pendingMembers.remove(index);
-      members.add(newMember);
+      members.add(newMember.newBuilder().joinedAtRevision(revision).build());
     }
 
     builder.members(members);

@@ -33,15 +33,16 @@ import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.util.RecipientAccessList;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
-import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender.LegacyGroupEvents;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender.SenderKeyGroupEvents;
+import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.groupsv2.GroupSendEndorsements;
@@ -154,7 +155,7 @@ public final class GroupSendUtil {
                                                           @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
-    return sendMessage(context, groupId, getDistributionId(groupId), null, allTargets, false, false, new TypingSendOperation(message, cancelationSignal), cancelationSignal);
+    return sendMessage(context, groupId, getDistributionId(groupId), null, allTargets, false, false, new TypingSendOperation(message), cancelationSignal);
   }
 
   /**
@@ -213,7 +214,8 @@ public final class GroupSendUtil {
                                                               boolean isRecipientUpdate,
                                                               @NonNull MessageId messageId,
                                                               long sentTimestamp,
-                                                              @NonNull SignalServiceStoryMessage message)
+                                                              @NonNull SignalServiceStoryMessage message,
+                                                              @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
     return sendMessage(
@@ -233,7 +235,7 @@ public final class GroupSendUtil {
                                                                                                Collections.emptyList(),
                                                                                                true))
                                          .collect(Collectors.toSet())),
-        null);
+        cancelationSignal);
   }
 
   /**
@@ -255,6 +257,11 @@ public final class GroupSendUtil {
                                                      @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
+    SignalServiceDataMessage data = sendOperation instanceof DataSendOperation && ((DataSendOperation) sendOperation).editMessage == null && !((DataSendOperation) sendOperation).isForStory
+                                    ? ((DataSendOperation) sendOperation).message : null;
+    GroupAdmissionSendGate.EpisodeCancellation admission = groupId != null ? GroupAdmissionSendGate.bind(groupId, relatedMessageId, data, cancelationSignal) : null;
+    CancelationSignal sendCancellation = admission != null ? admission : cancelationSignal;
+
     Log.i(TAG, "Starting group send. GroupId: " + (groupId != null ? groupId.toString() : "none") + ", DistributionId: " + (distributionId != null ? distributionId.toString() : "none") + " RelatedMessageId: " + (relatedMessageId != null ? relatedMessageId.toString() : "none") + ", Targets: " + allTargets.size() + ", RecipientUpdate: " + isRecipientUpdate + ", Operation: " + sendOperation.getClass().getSimpleName());
 
     Set<Recipient>  unregisteredTargets = allTargets.stream().filter(it -> it.isUnregistered() || it.isUnknown()).collect(Collectors.toSet());
@@ -400,7 +407,9 @@ public final class GroupSendUtil {
         final AtomicLong           entryId             = new AtomicLong(-1);
         final boolean              includeInMessageLog = sendOperation.shouldIncludeInMessageLog();
 
-        if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+        if (admission != null) admission.requireCurrent();
+        if (sendCancellation != null && sendCancellation.isCanceled()) {
+          if (admission != null) admission.requireCurrent();
           Log.i(TAG, "Send canceled before any sends took place. Returning an empty list.");
           return Collections.emptyList();
         }
@@ -419,7 +428,8 @@ public final class GroupSendUtil {
               }
             }
           }
-        });
+        }, sendCancellation);
+        if (admission != null) admission.requireCurrent();
 
         allResults.addAll(results);
 
@@ -457,7 +467,9 @@ public final class GroupSendUtil {
       SignalLocalMetrics.GroupMessageSend.onSenderKeyMslInserted(relatedMessageId.getId());
     }
 
-    if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+    if (admission != null) admission.requireCurrent();
+    if (sendCancellation != null && sendCancellation.isCanceled()) {
+      if (admission != null) admission.requireCurrent();
       Log.i(TAG, "Send canceled. Adding canceled results for " + legacyTargets.size() + " remaining legacy targets.");
       for (Recipient recipient : legacyTargets) {
         allResults.add(SendMessageResult.canceledFailure(recipients.getAddress(recipient.getId())));
@@ -520,7 +532,8 @@ public final class GroupSendUtil {
             entryId.set(messageLogDatabase.addRecipientToExistingEntryIfPossible(entryId.get(), recipients.requireRecipientId(result.getAddress()), sendOperation.getSentTimestamp(), result, sendOperation.getContentHint(), sendOperation.getRelatedMessageId(), sendOperation.isUrgent()));
           }
         }
-      }, cancelationSignal);
+      }, sendCancellation);
+      if (admission != null) admission.requireCurrent();
 
       allResults.addAll(results);
 
@@ -573,7 +586,8 @@ public final class GroupSendUtil {
                                                        @NonNull List<UnidentifiedAccess> access,
                                                        @Nullable GroupSendEndorsements groupSendEndorsements,
                                                        boolean isRecipientUpdate,
-                                                       @Nullable PartialSendBatchCompleteListener partialListener)
+                                                       @Nullable PartialSendBatchCompleteListener partialListener,
+                                                       @Nullable CancelationSignal cancelationSignal)
         throws NoSessionException, UntrustedIdentityException, InvalidKeyException, IOException, InvalidRegistrationIdException;
 
     @NonNull List<SendMessageResult> sendLegacy(@NonNull SignalServiceMessageSender messageSender,
@@ -630,11 +644,12 @@ public final class GroupSendUtil {
                                                               @NonNull List<UnidentifiedAccess> access,
                                                               @Nullable GroupSendEndorsements groupSendEndorsements,
                                                               boolean isRecipientUpdate,
-                                                              @Nullable PartialSendBatchCompleteListener partialListener)
+                                                              @Nullable PartialSendBatchCompleteListener partialListener,
+                                                              @Nullable CancelationSignal cancelationSignal)
         throws NoSessionException, UntrustedIdentityException, InvalidKeyException, IOException, InvalidRegistrationIdException
     {
       SenderKeyGroupEvents listener = relatedMessageId != null ? new SenderKeyMetricEventListener(relatedMessageId.getId()) : SenderKeyGroupEvents.EMPTY;
-      return messageSender.sendGroupDataMessage(distributionId, targets, access, groupSendEndorsements, isRecipientUpdate, contentHint, message, listener, urgent, isForStory, editMessage, partialListener);
+      return messageSender.sendGroupDataMessage(distributionId, targets, access, groupSendEndorsements, isRecipientUpdate, contentHint, message, listener, urgent, isForStory, editMessage, partialListener, cancelationSignal);
     }
 
     @Override
@@ -648,7 +663,7 @@ public final class GroupSendUtil {
         throws IOException, UntrustedIdentityException, NoSessionException
     {
       // PniSignatures are only needed for 1:1 messages, but some message jobs use the GroupSendUtil methods to send 1:1
-      if (targets.size() == 1 && relatedMessageId == null) {
+      if (targets.size() == 1 && relatedMessageId == null && message.getGroupId().isEmpty() && !(cancelationSignal instanceof GroupAdmissionSendGate.EpisodeCancellation)) {
         Recipient          targetRecipient    = targetRecipients.get(0);
         SealedSenderAccess sealedSenderAccess = sealedSenderAccesses.get(0);
         SendMessageResult  result;
@@ -712,11 +727,9 @@ public final class GroupSendUtil {
   private static class TypingSendOperation implements SendOperation {
 
     private final SignalServiceTypingMessage message;
-    private final CancelationSignal          cancelationSignal;
 
-    private TypingSendOperation(@NonNull SignalServiceTypingMessage message, @Nullable CancelationSignal cancelationSignal) {
-      this.message           = message;
-      this.cancelationSignal = cancelationSignal;
+    private TypingSendOperation(@NonNull SignalServiceTypingMessage message) {
+      this.message = message;
     }
 
     @Override
@@ -726,7 +739,8 @@ public final class GroupSendUtil {
                                                               @NonNull List<UnidentifiedAccess> access,
                                                               @Nullable GroupSendEndorsements groupSendEndorsements,
                                                               boolean isRecipientUpdate,
-                                                              @Nullable PartialSendBatchCompleteListener partialListener)
+                                                              @Nullable PartialSendBatchCompleteListener partialListener,
+                                                              @Nullable CancelationSignal cancelationSignal)
         throws NoSessionException, UntrustedIdentityException, InvalidKeyException, IOException, InvalidRegistrationIdException
     {
       Preconditions.checkNotNull(groupSendEndorsements, "GSEs must be non-null for non-story sender key send.");
@@ -802,12 +816,13 @@ public final class GroupSendUtil {
                                                               @NonNull List<UnidentifiedAccess> access,
                                                               @Nullable GroupSendEndorsements groupSendEndorsements,
                                                               boolean isRecipientUpdate,
-                                                              @Nullable PartialSendBatchCompleteListener partialSendListener)
+                                                              @Nullable PartialSendBatchCompleteListener partialSendListener,
+                                                              @Nullable CancelationSignal cancelationSignal)
         throws NoSessionException, UntrustedIdentityException, InvalidKeyException, IOException, InvalidRegistrationIdException
     {
       Preconditions.checkNotNull(groupSendEndorsements, "GSEs must be non-null for non-story sender key send.");
 
-      return messageSender.sendCallMessage(distributionId, targets, access, groupSendEndorsements, message, partialSendListener);
+      return messageSender.sendCallMessage(distributionId, targets, access, groupSendEndorsements, message, partialSendListener, cancelationSignal);
     }
 
     @Override
@@ -820,7 +835,7 @@ public final class GroupSendUtil {
                                                        @Nullable CancelationSignal cancelationSignal)
         throws IOException
     {
-      return messageSender.sendCallMessage(targets, sealedSenderAccesses, message);
+      return messageSender.sendCallMessage(targets, sealedSenderAccesses, message, cancelationSignal);
     }
 
     @Override
@@ -877,10 +892,11 @@ public final class GroupSendUtil {
                                                               @NonNull List<UnidentifiedAccess> access,
                                                               @Nullable GroupSendEndorsements groupSendEndorsements,
                                                               boolean isRecipientUpdate,
-                                                              @Nullable PartialSendBatchCompleteListener partialListener)
+                                                              @Nullable PartialSendBatchCompleteListener partialListener,
+                                                              @Nullable CancelationSignal cancelationSignal)
         throws NoSessionException, UntrustedIdentityException, InvalidKeyException, IOException, InvalidRegistrationIdException
     {
-      return messageSender.sendGroupStory(distributionId, Optional.ofNullable(groupId).map(GroupId::getDecodedId), targets, access, groupSendEndorsements, isRecipientUpdate, message, getSentTimestamp(), manifest, partialListener);
+      return messageSender.sendGroupStory(distributionId, Optional.ofNullable(groupId).map(GroupId::getDecodedId), targets, access, groupSendEndorsements, isRecipientUpdate, message, getSentTimestamp(), manifest, partialListener, cancelationSignal);
     }
 
     @Override
@@ -896,7 +912,7 @@ public final class GroupSendUtil {
       // We only allow legacy sends if you're sending to an empty group and just need to send a sync message.
       if (targets.isEmpty()) {
         Log.w(TAG, "Only sending a sync message.");
-        messageSender.sendStorySyncMessage(message, getSentTimestamp(), isRecipientUpdate, manifest);
+        messageSender.sendStorySyncMessage(message, getSentTimestamp(), isRecipientUpdate, manifest, cancelationSignal);
         return Collections.emptyList();
       } else {
         throw new UnsupportedOperationException("Stories can only be send via sender key!");

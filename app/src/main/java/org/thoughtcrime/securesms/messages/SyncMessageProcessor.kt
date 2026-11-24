@@ -64,6 +64,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.dependencies.KeyTransparencyApi
 import org.thoughtcrime.securesms.groups.BadGroupIdException
 import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.groups.v2.processing.TriggeringMessage
 import org.thoughtcrime.securesms.jobs.AttachmentBackfill
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob
@@ -290,7 +291,7 @@ object SyncMessageProcessor {
 
       if (dataMessage.profileKey.isNotEmpty()) {
         val recipient: Recipient = getSyncMessageDestination(sent)
-        if (!recipient.isSystemContact && !recipient.isProfileSharing) {
+        if (!GroupAdmission.isHeld(recipient) && !recipient.isSystemContact && !recipient.isProfileSharing) {
           SignalDatabase.recipients.setProfileSharing(recipient.id, true)
         }
       }
@@ -1213,8 +1214,12 @@ object SyncMessageProcessor {
     when (response.type) {
       MessageRequestResponse.Type.ACCEPT -> {
         val wasBlocked = recipient.isBlocked
-        SignalDatabase.recipients.setProfileSharing(recipient.id, true)
         SignalDatabase.recipients.setBlocked(recipient.id, false, 0)
+        if (GroupAdmission.isHeld(recipient)) {
+          log("Remote acceptance does not release this device's group admission hold.")
+          return
+        }
+        SignalDatabase.recipients.setProfileSharing(recipient.id, true)
         if (recipient.isPushV2Group) {
           log("Message request for a GV2 group was accepted on another device. Ensuring our profile key is up to date in the group.")
           AppDependencies.jobManager.add(GroupV2UpdateSelfProfileKeyJob.withoutLimits(recipient.requireGroupId().requireV2()))

@@ -115,6 +115,76 @@
       "task": "app:testProdWebsiteDebugUnitTest",
       "class": "org.thoughtcrime.securesms.keyvalue.UnifiedPushValuesControlTest",
       "min_executed": 16
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionEvidenceTest",
+      "min_executed": 9
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionPolicyTest",
+      "min_executed": 7
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGateTest",
+      "min_executed": 8
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionTest",
+      "min_executed": 14
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionValuesTest",
+      "min_executed": 9
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.database.RecipientTableGroupAdmissionTest",
+      "min_executed": 3
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.components.settings.app.collie.groups.ChooseGroupPeopleViewModelTest",
+      "min_executed": 8
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.components.settings.app.collie.groups.GroupPrivacySettingsRepositoryTest",
+      "min_executed": 5
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.components.settings.app.collie.groups.GroupPrivacySettingsViewModelTest",
+      "min_executed": 9
+    },
+    {
+      "task": "feature:app-settings:testDebugUnitTest",
+      "class": "org.signal.appsettings.collie.groups.ChooseGroupPeopleScreenTest",
+      "min_executed": 3
+    },
+    {
+      "task": "feature:app-settings:testDebugUnitTest",
+      "class": "org.signal.appsettings.collie.groups.GroupPrivacySettingsLayoutTest",
+      "min_executed": 3
+    },
+    {
+      "task": "feature:app-settings:testDebugUnitTest",
+      "class": "org.signal.appsettings.collie.groups.GroupPrivacySettingsScreenTest",
+      "min_executed": 9
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.jobs.GroupAdmissionJobTest",
+      "min_executed": 5
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.jobs.GroupAdmissionMediaJobTest",
+      "min_executed": 3
     }
   ]
 }

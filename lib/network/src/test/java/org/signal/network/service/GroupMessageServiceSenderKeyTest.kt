@@ -149,6 +149,25 @@ class GroupMessageServiceSenderKeyTest {
   }
 
   @Test
+  fun `a sender-key retry checks the guard again before transport`() = runTest {
+    val stale = IOException("group admission changed")
+    var changed = false
+    val guard = { if (changed) throw stale }
+    coEvery { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any(), eq(guard)) } coAnswers {
+      changed = true
+      RequestResult.NonSuccess(mismatched(alice, extra = intArrayOf(2)))
+    }
+
+    val result = runCatching {
+      newService().sendMessageViaSenderKey(distributionId, targets, content, ContentHint.RESENDABLE, null, timestamp, groupSend, isOnline = false, urgent = true, beforeSend = guard)
+    }
+
+    assertThat(result.exceptionOrNull()?.javaClass).isEqualTo(IOException::class.java)
+    assertThat(result.exceptionOrNull()?.message).isEqualTo(stale.message)
+    coVerify(exactly = 1) { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any(), eq(guard)) }
+  }
+
+  @Test
   fun `target whose device recovery fails is left out and the rest are retried`() = runTest {
     coEvery { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any()) } returnsMany listOf(
       RequestResult.NonSuccess(mismatched(bob, missing = intArrayOf(2))),

@@ -3,12 +3,14 @@ package org.thoughtcrime.securesms.messagerequests;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.Result;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.groups.GroupChangeException;
+import org.signal.core.util.groups.GroupChangeFailedException;
 import org.signal.core.util.logging.Log;
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup;
 import org.thoughtcrime.securesms.database.GroupTable;
@@ -20,6 +22,8 @@ import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.GroupsV2ProcessingLock;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.groups.ui.GroupChangeErrorCallback;
 import org.thoughtcrime.securesms.groups.ui.GroupChangeFailureReason;
 import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob;
@@ -36,6 +40,7 @@ import org.thoughtcrime.securesms.sms.MessageSender;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 
 import java.io.IOException;
+import java.io.Closeable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +108,8 @@ public final class MessageRequestRepository {
     if (recipient.isBlocked()) {
       boolean reportedAsSpam = reportedAsSpam(threadId);
       if (recipient.isGroup()) {
-        return new MessageRequestState(MessageRequestState.State.BLOCKED_GROUP, reportedAsSpam);
+        return new MessageRequestState(MessageRequestState.State.BLOCKED_GROUP, reportedAsSpam,
+                                       recipient.isPushV2Group() ? GroupAdmission.consentToken(recipient.requireGroupId().requireV2()) : null);
       } else {
         return new MessageRequestState(MessageRequestState.State.INDIVIDUAL_BLOCKED, reportedAsSpam);
       }
@@ -115,14 +121,14 @@ public final class MessageRequestRepository {
           return MessageRequestState.NONE;
         case PENDING_MEMBER: {
           boolean reportedAsSpam = reportedAsSpam(threadId);
-          return new MessageRequestState(MessageRequestState.State.GROUP_V2_INVITE, reportedAsSpam);
+          return new MessageRequestState(MessageRequestState.State.GROUP_V2_INVITE, reportedAsSpam, GroupAdmission.consentToken(recipient.requireGroupId().requireV2()));
         }
         default: {
-          if (RecipientUtil.isMessageRequestAccepted(threadId)) {
+          if (!GroupAdmission.isHeld(recipient) && RecipientUtil.isMessageRequestAccepted(threadId)) {
             return MessageRequestState.NONE;
           } else {
             boolean reportedAsSpam = reportedAsSpam(threadId);
-            return new MessageRequestState(MessageRequestState.State.GROUP_V2_ADD, reportedAsSpam);
+            return new MessageRequestState(MessageRequestState.State.GROUP_V2_ADD, reportedAsSpam, GroupAdmission.consentToken(recipient.requireGroupId().requireV2()));
           }
         }
       }
@@ -169,11 +175,17 @@ public final class MessageRequestRepository {
 
   @SuppressWarnings("unchecked")
   public @NonNull Single<Result<Unit, GroupChangeFailureReason>> acceptMessageRequest(@NonNull RecipientId recipientId, long threadId) {
+    return acceptMessageRequest(recipientId, threadId, null);
+  }
+
+  @SuppressWarnings("unchecked")
+  public @NonNull Single<Result<Unit, GroupChangeFailureReason>> acceptMessageRequest(@NonNull RecipientId recipientId, long threadId, @Nullable String expectedGroupEpisode) {
     //noinspection CodeBlock2Expr
     return Single.<Result<Unit, GroupChangeFailureReason>>create(emitter -> {
       acceptMessageRequest(
           recipientId,
           threadId,
+          expectedGroupEpisode,
           () -> emitter.onSuccess(Result.success(Unit.INSTANCE)),
           reason -> emitter.onSuccess(Result.failure(reason))
       );
@@ -185,24 +197,40 @@ public final class MessageRequestRepository {
                                    @NonNull Runnable onMessageRequestAccepted,
                                    @NonNull GroupChangeErrorCallback error)
   {
+    acceptMessageRequest(recipientId, threadId, null, onMessageRequestAccepted, error);
+  }
+
+  private void acceptMessageRequest(@NonNull RecipientId recipientId,
+                                   long threadId,
+                                   @Nullable String expectedGroupEpisode,
+                                   @NonNull Runnable onMessageRequestAccepted,
+                                   @NonNull GroupChangeErrorCallback error)
+  {
     executor.execute(() -> {
       Recipient recipient = Recipient.resolved(recipientId);
       if (recipient.isPushV2Group()) {
-        try {
-          GroupId.V2 groupId = recipient.requireGroupId().requireV2();
+        GroupId.V2 groupId = recipient.requireGroupId().requireV2();
+        try (Closeable ignored = GroupsV2ProcessingLock.acquireSingleGroupProcessingLock(groupId)) {
+          GroupAdmission.ConsentAttempt consent = GroupAdmission.beginAccept(groupId, expectedGroupEpisode);
+          try {
+            Log.i(TAG, "GV2 accepting invite");
+            GroupManager.acceptInvite(context, groupId);
+            if (GroupAdmission.isHeld(groupId)) {
+              throw new GroupChangeFailedException("The group membership changed; review the invitation again");
+            }
 
-          Log.i(TAG, "GV2 accepting invite");
-          GroupManager.acceptInvite(context, groupId);
+            RecipientTable recipientTable = SignalDatabase.recipients();
+            recipientTable.setProfileSharing(recipientId, true);
 
-          RecipientTable recipientTable = SignalDatabase.recipients();
-          recipientTable.setProfileSharing(recipientId, true);
+            Log.i(TAG, "Ensuring our profile key is up to date in the accepted group");
+            AppDependencies.getJobManager().add(GroupV2UpdateSelfProfileKeyJob.withoutLimits(groupId));
 
-          Log.i(TAG, "Ensuring our profile key is up to date in the accepted group");
-          AppDependencies.getJobManager().add(GroupV2UpdateSelfProfileKeyJob.withoutLimits(groupId));
-
-          insertMessageRequestAccept(recipient, threadId);
+            insertMessageRequestAccept(recipient, threadId);
+          } finally {
+            GroupAdmission.endOperation(consent);
+          }
           onMessageRequestAccepted.run();
-        } catch (GroupChangeException | IOException e) {
+        } catch (GroupChangeException | IOException | RuntimeException e) {
           Log.w(TAG, e);
           error.onError(GroupChangeFailureReason.fromException(e));
         }

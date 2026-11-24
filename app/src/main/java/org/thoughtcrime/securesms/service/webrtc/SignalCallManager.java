@@ -34,8 +34,8 @@ import org.signal.ringrtc.CallId;
 import org.signal.ringrtc.CallLinkRootKey;
 import org.signal.ringrtc.CallManager;
 import org.signal.ringrtc.CallSummary;
-import org.signal.ringrtc.GroupCall;
 import org.signal.ringrtc.GroupCall.Reaction;
+import org.signal.ringrtc.GroupCall;
 import org.signal.ringrtc.HttpHeader;
 import org.signal.ringrtc.NetworkRoute;
 import org.signal.ringrtc.PeekInfo;
@@ -55,6 +55,7 @@ import org.thoughtcrime.securesms.events.GroupCallPeekEvent;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobs.CallSyncEventJob;
 import org.thoughtcrime.securesms.jobs.GroupCallUpdateSendJob;
@@ -237,15 +238,15 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
   }
 
   public void startPreJoinCall(@NonNull Recipient recipient) {
-    process((s, p) -> p.handlePreJoinCall(s, new RemotePeer(recipient.getId())));
+    process((s, p) -> GroupAdmission.isHeld(recipient) ? s : p.handlePreJoinCall(s, new RemotePeer(recipient.getId())));
   }
 
   public void startOutgoingAudioCall(@NonNull Recipient recipient) {
-    process((s, p) -> p.handleOutgoingCall(s, new RemotePeer(recipient.getId()), OfferMessage.Type.AUDIO_CALL));
+    process((s, p) -> GroupAdmission.isHeld(recipient) ? s : p.handleOutgoingCall(s, new RemotePeer(recipient.getId()), OfferMessage.Type.AUDIO_CALL));
   }
 
   public void startOutgoingVideoCall(@NonNull Recipient recipient) {
-    process((s, p) -> p.handleOutgoingCall(s, new RemotePeer(recipient.getId()), OfferMessage.Type.VIDEO_CALL));
+    process((s, p) -> GroupAdmission.isHeld(recipient) ? s : p.handleOutgoingCall(s, new RemotePeer(recipient.getId()), OfferMessage.Type.VIDEO_CALL));
   }
 
   public void cancelPreJoin() {
@@ -499,6 +500,9 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
     keyedExecutor.execute(id.toString(), () -> {
       try {
         Recipient group = Recipient.resolved(id);
+        if (GroupAdmission.isHeld(group)) {
+          return;
+        }
         if (!group.getGroupId().isPresent()) {
           Log.w(TAG, "Recipient " + id + " is no longer a group. Skipping peek.");
           return;
@@ -509,7 +513,13 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
 
         List<GroupCall.GroupMemberInfo> members = GroupManager.getUuidCipherTexts(context, groupId).entrySet().stream()
                                                               .map(entry -> new GroupCall.GroupMemberInfo(entry.getKey(), entry.getValue().serialize())).collect(Collectors.toList());
+        if (GroupAdmission.isHeld(groupId)) {
+          return;
+        }
         callManager.peekGroupCall(SignalStore.internal().getGroupCallingServer(), credential.token.getBytes(Charsets.UTF_8), members, peekInfo -> {
+          if (GroupAdmission.isHeld(groupId)) {
+            return;
+          }
           Long threadId = SignalDatabase.threads().getThreadIdFor(group.getId());
 
           if (threadId != null) {
@@ -544,6 +554,9 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
       try {
         Recipient               group      = Recipient.resolved(info.getRecipientId());
         GroupId.V2              groupId    = group.requireGroupId().requireV2();
+        if (GroupAdmission.isHeld(groupId)) {
+          return;
+        }
         ExternalGroupCredential credential = GroupManager.getExternalGroupCredential(context, groupId);
 
         List<GroupCall.GroupMemberInfo> members = GroupManager.getUuidCipherTexts(context, groupId)
@@ -552,10 +565,17 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
                                                               .map(entry -> new GroupCall.GroupMemberInfo(entry.getKey(), entry.getValue().serialize()))
                                                               .collect(Collectors.toList());
 
+        if (GroupAdmission.isHeld(groupId)) {
+          return;
+        }
         callManager.peekGroupCall(SignalStore.internal().getGroupCallingServer(),
                                   credential.token.getBytes(Charsets.UTF_8),
                                   members,
-                                  peekInfo -> receivedGroupCallPeekForRingingCheck(info, peekInfo));
+                                  peekInfo -> {
+                                    if (!GroupAdmission.isHeld(groupId)) {
+                                      receivedGroupCallPeekForRingingCheck(info, peekInfo);
+                                    }
+                                  });
       } catch (IOException | VerificationFailedException | CallException e) {
         Log.i(TAG, "error peeking for ringing check", e);
       }
@@ -564,9 +584,12 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
 
   void requestGroupMembershipToken(@NonNull GroupId.V2 groupId, int groupCallHashCode) {
     SignalExecutors.BOUNDED_IO.execute(() -> {
+      if (GroupAdmission.isHeld(groupId)) {
+        return;
+      }
       try {
         ExternalGroupCredential credential = GroupManager.getExternalGroupCredential(context, groupId);
-        process((s, p) -> p.handleGroupMembershipProofResponse(s, groupCallHashCode, credential.token.getBytes(Charsets.UTF_8)));
+        process((s, p) -> GroupAdmission.isHeld(groupId) ? s : p.handleGroupMembershipProofResponse(s, groupCallHashCode, credential.token.getBytes(Charsets.UTF_8)));
       } catch (IOException e) {
         Log.w(TAG, "Unable to get group membership proof from service", e);
         process((s, p) -> p.handleGroupCallEnded(s, groupCallHashCode, CallManager.CallEndReason.SFU_CLIENT_FAILED_TO_JOIN));
@@ -1026,10 +1049,12 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
       if (group != null &&
           group.isActive() &&
           !Recipient.resolved(group.getRecipientId()).isBlocked() &&
+          (ringUpdate != CallManager.RingUpdate.REQUESTED || !GroupAdmission.isHeld(groupId)) &&
           group.memberLevel(senderRecipient).isInGroup() &&
           (!group.isAnnouncementGroup() || group.isAdmin(senderRecipient)))
       {
-        process((s, p) -> p.handleGroupCallRingUpdate(s, new RemotePeer(group.getRecipientId()), groupId, ringId, senderAci, ringUpdate));
+        process((s, p) -> ringUpdate == CallManager.RingUpdate.REQUESTED && GroupAdmission.isHeld(groupId)
+                           ? s : p.handleGroupCallRingUpdate(s, new RemotePeer(group.getRecipientId()), groupId, ringId, senderAci, ringUpdate));
       } else {
         Log.w(TAG, "Unable to ring unknown/inactive/blocked group, or sender is not a current member of the group.");
       }
@@ -1269,6 +1294,9 @@ public final class SignalCallManager implements CallManager.Observer, GroupCall.
     }
 
     SignalExecutors.BOUNDED.execute(() -> {
+      if (GroupAdmission.isHeld(recipient)) {
+        return;
+      }
       GroupCallUpdateSendJob updateSendJob = GroupCallUpdateSendJob.create(recipient.getId(), groupCallEraId);
       JobManager.Chain       chain         = AppDependencies.getJobManager().startChain(updateSendJob);
       CallId                 callIdLocal   = callId;

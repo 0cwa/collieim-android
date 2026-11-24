@@ -50,6 +50,13 @@ interface WebSocketConnection {
   @Throws(IOException::class)
   fun sendRequest(request: WebSocketRequestMessage, timeoutSeconds: Long): Single<WebsocketResponse>
 
+  /** Connections that queue requests must run [beforeSend] when dispatching the queued request. */
+  @Throws(IOException::class)
+  fun sendRequest(request: WebSocketRequestMessage, timeoutSeconds: Long, beforeSend: (() -> Unit)?): Single<WebsocketResponse> {
+    beforeSend?.invoke()
+    return sendRequest(request, timeoutSeconds)
+  }
+
   suspend fun sendRequestSuspend(request: WebSocketRequestMessage, timeout: Duration = DEFAULT_SEND_TIMEOUT): WebsocketResponse {
     throw UnsupportedOperationException("This connection does not support suspend sendRequest")
   }

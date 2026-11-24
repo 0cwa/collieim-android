@@ -12,6 +12,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.SealedSenderConstraint;
@@ -113,6 +114,11 @@ public class GroupCallUpdateSendJob extends BaseJob {
 
   @Override
   protected void onRun() throws Exception {
+    if (GroupAdmission.isHeld(recipientId)) {
+      Log.i(TAG, "Not sending a call update for a group awaiting local approval.");
+      return;
+    }
+
     if (!Recipient.self().isRegistered()) {
       throw new NotPushRegisteredException();
     }

@@ -48,15 +48,16 @@ class MessageApiV2(
     contents: List<SingleOutboundSealedSenderMessage>,
     sealedSenderAccess: SealedSenderAccess,
     onlineOnly: Boolean,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)? = null
   ): RequestResult<Unit, SealedSendFailure> {
-    val result = sendSealed(serviceId, timestamp, contents, sealedSenderAccess.toSendAuthorization(), onlineOnly, urgent)
+    val result = sendSealed(serviceId, timestamp, contents, sealedSenderAccess.toSendAuthorization(), onlineOnly, urgent, beforeSend)
 
     if (result.isAccessRejected()) {
       val fallbackAccess = sealedSenderAccess.switchToFallback()
       if (fallbackAccess != null) {
         Log.w(TAG, "[$timestamp] Sealed sender access was rejected. Retrying with ${fallbackAccess.javaClass.simpleName}.")
-        return sendSealed(serviceId, timestamp, contents, fallbackAccess.toSendAuthorization(), onlineOnly, urgent)
+        return sendSealed(serviceId, timestamp, contents, fallbackAccess.toSendAuthorization(), onlineOnly, urgent, beforeSend)
       }
     }
 
@@ -72,9 +73,10 @@ class MessageApiV2(
     timestamp: Long,
     auth: MultiRecipientSendAuthorization,
     onlineOnly: Boolean,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)? = null
   ): RequestResult<MultiRecipientMessageResponse, MultiRecipientSendFailure> {
-    return unauthWebSocket.runCatchingWithChatConnection { connection ->
+    return unauthWebSocket.runCatchingWithChatConnection(beforeSend) { connection ->
       UnauthMessagesService(connection).sendMultiRecipientMessage(payload, timestamp, auth, onlineOnly, urgent)
     }
   }
@@ -84,9 +86,10 @@ class MessageApiV2(
     timestamp: Long,
     contents: List<SingleOutboundUnsealedMessage>,
     onlineOnly: Boolean,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)? = null
   ): RequestResult<Unit, UnsealedSendFailure> {
-    return authWebSocket.runCatchingWithChatConnection { connection ->
+    return authWebSocket.runCatchingWithChatConnection(beforeSend) { connection ->
       AuthMessagesService(connection).sendMessage(serviceId.libSignalServiceId, timestamp, contents, onlineOnly, urgent)
     }
   }
@@ -94,9 +97,10 @@ class MessageApiV2(
   suspend fun sendSyncMessage(
     timestamp: Long,
     contents: List<SingleOutboundUnsealedMessage>,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)? = null
   ): RequestResult<Unit, SyncSendFailure> {
-    return authWebSocket.runCatchingWithChatConnection { connection ->
+    return authWebSocket.runCatchingWithChatConnection(beforeSend) { connection ->
       AuthMessagesService(connection).sendSyncMessage(timestamp, contents, urgent)
     }
   }
@@ -108,9 +112,10 @@ class MessageApiV2(
     contents: List<SingleOutboundSealedSenderMessage>,
     auth: UserBasedSendAuthorization,
     onlineOnly: Boolean,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)? = null
   ): RequestResult<Unit, SealedSendFailure> {
-    return unauthWebSocket.runCatchingWithChatConnection { connection ->
+    return unauthWebSocket.runCatchingWithChatConnection(beforeSend) { connection ->
       UnauthMessagesService(connection).sendMessage(serviceId.libSignalServiceId, timestamp, contents, auth, onlineOnly, urgent)
     }
   }

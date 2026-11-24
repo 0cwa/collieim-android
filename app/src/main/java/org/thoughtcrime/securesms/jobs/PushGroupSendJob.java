@@ -13,8 +13,8 @@ import org.signal.core.util.Util;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.NoSessionException;
 import org.thoughtcrime.securesms.attachments.Attachment;
-import org.thoughtcrime.securesms.database.GroupReceiptTable;
 import org.thoughtcrime.securesms.database.GroupReceiptTable.GroupReceiptInfo;
+import org.thoughtcrime.securesms.database.GroupReceiptTable;
 import org.thoughtcrime.securesms.database.GroupTable;
 import org.thoughtcrime.securesms.database.MessageTable;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
@@ -29,6 +29,8 @@ import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupAccessControl;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -91,8 +93,11 @@ public final class PushGroupSendJob extends PushSendJob {
   private static final String KEY_MESSAGE_ID        = "message_id";
   private static final String KEY_FILTER_RECIPIENTS = "filter_recipient";
 
+  private static final String KEY_ADMISSION_EPISODE = "admission_episode";
+
   private final long             messageId;
   private final Set<RecipientId> filterRecipients;
+  private String                admissionEpisode;
 
   public PushGroupSendJob(long messageId, @NonNull RecipientId destination, @NonNull Set<RecipientId> filterRecipients, boolean hasMedia, boolean isScheduledSend) {
     this(new Job.Parameters.Builder()
@@ -102,15 +107,16 @@ public final class PushGroupSendJob extends PushSendJob {
              .setLifespan(TimeUnit.DAYS.toMillis(1))
              .setMaxAttempts(Parameters.UNLIMITED)
              .build(),
-         messageId, filterRecipients);
+         messageId, filterRecipients, Recipient.resolved(destination).getGroupId().filter(GroupId::isV2).map(GroupId::requireV2).map(GroupAdmission::sendEpisode).map(GroupAdmission.SendEpisode::key).orElse(null));
 
   }
 
-  private PushGroupSendJob(@NonNull Job.Parameters parameters, long messageId, @NonNull Set<RecipientId> filterRecipients) {
+  private PushGroupSendJob(@NonNull Job.Parameters parameters, long messageId, @NonNull Set<RecipientId> filterRecipients, @Nullable String admissionEpisode) {
     super(parameters);
 
     this.messageId        = messageId;
     this.filterRecipients = filterRecipients;
+    this.admissionEpisode = admissionEpisode;
   }
 
   @WorkerThread
@@ -138,6 +144,10 @@ public final class PushGroupSendJob extends PushSendJob {
       MessageTable    database = SignalDatabase.messages();
       OutgoingMessage message  = database.getOutgoingMessage(messageId);
 
+      if (!GroupAdmissionSendGate.canSend(message)) {
+        throw new MmsException("Group requires local approval before sending.");
+      }
+
       if (message.getScheduledDate() != -1) {
         if (!filterAddresses.isEmpty()) {
           throw new MmsException("Cannot schedule a group message with filter addresses!");
@@ -163,7 +173,7 @@ public final class PushGroupSendJob extends PushSendJob {
                      attachmentUploadIds,
                      addHardDependencies ? destination.toQueueKey() : null);
 
-    } catch (NoSuchMessageException | MmsException e) {
+    } catch (NoSuchMessageException | MmsException | GroupAdmissionSendGate.HeldGroupException e) {
       Log.w(TAG, "Failed to enqueue message.", e);
       SignalDatabase.messages().markAsSentFailed(messageId);
       notifyMediaMessageDeliveryFailed(context, messageId);
@@ -174,6 +184,7 @@ public final class PushGroupSendJob extends PushSendJob {
   public @Nullable byte[] serialize() {
     return new JsonJobData.Builder().putLong(KEY_MESSAGE_ID, messageId)
                                     .putString(KEY_FILTER_RECIPIENTS, RecipientId.toSerializedList(filterRecipients))
+                                    .putString(KEY_ADMISSION_EPISODE, admissionEpisode)
                                     .serialize();
   }
 
@@ -223,6 +234,18 @@ public final class PushGroupSendJob extends PushSendJob {
       throw new MmsException("No GV1 messages can be sent anymore!");
     }
 
+    GroupId.V2 groupId = groupRecipient.requireGroupId().requireV2();
+    if (admissionEpisode == null) {
+      // Jobs queued by older builds acquire an episode on their first run with this code.
+      admissionEpisode = GroupAdmission.sendEpisode(groupId).key();
+    }
+    GroupAdmissionSendGate.EpisodeCancellation admission = new GroupAdmissionSendGate.EpisodeCancellation(groupId, admissionEpisode, null);
+    admission.requireCurrent();
+
+    if (!GroupAdmissionSendGate.canSend(message)) {
+      throw new MmsException("Group requires local approval before sending.");
+    }
+
     if ((message.getStoryType().isStory() || message.getParentStoryId() != null) && !groupRecipient.isActiveGroup()) {
       throw new MmsException("Not a member of the group!");
     }
@@ -266,7 +289,7 @@ public final class PushGroupSendJob extends PushSendJob {
         return;
       }
 
-      List<SendMessageResult> results = deliver(message, originalEditedMessage, groupRecipient, groupRecord.get(), target);
+      List<SendMessageResult> results = deliver(message, originalEditedMessage, groupRecipient, groupRecord.get(), target, admission);
       processGroupMessageResults(context, messageId, threadId, groupRecipient, message, results, target, skipped, existingNetworkFailures, existingIdentityMismatches);
       ConversationShortcutRankingUpdateJob.enqueueForOutgoingIfNecessary(groupRecipient);
       Log.i(TAG, JobLogger.format(this, "Finished send."));
@@ -291,9 +314,13 @@ public final class PushGroupSendJob extends PushSendJob {
     SignalDatabase.messages().markAsSentFailed(messageId);
   }
 
-  private List<SendMessageResult> deliver(OutgoingMessage message, @Nullable MessageRecord originalEditedMessage, @NonNull Recipient groupRecipient, @NonNull GroupRecord groupRecord, @NonNull List<Recipient> destinations)
+  private List<SendMessageResult> deliver(OutgoingMessage message, @Nullable MessageRecord originalEditedMessage, @NonNull Recipient groupRecipient, @NonNull GroupRecord groupRecord, @NonNull List<Recipient> destinations, @NonNull GroupAdmissionSendGate.EpisodeCancellation admission)
       throws IOException, UntrustedIdentityException, UndeliverableMessageException, NoSessionException
   {
+    if (!GroupAdmissionSendGate.canSend(message)) {
+      throw new UndeliverableMessageException("Group requires local approval before sending.");
+    }
+
     if (Utf8.size(message.getBody()) > SignalServiceMessageLimits.MAX_INLINE_BODY_SIZE_BYTES) {
       throw new UndeliverableMessageException("The total body size was greater than our limit of " + SignalServiceMessageLimits.MAX_INLINE_BODY_SIZE_BYTES + " bytes.");
     }
@@ -344,7 +371,7 @@ public final class PushGroupSendJob extends PushSendJob {
           throw new UndeliverableMessageException("No attachment on non-text story.");
         }
 
-        return GroupSendUtil.sendGroupStoryMessage(context, groupId.requireV2(), destinations, isRecipientUpdate, new MessageId(messageId), message.getSentTimeMillis(), storyMessage);
+        return GroupSendUtil.sendGroupStoryMessage(context, groupId.requireV2(), destinations, isRecipientUpdate, new MessageId(messageId), message.getSentTimeMillis(), storyMessage, admission);
       } else if (message.isGroup() && message.isGroupUpdate()) {
         if (message.isV2Group()) {
           MessageGroupContext.GroupV2Properties properties   = message.requireGroupV2Properties();
@@ -369,7 +396,7 @@ public final class PushGroupSendJob extends PushSendJob {
                                                                               .asGroupMessage(group)
                                                                               .build();
           return GroupSendUtil.sendResendableDataMessage(context, groupRecipient.requireGroupId()
-                                                                                .requireV2(), null, destinations, isRecipientUpdate, ContentHint.IMPLICIT, new MessageId(messageId), groupDataMessage, message.isUrgent(), false, null, null);
+                                                                                .requireV2(), null, destinations, isRecipientUpdate, ContentHint.IMPLICIT, new MessageId(messageId), groupDataMessage, message.isUrgent(), false, null, admission);
         } else {
           throw new UndeliverableMessageException("Messages can no longer be sent to V1 groups!");
         }
@@ -437,7 +464,7 @@ public final class PushGroupSendJob extends PushSendJob {
                                                        message.isUrgent(),
                                                        message.getStoryType().isStory() || message.getParentStoryId() != null,
                                                        editMessage,
-                                                       null);
+                                                       admission);
       }
     } catch (ServerRejectedException e) {
       throw new UndeliverableMessageException(e);
@@ -604,7 +631,7 @@ public final class PushGroupSendJob extends PushSendJob {
       String           raw     = data.getStringOrDefault(KEY_FILTER_RECIPIENTS, "");
       Set<RecipientId> filters = raw != null ? new HashSet<>(RecipientId.fromSerializedList(raw)) : Collections.emptySet();
 
-      return new PushGroupSendJob(parameters, data.getLong(KEY_MESSAGE_ID), filters);
+      return new PushGroupSendJob(parameters, data.getLong(KEY_MESSAGE_ID), filters, data.getStringOrDefault(KEY_ADMISSION_EPISODE, null));
     }
   }
 }

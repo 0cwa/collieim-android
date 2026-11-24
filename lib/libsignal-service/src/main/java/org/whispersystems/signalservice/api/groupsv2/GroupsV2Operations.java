@@ -656,7 +656,7 @@ public final class GroupsV2Operations {
           }
 
           promotePendingMembers.add(new DecryptedMember.Builder()
-                                                       .joinedAtRevision(-1)
+                                                       .joinedAtRevision(actions.version)
                                                        .role(Member.Role.DEFAULT)
                                                        .aciBytes(aci.toByteString())
                                                        .profileKey(ByteString.of(profileKey.serialize()))

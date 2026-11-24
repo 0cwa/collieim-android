@@ -12,17 +12,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.pin.RecoveryPinGuard
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.signal.appsettings.collie.CollieSettingsScreen
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.navigateTo
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 import org.thoughtcrime.securesms.components.settings.app.labs.LabsSettingsViewModel
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.pin.RecoveryPinGuard
 
 /** Reuses the existing Labs preferences and toggle handling for Collie's selected features. */
 @Composable
@@ -39,6 +39,7 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
     onEvent = viewModel::onEvent,
     showAppUpdates = AppSettingsRepository.showAppUpdates(),
     onAppUpdatesClick = { parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates) },
+    onGroupPrivacyClicked = { parentEventEmitter.navigateTo(AppSettingsRoute.CollieRoute.GroupPrivacy) },
     protectBackupKey = protectBackupKey,
     onProtectBackupKeyChanged = { desired ->
       authenticate {

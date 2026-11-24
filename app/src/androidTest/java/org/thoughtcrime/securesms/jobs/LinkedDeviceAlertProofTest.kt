@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.jobs
 
 import android.Manifest
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.os.ParcelFileDescriptor
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.ContentValues
@@ -33,6 +35,10 @@ class LinkedDeviceAlertProofTest {
     val automation = instrumentation.uiAutomation
     val notifications = context.getSystemService(NotificationManager::class.java)
     val createdAt = System.currentTimeMillis()
+    val service = automation.serviceInfo
+    val oldFlags = service.flags
+    service.flags = oldFlags or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+    automation.serviceInfo = service
     automation.grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
     try {
       postAndCapture(createdAt, true, R.string.NewLinkedDeviceNotification__you_linked_new_device, "linked-device-early")
@@ -44,6 +50,8 @@ class LinkedDeviceAlertProofTest {
     } finally {
       notifications.cancel(NotificationIds.NEW_LINKED_DEVICE)
       automation.executeShellCommand("cmd statusbar collapse").close()
+      service.flags = oldFlags
+      automation.serviceInfo = service
     }
   }
 
@@ -60,10 +68,14 @@ class LinkedDeviceAlertProofTest {
           it.notification.extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() == title
       }
     })
-    automation.executeShellCommand("cmd statusbar expand-notifications").close()
-    assertTrue("Notification shade did not show $title", await {
-      automation.rootInActiveWindow?.findAccessibilityNodeInfosByText(title)?.any { it.isVisibleToUser } == true
-    })
+    ParcelFileDescriptor.AutoCloseInputStream(automation.executeShellCommand("cmd statusbar expand-notifications")).use {
+      it.readBytes()
+    }
+    val titleVisible = await {
+      automation.windows.any { window ->
+        window.root?.findAccessibilityNodeInfosByText(title)?.any { it.isVisibleToUser } == true
+      }
+    }
     automation.waitForIdle(500, 5_000)
 
     val bitmap = checkNotNull(automation.takeScreenshot())
@@ -82,6 +94,7 @@ class LinkedDeviceAlertProofTest {
     } finally {
       bitmap.recycle()
     }
+    assertTrue("Notification shade did not show $title", titleVisible)
   }
 
   private fun await(condition: () -> Boolean): Boolean {

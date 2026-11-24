@@ -14,6 +14,8 @@ import android.os.Process
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.WindowManager
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasScrollAction
@@ -391,7 +393,14 @@ class ColdCallRuntimeTest {
         assertCold("calls-settings-screen")
       }
       ActivityScenario.launch<ConversationSettingsActivity>(ConversationSettingsActivity.forGroup(harness.context, requireNotNull(harness.group).groupId)).use {
-        compose.waitUntil(15_000) { compose.onAllNodes(hasScrollAction()).fetchSemanticsNodes().isNotEmpty() }
+        // The loading scaffold already exposes a scroll action, but has no items until the group
+        // recipient resolves. Wait for its populated layout before searching the lazy list.
+        compose.waitUntil(15_000) {
+          compose.onAllNodes(hasScrollAction()).fetchSemanticsNodes().singleOrNull()?.let { node ->
+            val rows = node.config.getOrNull(SemanticsProperties.CollectionInfo)?.rowCount ?: 0
+            rows > 0 && node.boundsInRoot.width > 0f && node.boundsInRoot.height > 0f
+          } == true
+        }
         compose.onNode(hasScrollAction()).performScrollToNode(hasTestTag(CallsSettingsTestTags.OVERRIDE))
         awaitLoadedSettingsRow(CallsSettingsTestTags.OVERRIDE)
         awaitRuntimeQueue()

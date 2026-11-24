@@ -156,6 +156,9 @@ import org.thoughtcrime.securesms.main.MainToolbarCallback
 import org.thoughtcrime.securesms.main.MainToolbarMode
 import org.thoughtcrime.securesms.main.MainToolbarState
 import org.thoughtcrime.securesms.main.MainToolbarViewModel
+import org.thoughtcrime.securesms.flags.CollieFlags
+import org.thoughtcrime.securesms.main.setup.SetupActions
+import org.thoughtcrime.securesms.main.setup.SetupStatusRepository
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder
 import org.thoughtcrime.securesms.main.rememberDecoratedDetailEntries
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher
@@ -299,6 +302,16 @@ class MainActivity :
               MainNavigationViewModel.NavigationEvent.STORY_CAMERA_FIRST -> {
                 mainBottomChromeCallback.onCameraClick(MainListRoute.Stories)
               }
+            }
+          }
+        }
+      }
+
+      launch {
+        if (CollieFlags.setupChecklist) {
+          repeatOnLifecycle(Lifecycle.State.STARTED) {
+            SetupStatusRepository.snapshot.collect { snapshot ->
+              toolbarViewModel.setSetupStatus(snapshot.state.statusLine, snapshot.state.remaining.isNotEmpty())
             }
           }
         }
@@ -701,6 +714,7 @@ class MainActivity :
     dynamicTheme.onResume(this)
 
     toolbarViewModel.refresh()
+    if (CollieFlags.setupChecklist) SetupStatusRepository.refresh()
 
     if (SignalStore.misc.shouldShowLinkedDevicesReminder) {
       SignalStore.misc.shouldShowLinkedDevicesReminder = false
@@ -1106,6 +1120,18 @@ class MainActivity :
 
     override fun onSettingsClick() {
       openSettings.launch(AppSettingsActivity.home(this@MainActivity))
+    }
+
+    override fun onStatusLineClick() {
+      if (CollieFlags.setupChecklist) SetupActions.onStatusLineClick(this@MainActivity, toolbarViewModel.state.value.statusLine)
+    }
+
+    override fun onFinishSetupClick() {
+      if (CollieFlags.setupChecklist) SetupActions.showSetup(this@MainActivity)
+    }
+
+    override fun onWhatsNewClick() {
+      if (CollieFlags.setupChecklist) SetupActions.showWhatsNew(this@MainActivity)
     }
 
     override fun onNotificationProfileClick() {

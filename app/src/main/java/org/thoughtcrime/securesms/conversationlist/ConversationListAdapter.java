@@ -22,6 +22,8 @@ import org.thoughtcrime.securesms.BindableConversationListItem;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.conversationlist.model.Conversation;
 import org.thoughtcrime.securesms.conversationlist.model.ConversationSet;
+import org.thoughtcrime.securesms.flags.CollieFlags;
+import org.thoughtcrime.securesms.main.setup.SetupEmptyState;
 import org.thoughtcrime.securesms.util.CachedInflater;
 import org.signal.core.ui.util.ViewUtil;
 
@@ -124,6 +126,9 @@ class ConversationListAdapter extends ListAdapter<Conversation, RecyclerView.Vie
       View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.conversation_list_archived_empty_state, parent, false);
       return new HeaderViewHolder(v);
     } else if (viewType == TYPE_EMPTY) {
+      if (CollieFlags.INSTANCE.getSetupChecklist()) {
+        return new HeaderViewHolder(SetupEmptyState.createView(parent));
+      }
       View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.conversation_list_empty_state, parent, false);
       return new HeaderViewHolder(v);
     } else if (viewType == TYPE_CLEAR_FILTER_FOOTER) {

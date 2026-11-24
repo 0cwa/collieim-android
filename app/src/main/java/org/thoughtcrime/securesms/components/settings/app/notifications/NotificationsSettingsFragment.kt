@@ -12,7 +12,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.launch
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,14 +25,21 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -54,6 +65,7 @@ import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosur
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
 import org.signal.core.util.eventbus.ThreadMode
@@ -147,7 +159,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun FragmentContent() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NotificationsSettingsScreen(state = state, callbacks = callbacks)
+    NotificationsSettingsScreen(state = state, callbacks = callbacks, focusPushNotifications = args.focusPushNotifications)
   }
 }
 
@@ -526,9 +538,11 @@ interface NotificationsSettingsCallbacks {
 fun NotificationsSettingsScreen(
   state: NotificationsSettingsState,
   callbacks: NotificationsSettingsCallbacks,
-  deviceState: DeviceState = remember { DeviceState() }
+  deviceState: DeviceState = remember { DeviceState() },
+  focusPushNotifications: Boolean = false
 ) {
   var showDialog by remember { mutableStateOf(false) }
+  var hasFocusedPushNotifications by rememberSaveable { mutableStateOf(false) }
 
   if (showDialog) {
     Dialogs.SimpleAlertDialog(
@@ -549,6 +563,7 @@ fun NotificationsSettingsScreen(
   ) {
     val errorCode = state.playServicesErrorCode
     val hasPlayServicesError = errorCode != null && errorCode != ConnectionResult.SUCCESS
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = if (hasPlayServicesError) 99 else 0)
 
     LaunchedEffect(errorCode) {
       if (hasPlayServicesError) {
@@ -556,8 +571,17 @@ fun NotificationsSettingsScreen(
       }
     }
 
+    LaunchedEffect(focusPushNotifications, state.isLinkedDevice) {
+      if (focusPushNotifications && !hasFocusedPushNotifications) {
+        val itemCount = snapshotFlow { listState.layoutInfo.totalItemsCount }.first { it > 0 }
+        hasFocusedPushNotifications = true
+        val itemsAfterHeader = if (state.isLinkedDevice) 3 else 4
+        listState.scrollToItem((itemCount - itemsAfterHeader).coerceAtLeast(0))
+      }
+    }
+
     LazyColumn(
-      state = rememberLazyListState(initialFirstVisibleItemIndex = if (hasPlayServicesError) 99 else 0),
+      state = listState,
       modifier = Modifier.padding(it)
     ) {
       if (!state.messageNotificationsState.canEnableNotifications) {
@@ -838,8 +862,40 @@ fun NotificationsSettingsScreen(
         Dividers.Default()
       }
 
-      item {
-        Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__push_notifications))
+      item(key = "push-notifications") {
+        if (focusPushNotifications) {
+          Surface(
+            color = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
+          ) {
+            Column {
+              Text(
+                text = stringResource(R.string.CollieSetup__delivery_title),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 4.dp)
+                  .semantics { liveRegion = LiveRegionMode.Polite }
+              )
+              Text(
+                text = stringResource(R.string.NotificationsSettingsFragment__push_notifications),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp).semantics { heading() }
+              )
+              Text(
+                text = stringResource(R.string.CollieSetup__delivery_settings_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
+              )
+            }
+          }
+        } else {
+          Texts.SectionHeader(
+            text = stringResource(R.string.NotificationsSettingsFragment__push_notifications),
+            modifier = Modifier.semantics { heading() }
+          )
+        }
       }
 
       item {

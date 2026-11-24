@@ -98,6 +98,7 @@ import org.thoughtcrime.securesms.banner.banners.CdsTemporaryErrorBanner;
 import org.thoughtcrime.securesms.banner.banners.DeprecatedBuildBanner;
 import org.thoughtcrime.securesms.banner.banners.DeprecatedSdkBanner;
 import org.thoughtcrime.securesms.banner.banners.DozeBanner;
+import org.thoughtcrime.securesms.flags.CollieFlags;
 import org.thoughtcrime.securesms.banner.banners.OutdatedBuildBanner;
 import org.thoughtcrime.securesms.banner.banners.ServiceOutageBanner;
 import org.thoughtcrime.securesms.banner.banners.UnauthorizedBanner;
@@ -144,6 +145,7 @@ import org.thoughtcrime.securesms.main.MainNavigationViewModel;
 import org.thoughtcrime.securesms.main.MainSnackbarHostKey;
 import org.thoughtcrime.securesms.main.MainToolbarMode;
 import org.thoughtcrime.securesms.main.MainToolbarViewModel;
+import org.thoughtcrime.securesms.main.setup.CollieProblemBanner;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.profiles.manage.username.UsernameEditFragment;
@@ -793,7 +795,7 @@ public class ConversationListFragment extends MainFragment implements Conversati
         new UnauthorizedBanner(requireContext()),
         new ServiceOutageBanner(requireContext()),
         new OutdatedBuildBanner(),
-        new DozeBanner(requireContext()),
+        CollieFlags.INSTANCE.getSetupChecklist() ? new CollieProblemBanner(requireActivity()) : new DozeBanner(requireContext()),
         new CdsTemporaryErrorBanner(getChildFragmentManager()),
         new CdsPermanentErrorBanner(getChildFragmentManager()),
         new UsernameOutOfSyncBanner((usernameSyncState) -> {

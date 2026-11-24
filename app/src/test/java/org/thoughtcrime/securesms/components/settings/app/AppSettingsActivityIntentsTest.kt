@@ -82,6 +82,27 @@ class AppSettingsActivityIntentsTest {
     }
   }
 
+  @Test
+  fun `only the setup notifications intent requests delivery focus`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+      assertThat(AppSettingsActivity.pushNotifications(context).getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false)).isEqualTo(true)
+      assertThat(AppSettingsActivity.notifications(context).getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false)).isEqualTo(false)
+      assertThat(AppSettingsActivity.playServicesProblem(context, 42).getBooleanExtra(EXTRA_FOCUS_PUSH_NOTIFICATIONS, false)).isEqualTo(false)
+    }
+  }
+
+  @Test
+  fun `setup can open app updates and Molly unified push in both modes`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+      assertThat(AppSettingsActivity.appUpdates(context).startRoute()).isEqualTo(AppSettingsRoute.AppUpdates)
+      val unifiedPush = AppSettingsActivity.unifiedPush(context)
+      assertThat(unifiedPush.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(unifiedPush.startRoute()).isEqualTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
+    }
+  }
+
   /** The start route rides under a host-specific extra key, so find it by type rather than by name. */
   private fun Intent.startRoute(): AppSettingsRoute? {
     return extras?.keySet()?.firstNotNullOfOrNull { getParcelableExtraCompat(it, AppSettingsRoute::class.java) }

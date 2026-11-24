@@ -494,6 +494,13 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
       putInteger(FORCE_WEBSOCKET_MODE, value.serialize())
     }
 
+  /** The person picked the delivery method in effect, rather than getting it as a default. */
+  val hasChosenNotificationMethod: Boolean
+    get() {
+      val effective = preferredNotificationMethod
+      return store.containsKey(MOLLY_NOTIFICATION_METHOD) && getString(MOLLY_NOTIFICATION_METHOD, null) == effective.serialize()
+    }
+
   /** MOLLY: FCM/Websocket/UnifiedPush delivery choice. Defaults to FCM, or Websocket when Google services are absent. */
   var preferredNotificationMethod: NotificationDeliveryMethod
     get() {

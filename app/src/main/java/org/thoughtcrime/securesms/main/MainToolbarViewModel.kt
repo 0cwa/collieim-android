@@ -23,6 +23,7 @@ import org.signal.core.util.concurrent.SignalDispatchers
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.calls.log.CallLogFilter
 import org.thoughtcrime.securesms.conversationlist.model.ConversationFilter
+import org.thoughtcrime.securesms.main.setup.StatusLine
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.recipients.Recipient
 
@@ -31,6 +32,10 @@ class MainToolbarViewModel : ViewModel() {
   private val internalEvents = MutableSharedFlow<Event>()
 
   val state: StateFlow<MainToolbarState> = internalStateFlow
+
+  fun setSetupStatus(statusLine: StatusLine, hasSetupItems: Boolean) {
+    internalStateFlow.update { it.copy(statusLine = statusLine, hasSetupItems = hasSetupItems) }
+  }
 
   fun refresh() {
     viewModelScope.launch {

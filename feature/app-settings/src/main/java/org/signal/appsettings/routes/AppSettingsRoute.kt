@@ -129,6 +129,10 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
   @Serializable
   data object Collie : AppSettingsRoute
 
+  /** Installation-local call permissions, under Collie's Hardening section. */
+  @Serializable
+  data object CollieCalls : AppSettingsRoute
+
   @Serializable
   @Parcelize
   sealed interface CollieRoute : AppSettingsRoute {

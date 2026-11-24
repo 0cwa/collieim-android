@@ -36,6 +36,7 @@ object CollieSettingsTestTags {
   const val ROW_BETTER_SEARCH = "collie-better-search"
   const val ROW_STARRED_MESSAGES = "collie-starred-messages"
   const val ROW_GROUP_PRIVACY = "collie-group-privacy"
+  const val ROW_CALLS = "collie-calls"
 }
 
 /** Collie-specific settings and selected experimental features offered to all users. */
@@ -50,7 +51,8 @@ fun CollieSettingsScreen(
   onRecoveryPinGuardChanged: (Boolean) -> Unit = {},
   showAppUpdates: Boolean = false,
   onAppUpdatesClick: () -> Unit = {},
-  onGroupPrivacyClicked: () -> Unit = {}
+  onGroupPrivacyClicked: () -> Unit = {},
+  onCallsClicked: () -> Unit = {}
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.CollieSettings__title),
@@ -90,6 +92,15 @@ fun CollieSettingsScreen(
 
       item {
         Texts.SectionHeader(text = stringResource(R.string.CollieSettings__hardening))
+      }
+
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.CollieCalls__title),
+          label = stringResource(R.string.CollieCalls__summary),
+          onClick = onCallsClicked,
+          modifier = Modifier.testTag(CollieSettingsTestTags.ROW_CALLS)
+        )
       }
 
       item {

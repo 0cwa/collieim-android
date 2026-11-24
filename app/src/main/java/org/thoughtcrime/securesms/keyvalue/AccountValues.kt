@@ -226,7 +226,11 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
   }
 
   fun setAci(aci: ACI) {
+    if (this.aci != aci) {
+      org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountRegistrationChanged()
+    }
     putString(KEY_ACI, aci.toString())
+    org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountChanged(aci.toString())
     RegisteredConstraint.Observer.notifyListeners()
   }
 
@@ -528,6 +532,9 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
 
     val previous = isRegistered
 
+    if (previous != registered || isAciChanged) {
+      org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountRegistrationChanged()
+    }
     putBoolean(KEY_IS_REGISTERED, registered)
 
     AppDependencies.incomingMessageObserver.notifyRegistrationStateChanged()
@@ -565,6 +572,9 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
     set(value) {
       val previous = isUnauthorizedReceived
 
+      if (previous != value) {
+        org.thoughtcrime.securesms.calls.permissions.CallPermissions.onAccountRegistrationChanged()
+      }
       putBoolean(KEY_IS_UNAUTHORIZED_RECEIVED, value)
 
       if (previous != value) {

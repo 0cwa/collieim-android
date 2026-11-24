@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CollieCalls__title">Calls</string>
+    <string name="CollieCalls__summary">Choose who can call you, or turn off calling on this device.</string>
+    <string name="CollieCalls__local_description">These permissions apply only to this device. They are separate from muting chats and notification settings.</string>
+    <string name="CollieCalls__device_restriction">Device restriction</string>
+    <string name="CollieCalls__disable_all">Disable all calling on this device</string>
+    <string name="CollieCalls__disable_all_description">Stops incoming and outgoing calls, group calls and call links. Contact and group exceptions cannot override this.</string>
+    <string name="CollieCalls__all_disabled">All calling is disabled on this device. Turn off the device restriction in Settings → Collie → Calls to change incoming-call permissions.</string>
+    <string name="CollieCalls__defaults">Device defaults</string>
+    <string name="CollieCalls__incoming">Incoming calls</string>
+    <string name="CollieCalls__direct_default_description">Applies to individual contacts unless you choose a different permission in their conversation settings. You can still choose to call a contact whose incoming calls are blocked.</string>
+    <string name="CollieCalls__groups">Group calls</string>
+    <string name="CollieCalls__group_default_description">Applies to incoming group calls unless you choose a different permission in that group’s conversation settings. You can still choose to join a group call. Allowing a group does not allow its members to call you privately.</string>
+    <string name="CollieCalls__allow_incoming">Allow incoming calls</string>
+    <string name="CollieCalls__block_incoming">Block incoming calls</string>
+    <string name="CollieCalls__allow_group">Allow group calls</string>
+    <string name="CollieCalls__block_group">Block group calls</string>
+    <string name="CollieCalls__inherit">Use device default</string>
+    <string name="CollieCalls__inherit_summary">Use device default · %1$s</string>
+    <string name="CollieCalls__direct_override_description">Choose whether this contact may call you. Existing blocks and identity checks still apply. Blocking incoming calls does not stop you from calling them.</string>
+    <string name="CollieCalls__group_override_description">This permission applies only to incoming calls in this group. You can still choose to join a group call. It does not change whether members can call you privately, or allow calls in other groups.</string>
+    <string name="CollieCalls__loading">Loading call permissions…</string>
+    <string name="CollieCalls__unavailable">Call permissions are unavailable. Calling stays blocked until they can be read.</string>
+    <string name="CollieCalls__save_failed_title">Couldn’t save call permissions</string>
+    <string name="CollieCalls__save_failed">The change could not be saved. Review the current setting and try again.</string>
+    <string name="CollieCalls__try_again">Try again</string>
+    <string name="CollieCalls__saving">Saving…</string>
+</resources>

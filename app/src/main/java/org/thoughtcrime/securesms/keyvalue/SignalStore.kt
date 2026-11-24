@@ -65,6 +65,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val unifiedPushValues = UnifiedPushValues(store)
   val collieSetupValues = CollieSetupValues(store)
   val groupAdmissionValues = GroupAdmissionValues(store)
+  val callPermissionValues = CallPermissionValues(store, context.noBackupFilesDir)
   val labsValues = LabsValues(store) { RemoteConfig.internalUser }
   val mollyValues = MollyValues(store, context)
 
@@ -192,7 +193,13 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
       instance!!.store.resetCache()
       instance!!.settingsValues.onPostBackupRestore()
       instance!!.groupAdmissionValues.onPostBackupRestore()
+      org.thoughtcrime.securesms.calls.permissions.CallPermissions.onRestore()
     }
+
+    @JvmStatic
+    @get:JvmName("callPermissions")
+    val callPermissions: CallPermissionValues
+      get() = instance!!.callPermissionValues
 
     @JvmStatic
     @get:JvmName("account")

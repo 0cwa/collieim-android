@@ -327,6 +327,11 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
+    if (keyValue.key.startsWith(org.thoughtcrime.securesms.keyvalue.CallPermissionValues.KEY_PREFIX)) {
+      Log.i(TAG, "Skipping installation-local call permissions");
+      return;
+    }
+
     // This marker is local recovery state, not backup data. In particular, an imported false value
     // must not make a partially restored account appear complete after a process restart.
     if (UnifiedPushValues.UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING.equals(keyValue.key)) {

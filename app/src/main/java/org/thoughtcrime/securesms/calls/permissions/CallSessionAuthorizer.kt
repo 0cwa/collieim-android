@@ -36,6 +36,7 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
     val outgoing: Boolean,
     var callId: Long?,
     val sourceDevice: Int?,
+    val initiator: Long,
     var expiresAt: Long,
     var active: Boolean = false
   )
@@ -53,7 +54,7 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
   fun beginOutgoing(context: CallContext, recipient: Long): Boolean {
     val existing = live()
     if (existing != null) return existing.outgoing && existing.context == context && existing.recipient == recipient
-    current = Session(++serial, context, recipient, true, null, null, clock() + SIGNALING_LEASE_MS, context != CallContext.DIRECT)
+    current = Session(++serial, context, recipient, true, null, null, recipient, clock() + SIGNALING_LEASE_MS, context != CallContext.DIRECT)
     return true
   }
 
@@ -79,13 +80,19 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
 
   fun hasSession(recipient: Long): Boolean = live()?.recipient == recipient
 
+  fun clear() { current = null }
+
+  fun sharingSession(context: CallContext, recipient: Long?): Long? = live()?.takeIf {
+    it.context == context && (recipient == null || it.recipient == recipient) && (context == CallContext.DIRECT || it.active)
+  }?.serial
+
   fun direct(recipient: Long, callId: Long, device: Int, kind: DirectMessageKind, age: Long, incomingAllowed: Boolean): CallAuthorization? {
     if (!fresh(device, age)) return null
     var s = live()
     if (kind == DirectMessageKind.OFFER) {
       if (!incomingAllowed) return null
       if (s == null) {
-        s = Session(++serial, CallContext.DIRECT, recipient, false, callId, device, clock() + SIGNALING_LEASE_MS)
+        s = Session(++serial, CallContext.DIRECT, recipient, false, callId, device, recipient, clock() + SIGNALING_LEASE_MS)
         current = s
       }
     }
@@ -105,15 +112,16 @@ internal class CallSessionAuthorizer(private val clock: () -> Long) {
     if (kind == GroupMessageKind.RING) {
       if (context != CallContext.GROUP || !incomingAllowed || ringId == null) return null
       if (s == null) {
-        s = Session(++serial, context, recipient, false, ringId, device, clock() + SIGNALING_LEASE_MS)
+        s = Session(++serial, context, recipient, false, ringId, device, sender, clock() + SIGNALING_LEASE_MS)
         current = s
       }
     }
     s ?: return null
     if (s.context != context || s.recipient != recipient) return null
     when (kind) {
-      GroupMessageKind.RING -> if (s.outgoing || s.callId != ringId || s.sourceDevice != device) return null
-      GroupMessageKind.CANCEL, GroupMessageKind.RING_RESPONSE -> if (ringId == null || s.callId != ringId) return null
+      GroupMessageKind.RING -> if (s.outgoing || s.callId != ringId || s.sourceDevice != device || s.initiator != sender) return null
+      GroupMessageKind.CANCEL -> if (ringId == null || s.callId != ringId || s.sourceDevice != device || s.initiator != sender) return null
+      GroupMessageKind.RING_RESPONSE -> if (ringId == null || s.callId != ringId) return null
       GroupMessageKind.GROUP_DATA -> if (!s.active) return null
     }
     return ticket(s, sender, device, null, kind)

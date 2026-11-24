@@ -1048,6 +1048,11 @@
             app:popExitAnim="@anim/fragment_close_exit" />
     </fragment>
 
+    <fragment
+        android:id="@+id/callsSettingsFragment"
+        android:name="org.thoughtcrime.securesms.components.settings.app.collie.CallsSettingsFragment"
+        android:label="@string/CollieCalls__title" />
+
     <!-- Labs Settings -->
 
     <fragment

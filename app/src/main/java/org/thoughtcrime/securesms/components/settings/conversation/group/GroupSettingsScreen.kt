@@ -79,7 +79,8 @@ fun GroupSettingsScreen(
   onEvent: (GroupSettingsEvent) -> Unit,
   onNavigationClick: () -> Unit,
   onAvatarViewCreated: (View) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  callPermissionContent: (@Composable () -> Unit)? = null
 ) {
   ConversationSettingsScaffold(
     title = state.title,
@@ -189,6 +190,8 @@ fun GroupSettingsScreen(
         onClick = { onEvent(GroupSettingsEvent.SoundsAndNotificationsClicked) }
       )
     }
+
+    callPermissionContent?.let { content -> item { content() } }
 
     if (state.starredMessagesEnabled) {
       item {

@@ -20,6 +20,7 @@ data class CallPermissionSettings(
 /** Small installation-local policy record. There are deliberately no unimplemented capabilities. */
 internal data class CallPolicyState(
   val account: String? = null,
+  val installation: String? = null,
   val allCallingDisabled: Boolean = false,
   val directDefault: CallPermission = CallPermission.ALLOW,
   val groupDefault: CallPermission = CallPermission.ALLOW,

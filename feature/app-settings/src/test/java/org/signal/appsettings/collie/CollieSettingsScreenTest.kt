@@ -73,6 +73,19 @@ class CollieSettingsScreenTest {
   }
 
   @Test
+  fun `Calls opens the hardening destination without changing a preference`() {
+    var opened = 0
+    composeTestRule.setContent {
+      CollieSettingsScreen(state = LabsSettingsState(), onEvent = events::add, onCallsClicked = { opened++ })
+    }
+
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_CALLS).performClick()
+
+    assertThat(opened).isEqualTo(1)
+    assertThat(events).isEmpty()
+  }
+
+  @Test
   fun `the Collie screen contains a Labs section`() {
     setContent(LabsSettingsState())
 

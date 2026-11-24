@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -250,6 +251,43 @@ class JobSchedulerSchedulerTest {
 
     assertEquals(retrying.generation, pending().generation)
     assertEquals(retrying.wakeupAt, pending().wakeupAt)
+  }
+
+  @Test
+  fun `other groups are scheduled before replacing the current wakeup`() {
+    val events = mutableListOf<String>()
+    val current = JobManager.PendingWakeup(20, listOf(constraint("current")))
+    val other = JobManager.PendingWakeup(10, listOf(constraint("other")))
+
+    val succeeded = JobManager.scheduleWakeupsForRetry(current.jobId(), listOf(current, other)) { delay, constraints ->
+      events.add("${constraints.single().getJobSchedulerKeyPart()}:$delay")
+      true
+    }
+
+    assertTrue(succeeded)
+    assertEquals(listOf("other:10", "current:20"), events)
+  }
+
+  @Test
+  fun `failed other group leaves the current wakeup available for framework retry`() {
+    val events = mutableListOf<String>()
+    val current = JobManager.PendingWakeup(20, listOf(constraint("current")))
+    val other = JobManager.PendingWakeup(10, listOf(constraint("other")))
+
+    val succeeded = JobManager.scheduleWakeupsForRetry(current.jobId(), listOf(current, other)) { _, constraints ->
+      events.add(constraints.single().getJobSchedulerKeyPart()!!)
+      false
+    }
+
+    assertFalse(succeeded)
+    assertEquals(listOf("other"), events)
+  }
+
+  private fun constraint(key: String): Constraint = object : Constraint {
+    override fun isMet(): Boolean = true
+    override fun getFactoryKey(): String = key
+    override fun applyToJobInfo(jobInfoBuilder: JobInfo.Builder) = Unit
+    override fun getJobSchedulerKeyPart(): String = key
   }
 
   private fun runAll() {

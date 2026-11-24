@@ -125,7 +125,7 @@ class NewLinkedDeviceNotificationSchedulingTest {
   }
 
   @Test
-  fun `legacy persisted payload remains a reminder with its existing schedule and constraints`() {
+  fun `legacy reminder keeps its persisted schedule while dropping its obsolete network gate`() {
     // Pre-change wire payload: deviceId = 2, deviceCreatedAt = 42, no phase field.
     val oldPayload = byteArrayOf(0x08, 0x02, 0x10, 0x2a)
     val oldParameters = Job.Parameters.Builder()
@@ -147,7 +147,7 @@ class NewLinkedDeviceNotificationSchedulingTest {
     assertEquals(1000L, restored.parameters.createTime)
     assertEquals(123.minutes.inWholeMilliseconds, restored.parameters.initialDelay)
     assertEquals(Job.Parameters.PRIORITY_DEFAULT, restored.parameters.queuePriority)
-    assertTrue(restored.parameters.constraintKeys.contains(NetworkConstraint.KEY))
+    assertFalse(restored.parameters.constraintKeys.contains(NetworkConstraint.KEY))
     assertTrue(restored.parameters.constraintKeys.contains(MasterSecretConstraint.KEY))
   }
 

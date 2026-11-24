@@ -127,7 +127,7 @@ class JobController {
     schedulePendingJobs(now, scheduler);
   }
 
-  private void schedulePendingJobs(long now, @NonNull Scheduler target) {
+  void schedulePendingJobs(long now, @NonNull Scheduler target) {
     Map<List<String>, Long> nextRunsByConstraints = new HashMap<>();
 
     for (MinimalJobSpec job : jobStorage.getAllMinimalJobSpecsMatchingFilter(spec -> !spec.isRunning())) {

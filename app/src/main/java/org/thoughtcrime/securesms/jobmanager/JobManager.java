@@ -403,17 +403,58 @@ public class JobManager implements ConstraintObserver.Notifier {
   void onSystemJobFinished(@NonNull JobParameters parameters, @NonNull Consumer<Boolean> completion) {
     runOnExecutor(() -> {
       systemScheduler.onWakeupFinished(parameters.getJobId(), parameters.getExtras());
-      AtomicBoolean success = new AtomicBoolean(true);
-      jobController.schedulePendingJobs((delay, constraints) -> {
-        if (!systemScheduler.scheduleSynchronously(delay, constraints)) {
-          success.set(false);
-        }
-      });
-      if (!success.get()) {
+      List<PendingWakeup> pendingWakeups = new ArrayList<>();
+      jobController.schedulePendingJobs(System.currentTimeMillis(), (delay, constraints) -> pendingWakeups.add(new PendingWakeup(delay, constraints)));
+
+      boolean success = scheduleWakeupsForRetry(parameters.getJobId(), pendingWakeups,
+                                                (delay, constraints) -> systemScheduler.scheduleSynchronously(delay, constraints));
+
+      if (!success) {
         systemScheduler.onWakeupRetrying(parameters.getJobId(), parameters.getExtras());
       }
-      completion.accept(!success.get());
+      completion.accept(!success);
     });
+  }
+
+  static boolean scheduleWakeupsForRetry(int currentJobId, @NonNull List<PendingWakeup> pendingWakeups, @NonNull WakeupScheduler scheduler) {
+    PendingWakeup currentSuccessor = null;
+    boolean success = true;
+    for (PendingWakeup pendingWakeup : pendingWakeups) {
+      if (pendingWakeup.jobId() == currentJobId) {
+        currentSuccessor = pendingWakeup;
+      } else if (!scheduler.schedule(pendingWakeup.delay, pendingWakeup.constraints)) {
+        success = false;
+      }
+    }
+
+    // Do not replace the current wakeup until all other groups are safely persisted. If one
+    // fails, Android can retry this generation and recover any missing earlier deadline.
+    if (success && currentSuccessor != null) {
+      success = scheduler.schedule(currentSuccessor.delay, currentSuccessor.constraints);
+    }
+    return success;
+  }
+
+  interface WakeupScheduler {
+    boolean schedule(long delay, @NonNull List<Constraint> constraints);
+  }
+
+  static final class PendingWakeup {
+    private final long delay;
+    private final List<Constraint> constraints;
+
+    PendingWakeup(long delay, @NonNull List<Constraint> constraints) {
+      this.delay = delay;
+      this.constraints = constraints;
+    }
+
+    int jobId() {
+      String constraintNames = constraints.stream()
+                                          .map(Constraint::getJobSchedulerKeyPart).filter(key -> key != null)
+                                          .sorted()
+                                          .collect(Collectors.joining("-"));
+      return constraintNames.hashCode();
+    }
   }
 
   @Override

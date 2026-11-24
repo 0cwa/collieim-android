@@ -132,6 +132,7 @@ public final class JobSchedulerScheduler implements Scheduler {
   public static class SystemService extends JobService {
 
     private final Map<Integer, ActiveWakeup> activeWakeups = new HashMap<>();
+    private final Map<Integer, CompletedWakeup> completedWakeups = new HashMap<>();
 
     @Override
     public boolean onStartJob(JobParameters params) {
@@ -147,6 +148,7 @@ public final class JobSchedulerScheduler implements Scheduler {
       ActiveWakeup wakeup = new ActiveWakeup(jobManager, params);
       synchronized (activeWakeups) {
         ActiveWakeup previous = activeWakeups.put(params.getJobId(), wakeup);
+        completedWakeups.remove(params.getJobId());
         if (previous != null) {
           previous.jobManager.removeOnEmptyQueueListener(previous);
         }
@@ -163,8 +165,16 @@ public final class JobSchedulerScheduler implements Scheduler {
       synchronized (activeWakeups) {
         ActiveWakeup wakeup = activeWakeups.get(params.getJobId());
         if (wakeup != null && Objects.equals(wakeup.parameters.getExtras().getString(WAKEUP_GENERATION), params.getExtras().getString(WAKEUP_GENERATION))) {
+          if (wakeup.finishing) {
+            return wakeup.needsReschedule != null && wakeup.needsReschedule;
+          }
           activeWakeups.remove(params.getJobId());
           wakeup.jobManager.removeOnEmptyQueueListener(wakeup);
+        } else {
+          CompletedWakeup completed = completedWakeups.get(params.getJobId());
+          if (completed != null && completed.generation.equals(params.getExtras().getString(WAKEUP_GENERATION))) {
+            return completed.needsReschedule;
+          }
         }
       }
       // Delayed rows can remain after an OS stop. Let Android retry this wakeup without
@@ -175,6 +185,8 @@ public final class JobSchedulerScheduler implements Scheduler {
     private final class ActiveWakeup implements JobManager.EmptyQueueListener {
       private final JobManager    jobManager;
       private final JobParameters parameters;
+      private boolean finishing;
+      private Boolean needsReschedule;
 
       private ActiveWakeup(@NonNull JobManager jobManager, @NonNull JobParameters parameters) {
         this.jobManager = jobManager;
@@ -184,15 +196,36 @@ public final class JobSchedulerScheduler implements Scheduler {
       @Override
       public void onQueueEmpty() {
         synchronized (activeWakeups) {
-          if (activeWakeups.get(parameters.getJobId()) != this) {
+          if (activeWakeups.get(parameters.getJobId()) != this || finishing) {
             return;
           }
-          activeWakeups.remove(parameters.getJobId());
+          finishing = true;
           // Claim completion through synchronous rearming, so onStopJob cannot turn this
           // same generation into a framework retry while it is being consumed.
           jobManager.removeOnEmptyQueueListener(this);
-          jobManager.onSystemJobFinished(parameters, needsReschedule -> jobFinished(parameters, needsReschedule));
+          jobManager.onSystemJobFinished(parameters, retry -> {
+            synchronized (activeWakeups) {
+              needsReschedule = retry;
+            }
+            jobFinished(parameters, retry);
+            synchronized (activeWakeups) {
+              if (activeWakeups.get(parameters.getJobId()) == this) {
+                activeWakeups.remove(parameters.getJobId());
+                completedWakeups.put(parameters.getJobId(), new CompletedWakeup(parameters.getExtras().getString(WAKEUP_GENERATION, ""), retry));
+              }
+            }
+          });
         }
+      }
+    }
+
+    private static final class CompletedWakeup {
+      private final String generation;
+      private final boolean needsReschedule;
+
+      private CompletedWakeup(@NonNull String generation, boolean needsReschedule) {
+        this.generation = generation;
+        this.needsReschedule = needsReschedule;
       }
     }
   }

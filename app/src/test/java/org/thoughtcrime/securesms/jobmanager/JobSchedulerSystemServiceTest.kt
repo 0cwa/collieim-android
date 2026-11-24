@@ -78,6 +78,22 @@ class JobSchedulerSystemServiceTest {
   }
 
   @Test
+  fun `stop during terminal dispatch returns the rearm result and keeps the generation fenced`() {
+    val parameters = parameters(0, "finishing")
+    assertTrue(service.onStartJob(parameters))
+    listeners.single().onQueueEmpty()
+
+    // The owner remains available while rearming is in flight; before the result, do not ask
+    // Android to retry a generation that is already being consumed.
+    assertFalse(service.onStopJob(parameters))
+    completions.single().accept(true)
+
+    assertTrue(service.onStopJob(parameters))
+    verify(exactly = 1) { service.jobFinished(parameters, true) }
+    verify(exactly = 1) { manager.onSystemJobFinished(parameters, any()) }
+  }
+
+  @Test
   fun `stopping a wakeup removes its listener requests retry and ignores a late drain`() {
     val parameters = parameters(0, "stopped")
     assertTrue(service.onStartJob(parameters))

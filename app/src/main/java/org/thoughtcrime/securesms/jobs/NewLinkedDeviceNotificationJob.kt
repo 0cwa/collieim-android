@@ -9,6 +9,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
+import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobs.protos.NewLinkedDeviceNotificationJobData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
@@ -98,6 +99,12 @@ class NewLinkedDeviceNotificationJob private constructor(
   override fun onFailure() = Unit
 
   class Factory : Job.Factory<NewLinkedDeviceNotificationJob?> {
-    override fun create(parameters: Parameters, serializedData: ByteArray?): NewLinkedDeviceNotificationJob = NewLinkedDeviceNotificationJob(NewLinkedDeviceNotificationJobData.ADAPTER.decode(serializedData!!), parameters)
+    override fun create(parameters: Parameters, serializedData: ByteArray?): NewLinkedDeviceNotificationJob {
+      val data = NewLinkedDeviceNotificationJobData.ADAPTER.decode(serializedData!!)
+      // Older reminders were network-gated even though publishing this local alert needs no network.
+      // Remove only that obsolete constraint while retaining the persisted deadline and queue.
+      val restoredParameters = if (!data.isEarlyNotification) parameters.withoutConstraint(NetworkConstraint.KEY) else parameters
+      return NewLinkedDeviceNotificationJob(data, restoredParameters)
+    }
   }
 }

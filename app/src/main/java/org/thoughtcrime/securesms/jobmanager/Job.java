@@ -408,6 +408,17 @@ public abstract class Job {
       return new Builder(id, createTime, lifespan, maxAttempts, maxInstancesForFactory, maxInstancesForQueue, queue, newConstraintKeys, inputData, memoryOnly, globalPriority, queuePriority, initialDelay).build();
     }
 
+    /** Returns a copy without the provided constraint, preserving its id and scheduling fields. */
+    public @NonNull Parameters withoutConstraint(@NonNull String constraintKey) {
+      if (!constraintKeys.contains(constraintKey)) {
+        return this;
+      }
+
+      List<String> newConstraintKeys = new LinkedList<>(constraintKeys);
+      newConstraintKeys.removeIf(constraintKey::equals);
+      return new Builder(id, createTime, lifespan, maxAttempts, maxInstancesForFactory, maxInstancesForQueue, queue, newConstraintKeys, inputData, memoryOnly, globalPriority, queuePriority, initialDelay).build();
+    }
+
     public Builder toBuilder() {
       return new Builder(id, createTime, lifespan, maxAttempts, maxInstancesForFactory, maxInstancesForQueue, queue, constraintKeys, inputData, memoryOnly, globalPriority, queuePriority, initialDelay);
     }

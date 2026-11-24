@@ -11,6 +11,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -107,6 +108,60 @@ class CallAdmissionDispatchTest {
     queue.drain()
 
     verify(exactly = 1) { native.receivedIceCandidates(peer.callId, peer, 2, candidates) }
+  }
+
+  @Test
+  fun `a held group admits only a cancellation matching the existing ring`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    val otherMember = policy.recipient(6)
+    assertNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.RING, 0))
+
+    policy.holdGroup(group)
+
+    assertNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.RING, 0))
+    assertNull(CallPermissions.authorizeGroup(group.id, sender.id, 42, 2, GroupMessageKind.CANCEL, 0))
+    assertNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 3, GroupMessageKind.CANCEL, 0))
+    assertNull(CallPermissions.authorizeGroup(group.id, otherMember.id, 41, 2, GroupMessageKind.CANCEL, 0))
+    val ticket = requireNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.CANCEL, 0))
+    val senderUuid = UUID(0, 7)
+    val payload = byteArrayOf(1)
+    manager.receivedOpaqueMessage(ticket, WebRtcData.OpaqueMessageMetadata(senderUuid, payload, 2, 0))
+    queue.drain()
+
+    verify(exactly = 1) { native.receivedCallMessage(senderUuid, 2, 1, payload, any()) }
+  }
+
+  @Test
+  fun `a queued cancellation still reaches an existing ring after the group becomes held`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    assertNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.RING, 0))
+    val ticket = requireNotNull(CallPermissions.authorizeGroup(group.id, sender.id, 41, 2, GroupMessageKind.CANCEL, 0))
+    val senderUuid = UUID(0, 7)
+    val payload = byteArrayOf(1)
+    manager.receivedOpaqueMessage(ticket, WebRtcData.OpaqueMessageMetadata(senderUuid, payload, 2, 0))
+
+    policy.holdGroup(group)
+    queue.drain()
+
+    verify(exactly = 1) { native.receivedCallMessage(senderUuid, 2, 1, payload, any()) }
+  }
+
+  @Test
+  fun `a held group cannot authorize new or already queued opaque call messages`() {
+    val group = policy.group(8)
+    val sender = policy.recipient(7)
+    assertTrue(CallPermissions.beginOutgoing(group.id))
+    val ticket = requireNotNull(CallPermissions.authorizeGroup(group.id, sender.id, null, 2, GroupMessageKind.GROUP_DATA, 0))
+    val opaque = WebRtcData.OpaqueMessageMetadata(UUID(0, 7), byteArrayOf(1), 2, 0)
+    manager.receivedOpaqueMessage(ticket, opaque)
+
+    policy.holdGroup(group)
+    queue.drain()
+
+    verify(exactly = 0) { native.receivedCallMessage(any(), any(), any(), any(), any()) }
+    assertNull(CallPermissions.authorizeGroup(group.id, sender.id, null, 2, GroupMessageKind.GROUP_DATA, 0))
   }
 
   @Test

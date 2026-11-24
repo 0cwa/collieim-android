@@ -9,6 +9,7 @@ import org.signal.core.models.ServiceId
 import org.signal.core.models.recipients.RecipientId
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientIds
@@ -468,6 +469,8 @@ object CallPermissions {
     if (recipient.isBlocked || sender.isBlocked || !sender.isIndividual) return false
     if (recipient.isCallLink) return kind == GroupMessageKind.GROUP_DATA
     if (!recipient.isPushV2Group) return false
+    // Let an authenticated cancellation clear its existing ring even after the group is held.
+    if (kind != GroupMessageKind.CANCEL && GroupAdmission.isHeld(recipient)) return false
     if (kind == GroupMessageKind.RING_RESPONSE && !sender.isSelf) return false
     val group = SignalDatabase.groups.getGroup(recipient.id).orElse(null) ?: return false
     if (!group.isActive || !group.memberLevel(sender).isInGroup) return false

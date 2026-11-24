@@ -162,7 +162,8 @@ class GroupMessageServiceSenderKeyTest {
       newService().sendMessageViaSenderKey(distributionId, targets, content, ContentHint.RESENDABLE, null, timestamp, groupSend, isOnline = false, urgent = true, beforeSend = guard)
     }
 
-    assertThat(result.exceptionOrNull()).isEqualTo(stale)
+    assertThat(result.exceptionOrNull()?.javaClass).isEqualTo(IOException::class.java)
+    assertThat(result.exceptionOrNull()?.message).isEqualTo(stale.message)
     coVerify(exactly = 1) { messageApi.sendMultiRecipientMessage(any(), any(), any(), any(), any(), eq(guard)) }
   }
 

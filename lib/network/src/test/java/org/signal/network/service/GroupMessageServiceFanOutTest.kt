@@ -82,7 +82,8 @@ class GroupMessageServiceFanOutTest {
       service.sendFanOut(fanOutTargets(1), envelopeContent, timestamp, isOnline = false, urgent = true, beforeSend = { throw stale })
     }
 
-    assertThat(result.exceptionOrNull()).isEqualTo(stale)
+    assertThat(result.exceptionOrNull()?.javaClass).isEqualTo(IOException::class.java)
+    assertThat(result.exceptionOrNull()?.message).isEqualTo(stale.message)
     coVerify(exactly = 0) { messageApi.sendSealedSenderMessage(any(), any(), any(), any(), any(), any(), any()) }
   }
 

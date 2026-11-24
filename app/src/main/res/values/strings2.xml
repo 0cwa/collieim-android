@@ -230,4 +230,17 @@
     <string name="LinkDeviceCode__invalid_code">This is not a valid linking code. Copy the full code from the device you want to link.</string>
     <string name="LinkDeviceCode__expired_code">This linking code has expired or is no longer available. Copy a new code from the device you want to link.</string>
     <string name="LinkDeviceCode__only_link_your_devices">Only paste a code from a device you own and trust.</string>
+    <string name="RoundSyncBackup__title">Round Sync</string>
+    <string name="RoundSyncBackup__off">Off</string>
+    <string name="RoundSyncBackup__task_summary">Task #%1$d</string>
+    <string name="RoundSyncBackup__task_not_installed">Task #%1$d (Round Sync not installed)</string>
+    <string name="RoundSyncBackup__not_installed">Round Sync not installed</string>
+    <string name="RoundSyncBackup__task_id">Task ID</string>
+    <string name="RoundSyncBackup__instructions">In Round Sync, open Tasks and look for the ID in the task details. Round Sync runs this task after each completed local backup.</string>
+    <string name="RoundSyncBackup__invalid_id">Enter a positive whole number for the task ID.</string>
+    <string name="RoundSyncBackup__save">Save</string>
+    <string name="RoundSyncBackup__disable">Turn off</string>
+    <string name="RoundSyncBackup__test">Test sync</string>
+    <string name="RoundSyncBackup__requested">Sync request sent to Round Sync. Check Round Sync to confirm it ran.</string>
+    <string name="RoundSyncBackup__failed">Could not start the Round Sync task.</string>
 </resources>

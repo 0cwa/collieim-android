@@ -32,6 +32,8 @@ class MollyValues internal constructor(store: KeyValueStore, private val context
     const val BLOCK_UNKNOWN = "pref_block_unknown"
     const val BACKUP_INTERVAL = "pref_backup_interval"
     const val BACKUP_MAX_FILES = "pref_backup_max_files"
+    const val ROUND_SYNC_ENABLED = "pref_backup_round_sync_enabled"
+    const val ROUND_SYNC_TASK_ID = "pref_backup_round_sync_task_id"
     const val PROXY_TYPE = "pref_proxy_type"
     const val PROXY_SOCKS_HOST = "pref_proxy_socks_host"
     const val PROXY_SOCKS_PORT = "pref_proxy_socks_port"
@@ -51,6 +53,8 @@ class MollyValues internal constructor(store: KeyValueStore, private val context
   var blockUnknownEnabled: Boolean by booleanValue(BLOCK_UNKNOWN, false)
   var backupInterval: Long by longValue(BACKUP_INTERVAL, TimeUnit.DAYS.toMillis(1))
   var backupMaxFiles: Int by integerValue(BACKUP_MAX_FILES, 2)
+  var roundSyncEnabled: Boolean by booleanValue(ROUND_SYNC_ENABLED, false)
+  var roundSyncTaskId: Int by integerValue(ROUND_SYNC_TASK_ID, -1)
   var hasSeenNetworkConfig: Boolean by booleanValue(NETWORK_CONFIG_SEEN, true)
   var passphraseLockTimeout: Long by longValue(PASSPHRASE_LOCK_TIMEOUT, 0)
 
@@ -82,6 +86,8 @@ class MollyValues internal constructor(store: KeyValueStore, private val context
       BLOCK_UNKNOWN,
       BACKUP_INTERVAL,
       BACKUP_MAX_FILES,
+      ROUND_SYNC_ENABLED,
+      ROUND_SYNC_TASK_ID,
       PROXY_TYPE,
       PROXY_SOCKS_HOST,
       PROXY_SOCKS_PORT,

@@ -25,6 +25,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.LocalBackupJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.protos.LocalBackupCreationProgress
+import org.thoughtcrime.securesms.preferences.RoundSyncBackupSettings
 import org.thoughtcrime.securesms.util.BackupUtil
 import org.thoughtcrime.securesms.util.DateUtils
 import org.thoughtcrime.securesms.util.formatHours
@@ -98,6 +99,7 @@ class LocalBackupsViewModel : ViewModel(), BackupKeyCredentialManagerHandler {
 
   fun refreshSettingsState() {
     val context = AppDependencies.application
+    val roundSyncSummary = RoundSyncBackupSettings.summary(context)
     val backupTime = LocalTime.of(SignalStore.settings.backupHour, SignalStore.settings.backupMinute).formatHours(context)
 
     val userUnregistered = SignalStore.account.isUnauthorizedReceived || !SignalStore.account.isRegistered
@@ -119,9 +121,15 @@ class LocalBackupsViewModel : ViewModel(), BackupKeyCredentialManagerHandler {
       it.copy(
         canTurnOn = canTurnOn,
         scheduleTimeLabel = backupTime,
+        roundSyncSummary = roundSyncSummary,
         optimizeStorageEnabled = SignalStore.backup.optimizeStorage
       )
     }
+  }
+
+  fun refreshRoundSyncSummary() {
+    val summary = RoundSyncBackupSettings.summary(AppDependencies.application)
+    internalSettingsState.update { it.copy(roundSyncSummary = summary) }
   }
 
   fun onBackupStarted() {

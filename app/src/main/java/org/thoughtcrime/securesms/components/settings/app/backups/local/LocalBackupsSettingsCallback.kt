@@ -22,6 +22,7 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.jobs.LocalBackupJob.enqueueArchive
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.preferences.RoundSyncBackupSettings
 import org.thoughtcrime.securesms.service.LocalBackupListener
 import org.thoughtcrime.securesms.util.BackupUtil
 import org.thoughtcrime.securesms.util.CommunicationActions
@@ -30,6 +31,7 @@ sealed interface LocalBackupsSettingsCallback {
   fun onNavigationClick()
   fun onTurnOnClick()
   fun onCreateBackupClick()
+  fun onRoundSyncClick()
   fun onPickTimeClick()
   fun onViewBackupKeyClick()
   fun onLearnMoreClick()
@@ -41,6 +43,7 @@ sealed interface LocalBackupsSettingsCallback {
     override fun onNavigationClick() = Unit
     override fun onTurnOnClick() = Unit
     override fun onCreateBackupClick() = Unit
+    override fun onRoundSyncClick() = Unit
     override fun onPickTimeClick() = Unit
     override fun onViewBackupKeyClick() = Unit
     override fun onLearnMoreClick() = Unit
@@ -72,6 +75,10 @@ class DefaultLocalBackupsSettingsCallback(
     } catch (_: ActivityNotFoundException) {
       Toast.makeText(activity, R.string.BackupDialog_no_file_picker_available, Toast.LENGTH_LONG).show()
     }
+  }
+
+  override fun onRoundSyncClick() {
+    RoundSyncBackupSettings.show(activity, viewModel::refreshRoundSyncSummary)
   }
 
   override fun onPickTimeClick() {

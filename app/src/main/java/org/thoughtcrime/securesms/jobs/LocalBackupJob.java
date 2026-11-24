@@ -19,6 +19,7 @@ import org.thoughtcrime.securesms.backup.BackupEvent;
 import org.thoughtcrime.securesms.backup.BackupFileIOError;
 import org.thoughtcrime.securesms.backup.BackupVerifier;
 import org.thoughtcrime.securesms.backup.FullBackupExporter;
+import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger;
 import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
@@ -140,6 +141,7 @@ public final class LocalBackupJob extends BaseJob {
 
       File tempFile = File.createTempFile(TEMP_BACKUP_FILE_PREFIX, TEMP_BACKUP_FILE_SUFFIX, backupDirectory);
 
+      boolean backupSucceeded = false;
       try {
         Stopwatch   stopwatch     = new Stopwatch("backup-export");
         BackupEvent finishedEvent = FullBackupExporter.export(context,
@@ -161,6 +163,7 @@ public final class LocalBackupJob extends BaseJob {
             Log.w(TAG, "Failed to rename temp file");
             throw new IOException("Renaming temporary backup file failed!");
           }
+          backupSucceeded = true;
         } else {
           BackupFileIOError.VERIFICATION_FAILED.postNotification(context);
         }
@@ -184,6 +187,9 @@ public final class LocalBackupJob extends BaseJob {
       }
 
       BackupUtil.deleteOldBackups();
+      if (backupSucceeded) {
+        RoundSyncBackupTrigger.triggerIfEnabled(context);
+      }
     } catch (UnableToStartException e) {
       Log.w(TAG, "This should not happen on API < 31");
       throw new AssertionError(e);

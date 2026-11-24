@@ -36,11 +36,12 @@ class LinkPreviewViewModelV2(
   }
 
   private var enabled = SignalStore.settings.isLinkPreviewsEnabled
+  private var webImagesEnabled = SignalStore.settings.isWebLinkPreviewImagesEnabled
   private var savedLinkPreviewState by savedStateHandle.delegate(LINK_PREVIEW_STATE) { LinkPreviewState.forNoLinks() }
-  private val linkPreviewStateStore = RxStore(savedLinkPreviewState)
+  private val linkPreviewStateStore = RxStore(cleanseState(savedLinkPreviewState))
 
   val linkPreviewState: Flowable<LinkPreviewState> = linkPreviewStateStore.stateFlowable.observeOn(AndroidSchedulers.mainThread())
-  val linkPreviewStateSnapshot: LinkPreviewState get() = linkPreviewStateStore.state
+  val linkPreviewStateSnapshot: LinkPreviewState get() = cleanseState(linkPreviewStateStore.state)
 
   val hasLinkPreview: Boolean = linkPreviewStateStore.state.linkPreview.isPresent
   val hasLinkPreviewUi: Boolean = linkPreviewStateStore.state.hasContent()
@@ -65,7 +66,7 @@ class LinkPreviewViewModelV2(
   }
 
   fun onSend(): List<LinkPreview> {
-    val currentState = linkPreviewStateStore.state
+    val currentState = linkPreviewStateSnapshot
 
     onUserCancel()
     userCancelled = false
@@ -87,6 +88,8 @@ class LinkPreviewViewModelV2(
   }
 
   fun onTextChanged(text: String, cursorStart: Int, cursorEnd: Int) {
+    refreshImagePreference()
+
     if (!enabled && !enablePlaceholder) {
       return
     }
@@ -128,6 +131,31 @@ class LinkPreviewViewModelV2(
   fun onEnabled() {
     userCancelled = false
     enabled = SignalStore.settings.isLinkPreviewsEnabled
+    refreshImagePreference()
+  }
+
+  /** Apply a setting changed while this composer was in the background. */
+  fun refreshImagePreference() {
+    val includeImages = SignalStore.settings.isWebLinkPreviewImagesEnabled
+    if (includeImages == webImagesEnabled) {
+      return
+    }
+
+    webImagesEnabled = includeImages
+    val url = activeUrl
+    if (url != null && !LinkPreviewImagePolicy.isWebLinkPreview(url)) {
+      return
+    }
+
+    activeRequest.dispose()
+    debouncer.clear()
+
+    val currentState = linkPreviewStateStore.state
+    setLinkPreviewState(currentState)
+
+    if (url != null && enabled && !userCancelled && (includeImages || currentState.isLoading)) {
+      activeRequest = performRequest(url)
+    }
   }
 
   fun onUserCancel() {
@@ -185,7 +213,10 @@ class LinkPreviewViewModelV2(
 
   private fun cleanseState(linkPreviewState: LinkPreviewState): LinkPreviewState {
     if (enabled) {
-      return linkPreviewState
+      val preview = linkPreviewState.linkPreview.orElse(null) ?: return linkPreviewState
+      return LinkPreviewImagePolicy.sanitize(preview)
+        ?.let(LinkPreviewState::forPreview)
+        ?: LinkPreviewState.forLinksWithNoPreview(preview.url, LinkPreviewRepository.Error.PREVIEW_NOT_AVAILABLE)
     }
 
     if (enablePlaceholder) {

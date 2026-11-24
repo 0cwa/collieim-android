@@ -1003,9 +1003,19 @@ class AttachmentTable(
             )
 
             if (!targetHasThumbnailInfo) {
-              values.put(THUMBNAIL_FILE, duplicateAttachmentDataInfo.thumbnailFile)
-              values.put(THUMBNAIL_RANDOM, duplicateAttachmentDataInfo.thumbnailRandom)
-              values.put(THUMBNAIL_RESTORE_STATE, duplicateAttachmentDataInfo.thumbnailRestoreState)
+              // Removal may have deleted the donor's thumbnail since the initial read. Read its
+              // current tuple while holding the writer transaction that establishes this reference.
+              val currentDuplicate = db.select(*DATA_FILE_INFO_PROJECTION)
+                .from(TABLE_NAME)
+                .where("$ID = ? AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", duplicateAttachment.attachmentId.id, dataFile, duplicateAttachment.remoteKey)
+                .run()
+                .readToSingleObject { it.readDataFileInfo() }
+                ?.takeIf { it.random.contentEquals(duplicateAttachmentDataInfo.random) }
+              if (currentDuplicate != null) {
+                values.put(THUMBNAIL_FILE, currentDuplicate.thumbnailFile)
+                values.put(THUMBNAIL_RANDOM, currentDuplicate.thumbnailRandom)
+                values.put(THUMBNAIL_RESTORE_STATE, currentDuplicate.thumbnailRestoreState)
+              }
             }
 
             db.update(TABLE_NAME)
@@ -2908,9 +2918,19 @@ class AttachmentTable(
                 }
 
               if (targetHasThumbnailInfo == false) {
-                values.put(THUMBNAIL_FILE, dataFileInfo.thumbnailFile)
-                values.put(THUMBNAIL_RANDOM, dataFileInfo.thumbnailRandom)
-                values.put(THUMBNAIL_RESTORE_STATE, dataFileInfo.thumbnailRestoreState)
+                // A target can keep the shared data file alive while removal deletes the donor's
+                // unshared thumbnail. Never publish the thumbnail tuple cached before this lock.
+                val currentDuplicate = db.select(*DATA_FILE_INFO_PROJECTION)
+                  .from(TABLE_NAME)
+                  .where("$ID = ? AND $DATA_FILE = ? AND $REMOTE_KEY = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", duplicateAttachment.attachmentId.id, dataFile, duplicateAttachment.remoteKey)
+                  .run()
+                  .readToSingleObject { it.readDataFileInfo() }
+                  ?.takeIf { it.random.contentEquals(dataFileInfo.random) }
+                if (currentDuplicate != null) {
+                  values.put(THUMBNAIL_FILE, currentDuplicate.thumbnailFile)
+                  values.put(THUMBNAIL_RANDOM, currentDuplicate.thumbnailRandom)
+                  values.put(THUMBNAIL_RESTORE_STATE, currentDuplicate.thumbnailRestoreState)
+                }
               }
             }
 

@@ -4,35 +4,44 @@
 
 package org.thoughtcrime.securesms.main.setup
 
-import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import im.molly.app.base.ApkInfo
+import kotlinx.coroutines.withContext
 import org.signal.core.ui.R as CoreUiR
 import org.signal.core.ui.compose.ComposeFullScreenDialogFragment
 import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.TitledTabRow
+import org.signal.core.util.concurrent.SignalDispatchers
 import org.thoughtcrime.securesms.R
 
 /** Which tab What's new opens on. */
@@ -41,10 +50,7 @@ enum class WhatsNewTab {
   PROJECT_LOG
 }
 
-/**
- * What's new: this update's highlights, and the project log of every change. Opening it counts as having seen the
- * highlights, whichever tab it opens on.
- */
+/** Both tabs describe the same bundled current release; reading history does not mark its highlights seen. */
 class WhatsNewDialogFragment : ComposeFullScreenDialogFragment() {
 
   companion object {
@@ -62,37 +68,53 @@ class WhatsNewDialogFragment : ComposeFullScreenDialogFragment() {
     }
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    if (savedInstanceState == null) {
-      SetupStatusRepository.markNotesSeen()
-    }
-  }
-
   @Composable
   override fun DialogContent() {
+    val context = LocalContext.current
+    val notes by produceState<ProjectLog.Notes?>(initialValue = null) {
+      value = withContext(SignalDispatchers.IO) { ProjectLogRepository.load(context.applicationContext) }
+    }
+    val loaded = notes
+    if (loaded == null) {
+      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+      }
+      return
+    }
+
     val startTab = WhatsNewTab.entries.firstOrNull { it.name == arguments?.getString(ARG_TAB) } ?: WhatsNewTab.THIS_UPDATE
     WhatsNewContent(
+      notes = loaded,
       startTab = startTab,
       onBack = { dismissAllowingStateLoss() },
-      onReleaseAction = { SetupActions.fixProblem(requireActivity(), Problem.RELEASE_ACTION) },
-      onFullNotes = { SetupActions.openReleaseNotes(requireActivity()) },
+      onReleaseAction = { SetupActions.actOnReleaseNotice(requireActivity(), it) },
+      onFullNotes = { SetupActions.openReleaseNotes(requireActivity(), it) },
       onSupport = { SetupActions.openSupport(requireActivity()) },
-      onOpenPullRequest = { SetupActions.openPullRequest(requireActivity(), it) }
+      onOpenPullRequest = { SetupActions.openPullRequest(requireActivity(), it) },
+      onHighlightsSeen = SetupStatusRepository::markNotesSeen
     )
   }
 }
 
 @Composable
-private fun WhatsNewContent(
+internal fun WhatsNewContent(
+  notes: ProjectLog.Notes,
   startTab: WhatsNewTab,
   onBack: () -> Unit,
-  onReleaseAction: () -> Unit,
-  onFullNotes: () -> Unit,
+  onReleaseAction: (CollieReleaseNotes.Edition) -> Unit,
+  onFullNotes: (String) -> Unit,
   onSupport: () -> Unit,
-  onOpenPullRequest: (Int) -> Unit
+  onOpenPullRequest: (Int) -> Unit,
+  onHighlightsSeen: (String) -> Unit
 ) {
   var tab by rememberSaveable { mutableStateOf(startTab) }
+  val edition = if (notes.current.kind == ProjectLog.CurrentKind.RELEASE) CollieReleaseNotes.edition(notes.current.highlightsId) else null
+
+  LaunchedEffect(tab, edition?.id) {
+    if (tab == WhatsNewTab.THIS_UPDATE && edition != null) {
+      onHighlightsSeen(edition.id)
+    }
+  }
 
   Scaffolds.Settings(
     title = stringResource(R.string.CollieWhatsNew__title),
@@ -109,12 +131,14 @@ private fun WhatsNewContent(
 
       when (tab) {
         WhatsNewTab.THIS_UPDATE -> ThisUpdate(
+          current = notes.current,
+          edition = edition,
           onReleaseAction = onReleaseAction,
           onFullNotes = onFullNotes,
           onSupport = onSupport,
           onProjectLog = { tab = WhatsNewTab.PROJECT_LOG }
         )
-        WhatsNewTab.PROJECT_LOG -> ProjectLogTab(installedVersion = ApkInfo.versionName, onOpenPullRequest = onOpenPullRequest)
+        WhatsNewTab.PROJECT_LOG -> ProjectLogTab(notes = notes, onOpenPullRequest = onOpenPullRequest)
       }
     }
   }
@@ -122,40 +146,63 @@ private fun WhatsNewContent(
 
 @Composable
 private fun ThisUpdate(
-  onReleaseAction: () -> Unit,
-  onFullNotes: () -> Unit,
+  current: ProjectLog.Current,
+  edition: CollieReleaseNotes.Edition?,
+  onReleaseAction: (CollieReleaseNotes.Edition) -> Unit,
+  onFullNotes: (String) -> Unit,
   onSupport: () -> Unit,
   onProjectLog: () -> Unit
 ) {
   LazyColumn(
     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-    verticalArrangement = Arrangement.spacedBy(20.dp)
+    verticalArrangement = Arrangement.spacedBy(20.dp),
+    modifier = Modifier.testTag("whats-new-highlights")
   ) {
     item {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(text = stringResource(R.string.CollieWhatsNew__heading), style = MaterialTheme.typography.headlineSmall)
         Text(
-          text = stringResource(R.string.CollieWhatsNew__installed_version, ApkInfo.versionName),
+          text = stringResource(R.string.CollieWhatsNew__installed_version, current.version),
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant
         )
       }
     }
 
-    if (CollieReleaseNotes.action != null) {
+    if (edition?.action != null) {
       item {
         ProblemBanner(
           problem = Problem.RELEASE_ACTION,
-          onFix = onReleaseAction,
+          onFix = { onReleaseAction(edition) },
           onDismiss = null,
-          contentPadding = PaddingValues(0.dp)
+          contentPadding = PaddingValues(0.dp),
+          releaseAction = edition.action
         )
       }
     }
 
-    items(CollieReleaseNotes.highlights) { highlight ->
+    if (edition == null) {
+      item {
+        Text(
+          text = stringResource(
+            when (current.kind) {
+              ProjectLog.CurrentKind.RELEASE -> R.string.CollieWhatsNew__no_highlights
+              ProjectLog.CurrentKind.DEVELOPMENT -> R.string.CollieWhatsNew__development
+              ProjectLog.CurrentKind.UNAVAILABLE -> R.string.CollieLog__unavailable
+            }
+          ),
+          style = MaterialTheme.typography.bodyLarge,
+          color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+      }
+    }
+
+    items(edition?.highlights.orEmpty()) { highlight ->
       Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(text = stringResource(highlight.title), style = MaterialTheme.typography.titleMedium)
+        Text(
+          text = if (highlight.titleIncludesSignalVersion) stringResource(highlight.title, ApkInfo.signalCanonicalVersionName) else stringResource(highlight.title),
+          style = MaterialTheme.typography.titleMedium
+        )
         Text(
           text = stringResource(highlight.body),
           style = MaterialTheme.typography.bodyLarge,
@@ -169,13 +216,15 @@ private fun ThisUpdate(
         FilledTonalButton(onClick = onProjectLog, modifier = Modifier.fillMaxWidth()) {
           Text(text = stringResource(R.string.CollieWhatsNew__see_project_log))
         }
-        TextButton(onClick = onFullNotes, modifier = Modifier.fillMaxWidth()) {
-          Text(text = stringResource(R.string.CollieWhatsNew__full_release_notes))
-          Icon(
-            imageVector = SignalIcons.Open.imageVector,
-            contentDescription = null,
-            modifier = Modifier.padding(start = 8.dp)
-          )
+        current.releaseUrl?.let { url ->
+          TextButton(onClick = { onFullNotes(url) }, modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(R.string.CollieWhatsNew__full_release_notes))
+            Icon(
+              imageVector = SignalIcons.Open.imageVector,
+              contentDescription = null,
+              modifier = Modifier.padding(start = 8.dp)
+            )
+          }
         }
         TextButton(onClick = onSupport, modifier = Modifier.fillMaxWidth()) {
           Text(text = stringResource(R.string.CollieSetup__support))

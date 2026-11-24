@@ -1,3 +1,0 @@
-topic: settings
-pr: 210
-Collie removes Signal donation checkout. Backup subscriptions and existing Collie support links still work.

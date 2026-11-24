@@ -12,14 +12,16 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.hasScrollToNodeAction
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
@@ -27,6 +29,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
+import im.molly.app.base.ApkInfo
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.spyk
@@ -38,6 +41,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.appsettings.R as AppSettingsR
 import org.signal.appsettings.home.AppSettingsTestTags
+import org.signal.core.ui.compose.ComposeFullScreenDialogFragment
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
@@ -54,6 +58,7 @@ import org.thoughtcrime.securesms.util.SecurePreferenceManager
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Writes API 35 screenshots of What's new with its two tabs and of Settings → Help → What's new to external files
@@ -77,26 +82,83 @@ class ProjectLogScreenshotTest {
 
   @Test
   fun whatsNewShowsThisUpdateAndTheProjectLog() = withFixture("light") {
+    val notes = preparedBetaNotes()
+    val editionId = requireNotNull(notes.current.highlightsId)
+    val openedRelease = AtomicReference<String?>(null)
     SignalStore.collieSetup.notesSeenId = null
     SignalStore.collieSetup.notesPendingId = null
+
     harness.launchActivity<MainActivity>().use { scenario ->
-      awaitText(context.getString(R.string.CollieStatus__updated_long))
-      compose.onNode(hasText(context.getString(R.string.CollieStatus__updated_long)) and isClickable()).performClick()
+      // A real app dialog renders the prepared record; the production repository and build flags stay untouched.
+      showNotes(scenario, notes, WhatsNewTab.PROJECT_LOG, onFullNotes = openedRelease::set)
+      assertCurrentSection(notes)
+      assertEquals("Reading history must not consume the highlights", null, SignalStore.collieSetup.notesSeenId)
+      compose.onAllNodes(hasText(context.getString(R.string.CollieLog__development_build))).assertCountEquals(0)
+      compose.onAllNodes(hasText(context.getString(R.string.CollieLog__unavailable))).assertCountEquals(0)
+
+      compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_this_update)) and isClickable()).performClick()
       awaitText(context.getString(R.string.CollieWhatsNew__heading))
+      compose.waitUntil(timeoutMillis = 15_000) { SignalStore.collieSetup.notesSeenId == editionId }
+      val highlights = compose.onNode(hasTestTag("whats-new-highlights"))
+      val upstream = context.getString(R.string.CollieWhatsNew__signal_title, ApkInfo.signalCanonicalVersionName)
+      highlights.performScrollToNode(hasText(upstream))
+      awaitText(upstream)
+      val fullNotes = hasText(context.getString(R.string.CollieWhatsNew__full_release_notes)) and isClickable()
+      highlights.performScrollToNode(fullNotes)
+      compose.onNode(fullNotes).performClick()
+      assertEquals("Full notes must target this release, not the mixed release list", notes.current.releaseUrl, openedRelease.get())
+      assertEquals("https://github.com/0cwa/collieim-android/releases/tag/trailblazer-v8.36.3-1-beta1", openedRelease.get())
       val support = hasText(context.getString(R.string.CollieSetup__support)) and isClickable()
-      compose.onNode(hasScrollToNodeAction()).performScrollToNode(support)
+      highlights.performScrollToNode(support)
       compose.onNode(support).assertExists()
+      highlights.performScrollToIndex(0)
       saveScreenshot(scenario, "01-light-this-update.png")
 
       compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_project_log)) and isClickable()).performClick()
-      awaitText(context.getString(R.string.CollieLog__this_build))
+      assertCurrentSection(notes)
+      compose.onNode(hasTestTag("project-log-list")).performScrollToIndex(0)
       saveScreenshot(scenario, "02-light-project-log.png")
+      saveTextEvidence(
+        "release-fixture.txt",
+        "fixture=prepared record rendered by the app\nproduct=beta\nversion=${notes.current.version}\nasset=collie-log/releases/beta/8.36.3-1-beta1.txt\nhighlights=$editionId\nrelease_url=${openedRelease.get()}\nentries=${notes.current.entries.size}\n"
+      )
+
+      // An empty finalized maintenance record stays current and cannot borrow the prior release's highlights.
+      val maintenanceVersion = "99.0.0-1"
+      val maintenance = ProjectLog.notes(
+        releaseFiles = bundledReleases("stable") + "version: $maintenanceVersion\ndate: 2026-11-22\n",
+        unreleasedFiles = emptyList(),
+        installedVersion = maintenanceVersion,
+        prepared = true
+      )
+      assertEquals(ProjectLog.CurrentKind.RELEASE, maintenance.current.kind)
+      showNotes(scenario, maintenance, WhatsNewTab.PROJECT_LOG)
+      assertCurrentSection(maintenance)
+      awaitText(context.getString(R.string.CollieLog__no_changes))
+      compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_this_update)) and isClickable()).performClick()
+      awaitText(context.getString(R.string.CollieWhatsNew__no_highlights))
+      compose.onAllNodes(hasText(context.getString(R.string.CollieWhatsNew__setup_title))).assertCountEquals(0)
+
+      val unavailable = ProjectLog.notes(
+        releaseFiles = bundledReleases("beta"),
+        unreleasedFiles = listOf("topic: fixes\nA change left outside the release."),
+        installedVersion = notes.current.version,
+        prepared = true
+      )
+      assertEquals(ProjectLog.CurrentKind.UNAVAILABLE, unavailable.current.kind)
+      showNotes(scenario, unavailable, WhatsNewTab.PROJECT_LOG)
+      assertCurrentSection(unavailable)
+      awaitText(context.getString(R.string.CollieLog__unavailable))
+      assertTrue("The invalid current record must not appear again in history", unavailable.history.none { it.version == unavailable.current.version })
     }
   }
 
   @Test
   fun helpOpensTheProjectLogAndOlderReleasesExpand() = withFixture("dark") {
-    SignalStore.collieSetup.notesSeenId = CollieReleaseNotes.ID
+    SignalStore.collieSetup.notesSeenId = null
+    val notes = ProjectLogRepository.load(context)
+    assertEquals("This navigation fixture uses the ordinary development APK", ProjectLog.CurrentKind.DEVELOPMENT, notes.current.kind)
+    assertTrue("Stable development must not show TrailBlazer release history", notes.history.none { it.version == "8.36.3-1-beta1" })
     // AppSettingsActivity.help() starts on Contact us, so go through the Settings list the way people do.
     ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
       val help = context.getString(AppSettingsR.string.preferences__help)
@@ -107,41 +169,42 @@ class ProjectLogScreenshotTest {
       saveScreenshot(scenario, "03-dark-help.png")
 
       compose.onNode(hasText(context.getString(AppSettingsR.string.HelpSettingsFragment__whats_new)) and isClickable()).performClick()
-      awaitText(context.getString(R.string.CollieLog__this_build))
+      assertCurrentSection(notes)
+      awaitText(context.getString(R.string.CollieLog__development_build), substring = true)
+      assertEquals("Help history must not mark highlights seen", null, SignalStore.collieSetup.notesSeenId)
 
-      // Collapse this build's changes and open the oldest release, so both header states show.
-      compose.onNode(hasText(context.getString(R.string.CollieLog__this_build)) and isClickable()).performClick()
+      if (notes.current.entries.isNotEmpty()) {
+        compose.onNode(hasTestTag("project-log-current")).performClick()
+      }
+      val oldest = notes.history.last()
       val log = compose.onNode(hasTestTag("project-log-list"))
-      log.performScrollToNode(hasText("8.33.2-1 RC1"))
-      compose.onNode(hasText("8.33.2-1 RC1") and isClickable()).performClick()
-      log.performScrollToNode(hasText("The first signed Collie test build", substring = true))
+      log.performScrollToNode(hasText(ProjectLog.displayVersion(oldest.version)))
+      compose.onNode(hasText(ProjectLog.displayVersion(oldest.version)) and isClickable()).performClick()
+      log.performScrollToNode(hasText(oldest.entries.first().text))
       saveScreenshot(scenario, "04-dark-project-log-from-help.png")
     }
   }
 
   @Test
   fun projectLogDisclosureOpensPr156InTheExternalBrowser() = withFixture("light") {
+    val notes = preparedBetaNotes()
+    val entry = notes.current.entries.single { it.pr == 156 }.text
     SignalStore.collieSetup.notesSeenId = null
     harness.launchActivity<MainActivity>().use { scenario ->
-      awaitText(context.getString(R.string.CollieStatus__updated_long))
-      compose.onNode(hasText(context.getString(R.string.CollieStatus__updated_long)) and isClickable()).performClick()
-      awaitText(context.getString(R.string.CollieWhatsNew__heading))
-      compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_project_log)) and isClickable()).performClick()
-      awaitText(context.getString(R.string.CollieLog__this_build))
-
+      showNotes(scenario, notes, WhatsNewTab.PROJECT_LOG)
+      assertCurrentSection(notes)
       val log = compose.onNode(hasTestTag("project-log-list"))
       val disclosure = context.getString(R.string.CollieLog__links_note)
-      val entry = "What’s new has a Project log of every change, also under Settings, Help."
       log.performScrollToNode(hasText(disclosure))
       awaitText(disclosure)
       saveScreenshot(scenario, "05-light-pr156-disclosure.png")
 
-      log.performScrollToNode(hasText(entry, substring = true))
-      awaitText(entry, substring = true)
+      log.performScrollToNode(hasText(entry))
+      awaitText(entry)
       saveScreenshot(scenario, "06-light-pr156-entry.png")
 
       val targetUrl = "https://github.com/0cwa/collieim-android/pull/156"
-      compose.onNode(hasText(entry, substring = true) and isClickable()).performClick()
+      compose.onNode(hasText(entry) and isClickable()).performClick()
       val device = UiDevice.getInstance(instrumentation)
       assertTrue(
         "The PR156 handoff did not leave Collie",
@@ -162,6 +225,67 @@ class ProjectLogScreenshotTest {
       assertTrue("The PR156 handoff must leave Collie", browserPackage != context.packageName)
       val (address, titleBounds) = saveBrowserScreenshot(device, browserPackage, renderedTitle, targetUrl)
       saveTextEvidence("browser-handoff.txt", "url=$targetUrl\nbrowser=$browserPackage\nrendered_title=$renderedTitle\nrendered_pr=#156\naddress=$address\ntitle_bounds=${titleBounds.left},${titleBounds.top},${titleBounds.right},${titleBounds.bottom}\n")
+    }
+  }
+
+  private fun bundledReleases(product: String): List<String> {
+    val directory = "${ProjectLog.ASSET_DIR}/${ProjectLog.RELEASES_DIR}/$product"
+    return context.assets.list(directory).orEmpty().sorted().map { name ->
+      context.assets.open("$directory/$name").bufferedReader().use { it.readText() }
+    }
+  }
+
+  private fun preparedBetaNotes(): ProjectLog.Notes = ProjectLog.notes(
+    releaseFiles = bundledReleases("beta"),
+    unreleasedFiles = emptyList(),
+    installedVersion = "8.36.3-1-beta1",
+    prepared = true
+  ).also {
+    assertEquals(ProjectLog.CurrentKind.RELEASE, it.current.kind)
+    assertTrue("A Beta release must not inherit Stable history", it.history.none { release -> release.version == "8.35.1-3-rc2" })
+  }
+
+  private fun showNotes(
+    scenario: ActivityScenario<MainActivity>,
+    notes: ProjectLog.Notes,
+    startTab: WhatsNewTab,
+    onFullNotes: (String) -> Unit = {}
+  ) {
+    scenario.onActivity { activity ->
+      (activity.supportFragmentManager.findFragmentByTag("project-log-proof") as? ProjectLogProofDialog)?.dismissNow()
+      ProjectLogProofDialog().apply {
+        this.notes = notes
+        this.startTab = startTab
+        this.onFullNotes = onFullNotes
+      }.showNow(activity.supportFragmentManager, "project-log-proof")
+    }
+    compose.waitForIdle()
+  }
+
+  private fun assertCurrentSection(notes: ProjectLog.Notes) {
+    compose.waitUntil(timeoutMillis = 15_000) { compose.onAllNodes(hasTestTag("project-log-current")).fetchSemanticsNodes().isNotEmpty() }
+    compose.onAllNodes(hasText(context.getString(R.string.CollieLog__your_version))).assertCountEquals(1)
+    compose.onNode(hasTestTag("project-log-current") and hasText(ProjectLog.displayVersion(notes.current.version))).assertExists()
+  }
+
+  /** Test-only host for the production composable, using release records from this APK's assets. */
+  class ProjectLogProofDialog : ComposeFullScreenDialogFragment() {
+    lateinit var notes: ProjectLog.Notes
+    var startTab: WhatsNewTab = WhatsNewTab.THIS_UPDATE
+    var onFullNotes: (String) -> Unit = {}
+
+    @Composable
+    override fun DialogContent() {
+      WhatsNewContent(
+        notes = notes,
+        startTab = startTab,
+        onBack = { dismissAllowingStateLoss() },
+        onReleaseAction = { SetupActions.actOnReleaseNotice(requireActivity(), it) },
+        onFullNotes = onFullNotes,
+        onSupport = { SetupActions.openSupport(requireActivity()) },
+        onOpenPullRequest = { SetupActions.openPullRequest(requireActivity(), it) },
+        onHighlightsSeen = SetupStatusRepository::markNotesSeen
+      )
     }
   }
 

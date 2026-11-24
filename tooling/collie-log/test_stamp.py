@@ -129,7 +129,7 @@ class StampTests(unittest.TestCase):
     def test_cr_only_pending_fragment_is_prepared_and_verified(self):
         path = self.root / "tooling/collie-log/unreleased/cr-only.txt"
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(b"topic: fixes\rCR-only line endings work.\r")
+        path.write_bytes(b"topic: fixes\rCR-only line endings work.\r\rtopic: privacy\rPreserve the second block.\r")
         self.commit()
         result = self.stamp()
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -139,6 +139,7 @@ class StampTests(unittest.TestCase):
         self.assertEqual(checked.returncode, 0, checked.stderr)
         record = self.root / f"app/src/main/assets/collie-log/releases/beta/{VERSION}.txt"
         self.assertIn("topic: fixes\nCR-only line endings work.\n", record.read_text())
+        self.assertIn("topic: privacy\nPreserve the second block.\n", record.read_text())
 
     def test_failed_atomic_properties_replace_rolls_back_outputs_and_pending(self):
         pending = self.pending("7.txt", "A change.\n")
@@ -157,6 +158,58 @@ class StampTests(unittest.TestCase):
         self.assertEqual((self.root / "gradle.properties").read_bytes(), original_properties)
         self.assertFalse((self.root / f"app/src/main/assets/collie-log/releases/beta/{VERSION}.txt").exists())
         self.assertFalse((self.root / f"fastlane/metadata/trailblazer-beta/en-US/changelogs/{CODE}.txt").exists())
+
+    def test_rollback_continues_when_generated_file_cannot_be_removed(self):
+        pending = self.pending("7.txt", "A change.\n")
+        self.commit()
+        original_properties = (self.root / "gradle.properties").read_bytes()
+        module = runpy.run_path(str(self.root / "tooling/collie-log/stamp.py"))
+        original_unlink = Path.unlink
+        blocked = f"{CODE}.txt"
+
+        def unlink_with_denial(path, **kwargs):
+            if path.name == blocked:
+                raise PermissionError("fixture denied removal")
+            return original_unlink(path, **kwargs)
+
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(self.root)
+            with mock.patch.object(module["os"], "replace", side_effect=OSError("replace failed")):
+                with mock.patch.object(Path, "unlink", unlink_with_denial):
+                    with self.assertRaisesRegex(OSError, "replace failed") as error:
+                        module["prepare"](VERSION, int(CODE), "2026-11-24", "beta")
+        finally:
+            os.chdir(original_cwd)
+        self.assertTrue(any("fixture denied removal" in note for note in error.exception.__notes__))
+        self.assertEqual(pending.read_text(), "A change.\n")
+        self.assertEqual((self.root / "gradle.properties").read_bytes(), original_properties)
+        self.assertFalse((self.root / f"app/src/main/assets/collie-log/releases/beta/{VERSION}.txt").exists())
+        self.assertFalse(list(self.root.glob(".gradle.properties.*")))
+
+    def test_interrupt_after_atomic_replace_leaves_valid_preparation(self):
+        pending = self.pending("7.txt", "A change.\n")
+        self.commit()
+        module = runpy.run_path(str(self.root / "tooling/collie-log/stamp.py"))
+        replace = module["os"].replace
+
+        def replace_then_interrupt(source, target):
+            replace(source, target)
+            raise KeyboardInterrupt()
+
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(self.root)
+            with mock.patch.object(module["os"], "replace", side_effect=replace_then_interrupt):
+                with self.assertRaises(KeyboardInterrupt):
+                    module["prepare"](VERSION, int(CODE), "2026-11-24", "beta")
+        finally:
+            os.chdir(original_cwd)
+        self.assertFalse(pending.exists())
+        self.commit()
+        verified = subprocess.run([sys.executable, str(self.root / "tooling/reproducible-builds/verify-release-prep.py"),
+                                  "--edition", "beta", "--build-state"], cwd=self.root, text=True, capture_output=True)
+        self.assertEqual(verified.returncode, 0, verified.stderr)
 
     def test_existing_record_or_changelog_causes_no_partial_preparation(self):
         self.pending("7.txt", "A change.\n")

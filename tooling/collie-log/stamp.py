@@ -232,6 +232,7 @@ def prepare(version, code, date, edition, *, highlights=None, tag=None):
     removed = []
     properties_path = Path("gradle.properties")
     temporary = None
+    replacement = None
     try:
         with target.open("x", encoding="utf-8", newline="\n") as output:
             created.append(target)
@@ -244,21 +245,39 @@ def prepare(version, code, date, edition, *, highlights=None, tag=None):
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as output:
             output.write(properties)
         os.chmod(temporary, properties_path.stat().st_mode)
+        replacement = temporary.stat()
         for path in waiting:
             content = path.read_bytes()
             mode = path.stat().st_mode
-            path.unlink()
             removed.append((path, content, mode))
+            path.unlink()
         os.replace(temporary, properties_path)
-        temporary = None
-    except BaseException:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
+    except BaseException as error:
+        if replacement is not None:
+            try:
+                committed = os.path.samestat(replacement, properties_path.stat())
+            except OSError as check_error:
+                error.add_note(f"Cannot determine whether release properties were installed: {check_error}")
+                raise error from check_error
+            if committed:
+                # An interrupt may arrive after the rename succeeded.
+                raise
         for path, content, mode in reversed(removed):
-            path.write_bytes(content)
-            os.chmod(path, mode)
-        for path in reversed(created):
-            path.unlink(missing_ok=True)
+            try:
+                with path.open("xb") as output:
+                    output.write(content)
+                os.chmod(path, mode)
+            except FileExistsError:
+                pass
+            except OSError as rollback_error:
+                error.add_note(f"Could not restore {path}: {rollback_error}")
+        for path in [*reversed(created), temporary]:
+            if path is None:
+                continue
+            try:
+                path.unlink(missing_ok=True)
+            except OSError as rollback_error:
+                error.add_note(f"Could not remove {path}: {rollback_error}")
         raise
     print(f"Prepared {edition} {version} from {source}: {len(items)} changes.")
     print(f"Wrote {target} and {draft}; review the Fastlane draft before committing.")

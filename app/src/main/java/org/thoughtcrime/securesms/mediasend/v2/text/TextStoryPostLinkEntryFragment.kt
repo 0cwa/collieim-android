@@ -98,6 +98,7 @@ class TextStoryPostLinkEntryFragment(private val shouldPreset: Boolean = false) 
 
   override fun onResume() {
     super.onResume()
+    linkPreviewViewModel.refreshImagePreference()
     ViewUtil.focusAndShowKeyboard(input)
   }
 

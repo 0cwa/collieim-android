@@ -74,6 +74,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import kotlin.Pair;
 import okhttp3.CacheControl;
 import okhttp3.Call;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -88,20 +89,39 @@ public class LinkPreviewRepository {
   private static final long FAILSAFE_MAX_IMAGE_SIZE = ByteUnit.MEGABYTES.toBytes(2);
 
   private final OkHttpClient client;
+  private final OkHttpClient thumbnailClient;
 
   public LinkPreviewRepository() {
-    this.client = AppDependencies.getOkHttpClient().newBuilder()
+    this(AppDependencies.getOkHttpClient().newBuilder()
                                   .socketFactory(Networking.getSocketFactory())
                                   .proxySelector(Networking.getProxySelectorForSocks())
                                   .dns(Networking.getDns())
                                   .cache(null)
                                   .addInterceptor(new UserAgentInterceptor("WhatsApp/2"))
                                   .addNetworkInterceptor(new LinkPreviewRedirectValidationInterceptor())
-                                  .build();
+                                  .build());
   }
 
   LinkPreviewRepository(@NonNull OkHttpClient client) {
     this.client = client;
+    this.thumbnailClient = client.newBuilder()
+                                 .addNetworkInterceptor(LinkPreviewRepository::enforceThumbnailPreference)
+                                 .build();
+  }
+
+  /** Recheck for each HTTP exchange, including redirects, without changing metadata requests. */
+  static @NonNull Response enforceThumbnailPreference(@NonNull Interceptor.Chain chain) throws IOException {
+    if (!SignalStore.settings().isWebLinkPreviewImagesEnabled()) {
+      chain.call().cancel();
+      throw new IOException("Web link preview images are disabled");
+    }
+    Response response = chain.proceed(chain.request());
+    if (!SignalStore.settings().isWebLinkPreviewImagesEnabled()) {
+      response.close();
+      chain.call().cancel();
+      throw new IOException("Web link preview images are disabled");
+    }
+    return response;
   }
 
   public @NonNull Single<Result<LinkPreview, Error>> getLinkPreview(@NonNull String url) {
@@ -263,7 +283,7 @@ public class LinkPreviewRepository {
   }
 
   private @NonNull RequestController fetchThumbnail(@NonNull String imageUrl, @NonNull Consumer<Optional<Attachment>> callback) {
-    Call                  call       = client.newCall(new Request.Builder().url(imageUrl).build());
+    Call                  call       = thumbnailClient.newCall(new Request.Builder().url(imageUrl).build());
     CallRequestController controller = new CallRequestController(call);
 
     SignalExecutors.UNBOUNDED.execute(() -> {

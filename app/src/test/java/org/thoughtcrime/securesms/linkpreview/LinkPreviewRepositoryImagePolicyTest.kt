@@ -12,6 +12,9 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
+import okhttp3.Call
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -27,6 +30,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -36,6 +40,7 @@ import org.robolectric.annotation.Config
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.RequestController
+import java.io.IOException
 import java.util.Collections
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
@@ -77,6 +82,36 @@ class LinkPreviewRepositoryImagePolicyTest {
       client.connectionPool.evictAll()
     }
     unmockkAll()
+  }
+
+  @Test
+  fun `disabled images cancel the next thumbnail exchange before it proceeds`() {
+    val chain = mockk<Interceptor.Chain>()
+    val call = mockk<Call>(relaxed = true)
+    every { chain.call() } returns call
+
+    assertThrows(IOException::class.java) { LinkPreviewRepository.enforceThumbnailPreference(chain) }
+    verify(exactly = 1) { call.cancel() }
+    verify(exactly = 0) { chain.proceed(any()) }
+  }
+
+  @Test
+  fun `disabling images before a redirect arrives closes the response and cancels follow-up`() {
+    includeImages.set(true)
+    val chain = mockk<Interceptor.Chain>()
+    val call = mockk<Call>(relaxed = true)
+    val request = Request.Builder().url(IMAGE).build()
+    val body = TrackedBody("image/png")
+    every { chain.call() } returns call
+    every { chain.request() } returns request
+    every { chain.proceed(request) } answers {
+      includeImages.set(false)
+      response(request, body, code = 302).newBuilder().header("Location", "https://images.collie.im/next.png").build()
+    }
+
+    assertThrows(IOException::class.java) { LinkPreviewRepository.enforceThumbnailPreference(chain) }
+    assertTrue(body.closed.await(5, TimeUnit.SECONDS))
+    verify(exactly = 1) { call.cancel() }
   }
 
   @Test

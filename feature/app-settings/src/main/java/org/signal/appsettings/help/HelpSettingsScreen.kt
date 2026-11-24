@@ -52,7 +52,8 @@ object HelpSettingsTestTags {
 fun HelpSettingsScreen(
   state: HelpSettingsState,
   onEvent: (HelpSettingsEvent) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  showAppUpdatesRow: Boolean = true
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.preferences__help),
@@ -112,7 +113,7 @@ fun HelpSettingsScreen(
         )
       }
 
-      if (state.showAppUpdates) {
+      if (state.showAppUpdates && showAppUpdatesRow) {
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences_app_updates__title),

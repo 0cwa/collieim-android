@@ -21,6 +21,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,6 +57,24 @@ class CollieSettingsScreenTest {
     composeTestRule.onNodeWithContentDescription(description).performClick()
 
     assertThat(events).containsExactly(LabsSettingsEvent.NavigateBackClicked)
+  }
+
+  @Test
+  fun `App updates is hidden when disabled`() {
+    setContent(LabsSettingsState())
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
+  }
+
+  @Test
+  fun `App updates invokes its destination callback when enabled`() {
+    var clicked = false
+    setContent(LabsSettingsState(), showAppUpdates = true) { clicked = true }
+    val tag = CollieSettingsTestTags.ROW_APP_UPDATES
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.SCROLLER)
+      .performScrollToNode(hasTestTag(tag))
+    composeTestRule.onNodeWithTag(tag).assertIsDisplayed().performClick()
+
+    assertThat(clicked).isTrue()
   }
 
   @Test
@@ -124,11 +143,13 @@ class CollieSettingsScreenTest {
 
   private fun switchIn(rowTag: String) = composeTestRule.onNode(isToggleable() and hasAnyAncestor(hasTestTag(rowTag)))
 
-  private fun setContent(state: LabsSettingsState) {
+  private fun setContent(state: LabsSettingsState, showAppUpdates: Boolean = false, onAppUpdatesClick: () -> Unit = {}) {
     composeTestRule.setContent {
       CollieSettingsScreen(
         state = state,
-        onEvent = { events += it }
+        onEvent = { events += it },
+        showAppUpdates = showAppUpdates,
+        onAppUpdatesClick = onAppUpdatesClick
       )
     }
   }

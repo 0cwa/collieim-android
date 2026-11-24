@@ -19,6 +19,7 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -70,6 +71,7 @@ class UnifiedPushDisclosureRefreshJobTest {
     every { aci.toString() } answers { accountId }
     every { signalStore.account.aci } returns aci
     every { signalStore.account.isRegistered } returns true
+    every { signalStore.account.isLinkedDevice } returns false
     every { signalStore.account.isUnauthorizedReceived } returns false
     every { signalStore.account.hasAciIdentityKey() } returns true
     every { signalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
@@ -156,6 +158,29 @@ class UnifiedPushDisclosureRefreshJobTest {
       val data = checkNotNull(job.serialize())
       val restored = UnifiedPushRefreshJob.Factory().create(Job.Parameters.Builder().build(), data)
       run(restored)
+      verify(exactly = 1) { app.applyPushNotificationServicesFromRefresh() }
+    } finally {
+      unmockkStatic(ApplicationContext::class)
+    }
+  }
+
+  @Test fun `startup configuration waits for a ready lease and respects a changed delivery method`() {
+    mockkStatic(ApplicationContext::class)
+    try {
+      val app = mockk<ApplicationContext>(relaxed = true)
+      every { ApplicationContext.getInstance(application) } returns app
+      val startup = UnifiedPushRefreshJob.configurePreferredDelivery().apply { setContext(application) }
+      UnifiedPushLifecycle.resetForTests(initiallyReady = false)
+      assertTrue(runCatching { startup.onRun() }.exceptionOrNull() is IOException)
+      verify(exactly = 0) { app.applyPushNotificationServicesFromRefresh() }
+
+      UnifiedPushLifecycle.resetForTests()
+      every { signalStore.settings.preferredNotificationMethod } returns NotificationDeliveryMethod.WEBSOCKET
+      startup.onRun()
+      verify(exactly = 0) { app.applyPushNotificationServicesFromRefresh() }
+
+      every { signalStore.settings.preferredNotificationMethod } returns NotificationDeliveryMethod.UNIFIEDPUSH
+      startup.onRun()
       verify(exactly = 1) { app.applyPushNotificationServicesFromRefresh() }
     } finally {
       unmockkStatic(ApplicationContext::class)

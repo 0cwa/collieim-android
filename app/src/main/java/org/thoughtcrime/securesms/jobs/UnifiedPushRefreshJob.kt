@@ -63,7 +63,8 @@ class UnifiedPushRefreshJob private constructor(
       .addConstraint(NetworkConstraint.KEY)
       .setMaxAttempts(3)
       .setLifespan(TimeUnit.HOURS.toMillis(6))
-      .setMaxInstancesForFactory(2)
+      // Accept a delivery change even when two routine refreshes already occupy the queue.
+      .setMaxInstancesForFactory(if (configureDelivery) Parameters.UNLIMITED else 2)
       .build()
   )
 
@@ -90,7 +91,9 @@ class UnifiedPushRefreshJob private constructor(
     try {
       if (configureDelivery) {
         synchronized(UnifiedPushLifecycle.monitor) {
-          if (authorization == null || !RelayDisclosure.matchesRefreshLocked(authorization)) return
+          if (authorization != null && !RelayDisclosure.matchesRefreshLocked(authorization)) return
+          if (SignalStore.settings.preferredNotificationMethod != NotificationDeliveryMethod.UNIFIEDPUSH ||
+            SignalStore.account.isLinkedDevice) return
           if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation) {
             throw IOException("UnifiedPush account context is transitioning")
           }
@@ -487,6 +490,9 @@ class UnifiedPushRefreshJob private constructor(
 
   companion object {
     private val TAG = Log.tag(UnifiedPushRefreshJob::class.java)
+
+    @JvmStatic
+    fun configurePreferredDelivery(): UnifiedPushRefreshJob = UnifiedPushRefreshJob(false, false, null, configureDelivery = true)
 
     const val KEY = "UnifiedPushRefreshJob"
     private const val KEY_PING = "ping"

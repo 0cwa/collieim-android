@@ -650,8 +650,13 @@ public class ApplicationContext extends Application implements AppForegroundObse
           Log.i(TAG, "UnifiedPush not supported in linked devices.");
           updateUnifiedPushStatus(false);
         } else if (!unifiedPushEnabled) {
-          Log.i(TAG, "Switching to UnifiedPush.");
-          updateUnifiedPushStatus(true, unifiedPushRefresh);
+          if (unifiedPushRefresh != null) {
+            // Startup and preference changes can run before push lifecycle admission.
+            AppDependencies.getJobManager().add(UnifiedPushRefreshJob.configurePreferredDelivery());
+          } else {
+            Log.i(TAG, "Switching to UnifiedPush.");
+            updateUnifiedPushStatus(true, null);
+          }
         } else if (unifiedPushRefresh != null) {
           AppDependencies.getJobManager().add(unifiedPushRefresh);
         }

@@ -20,6 +20,7 @@ import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.libsignal.zkgroup.groups.GroupSecretParams
 import org.signal.network.NetworkResult
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChange
 import org.thoughtcrime.securesms.database.GroupTable
@@ -34,6 +35,7 @@ import org.thoughtcrime.securesms.groups.GroupMutation
 import org.thoughtcrime.securesms.groups.GroupProtoUtil
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionMode
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor.Companion.LATEST
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
 import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob
@@ -266,6 +268,8 @@ class GroupsV2StateProcessor private constructor(
       return false
     }
 
+    if (hasInvalidJoinedAtRevision(currentLocalState)) return false
+
     if (currentLocalState.terminated) {
       Log.w(TAG, "$logPrefix Ignoring P2P group change because group is terminated")
       return false
@@ -321,6 +325,11 @@ class GroupsV2StateProcessor private constructor(
     groupRecord: Optional<GroupRecord> = SignalDatabase.groups.getGroup(groupId)
   ): InternalUpdateResult {
     val currentLocalState: DecryptedGroup? = groupRecord.filter { it.hasV2GroupProperties }.map { it.requireV2GroupProperties().decryptedGroup }.orNull()?.let { if (it.isEmptyPlaceholder()) null else it }
+
+    if (currentLocalState != null && hasInvalidJoinedAtRevision(currentLocalState)) {
+      Log.i(TAG, "$logPrefix Refreshing group snapshot with missing membership revision")
+      return updateToLatestViaServer(timestamp, currentLocalState, reconstructChange = false, forceUpdate = false, triggeringMessage = triggeringMessage)
+    }
 
     if (targetRevision == LATEST && (currentLocalState == null || currentLocalState.revision == RESTORE_PLACEHOLDER_REVISION)) {
       Log.i(TAG, "$logPrefix Latest revision only, update to latest directly")
@@ -530,7 +539,13 @@ class GroupsV2StateProcessor private constructor(
       return false
     }
 
-    return revision <= groupRecord.get().requireV2GroupProperties().groupRevision
+    val properties = groupRecord.get().requireV2GroupProperties()
+    return revision <= properties.groupRevision && !hasInvalidJoinedAtRevision(properties.decryptedGroup)
+  }
+
+  private fun hasInvalidJoinedAtRevision(group: DecryptedGroup): Boolean {
+    return !group.terminated && !group.isPlaceholderGroup &&
+      DecryptedGroupUtil.findMemberByAci(group.members, serviceIds.aci).orNull()?.let { it.joinedAtRevision !in 0..group.revision } == true
   }
 
   private fun canPageFromLocalRevision(localState: DecryptedGroup): Boolean {
@@ -674,7 +689,10 @@ class GroupsV2StateProcessor private constructor(
       }
 
       if (updatedGroupState != null) {
-        GroupAdmission.completeStateUpdate(GroupAdmission.prepareStateUpdate(groupId, serviceIds, groupStateDiff, updatedGroupState))
+        val admissionUpdate = GroupAdmission.prepareStateUpdate(groupId, serviceIds, groupStateDiff, updatedGroupState)
+        if (admissionUpdate != null) {
+          completeAdmissionAfterCommit(admissionUpdate) {}
+        }
       }
 
       return InternalUpdateResult.NoUpdateNeeded
@@ -777,8 +795,6 @@ class GroupsV2StateProcessor private constructor(
       updatedGroupState.avatar != previousGroupState.avatar
     }
 
-    GroupAdmission.completeStateUpdate(admissionUpdate)
-
     if (wasTerminated) {
       profileAndMessageHelper.stopAllTypingForGroup()
       ConversationShortcutUpdateJob.enqueue()
@@ -792,7 +808,25 @@ class GroupsV2StateProcessor private constructor(
       profileAndMessageHelper.scheduleStorageServiceSync()
     }
 
-    profileAndMessageHelper.setProfileSharing(groupStateDiff, updatedGroupState, needsAvatarFetch, triggeringMessage?.sentBySelf == true)
+    if (admissionUpdate == null) {
+      profileAndMessageHelper.setProfileSharing(groupStateDiff, updatedGroupState, needsAvatarFetch, triggeringMessage?.sentBySelf == true)
+    } else {
+      completeAdmissionAfterCommit(admissionUpdate) {
+        profileAndMessageHelper.setProfileSharing(groupStateDiff, updatedGroupState, needsAvatarFetch, triggeringMessage?.sentBySelf == true)
+      }
+    }
+  }
+
+  private fun completeAdmissionAfterCommit(update: GroupAdmission.PendingUpdate, onComplete: () -> Unit) {
+    SignalDatabase.runPostSuccessfulTransaction {
+      val completed = try {
+        GroupAdmission.completeStateUpdate(update)
+      } catch (e: KeyValuePersistenceException) {
+        Log.w(TAG, "$logPrefix Unable to persist admission after group state committed", e)
+        false
+      }
+      if (completed) onComplete()
+    }
   }
 
   @VisibleForTesting
@@ -801,11 +835,14 @@ class GroupsV2StateProcessor private constructor(
     fun setProfileSharing(groupStateDiff: GroupStateDiff, newLocalState: DecryptedGroup, needsAvatarFetch: Boolean, sentBySelf: Boolean = false) {
       val previousGroupState = groupStateDiff.previousGroupState
 
+      val signalDefault = GroupAdmission.getSettings().mode == GroupAdmissionMode.SIGNAL_DEFAULT
       if (GroupAdmission.shouldEnableProfileSharing(groupId)) {
         SignalDatabase.recipients.setProfileSharing(Recipient.externalGroupExact(groupId).id, true)
         if (needsAvatarFetch) AppDependencies.jobManager.add(AvatarGroupsV2DownloadJob(groupId, newLocalState.avatar, true))
         return
       }
+
+      if (!signalDefault) return
 
       if (previousGroupState != null && DecryptedGroupUtil.findMemberByAci(previousGroupState.members, aci).isPresent) {
         // Was already a member before update, profile sharing state previously determined

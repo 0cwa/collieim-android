@@ -17,6 +17,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.spyk
+import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -62,6 +63,9 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupsV2Authorization
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionMode
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSettings
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor.ProfileAndMessageHelper
 import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
@@ -411,6 +415,31 @@ class GroupsV2StateProcessorTest {
       }
 
     verify { groupTable.update(masterKey, result.latestServer!!, null) }
+  }
+
+  @Test
+  fun `group state save completes admission through the outer commit callback`() {
+    given {
+      localState(revision = 5)
+      expectTableUpdate = true
+    }
+    val update = GroupAdmission.PendingUpdate(selfAci.toString(), groupId.toString(), "prepared", null)
+    val callback = slot<Runnable>()
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.prepareStateUpdate(groupId, serviceIds, any(), any()) } returns update
+    every { GroupAdmission.completeStateUpdate(update) } returns true
+    every { SignalDatabase.runPostSuccessfulTransaction(capture(callback)) } answers {
+      verify { groupTable.update(any<GroupMasterKey>(), any(), anyNullable(), anyNullable(), any()) }
+    }
+    justRun { profileAndMessageHelper.setProfileSharing(any(), any(), any(), any()) }
+
+    processor.updateLocalGroupToRevision(6, 0, DecryptedGroupChange(revision = 6, newTimer = DecryptedTimer(duration = 5000)))
+
+    verify(exactly = 0) { GroupAdmission.completeStateUpdate(update) }
+    verify(exactly = 0) { profileAndMessageHelper.setProfileSharing(any(), any(), any(), any()) }
+    callback.captured.run()
+    verify(exactly = 1) { GroupAdmission.completeStateUpdate(update) }
+    verify(exactly = 1) { profileAndMessageHelper.setProfileSharing(any(), any(), any(), any()) }
   }
 
   @Test
@@ -2019,6 +2048,20 @@ class GroupsV2StateProcessorTest {
     verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
     verify(exactly = 1) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
     verify(exactly = 0) { jobManager.add(ofType(AvatarGroupsV2DownloadJob::class)) }
+  }
+
+  @Test
+  fun `restrictive modes keep blocked senders invitations for a local decision`() {
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.getSettings() } returns GroupAdmissionSettings(GroupAdmissionMode.ASK_EVERY_TIME)
+    every { GroupAdmission.isHeld(groupId) } returns true
+    applyGroupAddition(Recipient(id = RecipientId.from(200), isBlocked = true), requestedToJoin = false)
+
+    val invite = DecryptedGroup(revision = 1, pendingMembers = listOf(pendingMember(selfAci).copy(addedByAci = otherAci.toByteString())))
+    profileAndMessageHelper.setProfileSharing(GroupStateDiff(null, invite, null), invite, needsAvatarFetch = false)
+
+    verify(exactly = 0) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
   }
 
   private fun applyGroupAddition(addedBy: Recipient, requestedToJoin: Boolean = true) {

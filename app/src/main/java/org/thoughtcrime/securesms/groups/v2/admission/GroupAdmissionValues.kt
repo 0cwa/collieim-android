@@ -89,6 +89,7 @@ class GroupAdmissionValues(store: KeyValueStore) : SignalStoreValues(store) {
   private fun encode(state: AdmissionAccountState): String {
     val records = JSONObject()
     state.records.forEach { (group, record) ->
+      validateRecord(record)
       records.put(group, JSONObject().apply {
         put("kind", record.membership.kind.name)
         put("episode", record.membership.episode)
@@ -134,34 +135,48 @@ class GroupAdmissionValues(store: KeyValueStore) : SignalStoreValues(store) {
         allowedPeople = (0 until people.length()).map { ACI.parseOrThrow(people.getString(it)).also { require(it.isValid) }.toString() }.toSet()
       ),
       records = records.keys().asSequence().associateWith { group ->
-        val entry = records.getJSONObject(group)
-        AdmissionRecord(
-          membership = AdmissionMembership(
-            kind = MembershipKind.valueOf(entry.getString("kind")),
-            episode = entry.getString("episode"),
-            revision = entry.getInt("revision"),
-            joinedAtRevision = entry.optionalInt("joinedAt")
-          ),
-          status = AdmissionStatus.valueOf(entry.getString("status")),
-          generation = entry.getString("generation"),
-          pendingWrite = entry.optionalString("pending")
-        ).also(::validateRecord)
-      },
-      intents = intents.keys().asSequence().associateWith { group ->
-        val entry = intents.getJSONObject(group)
-        AdmissionIntent(
-          id = entry.getString("id"),
-          kind = ConsentKind.valueOf(entry.getString("kind")),
-          originEpisode = entry.optionalString("origin"),
-          expectedRevision = entry.optionalInt("revision")
-        ).also {
-          require(it.id.isNotBlank())
-          require(it.expectedRevision == null || it.expectedRevision >= 0)
-          require(it.kind != ConsentKind.ACCEPT || !it.originEpisode.isNullOrBlank())
+        try {
+          decodeRecord(records.getJSONObject(group))
+        } catch (e: Exception) {
+          Log.w(TAG, "Unable to read a group admission record; requiring local confirmation.", e)
+          AdmissionRecord(GroupAdmissionEvidence.unknownMembership(-1), AdmissionStatus.HELD)
         }
-      }
+      },
+      intents = intents.keys().asSequence().mapNotNull { group ->
+        try {
+          group to decodeIntent(intents.getJSONObject(group))
+        } catch (e: Exception) {
+          Log.w(TAG, "Unable to read a group admission intent; discarding it.", e)
+          null
+        }
+      }.toMap()
     )
   }
+
+  private fun decodeRecord(entry: JSONObject): AdmissionRecord =
+    AdmissionRecord(
+      membership = AdmissionMembership(
+        kind = MembershipKind.valueOf(entry.getString("kind")),
+        episode = entry.getString("episode"),
+        revision = entry.getInt("revision"),
+        joinedAtRevision = entry.optionalInt("joinedAt")
+      ),
+      status = AdmissionStatus.valueOf(entry.getString("status")),
+      generation = entry.getString("generation"),
+      pendingWrite = entry.optionalString("pending")
+    ).also(::validateRecord)
+
+  private fun decodeIntent(entry: JSONObject): AdmissionIntent =
+    AdmissionIntent(
+      id = entry.getString("id"),
+      kind = ConsentKind.valueOf(entry.getString("kind")),
+      originEpisode = entry.optionalString("origin"),
+      expectedRevision = entry.optionalInt("revision")
+    ).also {
+      require(it.id.isNotBlank())
+      require(it.expectedRevision == null || it.expectedRevision >= 0)
+      require(it.kind != ConsentKind.ACCEPT || !it.originEpisode.isNullOrBlank())
+    }
 
   private fun validateRecord(record: AdmissionRecord) {
     require(record.generation.isNotBlank())
@@ -187,6 +202,7 @@ class GroupAdmissionValues(store: KeyValueStore) : SignalStoreValues(store) {
         require(membership.episode.removePrefix("request:").toLong() >= 0)
       }
       MembershipKind.ABSENT -> require(membership.episode == "absent" && membership.joinedAtRevision == null)
+      MembershipKind.UNKNOWN -> require(membership.episode == "unknown" && membership.joinedAtRevision == null && record.status == AdmissionStatus.HELD)
     }
     when (record.status) {
       AdmissionStatus.AUTOMATIC, AdmissionStatus.EXISTING_GROUP -> require(membership.kind == MembershipKind.FULL)

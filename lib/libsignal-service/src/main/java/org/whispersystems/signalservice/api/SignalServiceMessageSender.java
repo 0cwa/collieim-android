@@ -326,7 +326,8 @@ public class SignalServiceMessageSender {
   public void sendStorySyncMessage(SignalServiceStoryMessage message,
                                    long timestamp,
                                    boolean isRecipientUpdate,
-                                   Set<SignalServiceStoryMessageRecipient> manifest)
+                                   Set<SignalServiceStoryMessageRecipient> manifest,
+                                   @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
     Log.d(TAG, "[" + timestamp + "] Sending a story sync message.");
@@ -337,7 +338,7 @@ public class SignalServiceMessageSender {
     }
 
     SignalServiceSyncMessage syncMessage = createSelfSendSyncMessageForStory(message, timestamp, isRecipientUpdate, manifest);
-    sendSyncMessage(syncMessage);
+    sendSyncMessage(syncMessage, cancelationSignal);
   }
 
   /**
@@ -353,20 +354,21 @@ public class SignalServiceMessageSender {
                                                 SignalServiceStoryMessage message,
                                                 long timestamp,
                                                 Set<SignalServiceStoryMessageRecipient> manifest,
-                                                PartialSendBatchCompleteListener partialListener)
+                                                PartialSendBatchCompleteListener partialListener,
+                                                @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, InvalidKeyException, NoSessionException, InvalidRegistrationIdException
   {
     Log.d(TAG, "[" + timestamp + "] Sending a story.");
 
     Content                  content            = createStoryContent(message);
-    List<SendMessageResult>  sendMessageResults = sendGroupMessage(distributionId, recipients, unidentifiedAccess, groupSendEndorsements, timestamp, content, ContentHint.IMPLICIT, groupId, false, SenderKeyGroupEvents.EMPTY, false, true, null);
+    List<SendMessageResult>  sendMessageResults = sendGroupMessage(distributionId, recipients, unidentifiedAccess, groupSendEndorsements, timestamp, content, ContentHint.IMPLICIT, groupId, false, SenderKeyGroupEvents.EMPTY, false, true, cancelationSignal);
 
     if (partialListener != null) {
       partialListener.onPartialSendComplete(sendMessageResults);
     }
 
     if (aciStore.isMultiDevice()) {
-      sendStorySyncMessage(message, timestamp, isRecipientUpdate, manifest);
+      sendStorySyncMessage(message, timestamp, isRecipientUpdate, manifest, cancelationSignal);
     }
 
     return sendMessageResults;
@@ -396,7 +398,8 @@ public class SignalServiceMessageSender {
 
   public List<SendMessageResult> sendCallMessage(List<SignalServiceAddress> recipients,
                                                  List<SealedSenderAccess> sealedSenderAccesses,
-                                                 SignalServiceCallMessage message)
+                                                 SignalServiceCallMessage message,
+                                                 @Nullable CancelationSignal cancelationSignal)
       throws IOException
   {
     long timestamp = System.currentTimeMillis();
@@ -405,7 +408,7 @@ public class SignalServiceMessageSender {
     Content         content         = createCallContent(message);
     EnvelopeContent envelopeContent = EnvelopeContent.encrypted(content, ContentHint.DEFAULT, Optional.empty());
 
-    return sendMessage(recipients, sealedSenderAccesses, timestamp, envelopeContent, false, null, null, null, message.isUrgent(), false);
+    return sendMessage(recipients, sealedSenderAccesses, timestamp, envelopeContent, false, null, cancelationSignal, null, message.isUrgent(), false);
   }
 
   public List<SendMessageResult> sendCallMessage(DistributionId distributionId,
@@ -413,14 +416,15 @@ public class SignalServiceMessageSender {
                                                  List<UnidentifiedAccess> unidentifiedAccess,
                                                  @Nonnull GroupSendEndorsements groupSendEndorsements,
                                                  SignalServiceCallMessage message,
-                                                 PartialSendBatchCompleteListener partialListener)
+                                                 PartialSendBatchCompleteListener partialListener,
+                                                 @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, InvalidKeyException, NoSessionException, InvalidRegistrationIdException
   {
     Log.d(TAG, "[" + message.getTimestamp().get() + "] Sending a call message (sender key).");
 
     Content content = createCallContent(message);
 
-    List<SendMessageResult> results = sendGroupMessage(distributionId, recipients, unidentifiedAccess, groupSendEndorsements, message.getTimestamp().get(), content, ContentHint.IMPLICIT, message.getGroupId(), false, SenderKeyGroupEvents.EMPTY, message.isUrgent(), false, null);
+    List<SendMessageResult> results = sendGroupMessage(distributionId, recipients, unidentifiedAccess, groupSendEndorsements, message.getTimestamp().get(), content, ContentHint.IMPLICIT, message.getGroupId(), false, SenderKeyGroupEvents.EMPTY, message.isUrgent(), false, cancelationSignal);
 
     if (partialListener != null) {
       partialListener.onPartialSendComplete(results);
@@ -580,7 +584,8 @@ public class SignalServiceMessageSender {
                                                       boolean urgent,
                                                       boolean isForStory,
                                                       SignalServiceEditMessage editMessage,
-                                                      PartialSendBatchCompleteListener partialListener)
+                                                      PartialSendBatchCompleteListener partialListener,
+                                                      @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException, InvalidKeyException, InvalidRegistrationIdException
   {
     Log.d(TAG, "[" + message.getTimestamp() + "] Sending a group " + (editMessage != null ? "edit data message" : "data message") + " to " + recipients.size() + " recipients using DistributionId " + distributionId);
@@ -594,7 +599,7 @@ public class SignalServiceMessageSender {
     }
 
     Optional<byte[]>        groupId = message.getGroupId();
-    List<SendMessageResult> results = sendGroupMessage(distributionId, recipients, unidentifiedAccess, groupSendEndorsements, message.getTimestamp(), content, contentHint, groupId, false, sendEvents, urgent, isForStory, null);
+    List<SendMessageResult> results = sendGroupMessage(distributionId, recipients, unidentifiedAccess, groupSendEndorsements, message.getTimestamp(), content, contentHint, groupId, false, sendEvents, urgent, isForStory, cancelationSignal);
 
     if (partialListener != null) {
       partialListener.onPartialSendComplete(results);
@@ -606,7 +611,7 @@ public class SignalServiceMessageSender {
       Content         syncMessage        = createMultiDeviceSentTranscriptContent(content, Optional.empty(), message.getTimestamp(), results, isRecipientUpdate, Collections.emptySet());
       EnvelopeContent syncMessageContent = EnvelopeContent.encrypted(syncMessage, ContentHint.IMPLICIT, Optional.empty());
 
-      sendMessage(localAddress, SealedSenderAccess.NONE, message.getTimestamp(), syncMessageContent, false, null, sendEvents, false, false);
+      sendMessage(localAddress, SealedSenderAccess.NONE, message.getTimestamp(), syncMessageContent, false, cancelationSignal, sendEvents, false, false);
     }
 
     sendEvents.onSyncMessageSent();
@@ -657,7 +662,7 @@ public class SignalServiceMessageSender {
       Content         syncMessage        = createMultiDeviceSentTranscriptContent(content, recipient, timestamp, results, isRecipientUpdate, Collections.emptySet());
       EnvelopeContent syncMessageContent = EnvelopeContent.encrypted(syncMessage, ContentHint.IMPLICIT, Optional.empty());
 
-      sendMessage(localAddress, SealedSenderAccess.NONE, timestamp, syncMessageContent, false, null, sendEvents, false, false);
+      sendMessage(localAddress, SealedSenderAccess.NONE, timestamp, syncMessageContent, false, cancelationSignal, sendEvents, false, false);
     }
 
     sendEvents.onSyncMessageSent();
@@ -709,7 +714,7 @@ public class SignalServiceMessageSender {
       Content         syncMessage        = createMultiDeviceSentTranscriptContent(content, recipient, timestamp, results, isRecipientUpdate, Collections.emptySet());
       EnvelopeContent syncMessageContent = EnvelopeContent.encrypted(syncMessage, ContentHint.IMPLICIT, Optional.empty());
 
-      sendMessage(localAddress, SealedSenderAccess.NONE, timestamp, syncMessageContent, false, null, sendEvents, false, false);
+      sendMessage(localAddress, SealedSenderAccess.NONE, timestamp, syncMessageContent, false, cancelationSignal, sendEvents, false, false);
     }
 
     sendEvents.onSyncMessageSent();
@@ -732,6 +737,12 @@ public class SignalServiceMessageSender {
   }
 
   public SendMessageResult sendSyncMessage(SignalServiceSyncMessage message)
+      throws IOException, UntrustedIdentityException, NoSessionException
+  {
+    return sendSyncMessage(message, null);
+  }
+
+  private SendMessageResult sendSyncMessage(SignalServiceSyncMessage message, @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
     Content content;
@@ -791,17 +802,23 @@ public class SignalServiceMessageSender {
 
     Optional<Long> timestamp = message.getSent().map(SentTranscriptMessage::getTimestamp);
 
-    return sendSyncMessage(content, urgent, timestamp);
+    return sendSyncMessage(content, urgent, timestamp, cancelationSignal);
   }
 
   public @Nonnull SendMessageResult sendSyncMessage(Content content, boolean urgent, Optional<Long> sent)
+      throws IOException, UntrustedIdentityException, NoSessionException
+  {
+    return sendSyncMessage(content, urgent, sent, null);
+  }
+
+  private SendMessageResult sendSyncMessage(Content content, boolean urgent, Optional<Long> sent, @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
     long timestamp = sent.orElseGet(System::currentTimeMillis);
 
     EnvelopeContent envelopeContent = EnvelopeContent.encrypted(content, ContentHint.IMPLICIT, Optional.empty());
 
-    return sendMessage(localAddress, SealedSenderAccess.NONE, timestamp, envelopeContent, false, null, null, urgent, false);
+    return sendMessage(localAddress, SealedSenderAccess.NONE, timestamp, envelopeContent, false, cancelationSignal, null, urgent, false);
   }
 
   /**
@@ -2431,6 +2448,10 @@ public class SignalServiceMessageSender {
                                                   boolean story,
                                                   int retryCount)
   {
+    if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+      return Single.just(SendMessageResult.canceledFailure(recipient));
+    }
+
     long startTime = System.currentTimeMillis();
     enforceMaxEnvelopeContentSize(content);
 
@@ -2455,11 +2476,12 @@ public class SignalServiceMessageSender {
 
     Single<SendMessageResult> sendWithFallback = messagesSingle
         .flatMap(messages -> {
-          if (cancelationSignal != null && cancelationSignal.isCanceled()) {
-            return Single.just(new kotlin.Pair<>(messages, new NetworkResult.NetworkError<SendMessageResponse>(new IOException("Canceled"))));
-          }
-
-          return Single.fromCallable(() -> messageApi.sendMessage(messages, sealedSenderAccess, story))
+          return Single.<NetworkResult<SendMessageResponse>>fromCallable(() -> {
+                  if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+                    return new NetworkResult.NetworkError<>(new IOException("Canceled"));
+                  }
+                  return messageApi.sendMessage(messages, sealedSenderAccess, story);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .onErrorReturn(NetworkResult.ApplicationError::new)
@@ -2514,6 +2536,9 @@ public class SignalServiceMessageSender {
             }
 
             return Single.fromCallable(() -> {
+              if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+                return SendMessageResult.canceledFailure(recipient);
+              }
               SendMessageResponse response = socket.sendMessage(messages, sealedSenderAccess, story);
               return SendMessageResult.success(
                   recipient,
@@ -2792,6 +2817,10 @@ public class SignalServiceMessageSender {
 
       MultiRecipientSendAuthorization multiRecipientAuth = story ? MultiRecipientSendAuthorization.Story.INSTANCE
                                                                  : new MultiRecipientSendAuthorization.GroupSend(groupSendEndorsements.toFullToken(workingRecipients));
+
+      if (cancelationSignal != null && cancelationSignal.isCanceled()) {
+        return buildCanceledGroupResults(workingRecipients, deferredResults);
+      }
 
       RequestResult<MultiRecipientMessageResponse, MultiRecipientSendFailure> result = messageApi.sendGroupMessage(ciphertext, multiRecipientAuth, timestamp, online, urgent);
 

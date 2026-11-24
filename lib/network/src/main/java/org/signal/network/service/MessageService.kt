@@ -29,17 +29,19 @@ class MessageService(
     serviceId: ServiceId,
     sealedSenderAccess: SealedSenderAccess?,
     request: SendRequest<EnvelopeContent>,
-    onEncrypted: (() -> Unit)? = null
+    onEncrypted: (() -> Unit)? = null,
+    beforeSend: (() -> Unit)? = null
   ): Either<SendError, SendSuccess> {
-    return individualMessageService.sendMessage(serviceId, request.content, request.timestamp, sealedSenderAccess, request.isOnline, request.urgent, onEncrypted)
+    return individualMessageService.sendMessage(serviceId, request.content, request.timestamp, sealedSenderAccess, request.isOnline, request.urgent, onEncrypted, beforeSend)
   }
 
   /** For callers that build one [SendRequest] and may send it to someone else or ourselves. */
   suspend fun sendSyncMessage(
     request: SendRequest<EnvelopeContent>,
-    onEncrypted: (() -> Unit)? = null
+    onEncrypted: (() -> Unit)? = null,
+    beforeSend: (() -> Unit)? = null
   ): Either<SendError, SendSuccess> {
-    return sendSyncMessage(request.timestamp, request.content, request.urgent, onEncrypted)
+    return individualMessageService.sendSyncMessage(request.timestamp, request.content, request.urgent, onEncrypted, beforeSend)
   }
 
   suspend fun sendSyncMessage(
@@ -60,12 +62,13 @@ class MessageService(
     destination: GroupSendDestination,
     recipients: List<GroupSendRecipient>,
     request: SendRequest<EnvelopeContent.Encrypted>,
-    messageId: Long? = null
+    messageId: Long? = null,
+    beforeSend: (() -> Unit)? = null
   ): Either<GroupSendError, List<RecipientSendResult>> {
     val content = request.content.content.get()
     val contentHint = request.content.contentHint
     val log = messageId?.let { SendLogEntry(it, recipients, request.timestamp, contentHint, request.urgent) }
-    return groupMessageService.sendMessage(destination, recipients, content, contentHint, request.timestamp, request.isOnline, request.urgent, onResult = { log?.record(it) })
+    return groupMessageService.sendMessage(destination, recipients, content, contentHint, request.timestamp, request.isOnline, request.urgent, beforeSend = beforeSend, onResult = { log?.record(it) })
   }
 
   private inner class SendLogEntry(

@@ -25,7 +25,7 @@ internal enum class AdmissionStatus {
   EXISTING_GROUP
 }
 
-internal enum class MembershipKind { ABSENT, PENDING, REQUESTING, FULL }
+internal enum class MembershipKind { ABSENT, PENDING, REQUESTING, FULL, UNKNOWN }
 
 /** An authenticated membership identity, not the latest title/avatar revision. */
 internal data class AdmissionMembership(

@@ -15,9 +15,11 @@ import org.thoughtcrime.securesms.mms.OutgoingMessage;
 import org.thoughtcrime.securesms.sms.GroupV2UpdateMessageUtil;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.messages.SignalServiceGroupV2;
+import org.whispersystems.signalservice.internal.push.http.CancelationSignal;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Admission is checked again at the side effect, independently of imported trust flags. */
 public final class GroupAdmissionSendGate {
@@ -47,7 +49,31 @@ public final class GroupAdmissionSendGate {
                                     @Nullable SignalServiceDataMessage wireMessage)
       throws HeldGroupException
   {
-    if (groupId == null || !GroupAdmission.isHeld(groupId)) {
+    requireAllowed(groupId, relatedMessageId, wireMessage, groupId != null && GroupAdmission.isHeld(groupId));
+  }
+
+  public static EpisodeCancellation bind(@NonNull GroupId.V2 groupId,
+                                         @Nullable MessageId relatedMessageId,
+                                         @Nullable SignalServiceDataMessage wireMessage,
+                                         @Nullable CancelationSignal external)
+      throws HeldGroupException
+  {
+    GroupAdmission.SendEpisode episode = GroupAdmission.sendEpisode(groupId);
+    requireAllowed(groupId, relatedMessageId, wireMessage, episode.getHeld());
+    EpisodeCancellation cancellation = external instanceof EpisodeCancellation && groupId.equals(((EpisodeCancellation) external).groupId)
+                                       ? (EpisodeCancellation) external
+                                       : new EpisodeCancellation(groupId, episode.key(), external);
+    cancellation.requireCurrent();
+    return cancellation;
+  }
+
+  private static void requireAllowed(@Nullable GroupId.V2 groupId,
+                                     @Nullable MessageId relatedMessageId,
+                                     @Nullable SignalServiceDataMessage wireMessage,
+                                     boolean held)
+      throws HeldGroupException
+  {
+    if (groupId == null || !held) {
       return;
     }
 
@@ -81,6 +107,38 @@ public final class GroupAdmissionSendGate {
     }
 
     throw new HeldGroupException();
+  }
+
+  /** One group send keeps the same episode across fanout, sender-key distribution and retries. */
+  public static final class EpisodeCancellation implements CancelationSignal {
+    private final GroupId.V2 groupId;
+    private final String episode;
+    private final CancelationSignal external;
+    private final AtomicBoolean stale = new AtomicBoolean();
+
+    public EpisodeCancellation(@NonNull GroupId.V2 groupId, @NonNull String episode, @Nullable CancelationSignal external) {
+      this.groupId  = groupId;
+      this.episode  = episode;
+      this.external = external;
+    }
+
+    public void requireCurrent() throws HeldGroupException {
+      if (isStale()) {
+        throw new HeldGroupException();
+      }
+    }
+
+    private boolean isStale() {
+      if (!stale.get() && !episode.equals(GroupAdmission.sendEpisode(groupId).key())) {
+        stale.set(true);
+      }
+      return stale.get();
+    }
+
+    @Override
+    public boolean isCanceled() {
+      return isStale() || (external != null && external.isCanceled());
+    }
   }
 
   /** A local policy rejection is terminal, rather than a retryable network error. */

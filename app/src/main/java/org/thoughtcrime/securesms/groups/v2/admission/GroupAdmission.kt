@@ -10,6 +10,7 @@ import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.groups.GroupChangeFailedException
+import org.signal.core.util.orNull
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChange
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -26,10 +27,19 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * Local permission to use a group, separate from its verified Signal membership and synced profile-sharing flag.
- * Membership and consent mutations run under GroupsV2ProcessingLock. Reads only inspect the encrypted ledger.
+ * Membership and consent mutations run under GroupsV2ProcessingLock.
  */
 object GroupAdmission {
-  data class PendingUpdate internal constructor(val account: String, val group: String, val token: String)
+  data class PendingUpdate internal constructor(val account: String, val group: String, val token: String, val intentToClear: String?)
+  class SendEpisode internal constructor(
+    private val account: String?,
+    private val generation: String?,
+    private val episode: String?,
+    val held: Boolean,
+    val joinedAtRevision: Int? = null
+  ) {
+    fun key(): String = "$account/$generation/$episode/$held"
+  }
   data class ConsentAttempt internal constructor(val account: String, val group: String, val id: String)
 
   @JvmStatic
@@ -43,6 +53,26 @@ object GroupAdmission {
     val account = account() ?: return false
     return SignalStore.groupAdmission.read(account).isHeld(groupId.toString())
   }
+
+  @JvmStatic
+  fun sendEpisode(groupId: GroupId.V2): SendEpisode {
+    val account = account() ?: return SendEpisode(null, null, null, false)
+    val group = groupId.toString()
+    val membership = currentMembership(groupId)
+    val state = SignalStore.groupAdmission.read(account)
+    val record = state.records[group]
+    val held = state.isHeld(group) || (record != null && record.membership.episode != membership.episode)
+    return SendEpisode(account, record?.generation, membership.episode, held, membership.joinedAtRevision)
+  }
+
+  /** Shared by the picker and the persistence boundary. */
+  internal fun selectableAci(recipient: Recipient): String? {
+    if (!recipient.isIndividual || recipient.isSelf || recipient.isBlocked || recipient.isHidden || !recipient.isRegistered) return null
+    return recipient.aci.orNull()?.takeIf { it.isValid }?.toString()
+  }
+
+  private fun currentPerson(aci: ACI): Recipient? =
+    SignalDatabase.recipients.getByAci(aci).orNull()?.let { Recipient.resolved(it).fresh() }?.takeIf { it.aci.orNull() == aci }
 
   @JvmStatic
   fun getSettings(): GroupAdmissionSettings {
@@ -69,7 +99,7 @@ object GroupAdmission {
         val records = state.records.toMutableMap()
         if (state.settings.mode == GroupAdmissionMode.SIGNAL_DEFAULT && mode != GroupAdmissionMode.SIGNAL_DEFAULT) {
           records.replaceAll { _, record ->
-            if (record.status == AdmissionStatus.SIGNAL_DEFAULT) record.copy(status = AdmissionStatus.HELD) else record
+            if (record.status == AdmissionStatus.SIGNAL_DEFAULT) record.copy(status = AdmissionStatus.HELD, generation = UUID.randomUUID().toString()) else record
           }
           baseline.forEach { (group, record) ->
             if (state.records[group]?.status != AdmissionStatus.HELD && state.records[group]?.pendingWrite == null) records[group] = record
@@ -88,8 +118,8 @@ object GroupAdmission {
     GroupsV2ProcessingLock.acquireAllGroupsProcessingLock(5.seconds).use {
       val before = SignalStore.groupAdmission.read(account).settings.allowedPeople
       for (raw in normalized - before) {
-        val person = Recipient.externalPush(ACI.parseOrThrow(raw)).resolve()
-        require(person.isRegistered && !person.isSelf && !person.isBlocked && !person.isHidden) { "Choose a registered, unblocked person" }
+        val person = currentPerson(ACI.parseOrThrow(raw))
+        require(person?.let(::selectableAci) == raw) { "Choose a registered, unblocked person" }
       }
       SignalStore.groupAdmission.update(account) { state -> state.copy(settings = state.settings.copy(allowedPeople = normalized)) }
     }
@@ -118,57 +148,79 @@ object GroupAdmission {
 
     val current = GroupAdmissionEvidence.membership(updated, self)
     val previous = GroupAdmissionEvidence.membership(diff.previousGroupState, self)
-    val changes = diff.serverHistory.mapNotNull { it.change }
+    val changes = diff.serverHistory.mapNotNull { it.change }.filter { it.revision in 0..updated.revision }
     val prior = snapshot.records[group]
-    val removed = changes.any { it.revision > (diff.previousGroupState?.revision ?: -1) && GroupAdmissionEvidence.removedSelf(it, self) }
-    val sameEpisode = prior?.membership?.episode == current.episode && !removed
+    // A pending decision may be carried across writes in the same batch, provided the prior write
+    // actually produced the previous state. A rolled-back write cannot authorize a different state.
+    val priorApplies = prior != null && (prior.pendingWrite == null || prior.membership == previous)
+    val removed = changes.any { it.revision > previous.revision && GroupAdmissionEvidence.removedSelf(it, self) }
+    val sameEpisode = priorApplies && prior?.membership?.episode == current.episode && !removed
     val intent = snapshot.intents[group]
-    val intentMatches = intent != null && GroupAdmissionEvidence.matchesIntent(intent, current, changes, self)
-    val joiningChange = changes.firstOrNull { it.revision == current.joinedAtRevision }
-    val continuingRequest = prior?.status == AdmissionStatus.LOCAL_CONSENT && prior.membership.kind == MembershipKind.REQUESTING &&
-      prior.membership.episode == previous.episode && !removed && joiningChange?.let { GroupAdmissionEvidence.promotesRequest(it, self) } == true
-    val continuingInvite = prior != null && prior.membership.kind == MembershipKind.PENDING && prior.membership.episode == previous.episode &&
-      !removed && joiningChange?.let { GroupAdmissionEvidence.promotesInvite(it, self) } == true
+    val joiningChange = changes.singleOrNull { it.revision == current.joinedAtRevision }?.takeIf { joining ->
+      priorApplies && prior?.membership?.episode == previous.episode && !removed &&
+        GroupAdmissionEvidence.hasUnbrokenHistory(previous.revision, joining.revision, changes, self)
+    }
+    val continuingRequest = prior?.status == AdmissionStatus.LOCAL_CONSENT && previous.kind == MembershipKind.REQUESTING &&
+      joiningChange?.let { ACI.parseOrNull(it.editorServiceIdBytes)?.isValid == true && GroupAdmissionEvidence.promotesRequest(it, self) } == true
+    val pendingId = diff.previousGroupState?.pendingMembers?.firstOrNull { self.matches(it.serviceIdBytes) }?.serviceIdBytes
+    val continuingInvite = previous.kind == MembershipKind.PENDING && pendingId != null &&
+      joiningChange?.let { GroupAdmissionEvidence.promotesInvite(it, self, pendingId) } == true
+    val intentMatches = intent != null && GroupAdmissionEvidence.matchesIntent(intent, current, changes, self) &&
+      (intent.kind != ConsentKind.ACCEPT || (continuingInvite && intent.originEpisode == token(account, prior, previous)))
     val inviter = GroupAdmissionEvidence.inviter(diff, updated, self)?.let { aci ->
-      val recipient = Recipient.externalPush(aci).resolve()
+      val recipient = currentPerson(aci)
       AdmissionInviter(
-        aci = aci.toString(),
-        blocked = recipient.isBlocked,
-        hidden = recipient.isHidden,
-        deviceContact = recipient.isSystemContact && Permissions.hasAll(AppDependencies.application, Manifest.permission.READ_CONTACTS)
+        aci = recipient?.let(::selectableAci),
+        blocked = recipient?.isBlocked == true,
+        hidden = recipient?.isHidden == true,
+        deviceContact = recipient?.isSystemContact == true && Permissions.hasAll(AppDependencies.application, Manifest.permission.READ_CONTACTS)
       )
     }
     val status = when {
       updated.terminated || current.kind == MembershipKind.ABSENT -> if (snapshot.settings.mode == GroupAdmissionMode.SIGNAL_DEFAULT) AdmissionStatus.SIGNAL_DEFAULT else AdmissionStatus.HELD
-      updated.needsServerSnapshot -> AdmissionStatus.HELD
+      updated.needsServerSnapshot || current.kind == MembershipKind.UNKNOWN -> AdmissionStatus.HELD
       intentMatches || continuingRequest -> AdmissionStatus.LOCAL_CONSENT
       sameEpisode -> prior!!.status
       continuingInvite -> prior!!.status
-      current.kind == MembershipKind.PENDING && snapshot.settings.mode != GroupAdmissionMode.SIGNAL_DEFAULT -> AdmissionStatus.HELD
+      snapshot.settings.mode != GroupAdmissionMode.SIGNAL_DEFAULT && (previous.kind == MembershipKind.PENDING || current.kind == MembershipKind.PENDING) -> AdmissionStatus.HELD
       else -> GroupAdmissionPolicy.evaluate(snapshot.settings, inviter)
     }
     val pendingToken = UUID.randomUUID().toString()
     val record = AdmissionRecord(
       membership = current,
       status = status,
-      generation = if (sameEpisode) prior!!.generation else UUID.randomUUID().toString(),
+      generation = if (sameEpisode && status == prior!!.status) prior.generation else UUID.randomUUID().toString(),
       pendingWrite = pendingToken
     )
-    SignalStore.groupAdmission.update(account) { state ->
-      state.copy(records = state.records + (group to record), intents = if (intentMatches || current.kind == MembershipKind.ABSENT) state.intents - group else state.intents)
+    val intentToClear = intent?.id?.takeIf {
+      (intentMatches && status == AdmissionStatus.LOCAL_CONSENT) || current.kind == MembershipKind.ABSENT ||
+        (sameEpisode && prior?.pendingWrite != null && status == AdmissionStatus.LOCAL_CONSENT)
     }
-    return PendingUpdate(account, group, pendingToken)
+    SignalStore.groupAdmission.update(account) { state -> state.copy(records = state.records + (group to record)) }
+    return PendingUpdate(account, group, pendingToken, intentToClear)
   }
 
   @JvmStatic
   @WorkerThread
-  fun completeStateUpdate(update: PendingUpdate?) {
-    if (update == null || account() != update.account) return
+  fun completeStateUpdate(update: PendingUpdate?): Boolean {
+    if (update == null) return true
+    if (account() != update.account) return false
+    val committed = currentMembership(GroupId.parseOrThrow(update.group).requireV2())
+    var completed = false
     SignalStore.groupAdmission.update(update.account) { state ->
       val record = state.records[update.group]
-      if (record?.pendingWrite != update.token) state else state.copy(records = state.records + (update.group to record.copy(pendingWrite = null)))
+      if (record?.pendingWrite != update.token || record.membership != committed) {
+        state
+      } else {
+        completed = true
+        state.copy(
+          records = state.records + (update.group to record.copy(pendingWrite = null)),
+          intents = if (state.intents[update.group]?.id == update.intentToClear) state.intents - update.group else state.intents
+        )
+      }
     }
-    notifyGroupChanged(update.group)
+    if (completed) notifyGroupChanged(update.group)
+    return completed
   }
 
   /** Only a configured automatic decision or actual local consent may replace the legacy trust predicate. */
@@ -196,11 +248,12 @@ object GroupAdmission {
     if (expectedToken == null && state.isHeld(group)) throw GroupChangeFailedException("Review this group invitation before accepting")
     if (state.settings.mode == GroupAdmissionMode.SIGNAL_DEFAULT && group !in state.records) return null
 
+    if (membership.kind == MembershipKind.FULL) {
+      SignalStore.groupAdmission.update(account) { grant(it, group, membership) }
+      return null
+    }
     val intent = AdmissionIntent(UUID.randomUUID().toString(), ConsentKind.ACCEPT, actualToken)
-    val record = (prior ?: AdmissionRecord(membership, AdmissionStatus.HELD)).copy(
-      status = if (membership.kind == MembershipKind.FULL) AdmissionStatus.LOCAL_CONSENT else AdmissionStatus.HELD,
-      pendingWrite = null
-    )
+    val record = (prior ?: AdmissionRecord(membership, AdmissionStatus.HELD)).copy(status = AdmissionStatus.HELD, pendingWrite = null)
     SignalStore.groupAdmission.update(account) {
       it.copy(records = it.records + (group to record), intents = it.intents + (group to intent))
     }
@@ -234,6 +287,7 @@ object GroupAdmission {
     val group = groupId.toString()
     val state = SignalStore.groupAdmission.read(account)
     val intent = state.intents[group] ?: return
+    if (nextRevision < 0) throw GroupChangeFailedException("Invalid group mutation revision")
     if (intent.kind == ConsentKind.ACCEPT) {
       val membership = currentMembership(groupId)
       val record = state.records[group]?.takeIf { it.membership.episode == membership.episode }
@@ -252,10 +306,13 @@ object GroupAdmission {
     if (attempt == null || account() != attempt.account) return
     val self = SignalStore.account.getServiceIds()
     val membership = GroupAdmissionEvidence.membership(group, self)
+    if (group.needsServerSnapshot || (group.isPlaceholderGroup && membership.kind != MembershipKind.REQUESTING)) return
+    if (currentMembership(GroupId.parseOrThrow(attempt.group).requireV2()) != membership) return
     SignalStore.groupAdmission.update(attempt.account) { state ->
       val intent = state.intents[attempt.group]?.takeIf { it.id == attempt.id } ?: return@update state
+      if (state.records[attempt.group]?.pendingWrite != null) return@update state
       val created = intent.kind == ConsentKind.CREATE && intent.expectedRevision == 0 && !group.isPlaceholderGroup && membership.kind == MembershipKind.FULL && membership.joinedAtRevision == 0
-      if (!created && !GroupAdmissionEvidence.matchesIntent(intent, membership, listOfNotNull(change), self)) return@update state
+      if (!created && (intent.kind == ConsentKind.ACCEPT || !GroupAdmissionEvidence.matchesIntent(intent, membership, listOfNotNull(change), self))) return@update state
       grant(state, attempt.group, membership)
     }
     notifyGroupChanged(attempt.group)
@@ -267,10 +324,10 @@ object GroupAdmission {
   fun confirmExistingMembership(attempt: ConsentAttempt?, group: DecryptedGroup) {
     if (attempt == null || account() != attempt.account || group.isPlaceholderGroup || group.needsServerSnapshot) return
     val membership = GroupAdmissionEvidence.membership(group, SignalStore.account.getServiceIds())
-    if (membership.kind != MembershipKind.FULL) return
+    if (membership.kind != MembershipKind.FULL || currentMembership(GroupId.parseOrThrow(attempt.group).requireV2()) != membership) return
     SignalStore.groupAdmission.update(attempt.account) { state ->
       val intent = state.intents[attempt.group]?.takeIf { it.id == attempt.id } ?: return@update state
-      if (intent.kind != ConsentKind.JOIN && intent.kind != ConsentKind.REQUEST) state else grant(state, attempt.group, membership)
+      if (state.records[attempt.group]?.pendingWrite != null || (intent.kind != ConsentKind.JOIN && intent.kind != ConsentKind.REQUEST)) state else grant(state, attempt.group, membership)
     }
     notifyGroupChanged(attempt.group)
   }
@@ -286,16 +343,27 @@ object GroupAdmission {
 
   private fun account(): String? = if (SignalStore.isInitialized) SignalStore.account.aci?.toString() else null
 
-  private fun currentMembership(groupId: GroupId.V2): AdmissionMembership = GroupAdmissionEvidence.membership(
-    SignalDatabase.groups.getGroup(groupId).orElse(null)?.takeIf { it.hasV2GroupProperties }?.requireV2GroupProperties()?.decryptedGroup,
-    SignalStore.account.getServiceIds()
-  )
+  private fun currentMembership(groupId: GroupId.V2): AdmissionMembership {
+    val state = SignalDatabase.groups.getGroupAdmissionState(groupId)
+    val membership = GroupAdmissionEvidence.membership(state?.first, SignalStore.account.getServiceIds())
+    // A local leave can clear the active flag before there is a new decrypted group snapshot.
+    return if (membership.kind == MembershipKind.FULL && state?.second == false) {
+      AdmissionMembership(MembershipKind.ABSENT, "absent", membership.revision)
+    } else {
+      membership
+    }
+  }
 
   private fun token(account: String, record: AdmissionRecord?, membership: AdmissionMembership): String = "$account/${record?.generation ?: membership.episode}/${membership.episode}"
 
   private fun grant(state: AdmissionAccountState, group: String, membership: AdmissionMembership): AdmissionAccountState {
     val prior = state.records[group]
-    val record = AdmissionRecord(membership, AdmissionStatus.LOCAL_CONSENT, if (prior?.membership?.episode == membership.episode) prior.generation else UUID.randomUUID().toString())
+    val generation = if (prior?.membership?.episode == membership.episode && prior.status == AdmissionStatus.LOCAL_CONSENT && prior.pendingWrite == null) {
+      prior.generation
+    } else {
+      UUID.randomUUID().toString()
+    }
+    val record = AdmissionRecord(membership, AdmissionStatus.LOCAL_CONSENT, generation)
     return state.copy(records = state.records + (group to record))
   }
 

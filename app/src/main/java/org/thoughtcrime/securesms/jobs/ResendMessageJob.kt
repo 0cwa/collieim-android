@@ -16,19 +16,23 @@ import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate
 import org.thoughtcrime.securesms.jobmanager.CoroutineJob
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.SealedSenderConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.groupId
 import org.thoughtcrime.securesms.net.SignalNetwork
+import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.OutgoingContent
 import org.whispersystems.signalservice.api.crypto.ContentHint
 import org.whispersystems.signalservice.api.crypto.EnvelopeContent
 import org.whispersystems.signalservice.api.push.DistributionId
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.internal.push.Content
+import org.whispersystems.signalservice.internal.push.GroupContextV2
 import java.util.Optional
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
@@ -45,9 +49,13 @@ class ResendMessageJob private constructor(
   private val content: Content,
   private val contentHint: ContentHint,
   private val urgent: Boolean,
-  private val groupId: GroupId.V2?,
-  private val distributionId: DistributionId?
+  groupId: GroupId.V2?,
+  private val distributionId: DistributionId?,
+  private var admissionEpisode: String?
 ) : CoroutineJob(parameters) {
+
+  private val groupContext = groupContext(content)
+  private val groupId = groupId ?: groupContext?.groupId
 
   companion object {
     const val KEY: String = "ResendMessageJob"
@@ -61,6 +69,10 @@ class ResendMessageJob private constructor(
     private const val KEY_URGENT = "urgent"
     private const val KEY_GROUP_ID = "group_id"
     private const val KEY_DISTRIBUTION_ID = "distribution_id"
+    private const val KEY_ADMISSION_EPISODE = "admission_episode"
+
+    private fun groupContext(content: Content): GroupContextV2? =
+      content.dataMessage?.groupV2 ?: content.editMessage?.dataMessage?.groupV2 ?: content.storyMessage?.group
   }
 
   constructor(
@@ -85,7 +97,8 @@ class ResendMessageJob private constructor(
     contentHint = contentHint,
     urgent = urgent,
     groupId = groupId,
-    distributionId = distributionId
+    distributionId = distributionId,
+    admissionEpisode = (groupId ?: groupContext(content)?.groupId)?.let { GroupAdmission.sendEpisode(it).key() }
   )
 
   override fun serialize(): ByteArray? {
@@ -97,15 +110,22 @@ class ResendMessageJob private constructor(
       .putBoolean(KEY_URGENT, urgent)
       .putBlobAsString(KEY_GROUP_ID, groupId?.decodedId)
       .putString(KEY_DISTRIBUTION_ID, distributionId?.toString())
+      .putString(KEY_ADMISSION_EPISODE, admissionEpisode)
       .serialize()
   }
 
   override fun getFactoryKey(): String = KEY
 
   override suspend fun doRun(): Result {
-    if (groupId != null && GroupAdmission.isHeld(groupId)) {
-      return Result.failure()
+    val admission = groupId?.let {
+      val current = GroupAdmission.sendEpisode(it)
+      val revision = groupContext?.revision ?: return Result.failure()
+      if (groupContext.groupId != it || current.held || (current.joinedAtRevision != null && revision < current.joinedAtRevision)) return Result.failure()
+      val expected = admissionEpisode ?: current.key().also { key -> admissionEpisode = key }
+      GroupAdmissionSendGate.EpisodeCancellation(it, expected, null)
     }
+    if (admission?.isCanceled == true) return Result.failure()
+    if (groupId != null && !SignalDatabase.groups.isCurrentMember(groupId, recipientId) && recipientId != Recipient.self().id) return Result.failure()
 
     if (SignalStore.internal.delayResends) {
       Log.w(TAG, "Delaying resend by 10 sec because of an internal preference.")
@@ -163,18 +183,21 @@ class ResendMessageJob private constructor(
 
     val request = SendRequest(EnvelopeContent.encrypted(contentToSend, contentHint, Optional.ofNullable(groupId?.decodedId)), timestamp = sentTimestamp, urgent = urgent)
 
-    if (groupId != null && GroupAdmission.isHeld(groupId)) {
+    val beforeSend = admission?.let { it::requireCurrent }
+    val result = try {
+      admission?.requireCurrent()
+      if (serviceId == SignalStore.account.aci) {
+        SignalNetwork.messageService.sendSyncMessage(request, beforeSend = beforeSend)
+      } else {
+        SignalNetwork.messageService.sendMessage(
+          serviceId = serviceId,
+          sealedSenderAccess = SealedSenderAccessUtil.getSealedSenderAccessFor(recipient, createGroupSendToken),
+          request = request,
+          beforeSend = beforeSend
+        )
+      }
+    } catch (_: GroupAdmissionSendGate.HeldGroupException) {
       return Result.failure()
-    }
-
-    val result = if (serviceId == SignalStore.account.aci) {
-      SignalNetwork.messageService.sendSyncMessage(request)
-    } else {
-      SignalNetwork.messageService.sendMessage(
-        serviceId = serviceId,
-        sealedSenderAccess = SealedSenderAccessUtil.getSealedSenderAccessFor(recipient, createGroupSendToken),
-        request = request
-      )
     }
 
     return result.fold(
@@ -253,7 +276,8 @@ class ResendMessageJob private constructor(
         contentHint = ContentHint.fromType(data.getInt(KEY_CONTENT_HINT)),
         urgent = data.getBooleanOrDefault(KEY_URGENT, true),
         groupId = groupId,
-        distributionId = distributionId
+        distributionId = distributionId,
+        admissionEpisode = data.getStringOrDefault(KEY_ADMISSION_EPISODE, null)
       )
     }
   }

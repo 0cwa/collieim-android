@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.net
 
 import okhttp3.Call
 import okhttp3.Dns
+import okhttp3.OkHttpClient
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -9,6 +10,8 @@ import java.net.Proxy
 import java.net.ProxySelector
 import java.net.SocketAddress
 import java.net.URI
+import java.util.function.BooleanSupplier
+import java.util.function.Consumer
 import javax.net.SocketFactory
 
 object Networking {
@@ -40,10 +43,13 @@ object Networking {
       if (current.socksProxy == value) current else Routing(current.enabled, value)
     }
 
+  /** Start a non-blocking platform lookup before a route change can supersede its direct route. */
   @JvmStatic
-  fun canUsePlatformGeocoder(): Boolean {
+  fun dispatchPlatformGeocoding(start: Consumer<BooleanSupplier>): Boolean = synchronized(routeLock) {
     val current = routing
-    return current.enabled && current.socksProxy == null
+    if (!current.enabled || current.socksProxy != null) return@synchronized false
+    start.accept(BooleanSupplier { routing === current })
+    true
   }
 
   /**
@@ -116,9 +122,25 @@ object Networking {
     }
     val proxySelector: ProxySelector by lazy { Networking.proxySelector { socksProxy != null } }
     val dns: Dns by lazy {
-      DnsProxyAware(socketFactory, proxySelector) {
+      // System DNS would bypass the pinned call machinery. Both map routes use bound DoH.
+      DnsProxyAware(socketFactory, proxySelector, ::configureDoh) {
         ensureCurrent()
-        socksProxy != null
+        true
+      }
+    }
+
+    fun configureDoh(builder: OkHttpClient.Builder) {
+      builder.addInterceptor { chain ->
+        val call = chain.call()
+        track(call)
+        try {
+          chain.proceed(chain.request())
+        } finally {
+          untrack(call)
+        }
+      }.addNetworkInterceptor { chain ->
+        ensureCurrent()
+        chain.proceed(chain.request())
       }
     }
 
@@ -149,16 +171,17 @@ object Networking {
   private class DnsProxyAware(
     socketFactory: SocketFactory,
     proxySelectorForSocks: ProxySelector,
-    private val useProxy: () -> Boolean
+    configure: Consumer<OkHttpClient.Builder> = Consumer {},
+    private val useDohOnly: () -> Boolean
   ) : Dns {
-    private val cloudflare: Dns = DohClient("https://1.1.1.1/dns-query", socketFactory, proxySelectorForSocks)
-    private val quad9: Dns = DohClient("https://9.9.9.9/dns-query", socketFactory, proxySelectorForSocks)
+    private val cloudflare: Dns = DohClient("https://1.1.1.1/dns-query", socketFactory, proxySelectorForSocks, configure)
+    private val quad9: Dns = DohClient("https://9.9.9.9/dns-query", socketFactory, proxySelectorForSocks, configure)
 
     private val systemDnsResolver: Dns = SequentialDns(Dns.SYSTEM, cloudflare, quad9)
     private val dohDnsResolver: Dns = SequentialDns(cloudflare, quad9)
 
     override fun lookup(hostname: String): List<InetAddress> {
-      return if (!useProxy()) {
+      return if (!useDohOnly()) {
         systemDnsResolver.lookup(hostname)
       } else {
         dohDnsResolver.lookup(hostname)

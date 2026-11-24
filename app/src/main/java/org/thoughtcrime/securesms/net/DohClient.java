@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -27,9 +28,13 @@ public class DohClient implements Dns {
   private final DnsOverHttps client;
 
   public DohClient(@NonNull String url, SocketFactory socketFactory, ProxySelector proxySelector) {
+    this(url, socketFactory, proxySelector, builder -> {});
+  }
+
+  public DohClient(@NonNull String url, SocketFactory socketFactory, ProxySelector proxySelector, Consumer<OkHttpClient.Builder> configure) {
     this.client = new DnsOverHttps.Builder()
                                   .url(HttpUrl.get(url))
-                                  .client(buildHttpClient(socketFactory, proxySelector))
+                                  .client(buildHttpClient(socketFactory, proxySelector, configure))
                                   .includeIPv6(false)
                                   .build();
   }
@@ -39,19 +44,20 @@ public class DohClient implements Dns {
     return client.lookup(hostname);
   }
 
-  static private OkHttpClient buildHttpClient(SocketFactory socketFactory, ProxySelector proxySelector) {
+  static private OkHttpClient buildHttpClient(SocketFactory socketFactory, ProxySelector proxySelector, Consumer<OkHttpClient.Builder> configure) {
     try {
       X509TrustManager trustManager = BlacklistingTrustManager.createForDefaultTrustStore();
       SSLContext       sslContext   = SSLContext.getInstance("TLS");
 
       sslContext.init(null, new TrustManager[] { trustManager }, null);
 
-      return new OkHttpClient.Builder()
+      OkHttpClient.Builder builder = new OkHttpClient.Builder()
                              .sslSocketFactory(new Tls12SocketFactory(sslContext.getSocketFactory()), trustManager)
                              .socketFactory(socketFactory)
                              .proxySelector(proxySelector)
-                             .cache(null)
-                             .build();
+                             .cache(null);
+      configure.accept(builder);
+      return builder.build();
     } catch (NoSuchAlgorithmException | KeyManagementException e) {
       throw new AssertionError(e);
     }

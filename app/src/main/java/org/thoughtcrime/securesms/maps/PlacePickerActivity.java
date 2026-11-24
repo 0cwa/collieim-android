@@ -11,7 +11,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -20,6 +20,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -46,11 +47,11 @@ import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BooleanSupplier;
 
 /**
  * Allows selection of an address from the OpenStreetMap raster map.
@@ -76,7 +77,8 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private Address                  currentAddress;
   private LatLng                   initialLocation = PRIME_MERIDIAN;
   private LatLng                   currentLocation = new LatLng(0, 0);
-  private AddressLookup            addressLookup;
+  private long                     addressLookupId;
+  private BooleanSupplier          addressRoute;
   private GoogleMap                googleMap;
   private Insets                   systemBarInsets;
   private @Nullable SimpleProgressDialog.DismissibleDialog snapshotProgress;
@@ -227,7 +229,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
     if (snapshotProgress != null) return;
 
     Intent      returnIntent = new Intent();
-    String      address      = Networking.canUsePlatformGeocoder() ? Objects.requireNonNullElse(addressToString(currentAddress), "") : "";
+    String      address      = addressRoute != null && addressRoute.getAsBoolean() ? Objects.requireNonNullElse(addressToString(currentAddress), "") : "";
     AddressData addressData  = new AddressData(currentLocation.latitude, currentLocation.longitude, address);
 
     SimpleProgressDialog.DismissibleDialog progress = SimpleProgressDialog.showDelayed(this);
@@ -280,65 +282,52 @@ public final class PlacePickerActivity extends AppCompatActivity {
   }
 
   private void lookupAddress(@Nullable LatLng target) {
-    if (addressLookup != null) {
-      addressLookup.cancel(true);
-    }
+    long lookupId = ++addressLookupId;
     currentAddress = null;
-    if (target == null || !Networking.canUsePlatformGeocoder()) {
-      addressLookup = null;
+    addressRoute = null;
+    // Older Android versions only expose a blocking lookup. Keep coordinate-only picking there.
+    if (target == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !Geocoder.isPresent() || !startAddressLookup(target, lookupId)) {
       bottomSheet.hide();
-      return;
     }
+  }
 
-    addressLookup = new AddressLookup();
-    addressLookup.execute(target);
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private boolean startAddressLookup(@NonNull LatLng target, long lookupId) {
+    Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+    return Networking.dispatchPlatformGeocoding(routeIsCurrent -> {
+      geocoder.getFromLocation(target.latitude, target.longitude, 1, new Geocoder.GeocodeListener() {
+        @Override
+        public void onGeocode(@NonNull List<Address> addresses) {
+          runOnUiThread(() -> finishAddressLookup(lookupId, routeIsCurrent, addresses.isEmpty() ? null : addresses.get(0)));
+        }
+
+        @Override
+        public void onError(@Nullable String errorMessage) {
+          runOnUiThread(() -> finishAddressLookup(lookupId, routeIsCurrent, null));
+        }
+      });
+    });
+  }
+
+  private void finishAddressLookup(long lookupId, BooleanSupplier routeIsCurrent, @Nullable Address address) {
+    if (lookupId != addressLookupId || isFinishing() || isDestroyed()) return;
+    currentAddress = routeIsCurrent.getAsBoolean() ? address : null;
+    addressRoute = routeIsCurrent;
+    if (currentAddress != null) {
+      bottomSheet.showResult(currentAddress.getLatitude(), currentAddress.getLongitude(),
+                             addressToShortString(currentAddress), addressToString(currentAddress));
+    } else {
+      bottomSheet.hide();
+    }
   }
 
   @SuppressLint("MissingPermission")
   @Override
   protected void onPause() {
     super.onPause();
+    ++addressLookupId;
     if (googleMap != null && (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
       googleMap.setMyLocationEnabled(false);
-    }
-    if (addressLookup != null) {
-      addressLookup.cancel(true);
-    }
-  }
-
-  @SuppressLint("StaticFieldLeak")
-  private class AddressLookup extends AsyncTask<LatLng, Void, Address> {
-
-    private final String TAG = Log.tag(AddressLookup.class);
-    private final Geocoder geocoder;
-
-    AddressLookup() {
-      geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-    }
-
-    @Override
-    protected Address doInBackground(LatLng... latLngs) {
-      if (latLngs.length == 0 || !Networking.canUsePlatformGeocoder()) return null;
-      LatLng latLng = latLngs[0];
-      if (latLng == null) return null;
-      try {
-        List<Address> result = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-        return !result.isEmpty() ? result.get(0) : null;
-      } catch (IOException e) {
-        Log.w(TAG, "Failed to get address from location", e);
-        return null;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(@Nullable Address address) {
-      if (!Networking.canUsePlatformGeocoder()) address = null;
-      currentAddress = address;
-      if (address != null) {
-        bottomSheet.showResult(address.getLatitude(), address.getLongitude(), addressToShortString(address), addressToString(address));
-      } else {
-        bottomSheet.hide();
-      }
     }
   }
 

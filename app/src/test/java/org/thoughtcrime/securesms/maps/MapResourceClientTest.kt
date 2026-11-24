@@ -30,6 +30,7 @@ import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.net.SocksProxy
 import java.io.IOException
 import java.net.Proxy
+import java.util.function.BooleanSupplier
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -282,14 +283,36 @@ class MapResourceClientTest {
   }
 
   @Test
-  fun `platform geocoding is available only when the direct route is enabled`() {
-    assertTrue(Networking.canUsePlatformGeocoder())
-    val proxy = SocksProxy("127.0.0.1", 9050)
-    Networking.socksProxy = proxy
-    assertFalse(Networking.canUsePlatformGeocoder())
+  fun `map DNS over HTTPS rejects queued calls and cancels admitted calls after route change`() {
+    val builder = OkHttpClient.Builder()
+    route.configureDoh(builder)
+    val client = builder.addInterceptor { chain ->
+      Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
+      assertTrue(chain.call().isCanceled())
+      throw IOException("Synthetic DNS transport reached")
+    }.build()
+    val request = Request.Builder().url("https://1.1.1.1/dns-query").build()
+    val admitted = client.newCall(request)
+    val queued = client.newCall(request)
+
+    assertEquals("Synthetic DNS transport reached", assertThrows(IOException::class.java) { admitted.execute() }.message)
+    assertEquals("Map network route changed", assertThrows(IOException::class.java) { queued.execute() }.message)
+  }
+
+  @Test
+  fun `platform geocoding dispatch and results are gated by one direct route`() {
+    lateinit var current: BooleanSupplier
+    assertTrue(Networking.dispatchPlatformGeocoding { current = it })
+    assertTrue(current.asBoolean)
+
+    Networking.socksProxy = SocksProxy("127.0.0.1", 9050)
+    assertFalse(Networking.dispatchPlatformGeocoding { error("Dispatched under SOCKS") })
+    assertFalse(current.asBoolean)
+
     Networking.socksProxy = null
+    assertFalse(current.asBoolean)
     Networking.isEnabled = false
-    assertFalse(Networking.canUsePlatformGeocoder())
+    assertFalse(Networking.dispatchPlatformGeocoding { error("Dispatched while offline") })
   }
 
   private fun tileRequest(): Request = Request.Builder()

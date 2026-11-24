@@ -817,6 +817,15 @@ class UnifiedPushRefreshJobTest {
 
   @Test
   fun `compensating cleanup does not complete an invalidation that supersedes its own`() {
+    assertCompensationAfterInterveningTransition(replaceInvalidation = true)
+  }
+
+  @Test
+  fun `compensating cleanup completes its own invalidation after an unrelated transition`() {
+    assertCompensationAfterInterveningTransition(replaceInvalidation = false)
+  }
+
+  private fun assertCompensationAfterInterveningTransition(replaceInvalidation: Boolean) {
     val store = provisioningStore()
     val created = MollySocketDevice(deviceId = 22, password = "fresh-relay-credential")
     val transitionRan = AtomicBoolean()
@@ -826,10 +835,12 @@ class UnifiedPushRefreshJobTest {
         val cleanupHasInvalidated = !Thread.holdsLock(UnifiedPushLifecycle.monitor) &&
           synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.hasPendingInvalidationLocked() }
         if (cleanupHasInvalidated && transitionRan.compareAndSet(false, true)) {
-          runBlocking { UnifiedPushAccountTransition.withTransition(completesInvalidation = true) {} }
-          synchronized(UnifiedPushLifecycle.monitor) {
-            assertTrue(UnifiedPushLifecycle.isReadyLocked())
-            UnifiedPushLifecycle.invalidateLocked()
+          runBlocking { UnifiedPushAccountTransition.withTransition(completesInvalidation = replaceInvalidation) {} }
+          if (replaceInvalidation) {
+            synchronized(UnifiedPushLifecycle.monitor) {
+              assertTrue(UnifiedPushLifecycle.isReadyLocked())
+              UnifiedPushLifecycle.invalidateLocked()
+            }
           }
         }
         store.values
@@ -843,8 +854,8 @@ class UnifiedPushRefreshJobTest {
     assertTrue(failure is KeyValuePersistenceException)
     assertEquals(0, failure!!.suppressed.size)
     assertNull(store.rebuilt().device)
-    assertFalse(UnifiedPushLifecycle.isReady())
-    assertTrue(synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.hasPendingInvalidationLocked() })
+    assertEquals(!replaceInvalidation, UnifiedPushLifecycle.isReady())
+    assertEquals(replaceInvalidation, synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.hasPendingInvalidationLocked() })
   }
 
   @Test

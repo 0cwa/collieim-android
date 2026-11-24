@@ -26,7 +26,7 @@ object UnifiedPushLifecycle {
   private var ready = false
   private var generation = 0L
   private var transitionGeneration: Long? = null
-  private var invalidationPending = false
+  private var pendingInvalidationGeneration: Long? = null
   private var leaseCount = 0
   private var drainSignal: CountDownLatch? = null
   private val pendingFetchAdmissions = LinkedHashSet<FetchAdmission>()
@@ -106,7 +106,7 @@ object UnifiedPushLifecycle {
       check(leaseCount == 0 && transitionGeneration == null) { "Cannot initialize UnifiedPush lifecycle while work is active" }
       initialized = true
       generation = nextGeneration(generation)
-      invalidationPending = false
+      pendingInvalidationGeneration = null
       ready = !incompleteTransition && legacyContextIsCoherent
     }
   }
@@ -242,7 +242,7 @@ object UnifiedPushLifecycle {
   /** Must be called from inside [monitor]. */
   fun isReadyLocked(): Boolean {
     check(Thread.holdsLock(monitor))
-    return initialized && ready && transitionGeneration == null && !invalidationPending
+    return initialized && ready && transitionGeneration == null && pendingInvalidationGeneration == null
   }
 
   /** Immediately revokes effect authorization; the caller must queue a transition that completes the invalidation. */
@@ -250,13 +250,13 @@ object UnifiedPushLifecycle {
     check(Thread.holdsLock(monitor))
     generation = nextGeneration(generation)
     ready = false
-    invalidationPending = true
+    pendingInvalidationGeneration = generation
     revokeFetchAdmissionsForTransitionLocked()
   }
 
   fun hasPendingInvalidationLocked(): Boolean {
     check(Thread.holdsLock(monitor))
-    return invalidationPending
+    return pendingInvalidationGeneration != null
   }
 
   fun currentGeneration(): Long = synchronized(monitor) { generation }
@@ -305,6 +305,7 @@ object UnifiedPushLifecycle {
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
     afterTransitionStarted: () -> Unit = {},
+    invalidationGenerationToComplete: Long? = null,
     block: suspend () -> T,
   ): TransitionResult<T> {
     require(!keepIncompleteMarker || !completesAccountRegistration) {
@@ -330,7 +331,7 @@ object UnifiedPushLifecycle {
           finishTransition(token, readyAfter = false, completesInvalidation = false)
         } else {
           withContext(NonCancellable + Dispatchers.IO) { persistIncompleteMarker(false) }
-          finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration)
+          finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration, invalidationGenerationToComplete)
         }
       }
       return TransitionResult(result, token.generation)
@@ -391,12 +392,18 @@ object UnifiedPushLifecycle {
     activeFetchAdmissions.clear()
   }
 
-  private fun finishTransition(token: TransitionOwnership, readyAfter: Boolean, completesInvalidation: Boolean) {
+  private fun finishTransition(
+    token: TransitionOwnership,
+    readyAfter: Boolean,
+    completesInvalidation: Boolean,
+    invalidationGenerationToComplete: Long? = null,
+  ) {
     synchronized(monitor) {
       check(transitionGeneration == token.generation) { "UnifiedPush lifecycle transition ownership changed" }
-      if (completesInvalidation && readyAfter) invalidationPending = false
+      val ownsPendingInvalidation = invalidationGenerationToComplete != null && invalidationGenerationToComplete == pendingInvalidationGeneration
+      if (readyAfter && (completesInvalidation || ownsPendingInvalidation)) pendingInvalidationGeneration = null
       transitionGeneration = null
-      ready = readyAfter && !invalidationPending
+      ready = readyAfter && pendingInvalidationGeneration == null
     }
   }
 
@@ -434,7 +441,7 @@ object UnifiedPushLifecycle {
       initialized = true
       ready = initiallyReady
       generation = 1
-      invalidationPending = false
+      pendingInvalidationGeneration = null
       drainSignal = null
       pendingFetchAdmissions.clear()
       activeFetchAdmissions.clear()

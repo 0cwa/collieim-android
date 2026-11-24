@@ -335,7 +335,7 @@ class UnifiedPushRefreshJob private constructor(
     suspend fun clearInTransition(generation: Long?) =
       UnifiedPushAccountTransition.withTransitionAndGeneration(
         expectedGeneration = generation,
-        completesInvalidation = generation != null,
+        invalidationGenerationToComplete = expectedGeneration,
       ) {
         synchronized(UnifiedPushLifecycle.monitor) {
           if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) &&
@@ -356,7 +356,7 @@ class UnifiedPushRefreshJob private constructor(
         clearInTransition(expectedGeneration)
       } catch (stale: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
         if (!allowRouteTransition || expectedGeneration == null) throw stale
-        // A different transition took over the invalidation. Clear only the matching credential.
+        // A different transition advanced the lifecycle. Finish only our original invalidation.
         clearInTransition(null)
       }
     }

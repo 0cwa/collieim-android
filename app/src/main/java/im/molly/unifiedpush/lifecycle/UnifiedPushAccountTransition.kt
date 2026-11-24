@@ -73,6 +73,7 @@ object UnifiedPushAccountTransition {
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
     readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
+    invalidationGenerationToComplete: Long? = null,
     block: suspend () -> T,
   ): UnifiedPushLifecycle.TransitionResult<T> {
     val result = UnifiedPushLifecycle.withTransitionAndGeneration(
@@ -83,6 +84,7 @@ object UnifiedPushAccountTransition {
       keepIncompleteMarker = keepIncompleteMarker,
       completesAccountRegistration = completesAccountRegistration,
       completesInvalidation = completesInvalidation,
+      invalidationGenerationToComplete = invalidationGenerationToComplete,
       afterTransitionStarted = {
         if (AppDependencies.isInitialized) {
           AppDependencies.incomingMessageObserver.notifyUnifiedPushFetchStateChanged()

@@ -41,6 +41,7 @@ import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.isSplitPane
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.RawFlag
 import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.SignalActivityRule

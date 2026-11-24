@@ -12,8 +12,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.testutil.SystemOutLogger
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [35])
@@ -21,7 +23,11 @@ class GroupPeekPermitTest {
   private val environment = CallPermissionTestEnvironment()
 
   @Before
-  fun setUp() = environment.setUp()
+  fun setUp() {
+    Log.initialize(SystemOutLogger())
+    environment.setUp()
+    assertTrue("The fixture must expose the registered account's call policy", CallPermissions.isCallingAllowed())
+  }
 
   @After
   fun tearDown() = environment.tearDown()

@@ -31,6 +31,7 @@ internal class CallPermissionTestEnvironment {
   private val recipients = HashMap<RecipientId, Recipient>()
   private val recipientTable: RecipientTable = mockk()
   private val groupTable: GroupTable = mockk()
+  private val groupRecords = HashMap<RecipientId, GroupRecord>()
   private val database: SQLiteDatabase = mockk()
   private val recipientTransactionLock = Any()
   private val recipientRemaps = HashMap<RecipientId, RecipientId>()
@@ -65,6 +66,7 @@ internal class CallPermissionTestEnvironment {
     every { Recipient.resolved(any()) } answers { recipient(firstArg<RecipientId>().toLong()) }
     every { SignalDatabase.recipients } returns recipientTable
     every { SignalDatabase.groups } returns groupTable
+    every { groupTable.getGroup(any<RecipientId>()) } answers { Optional.ofNullable(groupRecords[firstArg<RecipientId>()]) }
     every { SignalDatabase.runInTransaction<Unit>(any()) } answers {
       nextRecipientTransaction.getAndSet(null)?.invoke()
       synchronized(recipientTransactionLock) {
@@ -117,7 +119,13 @@ internal class CallPermissionTestEnvironment {
       every { isAnnouncementGroup } returns false
       every { memberLevel(any()) } returns GroupTable.MemberLevel.FULL_MEMBER
     }
-    every { groupTable.getGroup(recipient.id) } returns Optional.of(record)
+    // Keep the lookup key outside MockK's recording scope. Recipient.id is itself mocked;
+    // nesting that getter inside a getGroup stub can record a matcher instead of its stored ID.
+    groupRecords[recipient.id] = record
+    check(Recipient.resolved(recipient.id) === recipient)
+    check(recipient.isPushV2Group && !recipient.isIndividual)
+    check(SignalDatabase.groups.getGroup(recipient.id).orElse(null) === record)
+    check(record.isActive)
     return recipient
   }
 

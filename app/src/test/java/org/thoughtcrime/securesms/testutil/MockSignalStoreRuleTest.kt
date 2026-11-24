@@ -5,6 +5,7 @@ import android.app.Application
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -58,11 +59,19 @@ class MockSignalStoreRuleTest {
 
   @Test
   fun `remote-config initialization uses this fixtures storage without changing call permissions`() {
-    store.remoteConfig.pendingConfig = "{\"global.pinnedChatLimit\":9}"
+    // Numeric remote flags use string values; a JSON number resolves to the declared default.
+    store.remoteConfig.pendingConfig = "{\"global.pinnedChatLimit\":\"9\"}"
+    val expectedConfig = mapOf("global.pinnedChatLimit" to "9")
+
+    assertSame(store.remoteConfig, SignalStore.remoteConfig)
+    assertFalse(RemoteConfig.initialized)
+    assertEquals(expectedConfig, RemoteConfig.debugPendingDiskValues)
+    assertTrue(RemoteConfig.debugDiskValues.isEmpty())
 
     assertEquals(9, RemoteConfig.pinnedChatLimit)
 
     assertTrue(RemoteConfig.initialized)
+    assertEquals(expectedConfig, RemoteConfig.debugDiskValues)
     val policy = store.callPermissions.read()
     assertFalse(policy.allCallingDisabled)
     assertEquals(CallPermission.ALLOW, policy.directDefault)

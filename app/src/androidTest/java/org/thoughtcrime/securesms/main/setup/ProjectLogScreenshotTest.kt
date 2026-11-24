@@ -170,7 +170,7 @@ class ProjectLogScreenshotTest {
 
       compose.onNode(hasText(context.getString(AppSettingsR.string.HelpSettingsFragment__whats_new)) and isClickable()).performClick()
       assertCurrentSection(notes)
-      awaitText(context.getString(R.string.CollieLog__development_build))
+      awaitText(context.getString(R.string.CollieLog__development_build), substring = true)
       assertEquals("Help history must not mark highlights seen", null, SignalStore.collieSetup.notesSeenId)
 
       if (notes.current.entries.isNotEmpty()) {

@@ -64,6 +64,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Collection;
 import java.util.Collections;
@@ -458,6 +460,12 @@ public final class MediaOverviewPageFragment extends LoggingFragment
     exitMultiSelect();
   }
 
+  private void handleRemoveSelectedAttachments() {
+    MediaActions.handleRemoveAttachments(this, getListAdapter().getSelectedMedia(), () -> {
+      if (actionMode != null) exitMultiSelect();
+    });
+  }
+
   private void handleSelectAllMedia() {
     if (allLoaded) {
       getListAdapter().selectAllMedia();
@@ -514,7 +522,7 @@ public final class MediaOverviewPageFragment extends LoggingFragment
 
       int selectionCount = getListAdapter().getSectionCount();
 
-      bottomActionBar.setItems(Arrays.asList(
+      List<ActionItem> actions = new ArrayList<>(Arrays.asList(
           new ActionItem(org.signal.core.ui.R.drawable.symbol_save_android_24, getResources().getQuantityString(R.plurals.MediaOverviewActivity_save_plural, selectionCount), () -> {
             Collection<MediaTable.MediaRecord> selected = getListAdapter().getSelectedMedia();
 
@@ -549,6 +557,14 @@ public final class MediaOverviewPageFragment extends LoggingFragment
           new ActionItem(org.signal.core.ui.R.drawable.symbol_check_circle_24, getString(R.string.MediaOverviewActivity_select_all), this::handleSelectAllMedia),
           new ActionItem(org.signal.core.ui.R.drawable.symbol_trash_24, getResources().getQuantityString(R.plurals.MediaOverviewActivity_delete_plural, selectionCount), this::handleDeleteSelectedMedia)
       ));
+
+      Collection<MediaTable.MediaRecord> selectedMedia = getListAdapter().getSelectedMedia();
+      if (!selectedMedia.isEmpty() && selectedMedia.stream().allMatch(record -> record.getAttachment() != null && record.getLinkPreviewJson() == null)) {
+        actions.add(2, new ActionItem(org.signal.core.ui.R.drawable.symbol_trash_24,
+                                     getString(R.string.CollieAttachmentRemoval_short_action),
+                                     this::handleRemoveSelectedAttachments));
+      }
+      bottomActionBar.setItems(actions);
     }
   }
 

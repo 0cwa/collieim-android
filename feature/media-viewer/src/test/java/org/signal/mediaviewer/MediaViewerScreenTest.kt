@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -27,6 +28,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Density
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
@@ -108,6 +110,49 @@ class MediaViewerScreenTest {
     composeTestRule.onNodeWithTag(MediaViewerScreenTestTags.BACK_BUTTON).performClick()
 
     assertThat(events).contains(MediaViewerEvent.BackClicked)
+  }
+
+  @Test
+  fun givenStoredMedia_whenOpeningTheMenu_thenRemovalAndDeletionAreSeparateActions() {
+    setContent(createState())
+
+    composeTestRule.onNodeWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).performClick()
+    composeTestRule.onNodeWithTag(MediaViewerScreenTestTags.MENU_DELETE).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).performClick()
+
+    assertThat(events).contains(MediaViewerEvent.RemoveAttachmentClicked)
+  }
+
+  @Test
+  fun givenRemovalConfirmation_whenConfirming_thenOnlyAttachmentRemovalIsRequested() {
+    setContent(createState(dialog = MediaViewerState.Dialog.RemoveAttachmentConfirmation(AttachmentId(1))))
+
+    composeTestRule.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_DIALOG).assertIsDisplayed()
+    composeTestRule.onNodeWithText("Remove attachment").performClick()
+
+    assertThat(events).contains(MediaViewerEvent.RemoveAttachmentConfirmed)
+    assertThat(events.filterIsInstance<MediaViewerEvent.DeleteConfirmed>()).isEmpty()
+  }
+
+  @Test
+  fun givenRemovalConfirmation_whenCancelling_thenNoRemovalIsRequested() {
+    setContent(createState(dialog = MediaViewerState.Dialog.RemoveAttachmentConfirmation(AttachmentId(1))))
+
+    composeTestRule.onNodeWithText("Cancel").performClick()
+
+    assertThat(events).contains(MediaViewerEvent.DialogDismissed)
+    assertThat(events.filter { it == MediaViewerEvent.RemoveAttachmentConfirmed }).isEmpty()
+  }
+
+  @Test
+  @Config(qualifiers = "w320dp-h480dp")
+  fun givenLargeTextOnAShortScreen_thenRemovalConfirmationRemainsUsable() {
+    setContent(createState(dialog = MediaViewerState.Dialog.RemoveAttachmentConfirmation(AttachmentId(1))), fontScale = 2f)
+
+    composeTestRule.onNodeWithTag(MediaViewerScreenTestTags.REMOVE_ATTACHMENT_BUTTON).assertIsDisplayed()
+    composeTestRule.onNodeWithText("Cancel").assertIsDisplayed().performClick()
+
+    assertThat(events).contains(MediaViewerEvent.DialogDismissed)
   }
 
   @Test
@@ -395,14 +440,15 @@ class MediaViewerScreenTest {
   private fun setContent(
     state: MediaViewerState,
     playbackController: MediaViewerPlaybackController = MediaViewerPlaybackController(),
-    dismissState: DragToDismissState = DragToDismissState()
+    dismissState: DragToDismissState = DragToDismissState(),
+    fontScale: Float = 1f
   ) {
     composeTestRule.setContent {
       // The video page inflates VideoPlayer's XML, whose theme attributes come from Material3. The bare
       // test activity theme is a framework one, so wrap the context that the AndroidView receives.
       val themedContext = ContextThemeWrapper(LocalContext.current, com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar)
 
-      CompositionLocalProvider(LocalContext provides themedContext) {
+      CompositionLocalProvider(LocalContext provides themedContext, LocalDensity provides Density(LocalDensity.current.density, fontScale)) {
         MediaViewerScreen(
           state = state,
           onEvent = { events += it },

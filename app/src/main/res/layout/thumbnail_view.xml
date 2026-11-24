@@ -52,6 +52,22 @@
         app:tint="?attr/colorOnSurface"
         tools:visibility="visible" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/thumbnail_removed_label"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        android:clickable="false"
+        android:drawablePadding="8dp"
+        android:gravity="center"
+        android:importantForAccessibility="no"
+        android:padding="12dp"
+        android:text="@string/CollieAttachmentRemoval_removed"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
     <FrameLayout
         android:id="@+id/play_overlay"
         android:layout_width="48dp"

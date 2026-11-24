@@ -48,7 +48,28 @@ object TransferControls {
     state: TransferControlViewState,
     awaitingAttachmentIds: Set<AttachmentId> = emptySet()
   ): TransferControlsRenderState {
+    val removedSlides = state.slides.filter { it.asAttachment().isLocallyRemoved }
+    if (removedSlides.isNotEmpty()) {
+      val removedIds = removedSlides.mapNotNull { (it.asAttachment() as? DatabaseAttachment)?.attachmentId }.toSet()
+      val keepProgress: (Attachment) -> Boolean = { !it.isLocallyRemoved && (it as? DatabaseAttachment)?.attachmentId !in removedIds }
+
+      // Backfill and progress events can outlive a removal. They must not bring its controls back,
+      // or contribute bytes and pending-item counts to the remaining attachments in an album.
+      return deriveRenderState(
+        state.copy(
+          slides = state.slides.filterNot { it.asAttachment().isLocallyRemoved },
+          networkProgress = state.networkProgress.filterKeys(keepProgress),
+          compressionProgress = state.compressionProgress.filterKeys(keepProgress)
+        ),
+        awaitingAttachmentIds - removedIds
+      )
+    }
+
     if (state.slides.isEmpty()) {
+      return TransferControlsRenderState.Gone
+    }
+
+    if (state.slides.all { it.asAttachment().isPermanentlyFailed }) {
       return TransferControlsRenderState.Gone
     }
 
@@ -256,7 +277,7 @@ object TransferControls {
     var transferState = AttachmentTable.TRANSFER_PROGRESS_DONE
     var allFailed = true
     for (slide in slides) {
-      if (slide.transferState != AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE) {
+      if (slide.transferState != AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE && !slide.asAttachment().isLocallyRemoved) {
         allFailed = false
         transferState = if (slide.transferState == AttachmentTable.TRANSFER_PROGRESS_PENDING && transferState == AttachmentTable.TRANSFER_PROGRESS_DONE) {
           slide.transferState

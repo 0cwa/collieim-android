@@ -8,20 +8,28 @@ import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import im.molly.unifiedpush.MollySocketRepository
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.ControlUpdate
+import im.molly.unifiedpush.control.EndpointReconciler
+import im.molly.unifiedpush.model.ConnectionResult
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.receiver.LockedPushState
+import im.molly.unifiedpush.receiver.UnifiedPushReceiver
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkConstructor
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -54,10 +62,15 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.linkdevice.Device
 import org.thoughtcrime.securesms.linkdevice.LinkDeviceRepository
+import org.thoughtcrime.securesms.notifications.NotificationChannels
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.whispersystems.signalservice.api.SignalServiceMessageSender
 import org.whispersystems.signalservice.api.messages.SendMessageResult
+import org.unifiedpush.android.connector.data.PublicKeySet
+import org.unifiedpush.android.connector.data.PushEndpoint
+import org.unifiedpush.android.connector.data.PushMessage
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -120,8 +133,9 @@ class UnifiedPushRefreshJobTest {
   @After
   fun tearDown() {
     unmockkObject(LinkDeviceRepository)
-    unmockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies)
-    unmockkStatic(AppDependencies::class)
+    unmockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies, LockedPushState, EndpointReconciler)
+    unmockkStatic(AppDependencies::class, KeyCachingService::class, NotificationChannels::class, LockedPushState::class, EndpointReconciler::class, UnifiedPushDistributor::class)
+    unmockkConstructor(UnifiedPushNotificationBuilder::class)
   }
 
   @Test
@@ -494,6 +508,105 @@ class UnifiedPushRefreshJobTest {
     assertEquals(RegistrationStatus.PENDING, unifiedPush.registrationStatus)
     verify(exactly = 1) { MollySocketRepository.createDevice() }
     verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `duplicate endpoint during linked device creation does not revoke the new device`() {
+    val pending = configureEndpointCallbacks()
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    val created = MollySocketDevice(deviceId = 6, password = "new-relay-credential")
+    val generation = UnifiedPushLifecycle.currentGeneration()
+    storedDevice = null
+    every { MollySocketRepository.createDevice() } answers {
+      // A distributor can repeat its saved subscription while the HTTP linking request is in flight.
+      UnifiedPushReceiver().onNewEndpoint(context, savedEndpoint(), "fixture-instance")
+      created
+    }
+    every { MollySocketRepository.removeDevice(created) } returns Unit
+    every { MollySocketRepository.registerDeviceOnServer(any(), created, any(), false) } returns ConnectionResult.OK
+
+    val refresh = UnifiedPushRefreshJob(testPing = false).apply { setContext(context) }
+    refresh.onRun()
+    awaitEndpointCallbacks(pending)
+
+    assertEquals("a repeated subscription must not retire the linking job's generation", generation, UnifiedPushLifecycle.currentGeneration())
+    assertEquals(created, storedDevice)
+    assertEquals(RegistrationStatus.REGISTERED, storedStatus)
+    verify(exactly = 1) { MollySocketRepository.createDevice() }
+    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), created, "https://push.example.invalid/endpoint", false) }
+    verify(exactly = 0) { MollySocketRepository.removeDevice(created) }
+  }
+
+  @Test
+  fun `configuration test accepts its ping after the distributor repeats the saved endpoint`() {
+    val pending = configureEndpointCallbacks()
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    val receiver = UnifiedPushReceiver()
+    val generation = UnifiedPushLifecycle.currentGeneration()
+    every { UnifiedPushDistributor.registerApp(any()) } answers {
+      receiver.onNewEndpoint(context, savedEndpoint(), "fixture-instance")
+    }
+    every { MollySocketRepository.registerDeviceOnServer(any(), device, any(), true) } answers {
+      receiver.onMessage(context, PushMessage("""{"test":true}""".toByteArray(), true), "fixture-instance")
+      ConnectionResult.OK
+    }
+
+    val refresh = UnifiedPushRefreshJob(testPing = true).apply { setContext(context) }
+    refresh.onRun()
+    awaitEndpointCallbacks(pending)
+
+    assertEquals(generation, UnifiedPushLifecycle.currentGeneration())
+    assertEquals(device, storedDevice)
+    assertEquals(RegistrationStatus.REGISTERED, storedStatus)
+    verify(exactly = 1) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationTest() }
+    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), device, "https://push.example.invalid/endpoint", true) }
+    verify(exactly = 0) { MollySocketRepository.createDevice() }
+  }
+
+  /** Uses the real receiver and lifecycle, with only network, notification and sealed-storage effects replaced. */
+  private fun configureEndpointCallbacks(): AtomicReference<LockedPushState.Endpoint?> {
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    mockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies, LockedPushState, EndpointReconciler)
+    mockkStatic(AppDependencies::class, KeyCachingService::class, NotificationChannels::class, LockedPushState::class, EndpointReconciler::class, UnifiedPushDistributor::class)
+    mockkConstructor(UnifiedPushNotificationBuilder::class)
+    every { AppDependencies.application } returns context
+    every { AppDependencies.isInitialized } returns false
+    every { AppDependencies.jobManager } returns mockk(relaxUnitFun = true)
+    every { AppDependencies.resetNetwork(any()) } returns Unit
+    every { KeyCachingService.isLocked() } returns false
+    every { NotificationChannels.supported() } returns false
+    every { EndpointReconciler.reconcile(any()) } returns Unit
+    every { LockedPushState.setEncryptedEnrollment(any(), any()) } returns Unit
+    every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationTest() } returns Unit
+    every { anyConstructed<UnifiedPushNotificationBuilder>().clearAlerts(any()) } returns Unit
+    every { UnifiedPushDistributor.checkIfActive() } returns true
+    every { UnifiedPushDistributor.registerApp(any()) } returns Unit
+    every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.LINKED
+    every { unifiedPush.enabled } returns true
+    every { unifiedPush.vapidPublicKey } returns "SYNTHETIC-VAPID"
+    every { unifiedPush.vapidKeySynced } returns true
+    every { unifiedPush.lastReceivedTime } returns 0L
+    every { unifiedPush.registrationFailed } returns false
+    every { unifiedPush.registrationRetryScheduled } returns false
+    controlState = ControlState()
+    every { unifiedPush.controlStateRead } answers { ControlStateRead.Current(controlState) }
+    return AtomicReference<LockedPushState.Endpoint?>().also { pending ->
+      every { LockedPushState.savePending(any(), any()) } answers { pending.set(secondArg()) }
+      every { LockedPushState.peekPending(any()) } answers { pending.get() }
+      every { LockedPushState.clearPending(any()) } answers { pending.set(null) }
+    }
+  }
+
+  private fun savedEndpoint() = PushEndpoint(
+    "https://push.example.invalid/endpoint",
+    PublicKeySet("SYNTHETIC-P256DH", "SYNTHETIC-AUTH"),
+  )
+
+  private fun awaitEndpointCallbacks(pending: AtomicReference<LockedPushState.Endpoint?>) {
+    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+    while ((pending.get() != null || !UnifiedPushLifecycle.isReady()) && System.nanoTime() < deadline) Thread.yield()
+    assertNull("endpoint callback must finish before test teardown", pending.get())
+    assertTrue(UnifiedPushLifecycle.isReady())
   }
 
   @Test

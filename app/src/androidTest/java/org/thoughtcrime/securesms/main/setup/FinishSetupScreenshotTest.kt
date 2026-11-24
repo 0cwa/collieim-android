@@ -12,6 +12,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.performClick
@@ -65,7 +66,7 @@ class FinishSetupScreenshotTest {
 
   @Test
   fun setupShowsInTheStatusLineTheEmptyListAndTheSheet() = withFixture("light") {
-    SignalStore.collieSetup.notesSeenId = CollieReleaseNotes.ID
+    SignalStore.collieSetup.notesSeenId = ProjectLogRepository.load(context).current.highlightsId
     harness.launchActivity<MainActivity>().use { scenario ->
       awaitText(context.getString(R.string.CollieSetup__empty_title))
       awaitText(context.getString(R.string.CollieStatus__setup_short), substring = true)
@@ -78,23 +79,26 @@ class FinishSetupScreenshotTest {
   }
 
   @Test
-  fun updatedNotesOutrankSetupAndOpenWhatsNew() = withFixture("light") {
+  fun developmentNotesDoNotAnnounceAnUpdateAndOpenWhatsNew() = withFixture("light") {
+    assertEquals(ProjectLog.CurrentKind.DEVELOPMENT, ProjectLogRepository.load(context).current.kind)
     SignalStore.collieSetup.notesSeenId = null
     SignalStore.collieSetup.notesPendingId = null
     harness.launchActivity<MainActivity>().use { scenario ->
-      awaitText(context.getString(R.string.CollieStatus__updated_long))
-      saveScreenshot(scenario, "03-light-updated.png")
+      awaitText(context.getString(R.string.CollieStatus__setup_short), substring = true)
+      compose.onAllNodes(hasText(context.getString(R.string.CollieStatus__updated_long))).assertCountEquals(0)
+      saveScreenshot(scenario, "03-light-development-status.png")
 
-      compose.onNode(hasText(context.getString(R.string.CollieStatus__updated_long)) and isClickable()).performClick()
+      scenario.onActivity { SetupActions.showWhatsNew(it) }
       awaitText(context.getString(R.string.CollieWhatsNew__heading))
-      saveScreenshot(scenario, "04-light-whats-new.png")
+      awaitText(context.getString(R.string.CollieWhatsNew__development))
+      saveScreenshot(scenario, "04-light-development-whats-new.png")
     }
-    assertEquals(CollieReleaseNotes.ID, SignalStore.collieSetup.notesSeenId)
+    assertEquals("A development build has no published highlight edition to mark seen", null, SignalStore.collieSetup.notesSeenId)
   }
 
   @Test
   fun aMissingPushAppGetsTheRedBannerInDarkTheme() = withFixture("dark") {
-    SignalStore.collieSetup.notesSeenId = CollieReleaseNotes.ID
+    SignalStore.collieSetup.notesSeenId = ProjectLogRepository.load(context).current.highlightsId
     // UnifiedPush is selected and enabled, but this emulator has no distributor app to acknowledge it.
     SignalStore.settings.preferredNotificationMethod = NotificationDeliveryMethod.UNIFIEDPUSH
     SignalStore.unifiedpush.enabled = true
@@ -111,11 +115,11 @@ class FinishSetupScreenshotTest {
     SignalStore.collieSetup.notesPendingId = null
     harness.launchActivity<MainActivity>().use { scenario ->
       compose.waitUntil(timeoutMillis = 15_000) {
-        listOf(R.string.CollieStatus__updated_long, R.string.CollieStatus__updated_short, R.string.CollieStatus__updated_tiny).any { res ->
-          compose.onAllNodes(hasText(context.getString(res)), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+        listOf(R.string.CollieStatus__setup_short, R.string.CollieStatus__setup_tiny).any { res ->
+          compose.onAllNodes(hasText(context.getString(res), substring = true), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
         }
       }
-      saveScreenshot(scenario, "06-large-text-updated.png")
+      saveScreenshot(scenario, "06-large-text-setup.png")
     }
   }
 

@@ -8,16 +8,15 @@ import androidx.annotation.StringRes
 import org.thoughtcrime.securesms.R
 
 /**
- * The release notes bundled with this build. See docs/FINISH-SETUP.md for how to publish a new edition.
- *
- * [ID] names the content, not the APK: change it only when the highlights change, so a rebuild or version bump never
- * announces old notes again.
+ * Localized highlight editions selected by a bundled release record. An edition's ID names its content, not an APK,
+ * so rebuilding a release never announces the same highlights again.
  */
 object CollieReleaseNotes {
-  const val ID = "2026-11-setup-and-push-health"
-  const val RELEASES_URL = "https://github.com/0cwa/collieim-android/releases"
+  const val SETUP_AND_PUSH_HEALTH = "2026-11-setup-and-push-health"
 
-  data class Highlight(@StringRes val title: Int, @StringRes val body: Int)
+  data class Highlight(@StringRes val title: Int, @StringRes val body: Int, val titleIncludesSignalVersion: Boolean = false)
+
+  data class Edition(val id: String, val highlights: List<Highlight>, val action: Action? = null)
 
   /** Where the action of an important release notice leads. */
   enum class Destination {
@@ -37,14 +36,20 @@ object CollieReleaseNotes {
     val destination: Destination
   )
 
-  val highlights: List<Highlight> = listOf(
-    Highlight(R.string.CollieWhatsNew__setup_title, R.string.CollieWhatsNew__setup_body),
-    Highlight(R.string.CollieWhatsNew__push_health_title, R.string.CollieWhatsNew__push_health_body),
-    Highlight(R.string.CollieWhatsNew__updates_title, R.string.CollieWhatsNew__updates_body),
-    Highlight(R.string.CollieWhatsNew__backups_title, R.string.CollieWhatsNew__backups_body),
-    Highlight(R.string.CollieWhatsNew__signal_title, R.string.CollieWhatsNew__signal_body)
+  private val setupAndPushHealth = Edition(
+    id = SETUP_AND_PUSH_HEALTH,
+    highlights = listOf(
+      Highlight(R.string.CollieWhatsNew__setup_title, R.string.CollieWhatsNew__setup_body),
+      Highlight(R.string.CollieWhatsNew__push_health_title, R.string.CollieWhatsNew__push_health_body),
+      Highlight(R.string.CollieWhatsNew__updates_title, R.string.CollieWhatsNew__updates_body),
+      Highlight(R.string.CollieWhatsNew__backups_title, R.string.CollieWhatsNew__backups_body),
+      Highlight(R.string.CollieWhatsNew__signal_title, R.string.CollieWhatsNew__signal_body, titleIncludesSignalVersion = true)
+    )
   )
 
-  /** This edition asks nothing of people. */
-  val action: Action? = null
+  /** Missing or unknown editions never fall back to another release's highlights. */
+  fun edition(id: String?): Edition? = when (id) {
+    SETUP_AND_PUSH_HEALTH -> setupAndPushHealth
+    else -> null
+  }
 }

@@ -78,7 +78,9 @@
     <string name="CollieWhatsNew__title">What’s new</string>
     <string name="CollieWhatsNew__heading">What’s new in Collie</string>
     <string name="CollieWhatsNew__installed_version">Installed version %1$s</string>
-    <string name="CollieWhatsNew__full_release_notes">Full release notes</string>
+    <string name="CollieWhatsNew__full_release_notes">Release notes on GitHub</string>
+    <string name="CollieWhatsNew__development">This is a development build. See the project log for its changes.</string>
+    <string name="CollieWhatsNew__no_highlights">See the project log for the changes in this version.</string>
     <string name="CollieWhatsNew__got_it">Got it</string>
 
     <!-- Highlights of the bundled edition. Each claim must be true for the release that ships it (see docs/FINISH-SETUP.md). -->
@@ -89,7 +91,7 @@
     <string name="CollieWhatsNew__updates_title">Update notices for website installs</string>
     <string name="CollieWhatsNew__updates_body">If you installed Collie from its website, it checks signed release information and tells you when a new version is out.</string>
     <string name="CollieWhatsNew__backups_title">Safer restores</string>
-    <string name="CollieWhatsNew__backups_body">Restoring refuses backups that were changed, and restoring a Molly backup keeps your security settings.</string>
-    <string name="CollieWhatsNew__signal_title">Based on Signal 8.35.2</string>
-    <string name="CollieWhatsNew__signal_body">Includes the latest fixes from Signal.</string>
+    <string name="CollieWhatsNew__backups_body">Molly backups restore supported privacy settings, including screen lock and blocking unknown senders.</string>
+    <string name="CollieWhatsNew__signal_title">Based on Signal %1$s</string>
+    <string name="CollieWhatsNew__signal_body">Includes fixes from Signal.</string>
 </resources>

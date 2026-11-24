@@ -1,0 +1,16 @@
+version: 8.36.3-1-rc1
+date: 2026-11-20
+tag: v8.36.3-1-rc1
+
+topic: signal
+Based on Signal 8.36.3, with fixes for conversations, media and backup restoration.
+
+topic: settings
+pr: 210
+Signal donation checkout is removed. Backup subscriptions and Collie support links still work.
+
+topic: security
+Attachment uploads stay bound to the files selected for sending.
+
+topic: backups
+Backup import failures leave existing transactions alone, and restore details stay out of diagnostic logs.

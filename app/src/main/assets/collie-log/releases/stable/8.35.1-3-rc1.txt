@@ -1,5 +1,6 @@
 version: 8.35.1-3-rc1
 date: 2026-11-10
+tag: v8.35.1-3-rc1
 
 topic: settings
 Settings are easier to find: network comes first in Privacy and chat export last in Chats.

@@ -1,5 +1,6 @@
 version: 8.35.1-1-rc1
-date: 2026-11-06
+date: 2026-11-07
+tag: v8.35.1-1-rc1
 
 topic: signal
 Based on Signal 8.35.1.

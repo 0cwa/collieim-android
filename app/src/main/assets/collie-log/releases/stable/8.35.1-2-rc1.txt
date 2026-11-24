@@ -1,5 +1,6 @@
 version: 8.35.1-2-rc1
 date: 2026-11-09
+tag: v8.35.1-2-rc1
 
 topic: push
 UnifiedPush with MollySocket works again, so notification setup can finish.

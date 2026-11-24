@@ -53,7 +53,9 @@ object SetupStatusRepository {
     val state: SetupState = SetupState(),
     val details: Details = Details(),
     /** The problem whose banner shows now, or null when there is none or it was dismissed recently. */
-    val bannerProblem: Problem? = null
+    val bannerProblem: Problem? = null,
+    /** The highlight edition selected by this installed release, if any. */
+    val releaseNotes: CollieReleaseNotes.Edition? = null
   )
 
   private val scope = CoroutineScope(SupervisorJob() + SignalDispatchers.IO)
@@ -72,14 +74,14 @@ object SetupStatusRepository {
   }
 
   /** The person opened the release notes. */
-  fun markNotesSeen() {
-    SignalStore.collieSetup.notesSeenId = CollieReleaseNotes.ID
+  fun markNotesSeen(editionId: String) {
+    SignalStore.collieSetup.notesSeenId = editionId
     refresh()
   }
 
   /** The person acted on, or dismissed, the release notice. */
-  fun markReleaseActionDone() {
-    SignalStore.collieSetup.releaseActionDoneId = CollieReleaseNotes.ID
+  fun markReleaseActionDone(editionId: String) {
+    SignalStore.collieSetup.releaseActionDoneId = editionId
     refresh()
   }
 
@@ -91,7 +93,7 @@ object SetupStatusRepository {
 
   fun snoozeBanner(problem: Problem) {
     if (problem == Problem.RELEASE_ACTION) {
-      markReleaseActionDone()
+      internalSnapshot.value.releaseNotes?.let { markReleaseActionDone(it.id) }
     } else {
       SignalStore.collieSetup.snoozeBanner(problem, System.currentTimeMillis() + BANNER_SNOOZE_MS)
       refresh()
@@ -102,6 +104,7 @@ object SetupStatusRepository {
   private fun read(nowMs: Long): Snapshot {
     val context = AppDependencies.application
     val values = SignalStore.collieSetup
+    val releaseNotes = CollieReleaseNotes.edition(ProjectLogRepository.load(context).current.highlightsId)
 
     val method = SignalStore.settings.preferredNotificationMethod
     val delivery = when (method) {
@@ -134,8 +137,8 @@ object SetupStatusRepository {
       updateChecksEnabled = SignalStore.molly.updateApkEnabled,
       backupsEnabled = SignalStore.backup.newLocalBackupsEnabled || SignalStore.settings.isBackupEnabled,
       hiddenItems = values.hiddenItems,
-      showUpdated = showUpdated(nowMs),
-      releaseActionPending = CollieReleaseNotes.action != null && values.releaseActionDoneId != CollieReleaseNotes.ID
+      showUpdated = showUpdated(nowMs, releaseNotes),
+      releaseActionPending = releaseNotes?.action != null && values.releaseActionDoneId != releaseNotes.id
     )
 
     val state = SetupRules.evaluate(inputs)
@@ -148,15 +151,16 @@ object SetupStatusRepository {
     )
     val banner = state.problem?.takeIf { it == Problem.RELEASE_ACTION || values.bannerSnoozedUntil(it) <= nowMs }
 
-    return Snapshot(state, details, banner)
+    return Snapshot(state, details, banner, releaseNotes)
   }
 
   /** Unseen notes are announced for [UPDATED_WINDOW_MS] from the first time this build looked. */
-  private fun showUpdated(nowMs: Long): Boolean {
+  private fun showUpdated(nowMs: Long, edition: CollieReleaseNotes.Edition?): Boolean {
+    if (edition == null) return false
     val values = SignalStore.collieSetup
-    if (values.notesSeenId == CollieReleaseNotes.ID) return false
-    if (values.notesPendingId != CollieReleaseNotes.ID) {
-      values.notesPendingId = CollieReleaseNotes.ID
+    if (values.notesSeenId == edition.id) return false
+    if (values.notesPendingId != edition.id) {
+      values.notesPendingId = edition.id
       values.notesPendingSince = nowMs
     }
     return nowMs - values.notesPendingSince < UPDATED_WINDOW_MS

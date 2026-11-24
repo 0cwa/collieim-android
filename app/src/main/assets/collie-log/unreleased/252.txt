@@ -1,0 +1,3 @@
+topic: updates
+pr: 252
+What's new shows one current release, with clearer notes and separate Stable and Beta histories.

@@ -21,6 +21,9 @@ if (!nativeInputsAccepted) {
 // Release identity. The release-prep PR sets these in gradle.properties (docs/RELEASING.md).
 val releaseVersionCode = providers.gradleProperty("releaseVersionCode")
 val releaseVersionName = providers.gradleProperty("releaseVersionName")
+// The release recipe supplies this only after the existing preparation verifier succeeds.
+// A direct Gradle/PR build is a development preview even when it retains the last release's version.
+val releaseNotesPrepared = providers.gradleProperty("collieReleasePrepared").map { it.toBooleanStrict() }.orElse(false)
 
 // Reproducible build identity: the commit time and revision are tracked properties, not read from Git.
 val buildTimestamp = providers.gradleProperty("collieBuildTimestamp")
@@ -38,6 +41,7 @@ pluginManager.withPlugin("com.android.application") {
         ?: versionCode
       // Source builds without a release identity are marked as unvalidated ports.
       versionName = releaseVersionName.orNull ?: "$versionName-port-unvalidated"
+      buildConfigField("boolean", "COLLIE_RELEASE_PREPARED", releaseNotesPrepared.get().toString())
 
       buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/repo\"")
       buildConfigField("long", "BUILD_TIMESTAMP_OR_ZERO", buildTimestamp.get() + "000L")
@@ -56,6 +60,7 @@ pluginManager.withPlugin("com.android.application") {
     }
 
     android.buildTypes.getByName("debug").apply {
+      buildConfigField("boolean", "COLLIE_RELEASE_PREPARED", "false")
       // The IMO harness signs its synthetic messages with a publicly known test key.
       // Keep that trust root and package identity confined to an explicit debug test build.
       if (imoTests) {

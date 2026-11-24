@@ -177,9 +177,10 @@ fun ProblemBanner(
   problem: Problem,
   onFix: () -> Unit,
   onDismiss: (() -> Unit)?,
-  contentPadding: PaddingValues
+  contentPadding: PaddingValues,
+  releaseAction: CollieReleaseNotes.Action? = SetupStatusRepository.snapshot.value.releaseNotes?.action
 ) {
-  val action = CollieReleaseNotes.action
+  val action = releaseAction
   val (title, body, button) = when (problem) {
     Problem.NOTIFICATIONS_OFF -> Triple(R.string.CollieProblem__notifications_off_title, R.string.CollieProblem__notifications_off_body, R.string.CollieProblem__notifications_off_action)
     Problem.PUSH_APP_MISSING -> Triple(R.string.CollieProblem__push_app_missing_title, R.string.CollieProblem__push_app_missing_body, R.string.CollieProblem__push_app_missing_action)

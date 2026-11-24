@@ -84,7 +84,6 @@ object TestUsers {
     RegistrationUtil.maybeMarkRegistrationComplete()
     SignalDatabase.recipients.setProfileName(Recipient.self().id, ProfileName.fromParts("Tester", "McTesterson"))
     SignalStore.uiHints.setHasPromptedOptimizeDoze(true)
-    SignalStore.misc.ratingEnabled = false
 
     PreKeyUtil.generateAndStoreSignedPreKey(AppDependencies.protocolStore.aci(), SignalStore.account.aciPreKeys)
     PreKeyUtil.generateAndStoreOneTimeEcPreKeys(AppDependencies.protocolStore.aci(), SignalStore.account.aciPreKeys)

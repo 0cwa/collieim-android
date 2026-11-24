@@ -25,6 +25,7 @@ import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PartProgressEvent
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.Job.Parameters
 import org.thoughtcrime.securesms.jobmanager.JobLogger.format
@@ -231,6 +232,14 @@ class AttachmentDownloadJob private constructor(
       return
     }
 
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      Log.i(TAG, "Not downloading media for a group awaiting local approval.")
+      SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_PENDING)
+      return
+    }
+
     if (!forceDownload && !AttachmentUtil.isAutoDownloadPermitted(context, attachment)) {
       Log.w(TAG, "Attachment can't be auto downloaded...")
       SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_PENDING)
@@ -319,6 +328,13 @@ class AttachmentDownloadJob private constructor(
     attachmentId: AttachmentId,
     attachment: DatabaseAttachment
   ) {
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_PENDING)
+      return
+    }
+
     val maxReceiveSize: Long = RemoteConfig.maxAttachmentReceiveSizeBytes
     val attachmentFile: File = SignalDatabase.attachments.getOrCreateTransferFile(attachmentId)
 
@@ -339,7 +355,7 @@ class AttachmentDownloadJob private constructor(
         }
 
         override fun shouldCancel(): Boolean {
-          return this@AttachmentDownloadJob.isCanceled
+          return this@AttachmentDownloadJob.isCanceled || (recipient != null && GroupAdmission.isHeld(recipient))
         }
       }
 

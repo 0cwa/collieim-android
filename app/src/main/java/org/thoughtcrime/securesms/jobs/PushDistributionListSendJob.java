@@ -20,6 +20,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;
 import org.thoughtcrime.securesms.database.documents.NetworkFailure;
 import org.thoughtcrime.securesms.database.model.MessageId;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -118,7 +119,7 @@ public final class PushDistributionListSendJob extends PushSendJob {
       Set<String> attachmentUploadIds = enqueueCompressingAndUploadAttachmentsChains(jobManager, message);
 
       jobManager.add(new PushDistributionListSendJob(messageId, destination, !attachmentUploadIds.isEmpty(), filterRecipientIds), attachmentUploadIds, attachmentUploadIds.isEmpty() ? null : destination.toQueueKey());
-    } catch (NoSuchMessageException | MmsException e) {
+    } catch (NoSuchMessageException | MmsException | GroupAdmissionSendGate.HeldGroupException e) {
       Log.w(TAG, "Failed to enqueue message.", e);
       SignalDatabase.messages().markAsSentFailed(messageId);
       notifyMediaMessageDeliveryFailed(context, messageId);

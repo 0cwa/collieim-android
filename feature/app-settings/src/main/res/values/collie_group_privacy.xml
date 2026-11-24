@@ -37,5 +37,5 @@
     </plurals>
     <string name="ChooseGroupPeople__ineligible">Choose a registered individual with a known Signal identity. Blocked or hidden people, your own account, and groups cannot be added.</string>
     <string name="ChooseGroupPeople__identity_changed">A selected person’s identity or availability changed. Go back and choose them again. No people were added.</string>
-    <string name="ChooseGroupPeople__save_failed">Could not save the chosen people. Your existing list is unchanged. Try again.</string>
+    <string name="ChooseGroupPeople__save_failed">Could not confirm this change was saved. Go back to reload the list before trying again.</string>
 </resources>

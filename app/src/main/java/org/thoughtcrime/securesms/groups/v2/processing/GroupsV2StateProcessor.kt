@@ -33,6 +33,7 @@ import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupMutation
 import org.thoughtcrime.securesms.groups.GroupProtoUtil
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor.Companion.LATEST
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
 import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob
@@ -672,6 +673,10 @@ class GroupsV2StateProcessor private constructor(
         SignalDatabase.groups.updateGroupSendEndorsements(groupId, groupSendEndorsements)
       }
 
+      if (updatedGroupState != null) {
+        GroupAdmission.completeStateUpdate(GroupAdmission.prepareStateUpdate(groupId, serviceIds, groupStateDiff, updatedGroupState))
+      }
+
       return InternalUpdateResult.NoUpdateNeeded
     } else {
       Log.i(TAG, "$logPrefix Local state (revision: ${currentLocalState?.revision}) does not match, updating to ${updatedGroupState.revision}")
@@ -713,6 +718,7 @@ class GroupsV2StateProcessor private constructor(
     triggeringMessage: TriggeringMessage?
   ) {
     val previousGroupState = groupStateDiff.previousGroupState
+    val admissionUpdate = GroupAdmission.prepareStateUpdate(groupId, serviceIds, groupStateDiff, updatedGroupState)
 
     if (groupSendEndorsements != null) {
       Log.i(TAG, "$logPrefix Updating send endorsements")
@@ -771,6 +777,8 @@ class GroupsV2StateProcessor private constructor(
       updatedGroupState.avatar != previousGroupState.avatar
     }
 
+    GroupAdmission.completeStateUpdate(admissionUpdate)
+
     if (wasTerminated) {
       profileAndMessageHelper.stopAllTypingForGroup()
       ConversationShortcutUpdateJob.enqueue()
@@ -792,6 +800,12 @@ class GroupsV2StateProcessor private constructor(
 
     fun setProfileSharing(groupStateDiff: GroupStateDiff, newLocalState: DecryptedGroup, needsAvatarFetch: Boolean, sentBySelf: Boolean = false) {
       val previousGroupState = groupStateDiff.previousGroupState
+
+      if (GroupAdmission.shouldEnableProfileSharing(groupId)) {
+        SignalDatabase.recipients.setProfileSharing(Recipient.externalGroupExact(groupId).id, true)
+        if (needsAvatarFetch) AppDependencies.jobManager.add(AvatarGroupsV2DownloadJob(groupId, newLocalState.avatar, true))
+        return
+      }
 
       if (previousGroupState != null && DecryptedGroupUtil.findMemberByAci(previousGroupState.members, aci).isPresent) {
         // Was already a member before update, profile sharing state previously determined
@@ -823,6 +837,8 @@ class GroupsV2StateProcessor private constructor(
             Log.i(TAG, "Added by a blocked user. Leaving group.")
             AppDependencies.jobManager.add(LeaveGroupV2Job(groupId))
             return
+          } else if (GroupAdmission.isHeld(groupId)) {
+            Log.i(TAG, "Group addition requires local approval. Not enabling profile sharing.")
           } else if (addedBy.isSelf && !sentBySelf) {
             Log.i(TAG, "Group 'adder' is self. Not using self to auto-enable profile sharing.")
           } else if (addedBy.isSelf || ((addedBy.isSystemContact || addedBy.isProfileSharing) && !addedBy.isHidden && !addedBy.isBlocked)) {

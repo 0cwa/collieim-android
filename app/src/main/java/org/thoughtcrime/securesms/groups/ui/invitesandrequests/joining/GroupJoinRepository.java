@@ -88,6 +88,9 @@ final class GroupJoinRepository {
           }
         }
         callback.onError(error);
+      } catch (RuntimeException e) {
+        Log.w(TAG, "Unable to persist local group approval", e);
+        callback.onError(JoinGroupError.FAILED);
       }
     });
   }

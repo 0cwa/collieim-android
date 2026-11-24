@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import java.util.stream.Collectors;
 
+import org.signal.core.models.ServiceId.ACI;
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.logging.Log;
 import org.signal.ringrtc.CallException;
@@ -14,9 +15,10 @@ import org.signal.ringrtc.GroupCall;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
 import org.thoughtcrime.securesms.events.CallParticipant;
 import org.thoughtcrime.securesms.events.CallParticipantId;
-import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.events.WebRtcViewModel.State;
+import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.ringrtc.RemotePeer;
 import org.thoughtcrime.securesms.service.webrtc.state.VideoState;
@@ -25,7 +27,6 @@ import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceStateBuilder
 import org.webrtc.PeerConnection;
 import org.webrtc.VideoTrack;
 import org.whispersystems.signalservice.api.messages.calls.OfferMessage;
-import org.signal.core.models.ServiceId.ACI;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -170,6 +171,10 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
   protected @NonNull WebRtcServiceState handleGroupMembershipProofResponse(@NonNull WebRtcServiceState currentState, int groupCallHash, @NonNull byte[] groupMembershipToken) {
     Log.i(tag, "handleGroupMembershipProofResponse():");
 
+    if (GroupAdmission.isHeld(currentState.getCallInfoState().getCallRecipient())) {
+      return terminateGroupCall(currentState);
+    }
+
     GroupCall groupCall = currentState.getCallInfoState().getGroupCall();
 
     if (groupCall == null || groupCall.hashCode() != groupCallHash) {
@@ -190,6 +195,9 @@ public class GroupActionProcessor extends DeviceAwareActionProcessor {
     Log.i(tag, "handleGroupRequestUpdateMembers():");
 
     Recipient group     = currentState.getCallInfoState().getCallRecipient();
+    if (GroupAdmission.isHeld(group)) {
+      return terminateGroupCall(currentState);
+    }
     GroupCall groupCall = currentState.getCallInfoState().requireGroupCall();
 
     List<GroupCall.GroupMemberInfo> members = GroupManager.getUuidCipherTexts(context, group.requireGroupId().requireV2()).entrySet().stream()

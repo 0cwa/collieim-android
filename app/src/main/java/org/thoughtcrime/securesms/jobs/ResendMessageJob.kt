@@ -15,6 +15,7 @@ import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.CoroutineJob
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -102,6 +103,10 @@ class ResendMessageJob private constructor(
   override fun getFactoryKey(): String = KEY
 
   override suspend fun doRun(): Result {
+    if (groupId != null && GroupAdmission.isHeld(groupId)) {
+      return Result.failure()
+    }
+
     if (SignalStore.internal.delayResends) {
       Log.w(TAG, "Delaying resend by 10 sec because of an internal preference.")
       delay(10.seconds)
@@ -157,6 +162,10 @@ class ResendMessageJob private constructor(
     }
 
     val request = SendRequest(EnvelopeContent.encrypted(contentToSend, contentHint, Optional.ofNullable(groupId?.decodedId)), timestamp = sentTimestamp, urgent = urgent)
+
+    if (groupId != null && GroupAdmission.isHeld(groupId)) {
+      return Result.failure()
+    }
 
     val result = if (serviceId == SignalStore.account.aci) {
       SignalNetwork.messageService.sendSyncMessage(request)

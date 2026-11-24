@@ -3453,9 +3453,9 @@ class ConversationFragment :
     }
   }
 
-  private fun onMessageRequestAccept() {
+  private fun onMessageRequestAccept(expectedGroupEpisode: String?) {
     messageRequestViewModel
-      .onAccept()
+      .onAccept(expectedGroupEpisode)
       .subscribeWithShowProgress("accept message request")
   }
 
@@ -4997,8 +4997,8 @@ class ConversationFragment :
       onReportSpam()
     }
 
-    override fun handleMessageRequestAccept() {
-      onMessageRequestAccept()
+    override fun handleMessageRequestAccept(expectedGroupEpisode: String?) {
+      onMessageRequestAccept(expectedGroupEpisode)
     }
 
     override fun handleDeleteConversation() {
@@ -5329,8 +5329,8 @@ class ConversationFragment :
       }
     }
 
-    override fun onAcceptMessageRequestClicked() {
-      onMessageRequestAccept()
+    override fun onAcceptMessageRequestClicked(expectedGroupEpisode: String?) {
+      onMessageRequestAccept(expectedGroupEpisode)
     }
 
     override fun onDeleteClicked() {

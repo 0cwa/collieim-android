@@ -60,6 +60,8 @@ message AttachmentUploadJobData {
   optional bytes snapshotSourceRandom = 8;
   optional string snapshotPlaintextDigest = 9;
   optional string ownerIdentity = 10;
+  // Preserve the selected conversation while this is still a pre-upload attachment.
+  optional int64 admissionRecipientId = 11;
 }
 
 message PreKeysSyncJobData {

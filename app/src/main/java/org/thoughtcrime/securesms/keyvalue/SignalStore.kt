@@ -25,6 +25,7 @@ import org.signal.storage.keyvalue.SvrValues
 import org.signal.storage.keyvalue.TooltipValues
 import org.signal.storage.keyvalue.UiHintValues
 import org.thoughtcrime.securesms.lock.RegistrationLockReminders
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionValues
 
 /**
  * Simple, encrypted key-value store.
@@ -63,6 +64,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val backupValues = BackupValues(store, context)
   val unifiedPushValues = UnifiedPushValues(store)
   val collieSetupValues = CollieSetupValues(store)
+  val groupAdmissionValues = GroupAdmissionValues(store)
   val labsValues = LabsValues(store) { RemoteConfig.internalUser }
   val mollyValues = MollyValues(store, context)
 
@@ -123,6 +125,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
       backup.onFirstEverAppLaunch()
       unifiedpush.onFirstEverAppLaunch()
       collieSetup.onFirstEverAppLaunch()
+      groupAdmission.onFirstEverAppLaunch()
       labs.onFirstEverAppLaunch()
       molly.onFirstEverAppLaunch()
     }
@@ -159,6 +162,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
           backup.keysToIncludeInBackup +
           unifiedpush.keysToIncludeInBackup +
           collieSetup.keysToIncludeInBackup +
+          groupAdmission.keysToIncludeInBackup +
           labs.keysToIncludeInBackup +
           molly.keysToIncludeInBackup
       }
@@ -187,6 +191,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     fun onPostBackupRestore() {
       instance!!.store.resetCache()
       instance!!.settingsValues.onPostBackupRestore()
+      instance!!.groupAdmissionValues.onPostBackupRestore()
     }
 
     @JvmStatic
@@ -331,6 +336,11 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     @get:JvmName("collieSetup")
     val collieSetup: CollieSetupValues
       get() = instance!!.collieSetupValues
+
+    @JvmStatic
+    @get:JvmName("groupAdmission")
+    val groupAdmission: GroupAdmissionValues
+      get() = instance!!.groupAdmissionValues
 
     @JvmStatic
     @get:JvmName("labs")

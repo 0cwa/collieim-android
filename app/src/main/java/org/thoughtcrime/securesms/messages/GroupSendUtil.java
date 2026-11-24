@@ -33,15 +33,16 @@ import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.util.RecipientAccessList;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
-import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender.LegacyGroupEvents;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender.SenderKeyGroupEvents;
+import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.groupsv2.GroupSendEndorsements;
@@ -255,6 +256,8 @@ public final class GroupSendUtil {
                                                      @Nullable CancelationSignal cancelationSignal)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
+    requireGroupAdmission(groupId, relatedMessageId, sendOperation);
+
     Log.i(TAG, "Starting group send. GroupId: " + (groupId != null ? groupId.toString() : "none") + ", DistributionId: " + (distributionId != null ? distributionId.toString() : "none") + " RelatedMessageId: " + (relatedMessageId != null ? relatedMessageId.toString() : "none") + ", Targets: " + allTargets.size() + ", RecipientUpdate: " + isRecipientUpdate + ", Operation: " + sendOperation.getClass().getSimpleName());
 
     Set<Recipient>  unregisteredTargets = allTargets.stream().filter(it -> it.isUnregistered() || it.isUnknown()).collect(Collectors.toSet());
@@ -405,6 +408,7 @@ public final class GroupSendUtil {
           return Collections.emptyList();
         }
 
+        requireGroupAdmission(groupId, relatedMessageId, sendOperation);
         List<SendMessageResult> results = sendOperation.sendWithSenderKey(messageSender, distributionId, targets, access, groupSendEndorsements, isRecipientUpdate, partialResults -> {
           if (!includeInMessageLog) {
             return;
@@ -508,6 +512,7 @@ public final class GroupSendUtil {
       final AtomicLong           entryId             = new AtomicLong(-1);
       final boolean              includeInMessageLog = sendOperation.shouldIncludeInMessageLog();
 
+      requireGroupAdmission(groupId, relatedMessageId, sendOperation);
       List<SendMessageResult> results = sendOperation.sendLegacy(messageSender, legacyTargetAddresses, legacyTargets, SealedSenderAccess.forFanOutGroupSend(groupSendTokens, senderCertificate, legacyTargetAccesses), recipientUpdate, result -> {
         if (!includeInMessageLog) {
           return;
@@ -563,6 +568,12 @@ public final class GroupSendUtil {
     } else {
       return null;
     }
+  }
+
+  private static void requireGroupAdmission(@Nullable GroupId.V2 groupId, @Nullable MessageId relatedMessageId, @NonNull SendOperation operation) throws GroupAdmissionSendGate.HeldGroupException {
+    SignalServiceDataMessage data = operation instanceof DataSendOperation && ((DataSendOperation) operation).editMessage == null && !((DataSendOperation) operation).isForStory
+                                    ? ((DataSendOperation) operation).message : null;
+    GroupAdmissionSendGate.requireAllowed(groupId, relatedMessageId, data);
   }
 
   /** Abstraction layer to handle the different types of message send operations we can do */

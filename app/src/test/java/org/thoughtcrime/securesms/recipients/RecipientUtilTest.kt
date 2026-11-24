@@ -3,7 +3,9 @@ package org.thoughtcrime.securesms.recipients
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertFalse
@@ -18,6 +20,7 @@ import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.ThreadTable
 import org.thoughtcrime.securesms.database.model.GroupRecord
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 
 class RecipientUtilTest {
   private val recipient = mockk<Recipient>(relaxed = true)
@@ -32,6 +35,9 @@ class RecipientUtilTest {
 
   @Before
   fun setUp() {
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns false
+
     mockkObject(SignalDatabase.Companion)
     every { SignalDatabase.instance } returns mockk {
       every { threadTable } returns mockThreadTable
@@ -56,8 +62,37 @@ class RecipientUtilTest {
 
   @After
   fun cleanup() {
+    unmockkStatic(GroupAdmission::class)
     unmockkObject(Recipient)
     unmockkObject(SignalDatabase.Companion)
+  }
+
+  @Test
+  fun heldGroupIsNotAcceptedDespiteImportedTrustAndSentMessages() {
+    every { GroupAdmission.isHeld(recipient) } returns true
+    every { recipient.isProfileSharing } returns true
+    every { recipient.isSystemContact } returns true
+    every { mockMessageTable.getOutgoingSecureMessageCount(any()) } returns 10
+
+    assertFalse(RecipientUtil.isMessageRequestAccepted(1L, recipient))
+    assertFalse(RecipientUtil.isCallRequestAccepted(recipient))
+    assertFalse(RecipientUtil.isLegacyProfileSharingAccepted(recipient))
+    assertFalse(RecipientUtil.shouldHaveProfileKey(recipient))
+
+    RecipientUtil.shareProfileIfFirstSecureMessage(recipient)
+    verify(exactly = 0) { mockRecipientTable.setProfileSharing(any(), true) }
+  }
+
+  @Test
+  fun heldGroupDoesNotImplyProfileSharingWithItsMembers() {
+    every { groupRecipient.isProfileSharing } returns true
+    every { GroupAdmission.isHeld(groupRecipient) } returns true
+
+    assertFalse(RecipientUtil.shouldHaveProfileKey(recipient))
+    assertFalse(RecipientUtil.isProfileSharedViaGroup(recipient))
+
+    every { GroupAdmission.isHeld(groupRecipient) } returns false
+    assertTrue(RecipientUtil.shouldHaveProfileKey(recipient))
   }
 
   @Test

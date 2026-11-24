@@ -45,7 +45,7 @@ class ChooseGroupPeopleScreenTest {
   @Test
   fun `save failure is visible without clearing the selection`() {
     setContent(ChooseGroupPeopleState(selectedCount = 1, error = ChooseGroupPeopleState.Error.SAVE_FAILED))
-    composeTestRule.onNodeWithText("Your existing list is unchanged.", substring = true).assertIsDisplayed()
+    composeTestRule.onNodeWithText("Could not confirm this change was saved.", substring = true).assertIsDisplayed()
     composeTestRule.onNodeWithTag(ChooseGroupPeopleTestTags.ADD).assertIsEnabled()
   }
 

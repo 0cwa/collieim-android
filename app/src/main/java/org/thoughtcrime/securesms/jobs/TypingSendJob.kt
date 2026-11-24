@@ -8,6 +8,7 @@ import org.signal.network.service.SendRequest
 import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil
 import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.CoroutineJob
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -88,7 +89,7 @@ class TypingSendJob private constructor(
       return Result.success()
     }
 
-    if (recipient.isBlocked) {
+    if (recipient.isBlocked || GroupAdmission.isHeld(recipient)) {
       Log.w(TAG, "Not sending typing indicators to blocked recipients.")
       return Result.success()
     }
@@ -125,6 +126,10 @@ class TypingSendJob private constructor(
 
       if (targets.isEmpty()) {
         Log.w(TAG, "No eligible recipients.")
+        return Result.success()
+      }
+
+      if (GroupAdmission.isHeld(groupId)) {
         return Result.success()
       }
 

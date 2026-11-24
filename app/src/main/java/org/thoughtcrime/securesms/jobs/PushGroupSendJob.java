@@ -13,8 +13,8 @@ import org.signal.core.util.Util;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.NoSessionException;
 import org.thoughtcrime.securesms.attachments.Attachment;
-import org.thoughtcrime.securesms.database.GroupReceiptTable;
 import org.thoughtcrime.securesms.database.GroupReceiptTable.GroupReceiptInfo;
+import org.thoughtcrime.securesms.database.GroupReceiptTable;
 import org.thoughtcrime.securesms.database.GroupTable;
 import org.thoughtcrime.securesms.database.MessageTable;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
@@ -29,6 +29,7 @@ import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupAccessControl;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
@@ -138,6 +139,10 @@ public final class PushGroupSendJob extends PushSendJob {
       MessageTable    database = SignalDatabase.messages();
       OutgoingMessage message  = database.getOutgoingMessage(messageId);
 
+      if (!GroupAdmissionSendGate.canSend(message)) {
+        throw new MmsException("Group requires local approval before sending.");
+      }
+
       if (message.getScheduledDate() != -1) {
         if (!filterAddresses.isEmpty()) {
           throw new MmsException("Cannot schedule a group message with filter addresses!");
@@ -163,7 +168,7 @@ public final class PushGroupSendJob extends PushSendJob {
                      attachmentUploadIds,
                      addHardDependencies ? destination.toQueueKey() : null);
 
-    } catch (NoSuchMessageException | MmsException e) {
+    } catch (NoSuchMessageException | MmsException | GroupAdmissionSendGate.HeldGroupException e) {
       Log.w(TAG, "Failed to enqueue message.", e);
       SignalDatabase.messages().markAsSentFailed(messageId);
       notifyMediaMessageDeliveryFailed(context, messageId);
@@ -221,6 +226,10 @@ public final class PushGroupSendJob extends PushSendJob {
 
     if (groupRecipient.isPushV1Group()) {
       throw new MmsException("No GV1 messages can be sent anymore!");
+    }
+
+    if (!GroupAdmissionSendGate.canSend(message)) {
+      throw new MmsException("Group requires local approval before sending.");
     }
 
     if ((message.getStoryType().isStory() || message.getParentStoryId() != null) && !groupRecipient.isActiveGroup()) {
@@ -294,6 +303,10 @@ public final class PushGroupSendJob extends PushSendJob {
   private List<SendMessageResult> deliver(OutgoingMessage message, @Nullable MessageRecord originalEditedMessage, @NonNull Recipient groupRecipient, @NonNull GroupRecord groupRecord, @NonNull List<Recipient> destinations)
       throws IOException, UntrustedIdentityException, UndeliverableMessageException, NoSessionException
   {
+    if (!GroupAdmissionSendGate.canSend(message)) {
+      throw new UndeliverableMessageException("Group requires local approval before sending.");
+    }
+
     if (Utf8.size(message.getBody()) > SignalServiceMessageLimits.MAX_INLINE_BODY_SIZE_BYTES) {
       throw new UndeliverableMessageException("The total body size was greater than our limit of " + SignalServiceMessageLimits.MAX_INLINE_BODY_SIZE_BYTES + " bytes.");
     }

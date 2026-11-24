@@ -9,6 +9,7 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.Result
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.ui.GroupChangeFailureReason
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
 import org.thoughtcrime.securesms.jobs.RetrieveProfileAvatarJob
 import org.thoughtcrime.securesms.messagerequests.MessageRequestRepository
@@ -31,28 +32,37 @@ class MessageRequestViewModel(
         .firstOrError()
     }
 
-  fun onAccept(): Single<Result<Unit, GroupChangeFailureReason>> {
+  fun onAccept(expectedGroupEpisode: String? = null): Single<Result<Unit, GroupChangeFailureReason>> {
     return recipientId
       .flatMap { recipientId ->
-        val recipient = Recipient.resolved(recipientId)
-        if (recipient.isPushV2Group) {
-          if (recipient.shouldBlurAvatar && recipient.hasAvatar) {
-            AvatarGroupsV2DownloadJob.enqueueUnblurredAvatar(recipient.requireGroupId().requireV2())
+        messageRequestRepository.acceptMessageRequest(recipientId, threadId, expectedGroupEpisode)
+          .doOnSuccess { result ->
+            if (result is Result.Success) {
+              enqueueAcceptedAvatars(recipientId)
+            }
           }
-
-          val jobs = recipient.participantIds
-            .map { Recipient.resolved(it) }
-            .filter { it.shouldBlurAvatar && it.hasAvatar }
-            .map { RetrieveProfileAvatarJob(it, it.profileAvatar, true, true) }
-          AppDependencies.jobManager.addAll(jobs)
-        } else if (recipient.shouldBlurAvatar && recipient.hasAvatar) {
-          RetrieveProfileAvatarJob.enqueueUnblurredAvatar(recipient)
-        }
-
-        messageRequestRepository.acceptMessageRequest(recipientId, threadId)
       }
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
+  }
+
+  private fun enqueueAcceptedAvatars(recipientId: RecipientId) {
+    val recipient = Recipient.resolved(recipientId)
+    if (GroupAdmission.isHeld(recipient)) {
+      return
+    }
+    if (recipient.isPushV2Group) {
+      if (recipient.shouldBlurAvatar && recipient.hasAvatar) {
+        AvatarGroupsV2DownloadJob.enqueueUnblurredAvatar(recipient.requireGroupId().requireV2())
+      }
+      val jobs = recipient.participantIds
+        .map { Recipient.resolved(it) }
+        .filter { it.shouldBlurAvatar && it.hasAvatar }
+        .map { RetrieveProfileAvatarJob(it, it.profileAvatar, true, true) }
+      AppDependencies.jobManager.addAll(jobs)
+    } else if (recipient.shouldBlurAvatar && recipient.hasAvatar) {
+      RetrieveProfileAvatarJob.enqueueUnblurredAvatar(recipient)
+    }
   }
 
   fun onDelete(): Single<Result<Unit, GroupChangeFailureReason>> {

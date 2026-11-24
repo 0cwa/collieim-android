@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.linkdevice
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
@@ -274,6 +275,29 @@ class LinkDeviceViewModelTest {
 
     completeRequest()
     verify(exactly = 1) { LinkDeviceRepository.addDevice(any(), any()) }
+  }
+
+  @Test
+  fun `recreating the device list preserves an in flight linking operation`() {
+    coEvery { LinkDeviceRepository.loadDevices() } returns emptyList()
+    every { signalStore.misc.newLinkedDeviceId } returns 0
+    every { signalStore.misc.newLinkedDeviceCreatedTime } returns 0L
+    viewModel.onQrCodeScanned(CODE)
+    viewModel.addDevice(shouldSync = false)
+    assertTrue("The approved request should start", requestStarted.await(5, TimeUnit.SECONDS))
+
+    // Returning from AddLinkDeviceFragment creates the list view and loads devices again.
+    viewModel.initialize()
+    runBlocking {
+      withTimeout(5_000) { viewModel.state.first { !it.deviceListLoading } }
+    }
+
+    assertEquals(DialogState.Linking, viewModel.state.value.dialogState)
+    assertNull(viewModel.state.value.linkUri)
+    assertEquals(1, requestCount.get())
+
+    viewModel.stopExistingPolling()
+    completeRequest()
   }
 
   private fun assertNoProvisioning() {

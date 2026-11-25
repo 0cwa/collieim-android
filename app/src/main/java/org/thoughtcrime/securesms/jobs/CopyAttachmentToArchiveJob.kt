@@ -98,7 +98,7 @@ class CopyAttachmentToArchiveJob private constructor(
   }
 
   private suspend fun runCopy(): Result {
-    val expectedOwner = ownerIdentity
+    var expectedOwner = ownerIdentity
     val captured = if (expectedOwner == null) {
       SignalDatabase.attachments.getUploadCandidate(attachmentId)
     } else {
@@ -124,6 +124,10 @@ class CopyAttachmentToArchiveJob private constructor(
       onAdded()
       return Result.retry(0)
     }
+
+    // A matching archive-owner-v1 payload is safe to promote now that the old projection was verified.
+    expectedOwner = SignalDatabase.attachments.archiveOwnerToken(captured!!)
+    ownerIdentity = expectedOwner
 
     attemptedCandidate = captured
 

@@ -166,9 +166,9 @@ class UploadAttachmentToArchiveJob private constructor(
     }
 
     val captured = candidate!!
+    ownerIdentity = SignalDatabase.attachments.archiveOwnerToken(captured)
     if (expectedOwner == null) {
       // Persist the owner in this job's retry payload before letting it upload again.
-      ownerIdentity = SignalDatabase.attachments.archiveOwnerToken(captured)
       canReuseUpload = false
       uploadSpec = null
       finishOwnedProgress()
@@ -455,7 +455,7 @@ class UploadAttachmentToArchiveJob private constructor(
 
       Log.d(TAG, "[$attachmentId]$mediaIdLog Upload complete!")
       val finalizedCandidate = ArchiveDatabaseExecutor.runBlocking {
-        SignalDatabase.attachments.finalizeAttachmentAfterSnapshotUploadAndGetCandidate(captured, uploadResult, stable.plaintextDigest)
+        SignalDatabase.attachments.finalizeArchiveAttachmentAfterSnapshotUploadAndGetCandidate(captured, uploadResult, stable.plaintextDigest)
       }
       if (finalizedCandidate == null) {
         uploadSpec = null

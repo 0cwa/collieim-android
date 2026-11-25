@@ -23,15 +23,20 @@ class GalleryMediaFixtures(private val recipients: RecipientTestRule) {
     return SignalDatabase.threads.getOrCreateThreadIdFor(Recipient.resolved(contact))
   }
 
-  fun insertMessage(threadId: Long, scheduledDate: Long = -1, linkPreviews: String? = null): Long {
+  fun insertMessage(threadId: Long, scheduledDate: Long = -1, linkPreviews: String? = null, body: String? = null): Long {
     val messageId = TestSms.insert(recipients.signalDatabase.writeableDatabase, threadId = threadId, receivedTimestampMillis = nextReceivedTimestamp++)
 
-    if (scheduledDate != -1L || linkPreviews != null) {
+    if (scheduledDate != -1L || linkPreviews != null || body != null) {
       SignalDatabase.writableDatabase
         .update(MessageTable.TABLE_NAME)
         .values(
-          MessageTable.SCHEDULED_DATE to scheduledDate,
-          MessageTable.LINK_PREVIEWS to linkPreviews
+          ContentValues().apply {
+            put(MessageTable.SCHEDULED_DATE, scheduledDate)
+            put(MessageTable.LINK_PREVIEWS, linkPreviews)
+            if (body != null) {
+              put(MessageTable.BODY, body)
+            }
+          }
         )
         .where("${MessageTable.ID} = ?", messageId)
         .run()

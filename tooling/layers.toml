@@ -112,6 +112,10 @@ about = "Text-only web link previews"
 kind = "feature"
 about = "Geo URI links in message bodies"
 
+[layers.shared-links]
+kind = "feature"
+about = "Shared links in media overview with or without stored previews"
+
 [layers.webview]
 kind = "feature"
 about = "In-app WebView behavior"

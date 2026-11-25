@@ -72,14 +72,35 @@ public final class GroupedThreadMediaLoader extends AsyncTaskLoader<GroupedThrea
                                     ? new RoughSizeGroupingMethod(context)
                                     : new DateGroupingMethod(context, CalendarDateOnly.getInstance());
 
-    PopulatedGroupedThreadMedia mediaGrouping = new PopulatedGroupedThreadMedia(groupingMethod);
-
     AppDependencies.getDatabaseObserver().registerAttachmentUpdatedObserver(observer);
 
-    try (Cursor cursor = ThreadMediaLoader.createThreadMediaCursor(context, threadId, mediaType, sorting, limit)) {
-      while (cursor != null && cursor.moveToNext()) {
-        mediaGrouping.add(MediaTable.MediaRecord.from(cursor));
+    PopulatedGroupedThreadMedia mediaGrouping;
+    int queryLimit = limit;
+    while (true) {
+      // A larger query starts at the first candidate again.
+      mediaGrouping = new PopulatedGroupedThreadMedia(groupingMethod);
+      int acceptedCount = 0;
+      int candidateCount;
+      try (Cursor cursor = ThreadMediaLoader.createThreadMediaCursor(context, threadId, mediaType, sorting, queryLimit)) {
+        candidateCount = cursor == null ? 0 : cursor.getCount();
+        while (cursor != null && cursor.moveToNext()) {
+          MediaTable.MediaRecord record = MediaTable.MediaRecord.from(cursor);
+          if (record.getAttachment() == null && record.getLinkUrl() == null) {
+            continue;
+          }
+          mediaGrouping.add(record);
+          acceptedCount++;
+          if (limit > 0 && acceptedCount >= limit) {
+            break;
+          }
+        }
       }
+
+      if (mediaType != MediaLoader.MediaType.ALL || limit <= 0 || acceptedCount >= limit || candidateCount < queryLimit || queryLimit == Integer.MAX_VALUE) {
+        break;
+      }
+
+      queryLimit = (int) Math.min(2L * queryLimit, Integer.MAX_VALUE);
     }
 
     if (sorting == MediaTable.Sorting.Oldest || sorting == MediaTable.Sorting.Largest) {

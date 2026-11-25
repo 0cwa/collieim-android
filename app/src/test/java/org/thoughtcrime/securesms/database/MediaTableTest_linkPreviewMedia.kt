@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.database
 
 import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
@@ -21,6 +22,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.database.MediaTable.Sorting
+import org.thoughtcrime.securesms.database.loaders.GroupedThreadMediaLoader
+import org.thoughtcrime.securesms.database.loaders.MediaLoader
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 
@@ -145,5 +148,93 @@ class MediaTableTest_linkPreviewMedia {
 
     assertThat(records).hasSize(1)
     assertThat(records[0].linkPreviewJson).isNotNull()
+  }
+
+  @Test
+  fun `given a message with previews disabled, when I get link media, then its body link is listed`() {
+    val threadId = fixtures.createThread()
+    fixtures.insertMessage(threadId, body = "A link https://signal.org/help")
+
+    val records = SignalDatabase.media.getLinkMediaForThread(threadId, Sorting.Newest).readRecords()
+
+    assertThat(records).hasSize(1)
+    assertThat(records[0].attachment).isNull()
+    assertThat(records[0].linkPreviewJson).isNull()
+    assertThat(records[0].linkUrl).isEqualTo("https://signal.org/help")
+  }
+
+  @Test
+  fun `a message with an ordinary attachment contributes only its attachment without a stored preview`() {
+    val threadId = fixtures.createThread()
+    val messageId = fixtures.insertMessage(threadId, body = "See https://signal.org/help")
+    val attachmentId = fixtures.insertAttachment(messageId)
+
+    val links = SignalDatabase.media.getLinkMediaForThread(threadId, Sorting.Newest).readRecords()
+    val allMedia = SignalDatabase.media.getAllMediaForThread(threadId, Sorting.Newest).readRecords()
+
+    assertThat(links).hasSize(0)
+    assertThat(allMedia).hasSize(1)
+    assertThat(allMedia.single().linkUrl).isNull()
+    assertThat(allMedia.single().attachment?.attachmentId?.id).isEqualTo(attachmentId)
+  }
+
+  @Test
+  fun `given a stored preview and a message body, when I get link media, then the preview url and title are retained`() {
+    val threadId = fixtures.createThread()
+    fixtures.insertMessage(threadId, linkPreviews = LINK_PREVIEWS, body = "https://signal.org")
+
+    val record = SignalDatabase.media.getLinkMediaForThread(threadId, Sorting.Newest).readRecords().single()
+
+    assertThat(record.linkUrl).isEqualTo("https://signal.org")
+    assertThat(record.linkTitle).isEqualTo("Signal")
+  }
+
+  @Test
+  fun `given a coarse body match without a valid link, when I read media, then the row is not renderable`() {
+    val threadId = fixtures.createThread()
+    fixtures.insertMessage(threadId, body = "This is not a valid preview https://localhost")
+
+    val record = SignalDatabase.media.getLinkMediaForThread(threadId, Sorting.Newest).readRecords().single()
+
+    assertThat(record.linkUrl).isNull()
+    assertThat(record.attachment).isNull()
+  }
+
+  @Test
+  fun `given body links in multiple messages, when I get all media with a limit, then newest rows are returned first`() {
+    val threadId = fixtures.createThread()
+    fixtures.insertMessage(threadId, body = "https://signal.org/old")
+    fixtures.insertMessage(threadId, body = "https://signal.org/new")
+
+    val records = SignalDatabase.media.getAllMediaForThread(threadId, Sorting.Newest, limit = 1).readRecords()
+
+    assertThat(records).hasSize(1)
+    assertThat(records[0].linkUrl).isEqualTo("https://signal.org/new")
+  }
+
+  @Test
+  fun `given an invalid link candidate on the first page, when loading all media, then later valid links still fill the page`() {
+    val threadId = fixtures.createThread()
+    fixtures.insertMessage(threadId, body = "https://signal.org/old")
+    fixtures.insertMessage(threadId, body = "https://signal.org/middle")
+    fixtures.insertMessage(threadId, body = "https://localhost/private")
+
+    val loader = GroupedThreadMediaLoader(
+      ApplicationProvider.getApplicationContext<Application>(),
+      MediaTable.ALL_THREADS.toLong(),
+      MediaLoader.MediaType.ALL,
+      Sorting.Newest,
+      2
+    )
+    val grouped = requireNotNull(loader.loadInBackground())
+    val records = buildList {
+      for (section in 0 until grouped.sectionCount) {
+        for (item in 0 until grouped.getSectionItemCount(section)) {
+          add(grouped.get(section, item))
+        }
+      }
+    }
+
+    assertThat(records.map { it.linkUrl }).containsExactly("https://signal.org/middle", "https://signal.org/old")
   }
 }

@@ -17,4 +17,7 @@ object CollieFlags {
 
   val projectLog: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
+
+  val hardeningSettings: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
 }

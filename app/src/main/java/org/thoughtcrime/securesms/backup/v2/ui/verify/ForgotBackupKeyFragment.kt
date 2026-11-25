@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.ui.viewModel
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyRecordMode
@@ -20,6 +21,11 @@ class ForgotBackupKeyFragment : ComposeFragment() {
 
   @Composable
   override fun FragmentContent() {
+    BackupKeyAuthenticationGate { ProtectedContent() }
+  }
+
+  @Composable
+  private fun ProtectedContent() {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     MessageBackupsKeyRecordScreen(

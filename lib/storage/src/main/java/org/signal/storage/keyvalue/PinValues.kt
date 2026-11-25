@@ -15,6 +15,7 @@ class PinValues(store: KeyValueStore, context: Context, private val defaultRemin
     private const val LAST_REMINDER_TIME = "pin.last_reminder_time"
     private const val NEXT_INTERVAL = "pin.interval_index"
     private const val MIGRATION_VERSION = "pin.migration_version"
+    internal const val RECOVERY_PIN_GUARD_ENABLED = "pin.recovery_guard_enabled"
     private const val PIN_REMINDERS_ENABLED = "pin.pin_reminders_enabled"
 
     private const val CURRENT_MIGRATION_VERSION = 1
@@ -30,6 +31,8 @@ class PinValues(store: KeyValueStore, context: Context, private val defaultRemin
 
   override val keysToIncludeInBackup: List<String>
     get() = listOf(PIN_REMINDERS_ENABLED)
+
+  var recoveryPinGuardEnabled: Boolean by booleanValue(RECOVERY_PIN_GUARD_ENABLED, false)
 
   var nextReminderInterval: Long by longValue(NEXT_INTERVAL, defaultReminderInterval)
 

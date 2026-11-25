@@ -33,6 +33,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx3.asFlowable
 import org.signal.core.ui.biometrics.rememberBiometricsAuthentication
 import org.signal.core.ui.compose.CollectActions
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthentication
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.viewModel
@@ -91,8 +93,10 @@ class MessageBackupsFlowFragment : ComposeFragment(), BackupPaymentErrorHandler.
     )
   }
 
+  private var recoveryKeyExportAuthorized = false
+
   private val savePdfLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument(PDF_MIME_TYPE)) { uri: Uri? ->
-    if (uri != null) {
+    if (uri != null && (!BackupKeyAuthentication.isEnabled(requireContext()) || recoveryKeyExportAuthorized)) {
       val context = requireContext().applicationContext
       lifecycleScope.launch {
         val result = SignalLoginPdfRenderer.renderTo(context, uri, signalLoginDetailsViewModel.state.value.accountKey, signalLoginDetailsViewModel.state.value.recoveryKeyGroups)
@@ -196,87 +200,97 @@ class MessageBackupsFlowFragment : ComposeFragment(), BackupPaymentErrorHandler.
       }
 
       composable(route = MessageBackupsStage.Route.BACKUP_KEY_RECORD.name) {
-        val context = LocalContext.current
-        val passwordManagerSettingsIntent = SignalCredentialManager.getSettingsIntent(requireContext())
-        val isGooglePasswordManagerDefault = remember { SignalCredentialManager.isGooglePasswordManagerDefault(requireContext()) }
+        BackupKeyAuthenticationGate {
+          val context = LocalContext.current
+          val passwordManagerSettingsIntent = SignalCredentialManager.getSettingsIntent(requireContext())
+          val isGooglePasswordManagerDefault = remember { SignalCredentialManager.isGooglePasswordManagerDefault(requireContext()) }
 
-        MessageBackupsKeyRecordScreen(
-          backupKey = state.accountEntropyPool.displayValue,
-          keySaveState = state.backupKeySaveState,
-          canOpenPasswordManagerSettings = passwordManagerSettingsIntent != null,
-          isGooglePasswordManagerDefault = isGooglePasswordManagerDefault,
-          onNavigationClick = viewModel::goToPreviousStage,
-          mode = remember {
-            MessageBackupsKeyRecordMode.Passkey(
-              onSaveToPasswordManager = viewModel::onBackupKeySaveRequested,
-              onSaveManually = viewModel::goToRecordManually,
-              onSaveSuccessful = viewModel::onBackupKeySavedToPasswordManager
-            )
-          },
-          onCopyToClipboardClick = { Util.copyToClipboardSensitive(context, it) },
-          onRequestSaveToPasswordManager = viewModel::onBackupKeySaveRequested,
-          onConfirmSaveToPasswordManager = viewModel::onBackupKeySaveConfirmed,
-          onSaveStateCleared = viewModel::onBackupKeySaveStateCleared,
-          onSaveToPasswordManagerComplete = viewModel::onBackupKeySaveCompleted,
-          onGoToPasswordManagerSettingsClick = { requireContext().startActivity(passwordManagerSettingsIntent) },
-          notifyKeyIsSameAsOnDeviceBackupKey = SignalStore.backup.newLocalBackupsEnabled
-        )
+          MessageBackupsKeyRecordScreen(
+            backupKey = state.accountEntropyPool.displayValue,
+            keySaveState = state.backupKeySaveState,
+            canOpenPasswordManagerSettings = passwordManagerSettingsIntent != null,
+            isGooglePasswordManagerDefault = isGooglePasswordManagerDefault,
+            onNavigationClick = viewModel::goToPreviousStage,
+            mode = remember {
+              MessageBackupsKeyRecordMode.Passkey(
+                onSaveToPasswordManager = viewModel::onBackupKeySaveRequested,
+                onSaveManually = viewModel::goToRecordManually,
+                onSaveSuccessful = viewModel::onBackupKeySavedToPasswordManager
+              )
+            },
+            onCopyToClipboardClick = { Util.copyToClipboardSensitive(context, it) },
+            onRequestSaveToPasswordManager = viewModel::onBackupKeySaveRequested,
+            onConfirmSaveToPasswordManager = viewModel::onBackupKeySaveConfirmed,
+            onSaveStateCleared = viewModel::onBackupKeySaveStateCleared,
+            onSaveToPasswordManagerComplete = viewModel::onBackupKeySaveCompleted,
+            onGoToPasswordManagerSettingsClick = { requireContext().startActivity(passwordManagerSettingsIntent) },
+            notifyKeyIsSameAsOnDeviceBackupKey = SignalStore.backup.newLocalBackupsEnabled
+          )
+        }
       }
 
       composable(route = MessageBackupsStage.Route.BACKUP_KEY_RECORD_MANUALLY.name) {
-        val context = LocalContext.current
-        val passwordManagerSettingsIntent = SignalCredentialManager.getSettingsIntent(requireContext())
-        val isGooglePasswordManagerDefault = remember { SignalCredentialManager.isGooglePasswordManagerDefault(requireContext()) }
+        BackupKeyAuthenticationGate {
+          val context = LocalContext.current
+          val passwordManagerSettingsIntent = SignalCredentialManager.getSettingsIntent(requireContext())
+          val isGooglePasswordManagerDefault = remember { SignalCredentialManager.isGooglePasswordManagerDefault(requireContext()) }
 
-        MessageBackupsKeyRecordScreen(
-          backupKey = state.accountEntropyPool.displayValue,
-          keySaveState = state.backupKeySaveState,
-          canOpenPasswordManagerSettings = passwordManagerSettingsIntent != null,
-          isGooglePasswordManagerDefault = isGooglePasswordManagerDefault,
-          onNavigationClick = viewModel::goToPreviousStage,
-          mode = remember { MessageBackupsKeyRecordMode.Next(viewModel::goToNextStage) },
-          onCopyToClipboardClick = { Util.copyToClipboardSensitive(context, it) },
-          onRequestSaveToPasswordManager = viewModel::onBackupKeySaveRequested,
-          onConfirmSaveToPasswordManager = viewModel::onBackupKeySaveConfirmed,
-          onSaveToPasswordManagerComplete = viewModel::onBackupKeySaveCompleted,
-          onGoToPasswordManagerSettingsClick = { requireContext().startActivity(passwordManagerSettingsIntent) },
-          notifyKeyIsSameAsOnDeviceBackupKey = SignalStore.backup.newLocalBackupsEnabled
-        )
+          MessageBackupsKeyRecordScreen(
+            backupKey = state.accountEntropyPool.displayValue,
+            keySaveState = state.backupKeySaveState,
+            canOpenPasswordManagerSettings = passwordManagerSettingsIntent != null,
+            isGooglePasswordManagerDefault = isGooglePasswordManagerDefault,
+            onNavigationClick = viewModel::goToPreviousStage,
+            mode = remember { MessageBackupsKeyRecordMode.Next(viewModel::goToNextStage) },
+            onCopyToClipboardClick = { Util.copyToClipboardSensitive(context, it) },
+            onRequestSaveToPasswordManager = viewModel::onBackupKeySaveRequested,
+            onConfirmSaveToPasswordManager = viewModel::onBackupKeySaveConfirmed,
+            onSaveToPasswordManagerComplete = viewModel::onBackupKeySaveCompleted,
+            onGoToPasswordManagerSettingsClick = { requireContext().startActivity(passwordManagerSettingsIntent) },
+            notifyKeyIsSameAsOnDeviceBackupKey = SignalStore.backup.newLocalBackupsEnabled
+          )
+        }
       }
 
       composable(route = MessageBackupsStage.Route.BACKUP_KEY_VERIFY.name) {
-        MessageBackupsKeyVerifyScreen(
-          backupKey = state.accountEntropyPool.displayValue,
-          onNavigationClick = viewModel::goToPreviousStage,
-          onNextClick = viewModel::goToNextStage,
-          mode = if (state.isPhoneNumberless) {
-            MessageBackupsKeyVerifyScreenMode.SIGNAL_LOGIN
-          } else {
-            MessageBackupsKeyVerifyScreenMode.DEFAULT
-          }
-        )
+        BackupKeyAuthenticationGate {
+          MessageBackupsKeyVerifyScreen(
+            backupKey = state.accountEntropyPool.displayValue,
+            onNavigationClick = viewModel::goToPreviousStage,
+            onNextClick = viewModel::goToNextStage,
+            mode = if (state.isPhoneNumberless) {
+              MessageBackupsKeyVerifyScreenMode.SIGNAL_LOGIN
+            } else {
+              MessageBackupsKeyVerifyScreenMode.DEFAULT
+            }
+          )
+        }
       }
 
       composable(route = MessageBackupsStage.Route.CONFIRM_RECOVERY_KEY.name) {
-        MessageBackupsConfirmRecoveryKeyScreen(
-          aci = state.aci,
-          aep = state.accountEntropyPool,
-          onNavigationClick = viewModel::goToPreviousStage,
-          onViewDetailsClick = viewModel::goToSignalLoginViewDetails,
-          onConfirmed = viewModel::onRecoveryKeyConfirmed,
-          onEnterManuallyClick = viewModel::goToEnterRecoveryKeyManually
-        )
+        BackupKeyAuthenticationGate {
+          MessageBackupsConfirmRecoveryKeyScreen(
+            aci = state.aci,
+            aep = state.accountEntropyPool,
+            onNavigationClick = viewModel::goToPreviousStage,
+            onViewDetailsClick = viewModel::goToSignalLoginViewDetails,
+            onConfirmed = viewModel::onRecoveryKeyConfirmed,
+            onEnterManuallyClick = viewModel::goToEnterRecoveryKeyManually
+          )
+        }
       }
 
       composable(route = MessageBackupsStage.Route.SIGNAL_LOGIN_VIEW_DETAILS.name) {
-        val signalLoginState by signalLoginDetailsViewModel.state.collectAsStateWithLifecycle()
+        BackupKeyAuthenticationGate(onAuthorizationChanged = { recoveryKeyExportAuthorized = it }) {
+          val signalLoginState by signalLoginDetailsViewModel.state.collectAsStateWithLifecycle()
 
-        CollectActions(signalLoginDetailsViewModel.actions) { action -> handleSignalLoginViewDetailsAction(action) }
+          CollectActions(signalLoginDetailsViewModel.actions) { action -> handleSignalLoginViewDetailsAction(action) }
 
-        SignalLoginViewDetailsScreen(
-          state = signalLoginState,
-          onEvent = signalLoginDetailsViewModel::onEvent
-        )
+          SignalLoginViewDetailsScreen(
+            state = signalLoginState,
+            onEvent = signalLoginDetailsViewModel::onEvent
+          )
+        }
       }
 
       composable(route = MessageBackupsStage.Route.TYPE_SELECTION.name) {

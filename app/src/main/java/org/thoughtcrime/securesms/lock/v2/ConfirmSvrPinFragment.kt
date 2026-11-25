@@ -38,7 +38,8 @@ internal class ConfirmSvrPinFragment : BaseSvrPinFragment<ConfirmSvrPinViewModel
     val userEntry = args.userEntry!!
     val keyboard = args.keyboard
     val factory = ConfirmSvrPinViewModel.Factory(userEntry, keyboard)
-    val viewModel = ViewModelProvider(this, factory)[ConfirmSvrPinViewModel::class.java]
+    val owner = (requireActivity() as? CreateSvrPinActivity)?.confirmationViewModelOwner() ?: this
+    val viewModel = ViewModelProvider(owner, factory)[ConfirmSvrPinViewModel::class.java]
     viewModel.label.observe(viewLifecycleOwner) { label: ConfirmSvrPinViewModel.LabelState -> updateLabel(label) }
     viewModel.saveAnimation.observe(viewLifecycleOwner) { animation: SaveAnimation -> updateSaveAnimation(animation) }
     return viewModel

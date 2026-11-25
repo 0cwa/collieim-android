@@ -30,6 +30,7 @@ import org.thoughtcrime.securesms.backup.v2.ui.subscription.DownloadMediaDialog
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.KeyLimitExceededDialog
 import org.thoughtcrime.securesms.components.TemporaryScreenshotSecurity
 import org.thoughtcrime.securesms.components.settings.app.backups.remote.BackupKeyRotated
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.signal.signallogin.R as SignalLoginR
 
@@ -40,9 +41,6 @@ import org.signal.signallogin.R as SignalLoginR
 @Composable
 fun SettingsSignalLoginDetailsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit) {
   val context = LocalContext.current
-  val activity = requireNotNull(LocalActivity.current)
-  val scope = rememberCoroutineScope()
-  val supportUrl = stringResource(R.string.recovery_key_phishing_support_url)
   val viewModel: SettingsSignalLoginDetailsViewModel = viewModel {
     SettingsSignalLoginDetailsViewModel(
       parentEventEmitter = parentEventEmitter,
@@ -51,15 +49,27 @@ fun SettingsSignalLoginDetailsEntry(parentEventEmitter: (AppSettingsNavigationEv
       isGooglePasswordManagerDefault = SignalCredentialManager.isGooglePasswordManagerDefault(context)
     )
   }
-  val state by viewModel.state.collectAsStateWithLifecycle()
-  val resetRecoveryKeyState by viewModel.resetRecoveryKeyState.collectAsStateWithLifecycle()
-  val snackbar by viewModel.snackbar.collectAsStateWithLifecycle()
 
   TemporaryScreenshotSecurity.bind()
 
+  // A rotation finishes on the backup key screen, which has its own gate, so its result must not wait for this one.
   ResultEffect<BackupKeyRotated> {
     viewModel.onEvent(SettingsSignalLoginDetailsEvent.RecoveryKeyRotated)
   }
+
+  // The PDF launcher lives inside the gate, so an export result is only delivered to an authorized composition.
+  BackupKeyAuthenticationGate { SettingsSignalLoginDetailsContent(viewModel) }
+}
+
+@Composable
+private fun SettingsSignalLoginDetailsContent(viewModel: SettingsSignalLoginDetailsViewModel) {
+  val context = LocalContext.current
+  val activity = requireNotNull(LocalActivity.current)
+  val scope = rememberCoroutineScope()
+  val supportUrl = stringResource(R.string.recovery_key_phishing_support_url)
+  val state by viewModel.state.collectAsStateWithLifecycle()
+  val resetRecoveryKeyState by viewModel.resetRecoveryKeyState.collectAsStateWithLifecycle()
+  val snackbar by viewModel.snackbar.collectAsStateWithLifecycle()
 
   val savePdfLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
     if (uri != null) {

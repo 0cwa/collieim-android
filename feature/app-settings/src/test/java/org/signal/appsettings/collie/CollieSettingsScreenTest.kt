@@ -50,6 +50,46 @@ class CollieSettingsScreenTest {
   }
 
   @Test
+  fun `Hardening is hidden by default`() {
+    setContent(LabsSettingsState())
+
+    composeTestRule.onNodeWithText("Hardening").assertDoesNotExist()
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_PROTECT_BACKUP_KEY).assertDoesNotExist()
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD).assertDoesNotExist()
+  }
+
+  @Test
+  fun `Hardening shows both controls and lets the caller authorize updates`() {
+    val pinChanges = mutableListOf<Boolean>()
+    val backupChanges = mutableListOf<Boolean>()
+    composeTestRule.setContent {
+      CollieSettingsScreen(
+        state = LabsSettingsState(),
+        onEvent = {},
+        showHardening = true,
+        onRecoveryPinGuardChanged = { pinChanges += it },
+        protectBackupKey = true,
+        onProtectBackupKeyChanged = { backupChanges += it }
+      )
+    }
+
+    composeTestRule.onNodeWithText("Hardening").assertIsDisplayed()
+    val pin = CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD
+    scrollTo(pin)
+    switchIn(pin).assertIsOff()
+    composeTestRule.onNodeWithTag(pin).performClick()
+    switchIn(pin).assertIsOff()
+    assertThat(pinChanges).containsExactly(true)
+
+    val backup = CollieSettingsTestTags.ROW_PROTECT_BACKUP_KEY
+    scrollTo(backup)
+    switchIn(backup).assertIsOn()
+    composeTestRule.onNodeWithTag(backup).performClick()
+    switchIn(backup).assertIsOn()
+    assertThat(backupChanges).containsExactly(false)
+  }
+
+  @Test
   fun `clicking back emits NavigateBackClicked`() {
     setContent(LabsSettingsState())
     val description = ApplicationProvider.getApplicationContext<Application>().getString(R.string.AppSettingsScreen__go_back)

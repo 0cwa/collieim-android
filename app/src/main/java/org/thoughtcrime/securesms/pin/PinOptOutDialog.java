@@ -23,6 +23,10 @@ public final class PinOptOutDialog {
    *    has backups enabled, you should guide them through rotating the AEP first, and then call this with [rotateAep] = false.
    */
   public static void show(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner, boolean rotateAep, @NonNull Runnable onSuccess) {
+    RecoveryPinGuard.ifEnabled(context, () -> showVerified(context, lifecycleOwner, rotateAep, onSuccess));
+  }
+
+  private static void showVerified(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner, boolean rotateAep, @NonNull Runnable onSuccess) {
     Log.i(TAG, "show()");
     AlertDialog dialog = new MaterialAlertDialogBuilder(context)
                                         .setTitle(R.string.PinOptOutDialog_warning)

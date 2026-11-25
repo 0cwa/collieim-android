@@ -36,6 +36,10 @@ about = "Finish Setup: setup, news and delivery problems under Collie"
 kind = "feature"
 about = "Settings screens and routes not owned by a narrower feature"
 
+[layers.conversation-list-accessibility]
+kind = "feature"
+about = "Accessibility actions for conversation list rows"
+
 [layers.collie-settings]
 kind = "feature"
 about = "The Collie settings screen and its opt-in Labs features"

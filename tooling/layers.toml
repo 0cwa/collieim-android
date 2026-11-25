@@ -113,6 +113,10 @@ about = "Proxy and network settings"
 kind = "feature"
 about = "Text-only web link previews"
 
+[layers.geo-links]
+kind = "feature"
+about = "Geo URI links in message bodies"
+
 [layers.webview]
 kind = "feature"
 about = "In-app WebView behavior"

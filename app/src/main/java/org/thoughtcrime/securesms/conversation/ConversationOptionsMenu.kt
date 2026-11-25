@@ -37,6 +37,7 @@ internal object ConversationOptionsMenu {
   ) : MenuProvider {
 
     private var createdPreRenderMenu = false
+    private var displayedConsentToken: String? = null
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
       if (createdPreRenderMenu && !afterFirstRenderMode) {
@@ -58,6 +59,7 @@ internal object ConversationOptionsMenu {
         messageRequestState,
         isInBubble
       ) = callback.getSnapshot()
+      displayedConsentToken = messageRequestState.consentToken
 
       if (recipient == null) {
         Log.w(TAG, "Recipient is null, no menu")
@@ -234,7 +236,7 @@ internal object ConversationOptionsMenu {
         R.id.menu_block -> callback.handleBlock()
         R.id.menu_unblock -> callback.handleUnblock()
         R.id.menu_report_spam -> callback.handleReportSpam()
-        R.id.menu_accept -> callback.handleMessageRequestAccept()
+        R.id.menu_accept -> callback.handleMessageRequestAccept(displayedConsentToken)
         R.id.menu_delete_chat -> callback.handleDeleteConversation()
         R.id.edittext_bold,
         R.id.edittext_italic,
@@ -306,7 +308,7 @@ internal object ConversationOptionsMenu {
     fun handleBlock()
     fun handleUnblock()
     fun handleReportSpam()
-    fun handleMessageRequestAccept()
+    fun handleMessageRequestAccept(expectedGroupEpisode: String?)
     fun handleDeleteConversation()
     fun handleExportChat()
   }

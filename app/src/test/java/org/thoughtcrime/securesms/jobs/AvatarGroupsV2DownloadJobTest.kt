@@ -8,6 +8,11 @@ package org.thoughtcrime.securesms.jobs
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.verify
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,6 +25,7 @@ import org.signal.storageservice.storage.protos.groups.local.DecryptedMember
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 import kotlin.random.Random
@@ -32,6 +38,29 @@ class AvatarGroupsV2DownloadJobTest {
   val recipients = RecipientTestRule()
 
   private val application: Application = ApplicationProvider.getApplicationContext()
+
+  @Before
+  fun setUpAdmission() {
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns false
+    every { GroupAdmission.isHeld(any<GroupId.V2>()) } returns false
+  }
+
+  @After
+  fun tearDownAdmission() {
+    unmockkStatic(GroupAdmission::class)
+  }
+
+  @Test
+  fun givenAForcedQueuedJob_whenGroupBecomesHeld_thenNoAvatarIsDownloaded() {
+    val groupId = insertGroup(avatarKey = "current-key")
+    val job = AvatarGroupsV2DownloadJob(groupId, "current-key", true)
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns true
+
+    runJob(job)
+
+    verify(exactly = 0) { AppDependencies.signalServiceMessageReceiver.retrieveGroupsV2ProfileAvatar(any(), any(), any()) }
+  }
 
   @Test
   fun givenAJobForAnOlderAvatarKey_whenIRun_thenIExpectNoDownload() {

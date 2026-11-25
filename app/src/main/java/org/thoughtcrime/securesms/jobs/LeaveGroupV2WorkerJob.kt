@@ -7,6 +7,9 @@ import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupManager
+import org.thoughtcrime.securesms.groups.GroupsV2ProcessingLock
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionMode
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
@@ -43,7 +46,10 @@ class LeaveGroupV2WorkerJob(parameters: Parameters, private val groupId: GroupId
 
     val groupRecipient = Recipient.externalGroupExact(groupId)
 
-    GroupManager.leaveGroup(context, groupId, false)
+    GroupsV2ProcessingLock.acquireSingleGroupProcessingLock(groupId).use {
+      if (GroupAdmission.getSettings().mode != GroupAdmissionMode.SIGNAL_DEFAULT) return
+      GroupManager.leaveGroup(context, groupId, false)
+    }
 
     val threadId = SignalDatabase.threads.getThreadIdIfExistsFor(groupRecipient.id)
     if (threadId != -1L) {

@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupManager
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 
@@ -35,13 +36,40 @@ class GroupV2UpdateSelfProfileKeyJobTest {
 
   @Before
   fun setUp() {
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns false
+    every { GroupAdmission.isHeld(any<GroupId.V2>()) } returns false
+
     mockkStatic(GroupManager::class)
     every { GroupManager.updateSelfProfileKeyInGroup(any(), any()) } just runs
   }
 
   @After
   fun tearDown() {
+    unmockkStatic(GroupAdmission::class)
     unmockkStatic(GroupManager::class)
+  }
+
+  @Test
+  fun run_doesNotPublishProfileKeyForHeldGroupWithOldSharingFlag() {
+    val group = recipients.createGroup(recipients.createRecipient("Alice Smith"))
+    Recipient.live(group.recipientId).refresh()
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns true
+
+    runJob(group.groupId)
+
+    verify(exactly = 0) { GroupManager.updateSelfProfileKeyInGroup(any(), any()) }
+  }
+
+  @Test
+  fun run_rechecksHoldBeforePublishingProfileKey() {
+    val group = recipients.createGroup(recipients.createRecipient("Alice Smith"))
+    Recipient.live(group.recipientId).refresh()
+    every { GroupAdmission.isHeld(group.groupId) } returns true
+
+    runJob(group.groupId)
+
+    verify(exactly = 0) { GroupManager.updateSelfProfileKeyInGroup(any(), any()) }
   }
 
   @Test

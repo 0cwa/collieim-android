@@ -163,6 +163,10 @@ application = "manual"
 scope = "Prevent blocked inviters from automatically enabling group profile sharing."
 discovery_ref = "refs/tags/v8.36.0.0-JW"
 
+[layers.group-admission-policy]
+kind = "feature"
+about = "Device-local group invitation policy and explicit admission"
+
 [layers.name-collisions]
 kind = "feature"
 about = "Name collision warnings"

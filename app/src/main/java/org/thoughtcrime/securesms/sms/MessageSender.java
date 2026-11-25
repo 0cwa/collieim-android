@@ -25,17 +25,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 
+import org.signal.core.models.database.AttachmentId;
+import org.signal.core.models.media.Media;
 import org.signal.core.models.recipients.RecipientId;
+import org.signal.core.util.ParcelUtil;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
+import org.signal.network.util.Preconditions;
 import org.thoughtcrime.securesms.attachments.Attachment;
-import org.signal.core.models.database.AttachmentId;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
 import org.thoughtcrime.securesms.backup.v2.BackupRepository;
 import org.thoughtcrime.securesms.contacts.sync.ContactDiscovery;
 import org.thoughtcrime.securesms.database.AttachmentTable;
-import org.thoughtcrime.securesms.database.MessageTable;
 import org.thoughtcrime.securesms.database.MessageTable.InsertResult;
+import org.thoughtcrime.securesms.database.MessageTable;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.RecipientTable;
 import org.thoughtcrime.securesms.database.SignalDatabase;
@@ -46,6 +49,7 @@ import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.ReactionRecord;
 import org.thoughtcrime.securesms.database.model.StoryType;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobs.AdminDeleteSendJob;
@@ -60,15 +64,12 @@ import org.thoughtcrime.securesms.jobs.PushGroupSendJob;
 import org.thoughtcrime.securesms.jobs.ReactionSendJob;
 import org.thoughtcrime.securesms.jobs.RemoteDeleteSendJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.signal.core.models.media.Media;
 import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMessage;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
-import org.signal.core.util.ParcelUtil;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.whispersystems.signalservice.api.push.DistributionId;
-import org.signal.network.util.Preconditions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -459,6 +460,11 @@ public class MessageSender {
    *         be enqueued (like in the case of a local self-send).
    */
   public static @Nullable PreUploadResult preUploadPushAttachment(@NonNull Context context, @NonNull Attachment attachment, @Nullable Recipient recipient, @NonNull Media media) {
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      Log.i(TAG, "Not pre-uploading media for a group awaiting local approval.");
+      return null;
+    }
+
     Log.i(TAG, "Pre-uploading attachment for " + (recipient != null ? recipient.getId() : "null"));
 
     try {
@@ -466,7 +472,7 @@ public class MessageSender {
       DatabaseAttachment databaseAttachment = attachmentDatabase.insertAttachmentForPreUpload(attachment);
 
       Job compressionJob = AttachmentCompressionJob.fromAttachment(databaseAttachment, false, -1);
-      Job uploadJob      = new AttachmentUploadJob(databaseAttachment.attachmentId);
+      Job uploadJob      = new AttachmentUploadJob(databaseAttachment.attachmentId, recipient != null ? recipient.getId() : null);
 
       AppDependencies.getJobManager()
                      .startChain(compressionJob)
@@ -646,6 +652,11 @@ public class MessageSender {
     JobManager jobManager = AppDependencies.getJobManager();
 
     if (uploadJobIds.size() > 0) {
+      if (GroupAdmission.isHeld(recipient)) {
+        SignalDatabase.messages().markAsSentFailed(messageId);
+        return;
+      }
+
       Job groupSend = new PushGroupSendJob(messageId, recipient.getId(), filterRecipientIds, !uploadJobIds.isEmpty(), false);
       jobManager.add(groupSend, uploadJobIds, uploadJobIds.isEmpty() ? null : recipient.getId().toQueueKey());
     } else {

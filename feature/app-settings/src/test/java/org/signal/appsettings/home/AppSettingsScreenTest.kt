@@ -296,6 +296,14 @@ class AppSettingsScreenTest {
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).assertIsSelected()
   }
 
+  @Test
+  fun `group privacy belongs to the Collie section`() {
+    setContent(createState(), selectedRoute = AppSettingsRoute.CollieRoute.GroupPrivacy)
+    scrollTo(AppSettingsTestTags.ROW_COLLIE)
+
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).assertIsSelected()
+  }
+
   private fun setContent(
     state: AppSettingsState,
     selectedRoute: AppSettingsRoute? = null,

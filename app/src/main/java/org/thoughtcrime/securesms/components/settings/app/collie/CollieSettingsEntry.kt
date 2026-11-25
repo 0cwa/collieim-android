@@ -27,6 +27,8 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
     state = state,
     onEvent = viewModel::onEvent,
     showAppUpdates = CollieFlags.appUpdatesInCollieSettings && AppSettingsRepository.showAppUpdates(),
-    onAppUpdatesClick = { parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates) }
+    onAppUpdatesClick = { parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates) },
+    showGroupPrivacy = CollieFlags.groupAdmission,
+    onGroupPrivacyClicked = { parentEventEmitter.navigateTo(AppSettingsRoute.CollieRoute.GroupPrivacy) }
   )
 }

@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.signal.core.util.logging.Log;
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup;
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChange;
+import org.signal.storageservice.storage.protos.groups.local.DecryptedMember;
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupChangeLog;
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupExtensions;
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupUtil;
@@ -18,6 +19,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okio.ByteString;
 
 final class GroupStatePatcher {
 
@@ -148,7 +152,18 @@ final class GroupStatePatcher {
         }
       },
       (groupB, groupA) -> GroupChangeReconstruct.reconstructGroupChange(groupA, groupB),
-      (groupA, groupB) -> groupA.revision == groupB.revision && DecryptedGroupExtensions.getChangedFields(GroupChangeReconstruct.reconstructGroupChange(groupA, groupB)).isEmpty()
+      (groupA, groupB) -> groupA.revision == groupB.revision &&
+                          DecryptedGroupExtensions.getChangedFields(GroupChangeReconstruct.reconstructGroupChange(groupA, groupB)).isEmpty() &&
+                          (groupA.members.equals(groupB.members) || joinedRevisions(groupA).equals(joinedRevisions(groupB)))
     );
+  }
+
+  /** Member join revisions identify admission episodes even when there is nothing to render as a group update. */
+  private static Map<ByteString, Integer> joinedRevisions(DecryptedGroup group) {
+    Map<ByteString, Integer> revisions = new HashMap<>();
+    for (DecryptedMember member : group.members) {
+      revisions.put(member.aciBytes, member.joinedAtRevision);
+    }
+    return revisions;
   }
 }

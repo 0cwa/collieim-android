@@ -23,6 +23,7 @@ import org.thoughtcrime.securesms.database.NoSuchMessageException
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.ThreadTable
 import org.thoughtcrime.securesms.database.model.MessageRecord
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.impl.NotInCallConstraint
 import org.thoughtcrime.securesms.jobs.MultiDeviceDeleteSyncJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -41,6 +42,9 @@ class AttachmentUtilTest {
 
   @Before
   fun setUp() {
+    mockkStatic(GroupAdmission::class)
+    every { GroupAdmission.isHeld(any<Recipient>()) } returns false
+
     mockkObject(SignalDatabase.Companion)
     every { SignalDatabase.instance } returns mockk {
       every { messageTable } returns this@AttachmentUtilTest.messageTable
@@ -77,6 +81,21 @@ class AttachmentUtilTest {
   }
 
   // --- isAutoDownloadPermitted ---
+
+  @Test
+  fun `held group cannot auto download through contact or imported profile trust`() {
+    every { toRecipient.isGroup } returns true
+    every { toRecipient.isProfileSharing } returns true
+    every { fromRecipient.isSystemContact } returns true
+    every { messageRecord.isOutgoing } returns true
+    every { SignalStore.settings.wifiMediaDownloadAllowed } returns setOf("image")
+    every { GroupAdmission.isHeld(toRecipient) } returns true
+
+    assertFalse(AttachmentUtil.isAutoDownloadPermitted(context, attachment()))
+
+    every { GroupAdmission.isHeld(toRecipient) } returns false
+    assertTrue(AttachmentUtil.isAutoDownloadPermitted(context, attachment()))
+  }
 
   @Test
   fun `null attachment returns true`() {

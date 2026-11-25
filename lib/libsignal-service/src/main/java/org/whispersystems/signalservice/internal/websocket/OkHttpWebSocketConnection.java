@@ -6,6 +6,7 @@ import org.signal.network.websocket.WebSocketMessage;
 import org.signal.network.websocket.WebsocketResponse;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.signal.core.util.logging.Log;
 import org.signal.network.config.TrustStore;
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException;
@@ -40,6 +41,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import kotlin.Pair;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -233,6 +236,11 @@ public class OkHttpWebSocketConnection extends WebSocketListener implements WebS
 
   @Override
   public synchronized Single<WebsocketResponse> sendRequest(@NotNull WebSocketRequestMessage request, long timeoutSeconds) throws IOException {
+    return sendRequest(request, timeoutSeconds, null);
+  }
+
+  @Override
+  public synchronized Single<WebsocketResponse> sendRequest(@NotNull WebSocketRequestMessage request, long timeoutSeconds, @Nullable Function0<Unit> beforeSend) throws IOException {
     if (client == null) {
       throw new IOException("No connection!");
     }
@@ -244,9 +252,13 @@ public class OkHttpWebSocketConnection extends WebSocketListener implements WebS
 
     SingleSubject<WebsocketResponse> single = SingleSubject.create();
 
+    ByteString encodedRequest = ByteString.of(message.encode());
+    if (beforeSend != null) {
+      beforeSend.invoke();
+    }
     outgoingRequests.put(request.id, new OutgoingRequest(single));
 
-    if (!client.send(ByteString.of(message.encode()))) {
+    if (!client.send(encodedRequest)) {
       throw new IOException("Write failed!");
     }
 

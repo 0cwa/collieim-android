@@ -31,6 +31,7 @@ import org.signal.core.ui.compose.horizontalGutters
 object CollieSettingsTestTags {
   const val SCROLLER = "collie-settings-scroller"
   const val ROW_APP_UPDATES = "collie-app-updates"
+  const val ROW_GROUP_PRIVACY = "collie-group-privacy"
   const val ROW_STORY_ARCHIVE = "collie-story-archive"
   const val ROW_BETTER_SEARCH = "collie-better-search"
   const val ROW_STARRED_MESSAGES = "collie-starred-messages"
@@ -43,7 +44,9 @@ fun CollieSettingsScreen(
   onEvent: (LabsSettingsEvent) -> Unit,
   modifier: Modifier = Modifier,
   showAppUpdates: Boolean = false,
-  onAppUpdatesClick: () -> Unit = {}
+  onAppUpdatesClick: () -> Unit = {},
+  showGroupPrivacy: Boolean = false,
+  onGroupPrivacyClicked: () -> Unit = {}
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.CollieSettings__title),
@@ -64,6 +67,21 @@ fun CollieSettingsScreen(
             icon = SignalIcons.Calendar.painter,
             onClick = onAppUpdatesClick,
             modifier = Modifier.testTag(CollieSettingsTestTags.ROW_APP_UPDATES)
+          )
+        }
+      }
+
+      if (showGroupPrivacy) {
+        item {
+          Texts.SectionHeader(text = stringResource(R.string.CollieSettings__privacy))
+        }
+
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.GroupPrivacySettings__title),
+            label = stringResource(R.string.GroupPrivacySettings__summary),
+            onClick = onGroupPrivacyClicked,
+            modifier = Modifier.testTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY)
           )
         }
       }

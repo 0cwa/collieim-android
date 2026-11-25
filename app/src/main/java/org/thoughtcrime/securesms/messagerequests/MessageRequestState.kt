@@ -3,7 +3,11 @@ package org.thoughtcrime.securesms.messagerequests
 /**
  * Data necessary to render message request view.
  */
-data class MessageRequestState @JvmOverloads constructor(val state: State = State.NONE, val reportedAsSpam: Boolean = false) {
+data class MessageRequestState @JvmOverloads constructor(
+  val state: State = State.NONE,
+  val reportedAsSpam: Boolean = false,
+  val consentToken: String? = null
+) {
 
   companion object {
     @JvmField

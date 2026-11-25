@@ -35,6 +35,7 @@ import org.thoughtcrime.securesms.database.model.MmsMessageRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.BodyRangeList
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PartProgressEvent
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate
 import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.jobmanager.JobTracker
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -72,7 +73,12 @@ abstract class PushSendJob protected constructor(parameters: Parameters) : BaseJ
     private val TAG = Log.tag(PushSendJob::class.java)
 
     @JvmStatic
+    @Throws(GroupAdmissionSendGate.HeldGroupException::class)
     fun enqueueCompressingAndUploadAttachmentsChains(jobManager: JobManager, message: OutgoingMessage): Set<String> {
+      if (!GroupAdmissionSendGate.canSend(message)) {
+        throw GroupAdmissionSendGate.HeldGroupException()
+      }
+
       val attachments: MutableList<Attachment> = mutableListOf()
 
       attachments += message.attachments
@@ -84,7 +90,7 @@ abstract class PushSendJob protected constructor(parameters: Parameters) : BaseJ
           val attachmentId = (it as DatabaseAttachment).attachmentId
           Log.d(TAG, "Enqueueing job chain to upload $attachmentId")
 
-          val attachmentUploadJob = AttachmentUploadJob(attachmentId)
+          val attachmentUploadJob = AttachmentUploadJob(attachmentId, message.threadRecipient.id)
 
           val chain = AppDependencies.jobManager.startChain(AttachmentCompressionJob.fromAttachment(it, false, -1))
 
@@ -104,7 +110,7 @@ abstract class PushSendJob protected constructor(parameters: Parameters) : BaseJ
         val attachmentId = (message.outgoingQuote.attachment as DatabaseAttachment).attachmentId
 
         if (SignalDatabase.attachments.hasData(attachmentId)) {
-          val quoteUploadJob = AttachmentUploadJob(attachmentId)
+          val quoteUploadJob = AttachmentUploadJob(attachmentId, message.threadRecipient.id)
           jobManager.add(quoteUploadJob)
           jobs.add(quoteUploadJob.id)
         }

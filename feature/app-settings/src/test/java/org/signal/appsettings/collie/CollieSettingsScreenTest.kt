@@ -21,6 +21,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isLessThanOrEqualTo
 import assertk.assertions.isTrue
 import org.junit.Rule
 import org.junit.Test
@@ -75,6 +76,40 @@ class CollieSettingsScreenTest {
     composeTestRule.onNodeWithTag(tag).assertIsDisplayed().performClick()
 
     assertThat(clicked).isTrue()
+  }
+
+  @Test
+  fun `group privacy is hidden when feature entry point is disabled`() {
+    composeTestRule.setContent {
+      CollieSettingsScreen(state = LabsSettingsState(), onEvent = {}, showGroupPrivacy = false)
+    }
+
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertDoesNotExist()
+  }
+
+  @Test
+  fun `group privacy appears after app updates and before Labs when enabled`() {
+    var opened = false
+    composeTestRule.setContent {
+      CollieSettingsScreen(
+        state = LabsSettingsState(),
+        onEvent = {},
+        showAppUpdates = true,
+        showGroupPrivacy = true,
+        onGroupPrivacyClicked = { opened = true }
+      )
+    }
+
+    val updates = composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertIsDisplayed()
+    val privacy = composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertIsDisplayed()
+    val labs = composeTestRule.onNodeWithText("Labs").assertIsDisplayed()
+    assertThat(updates.fetchSemanticsNode().boundsInRoot.bottom)
+      .isLessThanOrEqualTo(privacy.fetchSemanticsNode().boundsInRoot.top)
+    assertThat(privacy.fetchSemanticsNode().boundsInRoot.bottom)
+      .isLessThanOrEqualTo(labs.fetchSemanticsNode().boundsInRoot.top)
+
+    privacy.performClick()
+    assertThat(opened).isTrue()
   }
 
   @Test

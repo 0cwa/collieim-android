@@ -274,7 +274,8 @@ class AttachmentTableTest_createRemoteKeyForAttachmentsThatNeedArchiveUpload {
     replaceVersion(id, changePath = true)
     assertThat(factory.create(parameters, serialized).run().isSuccess).isTrue()
     assertThat(SignalDatabase.attachments.getAttachment(id)!!.remoteKey).isNull()
-    verify(exactly = 0) { AppDependencies.jobManager.add(any<UploadAttachmentToArchiveJob>()) }
+    val jobManager = AppDependencies.jobManager
+    verify(exactly = 0) { jobManager.add(any<UploadAttachmentToArchiveJob>()) }
   }
 
   @Test
@@ -293,7 +294,8 @@ class AttachmentTableTest_createRemoteKeyForAttachmentsThatNeedArchiveUpload {
     replaceVersion(id, changePath = false)
     assertThat(factory.create(parameters, serialized).run().isSuccess).isTrue()
     assertThat(SignalDatabase.attachments.getAttachment(id)!!.remoteKey).isNull()
-    verify(exactly = 0) { AppDependencies.jobManager.add(any<CopyAttachmentToArchiveJob>()) }
+    val jobManager = AppDependencies.jobManager
+    verify(exactly = 0) { jobManager.add(any<CopyAttachmentToArchiveJob>()) }
   }
 
   @Test

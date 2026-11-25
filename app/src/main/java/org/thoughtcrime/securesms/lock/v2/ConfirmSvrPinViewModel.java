@@ -43,6 +43,10 @@ final class ConfirmSvrPinViewModel extends ViewModel implements BaseSvrPinViewMo
 
   @Override
   public void confirm() {
+    if (saveAnimation.getValue() != SaveAnimation.NONE) {
+      return;
+    }
+
     SvrPin userEntry = this.userEntry.getValue();
 
     if (pinToConfirm.toString().equals(userEntry.toString())) {

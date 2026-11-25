@@ -33,6 +33,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.jobs.MultiDeviceDeleteSyncJob
 import org.thoughtcrime.securesms.testing.CoroutineDispatcherRule
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.util.AttachmentUtil
 
@@ -48,6 +49,8 @@ class MediaDeleteProgressViewModelTest {
   fun setUp() {
     Log.initialize(SystemOutLogger())
     Dispatchers.setMain(dispatcher)
+    mockkObject(CollieFlags)
+    every { CollieFlags.attachmentRemoval } returns true
     mockkObject(SignalDatabase.Companion)
     every { SignalDatabase.instance } returns mockk {
       every { attachmentTable } returns attachments

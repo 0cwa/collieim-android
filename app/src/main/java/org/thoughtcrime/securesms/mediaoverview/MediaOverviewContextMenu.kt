@@ -26,7 +26,6 @@ import org.thoughtcrime.securesms.conversation.mutiselect.forward.MultiselectFor
 import org.thoughtcrime.securesms.conversation.mutiselect.forward.MultiselectForwardFragmentArgs
 import org.thoughtcrime.securesms.database.MediaTable
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.linkpreview.LinkPreview
 import org.thoughtcrime.securesms.mms.PartAuthority
 import org.thoughtcrime.securesms.sharing.v2.ShareActivity
@@ -171,7 +170,7 @@ class MediaOverviewContextMenu(
   }
 
   private fun getRemoveAttachmentsActionItem(mediaRecord: MediaTable.MediaRecord): ActionItem? {
-    if (!CollieFlags.attachmentRemoval || mediaRecord.attachment == null || mediaRecord.linkPreviewJson != null) return null
+    if (!MediaActions.canOfferAttachmentRemoval(mediaRecord)) return null
     return ActionItem(
       iconRes = CoreUiR.drawable.symbol_trash_24,
       title = fragment.getString(R.string.CollieAttachmentRemoval_action)

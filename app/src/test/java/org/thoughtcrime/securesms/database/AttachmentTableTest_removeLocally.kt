@@ -12,7 +12,9 @@ import android.database.Cursor
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,8 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
+import org.junit.After
+import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -38,7 +42,9 @@ import org.signal.core.models.database.AttachmentId
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.Base64
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob
 import org.thoughtcrime.securesms.mms.MediaStream
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
@@ -70,9 +76,25 @@ class AttachmentTableTest_removeLocally {
 
   @Before
   fun setUp() {
+    mockkObject(CollieFlags)
+    every { CollieFlags.attachmentRemoval } returns true
     sender = recipients.createRecipient("Attachment sender")
     threadId = SignalDatabase.threads.getOrCreateThreadIdFor(sender, false)
     every { AppDependencies.jobManager.find(any()) } returns emptyList()
+  }
+
+  @After
+  fun restoreEditionFlag() = unmockkObject(CollieFlags)
+
+  @Test
+  fun `Stable rejects local removal without changing the row`() {
+    assumeFalse(BuildConfig.TRAILBLAZER_BETA)
+    unmockkObject(CollieFlags)
+    val id = attachment(message())
+    val before = row(AttachmentTable.TABLE_NAME, id.id)
+
+    assertFalse(remove(id))
+    assertEquals(before, row(AttachmentTable.TABLE_NAME, id.id))
   }
 
   @Test
@@ -112,12 +134,81 @@ class AttachmentTableTest_removeLocally {
       AttachmentTable.REMOTE_KEY, AttachmentTable.REMOTE_LOCATION, AttachmentTable.REMOTE_DIGEST, AttachmentTable.REMOTE_INCREMENTAL_DIGEST,
       AttachmentTable.ARCHIVE_CDN, AttachmentTable.BLUR_HASH, AttachmentTable.METADATA_ID
     ).forEach { assertNull(it, stored[it]) }
+    assertNull(removed.remoteDigest)
+    assertNull(removed.dataHash)
     assertFalse(data.exists())
     assertFalse(thumbnail.exists())
     assertFalse(transfer.exists())
     assertFalse(db.exists(AttachmentMetadataTable.TABLE_NAME).where("${AttachmentMetadataTable.ID} = ?", metadataId).run())
     verify { jobManager.cancelAllInQueue(AttachmentDownloadJob.constructQueueString(id)) }
     verify(exactly = 0) { jobManager.add(any<org.thoughtcrime.securesms.jobmanager.Job>()) }
+  }
+
+  @Test
+  fun `legacy removed attachments still match linked deletion by digest and plaintext hash`() {
+    listOf(true, false).forEach { matchDigest ->
+      val messageId = message()
+      val id = attachment(messageId)
+      val sibling = attachment(messageId)
+      db.update(AttachmentTable.TABLE_NAME).values(AttachmentTable.ATTACHMENT_UUID to null).where("${AttachmentTable.ID} = ?", id.id).run()
+      db.update(AttachmentTable.TABLE_NAME)
+        .values(AttachmentTable.REMOTE_DIGEST to ByteArray(32) { 12 }, AttachmentTable.DATA_HASH_END to "sibling-hash")
+        .where("${AttachmentTable.ID} = ?", sibling.id)
+        .run()
+      val original = attachments.getAttachment(id)!!
+      val sentTime = row(MessageTable.TABLE_NAME, messageId)!![MessageTable.DATE_SENT] as Long
+      val request = AttachmentTable.SyncAttachmentId(
+        MessageTable.SyncMessageId(sender, sentTime),
+        uuid = null,
+        digest = original.remoteDigest.takeIf { matchDigest },
+        plaintextHash = original.dataHash.takeUnless { matchDigest }
+      )
+
+      assertTrue(remove(id))
+      val tombstone = attachments.getAttachment(id)!!
+      assertNull(tombstone.remoteKey)
+      assertNull(tombstone.remoteDigest)
+      assertNull(tombstone.dataHash)
+      assertTrue(attachments.deleteAttachments(listOf(request)).isEmpty())
+      assertNull(attachments.getAttachment(id))
+      assertNotNull(attachments.getAttachment(sibling))
+      assertNotNull(row(MessageTable.TABLE_NAME, messageId))
+    }
+  }
+
+  @Test
+  fun `local removal keeps offloaded attachments and their restore identity`() {
+    val id = attachment(message(), data = null)
+    db.update(AttachmentTable.TABLE_NAME)
+      .values(AttachmentTable.TRANSFER_STATE to AttachmentTable.TRANSFER_RESTORE_OFFLOADED)
+      .where("${AttachmentTable.ID} = ?", id.id)
+      .run()
+    val before = row(AttachmentTable.TABLE_NAME, id.id)
+
+    assertFalse(attachments.isAttachmentLocallyRemovable(id))
+    assertFalse(remove(id))
+    assertEquals(before, row(AttachmentTable.TABLE_NAME, id.id))
+  }
+
+  @Test
+  fun `removal reports a failed last-reference unlink after retaining the terminal state`() {
+    val blockedPath = files.newFolder().apply { resolve("existing").writeText("bytes") }
+    val id = attachment(message(), transfer = blockedPath)
+
+    assertThrows(IOException::class.java) { remove(id) }
+    assertTrue(attachments.getAttachment(id)!!.isLocallyRemoved)
+    assertTrue(blockedPath.exists())
+  }
+
+  @Test
+  fun `direct story replies in the conversation can remove downloaded attachments`() {
+    val parentReply = message()
+    val id = attachment(parentReply)
+    db.update(MessageTable.TABLE_NAME).values(MessageTable.PARENT_STORY_ID to -3).where("${MessageTable.ID} = ?", parentReply).run()
+
+    assertTrue(attachments.isAttachmentLocallyRemovable(id))
+    assertTrue(remove(id))
+    assertNotNull(row(MessageTable.TABLE_NAME, parentReply))
   }
 
   @Test
@@ -325,6 +416,27 @@ class AttachmentTableTest_removeLocally {
   }
 
   @Test
+  fun `thumbnail publication skips a matching terminal row but updates its live alias`() {
+    val terminal = attachment(message())
+    val alias = attachment(message())
+    val original = attachments.getAttachment(terminal)!!
+    db.update(AttachmentTable.TABLE_NAME)
+      .values(AttachmentTable.TRANSFER_STATE to AttachmentTable.TRANSFER_REMOVED_LOCALLY)
+      .where("${AttachmentTable.ID} = ?", terminal.id)
+      .run()
+
+    val received = file()
+    attachments.finalizeAttachmentThumbnailAfterDownload(terminal, original.dataHash, original.remoteKey, ByteArrayInputStream(byteArrayOf(1, 2, 3)), received)
+    assertFalse(received.exists())
+    assertNull(row(AttachmentTable.TABLE_NAME, terminal.id)!![AttachmentTable.THUMBNAIL_FILE])
+    assertNotNull(attachments.getThumbnailFileInfo(alias))
+
+    attachments.finalizeAttachmentThumbnailAfterUpload(terminal, original.dataHash, original.remoteKey, byteArrayOf(4, 5, 6))
+    assertNull(row(AttachmentTable.TABLE_NAME, terminal.id)!![AttachmentTable.THUMBNAIL_FILE])
+    assertNotNull(attachments.getThumbnailFileInfo(alias))
+  }
+
+  @Test
   fun `copying another attachment cannot fill a removed destination`() {
     val source = attachment(message(), data = file())
     val destination = attachment(message())
@@ -470,7 +582,7 @@ class AttachmentTableTest_removeLocally {
   private fun attachment(
     messageId: Long,
     contentType: String = "application/pdf",
-    data: File? = null,
+    data: File? = file(),
     thumbnail: File? = null,
     transfer: File? = null,
     metadataId: Long? = null

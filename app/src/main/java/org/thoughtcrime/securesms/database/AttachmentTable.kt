@@ -2073,14 +2073,14 @@ class AttachmentTable(
           DATA_FILE to null,
           DATA_RANDOM to null,
           DATA_HASH_START to null,
-          DATA_HASH_END to null,
+          DATA_HASH_END to attachment.dataHash.takeIf { attachment.uuid == null },
           DATA_SIZE to 0,
           THUMBNAIL_FILE to null,
           THUMBNAIL_RANDOM to null,
           TRANSFER_FILE to null,
           REMOTE_KEY to null,
           REMOTE_LOCATION to null,
-          REMOTE_DIGEST to null,
+          REMOTE_DIGEST to attachment.remoteDigest.takeIf { attachment.uuid == null },
           REMOTE_INCREMENTAL_DIGEST to null,
           REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
           CDN_NUMBER to Cdn.CDN_0.serialize(),
@@ -2127,28 +2127,33 @@ class AttachmentTable(
       Log.w(TAG, "Could not clear backfill presentation state for locally removed attachment $id.", e)
     }
 
-    deleteDataFiles(paths, contentTypes)
+    val unlinked = deleteDataFiles(paths, contentTypes)
     threads.update(threadId, unarchive = false, allowDeletion = false, syncThreadDelete = false)
     AppDependencies.databaseObserver.notifyMessageUpdateObservers(MessageId(messageId))
     AppDependencies.databaseObserver.notifyAttachmentDeletedObservers()
     AppDependencies.databaseObserver.notifyAttachmentUpdatedObservers()
     notifyConversationListeners(threadId)
     notifyConversationListListeners()
+    if (!unlinked) throw IOException("Unable to unlink all local files for attachment $id")
     return true
   }
 
   private fun locallyRemovableAttachment(db: SupportSQLiteDatabase, id: AttachmentId): DatabaseAttachment? {
     val attachment = db.select(*PROJECTION).from(TABLE_NAME).where("$ID = ?", id.id).run()
-      .readToSingleObject { it.readAttachment() } ?: return null
+      .readToSingleObject { cursor ->
+        val path = cursor.requireString(DATA_FILE)
+        cursor.readAttachment().takeIf { path != null && File(path).isFile }
+      } ?: return null
     val contentType = attachment.contentType ?: return null
-    if (attachment.isLocallyRemoved || attachment.quote || attachment.isSticker || MediaUtil.isLongTextType(contentType) || contentType == MediaUtil.VIEW_ONCE) return null
+    if (attachment.transferState != TRANSFER_PROGRESS_DONE || attachment.quote || attachment.isSticker) return null
+    if (MediaUtil.isLongTextType(contentType) || contentType == MediaUtil.VIEW_ONCE) return null
     if (!MediaUtil.isImageType(contentType) && !MediaUtil.isVideoType(contentType) && !MediaUtil.isAudioType(contentType) && !MediaUtil.isDocumentType(contentType)) return null
 
     val eligible = db.select(MessageTable.TYPE)
       .from(MessageTable.TABLE_NAME)
       .where(
         "${MessageTable.ID} = ? AND ${MessageTable.VIEW_ONCE} = 0 AND ${MessageTable.STORY_TYPE} = 0 AND " +
-          "${MessageTable.PARENT_STORY_ID} = 0 AND ${MessageTable.SCHEDULED_DATE} = -1 AND ${MessageTable.LATEST_REVISION_ID} IS NULL AND " +
+          "${MessageTable.PARENT_STORY_ID} <= 0 AND ${MessageTable.SCHEDULED_DATE} = -1 AND ${MessageTable.LATEST_REVISION_ID} IS NULL AND " +
           "${MessageTable.DELETED_BY} IS NULL AND ${MessageTable.LINK_PREVIEWS} IS NULL AND ${MessageTable.SHARED_CONTACTS} IS NULL",
         attachment.mmsId
       )
@@ -3666,11 +3671,14 @@ class AttachmentTable(
       .run()
   }
 
-  private fun deleteDataFiles(filePaths: Set<String>, contentTypes: Set<String>) {
+  private fun deleteDataFiles(filePaths: Set<String>, contentTypes: Set<String>): Boolean {
+    var unlinked = true
     for (path in filePaths) {
-      if (File(path).delete()) {
+      val file = File(path)
+      if (file.delete()) {
         Log.d(TAG, "[deleteDataFiles] Successfully deleted $path")
-      } else {
+      } else if (file.exists()) {
+        unlinked = false
         Log.w(TAG, "[deleteDataFiles] Failed to delete $path")
       }
     }
@@ -3679,6 +3687,7 @@ class AttachmentTable(
       Glide.get(context).clearDiskCache()
       ThreadUtil.runOnMain { Glide.get(context).clearMemory() }
     }
+    return unlinked
   }
 
   /**
@@ -4515,7 +4524,8 @@ class AttachmentTable(
       cdn = cursor.requireObject(CDN_NUMBER, Cdn),
       location = cursor.requireString(REMOTE_LOCATION),
       key = cursor.requireString(REMOTE_KEY),
-      digest = cursor.requireBlob(REMOTE_DIGEST),
+      // Retained database digests identify a tombstone only to linked-device deletion sync.
+      digest = if (locallyRemoved) null else cursor.requireBlob(REMOTE_DIGEST),
       incrementalDigest = cursor.requireBlob(REMOTE_INCREMENTAL_DIGEST),
       incrementalMacChunkSize = cursor.requireInt(REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE),
       fastPreflightId = cursor.requireString(FAST_PREFLIGHT_ID),
@@ -4533,7 +4543,7 @@ class AttachmentTable(
       transformProperties = parseTransformProperties(cursor.requireString(TRANSFORM_PROPERTIES)),
       displayOrder = cursor.requireInt(DISPLAY_ORDER),
       uploadTimestamp = cursor.requireLong(UPLOAD_TIMESTAMP),
-      dataHash = cursor.requireString(DATA_HASH_END),
+      dataHash = if (locallyRemoved) null else cursor.requireString(DATA_HASH_END),
       archiveCdn = cursor.requireIntOrNull(ARCHIVE_CDN),
       thumbnailRestoreState = ThumbnailRestoreState.deserialize(cursor.requireInt(THUMBNAIL_RESTORE_STATE)),
       archiveTransferState = ArchiveTransferState.deserialize(cursor.requireInt(ARCHIVE_TRANSFER_STATE)),
@@ -4883,7 +4893,7 @@ class AttachmentTable(
     return readableDatabase
       .select(ID, MESSAGE_ID, CONTENT_TYPE, DATA_HASH_END)
       .from(TABLE_NAME)
-      .where(query.where, query.whereArgs)
+      .where("(${query.where}) AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", query.whereArgs)
       .run()
       .readToSet { cursor ->
         DebugArchiveMediaInfo(
@@ -4955,7 +4965,7 @@ class AttachmentTable(
       val existingMatch: DataFileInfo? = db
         .select(*DATA_FILE_INFO_PROJECTION)
         .from(TABLE_NAME)
-        .where("$DATA_HASH_END = ?", newDataFileInfo.hash)
+        .where("$DATA_HASH_END = ? AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", newDataFileInfo.hash)
         .run()
         .readToSingleObject { it.readDataFileInfo() }
 

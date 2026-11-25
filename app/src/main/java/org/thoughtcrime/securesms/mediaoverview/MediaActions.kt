@@ -11,10 +11,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.core.Completable
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.attachments.AttachmentSaver
+import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.MediaTable
 import org.thoughtcrime.securesms.flags.CollieFlags
 
 internal object MediaActions {
+  @JvmStatic
+  fun canOfferAttachmentRemoval(record: MediaTable.MediaRecord): Boolean {
+    val attachment = record.attachment ?: return false
+    return CollieFlags.attachmentRemoval && record.linkPreviewJson == null &&
+      attachment.hasData && attachment.transferState == AttachmentTable.TRANSFER_PROGRESS_DONE
+  }
 
   @JvmStatic
   fun handleSaveMedia(fragment: Fragment, mediaRecords: Collection<MediaTable.MediaRecord>): Completable {

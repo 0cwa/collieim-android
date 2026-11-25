@@ -561,7 +561,7 @@ public final class MediaOverviewPageFragment extends LoggingFragment
       ));
 
       Collection<MediaTable.MediaRecord> selectedMedia = getListAdapter().getSelectedMedia();
-      if (CollieFlags.INSTANCE.getAttachmentRemoval() && !selectedMedia.isEmpty() && selectedMedia.stream().allMatch(record -> record.getAttachment() != null && record.getLinkPreviewJson() == null)) {
+      if (!selectedMedia.isEmpty() && selectedMedia.stream().allMatch(MediaActions::canOfferAttachmentRemoval)) {
         actions.add(2, new ActionItem(org.signal.core.ui.R.drawable.symbol_trash_24,
                                      getString(R.string.CollieAttachmentRemoval_short_action),
                                      this::handleRemoveSelectedAttachments));

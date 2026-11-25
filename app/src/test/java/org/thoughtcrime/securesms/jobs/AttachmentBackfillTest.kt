@@ -193,6 +193,26 @@ class AttachmentBackfillTest {
   }
 
   @Test
+  fun `removal during backfill registration leaves no request or timeout`() = runTest {
+    AttachmentBackfill.timeoutScope = CoroutineScope(StandardTestDispatcher(testScheduler))
+    val messageId = nextMessageId()
+    val live = attachmentFor(messageId)
+    val removed = databaseAttachment(attachmentId = live.attachmentId, transferProgress = AttachmentTable.TRANSFER_REMOVED_LOCALLY)
+    every { attachments.getAttachment(live.attachmentId) } returnsMany listOf(live, removed)
+    val failures = mutableListOf<AttachmentBackfill.BackfillFailure>()
+    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+      AttachmentBackfill.failures.collect { failures += it }
+    }
+
+    AttachmentBackfill.maybeRequest(messageId, live)
+    testScheduler.advanceUntilIdle()
+
+    verify(exactly = 0) { jobManager.add(any<MultiDeviceAttachmentBackfillRequestJob>()) }
+    assertFalse(AttachmentBackfill.awaiting.value.contains(live.attachmentId))
+    assertTrue(failures.isEmpty())
+  }
+
+  @Test
   fun `skips when message record is missing`() {
     every { messages.getMessageRecordOrNull(any()) } returns null
     val messageId = nextMessageId()

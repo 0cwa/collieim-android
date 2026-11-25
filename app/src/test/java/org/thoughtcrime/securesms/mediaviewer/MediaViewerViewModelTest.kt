@@ -31,6 +31,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +64,7 @@ import org.signal.paging.PagingController
 import org.signal.paging.StateFlowPagedData
 import org.signal.uicomponents.styledtext.StyleRange
 import org.signal.uicomponents.styledtext.StyledString
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.spoiler.SpoilerAnnotation
 import org.thoughtcrime.securesms.database.DatabaseObserver
@@ -93,6 +96,8 @@ class MediaViewerViewModelTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
+    mockkObject(CollieFlags)
+    every { CollieFlags.attachmentRemoval } returns true
 
     coEvery { repository.attachmentExists(any()) } returns false
     coEvery { repository.getInitialItem(any(), any(), any()) } returns null
@@ -107,6 +112,7 @@ class MediaViewerViewModelTest {
 
   @After
   fun tearDown() {
+    unmockkObject(CollieFlags)
     Dispatchers.resetMain()
   }
 

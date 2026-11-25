@@ -15,6 +15,7 @@ import org.signal.core.util.readToSingleObject
 import org.signal.core.util.requireLong
 import org.signal.core.util.requireString
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewUtil
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.MediaUtil.SlideType
@@ -74,7 +75,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
         ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID},
         ${MessageTable.TABLE_NAME}.${MessageTable.FROM_RECIPIENT_ID},
         ${ThreadTable.TABLE_NAME}.${ThreadTable.RECIPIENT_ID} as $THREAD_RECIPIENT_ID,
-        ${MessageTable.TABLE_NAME}.${MessageTable.BODY},
+        NULL AS ${MessageTable.BODY},
         NULL AS ${MessageTable.LINK_PREVIEWS},
         ${AttachmentTable.TABLE_NAME}.${AttachmentTable.MESSAGE_ID} as $MEDIA_MESSAGE_ID
       """
@@ -358,6 +359,28 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
 
   /** Returns all media for links (like, urls sent in chats). */
   private fun linkMediaQuery(threadId: Long): String {
+    val storedPreviewCondition = "${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS} IS NOT NULL"
+    val includeBodyLinks = CollieFlags.previewIndependentSharedLinks
+    val bodyProjection = if (includeBodyLinks) "${MessageTable.TABLE_NAME}.${MessageTable.BODY}" else "NULL"
+    val linkCondition = if (includeBodyLinks) {
+      """
+          (
+            $storedPreviewCondition OR
+            (
+              ${MessageTable.TABLE_NAME}.${MessageTable.BODY} LIKE '%https://%' AND
+              NOT EXISTS (
+                SELECT 1 FROM ${AttachmentTable.TABLE_NAME} AS body_link_attachment
+                WHERE body_link_attachment.${AttachmentTable.MESSAGE_ID} = ${MessageTable.TABLE_NAME}.${MessageTable.ID}
+                  AND body_link_attachment.${AttachmentTable.QUOTE} = 0
+                  AND body_link_attachment.${AttachmentTable.STICKER_PACK_ID} IS NULL
+              )
+            )
+          )
+      """.trimIndent()
+    } else {
+      storedPreviewCondition
+    }
+
     return """
         SELECT
           ${AttachmentTable.TABLE_NAME}.${AttachmentTable.ID} AS ${AttachmentTable.ID},
@@ -404,7 +427,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
           ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID},
           ${MessageTable.TABLE_NAME}.${MessageTable.FROM_RECIPIENT_ID},
           ${ThreadTable.TABLE_NAME}.${ThreadTable.RECIPIENT_ID} as $THREAD_RECIPIENT_ID,
-          ${MessageTable.TABLE_NAME}.${MessageTable.BODY},
+          $bodyProjection AS ${MessageTable.BODY},
           ${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS},
           ${MessageTable.TABLE_NAME}.${MessageTable.ID} as $MEDIA_MESSAGE_ID
         FROM
@@ -416,18 +439,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
           LEFT JOIN ${ThreadTable.TABLE_NAME} ON ${ThreadTable.TABLE_NAME}.${ThreadTable.ID} = ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID}
         WHERE
           ${threadFilter(threadId)} AND
-          (
-            ${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS} IS NOT NULL OR
-            (
-              ${MessageTable.TABLE_NAME}.${MessageTable.BODY} LIKE '%https://%' AND
-              NOT EXISTS (
-                SELECT 1 FROM ${AttachmentTable.TABLE_NAME} AS body_link_attachment
-                WHERE body_link_attachment.${AttachmentTable.MESSAGE_ID} = ${MessageTable.TABLE_NAME}.${MessageTable.ID}
-                  AND body_link_attachment.${AttachmentTable.QUOTE} = 0
-                  AND body_link_attachment.${AttachmentTable.STICKER_PACK_ID} IS NULL
-              )
-            )
-          ) AND
+          $linkCondition AND
           ${MessageTable.TABLE_NAME}.${MessageTable.VIEW_ONCE} = 0 AND
           ${MessageTable.TABLE_NAME}.${MessageTable.STORY_TYPE} = 0 AND
           ${MessageTable.TABLE_NAME}.${MessageTable.LATEST_REVISION_ID} IS NULL AND

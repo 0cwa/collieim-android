@@ -14,6 +14,11 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import org.junit.After
+import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +29,7 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.database.MediaTable.Sorting
 import org.thoughtcrime.securesms.database.loaders.GroupedThreadMediaLoader
 import org.thoughtcrime.securesms.database.loaders.MediaLoader
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 
@@ -48,6 +54,31 @@ class MediaTableTest_linkPreviewMedia {
     fun setUpClass() {
       Log.initialize(SystemOutLogger())
     }
+  }
+
+  @Before
+  fun enableBodyLinks() {
+    mockkObject(CollieFlags)
+    every { CollieFlags.previewIndependentSharedLinks } returns true
+  }
+
+  @After
+  fun restoreEditionFlag() {
+    unmockkObject(CollieFlags)
+  }
+
+  @Test
+  fun `stable lists stored previews and skips body-only links`() {
+    every { CollieFlags.previewIndependentSharedLinks } returns false
+    val threadId = fixtures.createThread()
+    fixtures.insertMessage(threadId, linkPreviews = LINK_PREVIEWS)
+    fixtures.insertMessage(threadId, body = "https://signal.org/body-only")
+
+    val links = SignalDatabase.media.getLinkMediaForThread(threadId, Sorting.Newest).readRecords()
+    val allMedia = SignalDatabase.media.getAllMediaForThread(threadId, Sorting.Newest, limit = 1).readRecords()
+
+    assertThat(links.map { it.linkUrl }).containsExactly("https://signal.org")
+    assertThat(allMedia.map { it.linkUrl }).containsExactly("https://signal.org")
   }
 
   @Test

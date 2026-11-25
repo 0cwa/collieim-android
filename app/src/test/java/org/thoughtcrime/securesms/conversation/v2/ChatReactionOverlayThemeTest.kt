@@ -25,14 +25,19 @@ import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -72,6 +77,58 @@ class ChatReactionOverlayThemeTest {
     assertPaletteSwitch(dark = true)
   }
 
+  @Test
+  fun `reaction slots expose distinct accessible actions and activate their slot`() {
+    val labels = listOf(
+      "React with 😀",
+      "Remove ❤️ reaction",
+      "React with 😂",
+      "React with 😮",
+      "React with 😢",
+      "React with 🙏",
+      "More reactions"
+    )
+    val selectedMessage = ReactionOverlaySelection(
+      snapshot = ImageBitmap(20, 20),
+      bubbleX = 100f,
+      bubbleY = 100f,
+      bubbleWidth = 20,
+      contextMenuX = 100f,
+      isMessageOnLeft = true,
+      lastSeenDownY = 110f,
+      emoji = List(REACTION_EMOJI_COUNT) { null },
+      emojiLabels = labels,
+      appliedEmojiIndex = 1,
+      canReact = true,
+      returnPosition = { null }
+    )
+    val controller = mockk<ChatReactionOverlayController>(relaxUnitFun = true) {
+      every { selection } returns selectedMessage
+      every { isRevealed } returns true
+      every { scrubber } returns ReactionScrubber(REACTION_EMOJI_COUNT, 0f)
+      every { menu } returns null
+      every { selectedIndex } returns ReactionScrubber.NO_SELECTION
+    }
+
+    compose.setContent {
+      SignalTheme(isDarkMode = false, incognitoKeyboardEnabled = false) {
+        Box(Modifier.size(320.dp, 480.dp)) {
+          ChatReactionOverlay(controller, Modifier.testTag(OVERLAY))
+        }
+      }
+    }
+
+    labels.forEach { label ->
+      compose.onNodeWithContentDescription(label).assertIsDisplayed()
+    }
+    compose.onNodeWithContentDescription("React with 😀").performSemanticsAction(SemanticsActions.OnClick)
+    verify { controller.onEmojiClicked(0) }
+    compose.onNodeWithContentDescription("Remove ❤️ reaction").performSemanticsAction(SemanticsActions.OnClick)
+    verify { controller.onEmojiClicked(1) }
+    compose.onNodeWithContentDescription("More reactions").performSemanticsAction(SemanticsActions.OnClick)
+    verify { controller.onEmojiClicked(REACTION_EMOJI_COUNT - 1) }
+  }
+
   private fun assertPaletteSwitch(dark: Boolean) {
     val application = ApplicationProvider.getApplicationContext<Application>()
     val configuration = Configuration(application.resources.configuration).apply {
@@ -91,6 +148,7 @@ class ChatReactionOverlayThemeTest {
       isMessageOnLeft = true,
       lastSeenDownY = 110f,
       emoji = emptyList(),
+      emojiLabels = emptyList(),
       appliedEmojiIndex = ReactionScrubber.NO_SELECTION,
       canReact = false,
       returnPosition = { null }

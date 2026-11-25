@@ -90,11 +90,12 @@ class ChatReactionOverlayController(
   private data class Strip(
     val emojiStrings: List<String>,
     val drawables: List<Drawable?>,
+    val labels: List<String?>,
     val appliedIndex: Int,
     val customSlotHasEmoji: Boolean
   ) {
     companion object {
-      val EMPTY = Strip(emptyList(), emptyList(), ReactionScrubber.NO_SELECTION, false)
+      val EMPTY = Strip(emptyList(), emptyList(), emptyList(), ReactionScrubber.NO_SELECTION, false)
     }
   }
 
@@ -145,6 +146,7 @@ class ChatReactionOverlayController(
       isMessageOnLeft = snapshot.isMessageOnLeft,
       lastSeenDownY = lastSeenDownPoint.y,
       emoji = strip.drawables,
+      emojiLabels = strip.labels,
       appliedEmojiIndex = strip.appliedIndex,
       canReact = builtMenu.canReact,
       returnPosition = snapshot.returnPosition
@@ -246,6 +248,15 @@ class ChatReactionOverlayController(
     return outcome.consumed
   }
 
+  /** Activates a reaction slot without going through the pointer scrub gesture. */
+  fun onEmojiClicked(index: Int) {
+    if (!isShowing || !isRevealed) {
+      return
+    }
+
+    commit(index)
+  }
+
   private fun commit(index: Int) {
     val record = messageRecord ?: return
 
@@ -272,6 +283,7 @@ class ChatReactionOverlayController(
     var appliedIndex = ReactionScrubber.NO_SELECTION
     var customSlotHasEmoji = false
     val drawables = mutableListOf<Drawable?>()
+    val labels = mutableListOf<String?>()
 
     for (index in 0 until REACTION_EMOJI_COUNT) {
       val isCustomSlot = index == customIndex
@@ -290,19 +302,26 @@ class ChatReactionOverlayController(
         if (isCustomSlot) {
           customSlotHasEmoji = true
           drawables += EmojiProvider.getEmojiDrawable(context, applied, true)
+          labels += context.getString(R.string.ChatReactionOverlay__remove_reaction, applied)
         } else {
-          drawables += EmojiProvider.getEmojiDrawable(context, SignalStore.emoji.getPreferredVariation(stripEmoji!!), true)
+          val preferred = SignalStore.emoji.getPreferredVariation(stripEmoji!!)
+          drawables += EmojiProvider.getEmojiDrawable(context, preferred, true)
+          labels += context.getString(R.string.ChatReactionOverlay__remove_reaction, preferred)
         }
       } else if (isCustomSlot) {
         drawables += ContextCompat.getDrawable(context, R.drawable.ic_any_emoji_32)
+        labels += context.getString(R.string.ChatReactionOverlay__more_reactions)
       } else {
-        drawables += stripEmoji?.let { EmojiProvider.getEmojiDrawable(context, SignalStore.emoji.getPreferredVariation(it), true) }
+        val preferred = stripEmoji?.let { SignalStore.emoji.getPreferredVariation(it) }
+        drawables += preferred?.let { EmojiProvider.getEmojiDrawable(context, it, true) }
+        labels += preferred?.let { context.getString(R.string.ChatReactionOverlay__react_with, it) }
       }
     }
 
     return Strip(
       emojiStrings = emojiStrings,
       drawables = drawables,
+      labels = labels,
       appliedIndex = appliedIndex,
       customSlotHasEmoji = customSlotHasEmoji
     )

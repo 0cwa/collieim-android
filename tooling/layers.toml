@@ -338,3 +338,6 @@ alias_of = "codeql-review"
 [layers.poll-voting]
 kind = "feature"
 about = "Poll voting and poll message validation"
+[layers.poll-text-limits]
+kind = "feature"
+about = "Grapheme-based validation of incoming poll text"

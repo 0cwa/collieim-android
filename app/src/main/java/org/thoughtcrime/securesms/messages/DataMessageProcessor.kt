@@ -9,6 +9,7 @@ import org.signal.core.models.database.StickerRecord
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.Base64
 import org.signal.core.util.Hex
+import org.signal.core.util.StringUtil
 import org.signal.core.util.UuidUtil
 import org.signal.core.util.isNotEmpty
 import org.signal.core.util.logging.Log
@@ -1019,12 +1020,12 @@ object DataMessageProcessor {
       return null
     }
 
-    if (poll.question == null || poll.question!!.isEmpty() || poll.question!!.length > POLL_QUESTION_CHARACTER_LIMIT) {
+    if (poll.question == null || poll.question!!.isEmpty() || StringUtil.getGraphemeCount(poll.question!!) > POLL_QUESTION_CHARACTER_LIMIT) {
       warn(envelope.clientTimestamp!!, "[handlePollCreate] Poll question is invalid.")
       return null
     }
 
-    if (poll.options.isEmpty() || poll.options.size > POLL_OPTIONS_LIMIT || poll.options.any { it.isEmpty() || it.length > POLL_CHARACTER_LIMIT }) {
+    if (poll.options.isEmpty() || poll.options.size > POLL_OPTIONS_LIMIT || poll.options.any { it.isEmpty() || StringUtil.getGraphemeCount(it) > POLL_CHARACTER_LIMIT }) {
       warn(envelope.clientTimestamp!!, "[handlePollCreate] Poll option is invalid.")
       return null
     }

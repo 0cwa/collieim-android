@@ -4,6 +4,7 @@ import android.app.Application
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -13,6 +14,7 @@ import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.signal.core.database.withinTransaction
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
@@ -186,6 +188,50 @@ class RemappedRecordsStorageTest {
       db.endTransaction()
     }
     assertEquals(132L, records.getThread(131).get())
+  }
+
+  @Test fun `thread merge replaces the stale mapping for its live secondary row`() {
+    val db = SignalDatabase.writableDatabase
+    db.execSQL("INSERT INTO recipient (_id) VALUES (141), (142)")
+    db.execSQL("INSERT INTO thread (_id, recipient_id) VALUES (151, 141), (152, 142)")
+    db.execSQL("INSERT INTO remapped_threads (old_id, new_id) VALUES (152, 153), (154, 155)")
+
+    db.withinTransaction {
+      val merged = SignalDatabase.threads.merge(RecipientId.from(141), RecipientId.from(142))
+      assertEquals(151L, merged.threadId)
+      assertTrue(merged.neededMerge)
+    }
+
+    assertEquals(151L, SignalDatabase.remappedRecords.getThreadMapping(152))
+    assertEquals(155L, SignalDatabase.remappedRecords.getThreadMapping(154))
+    assertNull(SignalDatabase.threads.getThreadRecord(152L))
+  }
+
+  @Test fun `recipient cleanup removes only the stale mapping for the live source row`() {
+    val db = SignalDatabase.writableDatabase
+    db.execSQL("INSERT INTO recipient (_id) VALUES (161)")
+    db.execSQL("INSERT INTO remapped_recipients (old_id, new_id) VALUES (161, 162), (163, 164)")
+
+    db.withinTransaction {
+      SignalDatabase.remappedRecords.deleteStaleRecipientMapping(RecipientId.from(161))
+      SignalDatabase.remappedRecords.deleteStaleRecipientMapping(RecipientId.from(163))
+    }
+
+    assertNull(SignalDatabase.remappedRecords.getRecipientMapping(RecipientId.from(161)))
+    assertEquals(RecipientId.from(164), SignalDatabase.remappedRecords.getRecipientMapping(RecipientId.from(163)))
+  }
+
+  @Test fun `recipient matching handles empty large and unrelated ID sets`() {
+    val db = SignalDatabase.writableDatabase
+    db.execSQL("INSERT INTO remapped_recipients (old_id, new_id) VALUES (10000, 10001), (20000, 20001)")
+    val records = RemappedRecords({ _ -> }, {})
+    val nonmatches = (1L..1200L).map(RecipientId::from)
+    val match = RecipientId.from(10000)
+
+    assertFalse(records.areAnyRemapped(emptyList()))
+    assertFalse(records.areAnyRemapped(nonmatches))
+    assertTrue(records.areAnyRemapped(nonmatches + match))
+    assertEquals("$match -> ${RecipientId.from(10001)} ", records.buildRemapDescription(nonmatches + match))
   }
 
 }

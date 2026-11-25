@@ -4623,6 +4623,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     val db = writableDatabase
     val primaryRecord = getRecord(primaryId)
     val secondaryRecord = getRecord(secondaryId)
+    SignalDatabase.remappedRecords.deleteStaleRecipientMapping(secondaryId)
 
     // Clean up any E164-based identities (legacy stuff)
     if (secondaryRecord.e164 != null) {

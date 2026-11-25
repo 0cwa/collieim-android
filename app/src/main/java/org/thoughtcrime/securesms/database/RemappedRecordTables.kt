@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.database
 import android.content.Context
 import android.database.Cursor
 import androidx.core.content.contentValuesOf
+import org.signal.core.database.SqlUtil
 import org.signal.core.database.delete
 import org.signal.core.database.exists
 import org.signal.core.database.select
@@ -67,17 +68,23 @@ class RemappedRecordTables internal constructor(context: Context?, databaseHelpe
     .run()
     .readToSingleObject { it.requireLong(NEW_ID) }
 
-  fun getAllRecipientMappings(): Map<RecipientId, RecipientId> {
-    val recipientMap: MutableMap<RecipientId, RecipientId> = HashMap()
+  fun hasRecipientMapping(oldIds: Collection<RecipientId>): Boolean {
+    if (oldIds.isEmpty()) return false
 
-    val mappings = getAllMappings(readableDatabase, Recipients.TABLE_NAME)
-    for (mapping in mappings) {
-      val oldId = RecipientId.from(mapping.oldId)
-      val newId = RecipientId.from(mapping.newId)
-      recipientMap[oldId] = newId
-    }
+    val query = SqlUtil.buildFastCollectionQuery(OLD_ID, oldIds.map { it.toLong() })
+    return readableDatabase.exists(Recipients.TABLE_NAME).where(query.where, query.whereArgs).run()
+  }
 
-    return recipientMap
+  fun getRecipientMappings(oldIds: Collection<RecipientId>): Map<RecipientId, RecipientId> {
+    if (oldIds.isEmpty()) return emptyMap()
+
+    val query = SqlUtil.buildFastCollectionQuery(OLD_ID, oldIds.map { it.toLong() })
+    return readableDatabase.select(OLD_ID, NEW_ID)
+      .from(Recipients.TABLE_NAME)
+      .where(query.where, query.whereArgs)
+      .run()
+      .readToList { RecipientId.from(it.requireLong(OLD_ID)) to RecipientId.from(it.requireLong(NEW_ID)) }
+      .toMap()
   }
 
   fun getAllThreadMappings(): Map<Long, Long> {
@@ -134,6 +141,21 @@ class RemappedRecordTables internal constructor(context: Context?, databaseHelpe
   fun deleteThreadMapping(oldId: Long, expectedNewId: Long) {
     writableDatabase.delete(Threads.TABLE_NAME)
       .where("$OLD_ID = ? AND $NEW_ID = ?", oldId, expectedNewId)
+      .run()
+  }
+
+  /** A mapping is stale while its source row still exists. Call before deleting a merged row. */
+  fun deleteStaleRecipientMapping(oldId: RecipientId) {
+    deleteStaleMapping(Recipients.TABLE_NAME, RecipientTable.TABLE_NAME, oldId.toLong())
+  }
+
+  fun deleteStaleThreadMapping(oldId: Long) {
+    deleteStaleMapping(Threads.TABLE_NAME, ThreadTable.TABLE_NAME, oldId)
+  }
+
+  private fun deleteStaleMapping(table: String, sourceTable: String, oldId: Long) {
+    writableDatabase.delete(table)
+      .where("$OLD_ID = ? AND EXISTS (SELECT 1 FROM $sourceTable WHERE $ID = ?)", oldId, oldId)
       .run()
   }
 

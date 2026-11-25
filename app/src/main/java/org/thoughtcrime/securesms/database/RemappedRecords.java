@@ -9,8 +9,6 @@ import org.signal.core.util.logging.Log;
 import org.signal.network.util.Preconditions;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -56,13 +54,13 @@ class RemappedRecords {
   }
 
   boolean areAnyRemapped(@NonNull Collection<RecipientId> recipientIds) {
-    Map<RecipientId, RecipientId> snapshot = Collections.unmodifiableMap(new HashMap<>(SignalDatabase.remappedRecords().getAllRecipientMappings()));
-    scheduleStaleTrimIfNeeded(!snapshot.isEmpty());
-    return recipientIds.stream().anyMatch(snapshot::containsKey);
+    boolean hasMapping = SignalDatabase.remappedRecords().hasRecipientMapping(recipientIds);
+    scheduleStaleTrimIfNeeded(hasMapping);
+    return hasMapping;
   }
 
   @NonNull String buildRemapDescription(@NonNull Collection<RecipientId> recipientIds) {
-    Map<RecipientId, RecipientId> snapshot = Collections.unmodifiableMap(new HashMap<>(SignalDatabase.remappedRecords().getAllRecipientMappings()));
+    Map<RecipientId, RecipientId> snapshot = SignalDatabase.remappedRecords().getRecipientMappings(recipientIds);
     scheduleStaleTrimIfNeeded(!snapshot.isEmpty());
     StringBuilder builder = new StringBuilder();
     for (RecipientId original : recipientIds) {

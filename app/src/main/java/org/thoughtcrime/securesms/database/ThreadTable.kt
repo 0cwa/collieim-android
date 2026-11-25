@@ -2025,6 +2025,7 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
       check(primaryThreadId != null)
       check(secondaryThreadId != null)
 
+      SignalDatabase.remappedRecords.deleteStaleThreadMapping(secondaryThreadId)
       for (table in threadIdDatabaseTables) {
         table.remapThread(secondaryThreadId, primaryThreadId)
       }

@@ -336,6 +336,9 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object Licenses : HelpRoute
+
+    @Serializable
+    data object ProjectLog : HelpRoute
   }
 
   @Serializable

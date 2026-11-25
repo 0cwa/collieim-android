@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CollieLog__title">Project log</string>
+    <!-- What's new tabs -->
+    <string name="CollieWhatsNew__tab_this_update">This update</string>
+    <string name="CollieWhatsNew__tab_project_log">Project log</string>
+    <string name="CollieWhatsNew__see_project_log">See all changes</string>
+
+    <!-- Project log: one plain sentence per change, grouped by release. The sentences themselves are English only. -->
+    <string name="CollieLog__intro">Changes in this app, newest first.</string>
+    <string name="CollieLog__development_build">Development build</string>
+    <string name="CollieLog__unavailable">Release notes for this version are unavailable.</string>
+    <string name="CollieLog__no_changes">No changes have been listed for this build.</string>
+    <string name="CollieLog__your_version">Your version</string>
+    <plurals name="CollieLog__changes">
+        <item quantity="one">%1$d change</item>
+        <item quantity="other">%1$d changes</item>
+    </plurals>
+    <string name="CollieLog__expand">Show changes</string>
+    <string name="CollieLog__collapse">Hide changes</string>
+    <string name="CollieLog__details_on_github">Details on GitHub</string>
+    <string name="CollieLog__links_note">Details open on GitHub in your browser, which doesn’t use Collie’s proxy.</string>
+
+    <!-- Topic labels shown above each line -->
+    <string name="CollieLog__topic_setup">Setup</string>
+    <string name="CollieLog__topic_push">Push</string>
+    <string name="CollieLog__topic_notifications">Notifications</string>
+    <string name="CollieLog__topic_backups">Backups</string>
+    <string name="CollieLog__topic_privacy">Privacy</string>
+    <string name="CollieLog__topic_security">Security</string>
+    <string name="CollieLog__topic_updates">Updates</string>
+    <string name="CollieLog__topic_settings">Settings</string>
+    <string name="CollieLog__topic_devices">Linked devices</string>
+    <string name="CollieLog__topic_look">Look</string>
+    <string name="CollieLog__topic_signal">Signal</string>
+    <string name="CollieLog__topic_fixes">Fixes</string>
+</resources>

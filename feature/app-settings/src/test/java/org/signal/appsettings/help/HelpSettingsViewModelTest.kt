@@ -79,6 +79,12 @@ class HelpSettingsViewModelTest {
   )
 
   @Test
+  fun `ProjectLogClicked opens the project log`() = assertEventNavigates(
+    HelpSettingsEvent.ProjectLogClicked,
+    AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.HelpRoute.ProjectLog)
+  )
+
+  @Test
   fun `WebsiteClicked opens Molly's website`() = assertEventEmits(HelpSettingsEvent.WebsiteClicked, HelpSettingsAction.OpenWebsite)
 
   @Test

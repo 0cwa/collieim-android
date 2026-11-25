@@ -14,6 +14,7 @@ import okio.ByteString.Companion.toByteString
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -62,6 +63,7 @@ import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.util.ProfileUtil
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import java.io.ByteArrayOutputStream
+import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 @Config(application = Application::class, manifest = Config.NONE)
@@ -194,4 +196,76 @@ class BackupAliasImportTest {
     `staged import merges contact aliases without changing real self`()
   }
 
+  @Test fun `import rejects a mismatched self before committing SQL`() {
+    val db = SignalDatabase.writableDatabase
+    db.execSQL("INSERT INTO recipient (_id, aci) VALUES (73, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')")
+    val originalSelf = Recipient.self().id
+    assertEquals(73L, originalSelf.toLong())
+    var checks = 0
+    every { reader.hasNext() } answers {
+      if (checks++ == 0) {
+        true
+      } else {
+        assertTrue(db.inTransaction())
+        db.execSQL("UPDATE recipient SET aci = ? WHERE _id = ?", arrayOf(replacement.toString(), Recipient.self().id.toLong()))
+        false
+      }
+    }
+    val failure = assertThrows(IllegalStateException::class.java) {
+      BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+    }
+    assertTrue(failure.message?.contains("Imported backup self") == true)
+    assertEquals(expected, SignalDatabase.recipients.getRecord(originalSelf).aci)
+    assertEquals(originalSelf, Recipient.self().id)
+  }
+  @Test fun `link import rejects another account before changing SQL`() {
+    val db = SignalDatabase.writableDatabase
+    db.execSQL("INSERT INTO recipient (_id, aci) VALUES (73, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')")
+    val originalSelf = Recipient.self().id
+    assertEquals(73L, originalSelf.toLong())
+    every { EncryptedBackupReader.createForLocalOrLinking(backupKey, replacement, any(), any()) } returns reader
+    val result = BackupRepository.importLinkAndSyncSignalBackup(0, { byteArrayOf().inputStream() }, BackupRepository.SelfData(replacement, null, null, profileKey), backupKey)
+    assertTrue(result is ImportResult.Failure)
+    assertEquals(expected, SignalDatabase.recipients.getRecord(originalSelf).aci)
+    assertEquals(originalSelf, Recipient.self().id)
+    verify(exactly = 0) { reader.getHeader() }
+    verify(exactly = 0) { reader.next() }
+    verify(exactly = 1) { reader.close() }
+  }
+
+  @Test fun `link import accepts the current account`() {
+    every { EncryptedBackupReader.createForLocalOrLinking(backupKey, expected, any(), any()) } returns reader
+    val result = BackupRepository.importLinkAndSyncSignalBackup(0, { byteArrayOf().inputStream() }, BackupRepository.SelfData(expected, null, null, profileKey), backupKey)
+    assertTrue(result is ImportResult.Success)
+    verify(exactly = 1) { reader.next() }
+    verify(exactly = 1) { reader.close() }
+  }
+
+  @Test fun `link import rejects an unavailable current account`() {
+    every { SignalStore.account.aci } returns null
+    every { EncryptedBackupReader.createForLocalOrLinking(backupKey, expected, any(), any()) } returns reader
+    val result = BackupRepository.importLinkAndSyncSignalBackup(0, { byteArrayOf().inputStream() }, BackupRepository.SelfData(expected, null, null, profileKey), backupKey)
+    assertTrue(result is ImportResult.Failure)
+    verify(exactly = 0) { reader.getHeader() }
+    verify(exactly = 0) { reader.next() }
+    verify(exactly = 1) { reader.close() }
+  }
+
+  @Test fun `link import reads the header for distinct instances of the same account identity`() {
+    val uuid = UUID.fromString("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+    val account = ACI.from(uuid)
+    val requested = ACI.from(uuid)
+    assertNotSame(account, requested)
+    assertEquals(account, requested)
+    every { SignalStore.account.aci } returns account
+    every { EncryptedBackupReader.createForLocalOrLinking(backupKey, any<ACI>(), any(), any()) } returns reader
+    every { reader.getHeader() } returns null
+
+    val result = BackupRepository.importLinkAndSyncSignalBackup(0, { byteArrayOf().inputStream() }, BackupRepository.SelfData(requested, null, null, profileKey), backupKey)
+
+    assertTrue(result is ImportResult.Failure)
+    verify(exactly = 1) { reader.getHeader() }
+    verify(exactly = 0) { reader.next() }
+    verify(exactly = 1) { reader.close() }
+  }
 }

@@ -24,4 +24,7 @@ object CollieFlags {
 
   val hardeningSettings: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
+
+  val attachmentRemoval: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
 }

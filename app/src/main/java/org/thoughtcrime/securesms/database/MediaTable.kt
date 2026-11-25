@@ -99,6 +99,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
         ${MessageTable.STORY_TYPE} = 0 AND
         ${MessageTable.LATEST_REVISION_ID} IS NULL AND
         ${AttachmentTable.QUOTE} = 0 AND
+        ${AttachmentTable.TRANSFER_STATE} != ${AttachmentTable.TRANSFER_REMOVED_LOCALLY} AND
         ${AttachmentTable.STICKER_PACK_ID} IS NULL AND
         ${MessageTable.TABLE_NAME}.${MessageTable.FROM_RECIPIENT_ID} > 0 AND
         $THREAD_RECIPIENT_ID > 0

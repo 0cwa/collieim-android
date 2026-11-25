@@ -144,16 +144,20 @@ abstract class Attachment(
   }
 
   val isInProgress: Boolean
-    get() = transferState != AttachmentTable.TRANSFER_PROGRESS_DONE && transferState != AttachmentTable.TRANSFER_PROGRESS_FAILED && transferState != AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE && transferState != AttachmentTable.TRANSFER_RESTORE_OFFLOADED
+    get() = transferState != AttachmentTable.TRANSFER_PROGRESS_DONE && transferState != AttachmentTable.TRANSFER_PROGRESS_FAILED && !isPermanentlyFailed && transferState != AttachmentTable.TRANSFER_RESTORE_OFFLOADED
+
+  /** This installation deliberately removed the media while retaining its message. */
+  val isLocallyRemoved: Boolean
+    get() = transferState == AttachmentTable.TRANSFER_REMOVED_LOCALLY
 
   val isPermanentlyFailed: Boolean
-    get() = transferState == AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE
+    get() = transferState == AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE || isLocallyRemoved
 
   /**
    * Denotes whether the media for the given attachment is no longer available for download.
    */
   val isMediaNoLongerAvailableForDownload: Boolean
-    get() = isPermanentlyFailed && (System.currentTimeMillis().milliseconds - uploadTimestamp.milliseconds) > 30.days
+    get() = !isLocallyRemoved && isPermanentlyFailed && (System.currentTimeMillis().milliseconds - uploadTimestamp.milliseconds) > 30.days
 
   val isSticker: Boolean
     get() = stickerLocator != null

@@ -19,6 +19,12 @@
   <string name="MediaViewerScreen__save">Save</string>
   <!-- Overflow menu item that deletes the media -->
   <string name="MediaViewerScreen__delete">Delete</string>
+  <!-- Explicit local attachment removal; the parent message is retained. -->
+  <string name="MediaViewerScreen__remove_attachment">Remove attachment, keep message</string>
+  <string name="MediaViewerScreen__remove_attachment_title">Remove attachment?</string>
+  <string name="MediaViewerScreen__remove_attachment_message">Remove this attachment from its message on this device? The message, text and reactions will stay, with an attachment-removed marker.\n\nThis cannot be undone here. Copies on other devices, in other messages, in edit history and in existing backups are kept.</string>
+  <string name="MediaViewerScreen__remove">Remove attachment</string>
+  <string name="MediaViewerScreen__removing_attachment">Removing attachment</string>
   <!-- Button in the note-to-self delete confirmation dialog that deletes the media -->
   <string name="MediaViewerScreen__delete_dialog_delete">Delete</string>
   <!-- Title of the dialog confirming deletion of a media message -->

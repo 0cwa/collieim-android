@@ -22,6 +22,7 @@ data class MediaViewerState(
   val scrollRequest: ScrollRequest? = null,
   /** True when previewing a draft (not part of any thread): no menu, no rail, no jump-to-chat. */
   val isDraft: Boolean = false,
+  val attachmentRemovalEnabled: Boolean = true,
   val showThread: Boolean = false,
   val allMediaInRail: Boolean = false,
   /** Resolved message bodies by message id, used as the caption fallback. */
@@ -77,7 +78,11 @@ data class MediaViewerState(
   sealed interface Dialog {
     data object None : Dialog
 
-    data class DeleteConfirmation(val canDeleteForEveryone: Boolean, val isNoteToSelf: Boolean) : Dialog
+    data class DeleteConfirmation(val canDeleteForEveryone: Boolean, val isNoteToSelf: Boolean, val attachmentId: AttachmentId? = null) : Dialog
+
+    data class RemoveAttachmentConfirmation(val attachmentId: AttachmentId) : Dialog
+
+    data object RemovingAttachment : Dialog
 
     data object SaveOffloadedMedia : Dialog
   }

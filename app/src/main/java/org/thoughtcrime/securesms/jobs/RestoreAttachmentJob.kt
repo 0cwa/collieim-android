@@ -47,6 +47,7 @@ import org.thoughtcrime.securesms.jobmanager.impl.DiskSpaceNotLowConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.RestoreAttachmentConstraint
 import org.thoughtcrime.securesms.jobmanager.impl.StickersNotDownloadingConstraint
+import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec
 import org.thoughtcrime.securesms.jobs.protos.RestoreAttachmentJobData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogActivity
@@ -127,6 +128,19 @@ class RestoreAttachmentJob private constructor(
   companion object {
     const val KEY = "RestoreAttachmentJob"
     private val TAG = Log.tag(RestoreAttachmentJob::class.java)
+
+    /** Match only this attachment, never its shared restore queue. */
+    fun jobSpecMatchesAttachmentId(jobSpec: JobSpec, attachmentId: AttachmentId): Boolean {
+      if (jobSpec.factoryKey != KEY) return false
+      val data = jobSpec.serializedData ?: return false
+      return try {
+        RestoreAttachmentJobData.ADAPTER.decode(data).attachmentId == attachmentId.id
+      } catch (_: IOException) {
+        false
+      } catch (_: IllegalArgumentException) {
+        false
+      }
+    }
 
     /**
      * Create a restore job for the initial large batch of media on a fresh restore.

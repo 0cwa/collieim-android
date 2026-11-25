@@ -63,7 +63,7 @@ class UploadAttachmentToArchiveJob private constructor(
   private val attachmentId: AttachmentId,
   private var uploadSpec: ResumableUpload?,
   private var snapshot: AttachmentUploadSnapshot.Identity?,
-  private val canReuseUpload: Boolean,
+  private var canReuseUpload: Boolean,
   parameters: Parameters
 ) : CoroutineJob(parameters) {
   private var attemptedCandidate: AttachmentTable.UploadCandidate? = null
@@ -167,11 +167,14 @@ class UploadAttachmentToArchiveJob private constructor(
 
     val captured = candidate!!
     if (expectedOwner == null) {
-      // Jobs persisted before owner identities were added are reissued as a new, owner-bound job.
+      // Persist the owner in this job's retry payload before letting it upload again.
+      ownerIdentity = SignalDatabase.attachments.archiveOwnerToken(captured)
+      canReuseUpload = false
+      uploadSpec = null
       finishOwnedProgress()
       releaseSnapshot()
-      AppDependencies.jobManager.add(UploadAttachmentToArchiveJob(attachmentId, canReuseUpload = false))
-      return Result.success()
+      onAdded()
+      return Result.retry(0)
     }
     attemptedCandidate = captured
 

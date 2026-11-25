@@ -14,7 +14,6 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.every
-import io.mockk.slot
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
@@ -219,33 +218,43 @@ class AttachmentTableTest_createRemoteKeyForAttachmentsThatNeedArchiveUpload {
   }
 
   @Test
-  fun legacyUploadPayloadIsReissuedWithCurrentAttachmentOwner() {
+  fun legacyUploadPayloadPersistsOwnerBeforeRetryAndRejectsAReplacementAttachment() {
     val id = insertWithData()
     val owner = SignalDatabase.attachments.archiveOwnerToken(SignalDatabase.attachments.getUploadCandidate(id)!!)
-    val legacy = UploadAttachmentToArchiveJobData(attachmentId = id.id, canReuseUpload = false)
-    val job = UploadAttachmentToArchiveJob.Factory().create(Job.Parameters.Builder().build(), legacy.encode())
-    val enqueued = slot<Job>()
+    val legacy = UploadAttachmentToArchiveJobData(attachmentId = id.id, canReuseUpload = true)
+    val parameters = Job.Parameters.Builder().build()
+    val factory = UploadAttachmentToArchiveJob.Factory()
+    val job = factory.create(parameters, legacy.encode())
 
-    every { AppDependencies.jobManager.add(capture(enqueued)) } returns Unit
+    assertThat(job.run().isRetry).isTrue()
+    val serialized = job.serialize()
+    val updated = UploadAttachmentToArchiveJobData.ADAPTER.decode(serialized)
+    assertThat(updated.ownerIdentity).isEqualTo(owner)
+    assertThat(updated.canReuseUpload).isEqualTo(false)
 
-    assertThat(job.run().isSuccess).isTrue()
-    verify(exactly = 1) { AppDependencies.jobManager.add(any<UploadAttachmentToArchiveJob>()) }
-    assertThat(UploadAttachmentToArchiveJobData.ADAPTER.decode(enqueued.captured.serialize()!!).ownerIdentity).isEqualTo(owner)
+    replaceVersion(id, changePath = true)
+    assertThat(factory.create(parameters, serialized).run().isSuccess).isTrue()
+    assertThat(SignalDatabase.attachments.getAttachment(id)!!.remoteKey).isNull()
+    verify(exactly = 0) { AppDependencies.jobManager.add(any<UploadAttachmentToArchiveJob>()) }
   }
 
   @Test
-  fun legacyCopyPayloadIsReissuedWithCurrentAttachmentOwner() {
+  fun legacyCopyPayloadPersistsOwnerBeforeRetryAndRejectsAReplacementAttachment() {
     val id = insertWithData()
     val owner = SignalDatabase.attachments.archiveOwnerToken(SignalDatabase.attachments.getUploadCandidate(id)!!)
     val legacy = CopyAttachmentToArchiveJobData(attachmentId = id.id)
-    val job = CopyAttachmentToArchiveJob.Factory().create(Job.Parameters.Builder().build(), legacy.encode())
-    val enqueued = slot<Job>()
+    val parameters = Job.Parameters.Builder().build()
+    val factory = CopyAttachmentToArchiveJob.Factory()
+    val job = factory.create(parameters, legacy.encode())
 
-    every { AppDependencies.jobManager.add(capture(enqueued)) } returns Unit
+    assertThat(job.run().isRetry).isTrue()
+    val serialized = job.serialize()
+    assertThat(CopyAttachmentToArchiveJobData.ADAPTER.decode(serialized).ownerIdentity).isEqualTo(owner)
 
-    assertThat(job.run().isSuccess).isTrue()
-    verify(exactly = 1) { AppDependencies.jobManager.add(any<CopyAttachmentToArchiveJob>()) }
-    assertThat(CopyAttachmentToArchiveJobData.ADAPTER.decode(enqueued.captured.serialize()!!).ownerIdentity).isEqualTo(owner)
+    replaceVersion(id, changePath = false)
+    assertThat(factory.create(parameters, serialized).run().isSuccess).isTrue()
+    assertThat(SignalDatabase.attachments.getAttachment(id)!!.remoteKey).isNull()
+    verify(exactly = 0) { AppDependencies.jobManager.add(any<CopyAttachmentToArchiveJob>()) }
   }
 
   @Test

@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
  */
 class CopyAttachmentToArchiveJob private constructor(
   private val attachmentId: AttachmentId,
-  private val progressToken: String?,
+  private var progressToken: String?,
   private var ownerIdentity: String?,
   parameters: Parameters
 ) : CoroutineJob(parameters) {
@@ -117,10 +117,12 @@ class CopyAttachmentToArchiveJob private constructor(
     }
 
     if (expectedOwner == null) {
-      // Reissue old persisted work once with an owner captured before serialization.
+      // Persist the owner in this job's retry payload before letting it copy again.
+      ownerIdentity = SignalDatabase.attachments.archiveOwnerToken(captured!!)
       progressToken?.let { ArchiveUploadProgress.onAttachmentFinishedIfOwned(attachmentId, it) }
-      AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachmentId, null, SignalDatabase.attachments.archiveOwnerToken(captured!!)))
-      return Result.success()
+      progressToken = null
+      onAdded()
+      return Result.retry(0)
     }
 
     attemptedCandidate = captured

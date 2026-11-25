@@ -32,6 +32,11 @@ object CollieSettingsTestTags {
   const val SCROLLER = "collie-settings-scroller"
   const val ROW_APP_UPDATES = "collie-app-updates"
   const val ROW_GROUP_PRIVACY = "collie-group-privacy"
+  const val SECTION_GROUP_PRIVACY = "collie-group-privacy-section"
+  const val SECTION_HARDENING = "collie-hardening-section"
+  const val SECTION_LABS = "collie-labs-section"
+  const val ROW_RECOVERY_PIN_GUARD = "collie-recovery-pin-guard"
+  const val ROW_PROTECT_BACKUP_KEY = "collie-protect-backup-key"
   const val ROW_STORY_ARCHIVE = "collie-story-archive"
   const val ROW_BETTER_SEARCH = "collie-better-search"
   const val ROW_STARRED_MESSAGES = "collie-starred-messages"
@@ -44,9 +49,14 @@ fun CollieSettingsScreen(
   onEvent: (LabsSettingsEvent) -> Unit,
   modifier: Modifier = Modifier,
   showAppUpdates: Boolean = false,
-  onAppUpdatesClick: () -> Unit = {},
   showGroupPrivacy: Boolean = false,
-  onGroupPrivacyClicked: () -> Unit = {}
+  showHardening: Boolean = false,
+  onAppUpdatesClick: () -> Unit = {},
+  onGroupPrivacyClicked: () -> Unit = {},
+  recoveryPinGuardEnabled: Boolean = false,
+  onRecoveryPinGuardChanged: (Boolean) -> Unit = {},
+  protectBackupKey: Boolean = false,
+  onProtectBackupKeyChanged: (Boolean) -> Unit = {}
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.CollieSettings__title),
@@ -73,7 +83,10 @@ fun CollieSettingsScreen(
 
       if (showGroupPrivacy) {
         item {
-          Texts.SectionHeader(text = stringResource(R.string.CollieSettings__privacy))
+          Texts.SectionHeader(
+            text = stringResource(R.string.CollieSettings__privacy),
+            modifier = Modifier.testTag(CollieSettingsTestTags.SECTION_GROUP_PRIVACY)
+          )
         }
 
         item {
@@ -86,8 +99,40 @@ fun CollieSettingsScreen(
         }
       }
 
+      if (showHardening) {
+        item {
+          Texts.SectionHeader(
+            text = stringResource(R.string.CollieSettings__hardening),
+            modifier = Modifier.testTag(CollieSettingsTestTags.SECTION_HARDENING)
+          )
+        }
+
+        item {
+          Rows.ToggleRow(
+            checked = protectBackupKey,
+            text = stringResource(R.string.CollieSettings__protect_backup_key),
+            label = stringResource(R.string.CollieSettings__protect_backup_key_description),
+            onCheckChanged = onProtectBackupKeyChanged,
+            modifier = Modifier.testTag(CollieSettingsTestTags.ROW_PROTECT_BACKUP_KEY)
+          )
+        }
+
+        item {
+          Rows.ToggleRow(
+            checked = recoveryPinGuardEnabled,
+            text = stringResource(R.string.CollieSettings__recovery_pin_guard),
+            label = stringResource(R.string.CollieSettings__recovery_pin_guard_description),
+            onCheckChanged = onRecoveryPinGuardChanged,
+            modifier = Modifier.testTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD)
+          )
+        }
+      }
+
       item {
-        Texts.SectionHeader(text = stringResource(R.string.CollieSettings__labs))
+        Texts.SectionHeader(
+          text = stringResource(R.string.CollieSettings__labs),
+          modifier = Modifier.testTag(CollieSettingsTestTags.SECTION_LABS)
+        )
         Text(
           text = stringResource(R.string.CollieSettings__labs_description),
           style = MaterialTheme.typography.bodyMedium,

@@ -12,6 +12,9 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
@@ -163,6 +166,129 @@ class AttachmentTableTest_createRemoteKeyForAttachmentsThatNeedArchiveUpload {
 
     // Verify attachment still has remote key
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)?.remoteKey).isNotNull()
+  }
+
+  @Test
+  fun whenAnotherUploadSetsKeyAfterSelection_preservesItsRemoteIdentityAndDoesNotCountWrite() {
+    val id = insertWithData()
+    val establishedKey = Base64.encodeWithPadding(ByteArray(64) { 7 })
+    val digest = byteArrayOf(3, 2, 1)
+    afterSelection("Missing key. Assigning new one.", {
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to establishedKey,
+          AttachmentTable.REMOTE_LOCATION to "completed-upload",
+          AttachmentTable.REMOTE_DIGEST to digest
+        )
+        .where("${AttachmentTable.ID} = ?", id.id).run()
+    }) {
+      val result = SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload()
+      assertThat(result.totalCount).isEqualTo(0)
+      assertThat(result.notQuoteOrStickerDupeNotFoundCount).isEqualTo(0)
+    }
+    val row = SignalDatabase.attachments.getAttachment(id)!!
+    assertThat(row.remoteKey).isEqualTo(establishedKey)
+    assertThat(row.remoteLocation).isEqualTo("completed-upload")
+    assertThat(row.remoteDigest.contentEquals(digest)).isTrue()
+  }
+
+  @Test
+  fun whenBulkDonorTargetChangesFileAfterSelection_doesNotAdoptRemoteIdentity() {
+    assertBulkDonorVersionChangeIsRejected(changePath = true)
+  }
+
+  @Test
+  fun whenBulkDonorTargetChangesRandomAfterSelection_doesNotAdoptRemoteIdentity() {
+    assertBulkDonorVersionChangeIsRejected(changePath = false)
+  }
+
+  @Test
+  fun whenBulkGeneratedKeyTargetChangesVersionAfterSelection_doesNotCountWrite() {
+    val id = insertWithData()
+    afterSelection("Missing key. Assigning new one.", {
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(AttachmentTable.DATA_RANDOM to byteArrayOf(5, 4, 3))
+        .where("${AttachmentTable.ID} = ?", id.id).run()
+    }) {
+      assertThat(SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload().totalCount).isEqualTo(0)
+    }
+    assertThat(SignalDatabase.attachments.getAttachment(id)!!.remoteKey).isNull()
+  }
+
+  @Test
+  fun whenDirectKeyHelperTargetChangesVersionAfterSelection_rejectsEveryAdoptionBranch() {
+    for (donor in listOf("full", "key-only", "none")) {
+      for (changePath in listOf(true, false)) {
+        val path = "/shared/${UUID.randomUUID()}"
+        if (donor != "none") {
+          insertAttachmentDirectly(
+            path, AttachmentTable.TRANSFER_PROGRESS_DONE, AttachmentTable.ArchiveTransferState.FINISHED.value,
+            Base64.encodeWithPadding(ByteArray(64) { 8 }),
+            remoteLocation = if (donor == "full") "donor-location" else null,
+            remoteDigest = if (donor == "full") byteArrayOf(1, 2, 3) else null
+          )
+        }
+        val id = insertWithData(path)
+        val message = when (donor) {
+          "full" -> "Found duplicate with full remote data."
+          "key-only" -> "Found duplicate with key only."
+          else -> "Missing key. Assigning new one."
+        }
+        afterSelection(message, { replaceVersion(id, changePath) }) {
+          SignalDatabase.attachments.createRemoteKeyIfNecessary(id)
+        }
+        val row = SignalDatabase.attachments.getAttachment(id)!!
+        assertThat(row.remoteKey).isNull()
+        assertThat(row.remoteLocation).isNull()
+        assertThat(row.remoteDigest).isNull()
+      }
+    }
+  }
+
+  private fun assertBulkDonorVersionChangeIsRejected(changePath: Boolean) {
+    val path = "/shared/${UUID.randomUUID()}"
+    insertAttachmentDirectly(
+      path, AttachmentTable.TRANSFER_PROGRESS_DONE, AttachmentTable.ArchiveTransferState.FINISHED.value,
+      Base64.encodeWithPadding(ByteArray(64) { 9 }), remoteLocation = "donor-location", remoteDigest = byteArrayOf(2, 3, 4)
+    )
+    val id = insertWithData(path)
+    afterSelection("Missing key but found same data file", { replaceVersion(id, changePath) }) {
+      val result = SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload()
+      assertThat(result.totalCount).isEqualTo(0)
+      assertThat(result.notQuoteOrStickerDupeFoundCount).isEqualTo(0)
+    }
+    val row = SignalDatabase.attachments.getAttachment(id)!!
+    assertThat(row.remoteKey).isNull()
+    assertThat(row.remoteLocation).isNull()
+    assertThat(row.remoteDigest).isNull()
+  }
+
+  private fun replaceVersion(id: AttachmentId, changePath: Boolean) {
+    val values = ContentValues().apply {
+      if (changePath) put(AttachmentTable.DATA_FILE, "/replacement/${UUID.randomUUID()}")
+      else put(AttachmentTable.DATA_RANDOM, byteArrayOf(4, 5, 6))
+    }
+    SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME).values(values)
+      .where("${AttachmentTable.ID} = ?", id.id).run()
+  }
+
+  private fun afterSelection(message: String, replacement: () -> Unit, action: () -> Unit) {
+    // Use the existing pre-write diagnostic to reproduce a writer arriving after the initial read.
+    var replaced = false
+    mockkStatic(Log::class)
+    try {
+      every { Log.w(any<String>(), match<String> { it.contains(message) }) } answers {
+        if (!replaced) {
+          replaced = true
+          replacement()
+        }
+        Unit
+      }
+      action()
+      assertThat(replaced).isTrue()
+    } finally {
+      unmockkStatic(Log::class)
+    }
   }
 
   @Test

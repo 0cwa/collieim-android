@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="CollieSettings__title" translatable="false">Collie</string>
+    <string name="CollieSettings__hardening">Hardening</string>
+    <string name="CollieSettings__protect_backup_key">Protect backup recovery key</string>
+    <string name="CollieSettings__protect_backup_key_description">Require phone authentication to view or change the recovery key used by encrypted backups.</string>
+    <string name="CollieSettings__recovery_pin_guard">Require PIN for recovery changes</string>
+    <string name="CollieSettings__recovery_pin_guard_description">Require your current PIN to change or disable it in this app, and to turn this setting on or off. Remember your PIN: Forgot PIN cannot bypass this check. Disabling the PIN also turns off this setting. This protects only this app; copied recovery credentials can still be used directly with the service.</string>
     <string name="CollieSettings__labs">Labs</string>
     <string name="CollieSettings__labs_description">Try experimental features from Signal. These features may change as they are developed.</string>
     <string name="CollieSettings__story_archive">Story Archive</string>

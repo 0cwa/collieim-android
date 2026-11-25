@@ -23,6 +23,7 @@ import org.signal.core.ui.navigation.ResultEffect
 import org.thoughtcrime.securesms.components.settings.app.backups.remote.BackupKeyRotated
 import org.thoughtcrime.securesms.lock.v2.CreateSvrPinActivity
 import org.thoughtcrime.securesms.pin.PinOptOutDialog
+import org.thoughtcrime.securesms.pin.RecoveryPinGuard
 
 /**
  * The advanced PIN settings, wired to their view model and to the PIN and opt-out flows they open. A
@@ -42,7 +43,7 @@ fun AdvancedPinSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) ->
   }
 
   ResultEffect<BackupKeyRotated> {
-    viewModel.onEvent(AdvancedPinSettingsEvent.BackupKeyRotated)
+    RecoveryPinGuard.ifEnabled(context) { viewModel.onEvent(AdvancedPinSettingsEvent.BackupKeyRotated) }
   }
 
   CollectActions(viewModel.actions) { action ->
@@ -56,6 +57,12 @@ fun AdvancedPinSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) ->
 
   AdvancedPinSettingsScreen(
     state = state,
-    onEvent = viewModel::onEvent
+    onEvent = { event ->
+      if (event == AdvancedPinSettingsEvent.RotateBackupKeyConfirmed) {
+        RecoveryPinGuard.ifEnabled(context) { viewModel.onEvent(event) }
+      } else {
+        viewModel.onEvent(event)
+      }
+    }
   )
 }

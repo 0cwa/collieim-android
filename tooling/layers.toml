@@ -167,6 +167,10 @@ discovery_ref = "refs/tags/v8.36.0.0-JW"
 kind = "feature"
 about = "Name collision warnings"
 
+[layers.message-rendering]
+kind = "feature"
+about = "Conversation message body rendering and truncation"
+
 [layers.theme-propagation]
 kind = "feature"
 about = "Theme propagation across screens"

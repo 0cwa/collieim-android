@@ -1,7 +1,9 @@
 <resources>
   <string name="PairingV1__scan_instructions">Scan a CollieSocket pairing QR code or a MollySocket server QR code.</string>
   <string name="PairingV1__consent_title">Pair with “%1$s”?</string>
-  <string name="PairingV1__consent_message">%1$s\nDistributor: %2$s\n\nLinks a notification relay to your Signal account. It cannot read your messages.</string>
+  <string name="PairingV1__consent_message">%1$s\nDistributor: %2$s\n%3$s\n\nLinks a notification relay to your Signal account. It cannot read your messages.</string>
+  <string name="PairingV1__submission_destination">Encrypted request will be sent to: %1$s</string>
+  <string name="PairingV1__manual_submission">No automatic upload; share or save the encrypted request yourself.</string>
   <string name="PairingV1__consent_confirm">Pair</string>
   <string name="PairingV1__push_server">Push server: %1$s</string>
   <string name="PairingV1__distributor_server">Using your distributor’s server (%1$s)</string>

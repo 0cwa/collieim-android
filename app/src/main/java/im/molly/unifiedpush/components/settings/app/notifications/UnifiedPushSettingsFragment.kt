@@ -229,9 +229,12 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
       origin != null -> getString(R.string.PairingV1__distributor_server, origin)
       else -> getString(R.string.PairingV1__distributor_server_unknown)
     }
+    val submission = scan.submitUrl?.let {
+      getString(R.string.PairingV1__submission_destination, it.toString())
+    } ?: getString(R.string.PairingV1__manual_submission)
     MaterialAlertDialogBuilder(requireContext())
       .setTitle(getString(R.string.PairingV1__consent_title, offer.hostLabel))
-      .setMessage(getString(R.string.PairingV1__consent_message, provider, distributor.name))
+      .setMessage(getString(R.string.PairingV1__consent_message, provider, distributor.name, submission))
       .setNegativeButton(android.R.string.cancel, null)
       .setPositiveButton(R.string.PairingV1__consent_confirm) { _, _ ->
         viewModel.pair(scan, disclosure, distributor.applicationId, offer.providerOrigin ?: origin)

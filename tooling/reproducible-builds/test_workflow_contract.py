@@ -48,6 +48,26 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("default: stable", self.workflow)
         self.assertIn("inputs.edition || 'stable'", self.workflow)
 
+    def test_only_exact_direct_beta_dispatch_opts_into_strict_preparation(self):
+        gates = (
+            "github.event_name == 'workflow_dispatch'",
+            "inputs.edition == 'beta'",
+            "github.repository == '0cwa/collieim-android'",
+            "github.ref == 'refs/heads/main'",
+            "inputs.ref == github.sha",
+            "github.workflow_ref == job.workflow_ref",
+        )
+        prefix = "COLLIE_REQUIRE_RELEASE_PREP: "
+        expressions = [line.removeprefix(prefix) for raw in self.workflow.splitlines()
+                       if (line := raw.strip()).startswith(prefix)]
+        self.assertEqual(expressions, ["${{ " + " && ".join(gates) + " && '1' || '0' }}"])
+        self.assertNotIn("COLLIE_DEVELOPMENT_BASE", self.workflow)
+
+    def test_release_preparation_tests_run_only_for_pull_requests(self):
+        self.assertIn("test-preparation:\n    name: Test release preparation\n    if: github.event_name == 'pull_request'", self.workflow)
+        self.assertIn("python3 -m unittest discover -s tooling/collie-log -p 'test_*.py'", self.workflow)
+        self.assertIn("python3 -m unittest discover -s tooling/reproducible-builds -p 'test_*.py'", self.workflow)
+
 
 if __name__ == '__main__':
     unittest.main()

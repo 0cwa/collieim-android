@@ -7,6 +7,8 @@ on:
   pull_request:
     paths:
       - tooling/reproducible-builds/**
+      - tooling/collie-log/stamp.py
+      - tooling/collie-log/test_*.py
       - .github/workflows/build-release.yml
   workflow_dispatch:
     inputs:
@@ -66,6 +68,8 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: ./.github/actions/disk-cleanup
       - name: Build the candidate
+        env:
+          COLLIE_REQUIRE_RELEASE_PREP: ${{ github.event_name == 'workflow_dispatch' && inputs.edition == 'beta' && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/main' && inputs.ref == github.sha && github.workflow_ref == job.workflow_ref && '1' || '0' }}
         run: tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"
       - name: Prepare Beta artifact identity
         if: ${{ matrix.edition == 'beta' }}
@@ -84,6 +88,19 @@ jobs:
           path: ${{ runner.temp }}/out/
           retention-days: 14
           if-no-files-found: error
+
+  test-preparation:
+    name: Test release preparation
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test release preparation and the build recipe
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/collie-log -p 'test_*.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/reproducible-builds -p 'test_*.py'
 
   determinism:
     name: Both ${{ matrix.edition }} builds are identical

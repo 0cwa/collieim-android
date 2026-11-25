@@ -341,7 +341,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       }
 
       clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_push),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_push, DSLSettingsText.ItalicModifier),
         summary = DSLSettingsText.from(getPushTestSummary(state)),
         isEnabled = !state.pushTestRunning,
         onClick = { viewModel.testPush() },
@@ -349,7 +349,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
 
       if (state.controlStateCorrupt) {
         clickPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery),
+          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery, DSLSettingsText.ItalicModifier),
           summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery_summary),
           onClick = { showControlStateRecoveryDialog() },
         )
@@ -357,14 +357,14 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
 
       if (!state.controlStateCorrupt && state.pendingExportCount > 0) {
         clickPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__pending_exports),
+          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__pending_exports, DSLSettingsText.ItalicModifier),
           summary = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__pending_exports_summary, state.pendingExportCount)),
           onClick = { showForgetIntentDialog(state) },
         )
       }
 
       clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment, DSLSettingsText.ItalicModifier),
         summary = DSLSettingsText.from(
           if (state.controlStateCorrupt) R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
           else R.string.UnifiedPushSettingsFragment__export_enrollment_summary
@@ -376,12 +376,12 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       dividerPref()
 
       textPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_title),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_title, DSLSettingsText.ItalicModifier),
         summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_summary),
       )
 
       clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_title),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_title, DSLSettingsText.ItalicModifier),
         summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_summary),
         onClick = { showRemoveRelayAccessDialog() },
       )

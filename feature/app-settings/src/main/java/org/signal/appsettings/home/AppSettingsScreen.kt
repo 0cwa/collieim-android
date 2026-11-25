@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -264,7 +265,7 @@ fun AppSettingsScreen(
           Rows.TextRow(
             text = AnnotatedString(
               text = stringResource(R.string.CollieSettings__title),
-              spanStyle = SpanStyle(fontWeight = FontWeight.Bold)
+              spanStyle = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
             ),
             icon = SignalIcons.Settings.painter,
             onClick = { onEvent(AppSettingsEvent.CollieClicked) },

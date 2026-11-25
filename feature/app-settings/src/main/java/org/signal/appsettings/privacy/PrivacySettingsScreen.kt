@@ -22,6 +22,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.compose.Dividers
@@ -393,8 +395,8 @@ private fun LazyListScope.networkSection(
 
   item {
     Rows.TextRow(
-      text = stringResource(R.string.preferences_network__check_connection),
-      label = state.networkConnectionStatus.message(),
+      text = stringResource(R.string.preferences_network__check_connection).asCollieSettingTitle(),
+      label = AnnotatedString(state.networkConnectionStatus.message()),
       enabled = state.networkConnectionStatus !is PrivacySettingsState.NetworkConnectionStatus.Checking,
       onClick = { onEvent(PrivacySettingsEvent.NetworkCheckConnectionClicked) },
       modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_NETWORK_CHECK_CONNECTION)

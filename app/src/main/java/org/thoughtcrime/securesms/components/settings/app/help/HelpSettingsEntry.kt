@@ -23,6 +23,7 @@ import org.signal.core.ui.compose.CollectActions
 import org.signal.core.util.Util
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.CommunicationActions
 
@@ -69,6 +70,7 @@ fun HelpSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit) 
 
   HelpSettingsScreen(
     state = state,
-    onEvent = viewModel::onEvent
+    onEvent = viewModel::onEvent,
+    showAppUpdatesRow = !CollieFlags.appUpdatesInCollieSettings
   )
 }

@@ -30,6 +30,7 @@ import org.signal.core.ui.compose.horizontalGutters
 @VisibleForTesting
 object CollieSettingsTestTags {
   const val SCROLLER = "collie-settings-scroller"
+  const val ROW_APP_UPDATES = "collie-app-updates"
   const val ROW_STORY_ARCHIVE = "collie-story-archive"
   const val ROW_BETTER_SEARCH = "collie-better-search"
   const val ROW_STARRED_MESSAGES = "collie-starred-messages"
@@ -40,7 +41,9 @@ object CollieSettingsTestTags {
 fun CollieSettingsScreen(
   state: LabsSettingsState,
   onEvent: (LabsSettingsEvent) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  showAppUpdates: Boolean = false,
+  onAppUpdatesClick: () -> Unit = {}
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.CollieSettings__title),
@@ -54,6 +57,17 @@ fun CollieSettingsScreen(
       contentPadding = contentPadding,
       modifier = Modifier.testTag(CollieSettingsTestTags.SCROLLER)
     ) {
+      if (showAppUpdates) {
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.preferences_app_updates__title),
+            icon = SignalIcons.Calendar.painter,
+            onClick = onAppUpdatesClick,
+            modifier = Modifier.testTag(CollieSettingsTestTags.ROW_APP_UPDATES)
+          )
+        }
+      }
+
       item {
         Texts.SectionHeader(text = stringResource(R.string.CollieSettings__labs))
         Text(

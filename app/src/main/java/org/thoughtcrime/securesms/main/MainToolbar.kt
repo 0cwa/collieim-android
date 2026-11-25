@@ -84,6 +84,9 @@ import org.thoughtcrime.securesms.components.compose.ActionModeTopBar
 import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageSmall
 import org.thoughtcrime.securesms.conversationlist.model.ConversationFilter
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.flags.CollieFlags
+import org.thoughtcrime.securesms.main.setup.MainToolbarTitle
+import org.thoughtcrime.securesms.main.setup.StatusLine
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.rememberRecipientField
 import org.signal.core.ui.R as CoreUiR
@@ -96,6 +99,9 @@ interface MainToolbarCallback {
   fun onClearUnreadChatsFilterClick()
   fun onOpenArchiveClick()
   fun onSettingsClick()
+  fun onStatusLineClick()
+  fun onFinishSetupClick()
+  fun onWhatsNewClick()
   fun onNotificationProfileClick()
   fun onProxyClick()
   fun onSearchClick()
@@ -120,6 +126,9 @@ interface MainToolbarCallback {
     override fun onClearUnreadChatsFilterClick() = Unit
     override fun onOpenArchiveClick() = Unit
     override fun onSettingsClick() = Unit
+    override fun onStatusLineClick() = Unit
+    override fun onFinishSetupClick() = Unit
+    override fun onWhatsNewClick() = Unit
     override fun onNotificationProfileClick() = Unit
     override fun onProxyClick() = Unit
     override fun onSearchClick() = Unit
@@ -178,7 +187,9 @@ data class MainToolbarState(
   @StringRes val searchHint: Int = R.string.SearchToolbar_search,
   val searchQuery: String = "",
   val hasActiveSearchFilter: Boolean = false,
-  val actionModeCount: Int = 0
+  val actionModeCount: Int = 0,
+  val statusLine: StatusLine = StatusLine.None,
+  val hasSetupItems: Boolean = false
 ) {
   enum class ProxyState(@DrawableRes val icon: Int) {
     NONE(-1),
@@ -432,7 +443,11 @@ private fun PrimaryToolbar(
       }
     },
     title = {
-      Text(
+      if (CollieFlags.setupChecklist) MainToolbarTitle(
+        title = stringResource(R.string.app_name),
+        statusLine = if (state.destination == MainListRoute.Chats) state.statusLine else StatusLine.None,
+        onStatusLineClick = callback::onStatusLineClick
+      ) else Text(
         text = stringResource(R.string.app_name)
       )
     },
@@ -484,6 +499,7 @@ private fun PrimaryToolbar(
       }
     }
   )
+
 }
 
 @Composable
@@ -744,6 +760,22 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
       onOptionSelected()
     }
   )
+
+  if (CollieFlags.setupChecklist && state.hasSetupItems) {
+    DropdownMenus.Item(
+      leadingIconResId = CoreUiR.drawable.symbol_check_circle_24,
+      text = { Text(text = stringResource(R.string.CollieMenu__finish_setup)) },
+      onClick = { callback.onFinishSetupClick(); onOptionSelected() }
+    )
+  }
+
+  if (CollieFlags.setupChecklist) {
+    DropdownMenus.Item(
+      leadingIconResId = CoreUiR.drawable.symbol_tada_24,
+      text = { Text(text = stringResource(R.string.CollieMenu__whats_new)) },
+      onClick = { callback.onWhatsNewClick(); onOptionSelected() }
+    )
+  }
 
   DropdownMenus.Item(
     leadingIconResId = R.drawable.symbol_archive_24,

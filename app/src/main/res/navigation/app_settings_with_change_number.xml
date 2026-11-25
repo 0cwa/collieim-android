@@ -644,6 +644,11 @@
             android:defaultValue="0"
             app:argType="integer" />
 
+        <argument
+            android:name="focus_push_notifications"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
     </fragment>
 
     <!-- region Privacy -->
@@ -857,6 +862,26 @@
     <action
         android:id="@+id/action_direct_to_notificationsSettingsFragment"
         app:destination="@id/notificationsSettingsFragment"
+        app:enterAnim="@anim/fragment_open_enter"
+        app:exitAnim="@anim/fragment_open_exit"
+        app:popEnterAnim="@anim/fragment_close_enter"
+        app:popExitAnim="@anim/fragment_close_exit" />
+
+    <action
+        android:id="@+id/action_direct_to_appUpdatesSettingsFragment"
+        app:destination="@id/appUpdatesFragment"
+        app:popUpTo="@id/appSettingsFragment"
+        app:popUpToInclusive="true"
+        app:enterAnim="@anim/fragment_open_enter"
+        app:exitAnim="@anim/fragment_open_exit"
+        app:popEnterAnim="@anim/fragment_close_enter"
+        app:popExitAnim="@anim/fragment_close_exit" />
+
+    <action
+        android:id="@+id/action_direct_to_unifiedPushFragment"
+        app:destination="@id/notificationUnifiedPushFragment"
+        app:popUpTo="@id/appSettingsFragment"
+        app:popUpToInclusive="true"
         app:enterAnim="@anim/fragment_open_enter"
         app:exitAnim="@anim/fragment_open_exit"
         app:popEnterAnim="@anim/fragment_close_enter"

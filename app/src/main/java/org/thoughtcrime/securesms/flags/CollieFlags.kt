@@ -12,6 +12,9 @@ object CollieFlags {
   val appUpdatesInCollieSettings: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
 
+  val setupChecklist: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
+
   val projectLog: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
 }

@@ -239,14 +239,12 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
             val remaps = RemappedRecords.getInstance().buildRemapDescription(groupRecord.get().members)
             Log.w(TAG, "Found a group with remapped recipients in it's membership list! Updating the list. GroupId: $groupId, Remaps: $remaps", true)
 
-            val oldToNew: List<Pair<RecipientId, RecipientId>> = groupRecord.get().members
-              .map { it to RemappedRecords.getInstance().getRecipient(it).orElse(null) }
-              .filterNot { (old, new) -> new == null || old == new }
+            writableDatabase.withinTransaction {
+              val oldToNew = groupRecord.get().members
+                .map { it to RemappedRecords.getInstance().getRecipient(it).orElse(null) }
+                .filterNot { (old, new) -> new == null || old == new }
 
-            if (oldToNew.isNotEmpty()) {
-              writableDatabase.withinTransaction {
-                oldToNew.forEach { remapRecipient(it.first, it.second) }
-              }
+              oldToNew.forEach { (old, new) -> remapRecipient(old, new) }
             }
 
             readableDatabase.query(select, query.whereArgs).use { refreshedCursor ->

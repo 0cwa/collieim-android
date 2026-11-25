@@ -17,6 +17,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase.Companion.attachments
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.messages
 import org.thoughtcrime.securesms.database.SignalDatabase.Companion.threads
 import org.thoughtcrime.securesms.database.model.MessageRecord
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.impl.NotInCallConstraint
 import org.thoughtcrime.securesms.jobs.MultiDeviceDeleteSyncJob.Companion.enqueueAttachmentDelete
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -181,6 +182,10 @@ object AttachmentUtil {
       val message = messages.getMessageRecord(attachment.mmsId)
       val fromRecipient = message.fromRecipient
       val toRecipient = threads.getRecipientForThreadId(message.threadId)
+
+      if (toRecipient != null && GroupAdmission.isHeld(toRecipient)) {
+        return false
+      }
 
       if (toRecipient != null && toRecipient.isGroup) {
         toRecipient.isProfileSharing || isTrustedIndividual(fromRecipient, message)

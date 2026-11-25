@@ -18,9 +18,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isLessThanOrEqualTo
 import assertk.assertions.isTrue
 import org.junit.Rule
 import org.junit.Test
@@ -118,6 +120,54 @@ class CollieSettingsScreenTest {
   }
 
   @Test
+  fun `group privacy is hidden when feature entry point is disabled`() {
+    composeTestRule.setContent {
+      CollieSettingsScreen(state = LabsSettingsState(), onEvent = {}, showGroupPrivacy = false)
+    }
+
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertDoesNotExist()
+  }
+
+  @Test
+  fun `group privacy appears after app updates and before Hardening and Labs when enabled`() {
+    var opened = false
+    composeTestRule.setContent {
+      CollieSettingsScreen(
+        state = LabsSettingsState(),
+        onEvent = {},
+        showAppUpdates = true,
+        showGroupPrivacy = true,
+        showHardening = true,
+        onGroupPrivacyClicked = { opened = true }
+      )
+    }
+
+    scrollTo(CollieSettingsTestTags.ROW_APP_UPDATES)
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertIsDisplayed()
+    val updatesScroll = scrollPosition()
+
+    scrollTo(CollieSettingsTestTags.ROW_GROUP_PRIVACY)
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertIsDisplayed()
+    val privacyScroll = scrollPosition()
+
+    scrollTo(CollieSettingsTestTags.SECTION_HARDENING)
+    composeTestRule.onNodeWithText("Hardening").assertIsDisplayed()
+    val hardeningScroll = scrollPosition()
+
+    scrollTo(CollieSettingsTestTags.SECTION_LABS)
+    composeTestRule.onNodeWithText("Labs").assertIsDisplayed()
+    val labsScroll = scrollPosition()
+
+    assertThat(updatesScroll).isLessThanOrEqualTo(privacyScroll)
+    assertThat(privacyScroll).isLessThanOrEqualTo(hardeningScroll)
+    assertThat(hardeningScroll).isLessThanOrEqualTo(labsScroll)
+
+    scrollTo(CollieSettingsTestTags.ROW_GROUP_PRIVACY)
+    composeTestRule.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).performClick()
+    assertThat(opened).isTrue()
+  }
+
+  @Test
   fun `the three public features emit their enable events`() {
     setContent(LabsSettingsState())
 
@@ -198,4 +248,7 @@ class CollieSettingsScreenTest {
     composeTestRule.onNodeWithTag(CollieSettingsTestTags.SCROLLER)
       .performScrollToNode(hasTestTag(testTag))
   }
+
+  private fun scrollPosition(): Float = composeTestRule.onNodeWithTag(CollieSettingsTestTags.SCROLLER)
+    .fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
 }

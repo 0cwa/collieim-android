@@ -38,6 +38,7 @@ import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PartProgressEvent
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobLogger.format
 import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil
@@ -254,6 +255,14 @@ class RestoreAttachmentJob private constructor(
       return
     }
 
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      Log.i(TAG, "Not restoring media for a group awaiting local approval.")
+      SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_RESTORE_OFFLOADED)
+      return
+    }
+
     if (attachment.stickerLocator.isValid()) {
       val locator = attachment.stickerLocator!!
       val stickerRecord = SignalDatabase.stickers.getSticker(locator.packId, locator.stickerId, false)
@@ -340,6 +349,13 @@ class RestoreAttachmentJob private constructor(
     forceTransitTier: Boolean = false,
     forceFallbackArchiveCdn: Boolean = false
   ) {
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_RESTORE_OFFLOADED)
+      return
+    }
+
     val maxReceiveSize: Long = RemoteConfig.maxAttachmentReceiveSizeBytes
     val attachmentFile: File = ArchiveDatabaseExecutor.runBlocking {
       SignalDatabase.attachments.getOrCreateTransferFile(attachmentId)
@@ -377,7 +393,7 @@ class RestoreAttachmentJob private constructor(
         }
 
         override fun shouldCancel(): Boolean {
-          return this@RestoreAttachmentJob.isCanceled
+          return this@RestoreAttachmentJob.isCanceled || (recipient != null && GroupAdmission.isHeld(recipient))
         }
       }
 

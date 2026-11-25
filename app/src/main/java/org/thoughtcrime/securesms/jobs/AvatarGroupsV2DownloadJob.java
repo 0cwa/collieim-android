@@ -5,27 +5,28 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.signal.core.util.ByteUnit;
 import org.signal.core.util.StreamUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey;
 import org.signal.libsignal.zkgroup.groups.GroupSecretParams;
+import org.signal.network.exceptions.NonSuccessfulResponseCodeException;
 import org.thoughtcrime.securesms.conversation.v2.data.AvatarDownloadStateCache;
 import org.thoughtcrime.securesms.database.GroupTable;
-import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.database.SignalDatabase;
+import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
-import org.thoughtcrime.securesms.jobmanager.JsonJobData;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobmanager.Job;
+import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.DataRestoreConstraint;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.signal.core.util.ByteUnit;
 import org.whispersystems.signalservice.api.SignalServiceMessageReceiver;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Operations;
-import org.signal.network.exceptions.NonSuccessfulResponseCodeException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -52,6 +53,10 @@ public final class AvatarGroupsV2DownloadJob extends BaseJob {
 
   public static void enqueueUnblurredAvatar(@NonNull GroupId.V2 groupId) {
     SignalExecutors.BOUNDED.execute(() -> {
+      if (GroupAdmission.isHeld(groupId)) {
+        return;
+      }
+
       GroupRecord groupRecord = SignalDatabase.groups().getGroup(groupId).orElse(null);
 
       if (groupRecord == null || !groupRecord.getHasV2GroupProperties()) {
@@ -134,6 +139,11 @@ public final class AvatarGroupsV2DownloadJob extends BaseJob {
       }
 
       Recipient recipient = Recipient.resolved(record.get().getRecipientId());
+      if (GroupAdmission.isHeld(recipient)) {
+        Log.i(TAG, "Not downloading an avatar for a group awaiting local admission.");
+        return;
+      }
+
       if (recipient.getShouldBlurAvatar() && !force) {
         Log.w(TAG, "Marking group as having an avatar but not downloading because avatar is blurred");
         database.onAvatarUpdated(groupId, true);
@@ -143,6 +153,11 @@ public final class AvatarGroupsV2DownloadJob extends BaseJob {
       Log.i(TAG, "Downloading new avatar for group " + groupId);
       if (force) AvatarDownloadStateCache.set(recipient, AvatarDownloadStateCache.DownloadState.IN_PROGRESS);
       byte[] decryptedAvatar = downloadGroupAvatarBytes(context, record.get().requireV2GroupProperties().getGroupMasterKey(), cdnKey);
+
+      if (GroupAdmission.isHeld(recipient)) {
+        if (force) AvatarDownloadStateCache.set(recipient, AvatarDownloadStateCache.DownloadState.FAILED);
+        return;
+      }
 
       AvatarHelper.setAvatar(context, record.get().getRecipientId(), decryptedAvatar != null ? new ByteArrayInputStream(decryptedAvatar) : null);
       database.onAvatarUpdated(groupId, true);

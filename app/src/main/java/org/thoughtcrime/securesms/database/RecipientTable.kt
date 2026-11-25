@@ -87,6 +87,7 @@ import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.groups.GroupId.V1
 import org.thoughtcrime.securesms.groups.GroupId.V2
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor
 import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob
@@ -2271,6 +2272,21 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
   }
 
   fun setProfileSharing(id: RecipientId, enabled: Boolean) {
+    if (enabled) {
+      // Read the group identifier directly. Resolving a Recipient here can populate its cache
+      // partway through a recipient update, before registration and other fields are finalized.
+      val groupId = readableDatabase
+        .select(GROUP_ID)
+        .from(TABLE_NAME)
+        .where("$ID = ?", id)
+        .run()
+        .readToSingleObject { GroupId.parseNullableOrThrow(it.requireString(GROUP_ID)) }
+      if (groupId?.isV2 == true && GroupAdmission.isHeld(groupId.requireV2())) {
+        Log.i(TAG, "Ignoring profile-sharing enablement for a group awaiting local admission.")
+        return
+      }
+    }
+
     val contentValues = ContentValues(1).apply {
       put(PROFILE_SHARING, if (enabled) 1 else 0)
     }
@@ -4794,7 +4810,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
 
       put(GROUP_ID, groupId.toString())
       put(TYPE, RecipientType.GV2.id)
-      put(PROFILE_SHARING, if (groupV2.proto.whitelisted) "1" else "0")
+      put(PROFILE_SHARING, if (groupV2.proto.whitelisted && !GroupAdmission.isHeld(groupId)) "1" else "0")
       put(BLOCKED, if (groupV2.proto.blocked) "1" else "0")
       put(BLOCKED_AT, groupV2.proto.blockedAtTimestamp)
       put(MUTE_UNTIL, groupV2.proto.mutedUntilTimestamp)

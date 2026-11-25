@@ -8,6 +8,8 @@ import org.signal.network.service.SendRequest
 import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil
 import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate
 import org.thoughtcrime.securesms.jobmanager.CoroutineJob
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -120,6 +122,9 @@ class TypingSendJob private constructor(
     val request = SendRequest(OutgoingContent.typing(action, timestamp, groupId), timestamp = timestamp, urgent = false, isOnline = true)
 
     val error = if (groupId != null) {
+      val episode = GroupAdmission.sendEpisode(groupId)
+      if (episode.held) return Result.success()
+      val admission = GroupAdmissionSendGate.EpisodeCancellation(groupId, episode.key(), null)
       val members = SignalDatabase.groups.getGroupMembers(groupId, memberSet = GroupTable.MemberSet.FULL_MEMBERS_EXCLUDING_SELF)
       val targets = RecipientUtil.getEligibleForSending(members)
 
@@ -128,11 +133,17 @@ class TypingSendJob private constructor(
         return Result.success()
       }
 
-      SignalNetwork.messageService.sendGroupMessage(
-        destination = GroupSendDestination.Group(GroupIdentifier(groupId.decodedId)),
-        recipients = AppMessageSendDependencies.toGroupSendRecipients(targets),
-        request = request
-      ).leftOrNull()
+      try {
+        admission.requireCurrent()
+        SignalNetwork.messageService.sendGroupMessage(
+          destination = GroupSendDestination.Group(GroupIdentifier(groupId.decodedId)),
+          recipients = AppMessageSendDependencies.toGroupSendRecipients(targets),
+          request = request,
+          beforeSend = admission::requireCurrent
+        ).leftOrNull()
+      } catch (_: GroupAdmissionSendGate.HeldGroupException) {
+        return Result.success()
+      }
     } else {
       SignalNetwork.messageService.sendMessage(
         serviceId = recipient.requireServiceId(),

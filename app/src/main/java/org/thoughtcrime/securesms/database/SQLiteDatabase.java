@@ -18,14 +18,15 @@ import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.logging.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 
 /**
  * This is a wrapper around {@link net.zetetic.database.sqlcipher.SQLiteDatabase}. There's difficulties
@@ -156,6 +157,30 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
     }
   }
 
+  /**
+   * Like the deduped overload, but combines writes for the same key in registration order.
+   * The combined task is discarded with the transaction on rollback.
+   */
+  public void runPostSuccessfulTransaction(@NonNull String dedupeKey, @NonNull Runnable task, @NonNull BinaryOperator<Runnable> combine) {
+    if (!wrapped.inTransaction()) {
+      task.run();
+      return;
+    }
+
+    Set<Runnable> tasks = getPendingPostSuccessfulTransactionTasks();
+    if (tasks.add(new DedupedRunnable(dedupeKey, task))) {
+      return;
+    }
+
+    for (Runnable pending : tasks) {
+      if (pending instanceof DedupedRunnable && ((DedupedRunnable) pending).key.equals(dedupeKey)) {
+        DedupedRunnable match = (DedupedRunnable) pending;
+        match.runnable = combine.apply(match.runnable, task);
+        return;
+      }
+    }
+  }
+
   private @NonNull Set<Runnable> getPendingPostSuccessfulTransactionTasks() {
     Set<Runnable> tasks = PENDING_POST_SUCCESSFUL_TRANSACTION_TASKS.get();
 
@@ -187,7 +212,7 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
    */
   private static class DedupedRunnable implements Runnable {
     private final String   key;
-    private final Runnable runnable;
+    private Runnable       runnable;
 
     protected DedupedRunnable(@NonNull String key, @NonNull Runnable runnable) {
       this.key      = key;
@@ -328,9 +353,22 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
 
   public void endTransaction() {
     Long holdStartNs = TRANSACTION_HOLD_START_NS.get();
-    trace("endTransaction()", wrapped::endTransaction);
-    traceLockEnd();
-    if (holdStartNs != null && !wrapped.inTransaction()) {
+    try {
+      trace("endTransaction()", wrapped::endTransaction);
+    } catch (RuntimeException e) {
+      if (!wrapped.inTransaction()) {
+        getPendingPostSuccessfulTransactionTasks().clear();
+        getPostSuccessfulTransactionTasks().clear();
+        TRANSACTION_HOLD_START_NS.remove();
+      }
+      throw e;
+    } finally {
+      traceLockEnd();
+    }
+    if (wrapped.inTransaction()) {
+      return;
+    }
+    if (holdStartNs != null) {
       TRANSACTION_HOLD_START_NS.remove();
       long holdMs = (System.nanoTime() - holdStartNs) / 1_000_000L;
       if (holdMs >= IssueReporter.SLOW_WRITE_LOW_PRIORITY_MS) {
@@ -340,10 +378,11 @@ public class SQLiteDatabase implements SupportSQLiteDatabase {
       }
     }
     Set<Runnable> tasks = getPostSuccessfulTransactionTasks();
-    for (Runnable r : new HashSet<>(tasks)) {
+    List<Runnable> committedTasks = new ArrayList<>(tasks);
+    tasks.clear();
+    for (Runnable r : committedTasks) {
       r.run();
     }
-    tasks.clear();
   }
 
   public void setTransactionSuccessful() {

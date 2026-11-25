@@ -31,6 +31,10 @@ import org.signal.core.ui.compose.horizontalGutters
 object CollieSettingsTestTags {
   const val SCROLLER = "collie-settings-scroller"
   const val ROW_APP_UPDATES = "collie-app-updates"
+  const val ROW_GROUP_PRIVACY = "collie-group-privacy"
+  const val SECTION_GROUP_PRIVACY = "collie-group-privacy-section"
+  const val SECTION_HARDENING = "collie-hardening-section"
+  const val SECTION_LABS = "collie-labs-section"
   const val ROW_RECOVERY_PIN_GUARD = "collie-recovery-pin-guard"
   const val ROW_PROTECT_BACKUP_KEY = "collie-protect-backup-key"
   const val ROW_STORY_ARCHIVE = "collie-story-archive"
@@ -45,8 +49,10 @@ fun CollieSettingsScreen(
   onEvent: (LabsSettingsEvent) -> Unit,
   modifier: Modifier = Modifier,
   showAppUpdates: Boolean = false,
+  showGroupPrivacy: Boolean = false,
   showHardening: Boolean = false,
   onAppUpdatesClick: () -> Unit = {},
+  onGroupPrivacyClicked: () -> Unit = {},
   recoveryPinGuardEnabled: Boolean = false,
   onRecoveryPinGuardChanged: (Boolean) -> Unit = {},
   protectBackupKey: Boolean = false,
@@ -75,9 +81,30 @@ fun CollieSettingsScreen(
         }
       }
 
+      if (showGroupPrivacy) {
+        item {
+          Texts.SectionHeader(
+            text = stringResource(R.string.CollieSettings__privacy),
+            modifier = Modifier.testTag(CollieSettingsTestTags.SECTION_GROUP_PRIVACY)
+          )
+        }
+
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.GroupPrivacySettings__title),
+            label = stringResource(R.string.GroupPrivacySettings__summary),
+            onClick = onGroupPrivacyClicked,
+            modifier = Modifier.testTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY)
+          )
+        }
+      }
+
       if (showHardening) {
         item {
-          Texts.SectionHeader(text = stringResource(R.string.CollieSettings__hardening))
+          Texts.SectionHeader(
+            text = stringResource(R.string.CollieSettings__hardening),
+            modifier = Modifier.testTag(CollieSettingsTestTags.SECTION_HARDENING)
+          )
         }
 
         item {
@@ -102,7 +129,10 @@ fun CollieSettingsScreen(
       }
 
       item {
-        Texts.SectionHeader(text = stringResource(R.string.CollieSettings__labs))
+        Texts.SectionHeader(
+          text = stringResource(R.string.CollieSettings__labs),
+          modifier = Modifier.testTag(CollieSettingsTestTags.SECTION_LABS)
+        )
         Text(
           text = stringResource(R.string.CollieSettings__labs_description),
           style = MaterialTheme.typography.bodyMedium,

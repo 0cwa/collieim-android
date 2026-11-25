@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CollieSettings__privacy">Privacy</string>
+    <string name="GroupPrivacySettings__title">Groups</string>
+    <string name="GroupPrivacySettings__summary">Choose whose new group additions need your review on this device.</string>
+    <string name="GroupPrivacySettings__who_can_add">Who can add me without review?</string>
+    <string name="GroupPrivacySettings__signal_default">Existing Signal behavior</string>
+    <string name="GroupPrivacySettings__signal_default_description">Use Signal’s usual checks for people and groups you trust.</string>
+    <string name="GroupPrivacySettings__contacts">Contacts on this device</string>
+    <string name="GroupPrivacySettings__contacts_description">Allow additions from people saved in this device’s contacts. Other additions need your review.</string>
+    <string name="GroupPrivacySettings__selected">Only people I choose</string>
+    <string name="GroupPrivacySettings__selected_description">Allow additions only from the people listed below. Everyone else needs your review.</string>
+    <string name="GroupPrivacySettings__ask">Ask every time</string>
+    <string name="GroupPrivacySettings__ask_description">Review each new group addition before using the group on this device.</string>
+    <string name="GroupPrivacySettings__local_scope">These controls apply only to this Collie installation. They do not prevent someone from adding your account on the service or change what your linked devices do.</string>
+    <string name="GroupPrivacySettings__review_scope">Groups held for review stay held when you change this setting. Open the group to review it. Invitations that already require Accept still need your approval, even from someone you choose.</string>
+    <string name="GroupPrivacySettings__contacts_permission">Contacts access is off. Collie cannot verify who is saved on this device, so new additions will need your review. You can allow contacts access in Android’s app permissions.</string>
+    <string name="GroupPrivacySettings__unknown_actor">If Collie cannot identify who added you, the group needs your review. Choosing someone never overrides blocking.</string>
+    <string name="GroupPrivacySettings__chosen_people">Chosen people</string>
+    <string name="GroupPrivacySettings__choose_people">Choose people</string>
+    <string name="GroupPrivacySettings__choose_people_description">Add registered people you recognize. You can remove them below.</string>
+    <string name="GroupPrivacySettings__empty_list">No people selected. New group additions will need your review.</string>
+    <string name="GroupPrivacySettings__unavailable_person">Unavailable contact</string>
+    <string name="GroupPrivacySettings__contact_details_unavailable">Contact details unavailable</string>
+    <string name="GroupPrivacySettings__person_ineligible">Not currently eligible. Additions from this person still need review.</string>
+    <string name="GroupPrivacySettings__remove_person">Remove %1$s from chosen people</string>
+    <string name="GroupPrivacySettings__loading">Loading group controls…</string>
+    <string name="GroupPrivacySettings__saving">Saving…</string>
+    <string name="GroupPrivacySettings__load_failed">Could not load group controls. Try again.</string>
+    <string name="GroupPrivacySettings__save_failed">Could not save this change. Your previous setting is still shown.</string>
+    <string name="GroupPrivacySettings__retry">Try again</string>
+    <string name="ChooseGroupPeople__description">Choose registered people who may add you without review when “Only people I choose” is selected. This does not send them a message.</string>
+    <string name="ChooseGroupPeople__add">Add people</string>
+    <plurals name="ChooseGroupPeople__selected">
+        <item quantity="one">%1$d person selected</item>
+        <item quantity="other">%1$d people selected</item>
+    </plurals>
+    <string name="ChooseGroupPeople__ineligible">Choose a registered individual with a known Signal identity. Blocked or hidden people, your own account, and groups cannot be added.</string>
+    <string name="ChooseGroupPeople__identity_changed">A selected person’s identity or availability changed. Go back and choose them again. No people were added.</string>
+    <string name="ChooseGroupPeople__save_failed">Could not confirm this change was saved. Go back to reload the list before trying again.</string>
+</resources>

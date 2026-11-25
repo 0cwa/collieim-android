@@ -269,7 +269,7 @@ fun AppSettingsScreen(
             icon = SignalIcons.Settings.painter,
             onClick = { onEvent(AppSettingsEvent.CollieClicked) },
             modifier = Modifier
-              .selectionHighlight(selectedRoute == AppSettingsRoute.Collie)
+              .selectionHighlight(selectedRoute == AppSettingsRoute.Collie || selectedRoute is AppSettingsRoute.CollieRoute)
               .testTag(AppSettingsTestTags.ROW_COLLIE)
           )
         }

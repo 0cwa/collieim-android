@@ -453,7 +453,7 @@ public final class DecryptedGroupUtil_apply_Test {
 
     assertEquals(new DecryptedGroup.Builder()
                      .revision(11)
-                     .members(List.of(member1, member2))
+                     .members(List.of(member1, member2.newBuilder().joinedAtRevision(11).build()))
                      .build(),
                  newGroup);
   }
@@ -800,7 +800,8 @@ public final class DecryptedGroupUtil_apply_Test {
 
     assertEquals(new DecryptedGroup.Builder()
                      .revision(14)
-                     .members(List.of(member(uuid1, profileKey1), admin(uuid2, profileKey2)))
+                     .members(List.of(member(uuid1, profileKey1).newBuilder().joinedAtRevision(14).build(),
+                                      admin(uuid2, profileKey2).newBuilder().joinedAtRevision(14).build()))
                      .requestingMembers(List.of(member3))
                      .build(),
                  newGroup);
@@ -953,7 +954,7 @@ public final class DecryptedGroupUtil_apply_Test {
 
     assertEquals(new DecryptedGroup.Builder()
                      .revision(11)
-                     .members(List.of(member1, member2))
+                     .members(List.of(member1, member2.newBuilder().joinedAtRevision(11).build()))
                      .build(),
                  newGroup);
   }

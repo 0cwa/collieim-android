@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import java.util.stream.Collectors;
 
+import org.signal.core.models.ServiceId.ACI;
 import org.signal.core.util.logging.Log;
 import org.signal.remoteconfig.RemoteConfig;
 import org.signal.ringrtc.CallException;
@@ -18,6 +19,7 @@ import org.thoughtcrime.securesms.components.webrtc.EglBaseWrapper;
 import org.thoughtcrime.securesms.events.CallParticipant;
 import org.thoughtcrime.securesms.events.CallParticipantId;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.ringrtc.RemotePeer;
@@ -25,7 +27,6 @@ import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceState;
 import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceStateBuilder;
 import org.thoughtcrime.securesms.util.NetworkUtil;
 import org.whispersystems.signalservice.api.messages.calls.OfferMessage;
-import org.signal.core.models.ServiceId.ACI;
 
 import java.util.List;
 
@@ -57,6 +58,10 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
   @Override
   protected @NonNull WebRtcServiceState handlePreJoinCall(@NonNull WebRtcServiceState currentState, @NonNull RemotePeer remotePeer) {
     Log.i(tag, "handlePreJoinCall():");
+
+    if (GroupAdmission.isHeld(remotePeer.getRecipient())) {
+      return groupCallFailure(currentState, "Group requires local approval before calling.", null);
+    }
 
     if (currentState.getCallInfoState().getGroupCall() != null) {
       Log.w(tag, "handlePreJoinCall(): Group call already exists, ignoring duplicate pre-join request");
@@ -187,6 +192,10 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
                                                            @NonNull OfferMessage.Type offerType)
   {
     Log.i(tag, "handleOutgoingCall():");
+
+    if (GroupAdmission.isHeld(remotePeer.getRecipient())) {
+      return groupCallFailure(currentState, "Group requires local approval before calling.", null);
+    }
 
     GroupCall groupCall = currentState.getCallInfoState().requireGroupCall();
 

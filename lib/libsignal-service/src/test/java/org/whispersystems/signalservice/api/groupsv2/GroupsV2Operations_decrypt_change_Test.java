@@ -276,13 +276,14 @@ public final class GroupsV2Operations_decrypt_change_Test {
     ProfileKey     profileKey     = newProfileKey();
     GroupCandidate groupCandidate = groupCandidate(newMember, profileKey);
 
-    assertDecryption(groupOperations.createAcceptInviteChange(groupCandidate.getExpiringProfileKeyCredential().get()),
+    assertDecryption(groupOperations.createAcceptInviteChange(groupCandidate.getExpiringProfileKeyCredential().get()).version(7),
                      new DecryptedGroupChange.Builder()
+                         .revision(7)
                          .promotePendingMembers(List.of(new DecryptedMember.Builder()
                                                             .aciBytes(newMember.toByteString())
                                                             .role(Member.Role.DEFAULT)
                                                             .profileKey(ByteString.of(profileKey.serialize()))
-                                                            .joinedAtRevision(-1)
+                                                            .joinedAtRevision(7)
                                                             .build())));
   }
 

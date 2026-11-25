@@ -39,8 +39,10 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
     state = state,
     onEvent = viewModel::onEvent,
     showAppUpdates = CollieFlags.appUpdatesInCollieSettings && AppSettingsRepository.showAppUpdates(),
+    showGroupPrivacy = CollieFlags.groupAdmission,
     showHardening = CollieFlags.hardeningSettings,
     onAppUpdatesClick = { parentEventEmitter.navigateTo(AppSettingsRoute.AppUpdates) },
+    onGroupPrivacyClicked = { parentEventEmitter.navigateTo(AppSettingsRoute.CollieRoute.GroupPrivacy) },
     recoveryPinGuardEnabled = recoveryPinGuardEnabled,
     onRecoveryPinGuardChanged = { desired ->
       RecoveryPinGuard.verify(context) {

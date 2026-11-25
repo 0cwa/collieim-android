@@ -18,6 +18,10 @@ object CollieFlags {
   val projectLog: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
 
+  /** Shows group admission controls in TrailBlazer Beta; saved restrictive policies remain enforced. */
+  val groupAdmission: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
+
   val hardeningSettings: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
 }

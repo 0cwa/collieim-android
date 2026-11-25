@@ -335,6 +335,18 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
       .readToSingleInt(-1)
   }
 
+  /** Reads the stored state and local membership flag without loading or remapping recipient rows. */
+  internal fun getGroupAdmissionState(groupId: GroupId.V2): Pair<DecryptedGroup, Boolean>? {
+    return readableDatabase
+      .select(V2_DECRYPTED_GROUP, IS_MEMBER)
+      .from(TABLE_NAME)
+      .where("$GROUP_ID = ?", groupId)
+      .run()
+      .readToSingleObject { cursor ->
+        cursor.requireBlob(V2_DECRYPTED_GROUP)?.let { DecryptedGroup.ADAPTER.decode(it) to cursor.requireBoolean(IS_MEMBER) }
+      }
+  }
+
   fun isUnknownGroup(groupId: GroupId): Boolean {
     return isUnknownGroup(getGroup(groupId))
   }

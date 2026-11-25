@@ -20,6 +20,7 @@ import org.thoughtcrime.securesms.backup.v2.requireThumbnailMediaName
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobLogger.format
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -118,6 +119,14 @@ class RestoreAttachmentThumbnailJob private constructor(
       return
     }
 
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      Log.i(TAG, "Not restoring a thumbnail for a group awaiting local approval.")
+      SignalDatabase.attachments.setThumbnailRestoreState(attachmentId, AttachmentTable.ThumbnailRestoreState.NEEDS_RESTORE)
+      return
+    }
+
     if (attachment.dataHash == null) {
       Log.w(TAG, "$attachmentId has no plaintext hash! Cannot proceed.")
       return
@@ -128,7 +137,7 @@ class RestoreAttachmentThumbnailJob private constructor(
 
     val progressListener = object : SignalServiceAttachment.ProgressListener {
       override fun onAttachmentProgress(progress: AttachmentTransferProgress) = Unit
-      override fun shouldCancel(): Boolean = this@RestoreAttachmentThumbnailJob.isCanceled
+      override fun shouldCancel(): Boolean = this@RestoreAttachmentThumbnailJob.isCanceled || (recipient != null && GroupAdmission.isHeld(recipient))
     }
 
     val cdnCredentials = runBlocking { SignalNetwork.archiveService.getCdnReadCredentials(ArchiveService.CredentialType.MEDIA, attachment.archiveCdn ?: RemoteConfig.backupFallbackArchiveCdn) }.successOrThrow().headers

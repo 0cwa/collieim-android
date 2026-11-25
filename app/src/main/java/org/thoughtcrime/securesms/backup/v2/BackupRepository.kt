@@ -1243,6 +1243,12 @@ object BackupRepository {
     val stopwatch = Stopwatch("import")
     val eventTimer = EventTimer()
 
+    // Link-and-sync follows local account registration; do not import a different account's archive.
+    if (backupMode.isLinkAndSync && SignalStore.account.aci != selfData.aci) {
+      Log.w(TAG, "[import] Link backup account does not match the current account")
+      return ImportResult.Failure
+    }
+
     val header = frameReader.getHeader()
     if (header == null) {
       Log.e(TAG, "[import] Backup is missing header!")
@@ -1254,21 +1260,28 @@ object BackupRepository {
       return ImportResult.Failure
     }
     SignalStore.backup.hasInvalidBackupVersion = false
+    val mediaRootBackupKey = MediaRootBackupKey(header.mediaRootBackupKey.toByteArray())
     val selfId: RecipientId
 
+    val importDatabase = SignalDatabase.writableDatabase
     var foreignKeysDisabled = false
+    var transactionAttempted = false
+    var transactionAlreadyActive = true
     var transactionStarted = false
     var transactionSuccessful = false
+    var importFailure: Throwable? = null
     try {
       // Removing all the data from the various tables is *very* expensive (i.e. can take *several* minutes) if we don't do some pre-work.
       // SQLite optimizes deletes if there's no foreign keys, triggers, or WHERE clause, so that's the environment we're gonna create.
 
       Log.d(TAG, "[import] Disabling foreign keys...")
-      SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(false)
+      importDatabase.forceForeignKeyConstraintsEnabled(false)
       foreignKeysDisabled = true
 
       Log.d(TAG, "[import] Acquiring transaction...")
-      SignalDatabase.writableDatabase.beginTransaction()
+      transactionAlreadyActive = importDatabase.inTransaction()
+      transactionAttempted = true
+      importDatabase.beginTransaction()
       transactionStarted = true
 
       Log.d(TAG, "[import] Inside transaction.")
@@ -1343,7 +1356,6 @@ object BackupRepository {
       }
 
       RecipientIds.clearCache()
-      SignalDatabase.remappedRecords.clearCache()
       AppDependencies.recipientCache.clear()
       AppDependencies.recipientCache.clearSelf()
       SignalDatabase.threads.clearCache()
@@ -1353,9 +1365,6 @@ object BackupRepository {
       if (cancellationSignal()) {
         return ImportResult.Failure
       }
-
-      val mediaRootBackupKey = MediaRootBackupKey(header.mediaRootBackupKey.toByteArray())
-      SignalStore.backup.mediaRootBackupKey = mediaRootBackupKey
 
       // Add back self after clearing data
       selfId = SignalDatabase.recipients.getAndPossiblyMerge(selfData.aci, selfData.pni, selfData.e164, pniVerified = true, changeSelf = true)
@@ -1500,25 +1509,57 @@ object BackupRepository {
       }
       stopwatch.split("fk-check")
 
-      SignalDatabase.writableDatabase.setTransactionSuccessful()
+      // Reject an imported self belonging to another account before committing destructive SQL.
+      if (SignalDatabase.recipients.getRecord(selfId).aci != selfData.aci) {
+        throw IllegalStateException("Imported backup self does not match the requested account")
+      }
+      importDatabase.setTransactionSuccessful()
       transactionSuccessful = true
+    } catch (failure: Throwable) {
+      importFailure = failure
+      throw failure
     } finally {
-      if (transactionStarted && SignalDatabase.writableDatabase.inTransaction()) {
-        SignalDatabase.writableDatabase.endTransaction()
+      var cleanupFailure: Throwable? = null
+      fun cleanup(action: () -> Unit) {
+        try {
+          action()
+        } catch (failure: Throwable) {
+          val previous = cleanupFailure
+          if (previous == null) cleanupFailure = failure else if (previous !== failure) previous.addSuppressed(failure)
+        }
       }
 
-      if (!transactionSuccessful) {
-        Log.w(TAG, "[import] Transaction failed, clearing release channel recipient ID from key-value store.")
-        SignalStore.releaseChannel.clearReleaseChannelRecipientId()
+      var transactionEnded = false
+      cleanup {
+        val mayOwnNewTransaction = transactionStarted || (transactionAttempted && !transactionAlreadyActive)
+        if (mayOwnNewTransaction && importDatabase.inTransaction()) {
+          importDatabase.endTransaction()
+        }
+        transactionEnded = true
       }
-
+      if (transactionSuccessful && transactionEnded) {
+        // The archive key belongs to the newly committed attachment rows.
+        cleanup { SignalStore.backup.mediaRootBackupKey = mediaRootBackupKey }
+      } else if (transactionStarted) {
+        // The transaction may have cached IDs from tables that were rolled back.
+        cleanup { RecipientIds.clearCache() }
+        cleanup { AppDependencies.recipientCache.clear() }
+        cleanup { AppDependencies.recipientCache.clearSelf() }
+        cleanup { SignalDatabase.threads.clearCache() }
+        cleanup { SignalStore.releaseChannel.clearReleaseChannelRecipientId() }
+      }
       if (foreignKeysDisabled) {
-        Log.d(TAG, "[import] Re-enabling foreign keys...")
-        SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+        cleanup {
+          Log.d(TAG, "[import] Re-enabling foreign keys...")
+          importDatabase.forceForeignKeyConstraintsEnabled(true)
+        }
+      }
+      cleanupFailure?.let { failure ->
+        val primary = importFailure
+        if (primary == null) throw failure else if (primary !== failure) primary.addSuppressed(failure)
       }
     }
 
-    SignalDatabase.remappedRecords.clearCache()
     SignalDatabase.remappedRecords.trimStaleMappings()
     AppDependencies.recipientCache.clear()
     AppDependencies.recipientCache.warmUp()

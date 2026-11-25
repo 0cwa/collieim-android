@@ -524,18 +524,59 @@ class AttachmentTable(
   /** Submission ownership excludes transfer state and derived visual/waveform metadata. */
   fun uploadOwnerToken(candidate: UploadCandidate): String = uploadOwnerToken(candidate, false)
 
-  private fun uploadOwnerToken(candidate: UploadCandidate, projectKeyToNull: Boolean): String {
+  /** Archive job ownership is stable across archive and thumbnail progress changes. */
+  fun archiveOwnerToken(candidate: UploadCandidate): String = uploadOwnerToken(
+    candidate,
+    projectKeyToNull = false,
+    projectArchiveStateToNull = true,
+    ownerTypeOverride = "archive-owner-v2",
+    includeTransferState = true,
+    includeArchiveThumbnailState = false,
+    includeThumbnailGenerationState = false
+  )
+
+  /** Beta persisted this exact projection in archive-owner-v1 job payloads. */
+  internal fun archiveOwnerTokenV1(candidate: UploadCandidate): String = uploadOwnerToken(candidate, false, projectArchiveStateToNull = true)
+
+  private fun archiveOwnerMatches(candidate: UploadCandidate, owner: String): Boolean = when {
+    owner.startsWith("archive-owner-v2:") -> archiveOwnerToken(candidate) == owner
+    owner.startsWith("archive-owner-v1:") -> archiveOwnerTokenV1(candidate) == owner
+    else -> false
+  }
+
+  private fun uploadOwnerToken(
+    candidate: UploadCandidate,
+    projectKeyToNull: Boolean,
+    projectArchiveStateToNull: Boolean = false,
+    ownerTypeOverride: String? = null,
+    includeTransferState: Boolean = false,
+    includeArchiveThumbnailState: Boolean = true,
+    includeThumbnailGenerationState: Boolean = true
+  ): String {
     val row = candidate.attachment
-    val values = org.json.JSONArray().put("attachment-owner-v2")
+    val ownerType = ownerTypeOverride ?: if (projectArchiveStateToNull) "archive-owner-v1" else "attachment-owner-v2"
+    val values = org.json.JSONArray().put(ownerType)
     fun add(value: Any?) { values.put(value ?: org.json.JSONObject.NULL) }
     fun bytes(value: ByteArray?): String? = value?.let { Base64.encodeWithPadding(it) }
     add(candidate.filePath); add(bytes(candidate.random)); add(row.remoteLocation); add(if (projectKeyToNull) null else row.remoteKey); add(row.dataHash)
     add(bytes(row.remoteDigest)); add(bytes(row.incrementalDigest)); add(row.incrementalMacChunkSize); add(row.uploadTimestamp); add(row.cdn.serialize())
-    add(row.size); add(row.archiveTransferState.value); add(row.archiveCdn); add(row.archiveThumbnailTransferState.value)
+    add(row.size); if (includeTransferState) add(row.transferState)
+    add(if (projectArchiveStateToNull) null else row.archiveTransferState.value); add(row.archiveCdn)
+    if (includeArchiveThumbnailState) add(row.archiveThumbnailTransferState.value)
     add(row.contentType); add(row.fileName); add(row.caption); add(row.uuid?.toString()); add(row.width); add(row.height)
     add(row.voiceNote); add(row.borderless); add(row.videoGif); add(row.transformProperties?.serialize())
-    add(candidate.info?.thumbnailFile); add(bytes(candidate.info?.thumbnailRandom)); add(candidate.info?.thumbnailRestoreState); add(candidate.info?.metadataId)
-    return "attachment-owner-v2:" + Base64.encodeWithPadding(MessageDigest.getInstance("SHA-256").digest(values.toString().toByteArray(Charsets.UTF_8)))
+    if (includeThumbnailGenerationState) {
+      add(candidate.info?.thumbnailFile); add(bytes(candidate.info?.thumbnailRandom)); add(candidate.info?.thumbnailRestoreState)
+    }
+    add(candidate.info?.metadataId)
+    return "$ownerType:" + Base64.encodeWithPadding(MessageDigest.getInstance("SHA-256").digest(values.toString().toByteArray(Charsets.UTF_8)))
+  }
+
+  private fun archiveCandidateMatches(db: SupportSQLiteDatabase, candidate: UploadCandidate, requireThumbnailTransferState: Boolean = false): Boolean {
+    val current = readUploadCandidate(db, candidate.attachment.attachmentId) ?: return false
+    return archiveOwnerToken(current) == archiveOwnerToken(candidate) &&
+      current.attachment.archiveTransferState == candidate.attachment.archiveTransferState &&
+      (!requireThumbnailTransferState || current.attachment.archiveThumbnailTransferState == candidate.attachment.archiveThumbnailTransferState)
   }
 
   /** Check ownership and perform this job's missing-key write in the same transaction. */
@@ -1273,18 +1314,42 @@ class AttachmentTable(
     }
   }
 
+  /** Mark an archive job pending only while its captured media owner still matches. */
+  fun markArchivePendingIfOwnerMatches(id: AttachmentId, owner: String, state: ArchiveTransferState): Boolean {
+    require(state == ArchiveTransferState.UPLOAD_IN_PROGRESS || state == ArchiveTransferState.COPY_PENDING)
+    return writableDatabase.withinTransaction { db ->
+      val candidate = readUploadCandidate(db, id) ?: return@withinTransaction false
+      if (!archiveOwnerMatches(candidate, owner)) return@withinTransaction false
+      val allowed = if (state == ArchiveTransferState.UPLOAD_IN_PROGRESS) {
+        setOf(ArchiveTransferState.NONE)
+      } else {
+        setOf(ArchiveTransferState.NONE, ArchiveTransferState.UPLOAD_IN_PROGRESS)
+      }
+      if (candidate.attachment.archiveTransferState !in allowed) return@withinTransaction false
+      db.update(TABLE_NAME)
+        .values(ARCHIVE_TRANSFER_STATE to state.value)
+        .where("$ID = ? AND $ARCHIVE_TRANSFER_STATE = ?", id.id, candidate.attachment.archiveTransferState.value)
+        .run() == 1
+    }
+  }
+
+  fun getArchiveCandidateIfOwnerMatches(id: AttachmentId, owner: String): UploadCandidate? = readableDatabase.withinTransaction { db ->
+    val candidate = readUploadCandidate(db, id) ?: return@withinTransaction null
+    candidate.takeIf { archiveOwnerMatches(it, owner) }
+  }
+
   /** Bind remote-only or local archive decisions to their captured identity. */
-  fun archiveCandidateUnchanged(candidate: UploadCandidate): Boolean = readableDatabase.withinTransaction { db -> candidateMatches(db, candidate) }
+  fun archiveCandidateUnchanged(candidate: UploadCandidate): Boolean = readableDatabase.withinTransaction { db -> archiveCandidateMatches(db, candidate) }
 
   fun setArchiveStateIfCandidateUnchanged(candidate: UploadCandidate, state: ArchiveTransferState): Boolean = writableDatabase.withinTransaction { db ->
-    if (!candidateMatches(db, candidate) || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
+    if (!archiveCandidateMatches(db, candidate) || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
       candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE) return@withinTransaction false
     db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$ID = ?", candidate.attachment.attachmentId.id).run() == 1
   }
 
   fun setArchiveStateIfOwnerMatches(id: AttachmentId, owner: String, state: ArchiveTransferState): Boolean = writableDatabase.withinTransaction { db ->
     val candidate = readUploadCandidate(db, id) ?: return@withinTransaction false
-    if (uploadOwnerToken(candidate) != owner || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
+    if (!archiveOwnerMatches(candidate, owner) || candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED ||
       candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE) return@withinTransaction false
     db.update(TABLE_NAME).values(ARCHIVE_TRANSFER_STATE to state.value).where("$ID = ?", id.id).run() == 1
   }
@@ -1702,15 +1767,35 @@ class AttachmentTable(
    * Matches the rows summed by [getPendingArchiveUploadBytes], but stops at the first hit.
    */
   fun areAnyAttachmentsPendingArchiveUpload(): Boolean {
-    return readableDatabase
-      .rawQuery(
+    return areAnyAttachmentsPendingArchiveUpload(readableDatabase)
+  }
+
+  /**
+   * Runs [block] only if there is no pending archive upload, checking and accepting under the same write transaction.
+   * Callers must acquire this transaction before any other lock needed by [block].
+   */
+  fun runIfNoAttachmentsPendingArchiveUpload(block: () -> Unit): Boolean {
+    return writableDatabase.withinTransaction { db ->
+      if (areAnyAttachmentsPendingArchiveUpload(db)) {
+        false
+      } else {
+        block()
+        true
+      }
+    }
+  }
+
+  private fun areAnyAttachmentsPendingArchiveUpload(db: SupportSQLiteDatabase): Boolean {
+    return db
+      .query(
         """
           SELECT EXISTS (
             SELECT 1
             FROM $TABLE_NAME INDEXED BY $ARCHIVE_TRANSFER_STATE_INDEX LEFT JOIN ${MessageTable.TABLE_NAME} ON $TABLE_NAME.$MESSAGE_ID = ${MessageTable.TABLE_NAME}.${MessageTable.ID}
             WHERE ${buildAttachmentsThatCanArchiveQuery(PENDING_ARCHIVE_UPLOAD_FILTER)}
           )
-        """.trimIndent()
+        """.trimIndent(),
+        emptyArray()
       )
       .readToSingleBoolean()
   }
@@ -2553,11 +2638,26 @@ class AttachmentTable(
 
   /** Finalize the initiating row only while its complete captured identity still matches. */
   @Throws(IOException::class)
-  fun finalizeAttachmentAfterSnapshotUpload(candidate: UploadCandidate, uploadResult: AttachmentUploadResult, plaintextHash: String): Boolean {
+  fun finalizeAttachmentAfterSnapshotUploadAndGetCandidate(candidate: UploadCandidate, uploadResult: AttachmentUploadResult, plaintextHash: String): UploadCandidate? =
+    finalizeAttachmentAfterSnapshotUploadAndGetCandidate(candidate, uploadResult, plaintextHash, ::candidateMatches)
+
+  /** Archive uploads do not depend on thumbnail generation, but must not overwrite thumbnail-upload progress. */
+  @Throws(IOException::class)
+  fun finalizeArchiveAttachmentAfterSnapshotUploadAndGetCandidate(candidate: UploadCandidate, uploadResult: AttachmentUploadResult, plaintextHash: String): UploadCandidate? =
+    finalizeAttachmentAfterSnapshotUploadAndGetCandidate(candidate, uploadResult, plaintextHash) { db, captured ->
+      archiveCandidateMatches(db, captured, requireThumbnailTransferState = true)
+    }
+
+  private fun finalizeAttachmentAfterSnapshotUploadAndGetCandidate(
+    candidate: UploadCandidate,
+    uploadResult: AttachmentUploadResult,
+    plaintextHash: String,
+    candidateMatches: (SupportSQLiteDatabase, UploadCandidate) -> Boolean
+  ): UploadCandidate? {
     return writableDatabase.withinTransaction { db ->
-      if (!candidateMatches(db, candidate) || candidate.attachment.transferState == TRANSFER_PROGRESS_PERMANENT_FAILURE) return@withinTransaction false
+      if (!candidateMatches(db, candidate) || candidate.attachment.transferState == TRANSFER_PROGRESS_PERMANENT_FAILURE) return@withinTransaction null
       val terminalArchive = candidate.attachment.archiveTransferState == ArchiveTransferState.FINISHED || candidate.attachment.archiveTransferState == ArchiveTransferState.PERMANENT_FAILURE
-      if (terminalArchive && (candidate.attachment.dataHash != plaintextHash || candidate.attachment.remoteKey != Base64.encodeWithPadding(uploadResult.key))) return@withinTransaction false
+      if (terminalArchive && (candidate.attachment.dataHash != plaintextHash || candidate.attachment.remoteKey != Base64.encodeWithPadding(uploadResult.key))) return@withinTransaction null
       val values = contentValuesOf(
         TRANSFER_STATE to TRANSFER_PROGRESS_DONE,
         CDN_NUMBER to uploadResult.cdnNumber,
@@ -2576,9 +2676,14 @@ class AttachmentTable(
         values.putNull(ARCHIVE_CDN)
         values.put(ARCHIVE_THUMBNAIL_TRANSFER_STATE, ArchiveTransferState.NONE.value)
       }
-      db.update(TABLE_NAME).values(values).where("$ID = ?", candidate.attachment.attachmentId.id).run() == 1
+      val updated = db.update(TABLE_NAME).values(values).where("$ID = ?", candidate.attachment.attachmentId.id).run() == 1
+      if (updated) readUploadCandidate(db, candidate.attachment.attachmentId) else null
     }
   }
+
+  @Throws(IOException::class)
+  fun finalizeAttachmentAfterSnapshotUpload(candidate: UploadCandidate, uploadResult: AttachmentUploadResult, plaintextHash: String): Boolean =
+    finalizeAttachmentAfterSnapshotUploadAndGetCandidate(candidate, uploadResult, plaintextHash) != null
 
   @Throws(MmsException::class)
   fun copyAttachmentData(sourceId: AttachmentId, destinationId: AttachmentId) {

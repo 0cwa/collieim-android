@@ -151,6 +151,7 @@ message RestoreAttachmentJobData {
 message CopyAttachmentToArchiveJobData {
   uint64 attachmentId = 1;
   optional string progressToken = 2;
+  optional string ownerIdentity = 3;
 }
 
 message UploadAttachmentToArchiveJobData {

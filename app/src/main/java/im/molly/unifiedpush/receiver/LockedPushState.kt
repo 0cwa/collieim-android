@@ -15,6 +15,8 @@ object LockedPushState {
   private const val PREFS = "collie_locked_push"
   private const val ENCRYPTED = "encrypted_enrollment"
   private const val PENDING = "pending_endpoint"
+  private const val PROTECTED_PAIRING_INSTANCE = "protected_pairing_instance"
+  private const val PROTECTED_PAIRING_DISTRIBUTOR = "protected_pairing_distributor"
   private const val PUSH_ARRIVED = "last_push_arrived"
   private const val SEPARATOR = '\n'
 
@@ -29,6 +31,26 @@ object LockedPushState {
   fun setEncryptedEnrollment(context: Context, encrypted: Boolean) {
     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(ENCRYPTED, encrypted).apply()
   }
+
+  /** Minimal plaintext routing gate used only to stop a stale default callback replacing a scoped route while locked. */
+  @JvmStatic
+  fun protectedPairingInstance(context: Context): String? =
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(PROTECTED_PAIRING_INSTANCE, null)
+
+  @JvmStatic
+  fun setProtectedPairingRoute(context: Context, instance: String?, distributor: String?) {
+    val editor = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+    if (instance == null || distributor == null) {
+      editor.remove(PROTECTED_PAIRING_INSTANCE).remove(PROTECTED_PAIRING_DISTRIBUTOR)
+    } else {
+      editor.putString(PROTECTED_PAIRING_INSTANCE, instance).putString(PROTECTED_PAIRING_DISTRIBUTOR, distributor)
+    }
+    editor.commit()
+  }
+
+  @JvmStatic
+  fun protectedPairingDistributor(context: Context): String? =
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(PROTECTED_PAIRING_DISTRIBUTOR, null)
 
   /**
    * When a push last reached the phone, kept here because it can be written while locked. A push that is dropped while

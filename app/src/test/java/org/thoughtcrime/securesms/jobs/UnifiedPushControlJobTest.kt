@@ -60,6 +60,7 @@ class UnifiedPushControlJobTest {
     mockkStatic(AppDependencies::class)
     every { AppDependencies.jobManager } returns jobManager
     every { SignalStore.unifiedpush } returns unifiedPush
+    every { unifiedPush.pairingEndpointBinding } returns null
   }
 
   @After

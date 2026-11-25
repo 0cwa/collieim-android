@@ -1,12 +1,14 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
 import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
@@ -15,8 +17,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.enrollment.PairingV1
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
@@ -33,18 +39,49 @@ import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 
 class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDeliveryMethod__unifiedpush) {
 
+  companion object {
+    const val PAIRING_OFFER_ARGUMENT = "pairingOffer"
+  }
+
   private lateinit var viewModel: UnifiedPushSettingsViewModel
 
+  private val enrollmentDocumentLauncher: ActivityResultLauncher<String> =
+    registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri: Uri? ->
+      viewModel.completeEnrollmentExport(uri)
+    }
+
+  private val pairingSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+    val sessionId = viewModel.pendingPairingSaveId
+    viewModel.pendingPairingSaveId = null
+    if (uri != null && (sessionId == null || !viewModel.savePairingRequest(requireContext(), sessionId, uri))) {
+      Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
+    }
+  }
+
+  private val pairingReceiptLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+    if (uri != null) {
+      val accepted = viewModel.readPairingReceipt(requireContext(), uri)
+      showPairingReceiptResult(accepted)
+    }
+  }
+
   private val qrScanLauncher: ActivityResultLauncher<Unit> =
-    registerForActivityResult(MollySocketQrScannerActivity.Contract()) { mollySocket ->
+    registerForActivityResult(MollySocketQrScannerActivity.Contract()) { data ->
       val disclosure = viewModel.scanDisclosure
       viewModel.scanDisclosure = null
-      if (mollySocket != null) {
-        if (disclosure == null) {
+      if (data != null) {
+        if (data.trimStart().startsWith("{")) {
+          handlePairingOffer(data, disclosure)
+        } else if (disclosure == null) {
           RelayDisclosureDialogs.showStaleAction(requireContext())
         } else {
-          RelayDisclosureDialogs.showRelay(requireContext(), mollySocket) {
-            viewModel.setMollySocket(mollySocket, disclosure)
+          val mollySocket = MollySocket.parseLink(Uri.parse(data))
+          if (mollySocket == null) {
+            Toast.makeText(requireContext(), R.string.PairingV1__invalid_offer, Toast.LENGTH_LONG).show()
+          } else {
+            RelayDisclosureDialogs.showRelay(requireContext(), mollySocket) {
+              viewModel.setMollySocket(mollySocket, disclosure)
+            }
           }
         }
       }
@@ -67,7 +104,14 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     RestartableSubscription { EventBus.default.subscribe<PushServiceEvent>(ThreadMode.MAIN, ::onPushServiceEvent) }
       .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-    viewModel.updateRegistration()
+    val firstScanOffer = arguments?.getString(PAIRING_OFFER_ARGUMENT)
+    if (firstScanOffer != null) {
+      if (viewModel.claimInitialPairingOffer(firstScanOffer)) {
+        handlePairingOffer(firstScanOffer, RelayDisclosure.capture(requireContext()))
+      }
+    } else if (!viewModel.pairingFlowActive) {
+      viewModel.updateRegistration()
+    }
   }
 
   override fun onResume() {
@@ -114,6 +158,220 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       const val TAG = "relay-export-result"
       const val RESULT_ID = "export-result-id"
     }
+  }
+
+  private fun handlePairingOffer(json: String, disclosure: RelayDisclosure.Snapshot?) {
+    viewModel.enterPairingFlow()
+    val offer = try {
+      viewModel.parsePairingOffer(json)
+    } catch (e: EnrollmentFile.Invalid) {
+      Toast.makeText(
+        requireContext(),
+        if (e.code == "unsupported_intent") R.string.PairingV1__unsupported_add_receiver else R.string.PairingV1__invalid_offer,
+        Toast.LENGTH_LONG,
+      ).show()
+      return
+    }
+    if (disclosure == null) {
+      Toast.makeText(requireContext(), R.string.PairingV1__endpoint_unavailable, Toast.LENGTH_LONG).show()
+      return
+    }
+    val distributors = viewModel.pairingDistributors()
+    if (distributors.isEmpty()) {
+      Toast.makeText(requireContext(), R.string.PairingV1__select_distributor_first, Toast.LENGTH_LONG).show()
+      return
+    }
+    val saved = viewModel.pairingSelectedDistributor()
+    if (saved == null || distributors.none { it.applicationId == saved }) {
+      val labels = distributors.map { "${it.name} (${it.applicationId})" }.toTypedArray()
+      var selected = 0
+      MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.PairingV1__select_distributor_title)
+        .setSingleChoiceItems(labels, selected) { _, which -> selected = which }
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+          val distributorId = distributors[selected].applicationId
+          viewModel.selectPairingDistributor(distributorId)
+          evaluatePairingOffer(offer, RelayDisclosure.capture(requireContext()), distributorId)
+        }
+        .setNegativeButton(android.R.string.cancel, null)
+        .show()
+      return
+    }
+    evaluatePairingOffer(offer, disclosure, saved)
+  }
+
+  private fun evaluatePairingOffer(
+    offer: PairingV1.Offer,
+    disclosure: RelayDisclosure.Snapshot?,
+    distributorId: String,
+  ) {
+    when (val plan = viewModel.evaluatePairingOffer(offer, distributorId)) {
+      is PairingV1Coordinator.OfferPlan.Ready -> showPairingConsent(offer, disclosure, plan.consent)
+      is PairingV1Coordinator.OfferPlan.Register -> showPairingRegistrationConsent(plan.details, disclosure)
+      is PairingV1Coordinator.OfferPlan.Failed -> Toast.makeText(requireContext(), plan.message, Toast.LENGTH_LONG).show()
+    }
+  }
+
+  private fun showPairingRegistrationConsent(
+    details: PairingV1Coordinator.RegistrationDetails,
+    disclosure: RelayDisclosure.Snapshot?,
+  ) {
+    val offer = details.offer
+    val provider = offer.providerOrigin ?: getString(R.string.PairingV1__provider_unspecified)
+    val message = getString(
+      R.string.PairingV1__registration_consent_message,
+      offer.hostLabel,
+      provider,
+      details.distributorLabel,
+      details.distributorId,
+      details.accountId,
+      offer.vapidPublicKey,
+    )
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__registration_consent_title)
+      .setMessage(message)
+      .setPositiveButton(R.string.PairingV1__registration_consent_confirm) { _, _ ->
+        val completion: (Result<PairingRegistrationGate.Endpoint>) -> Unit = { result ->
+          if (isAdded) {
+            if (result.isFailure) {
+              Toast.makeText(requireContext(), R.string.PairingV1__registration_failed, Toast.LENGTH_LONG).show()
+            } else {
+              val freshDisclosure = RelayDisclosure.capture(requireContext())
+              when (val plan = viewModel.evaluatePairingOffer(offer, details.distributorId)) {
+                is PairingV1Coordinator.OfferPlan.Ready -> showPairingConsent(offer, freshDisclosure, plan.consent)
+                is PairingV1Coordinator.OfferPlan.Register -> Toast.makeText(requireContext(), R.string.PairingV1__registration_not_ready, Toast.LENGTH_LONG).show()
+                is PairingV1Coordinator.OfferPlan.Failed -> Toast.makeText(requireContext(), plan.message, Toast.LENGTH_LONG).show()
+              }
+            }
+          }
+        }
+        val started = viewModel.registerPairingEndpoint(details, disclosure, completion)
+        if (!started) {
+          when (val latest = viewModel.evaluatePairingOffer(offer, details.distributorId)) {
+            is PairingV1Coordinator.OfferPlan.Ready -> showPairingConsent(offer, RelayDisclosure.capture(requireContext()), latest.consent)
+            is PairingV1Coordinator.OfferPlan.Failed -> Toast.makeText(requireContext(), latest.message, Toast.LENGTH_LONG).show()
+            is PairingV1Coordinator.OfferPlan.Register -> Toast.makeText(requireContext(), R.string.PairingV1__registration_not_started, Toast.LENGTH_LONG).show()
+          }
+        } else Toast.makeText(requireContext(), R.string.PairingV1__registration_started, Toast.LENGTH_LONG).show()
+      }
+      .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.cancelPairingAttempt(offer.sessionId) }
+      .show()
+  }
+
+  private fun showPairingConsent(
+    offer: PairingV1.Offer,
+    disclosure: RelayDisclosure.Snapshot?,
+    details: PairingV1Coordinator.ConsentDetails,
+  ) {
+    val message = getString(
+      if (offer.providerOrigin == null) R.string.PairingV1__consent_message_selected_provider
+      else R.string.PairingV1__consent_message,
+      offer.hostLabel,
+      details.providerOrigin,
+      details.distributorLabel,
+      details.distributorId,
+      offer.vapidPublicKey,
+      details.accountId,
+    )
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__consent_title)
+      .setMessage(message)
+      .setPositiveButton(R.string.PairingV1__consent_confirm) { _, _ ->
+        viewModel.sealPairing(offer, disclosure, details) { result ->
+          when (result) {
+            is PairingV1Coordinator.SealResult.Ready -> showPairingActions(result.session.id)
+            is PairingV1Coordinator.SealResult.Failed -> Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show()
+          }
+        }
+      }
+      .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.cancelPairingAttempt(offer.sessionId) }
+      .show()
+  }
+
+  private fun showPairingActions(sessionId: String) {
+    val actions = arrayOf(
+      getString(R.string.PairingV1__copy_request),
+      getString(R.string.PairingV1__share_request),
+      getString(R.string.PairingV1__save_request),
+      getString(R.string.PairingV1__paste_receipt),
+      getString(R.string.PairingV1__open_receipt),
+      getString(R.string.PairingV1__local_status),
+    )
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__request_ready)
+      .setItems(actions) { _, index ->
+        when (index) {
+          0 -> if (!viewModel.copyPairingRequest(requireContext(), sessionId)) {
+            Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
+          }
+          1 -> if (!viewModel.sharePairingRequest(requireContext(), sessionId)) {
+            Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
+          }
+          2 -> {
+            viewModel.pendingPairingSaveId = sessionId
+            pairingSaveLauncher.launch("colliesocket-pairing-request-$sessionId.json")
+          }
+          3 -> showPastePairingReceiptDialog()
+          4 -> pairingReceiptLauncher.launch(arrayOf("application/json", "text/*"))
+          5 -> showPairingLocalStatus()
+        }
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showPastePairingReceiptDialog() {
+    val input = EditText(requireContext()).apply {
+      inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+      minLines = 4
+      maxLines = 10
+      hint = getString(R.string.PairingV1__receipt_hint)
+    }
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__paste_receipt)
+      .setMessage(R.string.PairingV1__receipt_message)
+      .setView(input)
+      .setPositiveButton(R.string.PairingV1__verify_receipt) { _, _ ->
+        showPairingReceiptResult(viewModel.acceptPairingReceipt(input.text.toString()))
+      }
+      .setNeutralButton(R.string.PairingV1__paste_from_clipboard) { _, _ ->
+        showPairingReceiptResult(viewModel.pastePairingReceipt(requireContext()))
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showPairingReceiptResult(accepted: Boolean) {
+    val message = if (!accepted) getString(R.string.PairingV1__receipt_invalid)
+    else getString(R.string.PairingV1__receipt_authenticated)
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__receipt_title)
+      .setMessage(message)
+      .setPositiveButton(android.R.string.ok, null)
+      .show()
+  }
+
+  private fun showPairingLocalStatus() {
+    val status = viewModel.pairingStatus()
+    if (status == null) {
+      Toast.makeText(requireContext(), R.string.PairingV1__status_unavailable, Toast.LENGTH_LONG).show()
+      return
+    }
+    val message = getString(
+      R.string.PairingV1__status_message,
+      status.sessionId,
+      status.hostLabel,
+      status.providerOrigin,
+      status.distributorLabel,
+      java.text.DateFormat.getDateTimeInstance().format(java.util.Date(status.deadlineSeconds * 1000)),
+      getString(if (status.receiptAccepted) R.string.PairingV1__receipt_authenticated else R.string.PairingV1__receipt_pending),
+      getString(if (status.requestReady) R.string.PairingV1__request_available else R.string.PairingV1__request_unavailable),
+    )
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__local_status)
+      .setMessage(message)
+      .setPositiveButton(android.R.string.ok, null)
+      .show()
   }
 
   private fun showExportModeDialog(state: UnifiedPushSettingsState) {
@@ -163,7 +421,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_enrollment_export) { _, _ ->
         val serverEpoch = input.text.toString()
         RelayDisclosureDialogs.showExport(requireContext()) {
-          viewModel.exportEnrollment(requireContext(), serverEpoch, mode, disclosure = disclosure)
+          viewModel.prepareEnrollmentExport(serverEpoch, mode, disclosure = disclosure)?.let(enrollmentDocumentLauncher::launch)
         }
       }
       .setNegativeButton(android.R.string.cancel, null)
@@ -179,7 +437,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       .setItems(labels) { _, which ->
         val requestId = exports[which].requestId
         RelayDisclosureDialogs.showExport(requireContext()) {
-          viewModel.exportEnrollment(requireContext(), "", ExportMode.RERENDER, requestId, disclosure)
+          viewModel.prepareEnrollmentExport("", ExportMode.RERENDER, requestId, disclosure)?.let(enrollmentDocumentLauncher::launch)
         }
       }
       .setNegativeButton(android.R.string.cancel, null)
@@ -372,6 +630,18 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         isEnabled = !state.controlStateCorrupt && !viewModel.isExportPending(),
         onClick = { showExportModeDialog(state) },
       )
+
+      viewModel.pairingStatus()?.let { pairing ->
+        clickPref(
+          title = DSLSettingsText.from(R.string.PairingV1__local_status),
+          summary = DSLSettingsText.from(
+            if (pairing.receiptAccepted) R.string.PairingV1__status_summary_receipt
+            else if (pairing.requestReady) R.string.PairingV1__status_summary_ready
+            else R.string.PairingV1__status_summary_unavailable
+          ),
+          onClick = { showPairingActions(pairing.sessionId) },
+        )
+      }
 
       dividerPref()
 

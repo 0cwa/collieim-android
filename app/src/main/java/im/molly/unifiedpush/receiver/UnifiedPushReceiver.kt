@@ -9,6 +9,7 @@ import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -56,14 +57,85 @@ class UnifiedPushReceiver : MessagingReceiver() {
     /** Commits the pending connector tuple and its generation under the lifecycle transition. */
     internal fun commitPendingEndpoint(context: Context): UnifiedPushLifecycle.TransitionResult<EndpointEffects?>? {
       val receiver = UnifiedPushReceiver()
+      if (KeyCachingService.isLocked()) return null
+      synchronized(UnifiedPushLifecycle.monitor) {
+        val pairing = SignalStore.unifiedpush.pairingEndpointBinding
+        LockedPushState.setProtectedPairingRoute(context, pairing?.instance, pairing?.distributorId)
+      }
+      val bufferedUnregistration = PairingRegistrationGate.takeBufferedUnregistration()
+      if (bufferedUnregistration != null) {
+        val owner = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == bufferedUnregistration }?.distributorId
+        PairingRegistrationGate.fail(bufferedUnregistration)
+        if (owner != null) receiver.unregisterPairingIfOwned(context, bufferedUnregistration, owner)
+      } else {
+        PairingRegistrationGate.takeBufferedEndpoint()?.let { buffered ->
+          receiver.admitPairingEndpoint(
+            context,
+            LockedPushState.Endpoint(buffered.url, buffered.p256dh, buffered.auth, buffered.instance),
+          )
+        }
+      }
+      val queuedBeforeLock = LockedPushState.peekPending(context)
+      if (queuedBeforeLock != null && PairingRegistrationGate.current()?.binding?.instance == queuedBeforeLock.instance) {
+        receiver.admitPairingEndpoint(context, queuedBeforeLock)
+        return null
+      }
+      var discardedGeneration: Long? = null
       val expectedGeneration = synchronized(UnifiedPushLifecycle.monitor) {
         // Check the lock before inspecting or consuming the sealed endpoint. A callback queued before
         // the app locked must leave the saved endpoint untouched for a later unlock path.
         if (KeyCachingService.isLocked()) return null
+        val queued = LockedPushState.peekPending(context)
+        val activePairing = SignalStore.unifiedpush.pairingEndpointBinding
+        val sourceMismatch = queued != null && UnifiedPush.getSavedDistributor(context) != UnifiedPush.getAckDistributor(context)
+        if (queued != null && (sourceMismatch || activePairing != null && queued.instance != activePairing.instance)) {
+          if (LockedPushState.discardPending(context)) discardedGeneration = UnifiedPushLifecycle.currentGeneration()
+          return@synchronized null
+        }
+        if (queued != null && PairingRegistrationGate.isPairingInstance(queued.instance)) {
+          val values = SignalStore.unifiedpush
+          val pending = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == queued.instance }
+          val persisted = values.pairingEndpointBinding?.takeIf { it.instance == queued.instance }
+          val accountId = SignalStore.account.aci?.toString()
+          val endpointOrigin = queued.url?.let { im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(it) }
+          val bindingAccount = pending?.accountId ?: persisted?.accountId
+          val bindingDevice = pending?.deviceId ?: persisted?.deviceId
+          val bindingDistributor = pending?.distributorId ?: persisted?.distributorId
+          val ackDistributor = UnifiedPush.getAckDistributor(context)
+          val tupleChanged = queued.url != SignalStore.unifiedpush.endpoint || queued.p256dh != SignalStore.unifiedpush.endpointP256dh ||
+            queued.auth != SignalStore.unifiedpush.endpointAuth || queued.instance != (SignalStore.unifiedpush.endpointInstance ?: "default")
+          val endpointMatchesBinding = when {
+            pending != null -> queued.url != null && endpointOrigin != null && queued.p256dh != null && queued.auth != null &&
+              (pending.providerOrigin == null || pending.providerOrigin == endpointOrigin)
+            persisted != null -> {
+              val validTuple = if (queued.url == null) true else endpointOrigin != null && queued.p256dh != null && queued.auth != null &&
+                (persisted.endpointOrigin == endpointOrigin || receiver.pairingIdentityConfirmed(persisted))
+              validTuple && (!tupleChanged || receiver.pairingIdentityConfirmed(persisted))
+            }
+            else -> false
+          }
+          val bindingCurrent = (pending != null || persisted != null) && bindingAccount == accountId &&
+            bindingDevice == SignalStore.account.deviceId && UnifiedPush.getSavedDistributor(context) == bindingDistributor &&
+            ackDistributor == bindingDistributor && endpointMatchesBinding
+          if (!bindingCurrent) {
+            LockedPushState.clearPending(context)
+            if (pending != null) {
+              PairingRegistrationGate.fail(queued.instance)
+              receiver.unregisterPairingIfOwned(context, queued.instance, pending.distributorId)
+            }
+            return null
+          }
+        }
         if (!UnifiedPushLifecycle.isReadyLocked() && !UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked()) return null
         if (LockedPushState.peekPending(context) == null) return null
         UnifiedPushLifecycle.currentGeneration()
       }
+
+      if (discardedGeneration != null) {
+        restoreAdmissionAfterDiscard(discardedGeneration!!)
+        return null
+      }
+      if (expectedGeneration == null) return null
 
       return try {
         runBlocking {
@@ -77,7 +149,25 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 null
               } else {
                 LockedPushState.peekPending(context)?.let { pending ->
-                  receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
+                  val pendingPairing = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == pending.instance }
+                  val persistedPairing = SignalStore.unifiedpush.pairingEndpointBinding?.takeIf { it.instance == pending.instance }
+                  if (PairingRegistrationGate.isPairingInstance(pending.instance) && pendingPairing == null && persistedPairing == null) {
+                    LockedPushState.clearPending(context)
+                    PairingRegistrationGate.fail(pending.instance)
+                    null
+                  } else if (persistedPairing != null) {
+                    val values = SignalStore.unifiedpush
+                    val tupleChanged = pending.url != values.endpoint || pending.p256dh != values.endpointP256dh ||
+                      pending.auth != values.endpointAuth || pending.instance != (values.endpointInstance ?: "default")
+                    if (tupleChanged && !receiver.pairingIdentityConfirmed(persistedPairing)) {
+                      LockedPushState.clearPending(context)
+                      null
+                    } else {
+                      receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
+                    }
+                  } else {
+                    receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
+                  }
                 }
               }
             }
@@ -125,6 +215,22 @@ class UnifiedPushReceiver : MessagingReceiver() {
       }
     }
 
+    /** A stale locked callback must not leave admission closed after its sealed tuple is discarded. */
+    private fun restoreAdmissionAfterDiscard(generation: Long) {
+      if (KeyCachingService.isLocked()) return
+      try {
+        runBlocking {
+          UnifiedPushAccountTransition.withTransition(
+            expectedGeneration = generation,
+            completesInvalidation = true,
+            readyAfter = { UnifiedPushAccountTransition.hasCoherentRegisteredContext() && !KeyCachingService.isLocked() },
+          ) { }
+        }
+      } catch (_: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
+        return
+      }
+    }
+
     /** Called when the app comes to the foreground, where the job's attempts may have run out. */
     @JvmStatic
     fun resumeControl() {
@@ -140,8 +246,70 @@ class UnifiedPushReceiver : MessagingReceiver() {
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
     Log.i(TAG, "onNewEndpoint($instance)")
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
+    // Locked callbacks are buffered before any SignalStore reads. A tentative pairing endpoint is
+    // admitted from that buffer after unlock without replacing the currently active route.
+    if (appLocked) {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        val tentative = PairingRegistrationGate.current()?.binding?.instance == instance
+        if (tentative) {
+          PairingRegistrationGate.bufferEndpoint(
+            PairingRegistrationGate.BufferedEndpoint(received.url, received.p256dh, received.auth, received.instance),
+          )
+        } else {
+          val protected = LockedPushState.protectedPairingInstance(context)
+          if (!PairingRegistrationGate.allowsLockedCallback(instance, protected)) return
+          LockedPushState.savePending(context, received)
+          if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
+        }
+      }
+      return
+    }
+    if (UnifiedPush.getSavedDistributor(context) != UnifiedPush.getAckDistributor(context)) return
+    if (PairingRegistrationGate.current()?.binding?.instance == instance) {
+      admitPairingEndpoint(context, received)
+      return
+    }
+    val currentPairing = SignalStore.unifiedpush.pairingEndpointBinding
+    val protectedPairingInstance = currentPairing?.instance
+      ?: SignalStore.unifiedpush.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
+    val activeRouteInstance = SignalStore.unifiedpush.endpointInstance ?: "default"
+    if (!PairingRegistrationGate.allowsEndpointCallback(instance, protectedPairingInstance, activeRouteInstance)) {
+      return
+    }
+    if (currentPairing != null && currentPairing.instance == instance) {
+      if (appLocked) return
+      val callbackOrigin = im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(endpoint.url)
+      val tupleChanged = endpoint.url != SignalStore.unifiedpush.endpoint ||
+        endpoint.pubKeySet?.pubKey != SignalStore.unifiedpush.endpointP256dh ||
+        endpoint.pubKeySet?.auth != SignalStore.unifiedpush.endpointAuth
+      if (!pairingBindingMatchesCurrent(context, currentPairing) || callbackOrigin == null ||
+        endpoint.pubKeySet?.pubKey == null || endpoint.pubKeySet?.auth == null ||
+        (tupleChanged && !pairingIdentityConfirmed(currentPairing))) {
+        return
+      }
+    }
+    if (currentPairing != null && instance != currentPairing.instance) {
+      // A retained callback from the legacy default instance must not replace the pairing endpoint.
+      return
+    }
     var unchanged: UnifiedPushLifecycle.TransitionResult<EndpointEffects?>? = null
+    var rejectedByPairingGate = false
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      val values = SignalStore.unifiedpush
+      val currentPairing = values.pairingEndpointBinding
+      val livePairingInstance = PairingRegistrationGate.current()?.binding?.instance
+        ?: currentPairing?.instance
+        ?: values.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
+      val currentRouteInstance = values.endpointInstance ?: "default"
+      if (currentPairing != null && currentPairing.instance == instance &&
+        (!pairingBindingMatchesCurrent(context, currentPairing) || !pairingIdentityConfirmed(currentPairing))) {
+        rejectedByPairingGate = true
+        return@synchronized false
+      }
+      if (!PairingRegistrationGate.allowsEndpointCallback(instance, livePairingInstance, currentRouteInstance)) {
+        rejectedByPairingGate = true
+        return@synchronized false
+      }
       // registerApp also returns the existing endpoint. It must not revoke the registration
       // or test notification that requested it. Real route changes still drain old work.
       if (!appLocked && UnifiedPushLifecycle.isReadyLocked() && matchesCurrentEndpointLocked(received) && LockedPushState.peekPending(context) == null) {
@@ -153,11 +321,68 @@ class UnifiedPushReceiver : MessagingReceiver() {
       if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
       !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked())
     }
+    if (rejectedByPairingGate) {
+      return
+    }
     val completed = unchanged
     if (completed != null) {
       publishPendingEndpointEffects(context, completed)
     } else if (schedule) {
-      SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+      SignalExecutors.BOUNDED.execute {
+        applyPendingEndpoint(context)
+      }
+    }
+  }
+
+  /** Captures an approved registration endpoint as tentative state; the active route stays usable until confirmation. */
+  private fun admitPairingEndpoint(context: Context, endpoint: LockedPushState.Endpoint) {
+    var admitted: PairingRegistrationGate.Pending? = null
+    var rejected: String? = null
+    var owner: String? = null
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (KeyCachingService.isLocked()) return
+      val pending = PairingRegistrationGate.current() ?: return
+      val binding = pending.binding
+      owner = binding.distributorId
+      val values = SignalStore.unifiedpush
+      val account = UnifiedPushAccountTransition.captureContextLocked()
+      val routeInstance = values.endpointInstance ?: "default"
+      val routeUnchanged = values.endpoint == binding.previousEndpoint &&
+        values.endpointP256dh == binding.previousP256dh && values.endpointAuth == binding.previousAuth &&
+        routeInstance == binding.previousInstance
+      val registrationScopeCurrent = UnifiedPushLifecycle.currentGeneration() == binding.lifecycleGeneration &&
+        routeUnchanged && account != null && account.accountId == binding.accountId && account.localDeviceId == binding.deviceId &&
+        SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId &&
+        UnifiedPush.getSavedDistributor(context) == binding.distributorId &&
+        UnifiedPush.getAckDistributor(context) == binding.distributorId
+      val candidate = endpoint.url?.let {
+        PairingRegistrationGate.Endpoint(it, endpoint.p256dh, endpoint.auth, endpoint.instance)
+      }
+      if (!registrationScopeCurrent || candidate == null) {
+        rejected = "Pairing registration scope changed"
+      } else {
+        admitted = PairingRegistrationGate.claim(
+          instance = endpoint.instance,
+          savedDistributor = UnifiedPush.getSavedDistributor(context),
+          ackDistributor = UnifiedPush.getAckDistributor(context),
+          accountId = SignalStore.account.aci?.toString(),
+          deviceId = SignalStore.account.deviceId,
+          endpoint = candidate,
+        )
+        if (admitted == null) rejected = "Pairing endpoint did not match the approved offer"
+      }
+      if (LockedPushState.peekPending(context)?.instance == endpoint.instance) {
+        LockedPushState.clearPending(context)
+      }
+    }
+    val accepted = admitted
+    if (accepted != null) {
+      PairingRegistrationGate.complete(endpoint.instance, checkNotNull(accepted.claimedEndpoint), success = true)
+      Log.i(TAG, "Pairing-scoped endpoint captured for the approved session.")
+    } else {
+      PairingRegistrationGate.fail(endpoint.instance)
+      owner?.let { unregisterPairingIfOwned(context, endpoint.instance, it) }
+      if (rejected != null) Log.w(TAG, rejected!!)
     }
   }
 
@@ -167,12 +392,53 @@ class UnifiedPushReceiver : MessagingReceiver() {
       current.endpointAuth == endpoint.auth && current.instance == endpoint.instance
   }
 
+  private fun pairingBindingMatchesCurrent(
+    context: Context,
+    binding: org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding,
+  ): Boolean {
+    val endpointOrigin = SignalStore.unifiedpush.endpoint?.let { im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(it) }
+    val ackDistributor = UnifiedPush.getAckDistributor(context)
+    return binding.accountId == SignalStore.account.aci?.toString() &&
+      binding.deviceId == SignalStore.account.deviceId &&
+      UnifiedPush.getSavedDistributor(context) == binding.distributorId &&
+      ackDistributor == binding.distributorId && endpointOrigin == binding.endpointOrigin
+  }
+
+  /** A changed tuple may replace a scoped route only after the exact live account/instance has a v3 identity. */
+  internal fun pairingIdentityConfirmed(
+    binding: org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding,
+  ): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    if (SignalStore.unifiedpush.pairingEndpointBinding != binding) return@synchronized false
+    val values = SignalStore.unifiedpush
+    val state = values.controlStateRead.stateOrNull ?: return@synchronized false
+    val context = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized false
+    state.activeImportId != null && state.activeKeyId != null && state.activeImportSeq > 0 && state.activeEpoch > 0 &&
+      state.activeInstance == binding.instance && state.activeAccountId == binding.accountId &&
+      state.activeDeviceId == context.pushDevice?.deviceId &&
+      context.accountId == binding.accountId && context.instance == binding.instance &&
+      SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId
+  }
+
+  /** The connector's instance overload targets the currently saved distributor; never use it for another owner. */
+  private fun unregisterPairingIfOwned(context: Context, instance: String, distributorId: String) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (UnifiedPush.getSavedDistributor(context) == distributorId) {
+        runCatching { UnifiedPush.unregisterApp(context, instance) }
+      }
+    }
+  }
+
   internal data class AirGappedWarning(
     val route: UnifiedPushAccountTransition.AccountContext,
     val storedInstance: String?,
   )
 
-  internal data class EndpointEffects(val failed: Boolean, val changed: Boolean, val warning: AirGappedWarning?)
+  internal data class EndpointEffects(
+    val failed: Boolean,
+    val changed: Boolean,
+    val warning: AirGappedWarning?,
+    val allowLegacyRelayRefresh: Boolean,
+  )
 
   /** Updates route tuple and control frame under the lifecycle monitor; UI and job callbacks happen after release. */
   private fun applyEndpointLocked(endpoint: LockedPushState.Endpoint): EndpointEffects {
@@ -186,19 +452,54 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val changed = endpoint.url != values.endpoint || endpoint.p256dh != values.endpointP256dh ||
       endpoint.auth != values.endpointAuth || instance != previousInstance
     val airGapped = values.airGapped
-    values.setEndpointRegistration(
-      endpoint = endpoint.url,
-      p256dh = endpoint.p256dh,
-      auth = endpoint.auth,
-      instance = instance,
-    )
+    val wasPairingScoped = values.pairingEndpointBinding?.instance == endpoint.instance ||
+      PairingRegistrationGate.isPairingInstance(endpoint.instance)
+    val pendingPairing = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == endpoint.instance }
+    val existingPairing = values.pairingEndpointBinding?.takeIf { it.instance == endpoint.instance && endpoint.url != null }
+    val pairingBinding = pendingPairing?.let { pending ->
+      endpoint.url?.let { url -> im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(url) }?.let { origin ->
+        org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
+          pending.instance, pending.distributorId, pending.vapidPublicKey, pending.providerOrigin, origin,
+          pending.sessionId, pending.expiresAt, pending.accountId, pending.deviceId,
+        )
+      }
+    } ?: existingPairing?.let { binding ->
+      endpoint.url?.let(im.molly.unifiedpush.enrollment.PairingV1::canonicalOrigin)?.let { binding.copy(endpointOrigin = it) }
+    }
+    if (pairingBinding == null) {
+      values.setEndpointRegistration(endpoint.url, endpoint.p256dh, endpoint.auth, instance)
+      LockedPushState.setProtectedPairingRoute(AppDependencies.application, null, null)
+    } else {
+      values.setPairingEndpointRegistration(endpoint.url, endpoint.p256dh, endpoint.auth, pairingBinding)
+      LockedPushState.setProtectedPairingRoute(AppDependencies.application, pairingBinding.instance, pairingBinding.distributorId)
+    }
+    PairingRegistrationGate.current()?.takeIf { it.binding.instance != endpoint.instance }?.let { tentative ->
+      val binding = tentative.binding
+      val scopeStillMatches = values.endpoint == binding.previousEndpoint &&
+        values.endpointP256dh == binding.previousP256dh && values.endpointAuth == binding.previousAuth &&
+        (values.endpointInstance ?: "default") == binding.previousInstance &&
+        SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId &&
+        UnifiedPush.getSavedDistributor(AppDependencies.application) == binding.distributorId
+      if (!scopeStillMatches) {
+        PairingRegistrationGate.fail(binding.instance)
+        SignalExecutors.BOUNDED.execute {
+          unregisterPairingIfOwned(AppDependencies.application, binding.instance, binding.distributorId)
+        }
+      }
+    }
     val warning = if (changed && airGapped) {
       updateLastReceivedTime(0)
-      UnifiedPushAccountTransition.captureContextLocked()?.copy(pushDevice = null)?.let {
+      val activeKeyedEnrollment = values.controlStateRead.stateOrNull?.let { it.activeEpoch > 0 && it.key != null } == true
+      if (activeKeyedEnrollment) null else UnifiedPushAccountTransition.captureContextLocked()?.copy(pushDevice = null)?.let {
         AirGappedWarning(it, values.endpointInstance)
       }
     } else null
-    return EndpointEffects(failed, changed, warning)
+    return EndpointEffects(
+      failed = failed,
+      changed = changed,
+      warning = warning,
+      allowLegacyRelayRefresh = endpoint.url != null && pairingBinding == null && !wasPairingScoped,
+    )
   }
 
   private fun publishEndpointEffects(context: Context, effects: EndpointEffects) {
@@ -210,13 +511,49 @@ class UnifiedPushReceiver : MessagingReceiver() {
     EndpointReconciler.reconcile()
     // A new distributor endpoint must also resume legacy MollySocket registration. Control
     // reconciliation cannot do that before an encrypted enrollment has a control key.
-    if (effects.changed || effects.failed) {
+    if (effects.allowLegacyRelayRefresh && (effects.changed || effects.failed) && !PairingRegistrationGate.isRegistrationPending() &&
+      SignalStore.unifiedpush.pairingEndpointBinding == null) {
       AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
     }
   }
 
   override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
     Log.w(TAG, "onRegistrationFailed($instance): $reason")
+    if (PairingRegistrationGate.isPairingInstance(instance)) {
+      val candidate = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == instance }
+      if (candidate != null) {
+        PairingRegistrationGate.fail(instance)
+        unregisterPairingIfOwned(context, instance, candidate.distributorId)
+        return
+      }
+      if (appLocked) return
+      val active = synchronized(UnifiedPushLifecycle.monitor) {
+        val binding = SignalStore.unifiedpush.pairingEndpointBinding?.takeIf { it.instance == instance }
+        if (binding != null && pairingBindingMatchesCurrent(context, binding) && !SignalStore.unifiedpush.registrationRetryScheduled) {
+          SignalStore.unifiedpush.registrationFailed = true
+          SignalStore.unifiedpush.registrationRetryScheduled = true
+          binding
+        } else null
+      }
+      if (active != null) {
+        UnifiedPushNotificationBuilder(context).setNotificationRegistrationFailed()
+        EventBus.default.post(PushServiceEvent)
+        SignalExecutors.BOUNDED.execute {
+          synchronized(UnifiedPushLifecycle.monitor) {
+            val current = SignalStore.unifiedpush.pairingEndpointBinding
+            if (current == active && pairingBindingMatchesCurrent(context, active) && !appLocked) {
+              runCatching {
+                UnifiedPush.registerApp(context, active.instance, "CollieSocket pairing", active.vapidPublicKey)
+              }
+            }
+          }
+        }
+      }
+      return
+    }
+    if (appLocked) return
+    if (SignalStore.unifiedpush.pairingEndpointBinding != null ||
+      PairingRegistrationGate.isPairingInstance(SignalStore.unifiedpush.endpointInstance ?: "")) return
     if (!appLocked) {
       val retryScheduled = SignalStore.unifiedpush.registrationRetryScheduled
       SignalStore.unifiedpush.registrationFailed = true
@@ -233,18 +570,89 @@ class UnifiedPushReceiver : MessagingReceiver() {
     // called when this application is unregistered from receiving push messages
     // isPushAvailable becomes false => The websocket starts
     Log.i(TAG, "onUnregistered($instance)")
+    if (appLocked) {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        val protected = LockedPushState.protectedPairingInstance(context)
+        if (!PairingRegistrationGate.allowsLockedCallback(instance, protected)) return
+        if (PairingRegistrationGate.current()?.binding?.instance == instance) {
+          PairingRegistrationGate.bufferUnregistration(instance)
+        } else {
+          LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
+          if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
+        }
+      }
+      return
+    }
+    val admission = synchronized(UnifiedPushLifecycle.monitor) {
+      val owner = UnifiedPush.getSavedDistributor(context)
+      if (owner == null || owner != UnifiedPush.getAckDistributor(context)) return
+      val values = SignalStore.unifiedpush
+      val pairing = values.pairingEndpointBinding
+      val protectedInstance = pairing?.instance
+        ?: values.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
+      val routeInstance = values.endpointInstance ?: "default"
+      if (!PairingRegistrationGate.allowsEndpointCallback(instance, protectedInstance, routeInstance)) return
+      if (pairing?.instance == instance &&
+        (!pairingBindingMatchesCurrent(context, pairing) || !pairingIdentityConfirmed(pairing))) return
+      owner
+    }
+    val ownerDistributor = admission
+    val pendingPairing = PairingRegistrationGate.current()
+    if (pendingPairing?.binding?.instance == instance) {
+      PairingRegistrationGate.fail(instance)
+      return
+    }
+    var rejectedByPairingGate = false
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      val values = SignalStore.unifiedpush
+      if (UnifiedPush.getSavedDistributor(context) != ownerDistributor ||
+        UnifiedPush.getAckDistributor(context) != ownerDistributor) {
+        rejectedByPairingGate = true
+        return@synchronized false
+      }
+      val livePairing = values.pairingEndpointBinding
+      if (livePairing != null && livePairing.instance == instance &&
+        (!pairingBindingMatchesCurrent(context, livePairing) || !pairingIdentityConfirmed(livePairing))) {
+        rejectedByPairingGate = true
+        return@synchronized false
+      }
+      val livePairingInstance = PairingRegistrationGate.current()?.binding?.instance
+        ?: livePairing?.instance
+        ?: values.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
+      if (!PairingRegistrationGate.allowsEndpointCallback(instance, livePairingInstance, values.endpointInstance ?: "default")) {
+        rejectedByPairingGate = true
+        return@synchronized false
+      }
       LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
       if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
       !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked())
     }
-    UnifiedPush.forceRemoveDistributor(context)
-    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    if (rejectedByPairingGate) return
+    if (schedule) {
+      // Commit the tombstone while the old owner still passes callback admission. Removing that
+      // owner first changes the saved/ack pair and can make commitPendingEndpoint discard it.
+      SignalExecutors.BOUNDED.execute {
+        val committed = commitPendingEndpoint(context) ?: return@execute
+        if (committed.value == null) return@execute
+        publishPendingEndpointEffects(context, committed)
+        synchronized(UnifiedPushLifecycle.monitor) {
+          if (UnifiedPush.getSavedDistributor(context) == ownerDistributor &&
+            UnifiedPush.getAckDistributor(context) == ownerDistributor) {
+            UnifiedPush.forceRemoveDistributor(context)
+          }
+        }
+      }
+    }
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {
     if (appLocked) {
+      // SignalStore is unavailable while locked, so a custom instance can only be trusted after unlock.
       LockedPushState.recordPushArrived(context, System.currentTimeMillis())
+      if (PairingRegistrationGate.isPairingInstance(instance)) {
+        Log.d(TAG, "Pairing-scoped push buffered for evaluation after unlock.")
+        return
+      }
       // Which kind of enrollment this is cannot be read from SignalStore while locked.
       if (LockedPushState.isEncryptedEnrollment(context)) {
         Log.d(TAG, "Encrypted push dropped while locked.")
@@ -253,6 +661,112 @@ class UnifiedPushReceiver : MessagingReceiver() {
       }
       return
     }
+
+    val pairingBinding = SignalStore.unifiedpush.pairingEndpointBinding
+    val protectedPairingInstance = pairingBinding?.instance
+      ?: SignalStore.unifiedpush.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
+    val pendingCandidate = PairingRegistrationGate.current()?.takeIf { it.binding.instance == instance }
+    if (pendingCandidate != null) {
+      val import = pendingCandidate.importBinding ?: return
+      val allowed = synchronized(UnifiedPushLifecycle.monitor) {
+        PairingRegistrationGate.allowsCandidateConfirmation(
+          instance, UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context),
+          SignalStore.account.aci?.toString(), SignalStore.account.deviceId,
+        )
+      }
+      if (!allowed || !EncryptedPush.isEventShaped(message.content)) return
+      val registration = pendingCandidate.binding
+      val handling = try {
+        runBlocking {
+          UnifiedPushAccountTransition.withTransition(
+            expectedGeneration = registration.lifecycleGeneration,
+            readyAfter = { UnifiedPushAccountTransition.hasCoherentRegisteredContext() && !KeyCachingService.isLocked() },
+          ) {
+            synchronized(UnifiedPushLifecycle.monitor) {
+              val active = PairingRegistrationGate.current()?.takeIf { it.binding == registration } ?: return@synchronized null
+              val endpoint = active.claimedEndpoint ?: return@synchronized null
+              val values = SignalStore.unifiedpush
+              val now = System.currentTimeMillis() / 1000
+              val routeStillMatches = now < registration.expiresAt && endpoint.instance == import.instance &&
+                endpoint.url == import.endpoint && endpoint.p256dh == import.p256dh && endpoint.auth == import.auth &&
+                values.endpoint == registration.previousEndpoint && values.endpointP256dh == registration.previousP256dh &&
+                values.endpointAuth == registration.previousAuth && (values.endpointInstance ?: "default") == registration.previousInstance &&
+                SignalStore.account.aci?.toString() == registration.accountId && SignalStore.account.deviceId == registration.deviceId &&
+                UnifiedPush.getSavedDistributor(context) == registration.distributorId &&
+                UnifiedPush.getAckDistributor(context) == registration.distributorId
+              val state = values.controlStateRead.stateOrNull ?: return@synchronized null
+              val exactIntent = state.intents.any { intent -> intent.eligible && intent.requestId == import.requestId &&
+                intent.keyId == import.keyId && intent.epoch == import.epoch && intent.instance == import.instance &&
+                intent.accountId == import.accountId && intent.deviceId == import.deviceId &&
+                intent.target.endpoint == import.endpoint && intent.target.p256dh == import.p256dh && intent.target.auth == import.auth
+              }
+              if (!routeStillMatches || !exactIntent || !PairingRegistrationGate.allowsCandidateConfirmation(
+                  instance, UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context),
+                  SignalStore.account.aci?.toString(), SignalStore.account.deviceId,
+                )) return@synchronized null
+              val origin = im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(endpoint.url) ?: return@synchronized null
+              val previousPairingBinding = values.pairingEndpointBinding
+              fun restorePreviousRoute() {
+                if (previousPairingBinding == null) {
+                  values.setEndpointRegistration(registration.previousEndpoint, registration.previousP256dh,
+                    registration.previousAuth, registration.previousInstance.takeIf { registration.previousEndpoint != null })
+                } else {
+                  values.setPairingEndpointRegistration(registration.previousEndpoint, registration.previousP256dh,
+                    registration.previousAuth, previousPairingBinding)
+                }
+              }
+              values.setPairingEndpointRegistration(endpoint.url, endpoint.p256dh, endpoint.auth,
+                org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
+                  registration.instance, registration.distributorId, registration.vapidPublicKey,
+                  registration.providerOrigin, origin, registration.sessionId, registration.expiresAt,
+                  registration.accountId, registration.deviceId,
+                ),
+              )
+              val accepted = acceptEncryptedMessageLocked(context, message, import) ?: run {
+                restorePreviousRoute()
+                return@synchronized null
+              }
+              val event = accepted.outcome.event
+              val exactEvent = accepted.outcome.decision == EncryptedPush.Decision.ACCEPT_STATUS &&
+                accepted.effect == EndpointUpdates.Effect.PROMOTED && event != null && event.version == 3 &&
+                event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED &&
+                event.importId == import.requestId && event.keyId == import.keyId && event.epoch == import.epoch &&
+                event.instance == import.instance
+              if (!exactEvent) {
+                restorePreviousRoute()
+                return@synchronized null
+              }
+              values.enabled = true
+              SignalStore.settings.preferredNotificationMethod =
+                org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+              LockedPushState.setEncryptedEnrollment(context, true)
+              LockedPushState.setProtectedPairingRoute(context, registration.instance, registration.distributorId)
+              PairingRegistrationGate.promote(registration.instance)
+              accepted
+            }
+          }
+        }
+      } catch (_: Exception) { null }
+      if (handling != null) {
+        SignalExecutors.BOUNDED.execute {
+          org.thoughtcrime.securesms.ApplicationContext.getInstance(context).activatePushNotificationServicesAfterPairing()
+        }
+        val lease = UnifiedPushAccountTransition.acquireLease()
+        if (lease != null) {
+          if (!finishEncryptedMessage(context, lease, handling)) lease.close()
+        } else {
+          EndpointReconciler.reconcile()
+          updateLastReceivedTime(System.currentTimeMillis())
+        }
+      }
+      return
+    }
+    if (pairingBinding?.instance == instance && !pairingBindingMatchesCurrent(context, pairingBinding)) return
+    val activeRouteInstance = (SignalStore.unifiedpush.endpointInstance ?: "default").takeIf { SignalStore.unifiedpush.endpoint != null }
+    if (!PairingRegistrationGate.allowsMessageCallback(
+        instance, protectedPairingInstance, registrationPending = PairingRegistrationGate.isRegistrationPending(),
+        activeRouteInstance = activeRouteInstance,
+      )) return
 
     val lease = UnifiedPushAccountTransition.acquireLease()
     if (lease == null) {
@@ -274,7 +788,11 @@ class UnifiedPushReceiver : MessagingReceiver() {
         }
         val active = controlState.activeEpoch
         val pending = controlState.pendingEpoch
-        LockedPushState.setEncryptedEnrollment(context, active > 0)
+        val scopedPairingRoute = values.pairingEndpointBinding?.instance == instance
+        LockedPushState.setEncryptedEnrollment(context, active > 0 || scopedPairingRoute)
+        if (scopedPairingRoute && (pending <= 0 && active <= 0 || !EncryptedPush.isEventShaped(message.content))) {
+          return@synchronized MessageHandling(drop = true)
+        }
 
         // A saved import intent also requires encrypted delivery, before or after an active import is confirmed.
         if (active > 0 || pending > 0) {
@@ -314,7 +832,11 @@ class UnifiedPushReceiver : MessagingReceiver() {
   )
 
   /** Reads, validates, and durably commits an event while the lifecycle/replay monitor is held. */
-  private fun acceptEncryptedMessageLocked(context: Context, message: PushMessage): EncryptedHandling? {
+  private fun acceptEncryptedMessageLocked(
+    context: Context,
+    message: PushMessage,
+    candidateImport: PairingRegistrationGate.ImportBinding? = null,
+  ): EncryptedHandling? {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
     val controlStore = UnifiedPushControlStore(values)
@@ -325,7 +847,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
       return null
     }
     val currentContext = UnifiedPushAccountTransition.captureContextLocked()
-    val currentRegistration = currentContext?.let {
+    val currentRegistration = candidateImport?.let {
+      EndpointUpdates.RegistrationContext(it.accountId, it.deviceId, it.instance)
+    } ?: currentContext?.let {
       EndpointUpdates.RegistrationContext(it.accountId, it.pushDevice?.deviceId ?: -1, it.instance)
     }
     var effect = EndpointUpdates.Effect.NONE
@@ -340,7 +864,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       decrypted = message.decrypted,
       now = now,
       locked = { appLocked },
-      activeInstance = currentContext?.instance ?: values.endpointInstance ?: "default",
+      activeInstance = candidateImport?.instance ?: currentContext?.instance ?: values.endpointInstance ?: "default",
       acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
       state = state,
       versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
@@ -354,6 +878,11 @@ class UnifiedPushReceiver : MessagingReceiver() {
     if (outcome.decision.accepted) {
       // Replay and intent promotion share one acknowledged write before any effect starts.
       val event = outcome.event!!
+      if (candidateImport != null && (event.version != 3 || event.kind != EncryptedPush.Kind.STATUS ||
+          event.code != EncryptedPush.CODE_ENROLLMENT_IMPORTED || event.importId != candidateImport.requestId ||
+          event.keyId != candidateImport.keyId || event.epoch != candidateImport.epoch || event.instance != candidateImport.instance)) {
+        return null
+      }
       effect = try {
         EndpointUpdates.accepted(controlStore, outcome.state.serialize(), event, if (event.version == 3) currentRegistration else null)
       } catch (e: KeyValuePersistenceException) {

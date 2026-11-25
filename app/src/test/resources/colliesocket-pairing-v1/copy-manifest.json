@@ -1,0 +1,13 @@
+{
+  "manifest_version": 1,
+  "contract_version": "pairing/v1",
+  "source_repository": "0cwa/colliesocket",
+  "source_revision": "9e69698761aaa3a17d668790c9493fe7ce49a212",
+  "files": [
+    { "path": "README.md", "sha256": "809287c779b001f68b277dc71ed5233ce9899c7d2a63002da0fad3d846d8b5cf" },
+    { "path": "offer.schema.json", "sha256": "369979050472501e5352a7d2b9c701a2203e16ce7de4c63dd4f1772361da9d77" },
+    { "path": "request.schema.json", "sha256": "c03bfe708314e9f378026d0d6429132e0cd3aecc4923a142fc8d1c42277d5a32" },
+    { "path": "response.schema.json", "sha256": "686424ad9c8f8085b615d2b51e04401b53a1ee3ddcab54c417d5c33daccb4881" },
+    { "path": "fixtures/sealed-vectors.json", "sha256": "9029874b8888faeece9df1640374d3db5bf444437af25b6019a37ead3e1b9389" }
+  ]
+}

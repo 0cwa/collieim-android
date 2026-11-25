@@ -16,6 +16,7 @@ import io.mockk.unmockkConstructor
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertFalse
@@ -320,6 +321,24 @@ class UnifiedPushReceiverTest {
     verify(exactly = 1) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
   }
 
+  @Test
+  fun `active keyed air gapped enrollment skips the stock MollySocket manual update warning`() {
+    fakeAccount()
+    val url = "https://push.example.invalid/current"
+    values.setEndpointRegistration(url, fixtureP256dh, fixtureAuth, "default")
+    every { values.airGapped } returns true
+    values.mutateControl { ControlState(key = fixtureKey, activeEpoch = 1, highestEpoch = 1) }
+    val rotated = LockedPushState.Endpoint(url, fixtureP256dh, "rotated-auth", "default")
+    mockPendingEndpointStorage(rotated)
+    every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() } returns Unit
+
+    val committed = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
+    assertNull(committed.value?.warning)
+    UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
+
+    verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
+  }
+
   private fun assertEndpointChangeRevokesWork(endpoint: LockedPushState.Endpoint) {
     fakeAccount()
     values.setEndpointRegistration("https://push.example.invalid/current", "public-key", "auth-key", "default")
@@ -353,13 +372,21 @@ class UnifiedPushReceiverTest {
     mockkStatic(UnifiedPush::class)
     try {
       every { UnifiedPush.forceRemoveDistributor(any()) } returns Unit
-      every { values.endpoint } returns "https://example.org/push"
-      every { values.endpoint = any() } returns Unit
+      every { UnifiedPush.getSavedDistributor(context) } returns "org.example.distributor"
+      every { UnifiedPush.getAckDistributor(context) } returns "org.example.distributor"
+      values.setEndpointRegistration("https://example.org/push", "public-key", "auth-key", "default")
 
       UnifiedPushReceiver().onUnregistered(context, "default")
 
       verify(timeout = 3000) { values.setEndpointRegistration(null, null, null, null) }
+      verify(timeout = 3000) { UnifiedPush.forceRemoveDistributor(context) }
+      verifyOrder {
+        values.setEndpointRegistration(null, null, null, null)
+        UnifiedPush.forceRemoveDistributor(context)
+      }
+      verify(exactly = 0) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
       awaitLifecycleReady()
+      assertNull(values.endpoint)
     } finally {
       unmockkStatic(UnifiedPush::class)
     }
@@ -458,6 +485,8 @@ class UnifiedPushReceiverTest {
     fakeAccount()
     values.endpoint = "https://example.org/old"
     mockkStatic(UnifiedPush::class)
+    every { UnifiedPush.getSavedDistributor(context) } returns "org.example.distributor"
+    every { UnifiedPush.getAckDistributor(context) } returns "org.example.distributor"
     every { UnifiedPush.forceRemoveDistributor(context) } returns Unit
     mockkStatic(PushFetchHandler::class)
     every { PushFetchHandler.handleReceivedNotification(any(), any(), any()) } returns Unit
@@ -556,6 +585,8 @@ class UnifiedPushReceiverTest {
     values.endpoint = "https://push.example.invalid/current"
     val pending = mockPendingEndpointStorage()
     mockkStatic(UnifiedPush::class)
+    every { UnifiedPush.getSavedDistributor(context) } returns "org.example.distributor"
+    every { UnifiedPush.getAckDistributor(context) } returns "org.example.distributor"
     every { UnifiedPush.forceRemoveDistributor(context) } returns Unit
     val lease = UnifiedPushAccountTransition.acquireLease()!!
     val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
@@ -1174,6 +1205,22 @@ class UnifiedPushReceiverTest {
     clearMocks(values, answers = false, recordedCalls = true)
     UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/push", PublicKeySet("pub", "auth")), "default")
     verify(exactly = 0) { SignalStore.unifiedpush }
+  }
+
+  @Test
+  fun `stale default callback cannot replace a scoped endpoint while locked`() {
+    every { KeyCachingService.isLocked() } returns true
+    val pending = mockPendingEndpointStorage()
+    every { LockedPushState.protectedPairingInstance(any()) } returns "pairing-v1-current"
+
+    UnifiedPushReceiver().onNewEndpoint(
+      context,
+      PushEndpoint("https://push.example.invalid/stale", PublicKeySet("stale-public", "stale-auth")),
+      "default",
+    )
+
+    assertNull(pending.get())
+    verify(exactly = 0) { LockedPushState.savePending(any(), any()) }
   }
 
   private val fixtureKey = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"

@@ -16,7 +16,9 @@ import io.mockk.spyk
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -115,6 +117,97 @@ class EnrollmentExporterTest {
     assertEquals(eligible.controlKey, json["control_key"].asText())
     assertEquals(eligible.requestId, rerendered.requestId)
     assertTrue(exports.all { it.epoch == 5L && it.highestUsed == 8L && it.collides })
+  }
+
+  @Test
+  fun `pairing seal failure rolls back the enrollment intent without filesystem staging`() {
+    val before = values.controlState
+    var rendered = false
+
+    try {
+      EnrollmentExporter.exportForPairing(
+        context,
+        isDistributorActive = { true },
+        target = Target(endpoint, p256dh, auth),
+        instance = "fixture-instance",
+      ) { candidate, bridgeCredential, enrollment ->
+        rendered = true
+        assertTrue(enrollment.contains("\"enrollment_version\":3"))
+        assertEquals(1L, candidate.sequence)
+        assertEquals(values.device?.password, bridgeCredential.password)
+        assertEquals("fixture-instance", candidate.instance)
+        assertEquals(before, values.controlState)
+        throw EnrollmentFile.Invalid("invalid_key")
+      }
+      fail("expected pairing seal validation to fail")
+    } catch (e: EnrollmentFile.Invalid) {
+      assertEquals("invalid_key", e.code)
+    }
+
+    assertTrue(rendered)
+    assertEquals(before, values.controlState)
+    val dir = checkNotNull(context.getExternalFilesDir(null))
+    assertFalse(File(dir, EnrollmentExporter.FILE_NAME).exists())
+    assertFalse(File(dir, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
+  }
+
+  @Test
+  fun `pairing seal callback receives the typed candidate route and bridge credential before commit`() {
+    var sealedCandidate: ImportIntent? = null
+    var bridgePassword: String? = null
+    val target = Target("https://pairing.example.test/push", p256dh, auth)
+    EnrollmentExporter.exportForPairing(
+      context = context,
+      isDistributorActive = { true },
+      target = target,
+      instance = "pairing-v1-test",
+      validateSealed = { candidate, bridge, json ->
+        assertTrue(json.contains("\"enrollment_version\":3"))
+        assertEquals(target.endpoint, candidate.target.endpoint)
+        assertEquals(target.p256dh, candidate.target.p256dh)
+        assertEquals("pairing-v1-test", candidate.instance)
+        sealedCandidate = candidate
+        bridgePassword = bridge.password
+      },
+    )
+    assertNotNull(sealedCandidate)
+    assertEquals(values.device?.password, bridgePassword)
+    assertEquals(sealedCandidate, values.controlState.intents.single())
+    assertFalse(File(checkNotNull(context.getExternalFilesDir(null)), EnrollmentExporter.FILE_NAME).exists())
+  }
+
+  @Test
+  fun `pairing final binding validation runs before an intent can supersede prior state`() {
+    val before = values.controlState
+    var sealed = false
+    val dir = checkNotNull(context.getExternalFilesDir(null))
+
+    try {
+      EnrollmentExporter.exportForPairing(
+        context = context,
+        isDistributorActive = { true },
+        target = Target(endpoint, p256dh, auth),
+        instance = "fixture-instance",
+        validateBeforeCommit = { candidate ->
+          assertTrue(sealed)
+          assertEquals(before, values.controlState)
+          assertEquals(1, candidate.sequence)
+          throw EnrollmentFile.Invalid("offer_expired")
+        },
+      ) { candidate, bridgeCredential, _ ->
+        assertEquals(1L, candidate.sequence)
+        assertEquals(values.device?.password, bridgeCredential.password)
+        sealed = true
+      }
+      fail("expected final binding validation to fail")
+    } catch (e: EnrollmentFile.Invalid) {
+      assertEquals("offer_expired", e.code)
+    }
+
+    assertTrue(sealed)
+    assertEquals(before, values.controlState)
+    assertFalse(File(dir, EnrollmentExporter.FILE_NAME).exists())
+    assertFalse(File(dir, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
   }
 
   @Test

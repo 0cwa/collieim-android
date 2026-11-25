@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.control
 
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
@@ -25,6 +26,9 @@ object EndpointReconciler {
     val shouldEnqueue = synchronized(UnifiedPushLifecycle.monitor) {
       if (!UnifiedPushLifecycle.isReadyLocked()) return
       val values = SignalStore.unifiedpush
+      // The v2 frame encrypts the complete endpoint tuple. Do not build or queue one while a
+      // pairing-scoped route is tentative or active; its only safe promotion is the signed v3 path.
+      if (PairingRegistrationGate.isRegistrationPending()) return
       val store = UnifiedPushControlStore(values)
       val control = values.controlStateRead
       val controlState = control.stateOrNull
@@ -47,6 +51,11 @@ object EndpointReconciler {
         Log.w(TAG, "Endpoint update not built: ${e.code}")
         null
       }
+      val pairing = values.pairingEndpointBinding
+      if (pairing != null && (controlState.activeImportId == null || controlState.activeInstance != pairing.instance ||
+          controlState.activeAccountId != pairing.accountId || controlState.activeDeviceId != context.pushDevice?.deviceId ||
+          context.localDeviceId != pairing.deviceId || context.instance != pairing.instance || context.accountId != pairing.accountId ||
+          context.pushDevice == null || subscription == null)) return
       val result = try {
         EndpointUpdates.reconcile(store, context.accountId, device.deviceId, subscription, now)
       } catch (e: CorruptControlStateException) {

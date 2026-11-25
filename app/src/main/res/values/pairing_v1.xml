@@ -1,0 +1,81 @@
+<resources>
+  <string name="PairingV1__consent_title">Pair encrypted push</string>
+  <string name="PairingV1__consent_message">Pair with the server “%1$s”?
+
+Provider: %2$s
+Selected distributor: %3$s (%4$s)
+VAPID public key: %5$s
+Signal account: %6$s
+
+The app will create one encrypted bridge enrollment for this destination. Anyone who sees this offer can submit a request to the server. Continue only if you trust this server and provider.</string>
+  <string name="PairingV1__consent_message_selected_provider">Pair with the server “%1$s”?
+
+The offer does not specify a provider. Using the phone’s selected provider: %2$s
+Selected distributor: %3$s (%4$s)
+VAPID public key: %5$s
+Signal account: %6$s
+
+The app will create one encrypted bridge enrollment for this destination. Anyone who sees this offer can submit a request to the server. Continue only if you trust this server and provider.</string>
+  <string name="PairingV1__consent_confirm">Approve and create request</string>
+  <string name="PairingV1__unsupported_add_receiver">This offer requests adding a receiver. This app supports bridge pairing only. No settings or enrollment were changed.</string>
+  <string name="PairingV1__invalid_offer">This pairing offer is invalid or expired.</string>
+  <string name="PairingV1__offer_changed">The pairing offer changed. Scan it again.</string>
+  <string name="PairingV1__offer_expired">This pairing offer expired before a request was created. Scan a fresh offer.</string>
+  <string name="PairingV1__endpoint_changed">The active endpoint or distributor changed. Review the destination and approve again.</string>
+  <string name="PairingV1__endpoint_unavailable">Pairing needs a usable UnifiedPush endpoint. Select a distributor, then approve the pairing registration requested from this offer.</string>
+  <string name="PairingV1__vapid_registration_unavailable">This offer uses a different push provider key. Pairing did not change registration or send credentials to a saved relay. Configure the trusted provider separately, wait for its endpoint, then scan a fresh offer.</string>
+  <string name="PairingV1__first_scan_settings">Pairing offers need an active provider endpoint. Open UnifiedPush settings, configure the provider there, then scan the offer again and review the destination before approving.</string>
+  <string name="PairingV1__select_distributor_title">Choose a push distributor</string>
+  <string name="PairingV1__select_distributor_first">No UnifiedPush distributor is available. Install or enable a distributor, then scan the offer again.</string>
+  <string name="PairingV1__provider_server_mismatch">The active endpoint uses a different provider origin for “%1$s”. Set the distributor’s server to %2$s first, then scan the offer again.</string>
+  <string name="PairingV1__provider_unspecified">Not specified by the host. The endpoint’s full origin will be shown before pairing.</string>
+  <string name="PairingV1__registration_consent_title">Register for this pairing offer</string>
+  <string name="PairingV1__registration_consent_message">A new push registration will be requested for:
+
+Host: %1$s
+Provider origin: %2$s
+Selected distributor: %3$s (%4$s)
+Signal account: %5$s
+VAPID public key: %6$s
+
+This registration is tied to this offer and account. The distributor will receive the registration request. No enrollment is created yet. After registration, the app will show the resulting provider origin and ask for separate approval before sealing the request. Continue only if you trust this host and distributor.</string>
+  <string name="PairingV1__registration_consent_confirm">Approve registration</string>
+  <string name="PairingV1__registration_started">Preparing the pairing registration. The distributor response may take a moment.</string>
+  <string name="PairingV1__registration_failed">Pairing registration failed or expired. Scan the offer again.</string>
+  <string name="PairingV1__registration_not_started">Pairing registration could not be started. Review the distributor selection and scan again.</string>
+  <string name="PairingV1__registration_not_ready">The registration callback did not leave a current endpoint for this offer. Scan the offer again.</string>
+  <string name="PairingV1__request_failed">Could not create the encrypted pairing request.</string>
+  <string name="PairingV1__request_ready">Encrypted request ready</string>
+  <string name="PairingV1__copy_request">Copy request</string>
+  <string name="PairingV1__share_request">Share request</string>
+  <string name="PairingV1__save_request">Save request</string>
+  <string name="PairingV1__paste_receipt">Paste receipt</string>
+  <string name="PairingV1__open_receipt">Open receipt file</string>
+  <string name="PairingV1__local_status">Pairing status</string>
+  <string name="PairingV1__receipt_hint">Paste authenticated receipt JSON</string>
+  <string name="PairingV1__receipt_message">The receipt is accepted only after its session and encryption tag are verified.</string>
+  <string name="PairingV1__verify_receipt">Verify receipt</string>
+  <string name="PairingV1__paste_from_clipboard">Paste from clipboard</string>
+  <string name="PairingV1__receipt_title">Pairing receipt</string>
+  <string name="PairingV1__receipt_authenticated">Receipt authenticated. Device confirmation still requires a matching encrypted push event.</string>
+  <string name="PairingV1__receipt_pending">No authenticated receipt has been accepted.</string>
+  <string name="PairingV1__receipt_invalid">This receipt could not be authenticated for the current pairing session.</string>
+  <string name="PairingV1__status_unavailable">No pairing session is available in this app session. Scan a fresh offer to start again; the app cannot authenticate an old receipt without its in-memory session key.</string>
+  <string name="PairingV1__status_message">This status is stored only in this app. Device activation still requires a matching encrypted push event.
+
+Session: %1$s
+Server: %2$s
+Provider: %3$s
+Distributor: %4$s
+Offer expires: %5$s
+%6$s
+%7$s</string>
+  <string name="PairingV1__request_clip_label">Encrypted pairing request</string>
+  <string name="PairingV1__request_copied">Encrypted pairing request copied.</string>
+  <string name="PairingV1__request_available">The request can be shared while the same endpoint and distributor remain active and before the offer expires.</string>
+  <string name="PairingV1__request_unavailable">The endpoint or distributor changed, or the offer expired. Scan a fresh offer.</string>
+  <string name="PairingV1__status_summary_receipt">A receipt was authenticated</string>
+  <string name="PairingV1__status_summary_ready">Encrypted request ready</string>
+  <string name="PairingV1__status_summary_unavailable">Request expired or destination changed</string>
+  <string name="PairingV1__file_action_failed">Could not read or write the pairing file.</string>
+</resources>

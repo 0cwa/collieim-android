@@ -124,6 +124,7 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.endpointP256dh } returns "SYNTHETIC-P256DH"
     every { unifiedPush.endpointAuth } returns "SYNTHETIC-AUTH"
     every { unifiedPush.endpointInstance } returns "fixture-instance"
+    every { unifiedPush.pairingEndpointBinding } returns null
     every { unifiedPush.mollySocketUrl } returns "https://molly.example.invalid"
     every { unifiedPush.device } answers { storedDevice }
     every { unifiedPush.device = any() } answers { storedDevice = firstArg() }

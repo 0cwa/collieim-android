@@ -6,7 +6,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -32,7 +31,6 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
-import im.molly.unifiedpush.model.MollySocket
 import org.signal.camera.CameraScreenEvents
 import org.signal.camera.CameraScreenState
 import org.signal.camera.CameraScreenViewModel
@@ -108,7 +106,7 @@ class MollySocketQrScannerActivity : AppCompatActivity() {
             }
           },
           onDataFound = { data ->
-            setResult(RESULT_OK, Intent().setData(Uri.parse(data)))
+            setResult(RESULT_OK, Intent().putExtra(Contract.EXTRA_DATA, data))
             finish()
           },
           onBackNavigationPressed = {
@@ -135,17 +133,17 @@ class MollySocketQrScannerActivity : AppCompatActivity() {
       .execute()
   }
 
-  class Contract : ActivityResultContract<Unit, MollySocket?>() {
+  class Contract : ActivityResultContract<Unit, String?>() {
     override fun createIntent(context: Context, input: Unit): Intent {
       return Intent(context, MollySocketQrScannerActivity::class.java)
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): MollySocket? {
-      return if (resultCode == RESULT_OK) {
-        MollySocket.parseLink(intent?.data!!)
-      } else {
-        null
-      }
+    override fun parseResult(resultCode: Int, intent: Intent?): String? {
+      return if (resultCode == RESULT_OK) intent?.getStringExtra(EXTRA_DATA) else null
+    }
+
+    companion object {
+      const val EXTRA_DATA = "im.molly.unifiedpush.QR_DATA"
     }
   }
 }

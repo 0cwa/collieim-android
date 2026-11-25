@@ -103,6 +103,16 @@ object RelayDisclosure {
               // The receiver records and applies endpoints under the same monitor. Invalidate a
               // buffered endpoint before changing its destination, including after a restart.
               if (destinationChanged && !LockedPushState.discardPending(AppDependencies.application)) return@synchronized null
+              if (destinationChanged) {
+                val values = SignalStore.unifiedpush
+                val pairing = values.pairingEndpointBinding
+                if (pairing != null) {
+                  if (UnifiedPush.getSavedDistributor(AppDependencies.application) == pairing.distributorId) {
+                    runCatching { UnifiedPush.unregisterApp(AppDependencies.application, pairing.instance) }
+                  }
+                  values.setEndpointRegistration(null, null, null, null)
+                }
+              }
               SignalStore.unifiedpush.updateMollySocket(relay)
               if (deliveryMethod != null) SignalStore.settings.preferredNotificationMethod = deliveryMethod
               refreshAuthorizationLocked(snapshot.account)

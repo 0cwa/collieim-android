@@ -910,7 +910,8 @@ class AttachmentTable(
   private data class AttachmentKeyDupeData(
     val id: AttachmentId,
     val quote: Boolean,
-    val sticker: Boolean
+    val sticker: Boolean,
+    val sourceRandom: ByteArray?
   )
 
   /**
@@ -923,7 +924,7 @@ class AttachmentTable(
     var notQuoteOrStickerDupeFoundCount = 0
 
     val missingKeys: Map<String, List<AttachmentKeyDupeData>> = readableDatabase
-      .select(ID, DATA_FILE, QUOTE, STICKER_ID)
+      .select(ID, DATA_FILE, DATA_RANDOM, QUOTE, STICKER_ID)
       .from(TABLE_NAME)
       .where(
         """
@@ -938,7 +939,8 @@ class AttachmentTable(
         AttachmentKeyDupeData(
           id = AttachmentId(it.requireLong(ID)),
           quote = it.requireBoolean(QUOTE),
-          sticker = it.requireInt(STICKER_ID) >= 0
+          sticker = it.requireInt(STICKER_ID) >= 0,
+          sourceRandom = it.requireBlob(DATA_RANDOM)
         ) to it.requireNonNullString(DATA_FILE)
       }
       .groupBy({ (_, dataFile) -> dataFile }, { (record, _) -> record })
@@ -961,16 +963,19 @@ class AttachmentTable(
       if (duplicateAttachmentWithRemoteData != null) {
         val (duplicateAttachment, duplicateAttachmentDataInfo) = duplicateAttachmentWithRemoteData
 
-        dupeData.forEach { (attachmentId, isQuote, isSticker) ->
+        dupeData.forEach { (attachmentId, isQuote, isSticker, sourceRandom) ->
           Log.w(TAG, "[createRemoteKeyForAttachmentsThatNeedArchiveUpload][$attachmentId] Missing key but found same data file with remote data. Updating. isQuote:$isQuote isSticker:$isSticker")
 
           val updateCount = writableDatabase.withinTransaction { db ->
             val targetHasThumbnailInfo = db
-              .select(THUMBNAIL_FILE, THUMBNAIL_RANDOM, THUMBNAIL_RESTORE_STATE)
+              .select(DATA_FILE, DATA_RANDOM, THUMBNAIL_FILE, THUMBNAIL_RANDOM, THUMBNAIL_RESTORE_STATE)
               .from(TABLE_NAME)
               .where("$ID = ? AND ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0)", attachmentId.id)
               .run()
               .readToSingleObject { cursor ->
+                if (cursor.requireString(DATA_FILE) != dataFile || !cursor.requireBlob(DATA_RANDOM).contentEquals(sourceRandom)) {
+                  return@readToSingleObject null
+                }
                 cursor.requireString(THUMBNAIL_FILE) != null ||
                   cursor.requireBlob(THUMBNAIL_RANDOM) != null ||
                   cursor.requireInt(THUMBNAIL_RESTORE_STATE) != ThumbnailRestoreState.NONE.value
@@ -1013,18 +1018,30 @@ class AttachmentTable(
           Log.w(TAG, "[createRemoteKeyForAttachmentsThatNeedArchiveUpload] Generated new key for: ${dupeData.joinToString { it.id.toString() }}")
         }
 
-        dupeData.forEach { (attachmentId, isQuote, isSticker) ->
+        dupeData.forEach { (attachmentId, isQuote, isSticker, sourceRandom) ->
           Log.w(TAG, "[createRemoteKeyForAttachmentsThatNeedArchiveUpload][$attachmentId] Missing key. Assigning new one. isQuote:$isQuote isSticker:$isSticker")
 
-          writableDatabase.update(TABLE_NAME)
-            .values(REMOTE_KEY to Base64.encodeWithPadding(key))
-            .where("$ID = ?", attachmentId.id)
-            .run()
+          val updateCount = writableDatabase.withinTransaction { db ->
+            val sourceMatches = db.select(DATA_FILE, DATA_RANDOM)
+              .from(TABLE_NAME)
+              .where("$ID = ?", attachmentId.id)
+              .run()
+              .readToSingleObject { cursor ->
+                cursor.requireString(DATA_FILE) == dataFile && cursor.requireBlob(DATA_RANDOM).contentEquals(sourceRandom)
+              } ?: false
+            if (!sourceMatches) return@withinTransaction 0
 
-          totalCount++
+            db.update(TABLE_NAME)
+              .values(REMOTE_KEY to Base64.encodeWithPadding(key))
+              .where("$ID = ? AND ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0)", attachmentId.id)
+              .run()
+          }
 
-          if (!isQuote && !isSticker) {
-            notQuoteOrStickerDupeNotFoundCount++
+          if (updateCount > 0) {
+            totalCount++
+            if (!isQuote && !isSticker) {
+              notQuoteOrStickerDupeNotFoundCount++
+            }
           }
         }
       }
@@ -2665,7 +2682,8 @@ class AttachmentTable(
    * When false, leaves the target's local thumbnail tuple intact.
    */
   fun createRemoteKeyIfNecessary(attachmentId: AttachmentId, copyThumbnailInfo: Boolean = true) {
-    val dataFile = getDataFilePath(attachmentId)
+    val candidate = getUploadCandidate(attachmentId) ?: return
+    val dataFile = candidate.filePath
 
     if (dataFile != null) {
       val duplicate = readableDatabase
@@ -2698,6 +2716,7 @@ class AttachmentTable(
           )
 
           writableDatabase.withinTransaction { db ->
+            if (!candidateMatches(db, candidate)) return@withinTransaction
             if (copyThumbnailInfo) {
               val targetHasThumbnailInfo = db
                 .select(THUMBNAIL_FILE, THUMBNAIL_RANDOM, THUMBNAIL_RESTORE_STATE)
@@ -2724,11 +2743,13 @@ class AttachmentTable(
           }
         } else {
           Log.w(TAG, "[createRemoteKeyIfNecessary][$attachmentId] Found duplicate with key only. Copying key.")
-          writableDatabase
-            .update(TABLE_NAME)
-            .values(REMOTE_KEY to duplicateAttachment.remoteKey)
-            .where("$ID = ? AND ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0)", attachmentId.id)
-            .run()
+          writableDatabase.withinTransaction { db ->
+            if (!candidateMatches(db, candidate)) return@withinTransaction
+            db.update(TABLE_NAME)
+              .values(REMOTE_KEY to duplicateAttachment.remoteKey)
+              .where("$ID = ? AND ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0)", attachmentId.id)
+              .run()
+          }
         }
         return
       }
@@ -2736,11 +2757,13 @@ class AttachmentTable(
 
     val key = Util.getSecretBytes(64)
     Log.w(TAG, "[createRemoteKeyIfNecessary][$attachmentId] Missing key. Assigning new one.")
-    writableDatabase
-      .update(TABLE_NAME)
-      .values(REMOTE_KEY to Base64.encodeWithPadding(key))
-      .where("$ID = ? AND ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0)", attachmentId.id)
-      .run()
+    writableDatabase.withinTransaction { db ->
+      if (!candidateMatches(db, candidate)) return@withinTransaction
+      db.update(TABLE_NAME)
+        .values(REMOTE_KEY to Base64.encodeWithPadding(key))
+        .where("$ID = ? AND ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0)", attachmentId.id)
+        .run()
+    }
   }
 
   /**

@@ -75,7 +75,7 @@ else
   "$engine" build "${ignore[@]}" -f "$dockerfile" --target builder -t "$image" .
   "$engine" run --rm -e GIT_NO_REPLACE_OBJECTS=1 -v "$out:/out" --entrypoint sh "$image" -c '
     set -eu
-    ./gradlew --no-daemon "-PcollieReleasePrepared=$3" "$1"
+    ./gradlew --no-daemon --no-build-cache "-PcollieReleasePrepared=$3" "$1"
     cp "$2"/*.apk /out/
   ' sh "$task" "$apk_dir" "$prepared"
 fi

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
+import android.view.MenuItem
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -18,8 +19,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.enrollment.PairingTransport
 import im.molly.unifiedpush.enrollment.PairingV1
-import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocket
@@ -30,14 +31,16 @@ import org.signal.core.util.eventbus.ThreadMode
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
-import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.util.WindowUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 
-class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDeliveryMethod__unifiedpush) {
+class UnifiedPushSettingsFragment : DSLSettingsFragment(
+  R.string.NotificationDeliveryMethod__unifiedpush,
+  R.menu.unifiedpush_settings,
+) {
 
   companion object {
     const val PAIRING_OFFER_ARGUMENT = "pairingOffer"
@@ -55,13 +58,6 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.pendingPairingSaveId = null
     if (uri != null && (sessionId == null || !viewModel.savePairingRequest(requireContext(), sessionId, uri))) {
       Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
-    }
-  }
-
-  private val pairingReceiptLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-    if (uri != null) {
-      val accepted = viewModel.readPairingReceipt(requireContext(), uri)
-      showPairingReceiptResult(accepted)
     }
   }
 
@@ -94,6 +90,27 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
 
     viewModel.state.observe(viewLifecycleOwner) {
       adapter.submitList(getConfiguration(it).toMappingModelList())
+    }
+    viewModel.pairingState.observe(viewLifecycleOwner) { result ->
+      when (result) {
+        is UnifiedPushSettingsViewModel.PairingUi.Paired -> {
+          viewModel.consumePairingResult()
+          MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.PairingV1__paired, result.hostLabel))
+            .setMessage(R.string.PairingV1__waiting_confirmation)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+        }
+        is UnifiedPushSettingsViewModel.PairingUi.Offline -> {
+          viewModel.consumePairingResult()
+          showOfflinePairing(result.sessionId, result.hadSubmitUrl)
+        }
+        is UnifiedPushSettingsViewModel.PairingUi.Error -> {
+          viewModel.consumePairingResult()
+          Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show()
+        }
+        else -> Unit
+      }
     }
     viewModel.exportState.observe(viewLifecycleOwner) { result ->
       if (result == null || result.message != null) viewModel.refresh()
@@ -161,217 +178,83 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
   }
 
   private fun handlePairingOffer(json: String, disclosure: RelayDisclosure.Snapshot?) {
-    viewModel.enterPairingFlow()
-    val offer = try {
-      viewModel.parsePairingOffer(json)
+    if (viewModel.pairingBusy) return
+    val scan = try {
+      viewModel.parsePairingScan(json)
     } catch (e: EnrollmentFile.Invalid) {
-      Toast.makeText(
-        requireContext(),
-        if (e.code == "unsupported_intent") R.string.PairingV1__unsupported_add_receiver else R.string.PairingV1__invalid_offer,
-        Toast.LENGTH_LONG,
-      ).show()
+      showPairingError(when (e.code) {
+        "unsupported_intent" -> R.string.PairingV1__unsupported_add_receiver
+        "session_expired" -> R.string.PairingV1__offer_expired
+        "invalid_submit_url" -> R.string.PairingV1__invalid_submit_url
+        else -> R.string.PairingV1__invalid_offer
+      })
       return
     }
     if (disclosure == null) {
-      Toast.makeText(requireContext(), R.string.PairingV1__endpoint_unavailable, Toast.LENGTH_LONG).show()
+      showPairingError(R.string.PairingV1__endpoint_unavailable)
       return
     }
+    viewModel.enterPairingFlow()
     val distributors = viewModel.pairingDistributors()
-    if (distributors.isEmpty()) {
-      Toast.makeText(requireContext(), R.string.PairingV1__select_distributor_first, Toast.LENGTH_LONG).show()
-      return
-    }
-    val saved = viewModel.pairingSelectedDistributor()
-    if (saved == null || distributors.none { it.applicationId == saved }) {
-      val labels = distributors.map { "${it.name} (${it.applicationId})" }.toTypedArray()
-      var selected = 0
-      MaterialAlertDialogBuilder(requireContext())
+    val selected = distributors.firstOrNull { it.applicationId == viewModel.pairingSelectedDistributor() }
+    when {
+      distributors.isEmpty() -> showPairingError(R.string.PairingV1__select_distributor_first)
+      selected != null -> showPairingConsent(scan, disclosure, selected)
+      else -> MaterialAlertDialogBuilder(requireContext())
         .setTitle(R.string.PairingV1__select_distributor_title)
-        .setSingleChoiceItems(labels, selected) { _, which -> selected = which }
-        .setPositiveButton(android.R.string.ok) { _, _ ->
-          val distributorId = distributors[selected].applicationId
-          viewModel.selectPairingDistributor(distributorId)
-          evaluatePairingOffer(offer, RelayDisclosure.capture(requireContext()), distributorId)
+        .setItems(distributors.map { it.name }.toTypedArray()) { _, index ->
+          showPairingConsent(scan, disclosure, distributors[index])
         }
         .setNegativeButton(android.R.string.cancel, null)
         .show()
-      return
     }
-    evaluatePairingOffer(offer, disclosure, saved)
-  }
-
-  private fun evaluatePairingOffer(
-    offer: PairingV1.Offer,
-    disclosure: RelayDisclosure.Snapshot?,
-    distributorId: String,
-  ) {
-    when (val plan = viewModel.evaluatePairingOffer(offer, distributorId)) {
-      is PairingV1Coordinator.OfferPlan.Ready -> showPairingConsent(offer, disclosure, plan.consent)
-      is PairingV1Coordinator.OfferPlan.Register -> showPairingRegistrationConsent(plan.details, disclosure)
-      is PairingV1Coordinator.OfferPlan.Failed -> Toast.makeText(requireContext(), plan.message, Toast.LENGTH_LONG).show()
-    }
-  }
-
-  private fun showPairingRegistrationConsent(
-    details: PairingV1Coordinator.RegistrationDetails,
-    disclosure: RelayDisclosure.Snapshot?,
-  ) {
-    val offer = details.offer
-    val provider = offer.providerOrigin ?: getString(R.string.PairingV1__provider_unspecified)
-    val message = getString(
-      R.string.PairingV1__registration_consent_message,
-      offer.hostLabel,
-      provider,
-      details.distributorLabel,
-      details.distributorId,
-      details.accountId,
-      offer.vapidPublicKey,
-    )
-    MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.PairingV1__registration_consent_title)
-      .setMessage(message)
-      .setPositiveButton(R.string.PairingV1__registration_consent_confirm) { _, _ ->
-        val completion: (Result<PairingRegistrationGate.Endpoint>) -> Unit = { result ->
-          if (isAdded) {
-            if (result.isFailure) {
-              Toast.makeText(requireContext(), R.string.PairingV1__registration_failed, Toast.LENGTH_LONG).show()
-            } else {
-              val freshDisclosure = RelayDisclosure.capture(requireContext())
-              when (val plan = viewModel.evaluatePairingOffer(offer, details.distributorId)) {
-                is PairingV1Coordinator.OfferPlan.Ready -> showPairingConsent(offer, freshDisclosure, plan.consent)
-                is PairingV1Coordinator.OfferPlan.Register -> Toast.makeText(requireContext(), R.string.PairingV1__registration_not_ready, Toast.LENGTH_LONG).show()
-                is PairingV1Coordinator.OfferPlan.Failed -> Toast.makeText(requireContext(), plan.message, Toast.LENGTH_LONG).show()
-              }
-            }
-          }
-        }
-        val started = viewModel.registerPairingEndpoint(details, disclosure, completion)
-        if (!started) {
-          when (val latest = viewModel.evaluatePairingOffer(offer, details.distributorId)) {
-            is PairingV1Coordinator.OfferPlan.Ready -> showPairingConsent(offer, RelayDisclosure.capture(requireContext()), latest.consent)
-            is PairingV1Coordinator.OfferPlan.Failed -> Toast.makeText(requireContext(), latest.message, Toast.LENGTH_LONG).show()
-            is PairingV1Coordinator.OfferPlan.Register -> Toast.makeText(requireContext(), R.string.PairingV1__registration_not_started, Toast.LENGTH_LONG).show()
-          }
-        } else Toast.makeText(requireContext(), R.string.PairingV1__registration_started, Toast.LENGTH_LONG).show()
-      }
-      .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.cancelPairingAttempt(offer.sessionId) }
-      .show()
   }
 
   private fun showPairingConsent(
-    offer: PairingV1.Offer,
-    disclosure: RelayDisclosure.Snapshot?,
-    details: PairingV1Coordinator.ConsentDetails,
+    scan: PairingTransport.Scan,
+    disclosure: RelayDisclosure.Snapshot,
+    distributor: Distributor,
   ) {
-    val message = getString(
-      if (offer.providerOrigin == null) R.string.PairingV1__consent_message_selected_provider
-      else R.string.PairingV1__consent_message,
-      offer.hostLabel,
-      details.providerOrigin,
-      details.distributorLabel,
-      details.distributorId,
-      offer.vapidPublicKey,
-      details.accountId,
-    )
+    val offer = scan.offer
+    val origin = when (val plan = viewModel.evaluatePairingOffer(offer, distributor.applicationId)) {
+      is PairingV1Coordinator.OfferPlan.Ready -> plan.consent.providerOrigin
+      is PairingV1Coordinator.OfferPlan.Register -> plan.details.currentOrigin
+      is PairingV1Coordinator.OfferPlan.Failed -> {
+        Toast.makeText(requireContext(), plan.message, Toast.LENGTH_LONG).show()
+        return
+      }
+    }
+    val provider = when {
+      offer.providerOrigin != null -> getString(R.string.PairingV1__push_server, offer.providerOrigin)
+      origin != null -> getString(R.string.PairingV1__distributor_server, origin)
+      else -> getString(R.string.PairingV1__distributor_server_unknown)
+    }
     MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.PairingV1__consent_title)
-      .setMessage(message)
+      .setTitle(getString(R.string.PairingV1__consent_title, offer.hostLabel))
+      .setMessage(getString(R.string.PairingV1__consent_message, provider, distributor.name))
+      .setNegativeButton(android.R.string.cancel, null)
       .setPositiveButton(R.string.PairingV1__consent_confirm) { _, _ ->
-        viewModel.sealPairing(offer, disclosure, details) { result ->
-          when (result) {
-            is PairingV1Coordinator.SealResult.Ready -> showPairingActions(result.session.id)
-            is PairingV1Coordinator.SealResult.Failed -> Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show()
-          }
-        }
+        viewModel.pair(scan, disclosure, distributor.applicationId, offer.providerOrigin ?: origin)
       }
-      .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.cancelPairingAttempt(offer.sessionId) }
       .show()
   }
 
-  private fun showPairingActions(sessionId: String) {
-    val actions = arrayOf(
-      getString(R.string.PairingV1__copy_request),
-      getString(R.string.PairingV1__share_request),
-      getString(R.string.PairingV1__save_request),
-      getString(R.string.PairingV1__paste_receipt),
-      getString(R.string.PairingV1__open_receipt),
-      getString(R.string.PairingV1__local_status),
-    )
+  private fun showOfflinePairing(sessionId: String, hadSubmitUrl: Boolean) {
     MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.PairingV1__request_ready)
-      .setItems(actions) { _, index ->
-        when (index) {
-          0 -> if (!viewModel.copyPairingRequest(requireContext(), sessionId)) {
-            Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
-          }
-          1 -> if (!viewModel.sharePairingRequest(requireContext(), sessionId)) {
-            Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
-          }
-          2 -> {
-            viewModel.pendingPairingSaveId = sessionId
-            pairingSaveLauncher.launch("colliesocket-pairing-request-$sessionId.json")
-          }
-          3 -> showPastePairingReceiptDialog()
-          4 -> pairingReceiptLauncher.launch(arrayOf("application/json", "text/*"))
-          5 -> showPairingLocalStatus()
-        }
+      .setTitle(R.string.PairingV1__offline_title)
+      .setMessage(if (hadSubmitUrl) R.string.PairingV1__offline_unreachable else R.string.PairingV1__offline_manual)
+      .setPositiveButton(R.string.PairingV1__share_request) { _, _ ->
+        if (!viewModel.sharePairingRequest(requireContext(), sessionId)) showPairingError(R.string.PairingV1__file_action_failed)
       }
-      .setNegativeButton(android.R.string.cancel, null)
+      .setNegativeButton(R.string.PairingV1__save_request) { _, _ ->
+        viewModel.pendingPairingSaveId = sessionId
+        pairingSaveLauncher.launch("colliesocket-pairing-request.json")
+      }
       .show()
   }
 
-  private fun showPastePairingReceiptDialog() {
-    val input = EditText(requireContext()).apply {
-      inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-      minLines = 4
-      maxLines = 10
-      hint = getString(R.string.PairingV1__receipt_hint)
-    }
-    MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.PairingV1__paste_receipt)
-      .setMessage(R.string.PairingV1__receipt_message)
-      .setView(input)
-      .setPositiveButton(R.string.PairingV1__verify_receipt) { _, _ ->
-        showPairingReceiptResult(viewModel.acceptPairingReceipt(input.text.toString()))
-      }
-      .setNeutralButton(R.string.PairingV1__paste_from_clipboard) { _, _ ->
-        showPairingReceiptResult(viewModel.pastePairingReceipt(requireContext()))
-      }
-      .setNegativeButton(android.R.string.cancel, null)
-      .show()
-  }
-
-  private fun showPairingReceiptResult(accepted: Boolean) {
-    val message = if (!accepted) getString(R.string.PairingV1__receipt_invalid)
-    else getString(R.string.PairingV1__receipt_authenticated)
-    MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.PairingV1__receipt_title)
-      .setMessage(message)
-      .setPositiveButton(android.R.string.ok, null)
-      .show()
-  }
-
-  private fun showPairingLocalStatus() {
-    val status = viewModel.pairingStatus()
-    if (status == null) {
-      Toast.makeText(requireContext(), R.string.PairingV1__status_unavailable, Toast.LENGTH_LONG).show()
-      return
-    }
-    val message = getString(
-      R.string.PairingV1__status_message,
-      status.sessionId,
-      status.hostLabel,
-      status.providerOrigin,
-      status.distributorLabel,
-      java.text.DateFormat.getDateTimeInstance().format(java.util.Date(status.deadlineSeconds * 1000)),
-      getString(if (status.receiptAccepted) R.string.PairingV1__receipt_authenticated else R.string.PairingV1__receipt_pending),
-      getString(if (status.requestReady) R.string.PairingV1__request_available else R.string.PairingV1__request_unavailable),
-    )
-    MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.PairingV1__local_status)
-      .setMessage(message)
-      .setPositiveButton(android.R.string.ok, null)
-      .show()
+  private fun showPairingError(@StringRes message: Int) {
+    Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
   }
 
   private fun showExportModeDialog(state: UnifiedPushSettingsState) {
@@ -499,161 +382,126 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.refresh()
   }
 
-  private fun getConfiguration(state: UnifiedPushSettingsState): DSLConfiguration {
-    return configure {
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    if (item.itemId != R.id.unifiedpush_advanced) return super.onOptionsItemSelected(item)
+    viewModel.state.value?.let(::showAdvanced)
+    return true
+  }
+
+  private fun showAdvanced(state: UnifiedPushSettingsState) {
+    val actions = mutableListOf<Pair<Int, () -> Unit>>()
+    if (!state.controlStateCorrupt && !viewModel.isExportPending()) {
+      actions += R.string.PairingV1__manual_save to {
+        val disclosure = state.relayDisclosure
+        if (disclosure == null) {
+          RelayDisclosureDialogs.showStaleAction(requireContext())
+        } else {
+          val epoch = state.enrollmentEpoch.takeIf { it > 0 }?.toString().orEmpty()
+          RelayDisclosureDialogs.showExport(requireContext()) {
+            viewModel.prepareEnrollmentExport(epoch, ExportMode.NEW_INTENT, disclosure = disclosure)
+              ?.let(enrollmentDocumentLauncher::launch)
+          }
+        }
+      }
+      actions += R.string.PairingV1__export_options to { showExportModeDialog(state) }
+    }
+    if (state.controlStateCorrupt) {
+      actions += R.string.UnifiedPushSettingsFragment__control_state_recovery to { showControlStateRecoveryDialog() }
+    } else if (state.pendingExportCount > 0) {
+      actions += R.string.UnifiedPushSettingsFragment__pending_exports to { showForgetIntentDialog(state) }
+    }
+    if (state.registrationFailed) {
+      actions += R.string.UnifiedPushSettingsFragment__retry_registration to { viewModel.retryRegistration() }
+    }
+    if (state.airGapped && state.serverParameters != null) {
+      actions += R.string.UnifiedPushSettingsFragment__server_parameters to {
+        val disclosure = state.relayDisclosure
+        if (disclosure == null) {
+          RelayDisclosureDialogs.showStaleAction(requireContext())
+        } else {
+          RelayDisclosureDialogs.showCopy(requireContext()) {
+            viewModel.copyParamsToClipboard(requireContext(), disclosure)
+          }
+        }
+      }
+    }
+    if (state.aci != null) {
+      actions += R.string.PairingV1__copy_account to { viewModel.copyAciToClipboard(requireContext()) }
+    }
+    actions += R.string.UnifiedPushSettingsFragment__relay_trust_title to {
+      MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.UnifiedPushSettingsFragment__relay_trust_title)
+        .setMessage(R.string.UnifiedPushSettingsFragment__relay_trust_summary)
+        .setPositiveButton(android.R.string.ok, null)
+        .show()
+    }
+    actions += R.string.UnifiedPushSettingsFragment__remove_relay_access_title to { showRemoveRelayAccessDialog() }
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.PairingV1__advanced)
+      .setItems(actions.map { getString(it.first) }.toTypedArray()) { _, index -> actions[index].second.invoke() }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun getConfiguration(state: UnifiedPushSettingsState): DSLConfiguration = configure {
+    textPref(
+      title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__status),
+      summary = DSLSettingsText.from(getStatusSummary(state)),
+    )
+
+    val relaySummary = when {
+      state.pairingHost != null && state.pairingOrigin != null ->
+        getString(R.string.PairingV1__relay_summary, state.pairingHost, state.pairingOrigin)
+      state.pairingOrigin != null -> state.pairingOrigin
+      state.airGapped -> getString(R.string.UnifiedPushSettingsFragment__mollysocket_server_air_gapped)
+      else -> state.mollySocketUrl ?: getString(R.string.PairingV1__scan_to_pair)
+    }
+    clickPref(
+      title = DSLSettingsText.from(R.string.PairingV1__notification_relay),
+      summary = DSLSettingsText.from(relaySummary),
+      isEnabled = !viewModel.pairingBusy,
+      onClick = {
+        val disclosure = state.relayDisclosure
+        if (disclosure == null) {
+          RelayDisclosureDialogs.showStaleAction(requireContext())
+        } else {
+          viewModel.scanDisclosure = disclosure
+          qrScanLauncher.launch()
+        }
+      },
+    )
+
+    if (state.distributors.isEmpty()) {
       textPref(
-        title = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__status)),
-        summary = DSLSettingsText.from(getStatusSummary(state)),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__distributor_app),
+        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__none_available),
       )
+    } else {
+      radioListPref(
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__distributor_app),
+        listItems = state.distributors.map { it.name }.toTypedArray(),
+        selected = state.selected,
+        onSelected = { if (!viewModel.pairingBusy) viewModel.setUnifiedPushDistributor(state.distributors[it].applicationId) },
+      )
+    }
 
-      if (state.pushFallback) {
-        textPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__push_warning_title, requireContext().getColor(R.color.signal_alert_primary)),
-          summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__push_warning_summary),
-        )
-      }
-
-      if (state.registrationFailed) {
-        clickPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__retry_registration),
-          onClick = { viewModel.retryRegistration() },
-        )
-      }
-
+    val legacy = !state.encryptedEnrollment && !state.airGapped && state.mollySocketUrl != null
+    if (legacy) {
       clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__mollysocket_server),
-        summary = DSLSettingsText.from(
-          if (state.airGapped) {
-            getString(R.string.UnifiedPushSettingsFragment__mollysocket_server_air_gapped)
-          } else {
-            state.mollySocketUrl ?: "Error"
-          }
-        ),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_configuration),
+        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__tap_to_request_a_test_notification_from_mollysocket),
+        isEnabled = !viewModel.pairingBusy && state.registrationStatus == RegistrationStatus.REGISTERED,
         onClick = {
-          val disclosure = state.relayDisclosure
-          if (disclosure == null) {
-            RelayDisclosureDialogs.showStaleAction(requireContext())
-          } else {
-            viewModel.scanDisclosure = disclosure
-            qrScanLauncher.launch()
-          }
+          viewModel.pingMollySocket()
+          Toast.makeText(requireContext(), R.string.UnifiedPushSettingsFragment__a_test_notification_should_appear_in_a_few_moments, Toast.LENGTH_SHORT).show()
         },
       )
-
-      if (state.distributors.isEmpty()) {
-        textPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__distributor_app),
-          summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__none_available)
-        )
-      } else {
-        radioListPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__distributor_app),
-          listItems = state.distributors.map { it.name }.toTypedArray(),
-          selected = state.selected,
-          onSelected = {
-            viewModel.setUnifiedPushDistributor(state.distributors[it].applicationId)
-          },
-        )
-      }
-
-      dividerPref()
-
-      if (state.airGapped) {
-        clickPref(
-          title = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__server_parameters)),
-          summary = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__tap_to_copy_to_clipboard)),
-          iconEnd = DSLSettingsIcon.from(org.signal.core.ui.R.drawable.symbol_copy_android_24),
-          isEnabled = state.serverParameters != null,
-          onClick = {
-            val disclosure = state.relayDisclosure
-            if (disclosure == null) {
-              RelayDisclosureDialogs.showStaleAction(requireContext())
-            } else {
-              RelayDisclosureDialogs.showCopy(requireContext()) {
-                viewModel.copyParamsToClipboard(requireContext(), disclosure)
-              }
-            }
-          },
-        )
-      } else {
-        val aciOrUnknown = state.aci ?: getString(R.string.Recipient_unknown)
-
-        clickPref(
-          title = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__account_id)),
-          summary = DSLSettingsText.from(aciOrUnknown),
-          iconEnd = DSLSettingsIcon.from(org.signal.core.ui.R.drawable.symbol_copy_android_24),
-          isEnabled = state.aci != null,
-          onClick = {
-            viewModel.copyAciToClipboard(requireContext())
-          },
-        )
-
-        clickPref(
-          title = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__test_configuration)),
-          summary = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__tap_to_request_a_test_notification_from_mollysocket)),
-          onClick = {
-            viewModel.pingMollySocket()
-            Toast.makeText(context, getString(R.string.UnifiedPushSettingsFragment__a_test_notification_should_appear_in_a_few_moments), Toast.LENGTH_SHORT).show()
-          },
-        )
-      }
-
+    } else {
       clickPref(
         title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_push),
         summary = DSLSettingsText.from(getPushTestSummary(state)),
-        isEnabled = !state.pushTestRunning,
+        isEnabled = state.encryptedEnrollment && !state.awaitingPushConfirmation && !state.pushTestRunning && !viewModel.pairingBusy,
         onClick = { viewModel.testPush() },
-      )
-
-      if (state.controlStateCorrupt) {
-        clickPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery),
-          summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery_summary),
-          onClick = { showControlStateRecoveryDialog() },
-        )
-      }
-
-      if (!state.controlStateCorrupt && state.pendingExportCount > 0) {
-        clickPref(
-          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__pending_exports),
-          summary = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__pending_exports_summary, state.pendingExportCount)),
-          onClick = { showForgetIntentDialog(state) },
-        )
-      }
-
-      clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment),
-        summary = DSLSettingsText.from(
-          if (state.controlStateCorrupt) R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
-          else R.string.UnifiedPushSettingsFragment__export_enrollment_summary
-        ),
-        isEnabled = !state.controlStateCorrupt && !viewModel.isExportPending(),
-        onClick = { showExportModeDialog(state) },
-      )
-
-      viewModel.pairingStatus()?.let { pairing ->
-        clickPref(
-          title = DSLSettingsText.from(R.string.PairingV1__local_status),
-          summary = DSLSettingsText.from(
-            if (pairing.receiptAccepted) R.string.PairingV1__status_summary_receipt
-            else if (pairing.requestReady) R.string.PairingV1__status_summary_ready
-            else R.string.PairingV1__status_summary_unavailable
-          ),
-          onClick = { showPairingActions(pairing.sessionId) },
-        )
-      }
-
-      dividerPref()
-
-      textPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_title),
-        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__relay_trust_summary),
-      )
-
-      clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_title),
-        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__remove_relay_access_summary),
-        onClick = { showRemoveRelayAccessDialog() },
       )
     }
   }
@@ -675,40 +523,18 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
   }
 
   @StringRes
-  private fun getStatusSummary(state: UnifiedPushSettingsState): Int {
-    return when {
-      state.controlStateCorrupt -> R.string.UnifiedPushSettingsFragment__control_state_unavailable
-      state.distributors.isEmpty() -> R.string.UnifiedPushSettingsFragment__status_summary_no_distributor
-      state.selected == -1 -> R.string.UnifiedPushSettingsFragment__status_summary_distributor_not_selected
-      state.registrationFailed -> R.string.UnifiedPushSettingsFragment__registration_failed
-      state.selectedNotAck -> R.string.UnifiedPushSettingsFragment__status_summary_missing_endpoint
-      state.endpoint == null -> R.string.UnifiedPushSettingsFragment__status_summary_missing_endpoint
-      state.mollySocketUrl == null && !state.airGapped -> R.string.UnifiedPushSettingsFragment__status_summary_mollysocket_url_missing
-      state.device == null -> R.string.UnifiedPushSettingsFragment__status_summary_linked_device_error
-      else -> getRegistrationStatusSummary(state)
-    }
-  }
-
-  @StringRes
-  private fun getRegistrationStatusSummary(state: UnifiedPushSettingsState): Int {
-    return if (state.airGapped) {
-      when (state.registrationStatus) {
-        RegistrationStatus.REGISTERED -> android.R.string.ok
-        else -> R.string.UnifiedPushSettingsFragment__status_summary_air_gapped_pending
-      }
-    } else {
-      when (state.registrationStatus) {
-        RegistrationStatus.UNKNOWN,
-        RegistrationStatus.PENDING -> R.string.UnifiedPushSettingsFragment__status_summary_pending
-
-        RegistrationStatus.BAD_RESPONSE,
-        RegistrationStatus.SERVER_ERROR -> R.string.UnifiedPushSettingsFragment__status_summary_bad_response
-
-        RegistrationStatus.REGISTERED -> android.R.string.ok
-        RegistrationStatus.FORBIDDEN_PASSWORD -> R.string.UnifiedPushSettingsFragment__status_summary_pending
-        RegistrationStatus.FORBIDDEN_UUID -> R.string.UnifiedPushSettingsFragment__status_summary_forbidden_uuid
-        RegistrationStatus.FORBIDDEN_ENDPOINT -> R.string.UnifiedPushSettingsFragment__status_summary_forbidden_endpoint
-      }
-    }
+  private fun getStatusSummary(state: UnifiedPushSettingsState): Int = when {
+    viewModel.pairingBusy -> R.string.PairingV1__pairing_in_progress
+    state.pushFallback -> R.string.PairingV1__status_websocket
+    state.controlStateCorrupt -> R.string.UnifiedPushSettingsFragment__control_state_unavailable
+    state.registrationFailed -> R.string.UnifiedPushSettingsFragment__registration_failed
+    state.selectedNotAck || state.endpoint == null -> R.string.PairingV1__status_not_set_up
+    state.awaitingPushConfirmation -> R.string.PairingV1__waiting_confirmation
+    state.encryptedEnrollment -> R.string.PairingV1__status_connected
+    state.mollySocketUrl == null && !state.airGapped -> R.string.PairingV1__status_not_set_up
+    state.device == null -> R.string.PairingV1__status_not_set_up
+    state.registrationStatus == RegistrationStatus.REGISTERED -> R.string.PairingV1__status_connected
+    state.airGapped -> R.string.UnifiedPushSettingsFragment__status_summary_air_gapped_pending
+    else -> R.string.UnifiedPushSettingsFragment__status_summary_pending
   }
 }

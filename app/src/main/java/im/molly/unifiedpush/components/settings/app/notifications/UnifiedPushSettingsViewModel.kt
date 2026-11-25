@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.MainThread
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,8 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.enrollment.PairingTransport
 import im.molly.unifiedpush.enrollment.PairingV1
-import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.RelayDisclosure
@@ -26,7 +27,11 @@ import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import org.signal.storage.keyvalue.KeyValuePersistenceException
@@ -43,6 +48,7 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.unifiedpush.android.connector.UnifiedPush
 import java.util.UUID
+import kotlin.coroutines.resume
 
 private data class ExportSummary(val file: java.io.File?, val epoch: Long, val highestUsed: Long, val collides: Boolean)
 
@@ -67,64 +73,144 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     pairingFlowActive = true
   }
 
-  internal fun parsePairingOffer(json: String): PairingV1.Offer = pairingCoordinator.parseOffer(json)
+  internal sealed interface PairingUi {
+    data object Working : PairingUi
+    data class Paired(val hostLabel: String) : PairingUi
+    data class Offline(val sessionId: String, val hadSubmitUrl: Boolean) : PairingUi
+    data class Error(val message: String) : PairingUi
+  }
 
-  internal fun pairingConsentDetails(offer: PairingV1.Offer): PairingV1Coordinator.ConsentDetails? =
-    pairingCoordinator.consentDetails(offer)
+  private val pairingResult = MutableLiveData<PairingUi?>()
+  internal val pairingState: LiveData<PairingUi?> = pairingResult
+  internal val pairingBusy: Boolean get() = pairingResult.value == PairingUi.Working
 
-  internal fun evaluatePairingOffer(offer: PairingV1.Offer, distributorId: String? = null): PairingV1Coordinator.OfferPlan =
+  internal fun consumePairingResult() {
+    if (!pairingBusy) pairingResult.value = null
+  }
+
+  internal fun parsePairingScan(json: String): PairingTransport.Scan = pairingCoordinator.parseScan(json)
+
+  internal fun evaluatePairingOffer(offer: PairingV1.Offer, distributorId: String): PairingV1Coordinator.OfferPlan =
     pairingCoordinator.evaluateOffer(offer, distributorId)
 
   internal fun pairingDistributors(): List<Distributor> = UnifiedPush.getDistributors(application).map { id ->
     val label = try {
       application.packageManager.getApplicationLabel(application.packageManager.getApplicationInfo(id, 0)).toString()
-    } catch (_: Exception) { id }
+    } catch (_: PackageManager.NameNotFoundException) {
+      id
+    }
     Distributor(id, label)
   }
 
   internal fun pairingSelectedDistributor(): String? = UnifiedPush.getSavedDistributor(application)
 
-  internal fun selectPairingDistributor(distributorId: String) {
-    synchronized(UnifiedPushLifecycle.monitor) {
-      UnifiedPushDistributor.saveDistributor(application, distributorId)
-    }
-    refresh()
-  }
-
-  internal fun registerPairingEndpoint(
-    details: PairingV1Coordinator.RegistrationDetails,
-    disclosure: RelayDisclosure.Snapshot?,
-    onComplete: (Result<PairingRegistrationGate.Endpoint>) -> Unit,
-  ): Boolean = pairingCoordinator.registerForOffer(details, disclosure) { result ->
-    ThreadUtil.runOnMain {
-      refresh()
-      onComplete(result)
-    }
-  }
-
-  internal fun sealPairing(
-    offer: PairingV1.Offer,
-    disclosure: RelayDisclosure.Snapshot?,
-    consent: PairingV1Coordinator.ConsentDetails,
-    onResult: (PairingV1Coordinator.SealResult) -> Unit,
+  internal fun pair(
+    scan: PairingTransport.Scan,
+    disclosure: RelayDisclosure.Snapshot,
+    distributorId: String,
+    approvedOrigin: String?,
   ) {
-    SignalExecutors.BOUNDED.execute {
-      val result = pairingCoordinator.sealAfterConsent(offer, disclosure, consent)
-      ThreadUtil.runOnMain {
-        refresh()
-        onResult(result)
+    if (pairingBusy) return
+    pairingResult.value = PairingUi.Working
+    refresh()
+    viewModelScope.launch {
+      val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin)
+      pairingResult.value = result
+      refresh()
+    }
+  }
+
+  private suspend fun pairAfterApproval(
+    scan: PairingTransport.Scan,
+    disclosure: RelayDisclosure.Snapshot,
+    distributorId: String,
+    approvedOrigin: String?,
+  ): PairingUi {
+    val offer = scan.offer
+    if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return pairingError(R.string.PairingV1__offer_expired)
+
+    // A distributor chosen in the picker takes effect only after Pair, while the account and
+    // previous route shown during scanning are still current.
+    var approved: RelayDisclosure.Snapshot? = null
+    RelayDisclosure.runIfCurrent(disclosure) {
+      if (distributorId in UnifiedPush.getDistributors(application) &&
+        (distributorId == UnifiedPush.getSavedDistributor(application) ||
+          UnifiedPushDistributor.saveDistributor(application, distributorId))) {
+        approved = RelayDisclosure.capture(application)
+      }
+    }
+    var snapshot = approved ?: return pairingError(R.string.PairingV1__endpoint_changed)
+    var plan = pairingCoordinator.evaluateOffer(offer, distributorId)
+    if (plan is PairingV1Coordinator.OfferPlan.Register) {
+      val registration = plan.details
+      val registered = withTimeoutOrNull(25_000L) {
+        suspendCancellableCoroutine { continuation ->
+          val started = pairingCoordinator.registerForOffer(registration, snapshot) { result ->
+            if (continuation.isActive) continuation.resume(result.isSuccess)
+          }
+          if (!started && continuation.isActive) continuation.resume(false)
+        }
+      }
+      if (registered != true) {
+        pairingCoordinator.cancelOfferAttempt(offer.sessionId)
+        return pairingError(R.string.PairingV1__registration_failed)
+      }
+      val afterRegistration = RelayDisclosure.capture(application)
+      if (afterRegistration == null ||
+        afterRegistration.account.accountId != snapshot.account.accountId ||
+        afterRegistration.account.localDeviceId != snapshot.account.localDeviceId ||
+        afterRegistration.configuration != snapshot.configuration) {
+        pairingCoordinator.cancelOfferAttempt(offer.sessionId)
+        return pairingError(R.string.PairingV1__endpoint_changed)
+      }
+      snapshot = afterRegistration
+      plan = pairingCoordinator.evaluateOffer(offer, distributorId)
+    }
+    if (plan is PairingV1Coordinator.OfferPlan.Failed) {
+      pairingCoordinator.cancelOfferAttempt(offer.sessionId)
+      return PairingUi.Error(plan.message)
+    }
+    val consent = (plan as? PairingV1Coordinator.OfferPlan.Ready)?.consent
+    if (consent == null || consent.distributorId != distributorId ||
+      approvedOrigin != null && consent.providerOrigin != approvedOrigin) {
+      pairingCoordinator.cancelOfferAttempt(offer.sessionId)
+      return pairingError(R.string.PairingV1__endpoint_changed)
+    }
+
+    return withContext(Dispatchers.IO) {
+      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent)
+      if (sealed is PairingV1Coordinator.SealResult.Failed) {
+        pairingCoordinator.cancelOfferAttempt(offer.sessionId)
+        return@withContext PairingUi.Error(sealed.message)
+      }
+      val session = (sealed as PairingV1Coordinator.SealResult.Ready).session
+      when (val submitted = pairingCoordinator.submit(session, scan.submitUrl)) {
+        PairingTransport.Result.Accepted -> PairingUi.Paired(offer.hostLabel)
+        PairingTransport.Result.Offline -> PairingUi.Offline(session.id, scan.submitUrl != null)
+        else -> {
+          pairingCoordinator.cancelOfferAttempt(offer.sessionId)
+          pairingError(when (submitted) {
+            PairingTransport.Result.Stale -> R.string.PairingV1__endpoint_changed
+            PairingTransport.Result.UnsafeDestination -> R.string.PairingV1__invalid_submit_url
+            is PairingTransport.Result.Rejected -> when (submitted.code) {
+              "session_expired" -> R.string.PairingV1__offer_expired
+              "session_consumed" -> R.string.PairingV1__offer_used
+              "invalid_session" -> R.string.PairingV1__session_unavailable
+              "capacity_exceeded", "queue_full", "state_unavailable" -> R.string.PairingV1__server_busy
+              "invalid_endpoint" -> R.string.PairingV1__server_endpoint_rejected
+              else -> R.string.PairingV1__request_rejected
+            }
+            else -> R.string.PairingV1__receipt_invalid
+          })
+        }
       }
     }
   }
 
-  internal fun copyPairingRequest(context: Context, sessionId: String): Boolean = pairingCoordinator.copyRequest(context, sessionId)
+  private fun pairingError(@StringRes message: Int): PairingUi.Error = PairingUi.Error(application.getString(message))
+
   internal fun sharePairingRequest(context: Context, sessionId: String): Boolean = pairingCoordinator.shareRequest(context, sessionId)
-  internal fun savePairingRequest(context: Context, sessionId: String, uri: android.net.Uri): Boolean = pairingCoordinator.writeRequest(context, sessionId, uri)
-  internal fun pairingStatus(): PairingV1Coordinator.LocalStatus? = pairingCoordinator.status()
-  internal fun cancelPairingAttempt(sessionId: String) = pairingCoordinator.cancelOfferAttempt(sessionId)
-  internal fun pastePairingReceipt(context: Context): Boolean = pairingCoordinator.pasteAndAcceptReceipt(context).also { if (it) refresh() }
-  internal fun readPairingReceipt(context: Context, uri: android.net.Uri): Boolean = pairingCoordinator.readAndAcceptReceipt(context, uri).also { if (it) refresh() }
-  internal fun acceptPairingReceipt(json: String): Boolean = pairingCoordinator.acceptReceipt(json).also { if (it) refresh() }
+  internal fun savePairingRequest(context: Context, sessionId: String, uri: Uri): Boolean = pairingCoordinator.writeRequest(context, sessionId, uri)
 
   override fun onCleared() {
     pairingCoordinator.clear()
@@ -200,6 +286,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val mollySocketUrl = SignalStore.unifiedpush.mollySocketUrl
 
     val controlRead = SignalStore.unifiedpush.controlStateRead.stateOrNull
+    val pairing = SignalStore.unifiedpush.pairingEndpointBinding
     UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
       device = SignalStore.unifiedpush.device?.takeUnless(SignalStore.unifiedpush::isProvisioningPending),
@@ -211,6 +298,13 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       selectedNotAck = !ack,
       endpoint = SignalStore.unifiedpush.endpoint,
       mollySocketUrl = mollySocketUrl,
+      pairingHost = pairing?.hostLabel,
+      pairingOrigin = pairing?.endpointOrigin,
+      encryptedEnrollment = pairing != null || controlRead?.key != null,
+      awaitingPushConfirmation = pairing != null &&
+        (controlRead == null || controlRead.activeInstance != pairing.instance ||
+          pairing.importId != null && controlRead.activeImportId != pairing.importId),
+      enrollmentEpoch = controlRead?.activeEpoch ?: 0L,
       pushFallback = SignalStore.unifiedpush.health.fallback,
       pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),
       pushTestResultAt = SignalStore.unifiedpush.health.lastResultAt,

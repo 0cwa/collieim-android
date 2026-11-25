@@ -72,6 +72,16 @@ class EnrollmentExporterTest {
   @After fun cleanup() = EnrollmentExporter.removeFiles(context)
 
   @Test
+  fun `a new epoch is compared with the prior high water mark`() {
+    val export = EnrollmentExporter.exportWithEpoch(context, 8, ExportMode.NEW_INTENT) { true }
+
+    assertEquals(9, export.epoch)
+    assertEquals(8, export.highestUsed)
+    assertFalse(export.collides)
+    assertEquals(9, values.controlState.highestEpoch)
+  }
+
+  @Test
   fun `four concurrent new intents are capped and every saved intent shares the same epoch key`() {
     val workerCount = 5
     val ready = CountDownLatch(workerCount)

@@ -166,7 +166,7 @@
     <string name="DonateMegaphone__collie_support_body">If you enjoy Collie, consider supporting its development with a donation.</string>
     <string name="Megaphones_turn_on_stories">Turn on stories</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment">Export enrollment file</string>
-    <string name="UnifiedPushSettingsFragment__export_enrollment_summary">Saves an enrollment file for CollieSocket\'s protected import. Choose a location, import it only on the trusted server, then delete the saved copy.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_summary">For manual or air-gapped setup, save an enrollment file for CollieSocket\'s protected import. Import it only on the trusted server, then delete the saved copy.</string>
     <string name="UnifiedPushSettingsFragment__export_new_intent">Create a new import intent</string>
     <string name="UnifiedPushSettingsFragment__export_recovery_intent">Recover a restored server enrollment</string>
     <string name="UnifiedPushSettingsFragment__export_rerender_intent">Re-render a saved intent</string>

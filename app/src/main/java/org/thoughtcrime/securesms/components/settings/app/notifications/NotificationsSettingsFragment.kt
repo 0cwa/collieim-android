@@ -250,7 +250,6 @@ open class DefaultNotificationsSettingsCallbacks(
       val disclosure = viewModel.scanDisclosure
       viewModel.scanDisclosure = null
       if (data?.trimStart()?.startsWith("{") == true) {
-        Toast.makeText(activity, R.string.PairingV1__first_scan_settings, Toast.LENGTH_LONG).show()
         onFirstPairingScan?.invoke(data) ?: appSettingsRouter.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
       } else if (data != null) {
         if (disclosure == null) {

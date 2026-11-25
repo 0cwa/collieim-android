@@ -460,7 +460,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       endpoint.url?.let { url -> im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(url) }?.let { origin ->
         org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
           pending.instance, pending.distributorId, pending.vapidPublicKey, pending.providerOrigin, origin,
-          pending.sessionId, pending.expiresAt, pending.accountId, pending.deviceId,
+          pending.sessionId, pending.expiresAt, pending.accountId, pending.deviceId, pending.hostLabel,
         )
       }
     } ?: existingPairing?.let { binding ->
@@ -719,7 +719,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
                   registration.instance, registration.distributorId, registration.vapidPublicKey,
                   registration.providerOrigin, origin, registration.sessionId, registration.expiresAt,
-                  registration.accountId, registration.deviceId,
+                  registration.accountId, registration.deviceId, registration.hostLabel, import.requestId,
                 ),
               )
               val accepted = acceptEncryptedMessageLocked(context, message, import) ?: run {

@@ -49,6 +49,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_PAIRING_EXPIRY = "up.pairing.expiry"
     private const val UNIFIEDPUSH_PAIRING_ACCOUNT = "up.pairing.account"
     private const val UNIFIEDPUSH_PAIRING_DEVICE = "up.pairing.device"
+    private const val UNIFIEDPUSH_PAIRING_HOST_LABEL = "up.pairing.hostLabel"
+    private const val UNIFIEDPUSH_PAIRING_IMPORT_ID = "up.pairing.importId"
     private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
@@ -208,6 +210,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     val expiresAt: Long,
     val accountId: String,
     val deviceId: Int,
+    val hostLabel: String? = null,
+    val importId: String? = null,
   ) {
     override fun toString() = "PairingEndpointBinding(sessionId=$sessionId, instance=$instance)"
   }
@@ -225,7 +229,11 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       val expiry = snapshot.getLong(UNIFIEDPUSH_PAIRING_EXPIRY, 0L)
       val deviceId = snapshot.getInteger(UNIFIEDPUSH_PAIRING_DEVICE, 0)
       if (expiry <= 0L || deviceId <= 0) return null
-      return PairingEndpointBinding(instance, distributor, vapid, origin, endpointOrigin, session, expiry, account, deviceId)
+      return PairingEndpointBinding(
+        instance, distributor, vapid, origin, endpointOrigin, session, expiry, account, deviceId,
+        snapshot.getString(UNIFIEDPUSH_PAIRING_HOST_LABEL, null),
+        snapshot.getString(UNIFIEDPUSH_PAIRING_IMPORT_ID, null),
+      )
     }
 
   /** Publishes one connector route tuple so readers never combine a new URL with old key material or instance. */
@@ -244,6 +252,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .remove(UNIFIEDPUSH_PAIRING_EXPIRY)
       .remove(UNIFIEDPUSH_PAIRING_ACCOUNT)
       .remove(UNIFIEDPUSH_PAIRING_DEVICE)
+      .remove(UNIFIEDPUSH_PAIRING_HOST_LABEL)
+      .remove(UNIFIEDPUSH_PAIRING_IMPORT_ID)
       .apply()
   }
 
@@ -264,6 +274,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putLong(UNIFIEDPUSH_PAIRING_EXPIRY, binding.expiresAt)
       .putString(UNIFIEDPUSH_PAIRING_ACCOUNT, binding.accountId)
       .putInteger(UNIFIEDPUSH_PAIRING_DEVICE, binding.deviceId)
+      .putString(UNIFIEDPUSH_PAIRING_HOST_LABEL, binding.hostLabel)
+      .putString(UNIFIEDPUSH_PAIRING_IMPORT_ID, binding.importId)
       .apply()
   }
 

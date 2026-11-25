@@ -1,81 +1,47 @@
 <resources>
-  <string name="PairingV1__consent_title">Pair encrypted push</string>
-  <string name="PairingV1__consent_message">Pair with the server “%1$s”?
-
-Provider: %2$s
-Selected distributor: %3$s (%4$s)
-VAPID public key: %5$s
-Signal account: %6$s
-
-The app will create one encrypted bridge enrollment for this destination. Anyone who sees this offer can submit a request to the server. Continue only if you trust this server and provider.</string>
-  <string name="PairingV1__consent_message_selected_provider">Pair with the server “%1$s”?
-
-The offer does not specify a provider. Using the phone’s selected provider: %2$s
-Selected distributor: %3$s (%4$s)
-VAPID public key: %5$s
-Signal account: %6$s
-
-The app will create one encrypted bridge enrollment for this destination. Anyone who sees this offer can submit a request to the server. Continue only if you trust this server and provider.</string>
-  <string name="PairingV1__consent_confirm">Approve and create request</string>
-  <string name="PairingV1__unsupported_add_receiver">This offer requests adding a receiver. This app supports bridge pairing only. No settings or enrollment were changed.</string>
-  <string name="PairingV1__invalid_offer">This pairing offer is invalid or expired.</string>
+  <string name="PairingV1__scan_instructions">Scan a CollieSocket pairing QR code or a MollySocket server QR code.</string>
+  <string name="PairingV1__consent_title">Pair with “%1$s”?</string>
+  <string name="PairingV1__consent_message">%1$s\nDistributor: %2$s\n\nLinks a notification relay to your Signal account. It cannot read your messages.</string>
+  <string name="PairingV1__consent_confirm">Pair</string>
+  <string name="PairingV1__push_server">Push server: %1$s</string>
+  <string name="PairingV1__distributor_server">Using your distributor’s server (%1$s)</string>
+  <string name="PairingV1__distributor_server_unknown">Using your distributor’s server</string>
+  <string name="PairingV1__unsupported_add_receiver">Linked-device pairing is unavailable in this build. Generate a bridge QR code on your computer.</string>
+  <string name="PairingV1__invalid_offer">This QR code is invalid. Generate a new one on your computer.</string>
+  <string name="PairingV1__invalid_submit_url">This QR code has an unsafe submission address. Generate a new one on your computer.</string>
   <string name="PairingV1__offer_changed">The pairing offer changed. Scan it again.</string>
-  <string name="PairingV1__offer_expired">This pairing offer expired before a request was created. Scan a fresh offer.</string>
-  <string name="PairingV1__endpoint_changed">The active endpoint or distributor changed. Review the destination and approve again.</string>
-  <string name="PairingV1__endpoint_unavailable">Pairing needs a usable UnifiedPush endpoint. Select a distributor, then approve the pairing registration requested from this offer.</string>
-  <string name="PairingV1__vapid_registration_unavailable">This offer uses a different push provider key. Pairing did not change registration or send credentials to a saved relay. Configure the trusted provider separately, wait for its endpoint, then scan a fresh offer.</string>
-  <string name="PairingV1__first_scan_settings">Pairing offers need an active provider endpoint. Open UnifiedPush settings, configure the provider there, then scan the offer again and review the destination before approving.</string>
+  <string name="PairingV1__offer_used">This QR code was already used. Check the pairing on your computer.</string>
+  <string name="PairingV1__offer_expired">This QR code expired. Generate a new one on your computer.</string>
+  <string name="PairingV1__endpoint_changed">Your push settings changed. Scan the QR code again.</string>
+  <string name="PairingV1__endpoint_unavailable">Push setup is unavailable right now. Unlock the app and try again.</string>
+  <string name="PairingV1__vapid_registration_unavailable">The distributor could not use this push server. Check its settings and try again.</string>
   <string name="PairingV1__select_distributor_title">Choose a push distributor</string>
-  <string name="PairingV1__select_distributor_first">No UnifiedPush distributor is available. Install or enable a distributor, then scan the offer again.</string>
-  <string name="PairingV1__provider_server_mismatch">The active endpoint uses a different provider origin for “%1$s”. Set the distributor’s server to %2$s first, then scan the offer again.</string>
-  <string name="PairingV1__provider_unspecified">Not specified by the host. The endpoint’s full origin will be shown before pairing.</string>
-  <string name="PairingV1__registration_consent_title">Register for this pairing offer</string>
-  <string name="PairingV1__registration_consent_message">A new push registration will be requested for:
-
-Host: %1$s
-Provider origin: %2$s
-Selected distributor: %3$s (%4$s)
-Signal account: %5$s
-VAPID public key: %6$s
-
-This registration is tied to this offer and account. The distributor will receive the registration request. No enrollment is created yet. After registration, the app will show the resulting provider origin and ask for separate approval before sealing the request. Continue only if you trust this host and distributor.</string>
-  <string name="PairingV1__registration_consent_confirm">Approve registration</string>
-  <string name="PairingV1__registration_started">Preparing the pairing registration. The distributor response may take a moment.</string>
-  <string name="PairingV1__registration_failed">Pairing registration failed or expired. Scan the offer again.</string>
-  <string name="PairingV1__registration_not_started">Pairing registration could not be started. Review the distributor selection and scan again.</string>
-  <string name="PairingV1__registration_not_ready">The registration callback did not leave a current endpoint for this offer. Scan the offer again.</string>
+  <string name="PairingV1__select_distributor_first">Install or enable a push distributor, then scan the QR code again.</string>
+  <string name="PairingV1__provider_server_mismatch">To pair with “%1$s”, set your distributor’s server to %2$s, then scan again.</string>
+  <string name="PairingV1__registration_failed">Could not register with the distributor. Check its server settings and try again.</string>
   <string name="PairingV1__request_failed">Could not create the encrypted pairing request.</string>
-  <string name="PairingV1__request_ready">Encrypted request ready</string>
-  <string name="PairingV1__copy_request">Copy request</string>
-  <string name="PairingV1__share_request">Share request</string>
-  <string name="PairingV1__save_request">Save request</string>
-  <string name="PairingV1__paste_receipt">Paste receipt</string>
-  <string name="PairingV1__open_receipt">Open receipt file</string>
-  <string name="PairingV1__local_status">Pairing status</string>
-  <string name="PairingV1__receipt_hint">Paste authenticated receipt JSON</string>
-  <string name="PairingV1__receipt_message">The receipt is accepted only after its session and encryption tag are verified.</string>
-  <string name="PairingV1__verify_receipt">Verify receipt</string>
-  <string name="PairingV1__paste_from_clipboard">Paste from clipboard</string>
-  <string name="PairingV1__receipt_title">Pairing receipt</string>
-  <string name="PairingV1__receipt_authenticated">Receipt authenticated. Device confirmation still requires a matching encrypted push event.</string>
-  <string name="PairingV1__receipt_pending">No authenticated receipt has been accepted.</string>
-  <string name="PairingV1__receipt_invalid">This receipt could not be authenticated for the current pairing session.</string>
-  <string name="PairingV1__status_unavailable">No pairing session is available in this app session. Scan a fresh offer to start again; the app cannot authenticate an old receipt without its in-memory session key.</string>
-  <string name="PairingV1__status_message">This status is stored only in this app. Device activation still requires a matching encrypted push event.
-
-Session: %1$s
-Server: %2$s
-Provider: %3$s
-Distributor: %4$s
-Offer expires: %5$s
-%6$s
-%7$s</string>
-  <string name="PairingV1__request_clip_label">Encrypted pairing request</string>
-  <string name="PairingV1__request_copied">Encrypted pairing request copied.</string>
-  <string name="PairingV1__request_available">The request can be shared while the same endpoint and distributor remain active and before the offer expires.</string>
-  <string name="PairingV1__request_unavailable">The endpoint or distributor changed, or the offer expired. Scan a fresh offer.</string>
-  <string name="PairingV1__status_summary_receipt">A receipt was authenticated</string>
-  <string name="PairingV1__status_summary_ready">Encrypted request ready</string>
-  <string name="PairingV1__status_summary_unavailable">Request expired or destination changed</string>
-  <string name="PairingV1__file_action_failed">Could not read or write the pairing file.</string>
+  <string name="PairingV1__request_rejected">The relay declined pairing. Check it on your computer and try again.</string>
+  <string name="PairingV1__session_unavailable">This QR code is no longer available. Generate a new one on your computer.</string>
+  <string name="PairingV1__server_busy">The relay is busy. Try pairing again in a moment.</string>
+  <string name="PairingV1__server_endpoint_rejected">The relay declined your push server. Check the distributor settings and try again.</string>
+  <string name="PairingV1__receipt_invalid">Could not verify the relay’s reply. Check pairing on your computer.</string>
+  <string name="PairingV1__paired">Paired with %1$s</string>
+  <string name="PairingV1__waiting_confirmation">Waiting for first push confirmation…</string>
+  <string name="PairingV1__pairing_in_progress">Pairing…</string>
+  <string name="PairingV1__status_connected">Connected</string>
+  <string name="PairingV1__status_not_set_up">Not set up</string>
+  <string name="PairingV1__status_websocket">Using WebSocket fallback</string>
+  <string name="PairingV1__notification_relay">Notification relay</string>
+  <string name="PairingV1__scan_to_pair">Scan a QR code to pair</string>
+  <string name="PairingV1__relay_summary">%1$s · %2$s</string>
+  <string name="PairingV1__offline_title">Send the encrypted request</string>
+  <string name="PairingV1__offline_manual">Share or save this request to finish pairing on your computer.</string>
+  <string name="PairingV1__offline_unreachable">The relay could not be reached. Share or save this request to finish on your computer.</string>
+  <string name="PairingV1__share_request">Share encrypted request</string>
+  <string name="PairingV1__save_request">Save file</string>
+  <string name="PairingV1__file_action_failed">Could not share or save the pairing request. Scan a new QR code and try again.</string>
+  <string name="PairingV1__advanced">Advanced</string>
+  <string name="PairingV1__manual_save">Save enrollment file</string>
+  <string name="PairingV1__export_options">More enrollment export options</string>
+  <string name="PairingV1__copy_account">Copy account ID</string>
 </resources>

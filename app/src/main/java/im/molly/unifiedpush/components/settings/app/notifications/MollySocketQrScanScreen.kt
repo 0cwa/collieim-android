@@ -103,7 +103,7 @@ fun MollySocketQrScanScreen(
           QrCrosshair(modifier = Modifier.fillMaxSize())
 
           Text(
-            text = stringResource(R.string.MollySocketLink_scan_the_qr_code),
+            text = stringResource(R.string.PairingV1__scan_instructions),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White,
             textAlign = TextAlign.Center,

@@ -19,6 +19,7 @@ object PairingRegistrationGate {
     val previousP256dh: String? = null,
     val previousAuth: String? = null,
     val previousInstance: String = "default",
+    val hostLabel: String,
   ) {
     override fun toString() = "PairingRegistrationGate.Binding(sessionId=$sessionId, instance=$instance)"
   }
@@ -86,6 +87,7 @@ object PairingRegistrationGate {
         previousP256dh = previousP256dh,
         previousAuth = previousAuth,
         previousInstance = previousInstance,
+        hostLabel = offer.hostLabel,
       )
       pending = Pending(binding, onComplete)
       binding

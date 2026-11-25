@@ -5,7 +5,7 @@ import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import im.molly.unifiedpush.MollySocketRepository
-import im.molly.unifiedpush.enrollment.PairingV1
+import im.molly.unifiedpush.enrollment.PairingTransport
 import im.molly.unifiedpush.model.MollySocket
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -28,7 +28,7 @@ object MollySocketQrScanRepository {
     // the settings flow can reject the reserved intent with specific copy before any mutation.
     if (data.trimStart().startsWith("{")) {
       return Single.fromCallable {
-        runCatching { PairingV1.parseOffer(data, System.currentTimeMillis() / 1000) }
+        runCatching { PairingTransport.parse(data, System.currentTimeMillis() / 1000, allowExpiredForRouting = true) }
           .fold({ QrScanResult.Success(data) }, { QrScanResult.InvalidData })
       }.subscribeOn(Schedulers.computation())
     }

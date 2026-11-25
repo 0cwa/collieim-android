@@ -133,6 +133,7 @@ object EnrollmentExporter {
     if (!isDistributorActive()) throw EnrollmentFile.Invalid("not_ready")
     val store = UnifiedPushControlStore(values)
     val before = store.read()
+    var highestUsed = before.highestEpoch
 
     val intent: ImportIntent
     val contents: String
@@ -177,6 +178,7 @@ object EnrollmentExporter {
             replayIfAbsent = replayIfAbsent,
             validateCandidate = { intent -> validateBeforeCommit?.invoke(intent) },
           ) { old, sequence ->
+            highestUsed = old.highestEpoch
             if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
 
             // A matching epoch alone is not enough to reuse a candidate key: the intent may belong to a different
@@ -243,7 +245,6 @@ object EnrollmentExporter {
       outputStream.use { it.write(contents.toByteArray(Charsets.UTF_8)) }
     }
 
-    val highestUsed = if (writeToDisk || destination != null) store.read().highestEpoch else 0
     return PreparedExport(if (writeToDisk) output else null, contents, intent.epoch, highestUsed, intent.requestId, intent)
   }
 

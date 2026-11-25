@@ -1260,6 +1260,7 @@ object BackupRepository {
       return ImportResult.Failure
     }
     SignalStore.backup.hasInvalidBackupVersion = false
+    val mediaRootBackupKey = MediaRootBackupKey(header.mediaRootBackupKey.toByteArray())
     val selfId: RecipientId
 
     val importDatabase = SignalDatabase.writableDatabase
@@ -1364,9 +1365,6 @@ object BackupRepository {
       if (cancellationSignal()) {
         return ImportResult.Failure
       }
-
-      val mediaRootBackupKey = MediaRootBackupKey(header.mediaRootBackupKey.toByteArray())
-      SignalStore.backup.mediaRootBackupKey = mediaRootBackupKey
 
       // Add back self after clearing data
       selfId = SignalDatabase.recipients.getAndPossiblyMerge(selfData.aci, selfData.pni, selfData.e164, pniVerified = true, changeSelf = true)
@@ -1515,7 +1513,7 @@ object BackupRepository {
       if (SignalDatabase.recipients.getRecord(selfId).aci != selfData.aci) {
         throw IllegalStateException("Imported backup self does not match the requested account")
       }
-      SignalDatabase.writableDatabase.setTransactionSuccessful()
+      importDatabase.setTransactionSuccessful()
       transactionSuccessful = true
     } catch (failure: Throwable) {
       importFailure = failure
@@ -1539,7 +1537,10 @@ object BackupRepository {
         }
         transactionEnded = true
       }
-      if (transactionStarted && (!transactionSuccessful || !transactionEnded)) {
+      if (transactionSuccessful && transactionEnded) {
+        // The archive key belongs to the newly committed attachment rows.
+        cleanup { SignalStore.backup.mediaRootBackupKey = mediaRootBackupKey }
+      } else if (transactionStarted) {
         // The transaction may have cached IDs from tables that were rolled back.
         cleanup { RecipientIds.clearCache() }
         cleanup { AppDependencies.recipientCache.clear() }

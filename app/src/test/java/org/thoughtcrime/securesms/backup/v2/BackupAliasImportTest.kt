@@ -198,6 +198,7 @@ class BackupAliasImportTest {
 
   @Test fun `import rejects a mismatched self before committing SQL`() {
     val db = SignalDatabase.writableDatabase
+    val backup = SignalStore.backup
     db.execSQL("INSERT INTO recipient (_id, aci) VALUES (73, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')")
     val originalSelf = Recipient.self().id
     assertEquals(73L, originalSelf.toLong())
@@ -217,6 +218,7 @@ class BackupAliasImportTest {
     assertTrue(failure.message?.contains("Imported backup self") == true)
     assertEquals(expected, SignalDatabase.recipients.getRecord(originalSelf).aci)
     assertEquals(originalSelf, Recipient.self().id)
+    verify(exactly = 0) { backup.mediaRootBackupKey = any() }
   }
   @Test fun `link import rejects another account before changing SQL`() {
     val db = SignalDatabase.writableDatabase
@@ -234,9 +236,13 @@ class BackupAliasImportTest {
   }
 
   @Test fun `link import accepts the current account`() {
+    val db = SignalDatabase.writableDatabase
+    val backup = SignalStore.backup
+    every { backup.mediaRootBackupKey = any() } answers { assertFalse(db.inTransaction()) }
     every { EncryptedBackupReader.createForLocalOrLinking(backupKey, expected, any(), any()) } returns reader
     val result = BackupRepository.importLinkAndSyncSignalBackup(0, { byteArrayOf().inputStream() }, BackupRepository.SelfData(expected, null, null, profileKey), backupKey)
     assertTrue(result is ImportResult.Success)
+    verify(exactly = 1) { backup.mediaRootBackupKey = any() }
     verify(exactly = 1) { reader.next() }
     verify(exactly = 1) { reader.close() }
   }

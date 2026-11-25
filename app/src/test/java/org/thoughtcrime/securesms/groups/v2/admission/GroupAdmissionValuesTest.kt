@@ -18,6 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.signal.storage.keyvalue.KeyValueStore
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 
 @RunWith(RobolectricTestRunner::class)
@@ -31,6 +32,7 @@ class GroupAdmissionValuesTest {
 
   @Test
   fun `absent state preserves Signal behavior but corrupt state requires review`() {
+    assertThat(CollieFlags.groupAdmission).isFalse()
     assertThat(values().read(account).settings.mode).isEqualTo(GroupAdmissionMode.SIGNAL_DEFAULT)
     assertThat(values().read(account).isHeld(group)).isFalse()
 
@@ -117,6 +119,21 @@ class GroupAdmissionValuesTest {
     assertThat(restored.isHeld("other")).isTrue()
     assertThat(restored.intents).isEmpty()
     assertThat(restored.records.values.all { it.pendingWrite == null }).isTrue()
+  }
+
+  @Test
+  fun `Stable keeps a restrictive restored Beta policy enforced while its entry point is hidden`() {
+    assertThat(CollieFlags.groupAdmission).isFalse()
+    values().update(account) {
+      it.copy(settings = GroupAdmissionSettings(GroupAdmissionMode.ASK_EVERY_TIME))
+    }
+
+    values().onPostBackupRestore()
+
+    val restored = values().read(account)
+    assertThat(restored.settings.mode).isEqualTo(GroupAdmissionMode.ASK_EVERY_TIME)
+    assertThat(restored.isHeld("unseen-group")).isTrue()
+    assertThat(GroupAdmissionPolicy.evaluate(restored.settings, null)).isEqualTo(AdmissionStatus.HELD)
   }
 
   @Test

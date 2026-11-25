@@ -129,9 +129,9 @@ class AttachmentTableTest_removeLocally {
     assertEquals(AttachmentTable.ArchiveTransferState.PERMANENT_FAILURE, removed.archiveTransferState)
     val stored = row(AttachmentTable.TABLE_NAME, id.id)!!
     listOf(
-      AttachmentTable.DATA_FILE, AttachmentTable.DATA_RANDOM, AttachmentTable.DATA_HASH_START, AttachmentTable.DATA_HASH_END,
+      AttachmentTable.DATA_FILE, AttachmentTable.DATA_RANDOM, AttachmentTable.DATA_HASH_START,
       AttachmentTable.THUMBNAIL_FILE, AttachmentTable.THUMBNAIL_RANDOM, AttachmentTable.TRANSFER_FILE,
-      AttachmentTable.REMOTE_KEY, AttachmentTable.REMOTE_LOCATION, AttachmentTable.REMOTE_DIGEST, AttachmentTable.REMOTE_INCREMENTAL_DIGEST,
+      AttachmentTable.REMOTE_KEY, AttachmentTable.REMOTE_LOCATION, AttachmentTable.REMOTE_INCREMENTAL_DIGEST,
       AttachmentTable.ARCHIVE_CDN, AttachmentTable.BLUR_HASH, AttachmentTable.METADATA_ID
     ).forEach { assertNull(it, stored[it]) }
     assertNull(removed.remoteDigest)
@@ -146,16 +146,28 @@ class AttachmentTableTest_removeLocally {
 
   @Test
   fun `legacy removed attachments still match linked deletion by digest and plaintext hash`() {
+    assertLinkedDeletionMatchesRemovedAttachment(hasUuid = false)
+  }
+
+  @Test
+  fun `removed attachments with a UUID still match linked deletion by digest and plaintext hash`() {
+    assertLinkedDeletionMatchesRemovedAttachment(hasUuid = true)
+  }
+
+  private fun assertLinkedDeletionMatchesRemovedAttachment(hasUuid: Boolean) {
     listOf(true, false).forEach { matchDigest ->
       val messageId = message()
       val id = attachment(messageId)
       val sibling = attachment(messageId)
-      db.update(AttachmentTable.TABLE_NAME).values(AttachmentTable.ATTACHMENT_UUID to null).where("${AttachmentTable.ID} = ?", id.id).run()
+      if (!hasUuid) {
+        db.update(AttachmentTable.TABLE_NAME).values(AttachmentTable.ATTACHMENT_UUID to null).where("${AttachmentTable.ID} = ?", id.id).run()
+      }
       db.update(AttachmentTable.TABLE_NAME)
         .values(AttachmentTable.REMOTE_DIGEST to ByteArray(32) { 12 }, AttachmentTable.DATA_HASH_END to "sibling-hash")
         .where("${AttachmentTable.ID} = ?", sibling.id)
         .run()
       val original = attachments.getAttachment(id)!!
+      assertEquals(hasUuid, original.uuid != null)
       val sentTime = row(MessageTable.TABLE_NAME, messageId)!![MessageTable.DATE_SENT] as Long
       val request = AttachmentTable.SyncAttachmentId(
         MessageTable.SyncMessageId(sender, sentTime),

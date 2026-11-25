@@ -2067,20 +2067,19 @@ class AttachmentTable(
           cursor.requireLongOrNull(METADATA_ID)
         }
 
+      // Keep the end hash and remote digest for linked deletion requests that lack this row's UUID.
       db.update(TABLE_NAME)
         .values(
           TRANSFER_STATE to TRANSFER_REMOVED_LOCALLY,
           DATA_FILE to null,
           DATA_RANDOM to null,
           DATA_HASH_START to null,
-          DATA_HASH_END to attachment.dataHash.takeIf { attachment.uuid == null },
           DATA_SIZE to 0,
           THUMBNAIL_FILE to null,
           THUMBNAIL_RANDOM to null,
           TRANSFER_FILE to null,
           REMOTE_KEY to null,
           REMOTE_LOCATION to null,
-          REMOTE_DIGEST to attachment.remoteDigest.takeIf { attachment.uuid == null },
           REMOTE_INCREMENTAL_DIGEST to null,
           REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
           CDN_NUMBER to Cdn.CDN_0.serialize(),

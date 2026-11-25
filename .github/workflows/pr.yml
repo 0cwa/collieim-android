@@ -1,6 +1,7 @@
 name: PR checks
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [main, release/stable/8.35]
   workflow_dispatch:
@@ -83,6 +84,7 @@ jobs:
 
   unit-test-shards:
     name: Unit tests (${{ matrix.shard }})
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     strategy:
       fail-fast: false
       matrix:
@@ -227,7 +229,7 @@ jobs:
 
   unit-tests:
     name: Unit tests
-    if: ${{ always() }}
+    if: ${{ always() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     needs: [unit-test-shards]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -301,6 +303,7 @@ jobs:
 
   production-build:
     name: Unsigned production build
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
@@ -325,7 +328,7 @@ jobs:
 
   beta-compile:
     name: TrailBlazer Beta compile
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -347,7 +350,7 @@ jobs:
 
   security-readiness:
     name: Security readiness
-    if: ${{ always() }}
+    if: ${{ always() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     needs: [unit-tests, production-build]
     runs-on: ubuntu-24.04
     steps:

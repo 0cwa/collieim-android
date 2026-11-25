@@ -1,3 +1,0 @@
-topic: security
-pr: 153
-You can require your current PIN before changing recovery PIN settings.

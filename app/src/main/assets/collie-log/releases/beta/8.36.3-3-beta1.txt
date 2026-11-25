@@ -1,0 +1,26 @@
+version: 8.36.3-3-beta1
+date: 2026-11-25
+
+topic: privacy
+pr: 239
+Remove selected attachments from this device while keeping their messages, text and reactions.
+
+topic: privacy
+pr: 237
+Choose whose group additions Collie accepts automatically in Settings → Collie → Privacy.
+
+topic: security
+pr: 153
+You can require your current PIN before changing recovery PIN settings.
+
+topic: updates
+pr: 252
+What's new shows one current release, with clearer notes and separate Stable and Beta histories.
+
+topic: updates
+pr: 251
+App updates is now at the top of Settings → Collie instead of Help.
+
+topic: settings
+pr: 210
+Collie removes Signal donation checkout. Backup subscriptions and existing Collie support links still work.

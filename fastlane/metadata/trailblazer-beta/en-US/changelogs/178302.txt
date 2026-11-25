@@ -1,0 +1,5 @@
+- Remove selected attachments from this device while keeping their messages, text and reactions.
+- Choose whose group additions Collie accepts automatically in Settings > Collie > Privacy.
+- You can require your current PIN before changing recovery PIN settings.
+- What's new shows one current release, with clearer notes and separate Stable and Beta histories.
+- App updates is now at the top of Settings > Collie instead of Help.

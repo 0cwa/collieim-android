@@ -14,7 +14,10 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.BeforeClass
@@ -33,6 +36,7 @@ import org.thoughtcrime.securesms.jobs.CopyAttachmentToArchiveJob
 import org.thoughtcrime.securesms.jobs.UploadAttachmentToArchiveJob
 import org.thoughtcrime.securesms.jobs.protos.CopyAttachmentToArchiveJobData
 import org.thoughtcrime.securesms.jobs.protos.UploadAttachmentToArchiveJobData
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import org.thoughtcrime.securesms.testutil.SignalDatabaseRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
@@ -59,6 +63,41 @@ class AttachmentTableTest_createRemoteKeyForAttachmentsThatNeedArchiveUpload {
   fun whenNoEligibleAttachments_returnsZero() {
     val result = SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload()
     assertThat(result.totalCount).isEqualTo(0)
+  }
+
+  @Test
+  fun completionAcceptanceUsesWritableTransactionAndRejectsPendingEligibleAttachments() {
+    mockkObject(SignalStore)
+    every { SignalStore.releaseChannel } returns mockk(relaxed = true)
+    try {
+      val id = insertAttachmentDirectly(
+        dataFile = "/fake/path/pending-${UUID.randomUUID()}.jpg",
+        transferState = AttachmentTable.TRANSFER_PROGRESS_DONE,
+        archiveTransferState = AttachmentTable.ArchiveTransferState.UPLOAD_IN_PROGRESS.value,
+        remoteKey = Base64.encodeWithPadding(ByteArray(64) { 1 }),
+        dataHashEnd = "pending-hash"
+      )
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(AttachmentTable.CONTENT_TYPE to "image/jpeg")
+        .where("${AttachmentTable.ID} = ?", id.id).run()
+
+      var accepted = false
+      val rejectedPendingWork = SignalDatabase.attachments.runIfNoAttachmentsPendingArchiveUpload {
+        accepted = true
+      }
+      assertThat(rejectedPendingWork).isFalse()
+      assertThat(accepted).isFalse()
+
+      SignalDatabase.attachments.setArchiveTransferState(id, AttachmentTable.ArchiveTransferState.FINISHED)
+      val acceptedWithoutPendingWork = SignalDatabase.attachments.runIfNoAttachmentsPendingArchiveUpload {
+        accepted = true
+        assertThat(SignalDatabase.attachments.writableDatabase.inTransaction()).isTrue()
+      }
+      assertThat(acceptedWithoutPendingWork).isTrue()
+      assertThat(accepted).isTrue()
+    } finally {
+      unmockkObject(SignalStore)
+    }
   }
 
   @Test

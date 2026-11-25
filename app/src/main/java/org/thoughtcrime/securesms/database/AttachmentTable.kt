@@ -1730,15 +1730,35 @@ class AttachmentTable(
    * Matches the rows summed by [getPendingArchiveUploadBytes], but stops at the first hit.
    */
   fun areAnyAttachmentsPendingArchiveUpload(): Boolean {
-    return readableDatabase
-      .rawQuery(
+    return areAnyAttachmentsPendingArchiveUpload(readableDatabase)
+  }
+
+  /**
+   * Runs [block] only if there is no pending archive upload, checking and accepting under the same write transaction.
+   * Callers must acquire this transaction before any other lock needed by [block].
+   */
+  fun runIfNoAttachmentsPendingArchiveUpload(block: () -> Unit): Boolean {
+    return writableDatabase.withinTransaction { db ->
+      if (areAnyAttachmentsPendingArchiveUpload(db)) {
+        false
+      } else {
+        block()
+        true
+      }
+    }
+  }
+
+  private fun areAnyAttachmentsPendingArchiveUpload(db: SupportSQLiteDatabase): Boolean {
+    return db
+      .query(
         """
           SELECT EXISTS (
             SELECT 1
             FROM $TABLE_NAME INDEXED BY $ARCHIVE_TRANSFER_STATE_INDEX LEFT JOIN ${MessageTable.TABLE_NAME} ON $TABLE_NAME.$MESSAGE_ID = ${MessageTable.TABLE_NAME}.${MessageTable.ID}
             WHERE ${buildAttachmentsThatCanArchiveQuery(PENDING_ARCHIVE_UPLOAD_FILTER)}
           )
-        """.trimIndent()
+        """.trimIndent(),
+        emptyArray()
       )
       .readToSingleBoolean()
   }

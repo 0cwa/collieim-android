@@ -54,6 +54,7 @@ import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 @RunWith(RobolectricTestRunner::class)
@@ -116,6 +117,14 @@ class ArchiveUploadProgressTest {
   fun setUp() {
     clearMocks(backup, attachments, BackupMessagesJob.Companion, answers = false, recordedCalls = true)
     every { attachments.areAnyAttachmentsPendingArchiveUpload() } answers { hasPendingArchiveUpload }
+    every { attachments.runIfNoAttachmentsPendingArchiveUpload(any()) } answers {
+      if (hasPendingArchiveUpload) {
+        false
+      } else {
+        firstArg<() -> Unit>().invoke()
+        true
+      }
+    }
 
     storedState = ArchiveUploadProgressState(state = State.None)
     backsUpMedia = true
@@ -452,6 +461,42 @@ class ArchiveUploadProgressTest {
     assertThat(state.mediaUploadedBytes).isEqualTo(1000L)
     verify(exactly = 0) { backup.finishedInitialBackup = true }
     verify(exactly = 0) { BackupMessagesJob.enqueue() }
+  }
+
+  @Test
+  fun `progress flow - pending attachment before terminal acceptance prevents completion`() {
+    val calculationStarted = CountDownLatch(1)
+    val releaseCalculation = CountDownLatch(1)
+    val recomputationObserved = CountDownLatch(1)
+    val pendingChecks = AtomicInteger()
+    every { attachments.areAnyAttachmentsPendingArchiveUpload() } answers {
+      if (pendingChecks.incrementAndGet() == 1) {
+        calculationStarted.countDown()
+        releaseCalculation.await(5, TimeUnit.SECONDS)
+        false
+      } else {
+        recomputationObserved.countDown()
+        hasPendingArchiveUpload
+      }
+    }
+    setUploadProgress(ArchiveUploadProgressState(state = State.UploadMedia, mediaTotalBytes = 1000, mediaUploadedBytes = 0))
+
+    try {
+      ArchiveUploadProgress.triggerUpdate()
+      assertThat(calculationStarted.await(5, TimeUnit.SECONDS)).isTrue()
+
+      // Simulate a DB writer making a row eligible after the preliminary query but before onEach accepts completion.
+      hasPendingArchiveUpload = true
+      pendingArchiveUploadBytes = 1000
+      releaseCalculation.countDown()
+
+      assertThat(recomputationObserved.await(5, TimeUnit.SECONDS)).isTrue()
+      assertThat(uploadProgress().state).isEqualTo(State.UploadMedia)
+      verify(exactly = 0) { backup.finishedInitialBackup = true }
+      verify(exactly = 0) { BackupMessagesJob.enqueue() }
+    } finally {
+      releaseCalculation.countDown()
+    }
   }
 
   @Test

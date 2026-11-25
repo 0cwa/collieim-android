@@ -67,7 +67,6 @@ public final class AppInitialization {
     DeleteAbandonedAttachmentsJob.enqueue();
 
     RecipientIds.clearCache();
-    SignalDatabase.remappedRecords().clearCache();
     SignalDatabase.threads().clearCache();
     AppDependencies.getRecipientCache().clear();
     AppDependencies.getRecipientCache().clearSelf();

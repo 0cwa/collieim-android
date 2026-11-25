@@ -300,6 +300,76 @@ class TransferControlsTest {
     assertEquals(AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE, TransferControls.getTransferState(slides))
   }
 
+  @Test
+  fun `removed attachment stays Gone despite an old backfill request`() {
+    val id = AttachmentId(42L)
+    val state = stateOf(listOf(slide(AttachmentTable.TRANSFER_REMOVED_LOCALLY, attachmentId = id)))
+
+    assertEquals(TransferControlsRenderState.Gone, TransferControls.deriveRenderState(state, setOf(id)))
+  }
+
+  @Test
+  fun `removed and permanently unavailable album parts never offer a download or play action`() {
+    for (video in listOf(false, true)) {
+      val state = stateOf(
+        listOf(slide(AttachmentTable.TRANSFER_REMOVED_LOCALLY), slide(AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE, hasVideo = video))
+      )
+
+      assertEquals(TransferControlsRenderState.Gone, TransferControls.deriveRenderState(state))
+    }
+  }
+
+  @Test
+  fun `removed video never exposes playback or upload controls`() {
+    val state = stateOf(
+      listOf(slide(AttachmentTable.TRANSFER_REMOVED_LOCALLY, hasVideo = true)),
+      playableWhileDownloading = true,
+      isUpload = true
+    )
+
+    assertEquals(TransferControlsRenderState.Gone, TransferControls.deriveRenderState(state))
+  }
+
+  @Test
+  fun `removed and downloaded album has no remaining transfer controls`() {
+    val slides = listOf(slide(AttachmentTable.TRANSFER_REMOVED_LOCALLY), slide(AttachmentTable.TRANSFER_PROGRESS_DONE))
+
+    assertEquals(TransferControlsRenderState.Gone, TransferControls.deriveRenderState(stateOf(slides)))
+    assertEquals(AttachmentTable.TRANSFER_PROGRESS_DONE, TransferControls.getTransferState(slides))
+  }
+
+  @Test
+  fun `removed album item does not hide a pending download or inflate its item count`() {
+    val removed = slide(AttachmentTable.TRANSFER_REMOVED_LOCALLY)
+    val pending = listOf(slide(AttachmentTable.TRANSFER_PROGRESS_PENDING), slide(AttachmentTable.TRANSFER_PROGRESS_PENDING))
+    val render = TransferControls.deriveRenderState(stateOf(pending + removed)) as TransferControlsRenderState.Pending
+
+    assertEquals(2, render.itemCount)
+    assertEquals(2048L.bytes, render.sizeBytes)
+    assertEquals(AttachmentTable.TRANSFER_PROGRESS_PENDING, TransferControls.getTransferState(pending + removed))
+  }
+
+  @Test
+  fun `stale progress for a removed attachment is excluded from an ongoing album transfer`() {
+    val removedId = AttachmentId(42L)
+    val removed = slide(AttachmentTable.TRANSFER_REMOVED_LOCALLY, attachmentId = removedId)
+    val stale = slide(AttachmentTable.TRANSFER_PROGRESS_STARTED, attachmentId = removedId)
+    val downloading = slide(AttachmentTable.TRANSFER_PROGRESS_STARTED, size = 1000)
+    val state = stateOf(
+      listOf(removed, downloading),
+      networkProgress = mapOf(
+        stale.asAttachment() to TransferControlView.Progress(999_999L.bytes, 1_000_000L.bytes),
+        downloading.asAttachment() to TransferControlView.Progress(500L.bytes, 1000L.bytes)
+      )
+    )
+    val render = TransferControls.deriveRenderState(state, setOf(removedId)) as TransferControlsRenderState.InProgress
+    val expectedTotal = AttachmentCipherStreamUtil.getCiphertextLength(PaddingInputStream.getPaddedSize(1000))
+
+    assertEquals(0.5f, render.progress)
+    assertEquals(TransferControls.ProgressLabel.Bytes(500L.bytes, expectedTotal.bytes), render.label)
+    assertTrue(render.cancelable)
+  }
+
   private fun slide(
     transferState: Int,
     hasVideo: Boolean = false,

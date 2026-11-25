@@ -24,6 +24,7 @@ import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobLogger.format
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
+import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
@@ -48,6 +49,17 @@ class RestoreAttachmentThumbnailJob private constructor(
 
     private const val KEY_MESSAGE_ID = "message_id"
     private const val KEY_ATTACHMENT_ID = "part_row_id"
+
+    /** Thumbnail restores share a queue; removal must cancel only its own jobs. */
+    fun jobSpecMatchesAttachmentId(jobSpec: JobSpec, attachmentId: AttachmentId): Boolean {
+      if (jobSpec.factoryKey != KEY) return false
+      return try {
+        val data = JsonJobData.deserializeOrNull(jobSpec.serializedData) ?: return false
+        data.hasLong(KEY_ATTACHMENT_ID) && data.getLong(KEY_ATTACHMENT_ID) == attachmentId.id
+      } catch (_: RuntimeException) {
+        false
+      }
+    }
 
     @JvmStatic
     fun constructQueueString(attachmentId: AttachmentId): String {
@@ -98,7 +110,7 @@ class RestoreAttachmentThumbnailJob private constructor(
 
     val attachment = SignalDatabase.attachments.getAttachment(attachmentId)
 
-    if (attachment == null) {
+    if (attachment == null || attachment.isLocallyRemoved) {
       Log.w(TAG, "attachment no longer exists.")
       return
     }

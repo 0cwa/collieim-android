@@ -38,6 +38,7 @@ import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord
 import org.thoughtcrime.securesms.database.withAttachments
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob
 import org.thoughtcrime.securesms.jobs.MultiDeviceDeleteSyncJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -112,6 +113,21 @@ object MediaViewerRepository {
     }
   }
 
+  suspend fun canRemoveAttachment(attachmentId: AttachmentId): Either<Throwable, Boolean> {
+    if (!CollieFlags.attachmentRemoval) return Either.Right(false)
+    return withContext(SignalDispatchers.IO) {
+      Either.catch { SignalDatabase.attachments.isAttachmentLocallyRemovable(attachmentId) }
+    }
+  }
+
+  /** Local, irreversible removal of the selected part; never deletes or synchronizes its message. */
+  suspend fun removeAttachment(attachmentId: AttachmentId): Either<Throwable, Boolean> {
+    if (!CollieFlags.attachmentRemoval) return Either.Right(false)
+    return withContext(SignalDispatchers.IO) {
+      Either.catch { SignalDatabase.attachments.removeAttachmentLocally(attachmentId) }
+    }
+  }
+
   /** Whether the delete dialog may offer "Delete for everyone", plus the note-to-self flag for its labels. */
   suspend fun getDeleteValidity(attachmentId: AttachmentId): DeleteValidity {
     return withContext(SignalDispatchers.Default) {
@@ -172,7 +188,7 @@ object MediaViewerRepository {
 
   suspend fun attachmentExists(attachmentId: AttachmentId): Boolean {
     return withContext(SignalDispatchers.Default) {
-      SignalDatabase.attachments.getAttachment(attachmentId) != null
+      SignalDatabase.attachments.getAttachment(attachmentId)?.isLocallyRemoved == false
     }
   }
 
@@ -202,6 +218,7 @@ object MediaViewerRepository {
 
   /** Matches the viewability filter the gallery query applies, so both agree on what can be paged to. */
   private fun DatabaseAttachment.isDisplayable(): Boolean {
+    if (isLocallyRemoved) return false
     return transferState == AttachmentTable.TRANSFER_PROGRESS_DONE ||
       transferState == AttachmentTable.TRANSFER_PROGRESS_STARTED ||
       thumbnailUri != null

@@ -125,6 +125,10 @@ about = "Attachment upload integrity"
 kind = "feature"
 about = "Attachment identity and key privacy"
 
+[layers.attachment-removal]
+kind = "feature"
+about = "Remove selected local attachments while preserving messages and text"
+
 [layers.attachment-backfill]
 kind = "feature"
 about = "Attachment key backfill"

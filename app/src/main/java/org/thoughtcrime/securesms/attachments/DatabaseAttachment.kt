@@ -156,21 +156,21 @@ class DatabaseAttachment : Attachment {
   }
 
   override val uri: Uri?
-    get() = if (hasData || getIncrementalDigest() != null) {
+    get() = if (!isLocallyRemoved && (hasData || getIncrementalDigest() != null)) {
       PartAuthority.getAttachmentDataUri(attachmentId)
     } else {
       null
     }
 
   override val publicUri: Uri?
-    get() = if (hasData) {
+    get() = if (!isLocallyRemoved && hasData) {
       PartAuthority.getAttachmentPublicUri(uri)
     } else {
       null
     }
 
   override val thumbnailUri: Uri?
-    get() = if (thumbnailRestoreState == AttachmentTable.ThumbnailRestoreState.FINISHED) {
+    get() = if (!isLocallyRemoved && thumbnailRestoreState == AttachmentTable.ThumbnailRestoreState.FINISHED) {
       PartAuthority.getAttachmentThumbnailUri(attachmentId)
     } else {
       null

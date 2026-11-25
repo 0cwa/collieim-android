@@ -132,7 +132,8 @@ class AttachmentDownloadJob private constructor(
           downloadJob.id
         }
 
-        AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE -> {
+        AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE,
+        AttachmentTable.TRANSFER_REMOVED_LOCALLY -> {
           Log.d(TAG, "${databaseAttachment.attachmentId} is permanently failed, transferState: $transferState")
           null
         }
@@ -193,7 +194,7 @@ class AttachmentDownloadJob private constructor(
     Log.i(TAG, "onAdded() messageId: $messageId  attachmentId: $attachmentId  manual: $forceDownload")
 
     val attachment = SignalDatabase.attachments.getAttachment(attachmentId)
-    val pending = attachment != null && attachment.transferState != AttachmentTable.TRANSFER_PROGRESS_DONE && attachment.transferState != AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE
+    val pending = attachment != null && attachment.transferState != AttachmentTable.TRANSFER_PROGRESS_DONE && !attachment.isPermanentlyFailed
 
     if (pending && (forceDownload || AttachmentUtil.isAutoDownloadPermitted(context, attachment))) {
       Log.i(TAG, "onAdded() Marking attachment progress as 'started'")

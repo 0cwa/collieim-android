@@ -154,8 +154,10 @@ public class DocumentView extends FrameLayout {
 
     this.fileName.setText(OptionalUtil.or(documentSlide.getFileName(),
                                           documentSlide.getCaption())
-                                      .orElse(getContext().getString(R.string.DocumentView_unnamed_file)));
-    this.fileSize.setText(new ByteSize(documentSlide.getFileSize()).toUnitString(2));
+                                      .orElse(getContext().getString(documentSlide.hasAudio() ? R.string.Slide_audio : R.string.DocumentView_unnamed_file)));
+    this.fileSize.setText(documentSlide.asAttachment().isLocallyRemoved() ? getContext().getString(R.string.CollieAttachmentRemoval_removed)
+                                                                       : new ByteSize(documentSlide.getFileSize()).toUnitString(2));
+    setContentDescription(documentSlide.asAttachment().isLocallyRemoved() ? getContext().getString(R.string.CollieAttachmentRemoval_removed_explanation) : null);
     this.document.setText(documentSlide.getFileType(getContext()).orElse("").toLowerCase());
     this.setOnClickListener(new OpenClickedListener(documentSlide));
 
@@ -176,6 +178,15 @@ public class DocumentView extends FrameLayout {
 
   private void presentTransferControls(@NonNull Slide documentSlide, boolean showControls) {
     DatabaseAttachment dbAttachment = documentSlide.asAttachment() instanceof DatabaseAttachment ? (DatabaseAttachment) documentSlide.asAttachment() : null;
+
+    if (documentSlide.asAttachment().isLocallyRemoved()) {
+      controlToggle.displayQuick(iconContainer);
+      downloadButton.setOnClickListener(null);
+      uploadButton.setOnClickListener(null);
+      stopUploadButton.setOnClickListener(null);
+      if (downloadProgress.isSpinning()) downloadProgress.stopSpinning();
+      return;
+    }
 
     if (dbAttachment != null && dbAttachment.transferState == AttachmentTable.TRANSFER_PROGRESS_DONE && AttachmentBackfill.isAwaitingBackfill(dbAttachment.attachmentId)) {
       AttachmentBackfill.onAttachmentTerminal(dbAttachment.attachmentId, dbAttachment.mmsId);
@@ -220,7 +231,7 @@ public class DocumentView extends FrameLayout {
   }
 
   private void onPartProgress(final PartProgressEvent event) {
-    if (documentSlide != null && event.attachment.equals(documentSlide.asAttachment())) {
+    if (documentSlide != null && !documentSlide.asAttachment().isLocallyRemoved() && event.attachment.equals(documentSlide.asAttachment())) {
       downloadProgress.setInstantProgress(((float) event.progress) / event.total);
     }
   }
@@ -247,7 +258,7 @@ public class DocumentView extends FrameLayout {
 
     @Override
     public void onClick(View v) {
-      if (slide.hasDocument() && slide.getUri()!=null && viewListener != null) {
+      if (viewListener != null && (slide.asAttachment().isLocallyRemoved() || (slide.hasDocument() && slide.getUri() != null))) {
         viewListener.onClick(v, slide);
       }
     }

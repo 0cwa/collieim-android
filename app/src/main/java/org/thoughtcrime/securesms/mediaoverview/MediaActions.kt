@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.core.Completable
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.attachments.AttachmentSaver
 import org.thoughtcrime.securesms.database.MediaTable
+import org.thoughtcrime.securesms.flags.CollieFlags
 
 internal object MediaActions {
 
@@ -33,8 +34,32 @@ internal object MediaActions {
       .setCancelable(true)
       .setPositiveButton(R.string.delete) { _, _ ->
         val viewModel = ViewModelProvider(fragment)[MediaDeleteProgressViewModel::class.java]
-        viewModel.start(mediaRecords)
-        MediaDeleteProgressDialogFragment.show(fragment)
+        if (viewModel.start(mediaRecords)) {
+          MediaDeleteProgressDialogFragment.show(fragment)
+        }
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  @JvmStatic
+  @JvmOverloads
+  fun handleRemoveAttachments(fragment: Fragment, mediaRecords: Collection<MediaTable.MediaRecord>, onStarted: Runnable? = null) {
+    if (!CollieFlags.attachmentRemoval) return
+
+    // Bind confirmation to this selection, even if the gallery refreshes while the dialog is open.
+    val snapshot = mediaRecords.toList()
+    if (snapshot.isEmpty()) return
+
+    MaterialAlertDialogBuilder(fragment.requireContext())
+      .setTitle(R.string.CollieAttachmentRemoval_confirm)
+      .setMessage(fragment.resources.getQuantityString(R.plurals.CollieAttachmentRemoval_confirmation, snapshot.size, snapshot.size))
+      .setPositiveButton(R.string.CollieAttachmentRemoval_remove) { _, _ ->
+        val viewModel = ViewModelProvider(fragment)[MediaDeleteProgressViewModel::class.java]
+        if (viewModel.start(snapshot, MediaDeleteProgressViewModel.Operation.REMOVE_ATTACHMENTS)) {
+          onStarted?.run()
+          MediaDeleteProgressDialogFragment.show(fragment)
+        }
       }
       .setNegativeButton(android.R.string.cancel, null)
       .show()

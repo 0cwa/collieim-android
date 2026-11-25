@@ -50,6 +50,7 @@ import org.signal.core.ui.R as CoreUiR
 internal fun MediaViewerTopBar(
   item: MediaViewerItem?,
   isDraft: Boolean,
+  attachmentRemovalEnabled: Boolean = true,
   showThread: Boolean,
   playbackController: MediaViewerPlaybackController,
   onEvent: (MediaViewerEvent) -> Unit,
@@ -113,6 +114,7 @@ internal fun MediaViewerTopBar(
 
     OverflowMenu(
       isDraft = isDraft,
+      attachmentRemovalEnabled = attachmentRemovalEnabled,
       onEvent = onEvent
     )
   }
@@ -195,6 +197,7 @@ private fun titleText(item: MediaViewerItem, showThread: Boolean): String {
 @Composable
 private fun OverflowMenu(
   isDraft: Boolean,
+  attachmentRemovalEnabled: Boolean,
   onEvent: (MediaViewerEvent) -> Unit
 ) {
   Box {
@@ -233,6 +236,18 @@ private fun OverflowMenu(
       )
 
       if (!isDraft) {
+        if (attachmentRemovalEnabled) {
+          DropdownMenus.Item(
+            leadingIconResId = CoreUiR.drawable.symbol_trash_24,
+            text = { Text(text = stringResource(R.string.MediaViewerScreen__remove_attachment)) },
+            onClick = {
+              controller.hide()
+              onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+            },
+            modifier = Modifier.testTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT)
+          )
+        }
+
         DropdownMenus.Item(
           leadingIconResId = CoreUiR.drawable.symbol_trash_24,
           text = { Text(text = stringResource(R.string.MediaViewerScreen__delete)) },

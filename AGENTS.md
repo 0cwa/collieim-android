@@ -3,6 +3,9 @@
 - Workflow: `0cwa/collie-release-engineering` `docs/DEVELOPMENT-CYCLE.md`. Change app code directly in ordinary PRs.
 - Every non-merge commit carries one `Layer: <name>` trailer naming an entry in `tooling/layers.toml`, e.g. `Layer: settings`. Sign commits and confirm that GitHub verifies their signatures before landing.
 - Work is sliced by feature: a PR changes one `feature` layer, plus any `infra` or `upstream` layers. A second feature is a second PR. A feature's tests and docs use its layer. A new feature adds its entry to `tooling/layers.toml` in the same PR. Land PRs with a merge commit, not squash or rebase, so every commit keeps its layer.
+- Use a dedicated `origin/main` worktree per feature lane; avoid `.patch` or `GIT_INDEX_FILE` staging across a dirty checkout.
+- Before pushing, run `python3 tooling/git-hooks/install.py` or `python3 tooling/ci/preflight.py` to catch unregistered `Layer:` trailers, unsigned commits, and Fastlane metadata errors locally.
+- For feature lanes, verify focused unit tests and debug instrumentation APKs locally; leave full dual unsigned release APK builds to CI unless directly verifying release or packaging changes.
 - Signal and Molly upgrades: merge them with `python3 tooling/upstream/merge-upstream.py signal <tag>` or `molly <branch>` (see `docs/SIGNAL-DONATION-REMOVAL.md`). Upstream commits stay unsigned and without trailers; the signed merge commit carries `Layer: upgrade` and `Upstream:`, which CI checks against the upstream repository.
 - Add nothing to the repo root; put new files under `docs/`, `tooling/` or `.github/`.
 - Releases: `docs/RELEASING.md`. Build and publish the APK first. Tooling changes go in separate PRs and never delay a release.

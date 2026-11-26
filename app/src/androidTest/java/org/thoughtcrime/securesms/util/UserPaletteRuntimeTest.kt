@@ -14,13 +14,16 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.core.content.ContextCompat
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -115,6 +118,70 @@ class UserPaletteRuntimeTest {
   @Test
   fun darkPilotReachesOverviewAndSettingsThenReturnsToCollie() {
     assertPilotRoundTrip(SettingsValues.Theme.DARK)
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 31)
+  fun systemPilotSystemCollieKeepsViewAndComposeRolesInSync() {
+    assertTrue("Android System colors are unavailable", DynamicTheme.isDynamicColorsAvailable())
+    val nightMode = Configuration.UI_MODE_NIGHT_NO
+    val processId = Process.myPid()
+
+    instrumentation.runOnMainSync {
+      SignalStore.settings.setTheme(SettingsValues.Theme.LIGHT, false)
+      SignalStore.settings.setColorPalette(ThemePalettes.SYSTEM)
+      DynamicTheme.setDefaultDayNightMode(context)
+    }
+    assertTrue(PlainTextKeyValueStore.isDynamicColorsEnabled)
+    assertNull(PlainTextKeyValueStore.themePalette)
+
+    ActivityScenario.launch(MainActivity::class.java).use { main ->
+      val overview = awaitResumed<MainActivity>(null, nightMode)
+      val systemSurface = ThemeUtil.getThemedColor(overview, MaterialR.attr.colorSurface)
+      val systemPrimary = ThemeUtil.getThemedColor(overview, MaterialR.attr.colorPrimary)
+      assertScreenshot("system-light-overview", systemSurface)
+
+      main.onActivity { it.startActivity(AppSettingsActivity.home(it)) }
+      var settings = awaitResumed<AppSettingsActivity>(null, nightMode)
+      awaitComposeNode(AppSettingsTestTags.SCROLLER)
+      assertScreenshot("system-light-settings", systemSurface)
+
+      instrumentation.runOnMainSync { SignalStore.settings.setColorPalette(PILOT) }
+      settings = awaitResumed(PILOT, nightMode, previous = settings)
+      assertEquals(PILOT, paletteMarker(settings))
+      assertEquals(pilot.light.primary.toArgb(), ThemeUtil.getThemedColor(settings, MaterialR.attr.colorPrimary))
+      assertEquals(pilot.light.surface.toArgb(), ThemeUtil.getThemedColor(settings, MaterialR.attr.colorSurface))
+      assertFalse(PlainTextKeyValueStore.isDynamicColorsEnabled)
+      assertEquals(PILOT, PlainTextKeyValueStore.themePalette)
+      assertScreenshot("system-to-pilot-light-settings", pilot.light.surface.toArgb())
+
+      instrumentation.runOnMainSync { SignalStore.settings.setColorPalette(ThemePalettes.SYSTEM) }
+      settings = awaitResumed(null, nightMode, previous = settings)
+      assertTrue(PlainTextKeyValueStore.isDynamicColorsEnabled)
+      assertNull(PlainTextKeyValueStore.themePalette)
+      assertEquals(systemPrimary, ThemeUtil.getThemedColor(settings, MaterialR.attr.colorPrimary))
+      assertEquals(systemSurface, ThemeUtil.getThemedColor(settings, MaterialR.attr.colorSurface))
+      assertScreenshot("pilot-to-system-light-settings", systemSurface)
+
+      instrumentation.runOnMainSync { SignalStore.settings.setColorPalette(ThemePalettes.COLLIE) }
+      settings = awaitResumed(null, nightMode, previous = settings)
+      val collieSurface = Color.parseColor("#FFF8F0")
+      assertFalse(PlainTextKeyValueStore.isDynamicColorsEnabled)
+      assertNull(PlainTextKeyValueStore.themePalette)
+      assertNull(paletteMarker(settings))
+      assertEquals(collieSurface, ThemeUtil.getThemedColor(settings, MaterialR.attr.colorSurface))
+      assertEquals(
+        ContextCompat.getColor(settings, CoreUiR.color.molly_primary_light),
+        ThemeUtil.getThemedColor(settings, MaterialR.attr.colorPrimary)
+      )
+      assertScreenshot("system-pilot-system-to-collie-light-settings", collieSurface)
+      instrumentation.runOnMainSync { settings.finish() }
+
+      val collieOverview = awaitResumed<MainActivity>(null, nightMode, previous = overview)
+      assertEquals(collieSurface, ThemeUtil.getThemedColor(collieOverview, MaterialR.attr.colorSurface))
+      assertEquals(processId, Process.myPid())
+      assertScreenshot("system-pilot-system-to-collie-light-overview", collieSurface)
+    }
   }
 
   private fun assertPilotRoundTrip(theme: SettingsValues.Theme) {

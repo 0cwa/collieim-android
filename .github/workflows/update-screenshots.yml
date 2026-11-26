@@ -66,13 +66,12 @@ jobs:
           submodules: true
           lfs: true
           persist-credentials: false
-      - name: Load pinned engineering screenshot collector
+      - name: Load the screenshot collector from trusted main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: 0cwa/collie-release-engineering
-          ref: 9b7803d1a1b699ad705a1110f94ded2c3016fa08
-          path: policy
-          sparse-checkout: tools/screenshots
+          ref: refs/heads/main
+          path: trusted-main
+          sparse-checkout: tooling/screenshots
           persist-credentials: false
       - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
@@ -90,7 +89,7 @@ jobs:
       - name: Collect only bounded screenshot data
         env:
           BASE_SHA: ${{ github.sha }}
-        run: python3 policy/tools/screenshots/screenshot_artifacts.py collect --repository source --base-sha "$BASE_SHA" --output "$RUNNER_TEMP/screenshots/screenshot-changes.json"
+        run: python3 trusted-main/tooling/screenshots/screenshot_artifacts.py collect --repository source --base-sha "$BASE_SHA" --output "$RUNNER_TEMP/screenshots/screenshot-changes.json"
       - name: Upload one data manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:

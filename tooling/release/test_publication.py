@@ -191,12 +191,57 @@ class PublicationTests(unittest.TestCase):
         result = self.publish()
         self.assertEqual(self.github.latest, 10)
         self.assertTrue(self.github.rows[20]["prerelease"])
-        self.assertEqual({asset["name"] for asset in result["identity"]["assets"]}, {*p.APK_NAMES, p.RECORD_NAME})
+        self.assertEqual({asset["name"] for asset in result["identity"]["assets"]},
+                         {*p.APK_NAMES, p.RECORD_NAME, p.MANIFEST_NAME})
         record = result["identity"]["publication"]
         self.assertEqual(record["release_id"], 20)
         self.assertEqual(record["source_commit"], self.helper.tag["source_commit"])
         self.assertEqual(len({asset["sha256"] for asset in record["apks"]}), 1)
         self.assertEqual(record["built_on"], "local")
+
+    def test_release_manifest_binds_signed_source_and_canonical_apk(self):
+        result = self.publish()
+        manifest = next(asset for asset in result["identity"]["assets"] if asset["name"] == "release.json")
+        self.assertEqual(json.loads(self.github.files[manifest["id"]]), {
+            "schema": 1,
+            "channel": "stable",
+            "tag": TAG,
+            "source_commit": self.helper.tag["source_commit"],
+            "version_name": NAME,
+            "version_code": CODE,
+            "package_id": p.PACKAGE,
+            "apk_name": "collie.apk",
+            "apk_sha256": hashlib.sha256(apk()).hexdigest(),
+            "native_artifacts_path": "build-inputs/native-artifacts.json",
+        })
+
+    def test_legacy_prerelease_can_promote_without_adding_a_manifest(self):
+        self.publish()
+        assets = self.github.rows[20]["assets"]
+        assets[:] = [asset for asset in assets if asset["name"] != p.MANIFEST_NAME]
+        writes = len(self.github.writes)
+        self.helper.promote(self.inspect("promote"), self.rebuilt(), RUN)
+        self.assertEqual(self.github.writes[writes:], [("transition", 20, False)])
+
+    def test_conflicting_manifest_blocks_publication(self):
+        self.github.add_asset(20, p.MANIFEST_NAME, b'{"schema":1,"apk_sha256":"wrong"}')
+        with self.assertRaisesRegex(p.Failure, "Release manifest differs"):
+            self.publish()
+        self.assertEqual(self.github.writes, [])
+
+    def test_manifest_upload_can_resume_after_record_upload(self):
+        upload = self.github.upload
+
+        def upload_without_manifest(tag, paths):
+            upload(tag, [path for path in paths if path.name != p.MANIFEST_NAME])
+
+        with patch.object(self.github, "upload", side_effect=upload_without_manifest):
+            with self.assertRaisesRegex(p.Failure, "missing release.json"):
+                self.publish()
+        self.assertTrue(self.github.rows[20]["draft"])
+        self.helper = Harness(self.root / "retry", self.github)
+        self.assertEqual(self.publish()["status"], "PRERELEASE_PUBLISHED")
+        self.assertEqual(self.github.writes[-2], ("upload", [p.MANIFEST_NAME]))
 
     def test_published_retry_is_read_only_and_never_demotes_full_release(self):
         self.publish()
@@ -275,7 +320,7 @@ class PublicationTests(unittest.TestCase):
         self.github.add_asset(20, p.BETA_NAME, self.beta_apk())
         result = self.publish()
         names = {asset["name"] for asset in result["identity"]["assets"]}
-        self.assertEqual(names, {*p.APK_NAMES, p.RECORD_NAME, p.BETA_NAME})
+        self.assertEqual(names, {*p.APK_NAMES, p.RECORD_NAME, p.MANIFEST_NAME, p.BETA_NAME})
         record = result["identity"]["publication"]
         self.assertEqual(record["beta_apk"]["name"], p.BETA_NAME)
         self.assertNotIn(p.BETA_NAME, {asset["name"] for asset in record["apks"]})
@@ -624,6 +669,13 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertLess(publish.index("verify-apk-match.sh"), publish.index("publication.py publish"))
         self.assertIn("inputs.verify_only", verify)
         self.assertIn("--legacy-build-run", verify)
+
+    def test_release_notes_come_from_verified_tag_source(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text()
+        notes = workflow.split("Read release notes from the signed tag commit", 1)[1]
+        self.assertIn("SOURCE_COMMIT: ${{ steps.identity.outputs.source_commit }}", notes)
+        self.assertIn('notes_path="docs/release-notes/$VERSION.md"', notes)
+        self.assertIn('git show "$SOURCE_COMMIT:$notes_path"', notes)
 
     def test_final_promotion_refreshes_exact_source_ci_after_rebuild(self):
         workflow = (ROOT / '.github/workflows/promote.yml').read_text()

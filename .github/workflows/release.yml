@@ -24,12 +24,6 @@ on:
       legacy_build_run:
         description: Original build run ID for an older release (verify-only)
         type: string
-      source_branch:
-        description: Branch supplying the exact signed tag commit's CI evidence
-        type: choice
-        options: [main, release/stable/8.35]
-        default: main
-        required: true
 permissions:
   contents: read
   actions: read
@@ -38,7 +32,7 @@ concurrency:
   cancel-in-progress: false
 env:
   TAG: ${{ inputs.tag }}
-  SOURCE_BRANCH: ${{ inputs.source_branch }}
+  SOURCE_BRANCH: main
   BUILT_ON: ${{ inputs.built_on }}
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
@@ -117,13 +111,16 @@ jobs:
           test "${#apks[@]}" -eq 1
           result=$(env -u GH_TOKEN bash "$GITHUB_WORKSPACE/tooling/release/verify-apk-match.sh" "${apks[0]}" "$DRAFT_APK")
           printf '%s\n' "$result" > "$RUNNER_TEMP/release-evidence/draft-apk-match.txt"
-      - name: Release notes exist in the release-engineering repo
+      - name: Read release notes from the signed tag commit
         env:
+          SOURCE_COMMIT: ${{ steps.identity.outputs.source_commit }}
           VERSION: ${{ steps.identity.outputs.version_name }}
         run: |
-          curl -fsSL "https://raw.githubusercontent.com/0cwa/collie-release-engineering/main/distribution/release-notes/$VERSION.md" \
-            -o "$RUNNER_TEMP/notes.md" \
-            || { echo "::error::add distribution/release-notes/$VERSION.md to collie-release-engineering main"; exit 1; }
+          notes_path="docs/release-notes/$VERSION.md"
+          if ! git show "$SOURCE_COMMIT:$notes_path" > "$RUNNER_TEMP/notes.md" || [[ ! -s "$RUNNER_TEMP/notes.md" ]]; then
+            echo "::error::Signed release commit $SOURCE_COMMIT must contain nonempty $notes_path"
+            exit 1
+          fi
           printf '\n\n[Source-to-APK verification run](%s/%s/actions/runs/%s)\n' \
             "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> "$RUNNER_TEMP/notes.md"
       - name: Record exact assets and publish a prerelease without changing Latest

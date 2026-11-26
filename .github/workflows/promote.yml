@@ -26,6 +26,7 @@ jobs:
       actions: read
     outputs:
       source_commit: ${{ steps.identity.outputs.source_commit }}
+      # Use the recorded route so existing maintenance prereleases remain promotable.
       source_branch: ${{ steps.identity.outputs.source_branch }}
       trusted_main: ${{ steps.identity.outputs.trusted_main }}
       identity_artifact_id: ${{ steps.identity-artifact.outputs.artifact-id }}

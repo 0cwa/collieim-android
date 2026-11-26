@@ -195,6 +195,10 @@ about = "Database schema and migrations not owned by a narrower feature"
 kind = "feature"
 about = "Older catch-all name; new commits should name the specific feature"
 
+[layers.media-share-drafts]
+kind = "feature"
+about = "Preserving conversation text drafts across external media shares"
+
 # Infrastructure
 
 [layers.ci]

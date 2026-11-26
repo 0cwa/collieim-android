@@ -33,16 +33,27 @@ import org.signal.core.models.recipients.RecipientId
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.calls.log.CallLogFragment
+import org.thoughtcrime.securesms.components.emoji.EmojiTextView
 import org.thoughtcrime.securesms.conversation.ConversationArgs
 import org.thoughtcrime.securesms.conversation.ConversationIntents
+import org.thoughtcrime.securesms.conversation.MessageSendType
 import org.thoughtcrime.securesms.conversation.v2.ConversationFragment
 import org.thoughtcrime.securesms.conversationlist.ConversationListArchiveFragment
 import org.thoughtcrime.securesms.conversationlist.ConversationListFragment
+import org.thoughtcrime.securesms.database.DraftTable
+import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.database.model.MessageRecord
+import org.thoughtcrime.securesms.database.model.MmsMessageRecord
+import org.thoughtcrime.securesms.database.model.StoryType
+import org.thoughtcrime.securesms.database.withAttachments
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.v3.MediaSendV3Activity
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.stories.landing.StoriesLandingFragment
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import org.thoughtcrime.securesms.util.MessageTableTestUtils
 import java.io.ByteArrayOutputStream
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
@@ -195,6 +206,97 @@ class MainNavigationLaunchTest {
       check(launched.nonMainActivities().isEmpty()) {
         "Text share should not launch a secondary activity, got ${launched.nonMainActivities().map { it::class.simpleName }}"
       }
+    }
+  }
+
+  @Test
+  fun warmStart_plainExternalImage_cancel_restoresExistingTextDraft() {
+    val draftText = "draft that must survive image share"
+    val threadId = seedTextDraft(draftText)
+    val media = realJpegMedia()
+
+    launchSync(notificationToConversationIntent(recipient)).use { launched ->
+      awaitComposerText(launched, draftText)
+      val mediaEditor = launchPlainExternalImageShare(launched, media)
+
+      finishMediaEditor(mediaEditor)
+
+      awaitComposerText(launched, draftText)
+      awaitPersistedTextDraft(threadId, draftText)
+    }
+  }
+
+  @Test
+  fun warmStart_plainExternalImage_send_restoresExistingTextDraftWithoutUsingItAsCaption() {
+    val draftText = "draft that must not become a caption"
+    val threadId = seedTextDraft(draftText)
+    val media = realJpegMedia()
+
+    launchSync(notificationToConversationIntent(recipient)).use { launched ->
+      awaitComposerText(launched, draftText)
+      val mediaEditor = launchPlainExternalImageShare(launched, media)
+      await(timeoutMs = 15_000, description = "media editor shows the empty caption placeholder") {
+        val placeholder = mediaEditor.getString(MediaSendR.string.AddAMessageRow__message)
+        mediaEditor.window.decorView.hasVisibleCaption(placeholder)
+      }
+      val messagesBeforeSend = messageIds(threadId)
+
+      finishMediaEditor(mediaEditor, mediaSendResult(media))
+
+      awaitComposerText(launched, draftText)
+      awaitPersistedTextDraft(threadId, draftText)
+      assertNewOutgoingImageMessage(threadId, messagesBeforeSend, media, draftText)
+    }
+  }
+
+  @Test
+  fun warmStart_plainExternalImage_resultForDifferentRecipient_restoresExistingTextDraft() {
+    val draftText = "draft that must survive a mismatched editor result"
+    val threadId = seedTextDraft(draftText)
+    val media = realJpegMedia()
+
+    launchSync(notificationToConversationIntent(recipient)).use { launched ->
+      awaitComposerText(launched, draftText)
+      val messagesBeforeShare = messageIds(threadId)
+      val mediaEditor = launchPlainExternalImageShare(launched, media)
+      val otherRecipient = harness.others.first { it != recipient }
+
+      finishMediaEditor(mediaEditor, mediaSendResult(media, otherRecipient))
+
+      awaitComposerText(launched, draftText)
+      awaitPersistedTextDraft(threadId, draftText)
+      check(messageIds(threadId) == messagesBeforeShare) { "A mismatched media result must not send a message" }
+    }
+  }
+
+  @Test
+  fun recreate_whilePlainExternalImageEditorOpen_sendPreservesExistingTextDraft() {
+    val draftText = "draft that must survive recreation"
+    val threadId = seedTextDraft(draftText)
+    val media = realJpegMedia()
+
+    launchSync(notificationToConversationIntent(recipient)).use { launched ->
+      awaitComposerText(launched, draftText)
+      val mediaEditor = launchPlainExternalImageShare(launched, media)
+      val originalActivity = launched.activity
+      val originalFragment = runOnMainSync { launched.recorder.latestActive() }
+      val fragmentCount = launched.recorder.createdArgs.size
+
+      runOnMainSync { launched.activity.recreate() }
+
+      await(timeoutMs = 15_000, description = "MainActivity and ConversationFragment recreated behind the media editor") {
+        launched.activity !== originalActivity &&
+          launched.recorder.createdArgs.size > fragmentCount &&
+          launched.recorder.latestActive() !== originalFragment
+      }
+      awaitPersistedTextDraft(threadId, draftText)
+      val messagesBeforeSend = messageIds(threadId)
+
+      finishMediaEditor(mediaEditor, mediaSendResult(media))
+
+      awaitComposerText(launched, draftText)
+      awaitPersistedTextDraft(threadId, draftText)
+      assertNewOutgoingImageMessage(threadId, messagesBeforeSend, media, draftText)
     }
   }
 
@@ -469,6 +571,94 @@ class MainNavigationLaunchTest {
   }
 
   // region Helpers
+
+  private fun seedTextDraft(text: String): Long {
+    val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(Recipient.resolved(recipient))
+    SignalDatabase.drafts.replaceDrafts(
+      threadId,
+      DraftTable.Drafts(listOf(DraftTable.Draft(DraftTable.Draft.TEXT, text)))
+    )
+    return threadId
+  }
+
+  private fun launchPlainExternalImageShare(launched: LaunchedActivity, media: Media): MediaSendV3Activity {
+    val timestamp = maxOf(System.currentTimeMillis(), SignalStore.misc.lastProcessedShareDataTimestamp + 1)
+    val intent = shareToConversationIntent(
+      recipient = recipient,
+      blob = media.uri,
+      mimeType = checkNotNull(media.contentType),
+      shareDataTimestamp = timestamp
+    )
+
+    runOnMainSync {
+      InstrumentationRegistry.getInstrumentation().callActivityOnNewIntent(launched.activity, intent)
+    }
+
+    return launched.awaitActivity(MediaSendV3Activity::class.java, timeoutMs = 20_000)
+  }
+
+  private fun mediaSendResult(media: Media, resultRecipient: RecipientId = recipient): MediaSendActivityResult = MediaSendActivityResult(
+    recipientId = resultRecipient,
+    nonUploadedMedia = listOf(media),
+    body = "",
+    messageSendType = MessageSendType.SignalMessageSendType,
+    isViewOnce = false,
+    mentions = emptyList(),
+    bodyRanges = null,
+    storyType = StoryType.NONE
+  )
+
+  private fun View.hasVisibleCaption(placeholder: String): Boolean {
+    if (!isShown) return false
+    if (this is EmojiTextView && text.toString() == placeholder) return true
+    if (this is ViewGroup) {
+      for (i in 0 until childCount) {
+        if (getChildAt(i).hasVisibleCaption(placeholder)) return true
+      }
+    }
+    return false
+  }
+
+  private fun finishMediaEditor(activity: MediaSendV3Activity, result: MediaSendActivityResult? = null) {
+    runOnMainSync {
+      if (result == null) {
+        activity.setResult(Activity.RESULT_CANCELED)
+      } else {
+        activity.setResult(Activity.RESULT_OK, Intent().putExtra(MediaSendActivityResult.EXTRA_RESULT, result))
+      }
+      activity.finish()
+    }
+  }
+
+  private fun awaitPersistedTextDraft(threadId: Long, expected: String) {
+    await(timeoutMs = 15_000, description = "database draft remains \"$expected\"") {
+      SignalDatabase.drafts.getDrafts(threadId)
+        .firstOrNull { it.type == DraftTable.Draft.TEXT }
+        ?.value == expected
+    }
+  }
+
+  private fun messageIds(threadId: Long): Set<Long> =
+    MessageTableTestUtils.getMessages(threadId).mapTo(mutableSetOf()) { it.id }
+
+  private fun assertNewOutgoingImageMessage(threadId: Long, previousMessageIds: Set<Long>, expectedMedia: Media, draftText: String) {
+    await(timeoutMs = 15_000, description = "new outgoing image message") {
+      newMessagesWithAttachments(threadId, previousMessageIds).any { it.isOutgoing }
+    }
+    val messages = newMessagesWithAttachments(threadId, previousMessageIds).filter { it.isOutgoing }
+    check(messages.size == 1) { "Expected one outgoing message, got ${messages.map { it.id }}" }
+    val message = messages.single()
+    check(message is MmsMessageRecord && message.containsMediaSlide()) { "Expected outgoing MMS with media, got $message" }
+    check(message.body.isNullOrEmpty() && message.body != draftText) { "Existing draft became the outgoing body: ${message.body}" }
+    val images = message.slideDeck.slides.filter { it.hasImage() }
+    check(images.size == 1) { "Expected one image attachment, got ${message.slideDeck.slides.map { it.contentType }}" }
+    check(images.single().contentType == expectedMedia.contentType) { "Unexpected image content type: ${images.single().contentType}" }
+    check(images.single().fileSize == expectedMedia.size) { "Unexpected image size: ${images.single().fileSize}" }
+    check(images.single().caption.orElse(null).isNullOrEmpty()) { "Unexpected image caption: ${images.single().caption.orElse(null)}" }
+  }
+
+  private fun newMessagesWithAttachments(threadId: Long, previousMessageIds: Set<Long>): List<MessageRecord> =
+    MessageTableTestUtils.getMessages(threadId).filter { it.id !in previousMessageIds }.withAttachments()
 
   /**
    * Mirrors [org.thoughtcrime.securesms.sharing.v2.ShareActivity.openConversation]. We

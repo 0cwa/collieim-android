@@ -336,6 +336,13 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val pairing = SignalStore.unifiedpush.pairingEndpointBinding
     val receiverJson = SignalStore.unifiedpush.v4ReceiverState
     val receiver = ReceiverControlState.parse(receiverJson)
+    val pendingReceiver = ReceiverControlState.parse(SignalStore.unifiedpush.v4PendingReceiverState)
+    val matchingConfirmedV4 = pairing != null && receiver?.confirmed == true && receiver.importId == pairing.importId &&
+      receiver.instance == pairing.instance && receiver.accountId == pairing.accountId && pairing.deviceId == SignalStore.account.deviceId
+    val awaitingV3 = pairing != null && !matchingConfirmedV4 &&
+      (controlRead == null || controlRead.activeInstance != pairing.instance || pairing.importId != null && controlRead.activeImportId != pairing.importId)
+    val awaitingV4 = pendingReceiver != null && pairing?.importId == pendingReceiver.importId ||
+      receiver != null && (!receiver.confirmed || receiver.pendingEpoch != null)
     UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
       device = SignalStore.unifiedpush.device?.takeUnless(SignalStore.unifiedpush::isProvisioningPending),
@@ -350,10 +357,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       pairingHost = pairing?.hostLabel ?: receiver?.hostLabel,
       pairingOrigin = pairing?.endpointOrigin ?: receiver?.target?.endpoint?.let(PairingV1::canonicalOrigin),
       encryptedEnrollment = pairing != null || controlRead?.key != null || receiverJson != null,
-      awaitingPushConfirmation = pairing != null &&
-        (controlRead == null || controlRead.activeInstance != pairing.instance ||
-          pairing.importId != null && controlRead.activeImportId != pairing.importId) ||
-        receiverJson != null && (receiver?.confirmed != true || receiver.pendingEpoch != null),
+      awaitingPushConfirmation = awaitingV3 || awaitingV4,
       receiverUpdatePending = receiver?.pendingEpoch != null,
       enrollmentEpoch = controlRead?.activeEpoch ?: receiver?.epoch ?: 0L,
       pushFallback = SignalStore.unifiedpush.health.fallback,

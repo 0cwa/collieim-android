@@ -13,7 +13,7 @@ object ControlReset {
   @JvmStatic
   fun discard(context: Context) {
     SignalStore.unifiedpush.clearControl()
-    SignalStore.unifiedpush.commitV4ReceiverState(null)
+    SignalStore.unifiedpush.commitV4ReceiverStates(null, null)
     LockedPushState.setEncryptedEnrollment(context, false)
   }
 
@@ -35,7 +35,7 @@ object ControlReset {
   fun recoverCorrupt(context: Context): Boolean {
     val cleared = SignalStore.unifiedpush.clearCorruptControlAfterServerRemoval()
     if (cleared) {
-      SignalStore.unifiedpush.commitV4ReceiverState(null)
+      SignalStore.unifiedpush.commitV4ReceiverStates(null, null)
       LockedPushState.setEncryptedEnrollment(context, false)
     }
     return cleared

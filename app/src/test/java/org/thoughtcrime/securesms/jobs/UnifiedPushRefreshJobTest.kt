@@ -13,6 +13,8 @@ import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.ControlFrame
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.ControlUpdate
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.model.ConnectionResult
@@ -110,6 +112,7 @@ class UnifiedPushRefreshJobTest {
 
     every { SignalStore.unifiedpush } returns unifiedPush
     every { signalStore.account.isRegistered } returns true
+    every { signalStore.account.isLinkedDevice } returns false
     val aci = mockk<ServiceId.ACI>()
     every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
     every { signalStore.account.aci } returns aci
@@ -125,6 +128,9 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.endpointAuth } returns "SYNTHETIC-AUTH"
     every { unifiedPush.endpointInstance } returns "fixture-instance"
     every { unifiedPush.pairingEndpointBinding } returns null
+    every { unifiedPush.vapidKeySynced } returns true
+    every { unifiedPush.v4ReceiverState } returns null
+    every { unifiedPush.v4PendingReceiverState } returns null
     every { unifiedPush.mollySocketUrl } returns "https://molly.example.invalid"
     every { unifiedPush.device } answers { storedDevice }
     every { unifiedPush.device = any() } answers { storedDevice = firstArg() }
@@ -529,6 +535,50 @@ class UnifiedPushRefreshJobTest {
   }
 
   @Test
+  fun `a confirmed linked v4 receiver stays registered without creating bridge credentials`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val importId = "22222222-2222-4222-8222-222222222222"
+    val endpoint = "https://push.example.invalid/linked"
+    val p256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
+    val auth = "MDEyMzQ1Njc4OTo7PD0-Pw"
+    val aci = mockk<ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { signalStore.account.aci } returns aci
+    every { signalStore.account.deviceId } returns 3
+    every { signalStore.account.isLinkedDevice } returns true
+    every { unifiedPush.enabled } returns true
+    every { unifiedPush.endpoint } returns endpoint
+    every { unifiedPush.endpointInstance } returns instance
+    every { unifiedPush.endpointP256dh } returns p256dh
+    every { unifiedPush.endpointAuth } returns auth
+    every { unifiedPush.pairingEndpointBinding } returns UnifiedPushValues.PairingEndpointBinding(
+      instance, "org.collie.pack", "SYNTHETIC-VAPID", "https://push.example.invalid", "https://push.example.invalid",
+      "33333333-3333-4333-8333-333333333333", System.currentTimeMillis() / 1000 + 600, accountId, 3, "Fixture host", importId,
+    )
+    every { unifiedPush.v4ReceiverState } returns ReceiverControlState(
+      receiverId = "44444444-4444-4444-8444-444444444444", importId = importId, accountId = accountId,
+      bridgeDeviceId = 2, instance = instance, controlKey = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+      hostLabel = "Fixture bridge",
+      epoch = 1, target = Target(endpoint, p256dh, auth), confirmed = true,
+    ).serialize()
+    every { unifiedPush.registrationFailed } returns false
+    storedDevice = null
+    mockkObject(MollySocketRepository, UnifiedPushDistributor, AppDependencies)
+    mockkStatic(AppDependencies::class, NotificationChannels::class)
+    every { UnifiedPushDistributor.checkIfActive() } returns true
+    every { AppDependencies.application } returns ApplicationProvider.getApplicationContext()
+    every { AppDependencies.resetNetwork(any()) } returns Unit
+    every { NotificationChannels.supported() } returns false
+
+    newRefreshJob().onRun()
+
+    assertEquals(RegistrationStatus.REGISTERED, unifiedPush.registrationStatus)
+    verify(exactly = 0) { MollySocketRepository.createDevice() }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+  }
+
+  @Test
   fun `refresh recreates a validated device instead of registering the removed lease snapshot`() {
     val created = MollySocketDevice(deviceId = 6, password = "new-relay-credential")
     storedDevice = device
@@ -720,7 +770,8 @@ class UnifiedPushRefreshJobTest {
         runCatching { job.onRun() }.exceptionOrNull()
       }
 
-      assertTrue(removeEntered.await(5, TimeUnit.SECONDS))
+      val removed = removeEntered.await(5, TimeUnit.SECONDS)
+      assertTrue("refresh outcome before remote unlink: ${if (refresh.isDone) refresh.get(0, TimeUnit.SECONDS) else "still running"}", removed)
       // Remote removal has succeeded, but local authority remains intact until the send lease drains.
       assertEquals(device, storedDevice)
       assertEquals(update, controlState.update)

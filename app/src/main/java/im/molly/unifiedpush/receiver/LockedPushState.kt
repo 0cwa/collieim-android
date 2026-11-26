@@ -41,11 +41,13 @@ object LockedPushState {
     val message: String? = null,
     val receiverId: String? = null,
   ) {
-    fun matches(event: EncryptedPush.Event): Boolean =
+    fun identityMatches(event: EncryptedPush.Event): Boolean =
       event.instance == instance && event.importId == importId && event.epoch == epoch &&
-        event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED &&
         if (receiverId == null) event.version == 3 && event.keyId == keyId
         else event.version == 4 && event.receiverId == receiverId
+
+    fun matches(event: EncryptedPush.Event): Boolean = identityMatches(event) &&
+      event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED
   }
 
   internal fun savePairingConfirmation(context: Context, pending: PairingConfirmation): Boolean = try {

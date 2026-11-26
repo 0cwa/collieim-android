@@ -171,6 +171,9 @@ class UnifiedPushRefreshJob private constructor(
   @Throws(IOException::class)
   private fun checkRegistrationStatus(lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): RegistrationStatus {
     if (synchronized(UnifiedPushLifecycle.monitor) { legacyRelayBlockedLocked() }) return RegistrationStatus.PENDING
+    if (SignalStore.account.isLinkedDevice) {
+      return if (hasConfirmedLinkedV4Route()) RegistrationStatus.REGISTERED else RegistrationStatus.PENDING
+    }
     val endpoint = SignalStore.unifiedpush.endpoint
     val airGapped = SignalStore.unifiedpush.airGapped
     val mollySocketUrl = SignalStore.unifiedpush.mollySocketUrl?.toHttpUrlOrNull()
@@ -224,6 +227,18 @@ class UnifiedPushRefreshJob private constructor(
     return result.toRegistrationStatus()
   }
 
+  /** Linked devices use their confirmed receiver subscription and must never create bridge credentials. */
+  private fun hasConfirmedLinkedV4Route(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    val values = SignalStore.unifiedpush
+    val receiver = im.molly.unifiedpush.control.ReceiverControlState.parse(values.v4ReceiverState)
+    val binding = values.pairingEndpointBinding
+    val accountId = SignalStore.account.aci?.toString()
+    receiver?.confirmed == true && binding != null && accountId != null && receiver.accountId == accountId &&
+      receiver.instance == values.endpointInstance && receiver.instance == binding.instance &&
+      receiver.importId == binding.importId && binding.accountId == accountId &&
+      binding.deviceId == SignalStore.account.deviceId && values.endpoint != null
+  }
+
   /** Reuses Signal bridge provisioning without submitting the credential to a relay. */
   internal fun provisionBridgeCredential(
     context: Context,
@@ -268,8 +283,12 @@ class UnifiedPushRefreshJob private constructor(
   private fun legacyRelayBlockedLocked(): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
+    val protectedPairingRoute = values.pairingEndpointBinding != null ||
+      PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: "")
+    if (!protectedPairingRoute) return false
+    if (SignalStore.account.isLinkedDevice && hasConfirmedLinkedV4Route()) return false
     return PairingRegistrationGate.blocksLegacyRelay(
-      values.pairingEndpointBinding != null || PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: ""),
+      hasProtectedPairingEndpoint = true,
     )
   }
 

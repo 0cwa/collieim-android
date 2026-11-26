@@ -12,6 +12,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -117,25 +118,40 @@ class RelayDisclosureUiTest {
       checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json")).use { it.readBytes() },
     )
     val sub = fixture["subscription"]
-    values.v4ReceiverState = ReceiverControlState(
-      receiverId = fixture["receiver_id"].asText(), importId = fixture["request_id"].asText(),
-      accountId = SignalStore.account.aci.toString(), bridgeDeviceId = 2, instance = sub["instance"].asText(),
-      hostLabel = "Collie Lab", controlKey = fixture["control_key"].asText(), epoch = 1,
-      target = Target(sub["endpoint"].asText(), sub["p256dh"].asText(), sub["auth"].asText()),
-      confirmed = true,
-    ).serialize()
+    val previousDeviceId = SignalStore.account.deviceId
+    SignalStore.account.deviceId = 3
+    val instance = sub["instance"].asText()
+    val endpoint = sub["endpoint"].asText()
     try {
+      values.v4ReceiverState = ReceiverControlState(
+        receiverId = fixture["receiver_id"].asText(), importId = fixture["request_id"].asText(),
+        accountId = SignalStore.account.aci.toString(), bridgeDeviceId = 2, instance = instance,
+        hostLabel = "Collie Lab", controlKey = fixture["control_key"].asText(), epoch = 1,
+        target = Target(endpoint, sub["p256dh"].asText(), sub["auth"].asText()), confirmed = true,
+      ).serialize()
+      values.setPairingEndpointRegistration(
+        endpoint, sub["p256dh"].asText(), sub["auth"].asText(),
+        org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
+          instance = instance, distributorId = "org.collie.pack", vapidPublicKey = values.vapidPublicKey.orEmpty(),
+          providerOrigin = "https://push.example.test", endpointOrigin = checkNotNull(PairingV1.canonicalOrigin(endpoint)),
+          sessionId = fixture["request_id"].asText(), expiresAt = System.currentTimeMillis() / 1000 + 600,
+          accountId = SignalStore.account.aci.toString(), deviceId = SignalStore.account.deviceId,
+          hostLabel = "Collie Lab", importId = fixture["request_id"].asText(),
+        ),
+      )
       withSettings {
         onView(withText(R.string.UnifiedPushSettingsFragment__status)).check(matches(isDisplayed()))
         onView(withText(R.string.PairingV1__notification_relay)).check(matches(isDisplayed()))
         onView(withText("Collie Lab · https://push.example.test")).check(matches(isDisplayed()))
         onView(withText(R.string.UnifiedPushSettingsFragment__distributor_app)).check(matches(isDisplayed()))
         onView(withText(R.string.UnifiedPushSettingsFragment__test_push)).check(matches(isDisplayed()))
+          .check(matches(isEnabled()))
         onView(withText(R.string.PairingV1__waiting_confirmation)).check(doesNotExist())
         screenshot("09-v4-linked-settings")
       }
     } finally {
       values.v4ReceiverState = null
+      SignalStore.account.deviceId = previousDeviceId
     }
   }
 

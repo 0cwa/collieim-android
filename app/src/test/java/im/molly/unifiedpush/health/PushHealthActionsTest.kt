@@ -3,6 +3,8 @@ package im.molly.unifiedpush.health
 import android.app.Application
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.LegacyPending
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.MollySocketDevice
@@ -68,6 +70,7 @@ class PushHealthActionsTest {
   @After
   fun tearDown() {
     UnifiedPushHealthJob.distributorActive = im.molly.unifiedpush.UnifiedPushDistributor::checkIfActive
+    UnifiedPushHealthJob.timeoutMs = im.molly.unifiedpush.health.PushHealth.PING_TIMEOUT_MS
   }
 
   private val health get() = values.health
@@ -212,6 +215,63 @@ class PushHealthActionsTest {
       subscription.unsubscribe()
       UnifiedPushHealthJob.timeoutMs = PushHealth.PING_TIMEOUT_MS
     }
+  }
+
+  @Test
+  fun `a linked receiver health ping is abandoned when its pinned receiver route changes`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val importId = "22222222-2222-4222-8222-222222222222"
+    val receiverId = "33333333-3333-4333-8333-333333333333"
+    val endpoint = "https://push.example.invalid/linked"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.endpoint = endpoint
+    values.endpointInstance = instance
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    values.setPairingEndpointRegistration(
+      endpoint, fixtureP256dh, fixtureAuth,
+      UnifiedPushValues.PairingEndpointBinding(
+        instance, "org.collie.pack", "fixture-vapid", "https://push.example.invalid",
+        "https://push.example.invalid", "44444444-4444-4444-8444-444444444444", System.currentTimeMillis() / 1000 + 600,
+        accountId, 3, "Fixture host", importId,
+      ),
+    )
+    val receiver = ReceiverControlState(
+      receiverId, importId, accountId, 2, instance, hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(endpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    values.v4ReceiverState = receiver.serialize()
+    UnifiedPushHealthJob.distributorActive = { true }
+    UnifiedPushHealthJob.timeoutMs = 10_000
+
+    val done = java.util.concurrent.CountDownLatch(1)
+    val error = java.util.concurrent.atomic.AtomicReference<Throwable?>()
+    val job = UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    )
+    Thread {
+      try { job.onRun() } catch (failure: Throwable) { error.set(failure) } finally { done.countDown() }
+    }.start()
+    val deadline = System.currentTimeMillis() + 3_000
+    while (ReceiverControlState.parse(values.v4ReceiverState)?.pendingEpoch == null && System.currentTimeMillis() < deadline) Thread.sleep(20)
+    assertEquals(null, error.get())
+    assertEquals(2L, ReceiverControlState.parse(values.v4ReceiverState)?.pendingEpoch)
+
+    values.v4ReceiverState = receiver.copy(importId = "55555555-5555-4555-8555-555555555555").serialize()
+
+    assertTrue("the stale health job exits after the route changes", done.await(3, java.util.concurrent.TimeUnit.SECONDS))
+    assertEquals(null, error.get())
+    assertEquals("a replaced receiver does not receive a health verdict", 0L, health.lastResultAt)
+    assertEquals("the stale ping does not alter the replacement receiver", "55555555-5555-4555-8555-555555555555", ReceiverControlState.parse(values.v4ReceiverState)?.importId)
   }
 
   // --- B2: pushes dropped while locked are still pushes ---

@@ -101,7 +101,13 @@ internal class PairingV1Coordinator(private val context: Context) {
 
   /** Reserved intent is rejected before reading or changing registration state. */
   fun parseScan(json: String, nowSeconds: Long = System.currentTimeMillis() / 1000): PairingTransport.Scan {
-    return PairingTransport.parse(json, nowSeconds)
+    val scan = PairingTransport.parse(json, nowSeconds)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (SignalStore.account.isLinkedDevice && scan.offer.intent != "add_receiver") {
+        throw EnrollmentFile.Invalid("invalid_offer")
+      }
+    }
+    return scan
   }
 
   /** Capture the complete destination shown in consent, including the live subscription and distributor. */
@@ -135,6 +141,9 @@ internal class PairingV1Coordinator(private val context: Context) {
 
   /** Chooses the safe first-use path without starting a registration. */
   fun evaluateOffer(offer: PairingV1.Offer, selectedDistributor: String? = null): OfferPlan = synchronized(UnifiedPushLifecycle.monitor) {
+    if (SignalStore.account.isLinkedDevice && offer.intent != "add_receiver") {
+      return@synchronized OfferPlan.Failed(context.getString(R.string.PairingV1__request_failed))
+    }
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) {
       return@synchronized OfferPlan.Failed(context.getString(R.string.PairingV1__offer_expired))
     }
@@ -174,6 +183,7 @@ internal class PairingV1Coordinator(private val context: Context) {
     disclosure: RelayDisclosure.Snapshot?,
     onComplete: (Result<PairingRegistrationGate.Endpoint>) -> Unit,
   ): Boolean {
+    if (details.offer.intent != "add_receiver" && SignalStore.account.isLinkedDevice) return false
     val snapshot = disclosure ?: return false
     if (System.currentTimeMillis() / 1000 >= details.offer.expiresAt) return false
     registeringSessionId = details.offer.sessionId
@@ -279,6 +289,9 @@ internal class PairingV1Coordinator(private val context: Context) {
     allowRecovery: Boolean,
     bridgeDeviceId: Int? = null,
   ): SealResult {
+    if (offer.intent != "add_receiver" && synchronized(UnifiedPushLifecycle.monitor) { SignalStore.account.isLinkedDevice }) {
+      return SealResult.Failed(context.getString(R.string.PairingV1__request_failed))
+    }
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return SealResult.Failed(context.getString(R.string.PairingV1__offer_expired))
     if (offer != consented.offer) return SealResult.Failed(context.getString(R.string.PairingV1__offer_changed))
     if (synchronized(UnifiedPushLifecycle.monitor) { isUsableAccountLocked() && isPromotedOfferLocked(offer) }) {
@@ -401,21 +414,24 @@ internal class PairingV1Coordinator(private val context: Context) {
             it.binding.accountId == session.accountId && it.binding.deviceId == session.deviceId
         }
         if (gate != null && candidate == null) return@synchronized
-        val priorReceiver = SignalStore.unifiedpush.v4ReceiverState
+        val priorPendingReceiver = SignalStore.unifiedpush.v4PendingReceiverState
         try {
-          SignalStore.unifiedpush.commitV4ReceiverState(receiver.serialize())
+          SignalStore.unifiedpush.commitV4ReceiverAttempt(
+            receiver.serialize(),
+            im.molly.unifiedpush.receiver.EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize(),
+          )
           if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
               session.offer.sessionId, session.instance, session.distributorId, session.vapidPublicKey,
               session.offer.providerOrigin, session.deadlineSeconds, session.offer.hostLabel, session.importRequestId,
               "", session.importEpoch, RelayDisclosure.pairingScopeDigest(session.disclosure), receiverId = receiver.receiverId,
             ))) {
-            SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver)
+            SignalStore.unifiedpush.commitV4ReceiverStates(SignalStore.unifiedpush.v4ReceiverState, priorPendingReceiver)
             return@synchronized
           }
           if (candidate != null) {
             val endpoint = candidate.claimedEndpoint ?: run {
               LockedPushState.clearPairingConfirmation(context, session.offer.sessionId)
-              SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver)
+              SignalStore.unifiedpush.commitV4ReceiverStates(SignalStore.unifiedpush.v4ReceiverState, priorPendingReceiver)
               return@synchronized
             }
             val bound = PairingRegistrationGate.bindImport(
@@ -428,7 +444,7 @@ internal class PairingV1Coordinator(private val context: Context) {
             )
             if (!bound) {
               LockedPushState.clearPairingConfirmation(context, session.offer.sessionId)
-              SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver)
+              SignalStore.unifiedpush.commitV4ReceiverStates(SignalStore.unifiedpush.v4ReceiverState, priorPendingReceiver)
               return@synchronized
             }
           }
@@ -437,7 +453,7 @@ internal class PairingV1Coordinator(private val context: Context) {
           persisted = true
         } catch (_: Exception) {
           LockedPushState.clearPairingConfirmation(context, session.offer.sessionId)
-          runCatching { SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver) }
+          runCatching { SignalStore.unifiedpush.commitV4ReceiverStates(SignalStore.unifiedpush.v4ReceiverState, priorPendingReceiver) }
         }
       }
     }
@@ -851,13 +867,14 @@ internal class PairingV1Coordinator(private val context: Context) {
       it.sessionId == sessionId && it.receiverId != null
     }
     val expected = sessionState?.let { ReceiverControlState.parse(it) }
-      ?: confirmation?.receiverId?.let { id -> ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)?.takeIf { it.receiverId == id } }
-    val stored = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)
+      ?: confirmation?.receiverId?.let { id -> ReceiverControlState.parse(SignalStore.unifiedpush.v4PendingReceiverState)?.takeIf { it.receiverId == id } }
+    val stored = ReceiverControlState.parse(SignalStore.unifiedpush.v4PendingReceiverState)
     if (expected != null && stored?.receiverId == expected.receiverId && stored.importId == expected.importId && !stored.confirmed) {
       val values = SignalStore.unifiedpush
-      values.commitV4ReceiverState(null)
+      values.commitV4ReceiverStates(values.v4ReceiverState, null)
       val control = values.controlStateRead.stateOrNull
-      LockedPushState.setEncryptedEnrollment(context, control?.let { it.activeEpoch > 0 || it.activeImportId != null } == true)
+      val activeV4 = ReceiverControlState.parse(values.v4ReceiverState)?.confirmed == true
+      LockedPushState.setEncryptedEnrollment(context, activeV4 || control?.let { it.activeEpoch > 0 || it.activeImportId != null } == true)
     }
   }
 

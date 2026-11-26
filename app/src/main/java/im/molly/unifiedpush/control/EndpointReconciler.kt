@@ -66,7 +66,7 @@ object EndpointReconciler {
           receiver.accountId == pairing.accountId && receiver.instance == pairing.instance
         if ((!v3Identity && !v4Identity) || context.localDeviceId != pairing.deviceId ||
           context.instance != pairing.instance || context.accountId != pairing.accountId ||
-          context.pushDevice == null || subscription == null) return
+          (!v4Identity && context.pushDevice == null) || subscription == null) return
       }
       var needsSend = false
       if (receiver?.confirmed == true && subscription != null && receiver.accountId == context.accountId && receiver.instance == context.instance) {
@@ -82,7 +82,9 @@ object EndpointReconciler {
           needsSend = updatedReceiver.pendingEpoch != null && (forceReceiver || retryPending || !updatedReceiver.pendingFrame!!.contentEquals(receiver.pendingFrame ?: byteArrayOf()) || resume && now - pendingAt >= RESUME_AFTER_SECONDS)
         }
       }
-      if (controlState.key != null && device != null) {
+      // Once the confirmed v4 receiver owns this connector route, do not also update a retained
+      // legacy record through the same registration.
+      if (!v4Current && controlState.key != null && device != null) {
         val result = try {
           EndpointUpdates.reconcile(store, context.accountId, device.deviceId, subscription, now)
         } catch (e: CorruptControlStateException) {

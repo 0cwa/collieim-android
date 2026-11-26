@@ -964,14 +964,12 @@ fun NotificationsSettingsScreen(
         )
       }
 
-      if (!state.isLinkedDevice) {
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.NotificationsSettingsFragment__configure_unifiedpush),
-            enabled = state.preferredNotificationMethod == NotificationDeliveryMethod.UNIFIEDPUSH,
-            onClick = callbacks::onNavigationUnifiedPushSettings
-          )
-        }
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.NotificationsSettingsFragment__configure_unifiedpush),
+          enabled = state.preferredNotificationMethod == NotificationDeliveryMethod.UNIFIEDPUSH,
+          onClick = callbacks::onNavigationUnifiedPushSettings
+        )
       }
     }
   }
@@ -982,7 +980,7 @@ internal fun availableNotificationMethods(isLinkedDevice: Boolean, isFcmSupporte
     when (method) {
       NotificationDeliveryMethod.FCM -> isFcmSupported
       NotificationDeliveryMethod.WEBSOCKET -> true
-      NotificationDeliveryMethod.UNIFIEDPUSH -> !isLinkedDevice
+      NotificationDeliveryMethod.UNIFIEDPUSH -> true
     }
   }
 

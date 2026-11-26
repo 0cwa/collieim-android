@@ -5,6 +5,8 @@ import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.health.PushHealth
@@ -58,6 +60,7 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
   }
 
   private fun runPing() {
+    if (runV4PingIfCurrent()) return
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
     val state = try {
@@ -71,44 +74,6 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
     val device = values.device
     val endpoint = values.endpoint
     val distributorActive = distributorActive()
-
-    val receiver = ReceiverControlState.parse(values.v4ReceiverState)
-    if (receiver?.confirmed == true) {
-      if (aci == null || endpoint == null || !distributorActive || receiver.accountId != aci.toString()) {
-        val hop = PushHealth.diagnose(null, distributorActive, endpoint != null)
-        if (manual || hop == PushHealth.Hop.DISTRIBUTOR) PushHealthActions.onPing(hop)
-        return
-      }
-      val subscription = try {
-        ControlFrame.Subscription(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
-      } catch (_: EnrollmentFile.Invalid) {
-        PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
-        return
-      }
-      val ping = try {
-        ReceiverControlState.reconcile(receiver, aci.toString(), receiver.bridgeDeviceId, subscription, System.currentTimeMillis() / 1000, force = true)
-      } catch (_: EnrollmentFile.Invalid) { null }
-      if (ping == null) {
-        PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
-        return
-      }
-      values.v4ReceiverState = ping.serialize()
-      UnifiedPushControlJob.enqueue()
-      val deadline = System.currentTimeMillis() + timeoutMs
-      while (System.currentTimeMillis() < deadline) {
-        val current = ReceiverControlState.parse(values.v4ReceiverState) ?: return
-        if (current.pendingEpoch == null && current.epoch >= checkNotNull(ping.pendingEpoch)) return
-        Thread.sleep(POLL_MS)
-      }
-      val current = ReceiverControlState.parse(values.v4ReceiverState)
-      val hop = when {
-        !distributorActive() || values.endpoint == null -> PushHealth.Hop.DISTRIBUTOR
-        current?.pendingSentAt == 0L -> PushHealth.Hop.SIGNAL_SEND
-        else -> PushHealth.Hop.COLLIESOCKET_OR_PROVIDER
-      }
-      PushHealthActions.onPing(hop)
-      return
-    }
 
     if (aci == null || device == null || endpoint == null || !distributorActive || state.key == null || state.activeEpoch <= 0) {
       // Nothing can be sent. A missing distributor or endpoint is a verdict of its own; the rest is "unavailable",
@@ -157,6 +122,92 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
 
     val hop = PushHealth.diagnose(store.read().update, distributorActive(), SignalStore.unifiedpush.endpoint != null)
     PushHealthActions.onPing(hop)
+  }
+
+  /** Pins a v4 ping and every poll to the same live account, route, receiver and pending frame. */
+  private fun runV4PingIfCurrent(): Boolean {
+    val values = SignalStore.unifiedpush
+    var applicable = false
+    var failure: PushHealth.Hop? = null
+    var pinned: ReceiverControlState? = null
+    synchronized(UnifiedPushLifecycle.monitor) {
+      val receiver = ReceiverControlState.parse(values.v4ReceiverState)
+      if (receiver?.confirmed != true) return@synchronized
+      val context = UnifiedPushAccountTransition.captureContextLocked()
+      val pairing = values.pairingEndpointBinding
+      val currentInstance = values.endpointInstance ?: "default"
+      if (receiver.instance != currentInstance && pairing?.instance != currentInstance) return@synchronized
+      applicable = true
+      val routeMatches = context != null && receiver.accountId == context.accountId && receiver.instance == context.instance &&
+        values.endpoint != null && receiver.instance == currentInstance &&
+        (pairing == null || pairing.importId == receiver.importId && pairing.instance == receiver.instance &&
+          pairing.accountId == context.accountId && pairing.deviceId == context.localDeviceId)
+      if (!routeMatches || !distributorActive()) {
+        failure = PushHealth.diagnose(null, distributorActive(), values.endpoint != null)
+        return@synchronized
+      }
+      val subscription = try {
+        ControlFrame.Subscription(values.endpoint!!, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+      } catch (_: EnrollmentFile.Invalid) {
+        failure = PushHealth.Hop.UNAVAILABLE
+        return@synchronized
+      }
+      pinned = try {
+        ReceiverControlState.reconcile(receiver, receiver.accountId, receiver.bridgeDeviceId, subscription,
+          System.currentTimeMillis() / 1000, force = true)
+      } catch (_: EnrollmentFile.Invalid) { null }
+      if (pinned == null) {
+        failure = PushHealth.Hop.UNAVAILABLE
+        return@synchronized
+      }
+      values.v4ReceiverState = pinned!!.serialize()
+    }
+    if (!applicable) return false
+    failure?.let {
+      if (manual || it == PushHealth.Hop.DISTRIBUTOR) PushHealthActions.onPing(it)
+      return true
+    }
+    val ping = checkNotNull(pinned)
+    val expectedEpoch = checkNotNull(ping.pendingEpoch)
+    UnifiedPushControlJob.enqueue()
+    val deadline = System.currentTimeMillis() + timeoutMs
+    while (System.currentTimeMillis() < deadline) {
+      val current = synchronized(UnifiedPushLifecycle.monitor) {
+        val live = ReceiverControlState.parse(values.v4ReceiverState) ?: return true
+        val context = UnifiedPushAccountTransition.captureContextLocked() ?: return true
+        val pairing = values.pairingEndpointBinding
+        val routeMatches = live.receiverId == ping.receiverId && live.bridgeDeviceId == ping.bridgeDeviceId &&
+          live.controlKey == ping.controlKey && live.confirmed && live.accountId == ping.accountId &&
+          live.instance == ping.instance && live.importId == ping.importId &&
+          context.accountId == ping.accountId && context.instance == ping.instance && values.endpoint != null &&
+          (pairing == null || pairing.importId == ping.importId && pairing.accountId == ping.accountId &&
+            pairing.instance == ping.instance && pairing.deviceId == context.localDeviceId)
+        if (!routeMatches) return true
+        if (live.pendingEpoch == null && live.epoch >= expectedEpoch) return true
+        if (live.pendingEpoch != expectedEpoch || live.pendingFrame?.contentEquals(ping.pendingFrame ?: byteArrayOf()) != true) return true
+        live
+      }
+      if (current == null) return true
+      Thread.sleep(POLL_MS)
+    }
+    val current = synchronized(UnifiedPushLifecycle.monitor) {
+      val live = ReceiverControlState.parse(values.v4ReceiverState) ?: return true
+      val context = UnifiedPushAccountTransition.captureContextLocked() ?: return true
+      val pairing = values.pairingEndpointBinding
+      if (live.receiverId != ping.receiverId || live.bridgeDeviceId != ping.bridgeDeviceId || live.controlKey != ping.controlKey ||
+        !live.confirmed || live.accountId != ping.accountId || live.instance != ping.instance || live.importId != ping.importId ||
+        live.pendingEpoch != expectedEpoch || live.pendingFrame?.contentEquals(ping.pendingFrame ?: byteArrayOf()) != true ||
+        context.accountId != ping.accountId || context.instance != ping.instance || values.endpoint == null ||
+        pairing != null && (pairing.importId != ping.importId || pairing.accountId != ping.accountId || pairing.instance != ping.instance || pairing.deviceId != context.localDeviceId)) return true
+      live
+    }
+    val hop = when {
+      !distributorActive() || values.endpoint == null -> PushHealth.Hop.DISTRIBUTOR
+      current.pendingSentAt == 0L -> PushHealth.Hop.SIGNAL_SEND
+      else -> PushHealth.Hop.COLLIESOCKET_OR_PROVIDER
+    }
+    PushHealthActions.onPing(hop)
+    return true
   }
 
   class Factory : Job.Factory<UnifiedPushHealthJob> {

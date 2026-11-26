@@ -62,6 +62,8 @@ import org.signal.storage.database.DatabaseSecretProvider;
 import org.signal.storage.database.SqlCipherLibraryLoader;
 import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle;
+import im.molly.unifiedpush.control.ReceiverControlState;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.avatar.AvatarPickerStorage;
 import org.thoughtcrime.securesms.backup.v2.BackupRepository;
@@ -667,8 +669,15 @@ public class ApplicationContext extends Application implements AppForegroundObse
       }
       if (method == NotificationDeliveryMethod.UNIFIEDPUSH) {
         if (SignalStore.account().isLinkedDevice()) {
-          Log.i(TAG, "UnifiedPush not supported in linked devices.");
-          updateUnifiedPushStatus(false);
+          if (hasConfirmedLinkedV4Route()) {
+            if (!unifiedPushEnabled) {
+              Log.i(TAG, "Enabling the confirmed v4 receiver route on this linked device.");
+              updateUnifiedPushStatus(true, null);
+            }
+          } else {
+            Log.i(TAG, "UnifiedPush is unavailable without a confirmed v4 receiver route on a linked device.");
+            updateUnifiedPushStatus(false);
+          }
         } else if (!unifiedPushEnabled) {
           if (unifiedPushRefresh != null) {
             // Startup and preference changes can run before push lifecycle admission.
@@ -720,6 +729,20 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   private void updateUnifiedPushStatus(boolean enabled) {
     updateUnifiedPushStatus(enabled, new UnifiedPushRefreshJob());
+  }
+
+  private boolean hasConfirmedLinkedV4Route() {
+    synchronized (UnifiedPushLifecycle.monitor) {
+      var values = SignalStore.unifiedpush();
+      var receiver = ReceiverControlState.Companion.parse(values.getV4ReceiverState());
+      var binding = values.getPairingEndpointBinding();
+      String accountId = SignalStore.account().getAci() == null ? null : SignalStore.account().getAci().toString();
+      return receiver != null && receiver.getConfirmed() && binding != null && accountId != null &&
+          SignalStore.account().getDeviceId() >= 2 && receiver.getAccountId().equals(accountId) &&
+          receiver.getInstance().equals(values.getEndpointInstance()) && receiver.getInstance().equals(binding.getInstance()) &&
+          receiver.getImportId().equals(binding.getImportId()) && accountId.equals(binding.getAccountId()) &&
+          SignalStore.account().getDeviceId() == binding.getDeviceId() && values.getEndpoint() != null;
+    }
   }
 
   private void updateUnifiedPushStatus(boolean enabled, @Nullable UnifiedPushRefreshJob refresh) {

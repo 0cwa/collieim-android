@@ -4,12 +4,14 @@ import android.app.Application
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.CorruptControlStateException
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.model.MollySocketDevice
+import im.molly.unifiedpush.receiver.EncryptedPush
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -316,6 +318,51 @@ class UnifiedPushValuesControlTest {
     val absent = values(KeyValueDataSet())
     absent.clearControl()
     assertTrue(absent.controlStateRead is ControlStateRead.Absent)
+  }
+
+  @Test
+  fun `pending v4 receiver initializes replay atomically and preserves existing replay history`() {
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
+    val values = UnifiedPushValues(KeyValueStore(storage))
+    val receiver = ReceiverControlState(
+      receiverId = "22222222-2222-4222-8222-222222222222",
+      importId = "33333333-3333-4333-8333-333333333333",
+      accountId = account,
+      bridgeDeviceId = 2,
+      instance = instance,
+      controlKey = key,
+      epoch = 1,
+      target = target,
+    )
+    val initialReplay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    val writesBeforeEnrollment = storage.writes
+
+    values.commitV4ReceiverAttempt(receiver.serialize(), initialReplay)
+
+    assertEquals("receiver and replay are acknowledged in one write", writesBeforeEnrollment + 1, storage.writes)
+    assertEquals(receiver.serialize(), values.v4PendingReceiverState)
+    assertEquals(initialReplay, values.replayState)
+    val replacement = receiver.copy(
+      receiverId = "44444444-4444-4444-8444-444444444444",
+      importId = "55555555-5555-4555-8555-555555555555",
+    )
+    values.commitV4ReceiverAttempt(replacement.serialize(), initialReplay)
+    values.mutateControlWithReceiverAndReplay(initialReplay, receiver.copy(confirmed = true).serialize())
+    assertEquals("an active receiver event keeps the separate pending candidate", replacement.serialize(), values.v4PendingReceiverState)
+    values.mutateControlWithReceiverAndReplay(
+      initialReplay, replacement.copy(confirmed = true).serialize(), clearPendingV4ReceiverState = true,
+    )
+    assertNull("candidate promotion clears only the pending record after writing it active", values.v4PendingReceiverState)
+
+    val existingReplay = EncryptedPush.ReplayState(
+      System.currentTimeMillis() / 1000,
+      listOf(EncryptedPush.ReplayState.Seen("11111111-1111-4111-8111-111111111111", System.currentTimeMillis() / 1000 + 120)),
+    ).serialize()
+    values.replayState = existingReplay
+
+    values.commitV4ReceiverAttempt(receiver.serialize(), initialReplay)
+
+    assertEquals("replacement enrollment keeps the existing replay history", existingReplay, values.replayState)
   }
 
   @Test

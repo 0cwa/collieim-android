@@ -11,7 +11,7 @@ import android.text.style.URLSpan
 import org.signal.core.util.Linkifier.DetectedLink
 
 /**
- * Detects web URLs in this [Spannable] and applies a span for each one.
+ * Detects supported links in this [Spannable] and applies a span for each one.
  *
  * Overlapping spans are pruned using the same longest-wins rule. Equal-length overlapping spans are both kept.
  *

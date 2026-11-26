@@ -37,12 +37,16 @@ internal object PairingDistributorRegistration {
     context: Context,
     previousDistributorId: String,
     distributorId: String,
+    previousInstance: String,
   ): Boolean {
     val saved = UnifiedPush.getSavedDistributor(context)
     val acknowledged = UnifiedPush.getAckDistributor(context)
-    if (saved == distributorId && acknowledged == distributorId) return true
-    if (saved != previousDistributorId || acknowledged != previousDistributorId) return false
-    return publishSelectedDistributor(context, distributorId)
+    if (saved != distributorId || acknowledged != distributorId) {
+      if (saved != previousDistributorId || acknowledged != previousDistributorId) return false
+      if (!publishSelectedDistributor(context, distributorId)) return false
+    }
+    if (previousDistributorId != distributorId) unregister(context, previousDistributorId, previousInstance)
+    return true
   }
 
   // Connector 3.0.10's saveDistributor clears the acknowledgment on an owner change. Publish the

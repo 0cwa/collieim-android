@@ -43,7 +43,6 @@ object LockedPushState {
     val receiverId: String? = null,
     val previousDistributor: String? = null,
     val previousInstance: String? = null,
-    val previousDeliveryMethod: String? = null,
   ) {
     fun identityMatches(event: EncryptedPush.Event): Boolean =
       event.instance == instance && event.importId == importId && event.epoch == epoch &&
@@ -61,7 +60,7 @@ object LockedPushState {
       .put("host", pending.hostLabel).put("import", pending.importId).put("key", pending.keyId)
       .put("epoch", pending.epoch).put("scope", pending.scopeDigest).put("message", pending.message)
       .put("receiver", pending.receiverId).put("previousDistributor", pending.previousDistributor)
-      .put("previousInstance", pending.previousInstance).put("previousDeliveryMethod", pending.previousDeliveryMethod)
+      .put("previousInstance", pending.previousInstance)
     val sealed = KeyStoreHelper.seal(json.toString().toByteArray(Charsets.UTF_8))
     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(PAIRING_CONFIRMATION, sealed.serialize()).commit()
   } catch (_: Exception) {
@@ -79,7 +78,6 @@ object LockedPushState {
         json.getString("import"), json.getString("key"), json.getLong("epoch"), json.getString("scope"),
         json.optString("message").ifEmpty { null }, json.optString("receiver").ifEmpty { null },
         json.optString("previousDistributor").ifEmpty { null }, json.optString("previousInstance").ifEmpty { null },
-        json.optString("previousDeliveryMethod").ifEmpty { null },
       )
     } catch (_: Exception) {
       Log.w(TAG, "Could not read the retained pairing confirmation.")

@@ -388,9 +388,10 @@ class UnifiedPushValuesControlTest {
   }
 
   @Test
-  fun `v4 promotion commits replay receiver and pairing route in one acknowledged write`() {
+  fun `v4 promotion commits replay receiver route and delivery choice in one acknowledged write`() {
     val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
-    val values = UnifiedPushValues(KeyValueStore(storage))
+    val store = KeyValueStore(storage)
+    val values = UnifiedPushValues(store)
     values.mutateControl { ControlState() }
     values.setEndpointRegistration("https://push.example.invalid/old", "old-public-key", "old-auth-key", "old-instance")
     val pending = ReceiverControlState(
@@ -442,6 +443,8 @@ class UnifiedPushValuesControlTest {
     assertEquals(target.auth, values.endpointAuth)
     assertEquals(instance, values.endpointInstance)
     assertEquals(binding, values.pairingEndpointBinding)
+    assertTrue(values.enabled)
+    assertEquals("UNIFIEDPUSH", store.getString("molly.notificationMethod", null))
   }
 
   @Test

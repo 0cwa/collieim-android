@@ -599,7 +599,6 @@ internal class PairingV1Coordinator(private val context: Context) {
               "", session.importEpoch, RelayDisclosure.pairingScopeDigest(session.disclosure), receiverId = receiver.receiverId,
               previousDistributor = session.disclosure.configuration.distributor,
               previousInstance = session.disclosure.account.instance,
-              previousDeliveryMethod = session.disclosure.configuration.deliveryMethod.name,
             ))) {
             SignalStore.unifiedpush.commitV4ReceiverStates(SignalStore.unifiedpush.v4ReceiverState, priorPendingReceiver)
             return@synchronized

@@ -34,6 +34,7 @@ import org.thoughtcrime.securesms.gcm.PushFetchHandler
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
+import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.service.KeyCachingService
@@ -79,35 +80,33 @@ class UnifiedPushReceiver : MessagingReceiver() {
       if (KeyCachingService.isLocked()) return false
       return synchronized(UnifiedPushLifecycle.monitor) {
         val confirmation = LockedPushState.peekPairingConfirmation(context)?.takeIf {
-          it.receiverId != null && it.previousDistributor != null && it.previousDeliveryMethod != null &&
-            System.currentTimeMillis() / 1000 < it.expiresAt
+          it.receiverId != null && it.previousDistributor != null && it.previousInstance != null
         } ?: return@synchronized false
         val values = SignalStore.unifiedpush
         val receiver = ReceiverControlState.parse(values.v4ReceiverState)?.takeIf { it.confirmed } ?: return@synchronized false
         val binding = values.pairingEndpointBinding ?: return@synchronized false
         val account = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized false
-        val target = values.endpoint?.let { Target(it, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty()) }
-          ?: return@synchronized false
-        val endpointOrigin = PairingV1.canonicalOrigin(target.endpoint) ?: return@synchronized false
+        val endpoint = values.endpoint ?: return@synchronized false
+        val subscription = try {
+          ControlFrame.Subscription(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+        } catch (_: EnrollmentFile.Invalid) {
+          return@synchronized false
+        }
+        val endpointOrigin = PairingV1.canonicalOrigin(endpoint) ?: return@synchronized false
         if (receiver.receiverId != confirmation.receiverId || receiver.importId != confirmation.importId ||
           receiver.instance != confirmation.instance || receiver.epoch != confirmation.epoch ||
-          receiver.accountId != account.accountId || receiver.instance != account.instance || receiver.target != target ||
+          receiver.accountId != account.accountId || receiver.instance != account.instance || !receiver.target.matches(subscription) ||
           binding.instance != receiver.instance || binding.sessionId != confirmation.sessionId ||
           binding.importId != receiver.importId || binding.accountId != receiver.accountId ||
           binding.deviceId != account.localDeviceId || binding.distributorId != confirmation.distributor ||
           binding.vapidPublicKey != confirmation.vapid || binding.providerOrigin != confirmation.providerOrigin ||
-          binding.endpointOrigin != endpointOrigin ||
-          SignalStore.settings.preferredNotificationMethod.name != confirmation.previousDeliveryMethod &&
-            SignalStore.settings.preferredNotificationMethod !=
-              org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
+          binding.endpointOrigin != endpointOrigin || binding.expiresAt != confirmation.expiresAt ||
+          !values.enabled || SignalStore.settings.preferredNotificationMethod != NotificationDeliveryMethod.UNIFIEDPUSH ||
           confirmation.distributor !in UnifiedPush.getDistributors(context)) return@synchronized false
         if (!PairingDistributorRegistration.recoverPromotionSelection(
-            context, checkNotNull(confirmation.previousDistributor), confirmation.distributor,
+            context, checkNotNull(confirmation.previousDistributor), confirmation.distributor, checkNotNull(confirmation.previousInstance),
           )) return@synchronized false
 
-        values.enabled = true
-        SignalStore.settings.preferredNotificationMethod =
-          org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
         LockedPushState.setEncryptedEnrollment(context, true)
         LockedPushState.setProtectedPairingRoute(context, receiver.instance, confirmation.distributor)
         LockedPushState.clearPairingConfirmation(context, confirmation.sessionId)
@@ -940,9 +939,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 if (import.receiverId == null) restoreLegacyRoute()
                 return@synchronized null
               }
-              values.enabled = true
-              SignalStore.settings.preferredNotificationMethod =
-                org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+              if (import.receiverId == null) {
+                values.enabled = true
+                SignalStore.settings.preferredNotificationMethod = NotificationDeliveryMethod.UNIFIEDPUSH
+              }
               LockedPushState.setEncryptedEnrollment(context, true)
               LockedPushState.setProtectedPairingRoute(context, registration.instance, registration.distributorId)
               val connectorPromotionComplete = PairingDistributorRegistration.promote(context, registration)
@@ -1012,11 +1012,15 @@ class UnifiedPushReceiver : MessagingReceiver() {
         val endpoint = values.endpoint ?: return@synchronized null
         val route = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized null
         if (route.accountId != pendingReceiver.accountId || route.instance != instance || values.endpointInstance != instance) return@synchronized null
-        if (endpoint != pendingReceiver.target.endpoint || values.endpointP256dh != pendingReceiver.target.p256dh ||
-          values.endpointAuth != pendingReceiver.target.auth) return@synchronized null
+        val subscription = try {
+          ControlFrame.Subscription(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+        } catch (_: EnrollmentFile.Invalid) {
+          return@synchronized null
+        }
+        if (!pendingReceiver.target.matches(subscription)) return@synchronized null
         val origin = PairingV1.canonicalOrigin(endpoint) ?: return@synchronized null
         val pairingRegistration = UnifiedPushValues.PairingEndpointRegistration(
-          endpoint, values.endpointP256dh, values.endpointAuth,
+          endpoint, subscription.p256dh, subscription.auth,
           UnifiedPushValues.PairingEndpointBinding(
             pendingReceiver.instance, confirmation.distributor, confirmation.vapid, confirmation.providerOrigin,
             origin, confirmation.sessionId, confirmation.expiresAt, pendingReceiver.accountId, SignalStore.account.deviceId,
@@ -1033,9 +1037,6 @@ class UnifiedPushReceiver : MessagingReceiver() {
           event.version == 4 && event.receiverId == import.receiverId && event.importId == import.requestId &&
           event.epoch == import.epoch && event.instance == import.instance
         if (!exactConfirmation) return@synchronized null
-        values.enabled = true
-        SignalStore.settings.preferredNotificationMethod =
-          org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
         LockedPushState.setEncryptedEnrollment(context, true)
         LockedPushState.setProtectedPairingRoute(context, pendingReceiver.instance, confirmation.distributor)
         LockedPushState.clearPairingConfirmation(context, confirmation.sessionId)
@@ -1046,43 +1047,6 @@ class UnifiedPushReceiver : MessagingReceiver() {
         if (lease != null && !finishEncryptedMessage(context, lease, handling)) lease.close()
       }
       return
-    }
-    val promoted = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)
-    val promotedConfirmation = LockedPushState.peekPairingConfirmation(context)?.takeIf {
-      it.receiverId != null && promoted?.confirmed == true && promoted.receiverId == it.receiverId && promoted.importId == it.importId
-    }
-    if (promoted != null && promotedConfirmation != null) {
-      synchronized(UnifiedPushLifecycle.monitor) {
-        val values = SignalStore.unifiedpush
-        val current = ReceiverControlState.parse(values.v4ReceiverState)
-        val account = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized
-        val endpoint = values.endpoint
-        val consentScope = RelayDisclosure.capture(context)
-        val confirmationStillMatches = current?.confirmed == true && current.receiverId == promoted.receiverId &&
-          current.importId == promoted.importId && current.accountId == promoted.accountId &&
-          current.instance == promoted.instance && current.instance == instance &&
-          promotedConfirmation.instance == current.instance && promotedConfirmation.receiverId == current.receiverId &&
-          promotedConfirmation.importId == current.importId && account.accountId == current.accountId &&
-          account.localDeviceId == SignalStore.account.deviceId && endpoint == current.target.endpoint &&
-          values.endpointP256dh == current.target.p256dh && values.endpointAuth == current.target.auth &&
-          consentScope != null && pairingConfirmationScopeMatches(context, promotedConfirmation) &&
-          RelayDisclosure.matchesDuringTransition(consentScope)
-        if (confirmationStillMatches) {
-          val origin = PairingV1.canonicalOrigin(checkNotNull(endpoint))
-          if (origin != null) {
-            values.setPairingEndpointRegistration(endpoint, values.endpointP256dh, values.endpointAuth,
-              org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
-                current.instance, promotedConfirmation.distributor, promotedConfirmation.vapid,
-                promotedConfirmation.providerOrigin, origin, promotedConfirmation.sessionId,
-                promotedConfirmation.expiresAt, current.accountId, account.localDeviceId,
-                promotedConfirmation.hostLabel, current.importId,
-              ),
-            )
-            values.enabled = true
-            LockedPushState.clearPairingConfirmation(context, promotedConfirmation.sessionId)
-          }
-        }
-      }
     }
     if (pairingBinding?.instance == instance && !pairingBindingMatchesCurrent(context, pairingBinding)) return
     val activeRouteInstance = (SignalStore.unifiedpush.endpointInstance ?: "default").takeIf { SignalStore.unifiedpush.endpoint != null }
@@ -1119,8 +1083,8 @@ class UnifiedPushReceiver : MessagingReceiver() {
           controlState.intents.any { it.eligible && it.instance == instance } ||
           controlState.legacyPending != null && instance == currentRouteInstance
         val scopedPairingRoute = values.pairingEndpointBinding?.instance == instance
-        val pendingOnlyRoute = pendingReceiver != null && !legacyOwnsRoute && receiver == null && !scopedPairingRoute
-        val encryptedRoute = active > 0 && legacyOwnsRoute || scopedPairingRoute || receiver != null || pendingOnlyRoute
+        val retainedRoute = values.endpoint != null && instance == currentRouteInstance
+        val encryptedRoute = active > 0 && legacyOwnsRoute || scopedPairingRoute || receiver != null
         LockedPushState.setEncryptedEnrollment(context, active > 0 || scopedPairingRoute || receiver != null)
         if ((encryptedRoute && (receiver != null || pendingReceiver != null || scopedPairingRoute) || scopedPairingRoute && pending <= 0 && active <= 0) && !EncryptedPush.isEventShaped(message.content)) {
           return@synchronized MessageHandling(drop = true)
@@ -1143,7 +1107,11 @@ class UnifiedPushReceiver : MessagingReceiver() {
             return@synchronized MessageHandling(drop = true)
           }
         }
-        MessageHandling(plaintext = message.content.toString(Charsets.UTF_8))
+        if (pendingReceiver != null && (!retainedRoute || EncryptedPush.isEventShaped(message.content))) {
+          MessageHandling(drop = true)
+        } else {
+          MessageHandling(plaintext = message.content.toString(Charsets.UTF_8))
+        }
       }
 
       if (handling == null || handling.drop) return

@@ -973,13 +973,13 @@ class UnifiedPushReceiverTest {
     lockedPushStateMocked = true
     every { LockedPushState.peekPairingConfirmation(context) } returns confirmation
     every { LockedPushState.clearPairingConfirmation(context, confirmation.sessionId) } returns Unit
+    mockkObject(PairingV1)
     try {
       assertNull("no in-memory registration survives process death", PairingRegistrationGate.current())
       assertTrue(synchronized(UnifiedPushLifecycle.monitor) { hasLivePendingV4PairingConfirmation(context) })
       val secondOffer = freshPairingOffer().copy(
         sessionId = ReceiverEnrollmentV4.newUuid(), vapidPublicKey = "fixture-vapid", intent = "add_receiver",
       )
-      mockkObject(PairingV1)
       every { PairingV1.seal(secondOffer, any(), endpoint) } returns
         PairingV1.SealedRequest("{}", ByteArray(32), byteArrayOf(), byteArrayOf(), byteArrayOf())
       val coordinator = PairingV1Coordinator(context)
@@ -992,8 +992,8 @@ class UnifiedPushReceiverTest {
       verify(exactly = 0) { LockedPushState.savePairingConfirmation(context, match { it.sessionId == secondOffer.sessionId }) }
       verify(exactly = 0) { LockedPushState.clearPairingConfirmation(context, confirmation.sessionId) }
       coordinator.clear()
-      unmockkObject(PairingV1)
     } finally {
+      unmockkObject(PairingV1)
       unmockkStatic(UnifiedPush::class)
     }
   }
@@ -1008,13 +1008,13 @@ class UnifiedPushReceiverTest {
     val importId = "44444444-4444-4444-8444-444444444444"
     val sessionId = "55555555-5555-4555-8555-555555555555"
     val receiverId = "33333333-3333-4333-8333-333333333333"
-    val now = System.currentTimeMillis() / 1000
+    val expiresAt = System.currentTimeMillis() / 1000 - 1
     val target = Target(endpoint, fixtureP256dh, fixtureAuth)
     values.setPairingEndpointRegistration(
       endpoint, fixtureP256dh, fixtureAuth,
       UnifiedPushValues.PairingEndpointBinding(
         instance, distributor, "fixture-vapid", "https://push.example.invalid", "https://push.example.invalid",
-        sessionId, now + 600, checkNotNull(accountIdentityId), 1, "Fixture bridge", importId,
+        sessionId, expiresAt, checkNotNull(accountIdentityId), 1, "Fixture bridge", importId,
       ),
     )
     values.enabled = true
@@ -1022,12 +1022,12 @@ class UnifiedPushReceiverTest {
       receiverId, importId, checkNotNull(accountIdentityId), 2, instance, "Fixture bridge", fixtureKey, 1,
       target, confirmed = true,
     ).serialize()
-    val confirmation = AtomicReference<LockedPushState.PairingConfirmation?>(LockedPushState.PairingConfirmation(
-      sessionId, instance, distributor, "fixture-vapid", "https://push.example.invalid", now + 600,
+    val committedConsent = LockedPushState.PairingConfirmation(
+      sessionId, instance, distributor, "fixture-vapid", "https://push.example.invalid", expiresAt,
       "Fixture bridge", importId, "", 1, "committed-consent", receiverId = receiverId,
       previousDistributor = previousDistributor, previousInstance = "default",
-      previousDeliveryMethod = org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH.name,
-    ))
+    )
+    val confirmation = AtomicReference<LockedPushState.PairingConfirmation?>(committedConsent)
     val connector = context.getSharedPreferences("unifiedpush.connector", Context.MODE_PRIVATE)
     fun selected(id: String) {
       connector.edit().putString("unifiedpush.distributor", id).putBoolean("unifiedpush.distributor_ack", true).commit()
@@ -1038,6 +1038,7 @@ class UnifiedPushReceiverTest {
     mockkStatic(LockedPushState::class)
     lockedPushStateMocked = true
     every { UnifiedPush.getDistributors(context) } returns listOf(distributor)
+    every { UnifiedPush.unregisterApp(any(), "default") } returns Unit
     every { UnifiedPush.getSavedDistributor(context) } answers { connector.getString("unifiedpush.distributor", null) }
     every { UnifiedPush.getAckDistributor(context) } answers {
       connector.getString("unifiedpush.distributor", null).takeIf { connector.getBoolean("unifiedpush.distributor_ack", false) }
@@ -1048,18 +1049,28 @@ class UnifiedPushReceiverTest {
     every { LockedPushState.setProtectedPairingRoute(context, any(), any()) } returns Unit
     try {
       UnifiedPushAccountTransition.initializeFromSignalStore()
-      assertTrue("a confirmed v4 route with retained consent completes the connector half",
+      assertTrue("a confirmed v4 route recovers even after its offer expires",
         UnifiedPushReceiver.recoverInterruptedV4Promotion(context))
       assertEquals(distributor, connector.getString("unifiedpush.distributor", null))
       assertTrue(connector.getBoolean("unifiedpush.distributor_ack", false))
       assertNull(confirmation.get())
+      verify(exactly = 1) { UnifiedPush.unregisterApp(any(), "default") }
 
-      confirmation.set(LockedPushState.PairingConfirmation(
-        sessionId, instance, distributor, "fixture-vapid", "https://push.example.invalid", now + 600,
-        "Fixture bridge", importId, "", 1, "committed-consent", receiverId = receiverId,
-        previousDistributor = previousDistributor, previousInstance = "default",
-        previousDeliveryMethod = org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH.name,
-      ))
+      confirmation.set(committedConsent)
+      assertTrue("recovery also retires the old registration if selection completed before interruption",
+        UnifiedPushReceiver.recoverInterruptedV4Promotion(context))
+      verify(exactly = 2) { UnifiedPush.unregisterApp(any(), "default") }
+
+      confirmation.set(committedConsent)
+      selected(previousDistributor)
+      every { SignalStore.settings.preferredNotificationMethod } returns
+        org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.WEBSOCKET
+      assertFalse("returning to the prior delivery method revokes promotion recovery",
+        UnifiedPushReceiver.recoverInterruptedV4Promotion(context))
+      assertEquals(previousDistributor, connector.getString("unifiedpush.distributor", null))
+
+      every { SignalStore.settings.preferredNotificationMethod } returns
+        org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
       val revokedDistributor = "org.example.user-selected"
       selected(revokedDistributor)
       assertFalse("a user-selected replacement is never overwritten by recovery",
@@ -1170,69 +1181,72 @@ class UnifiedPushReceiverTest {
       previousEndpoint = previousEndpoint, previousP256dh = fixtureP256dh, previousAuth = fixtureAuth,
       previousInstance = "default", previousDistributorId = owner, disclosure = scope,
     ) { })
-    val claimed = PairingRegistrationGate.Endpoint(endpoint, fixtureP256dh, fixtureAuth, registration.instance)
-    assertNotNull(PairingRegistrationGate.claim(registration.instance, owner, owner,
-      checkNotNull(accountIdentityId), 1, claimed))
-    val receiverId = "33333333-3333-4333-8333-333333333333"
-    val importId = "44444444-4444-4444-8444-444444444444"
-    val receiverState = ReceiverControlState(
-      receiverId, importId, checkNotNull(accountIdentityId), 2, registration.instance,
-      hostLabel = offer.hostLabel, controlKey = fixtureKey, epoch = 1,
-      target = Target(endpoint, fixtureP256dh, fixtureAuth),
-    )
-    val identity = PairingRegistrationGate.ImportBinding(
-      importId, "", 1, endpoint, fixtureP256dh, fixtureAuth, checkNotNull(accountIdentityId), 1,
-      registration.instance, receiverId,
-    )
-    assertTrue(PairingRegistrationGate.bindImport(registration.instance, identity))
-    values.commitV4ReceiverAttempt(
-      receiverState.serialize(), EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize(),
-    )
-    val confirmation = LockedPushState.PairingConfirmation(
-      offer.sessionId, registration.instance, owner, offer.vapidPublicKey, offer.providerOrigin,
-      offer.expiresAt, offer.hostLabel, importId, "", 1, RelayDisclosure.pairingScopeDigest(scope), receiverId = receiverId,
-    )
-    mockkObject(LockedPushState)
-    mockkStatic(LockedPushState::class)
-    lockedPushStateMocked = true
-    every { LockedPushState.peekPairingConfirmation(context) } returns confirmation
-    every { LockedPushState.clearPairingConfirmation(context, offer.sessionId) } returns Unit
-    every { LockedPushState.setEncryptedEnrollment(context, any()) } returns Unit
-    every { LockedPushState.setProtectedPairingRoute(context, any(), any()) } returns Unit
-    assertTrue("the exact live candidate is retained before the failed transition",
-      synchronized(UnifiedPushLifecycle.monitor) { hasLivePendingV4PairingConfirmation(context) })
-    var failCommit = true
-    every { values.mutateControlWithReceiverAndReplay(any(), any(), any(), any()) } answers {
-      if (failCommit) {
-        failCommit = false
-        throw KeyValuePersistenceException(IllegalStateException("simulated pre-commit persistence failure"))
+    try {
+      val claimed = PairingRegistrationGate.Endpoint(endpoint, fixtureP256dh, fixtureAuth, registration.instance)
+      assertNotNull(PairingRegistrationGate.claim(registration.instance, owner, owner,
+        checkNotNull(accountIdentityId), 1, claimed))
+      val receiverId = "33333333-3333-4333-8333-333333333333"
+      val importId = "44444444-4444-4444-8444-444444444444"
+      val receiverState = ReceiverControlState(
+        receiverId, importId, checkNotNull(accountIdentityId), 2, registration.instance,
+        hostLabel = offer.hostLabel, controlKey = fixtureKey, epoch = 1,
+        target = Target(endpoint, fixtureP256dh, fixtureAuth),
+      )
+      val identity = PairingRegistrationGate.ImportBinding(
+        importId, "", 1, endpoint, fixtureP256dh, fixtureAuth, checkNotNull(accountIdentityId), 1,
+        registration.instance, receiverId,
+      )
+      assertTrue(PairingRegistrationGate.bindImport(registration.instance, identity))
+      values.commitV4ReceiverAttempt(
+        receiverState.serialize(), EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize(),
+      )
+      val confirmation = LockedPushState.PairingConfirmation(
+        offer.sessionId, registration.instance, owner, offer.vapidPublicKey, offer.providerOrigin,
+        offer.expiresAt, offer.hostLabel, importId, "", 1, RelayDisclosure.pairingScopeDigest(scope), receiverId = receiverId,
+      )
+      mockkObject(LockedPushState)
+      mockkStatic(LockedPushState::class)
+      lockedPushStateMocked = true
+      every { LockedPushState.peekPairingConfirmation(context) } returns confirmation
+      every { LockedPushState.clearPairingConfirmation(context, offer.sessionId) } returns Unit
+      every { LockedPushState.setEncryptedEnrollment(context, any()) } returns Unit
+      every { LockedPushState.setProtectedPairingRoute(context, any(), any()) } returns Unit
+      assertTrue("the exact live candidate is retained before the failed transition",
+        synchronized(UnifiedPushLifecycle.monitor) { hasLivePendingV4PairingConfirmation(context) })
+      var failCommit = true
+      every { values.mutateControlWithReceiverAndReplay(any(), any(), any(), any()) } answers {
+        if (failCommit) {
+          failCommit = false
+          throw KeyValuePersistenceException(IllegalStateException("simulated pre-commit persistence failure"))
+        }
+        callOriginal()
       }
-      callOriginal()
+
+      val eventNode = ObjectMapper().readTree(
+        checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/imported.json")).use { it.readBytes() },
+      ) as com.fasterxml.jackson.databind.node.ObjectNode
+      val now = System.currentTimeMillis() / 1000
+      eventNode.put("instance", registration.instance).put("import_id", importId).put("receiver_id", receiverId)
+        .put("issued_at", now).put("expires_at", now + 300)
+      val event = eventNode.toString().toByteArray()
+      val generationBefore = UnifiedPushLifecycle.currentGeneration()
+      UnifiedPushReceiver().onMessage(context, PushMessage(event, true), registration.instance)
+
+      assertFalse("the simulated receiver state write failed", failCommit)
+      assertTrue("the lifecycle transition advanced before failing", UnifiedPushLifecycle.currentGeneration() > generationBefore)
+      assertEquals("the pending receiver remains uncommitted", receiverState.serialize(), values.v4PendingReceiverState)
+      val rebound = checkNotNull(PairingRegistrationGate.current())
+      assertEquals("the failed transition did not replace the candidate", registration.instance, rebound.binding.instance)
+      assertEquals("the exact candidate gate follows the new lifecycle generation",
+        UnifiedPushLifecycle.currentGeneration(), rebound.binding.lifecycleGeneration)
+      assertEquals("durable consent remains available for retry", confirmation, LockedPushState.peekPairingConfirmation(context))
+      assertTrue(PairingRegistrationGate.allowsCandidateConfirmation(
+        registration.instance, owner, owner, checkNotNull(accountIdentityId), 1,
+      ))
+    } finally {
+      PairingRegistrationGate.cancel(registration.instance)
+      unmockkStatic(UnifiedPush::class)
     }
-
-    val eventNode = ObjectMapper().readTree(
-      checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/imported.json")).use { it.readBytes() },
-    ) as com.fasterxml.jackson.databind.node.ObjectNode
-    val now = System.currentTimeMillis() / 1000
-    eventNode.put("instance", registration.instance).put("import_id", importId).put("receiver_id", receiverId)
-      .put("issued_at", now).put("expires_at", now + 300)
-    val event = eventNode.toString().toByteArray()
-    val generationBefore = UnifiedPushLifecycle.currentGeneration()
-    UnifiedPushReceiver().onMessage(context, PushMessage(event, true), registration.instance)
-
-    assertFalse("the simulated receiver state write failed", failCommit)
-    assertTrue("the lifecycle transition advanced before failing", UnifiedPushLifecycle.currentGeneration() > generationBefore)
-    assertEquals("the pending receiver remains uncommitted", receiverState.serialize(), values.v4PendingReceiverState)
-    val rebound = checkNotNull(PairingRegistrationGate.current())
-    assertEquals("the failed transition did not replace the candidate", registration.instance, rebound.binding.instance)
-    assertEquals("the exact candidate gate follows the new lifecycle generation",
-      UnifiedPushLifecycle.currentGeneration(), rebound.binding.lifecycleGeneration)
-    assertEquals("durable consent remains available for retry", confirmation, LockedPushState.peekPairingConfirmation(context))
-    assertTrue(PairingRegistrationGate.allowsCandidateConfirmation(
-      registration.instance, owner, owner, checkNotNull(accountIdentityId), 1,
-    ))
-    PairingRegistrationGate.cancel(registration.instance)
-    unmockkStatic(UnifiedPush::class)
   }
 
   private fun assertReceiptAdmissionDuringTransitionDrain() {
@@ -1785,7 +1799,7 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
-  fun `v4 receiver rejects plaintext until import then accepts status wake and test events`() {
+  fun `retained plaintext route accepts padded keys at v4 promotion and then requires encrypted events`() {
     val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
     fakeAccount(accountId)
     val receiverFixture = ObjectMapper().readTree(
@@ -1811,7 +1825,7 @@ class UnifiedPushReceiverTest {
     enrollment(active = 0, pending = 0) {
       every { SignalStore.account.isLinkedDevice } returns true
       every { SignalStore.account.deviceId } returns 3
-      values.setEndpointRegistration(endpoint, p256dh, auth, instance)
+      values.setEndpointRegistration(endpoint, "$p256dh=", "$auth==", instance)
       every { values.endpointInstance } returns instance
       values.replayState = null
       values.commitV4ReceiverAttempt(
@@ -1844,11 +1858,10 @@ class UnifiedPushReceiverTest {
       every { LockedPushState.peekPairingConfirmation(context) } answers { pendingConfirmation }
       every { LockedPushState.clearPairingConfirmation(context, confirmation.sessionId) } answers { pendingConfirmation = null }
       val receiver = UnifiedPushReceiver()
-      receiver.onMessage(context, PushMessage("urgent".toByteArray(), true), instance)
-      fetches(0)
+      receiver.onMessage(context, urgent(), instance)
+      fetches(1)
 
       every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationTest() } returns Unit
-      fetches(0)
 
       fun event(name: String, kind: String? = null, epoch: Long? = null, eventId: String = "77777777-7777-4777-8777-777777777777"): ByteArray {
         val node = ObjectMapper().readTree(
@@ -1862,7 +1875,7 @@ class UnifiedPushReceiverTest {
       }
 
       receiver.onMessage(context, PushMessage(event("wake"), true), instance)
-      fetches(0)
+      fetches(1)
       val importedBytes = event("imported")
       val importedEvent = checkNotNull(EncryptedPush.parse(importedBytes, System.currentTimeMillis() / 1000, setOf(4)))
       assertTrue(receiverState.identityMatches(importedEvent, accountId))
@@ -1885,6 +1898,10 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(context, PushMessage(importedBytes, true), instance)
       assertTrue(checkNotNull(ReceiverControlState.parse(values.v4ReceiverState)).confirmed)
       assertEquals("the confirmed receiver is attached to its paired connector route", receiverState.importId, values.pairingEndpointBinding?.importId)
+      assertEquals(p256dh, values.endpointP256dh)
+      assertEquals(auth, values.endpointAuth)
+      receiver.onMessage(context, urgent(), instance)
+      fetches(1)
       assertEquals(
         "a receipt arriving after enrollment_imported matches only the confirmed active attempt",
         PairingReceiptV4State.CONFIRMED,
@@ -1971,7 +1988,7 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(
         context, PushMessage(event("wake", "wake", 2, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"), true), instance,
       )
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
+      verify(timeout = 3000, exactly = 2) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       receiver.onMessage(context, PushMessage(event("wake", "test", 2, "88888888-8888-4888-8888-888888888888"), true), instance)
       verify(timeout = 3000, exactly = 1) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationTest() }
     }

@@ -67,12 +67,14 @@ object PushHealthActions {
     hop: PushHealth.Hop,
     applyIfCurrent: ((PushHealth.Outcome, () -> Unit) -> Boolean)?,
   ) {
-    val (outcome, version) = synchronized(lock) {
+    val (outcome, version, fallback) = synchronized(lock) {
       effectVersion++
-      PushHealth.recordPing(SignalStore.unifiedpush.health, hop, System.currentTimeMillis() / 1000) to effectVersion
+      val health = SignalStore.unifiedpush.health
+      val outcome = PushHealth.recordPing(health, hop, System.currentTimeMillis() / 1000)
+      Triple(outcome, effectVersion, health.fallback)
     }
     Log.i(TAG, "Push test: ${hop.code}. Failures: ${outcome.failures}")
-    executor.execute { apply(outcome, version, applyIfCurrent) }
+    executor.execute { apply(outcome, version, fallback, applyIfCurrent) }
   }
 
   /** An accepted push is proof that push works, so earlier failures stop counting. */
@@ -88,10 +90,29 @@ object PushHealthActions {
   private fun apply(
     outcome: PushHealth.Outcome,
     version: Long? = null,
+    fallback: Boolean? = null,
     applyIfCurrent: ((PushHealth.Outcome, () -> Unit) -> Boolean)? = null,
   ) {
     var shouldResetNetwork = false
-    val applyModeChange = {
+    if (applyIfCurrent != null) {
+      val applied = applyIfCurrent(outcome) {
+        synchronized(lock) {
+          if (version != effectVersion || fallback != SignalStore.unifiedpush.health.fallback) return@synchronized
+          val settings = SignalStore.settings
+          val mode = settings.forceWebsocketMode
+          val nextMode = when {
+            fallback == true && mode != ForceWebsocketMode.ENABLED_BY_USER -> ForceWebsocketMode.ENABLED_AUTOMATICALLY
+            fallback == false && mode == ForceWebsocketMode.ENABLED_AUTOMATICALLY -> ForceWebsocketMode.DISABLED_AUTOMATICALLY
+            else -> mode
+          }
+          if (mode != nextMode) {
+            settings.forceWebsocketMode = nextMode
+            shouldResetNetwork = true
+          }
+        }
+      }
+      if (!applied) return
+    } else if (outcome.enteredFallback || outcome.leftFallback) {
       val settings = SignalStore.settings
       if (outcome.enteredFallback) {
         if (settings.forceWebsocketMode != ForceWebsocketMode.ENABLED_BY_USER) {
@@ -103,13 +124,6 @@ object PushHealthActions {
           settings.forceWebsocketMode = ForceWebsocketMode.DISABLED_AUTOMATICALLY
         }
         shouldResetNetwork = true
-      }
-    }
-    if (outcome.enteredFallback || outcome.leftFallback) {
-      if (applyIfCurrent == null) applyModeChange()
-      else {
-        val latest = synchronized(lock) { version == effectVersion }
-        if (!latest || !applyIfCurrent(outcome, applyModeChange)) return
       }
     }
     if (shouldResetNetwork) resetNetwork()

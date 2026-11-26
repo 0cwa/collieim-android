@@ -431,9 +431,11 @@ class PushHealthActionsTest {
     health.failures = 1
     health.fallback = false
     job.onRun()
-    assertEquals(1, queued.size)
+    job.onRun()
+    assertEquals(2, queued.size)
     queued.removeAt(0).run()
-    assertEquals("a fallback for the still-current receiver remains valid", ForceWebsocketMode.ENABLED_AUTOMATICALLY, mode)
+    queued.removeAt(0).run()
+    assertEquals("a repeated verdict keeps the still-current receiver in fallback", ForceWebsocketMode.ENABLED_AUTOMATICALLY, mode)
     assertEquals(1, resets)
   }
 

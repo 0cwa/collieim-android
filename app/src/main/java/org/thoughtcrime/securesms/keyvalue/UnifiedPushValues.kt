@@ -477,6 +477,10 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
           .putInteger(UNIFIEDPUSH_PAIRING_DEVICE, binding.deviceId)
           .putString(UNIFIEDPUSH_PAIRING_HOST_LABEL, binding.hostLabel)
           .putString(UNIFIEDPUSH_PAIRING_IMPORT_ID, binding.importId)
+        if (clearPendingV4ReceiverState) {
+          write.putBoolean(UNIFIEDPUSH_ENABLED, true)
+          SettingsValues.writeNotificationDeliveryMethod(write, SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH)
+        }
       }
       write.commitAndWaitForPersistence()
       return next

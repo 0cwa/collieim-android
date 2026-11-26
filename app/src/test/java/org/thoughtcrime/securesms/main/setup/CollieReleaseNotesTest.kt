@@ -23,6 +23,15 @@ class CollieReleaseNotesTest {
   }
 
   @Test
+  fun `Stable 8_36_3_3 has its own highlights and update action`() {
+    val edition = CollieReleaseNotes.edition(CollieReleaseNotes.STABLE_8_36_3_3)
+    assertNotNull(edition)
+    assertEquals(CollieReleaseNotes.STABLE_8_36_3_3, edition!!.id)
+    assertEquals(5, edition.highlights.size)
+    assertEquals(CollieReleaseNotes.Destination.APP_UPDATES, edition.action!!.destination)
+  }
+
+  @Test
   fun `every selected bundled highlight edition exists and contains highlights`() {
     val selected = listOf("stable", "beta").flatMap { product ->
       val files = File(releases, product).listFiles().orEmpty().filter { it.extension == "txt" }

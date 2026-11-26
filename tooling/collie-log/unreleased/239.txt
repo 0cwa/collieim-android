@@ -1,3 +1,0 @@
-topic: privacy
-pr: 239
-Remove selected attachments from this device while keeping their messages, text and reactions.

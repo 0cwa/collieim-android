@@ -80,7 +80,38 @@ internal fun hasLivePendingV4PairingConfirmation(context: Context): Boolean {
     it.receiverId == pending.receiverId && it.importId == pending.importId && it.instance == pending.instance &&
       it.epoch == pending.epoch
   }
-  val scope = RelayDisclosure.capture(context) ?: return false
+  val candidate = PairingRegistrationGate.current()?.takeIf {
+    it.binding.instance == pending.instance && it.binding.sessionId == confirmation?.sessionId &&
+      it.binding.accountId == pending.accountId
+  }
+  val snapshot = candidate?.binding?.disclosure
+  val candidateRouteIsLive = candidate != null && snapshot != null && confirmation != null &&
+    System.currentTimeMillis() / 1000 < confirmation.expiresAt &&
+    candidate.binding.distributorId == confirmation.distributor &&
+    candidate.binding.previousDistributorId == snapshot.configuration.distributor &&
+    candidate.binding.matchesDistributorSelection(
+      UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context),
+    ) && snapshot.account.accountId == pending.accountId &&
+    candidate.claimedEndpoint?.let { endpoint ->
+      endpoint.instance == pending.instance && endpoint.url == pending.target.endpoint &&
+        endpoint.p256dh == pending.target.p256dh && endpoint.auth == pending.target.auth
+    } == true &&
+    candidate.importBinding?.let { identity ->
+      identity.receiverId == pending.receiverId && identity.requestId == pending.importId &&
+        identity.epoch == pending.epoch && identity.instance == pending.instance &&
+        identity.accountId == pending.accountId && identity.deviceId == candidate.binding.deviceId &&
+        identity.endpoint == pending.target.endpoint && identity.p256dh == pending.target.p256dh &&
+        identity.auth == pending.target.auth
+    } == true &&
+    candidate.binding.distributorId in UnifiedPush.getDistributors(context) &&
+    RelayDisclosure.pairingScopeDigest(snapshot) == confirmation.scopeDigest &&
+    RelayDisclosure.matchesDuringTransition(snapshot)
+  if (candidateRouteIsLive) return true
+
+  // A candidate registration intentionally leaves the previously acknowledged distributor selected
+  // until the authenticated import promotes the isolated route. Validate against that retained scope.
+  // For a reused route there is no isolated candidate, so its selected distributor remains strict.
+  val scope = if (candidate != null) snapshot ?: return false else RelayDisclosure.capture(context) ?: return false
   val selected = scope.configuration.distributor
   val live = confirmation != null && System.currentTimeMillis() / 1000 < confirmation.expiresAt &&
     scope.account.accountId == pending.accountId && selected != null && confirmation.distributor == selected &&
@@ -714,9 +745,10 @@ internal class PairingV1Coordinator(private val context: Context) {
       }
       val receiptState = synchronized(UnifiedPushLifecycle.monitor) {
         val values = SignalStore.unifiedpush
-        if (!sessionBindingMatchesLocked(session)) return@synchronized null
         val pending = ReceiverControlState.parse(values.v4PendingReceiverState)
         val active = ReceiverControlState.parse(values.v4ReceiverState)
+        val transitioning = UnifiedPushLifecycle.isTransitionInProgressLocked()
+        if (!sessionBindingMatchesLocked(session, duringTransition = transitioning)) return@synchronized null
         val candidate = PairingRegistrationGate.current()?.takeIf {
           it.binding.sessionId == session.offer.sessionId && it.binding.instance == session.instance &&
             it.binding.accountId == session.accountId && it.binding.deviceId == session.deviceId
@@ -727,6 +759,12 @@ internal class PairingV1Coordinator(private val context: Context) {
           } == true && endpoint.instance == expected.instance
         }
         if (candidate != null && candidateEndpoint == null) return@synchronized null
+        if (transitioning && candidate != null && candidate.importBinding?.let { identity ->
+            identity.receiverId == expected.receiverId && identity.requestId == expected.importId &&
+              identity.epoch == expected.epoch && identity.instance == expected.instance &&
+              identity.accountId == expected.accountId && identity.deviceId == session.deviceId &&
+              candidateEndpoint?.let { it.url == expected.target.endpoint && it.p256dh == expected.target.p256dh && it.auth == expected.target.auth } == true
+          } != true) return@synchronized null
         val endpoint = candidateEndpoint?.url ?: values.endpoint ?: return@synchronized null
         matchingV4ReceiptState(
           expected, pending, if (candidate == null) active else null, SignalStore.account.aci?.toString(),
@@ -1014,6 +1052,21 @@ internal class PairingV1Coordinator(private val context: Context) {
     if (disclosureCurrent && matches) return true
     return synchronized(UnifiedPushLifecycle.monitor) {
       val expected = session.receiverStateJson?.let(ReceiverControlState::parse) ?: return@synchronized false
+      if (UnifiedPushLifecycle.isTransitionInProgressLocked() &&
+        RelayDisclosure.matchesDuringTransition(session.disclosure) &&
+        sessionBindingMatchesLocked(session, duringTransition = true)) {
+        val values = SignalStore.unifiedpush
+        val pending = ReceiverControlState.parse(values.v4PendingReceiverState)
+        val active = ReceiverControlState.parse(values.v4ReceiverState)
+        val candidate = PairingRegistrationGate.current()?.takeIf { it.binding.instance == session.instance }
+        val endpoint = candidate?.claimedEndpoint?.url ?: values.endpoint ?: return@synchronized false
+        return@synchronized matchingV4ReceiptState(
+          expected, pending, if (candidate == null) active else null, SignalStore.account.aci?.toString(),
+          candidate?.claimedEndpoint?.instance ?: (values.endpointInstance ?: "default"),
+          canonicalTarget(endpoint, candidate?.claimedEndpoint?.p256dh ?: values.endpointP256dh,
+            candidate?.claimedEndpoint?.auth ?: values.endpointAuth),
+        ) != null
+      }
       val active = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState) ?: return@synchronized false
       active.confirmed && active.receiverId == expected.receiverId && active.importId == expected.importId &&
         active.accountId == expected.accountId && active.bridgeDeviceId == expected.bridgeDeviceId &&
@@ -1025,7 +1078,8 @@ internal class PairingV1Coordinator(private val context: Context) {
   private fun sessionBindingMatchesLocked(session: Session, duringTransition: Boolean = false): Boolean {
     val usableAccount = if (duringTransition) isUsableAccountDuringTransitionLocked() else isUsableAccountLocked()
     if (!usableAccount || SignalStore.account.aci?.toString() != session.accountId ||
-      SignalStore.account.deviceId != session.deviceId || !hasOfferVapidBindingLocked(session.offer, session.distributorId)) return false
+      SignalStore.account.deviceId != session.deviceId ||
+      !hasOfferVapidBindingLocked(session.offer, session.distributorId, duringTransition)) return false
     val values = SignalStore.unifiedpush
     val tentative = PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == session.offer.sessionId }
     if (tentative == null && (UnifiedPush.getSavedDistributor(context) != session.distributorId ||
@@ -1081,13 +1135,15 @@ internal class PairingV1Coordinator(private val context: Context) {
       SignalStore.account.hasAciIdentityKey() && SignalStore.account.servicePassword != null &&
       SignalStore.account.deviceId >= SignalServiceAddress.DEFAULT_DEVICE_ID
 
-  private fun hasOfferVapidBindingLocked(offer: PairingV1.Offer, distributorId: String): Boolean {
+  private fun hasOfferVapidBindingLocked(offer: PairingV1.Offer, distributorId: String, duringTransition: Boolean = false): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
     val tentative = PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == offer.sessionId }
     if (tentative != null) {
       val endpoint = tentative.claimedEndpoint
-      return endpoint != null && pairingScopeMatchesLocked(tentative.binding) &&
+      val scopeMatches = if (duringTransition) RelayDisclosure.matchesDuringTransition(tentative.binding.disclosure)
+        else pairingScopeMatchesLocked(tentative.binding)
+      return endpoint != null && scopeMatches &&
         tentative.binding.vapidPublicKey == offer.vapidPublicKey &&
         tentative.binding.providerOrigin == offer.providerOrigin &&
         tentative.binding.distributorId == distributorId && endpoint.instance == tentative.binding.instance

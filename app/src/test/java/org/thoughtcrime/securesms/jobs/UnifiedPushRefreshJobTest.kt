@@ -16,6 +16,8 @@ import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.RelayDisclosure
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.enrollment.PairingV1
 import im.molly.unifiedpush.control.ControlUpdate
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.model.ConnectionResult
@@ -132,6 +134,206 @@ class UnifiedPushRefreshJobTest {
     assertNotNull("the fixture must be a readable pending v4 receiver", ReceiverControlState.parse(unifiedPush.v4PendingReceiverState))
     val refresh = newRefreshJob().apply { setContext(context) }
     assertFalse(synchronized(UnifiedPushLifecycle.monitor) { refresh.legacyRelayBlockedLocked() })
+  }
+
+  @Test
+  fun `isolated distributor replacement protects candidate until matching confirmation promotes it`() {
+    assertIsolatedReplacementProtection()
+  }
+
+  @Test
+  fun `isolated candidate with a different selected distributor is retired and releases refresh`() {
+    assertIsolatedReplacementProtection(wrongDistributor = true)
+  }
+
+  @Test
+  fun `isolated fresh candidate protects refresh without an active route`() {
+    assertIsolatedReplacementProtection(fresh = true)
+  }
+
+  @Test
+  fun `expired isolated confirmation releases refresh and retires only the candidate`() {
+    assertIsolatedReplacementProtection(expired = true)
+  }
+
+  private fun assertIsolatedReplacementProtection(
+    wrongDistributor: Boolean = false,
+    fresh: Boolean = false,
+    expired: Boolean = false,
+  ) {
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val oldDistributor = "org.example.distributor.a"
+    val candidateDistributor = "org.example.distributor.b"
+    val oldEndpoint = if (fresh) null else "https://push.example.invalid/retained"
+    val candidateEndpoint = "https://push.example.invalid/candidate"
+    val candidateP256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
+    val candidateAuth = "EBESExQVFhcYGRobHB0eHw"
+    val offer = PairingV1.Offer(
+      "33333333-3333-4333-8333-333333333333", "add_receiver", System.currentTimeMillis() / 1000 + 600,
+      "Secondary phone", null, "vapid-key", "server-public-key",
+    )
+    val account = UnifiedPushAccountTransition.AccountContext(
+      accountId, 1, null, oldEndpoint, oldEndpoint?.let { "old-p256dh" }, oldEndpoint?.let { "old-auth" }, "default",
+    )
+    val scope = RelayDisclosure.Snapshot(
+      1, account, RelayDisclosure.Configuration(
+        manual = false, url = "https://molly.example.invalid", vapid = "vapid-key",
+        deliveryMethod = org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH,
+        distributor = oldDistributor,
+      ), emptyList(),
+    )
+    lateinit var receiver: ReceiverControlState
+    lateinit var binding: PairingRegistrationGate.Binding
+    var savedDistributor = oldDistributor
+    var ackDistributor = oldDistributor
+    var endpoint = oldEndpoint
+    var endpointP256dh: String? = oldEndpoint?.let { "old-p256dh" }
+    var endpointAuth: String? = oldEndpoint?.let { "old-auth" }
+    var endpointInstance = "default"
+    var activeState: String? = null
+    var pendingState: String? = null
+    var pairingBinding: UnifiedPushValues.PairingEndpointBinding? = null
+    every { unifiedPush.endpoint } answers { endpoint }
+    every { unifiedPush.endpointP256dh } answers { endpointP256dh }
+    every { unifiedPush.endpointAuth } answers { endpointAuth }
+    every { unifiedPush.endpointInstance } answers { endpointInstance }
+    every { unifiedPush.v4ReceiverState } answers { activeState }
+    every { unifiedPush.v4PendingReceiverState } answers { pendingState }
+    every { unifiedPush.pairingEndpointBinding } answers { pairingBinding }
+    every { unifiedPush.controlStateRead } returns ControlStateRead.Current(controlState)
+    every { unifiedPush.commitV4ReceiverStates(any(), any()) } answers {
+      activeState = firstArg()
+      pendingState = secondArg()
+    }
+    every { unifiedPush.setPairingEndpointRegistration(any(), any(), any(), any()) } answers {
+      endpoint = firstArg()
+      endpointP256dh = secondArg()
+      endpointAuth = thirdArg()
+      pairingBinding = arg(3)
+      endpointInstance = checkNotNull(pairingBinding?.instance)
+    }
+
+    mockkObject(RelayDisclosure, LockedPushState)
+    mockkStatic(UnifiedPush::class, LockedPushState::class)
+    try {
+      every { RelayDisclosure.capture(context) } returns scope
+      every { RelayDisclosure.pairingScopeDigest(scope) } returns "pre-consent-scope"
+      every { RelayDisclosure.matchesDuringTransition(scope) } returns true
+      every { LockedPushState.peekPairingConfirmation(context) } answers { LockedPushState.PairingConfirmation(
+        offer.sessionId, binding.instance, candidateDistributor, offer.vapidPublicKey, offer.providerOrigin,
+        if (expired) System.currentTimeMillis() / 1000 - 1 else offer.expiresAt,
+        offer.hostLabel, receiver.importId, "", receiver.epoch, "pre-consent-scope", receiverId = receiver.receiverId,
+      ) }
+      every { LockedPushState.clearPairingConfirmation(context, any()) } returns Unit
+      every { LockedPushState.setEncryptedEnrollment(context, any()) } returns Unit
+      every { UnifiedPush.getDistributors(context) } returns listOf(oldDistributor, candidateDistributor)
+      every { UnifiedPush.getSavedDistributor(context) } answers { savedDistributor }
+      every { UnifiedPush.getAckDistributor(context) } answers { ackDistributor }
+
+      binding = checkNotNull(PairingRegistrationGate.begin(
+        candidateDistributor, offer, accountId, 1, lifecycleGeneration = scope.generation,
+        previousEndpoint = oldEndpoint, previousP256dh = oldEndpoint?.let { "old-p256dh" }, previousAuth = oldEndpoint?.let { "old-auth" },
+        previousInstance = "default", previousDistributorId = oldDistributor, disclosure = scope,
+      ) { })
+      receiver = ReceiverControlState(
+        receiverId = "55555555-5555-4555-8555-555555555555",
+        importId = "66666666-6666-4666-8666-666666666666",
+        accountId = accountId,
+        bridgeDeviceId = 2,
+        instance = binding.instance,
+        hostLabel = "Secondary phone",
+        controlKey = "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+        epoch = 1,
+        target = Target(candidateEndpoint, candidateP256dh, candidateAuth),
+      )
+      pendingState = receiver.serialize()
+      val claimed = PairingRegistrationGate.Endpoint(candidateEndpoint, candidateP256dh, candidateAuth, binding.instance)
+      assertNotNull(PairingRegistrationGate.claim(binding.instance, oldDistributor, oldDistributor, accountId, 1, claimed))
+      assertTrue(PairingRegistrationGate.bindImport(binding.instance, PairingRegistrationGate.ImportBinding(
+        receiver.importId, "", receiver.epoch, candidateEndpoint, candidateP256dh, candidateAuth,
+        accountId, binding.deviceId, binding.instance, receiver.receiverId,
+      )))
+      val gateCandidate = checkNotNull(PairingRegistrationGate.current())
+      assertEquals(receiver.instance, gateCandidate.binding.instance)
+      assertEquals(receiver.target, Target(checkNotNull(gateCandidate.claimedEndpoint).url,
+        checkNotNull(gateCandidate.claimedEndpoint).p256dh!!, checkNotNull(gateCandidate.claimedEndpoint).auth!!))
+      assertEquals(receiver.importId, gateCandidate.importBinding?.requestId)
+      assertEquals(binding.deviceId, gateCandidate.importBinding?.deviceId)
+      assertEquals(oldDistributor, gateCandidate.binding.disclosure?.configuration?.distributor)
+      val confirmation = checkNotNull(LockedPushState.peekPairingConfirmation(context))
+      assertEquals(candidateDistributor, confirmation.distributor)
+      assertEquals(offer.sessionId, confirmation.sessionId)
+      assertEquals(receiver.importId, confirmation.importId)
+      assertEquals(receiver.instance, confirmation.instance)
+      assertEquals(receiver.receiverId, confirmation.receiverId)
+      assertEquals(receiver.epoch, confirmation.epoch)
+      assertEquals(!expired, System.currentTimeMillis() / 1000 < confirmation.expiresAt)
+      assertEquals(gateCandidate.binding.distributorId, confirmation.distributor)
+      assertEquals(gateCandidate.binding.previousDistributorId, scope.configuration.distributor)
+      assertTrue(gateCandidate.binding.matchesDistributorSelection(savedDistributor, ackDistributor))
+      assertEquals(gateCandidate.binding.sessionId, confirmation.sessionId)
+      assertTrue(RelayDisclosure.matchesDuringTransition(scope))
+      assertEquals("pre-consent-scope", RelayDisclosure.pairingScopeDigest(gateCandidate.binding.disclosure!!))
+      assertTrue(candidateDistributor in UnifiedPush.getDistributors(context))
+      assertEquals(receiver.receiverId, gateCandidate.importBinding?.receiverId)
+      assertEquals(receiver.importId, gateCandidate.importBinding?.requestId)
+      assertEquals(receiver.epoch, gateCandidate.importBinding?.epoch)
+      assertEquals(receiver.instance, gateCandidate.importBinding?.instance)
+      assertEquals(accountId, gateCandidate.importBinding?.accountId)
+      assertEquals(candidateEndpoint, gateCandidate.importBinding?.endpoint)
+      assertEquals(candidateP256dh, gateCandidate.importBinding?.p256dh)
+      assertEquals(candidateAuth, gateCandidate.importBinding?.auth)
+
+      val refresh = newRefreshJob()
+      if (wrongDistributor) {
+        savedDistributor = "org.example.distributor.wrong"
+        ackDistributor = "org.example.distributor.wrong"
+      }
+      val blocked = synchronized(UnifiedPushLifecycle.monitor) { refresh.legacyRelayBlockedLocked() }
+      assertEquals(
+        if (wrongDistributor) "a different selected distributor retires the stale candidate and releases refresh"
+        else if (expired) "an expired confirmation retires the candidate and releases refresh"
+        else "the pending candidate blocks queued legacy refresh while A remains selected",
+        !wrongDistributor && !expired,
+        blocked,
+      )
+      if (wrongDistributor || expired) {
+        verify(exactly = 1) { unifiedPush.commitV4ReceiverStates(null, null) }
+        assertNull(pendingState)
+        assertEquals("the previously selected route remains intact", oldEndpoint, endpoint)
+        assertNull(PairingRegistrationGate.current())
+        return
+      }
+      assertEquals("the refresh guard preserves the pending import", receiver.serialize(), pendingState)
+      assertEquals("the previously selected route remains active before confirmation", oldEndpoint, endpoint)
+      assertEquals(oldDistributor, savedDistributor)
+      assertEquals(oldDistributor, ackDistributor)
+
+      // Model the exact authenticated enrollment_imported commit: install B, confirm this identity, and retire its gate.
+      val origin = checkNotNull(im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(candidateEndpoint))
+      unifiedPush.setPairingEndpointRegistration(candidateEndpoint, candidateP256dh, candidateAuth,
+        UnifiedPushValues.PairingEndpointBinding(
+          binding.instance, candidateDistributor, offer.vapidPublicKey, offer.providerOrigin, origin, offer.sessionId,
+          offer.expiresAt, accountId, 1, offer.hostLabel, receiver.importId,
+        ),
+      )
+      unifiedPush.commitV4ReceiverStates(receiver.copy(confirmed = true).serialize(), null)
+      savedDistributor = candidateDistributor
+      ackDistributor = candidateDistributor
+      assertNotNull(PairingRegistrationGate.promote(binding.instance))
+
+      assertEquals(candidateEndpoint, endpoint)
+      assertEquals(candidateDistributor, pairingBinding?.distributorId)
+      assertEquals(receiver.receiverId, ReceiverControlState.parse(activeState)?.receiverId)
+      assertTrue(checkNotNull(ReceiverControlState.parse(activeState)).confirmed)
+      assertNull(pendingState)
+      assertNull(PairingRegistrationGate.current())
+    } finally {
+      PairingRegistrationGate.current()?.binding?.let { PairingRegistrationGate.cancel(it.instance) }
+      unmockkStatic(UnifiedPush::class, LockedPushState::class)
+      unmockkObject(RelayDisclosure, LockedPushState)
+    }
   }
 
   @Test

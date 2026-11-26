@@ -74,6 +74,7 @@ Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using 
 
 ## Security
 Collie's native libraries (including libringrtc and libsignal) combine Signal sources, all of Molly's proxy protections, plus Collie adaptations. [Release-engineering PR #17 documents their origins and testing.](https://github.com/0cwa/collie-release-engineering/pull/17)
+See the [source verification guide](docs/security/VERIFY.md) to verify the source used for a build.
 
 ## Backups
 
@@ -89,6 +90,10 @@ Collie supports local Signal-format backups. Restoring a backup requires an app 
 </p>
 
 [Report bugs or suggest changes](https://github.com/0cwa/collieim-android/issues) in this repository.
+
+## Contributing
+
+Fork pull requests are welcome. The [contributor guide](.github/CONTRIBUTING.md) covers local setup, builds, and submitting a pull request.
 
 ## License
 

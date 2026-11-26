@@ -254,13 +254,20 @@ jobs:
           set -euo pipefail
           evidence=build/relay-disclosure
           mkdir -p "$evidence/screenshots"
+          pull_screenshot() {
+            local name=$1
+            if [ ! -s "$evidence/screenshots/$name" ]; then
+              local temporary="$evidence/$name.part"
+              timeout 30s adb pull "/sdcard/Download/collie-relay-disclosure/$name" "$temporary" &&
+                mv "$temporary" "$evidence/screenshots/$name"
+            fi
+          }
           collect() {
             status=$?
             trap - EXIT
             printf '%s\n' "$status" > "$evidence/exit-code.txt"
-            mkdir -p "$evidence/screenshots"
-            timeout 30s adb pull /sdcard/Android/data/im.collie.app/files/relay-08-add-receiver-consent.png "$evidence/screenshots/" || true
-            timeout 30s adb pull /sdcard/Android/data/im.collie.app/files/relay-09-v4-linked-settings.png "$evidence/screenshots/" || true
+            pull_screenshot relay-08-add-receiver-consent.png || true
+            pull_screenshot relay-09-v4-linked-settings.png || true
             sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
               app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
             exit "$status"
@@ -270,21 +277,24 @@ jobs:
           test "$(cat "$evidence/device-api.txt")" = 35
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
           run_case() {
-            method=$1
+            local method=$1 result=0
             rm -rf app/build/outputs/androidTest-results
             ./gradlew --no-daemon --console=plain \
               :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
               :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-relay-disclosure-apks.gradle" \
               "-Pandroid.testInstrumentationRunnerArguments.class=im.molly.unifiedpush.enrollment.RelayDisclosureUiTest#$method" \
               -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
-              -Pandroid.testInstrumentationRunnerArguments.ep_screenshot=relay
+              -Pandroid.testInstrumentationRunnerArguments.ep_screenshot=relay || result=$?
             mkdir -p "$evidence/results/$method"
-            cp -R app/build/outputs/androidTest-results/. "$evidence/results/$method/"
+            if [ -d app/build/outputs/androidTest-results ]; then
+              cp -R app/build/outputs/androidTest-results/. "$evidence/results/$method/"
+            fi
+            return "$result"
           }
           run_case addReceiverConsentShowsFourRowsAndExactDeviceWording
-          timeout 30s adb pull /sdcard/Android/data/im.collie.app/files/relay-08-add-receiver-consent.png "$evidence/screenshots/"
+          pull_screenshot relay-08-add-receiver-consent.png
           run_case confirmedV4ReceiverAppearsInLinkedRelaySettings
-          timeout 30s adb pull /sdcard/Android/data/im.collie.app/files/relay-09-v4-linked-settings.png "$evidence/screenshots/"
+          pull_screenshot relay-09-v4-linked-settings.png
           SH
       - name: Run selected UnifiedPush screens on API 35
         id: device

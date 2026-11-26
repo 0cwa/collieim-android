@@ -1,8 +1,11 @@
 # Building Collie
 
-The application source is maintained directly in this repository. Follow the
-[development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md)
-for contributor workflow, [VERIFY.md](VERIFY.md) for source verification, and
+Start with the [contributor guide](../.github/CONTRIBUTING.md) to set up your SDK,
+build a debug APK, and run tests.
+
+The application source is maintained directly in this repository. See the
+[maintainer development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md),
+the [source verification guide](security/VERIFY.md), and
 [RELEASING.md](RELEASING.md) for the release build and signing process.
 The release build uses `tooling/reproducible-builds/build-release.sh` and the
 native inputs recorded in `build-inputs`.

@@ -15,31 +15,36 @@ from publication import (
 
 def build_artifact(github, source, run_id, *, legacy, approved=None, source_branch="main"):
     require(source_branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
-    require(not legacy or source_branch == "main", "Legacy build evidence must come from main")
-    if approved:
-        require(approved["source_branch"] == source_branch and
-                approved["workflow_path"] == ".github/workflows/pr.yml" and
-                approved["workflow_id"] == 413670842,
-                "Approved CI has a different source branch or workflow")
     require(run_id is None or positive(run_id), "Build run ID must be positive")
     workflow = "build-release.yml" if legacy else "pr.yml"
+    workflow_path = f".github/workflows/{workflow}"
+    registered = github.api(f"actions/workflows/{workflow}")
+    workflow_id = registered.get("id")
+    require(positive(workflow_id) and registered.get("path") == workflow_path,
+            f"Cannot resolve the registered workflow for {workflow_path}")
+    if approved is not None:
+        require(not legacy and approved["source_branch"] == source_branch and
+                approved["workflow_path"] == workflow_path and
+                positive(approved["workflow_id"]) and approved["workflow_id"] == workflow_id,
+                "Approved CI has a different source branch or workflow")
     query = urlencode({"head_sha": source, "branch": source_branch, "per_page": 100})
-    runs = github.api(f"actions/workflows/{workflow}/runs?{query}")["workflow_runs"]
+    runs = github.api(f"actions/workflows/{workflow_id}/runs?{query}")["workflow_runs"]
     allowed_events = {"workflow_dispatch"} if legacy else {"push", "workflow_dispatch"}
     candidates = [
         run for run in runs
         if (run_id is None or run["id"] == run_id)
-        and run["path"] == f".github/workflows/{workflow}"
+        and run["path"] == workflow_path
         and run["head_sha"] == source and run["head_branch"] == source_branch
         and run["head_repository"]["full_name"] == REPOSITORY
         and run["event"] in allowed_events
     ]
     require(candidates, f"No trusted {workflow} run for {source}")
     run = max(candidates, key=lambda candidate: candidate["id"])
+    require(positive(run["workflow_id"]) and run["workflow_id"] == workflow_id,
+            "Build run workflow differs from the registered workflow")
     require(run["status"] == "completed" and run["conclusion"] == "success",
             f"Source build run {run['id']} has not passed")
-    if approved:
-        require(run["workflow_id"] == approved["workflow_id"], "Approved CI workflow identity changed")
+    if approved is not None:
         require(run["run_attempt"] == approved["run_attempt"], "Approved CI attempt changed before artifact selection")
         require(run["event"] == approved["workflow_event"], "Approved CI event changed before artifact selection")
 
@@ -55,7 +60,7 @@ def build_artifact(github, source, run_id, *, legacy, approved=None, source_bran
     artifacts = [asset for asset in artifacts if asset["name"] == artifact_name and not asset["expired"]]
     require(len(artifacts) == 1, f"Run {run['id']} needs one unexpired {artifact_name} artifact")
     artifact = artifacts[0]
-    if approved:
+    if approved is not None:
         require(job.get("run_attempt") == run["run_attempt"], "Build job belongs to a different attempt")
         expected_job = next(entry for entry in approved["jobs"] if entry["name"] == job_name)
         require(job["id"] == expected_job["id"] and job["started_at"] <= artifact["created_at"] <= job["completed_at"],
@@ -114,7 +119,6 @@ def main():
             run_id, artifact_id = build["build_run_id"], build["artifact_id"]
             require(positive(run_id) and positive(artifact_id), "Invalid approved build run or artifact ID")
         else:
-            require(source_branch == "main", "Maintenance verification requires the approved build binding")
             run_id, artifact_id = build_artifact(
                 github, source, args.legacy_build_run, legacy=args.legacy_build_run is not None, source_branch=source_branch,
             )

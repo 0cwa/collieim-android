@@ -1,0 +1,376 @@
+# Current path ownership for feature_diff.py. This map describes the net tree
+# delta, including changes inherited from Signal since the Molly baseline.
+# Patterns are relative to the repo root. *, ?, and [] match within a path
+# component. A ** component matches zero or more levels.
+#
+# Shared paths override a single exclusive claim and count once overall.
+# Each feature lists the shared files relevant to its --include-shared patch.
+# Leave uncertain ownership unmapped. Dependencies document relationships only.
+
+[shared]
+paths = [
+  "**/strings2.xml",
+  "app/src/main/res/values*/strings*.xml",
+  "feature/app-settings/src/main/res/values*/strings*.xml",
+  "tooling/layers.toml",
+  "gradle/libs.versions.toml",
+  "gradle.properties",
+  "app/build.gradle.kts",
+  "app/src/main/AndroidManifest.xml",
+  "app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java",
+  "app/src/main/java/org/thoughtcrime/securesms/flags/CollieFlags.kt",
+  "app/src/main/protowire/JobData.proto",
+]
+
+[features.unifiedpush]
+about = "Distributor selection, registration, delivery, and push health"
+paths = [
+  "app/src/*/java/im/molly/unifiedpush/health/**",
+  "app/src/main/java/im/molly/unifiedpush/UnifiedPushDistributor.kt",
+  "app/src/main/java/im/molly/unifiedpush/UnifiedPushNotificationBuilder.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/UnifiedPushHealthJob*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobmanager/**/UnifiedPushMessageFetch*.kt",
+  "app/src/main/res/menu/unifiedpush_settings.xml",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettings*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/UnifiedPushValues.kt",
+  "app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt",
+  "app/src/main/java/im/molly/unifiedpush/lifecycle/**",
+  "app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettings*.kt",
+  "app/src/main/res/values/strings2.xml",
+]
+
+[features.encrypted-push]
+about = "Encrypted push payloads, receiver enrollment, and endpoint control"
+depends_on = ["unifiedpush"]
+paths = [
+  "app/src/*/java/im/molly/unifiedpush/control/**",
+  "app/src/*/java/im/molly/unifiedpush/enrollment/ControlKeyId*.kt",
+  "app/src/*/java/im/molly/unifiedpush/enrollment/ReceiverEnrollmentV4*.kt",
+  "app/src/*/java/im/molly/unifiedpush/enrollment/EncryptedPush*.kt",
+  "app/src/*/java/im/molly/unifiedpush/receiver/EncryptedPush*.kt",
+  "app/src/androidTest/java/im/molly/unifiedpush/receiver/NtfyV3PhysicalChainTest.kt",
+  "app/src/test/resources/colliesocket-contract*/**",
+  "app/src/*/resources/colliesocket-encrypted-push-v4/**",
+  "app/src/androidTest/assets/colliesocket-encrypted-push-v4/**",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/UnifiedPushControlJob*.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/keyvalue/UnifiedPushValuesControlTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt",
+  "app/src/main/java/im/molly/unifiedpush/receiver/LockedPushState.kt",
+  "app/src/main/java/im/molly/unifiedpush/lifecycle/**",
+  "app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettings*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/UnifiedPushValues.kt",
+  "app/src/main/res/values/strings2.xml",
+]
+
+[features.push-security]
+about = "Consent and trust checks for push registration and relay setup"
+depends_on = ["unifiedpush"]
+paths = [
+  "app/src/*/java/im/molly/unifiedpush/enrollment/RelayDisclosure*.kt",
+  "app/src/*/java/im/molly/unifiedpush/components/settings/app/notifications/RelayDisclosureDialogs*.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobs/UnifiedPushDisclosureRefreshJobTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/notifications/MollyNotificationCallbacksTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt",
+  "app/src/main/java/im/molly/unifiedpush/UnifiedPushDefaultDistributorLinkActivity.kt",
+  "app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt",
+  "app/src/main/java/im/molly/unifiedpush/receiver/LockedPushState.kt",
+  "app/src/main/java/im/molly/unifiedpush/lifecycle/**",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettings*.kt",
+  "app/src/main/res/values/strings2.xml",
+]
+
+[features.relay]
+about = "Relay setup, QR pairing, and enrollment export"
+depends_on = ["unifiedpush", "encrypted-push", "push-security"]
+paths = [
+  "app/src/*/java/im/molly/unifiedpush/enrollment/Enrollment*.kt",
+  "app/src/*/java/im/molly/unifiedpush/enrollment/Pairing*.kt",
+  "app/src/main/java/im/molly/unifiedpush/model/MollySocket.kt",
+  "app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/MollySocketQrScan*.kt",
+  "app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/PairingV1Coordinator.kt",
+  "app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/QrScanResult.kt",
+  "app/src/test/java/im/molly/unifiedpush/MollySocketRepositoryTest.kt",
+  "app/src/test/java/im/molly/unifiedpush/UnifiedPushDefaultDistributorLinkActivityTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/UnifiedPushRefreshJobAdmissionTest.kt",
+  "app/src/test/resources/colliesocket-pairing-v1/**",
+  "app/src/androidTest/assets/colliesocket-pairing-v1/**",
+]
+shared_paths = [
+  "app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt",
+  "app/src/main/java/im/molly/unifiedpush/UnifiedPushDefaultDistributorLinkActivity.kt",
+  "app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettings*.kt",
+  "app/src/main/java/im/molly/unifiedpush/lifecycle/**",
+  "app/src/main/java/im/molly/unifiedpush/receiver/LockedPushState.kt",
+  "app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt",
+  "app/src/test/java/im/molly/unifiedpush/receiver/UnifiedPushReceiverTest.kt",
+  "app/src/test/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettingsViewModelPersistenceTest.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettings*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJobTest.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/UnifiedPushValues.kt",
+  "app/src/main/res/values/strings2.xml",
+]
+
+[features.linked-device-alerts]
+about = "Early alerts and delayed reminders when a device is linked"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/NewLinkedDeviceNotificationJob*.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/NewLinkedDeviceNotificationSchedulingTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/InAppSchedulerTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/JobControllerDelayedWakeupTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/JobSchedulerSchedulerTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/JobSchedulerSystemServiceTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/jobmanager/impl/AutoDownloadEmojiConstraintTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/database/JobDatabase.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobmanager/InAppScheduler.java",
+  "app/src/main/java/org/thoughtcrime/securesms/jobmanager/Job.java",
+  "app/src/main/java/org/thoughtcrime/securesms/jobmanager/JobController.java",
+  "app/src/main/java/org/thoughtcrime/securesms/jobmanager/JobManager.java",
+  "app/src/main/java/org/thoughtcrime/securesms/jobmanager/JobSchedulerScheduler.java",
+  "app/src/main/java/org/thoughtcrime/securesms/jobmanager/impl/AutoDownloadEmojiConstraint.java",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/MiscellaneousValues.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceViewModel.kt",
+  "app/src/main/protowire/JobData.proto",
+  "app/src/main/res/values/strings2.xml",
+  "tooling/layers.toml",
+]
+
+[features.group-admission-policy]
+about = "Device-local group invitation policy and explicit admission"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/groups/v2/admission/**",
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/collie/groups/**",
+  "app/src/test/java/org/thoughtcrime/securesms/database/RecipientTableGroupAdmissionTest.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/GroupAdmission*.kt",
+  "feature/app-settings/src/*/java/org/signal/appsettings/collie/groups/**",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/flags/CollieFlags.kt",
+  "app/src/main/protowire/JobData.proto",
+  "feature/app-settings/src/main/res/values/collie_settings.xml",
+]
+
+[features.collie-settings]
+about = "The Collie settings screen and opt-in Labs controls"
+paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/collie/CollieSettingsFragment.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/collie/CollieSettingsNavigation.kt",
+  "feature/app-settings/src/test/java/org/signal/appsettings/collie/CollieSettingsLayoutTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/collie/CollieSettingsEntry.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/flags/CollieFlags.kt",
+  "feature/app-settings/src/*/java/org/signal/appsettings/collie/CollieSettingsScreen*.kt",
+  "feature/app-settings/src/main/res/values/collie_settings.xml",
+]
+
+[features.hardening-settings]
+about = "The Beta Hardening controls and phone authentication for backup keys"
+depends_on = ["collie-settings", "recovery-pin-guard"]
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/collie/BackupKey*Authentication*.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/components/settings/app/collie/PhoneAuthenticationAttemptTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/collie/CollieSettingsEntry.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/flags/CollieFlags.kt",
+  "feature/app-settings/src/*/java/org/signal/appsettings/collie/CollieSettingsScreen*.kt",
+  "feature/app-settings/src/main/res/values/collie_settings.xml",
+  "app/src/main/java/org/thoughtcrime/securesms/backup/v2/ui/verify/*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/backups/remote/BackupKeyDisplayEntry.kt",
+]
+
+[features.recovery-pin-guard]
+about = "Require current PIN or phone authentication for recovery changes"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/pin/RecoveryPinGuard*.kt",
+  "app/src/androidTest/java/org/thoughtcrime/securesms/lock/v2/GuardedPinRecreationTest.kt",
+  "app/src/main/res/values/recovery_pin_guard.xml",
+  "lib/storage/src/test/java/org/signal/storage/keyvalue/SvrRecoveryGuardTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/PassphraseRequiredActivity.java",
+  "app/src/main/java/org/thoughtcrime/securesms/lock/v2/ConfirmSvrPin*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/lock/v2/ConfirmSvrPinViewModel.java",
+  "app/src/main/java/org/thoughtcrime/securesms/lock/v2/CreateSvrPinActivity.java",
+  "app/src/main/java/org/thoughtcrime/securesms/pin/PinOptOutDialog.java",
+  "app/src/main/java/org/thoughtcrime/securesms/preferences/AdvancedPinSettingsEntry.kt",
+  "lib/storage/src/main/java/org/signal/storage/keyvalue/PinValues.kt",
+  "lib/storage/src/main/java/org/signal/storage/keyvalue/SvrValues.kt",
+]
+
+[features.app-updates]
+about = "The signed in-app updater and update profiles"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/apkupdate/**",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/ApkUpdateJob*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/ApkUpdateValues.kt",
+  "lib/storage/src/main/java/org/signal/storage/keyvalue/ApkUpdateValues.kt",
+  "app/src/androidTest/assets/apkupdate/**",
+  "app/src/test/resources/apkupdate/**",
+]
+shared_paths = ["app/build.gradle.kts", "app/src/main/res/values/strings2.xml"]
+
+[features.trailblazer]
+about = "The TrailBlazer Beta edition and its package identity"
+paths = ["app/src/beta/**"]
+shared_paths = ["app/build.gradle.kts", "gradle.properties"]
+
+[features.branding]
+about = "Collie names, launcher icons, and artwork"
+paths = [
+  "app/src/androidTest/java/org/thoughtcrime/securesms/branding/**",
+  "app/src/main/res/drawable*/ic_launcher*",
+  "app/src/main/res/mipmap*/ic_launcher*",
+]
+shared_paths = ["app/build.gradle.kts", "app/src/main/res/values*/strings*.xml"]
+
+[features.web-link-preview-images]
+about = "Text-only web link previews and their settings"
+paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/linkpreview/LinkPreviewImagePolicy.java",
+  "app/src/test/java/org/thoughtcrime/securesms/linkpreview/*ImagePolicy*Test.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/keyvalue/WebLinkPreviewSettingsTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/mediasend/v2/text/TextStoryPreviewSubmissionTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/sharing/interstitial/ShareInterstitialPreviewSubmissionTest.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettings*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/linkpreview/LinkPreviewRepository.java",
+  "app/src/main/java/org/thoughtcrime/securesms/linkpreview/LinkPreviewViewModel*",
+  "feature/app-settings/src/main/res/values/strings.xml",
+]
+
+[features.signal-donation-removal]
+about = "Remove Signal donation checkout and payment clients"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/**",
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/subscription/receipts/**",
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/**",
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/subscription/*Donation*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/subscription/*InAppPayment*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/InAppPayment*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshDonationSubscriptionStatusJob.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/badges/self/expired/MonthlyDonation*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/*DonationConfiguration*.kt",
+  "app/src/main/res/color/donation_*.xml",
+  "app/src/main/res/drawable/custom_donation_*.xml",
+  "app/src/main/res/layout/donation_*.xml",
+  "app/src/main/res/layout/manage_donations_fragment.xml",
+  "app/src/*/reference/**/DonationCheckoutScreenshotTests/**",
+  "lib/donations/**",
+  "lib/libsignal-service/src/*/java/org/whispersystems/signalservice/**/Donations*.*",
+  "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/subscriptions/StripeClientSecret.kt",
+]
+shared_paths = [
+  "app/build.gradle.kts",
+  "gradle/libs.versions.toml",
+  "app/src/main/java/org/thoughtcrime/securesms/database/InAppPaymentTable.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/PaymentsValues.kt",
+  "app/src/main/res/values/strings2.xml",
+]
+
+[features.backup]
+about = "Backup and restore, rollback safety, and progress reporting"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/backup/**",
+  "app/src/main/java/org/thoughtcrime/securesms/absbackup/**",
+  "app/src/*/java/org/thoughtcrime/securesms/components/settings/app/backups/**",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/*Backup*Job*.kt",
+  "feature/app-settings/src/*/java/org/signal/appsettings/backups/**",
+  "lib/archive/**",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ArchiveConverterExtensions.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/backup/v2/RemovedAttachmentArchiveTest.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/backup/v2/ui/verify/*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/backup/v2/ui/subscription/MessageBackupsFlowFragment.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/backups/remote/BackupKeyDisplayEntry.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt",
+]
+
+[features.archive-media]
+about = "Reliable archived media retries and completion"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/ArchiveAttachmentReconciliationJob*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/ArchiveCommitAttachmentDeletesJob*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/ArchiveThumbnailUploadJob*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/jobs/*AttachmentToArchiveJob*.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt",
+  "app/src/main/protowire/JobData.proto",
+]
+
+[features.attachment-removal]
+about = "Remove local attachments while preserving the message and text"
+depends_on = ["trailblazer"]
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/mediaoverview/MediaActions*.kt",
+  "app/src/*/java/org/thoughtcrime/securesms/mediaoverview/MediaDeleteProgress*.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/components/RemovedAttachmentPresentationTest.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/database/AttachmentTableTest_removeLocally.kt",
+  "app/src/main/res/values/collie_attachment_removal.xml",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ArchiveConverterExtensions.kt",
+  "app/src/test/java/org/thoughtcrime/securesms/backup/v2/RemovedAttachmentArchiveTest.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/attachments/Attachment.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/attachments/DatabaseAttachment.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/flags/CollieFlags.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentBackfill.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentDownloadJob.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreAttachment*Job.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/mediaoverview/MediaOverviewContextMenu.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/mediaoverview/MediaOverviewPageFragment.java",
+  "app/src/main/java/org/thoughtcrime/securesms/mediaviewer/MediaViewer*.kt",
+  "feature/media-viewer/src/main/res/values/strings.xml",
+]
+
+[features.setup]
+about = "Finish Setup, setup prompts, and delivery problems"
+paths = [
+  "app/src/*/java/org/thoughtcrime/securesms/main/setup/*Setup*.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/main/setup/CollieProblemBanner.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/CollieBootstrapValues.kt",
+  "app/src/main/java/org/thoughtcrime/securesms/keyvalue/CollieSetupValues.kt",
+]
+shared_paths = [
+  "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettings*.kt",
+  "app/src/main/res/values/strings2.xml",
+]
+
+[features.project-log]
+about = "In-app release notes and the project log"
+paths = [
+  "app/src/main/assets/collie-log/**",
+  "app/src/*/java/org/thoughtcrime/securesms/main/setup/CollieReleaseNotes*.kt",
+]
+
+[features.infra]
+about = "Repository automation, release tooling, documentation, and store metadata"
+paths = [
+  ".github/**",
+  "tooling/**",
+  "docs/**",
+  "fastlane/**",
+  ".coderabbit.yaml",
+  ".gitattributes",
+  ".gitignore",
+  "AGENTS.md",
+  "README.md",
+]

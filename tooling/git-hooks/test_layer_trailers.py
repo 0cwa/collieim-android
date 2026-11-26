@@ -1,9 +1,8 @@
-"""Exercise the PR #168 regression through real commits, merges and pushes."""
+"""Exercise Layer trailers and upstream verification through real Git repositories."""
 
 import contextlib
 import importlib.util
 import io
-import json
 import os
 from pathlib import Path
 import subprocess
@@ -17,7 +16,7 @@ SCRIPTS = Path(__file__).resolve().parent
 CHECKER = SCRIPTS / "collie_check_layer_trailers.py"
 INSTALLER = SCRIPTS / "install.py"
 GOOD = "Change the website\n\nLayer: website\nCo-authored-by: Name <name@example.com>\n"
-BROKEN = GOOD.replace("website\nCo-authored", "website\n\nCo-authored")
+BROKEN = GOOD.replace("Layer: website", "Layer: Website")
 REPO_CATALOG = SCRIPTS.parent / "layers.toml"
 CATALOG = """
 [layers.website]
@@ -37,21 +36,6 @@ SIGNAL = "signalapp/Signal-Android"
 MOLLY = "mollyim/mollyim-android"
 
 
-def provenance_table(layer="relay", **overrides):
-    fields = {
-        "repository": "johanw666/Signal-Android",
-        "revision": "8f4ad8577344e844945ee8e73d95fd1fcc7208bc",
-        "revision_kind": "release-snapshot",
-        "relationship": "adaptation",
-        "application": "manual",
-        "scope": "Selected behavior from the snapshot",
-    }
-    fields.update(overrides)
-    return f"\n[layers.{layer}.provenance]\n" + "".join(
-        f"{key} = {json.dumps(value)}\n" for key, value in fields.items()
-    )
-
-
 def load_checker():
     spec = importlib.util.spec_from_file_location("checker", CHECKER)
     checker = importlib.util.module_from_spec(spec)
@@ -59,122 +43,11 @@ def load_checker():
     return checker
 
 
-class ProvenanceTests(unittest.TestCase):
-    def setUp(self):
-        self.checker = load_checker()
-
-    def test_old_catalogs_and_unclassified_features_still_parse(self):
-        for text in ("", CATALOG, UPSTREAM_CATALOG):
-            with self.subTest(text=text):
-                self.checker.Catalog(text)
-        catalog = self.checker.Catalog(CATALOG + provenance_table(prerequisites=["setup"]))
-        self.assertNotIn("provenance", catalog.layers["setup"])
-        self.assertEqual(catalog.kind("relay"), "feature")
-        self.assertIsNone(catalog.problem("relay"))
-
-    def test_relationship_revision_and_application_combinations(self):
-        for relationship in ("direct-import", "adaptation", "inspiration"):
-            for revision_kind in ("feature-commit", "release-snapshot"):
-                for application in ("mechanical", "manual"):
-                    with self.subTest(relationship=relationship, revision_kind=revision_kind, application=application):
-                        text = CATALOG + provenance_table(
-                            relationship=relationship, revision_kind=revision_kind, application=application
-                        )
-                        if application == "mechanical" and (relationship != "direct-import" or revision_kind != "feature-commit"):
-                            with self.assertRaisesRegex(ValueError, "mechanical application requires"):
-                                self.checker.Catalog(text)
-                        else:
-                            self.checker.Catalog(text)
-
-    def test_required_fields_cannot_be_missing_or_have_wrong_types(self):
-        table = provenance_table()
-        for field in self.checker.PROVENANCE_REQUIRED:
-            with self.subTest(field=field, missing=True):
-                text = "\n".join(line for line in table.splitlines() if not line.startswith(f"{field} ="))
-                with self.assertRaisesRegex(ValueError, f"missing fields: {field}"):
-                    self.checker.Catalog(CATALOG + text)
-            for value in (False, 12, [], {}, "", "   "):
-                with self.subTest(field=field, value=value):
-                    with self.assertRaisesRegex(ValueError, f"{field} must be a nonblank string"):
-                        self.checker.Catalog(CATALOG + provenance_table(**{field: value}))
-
-    def test_invalid_classifications_are_rejected(self):
-        for field, value in (
-            ("relationship", "import"), ("revision_kind", "commit"),
-            ("application", "automatic"), ("relationship", "adaptation "),
-        ):
-            with self.subTest(field=field, value=value):
-                with self.assertRaisesRegex(ValueError, f"{field} must be one of"):
-                    self.checker.Catalog(CATALOG + provenance_table(**{field: value}))
-
-    def test_revision_is_an_exact_commit_not_a_discovery_ref(self):
-        for revision in ("main", "refs/heads/main", "refs/tags/v8.36.0.0-JW", "8f4ad857", "a" * 39, "b" * 41, "A" * 40, "0" * 40, "g" * 40):
-            with self.subTest(revision=revision):
-                with self.assertRaisesRegex(ValueError, "revision must be an exact"):
-                    self.checker.Catalog(CATALOG + provenance_table(revision=revision))
-
-    def test_discovery_refs_are_optional_and_separate_from_selected_revisions(self):
-        for ref in ("refs/heads/main", "refs/heads/feature/guard", "refs/tags/v8.36.0.0-JW"):
-            with self.subTest(ref=ref):
-                catalog = self.checker.Catalog(CATALOG + provenance_table(discovery_ref=ref))
-                self.assertEqual(catalog.layers["relay"]["provenance"]["revision"], "8f4ad8577344e844945ee8e73d95fd1fcc7208bc")
-        for ref in (False, [], {}, 42, "", "main", "a" * 40, "refs/tags/*-JW", "refs/heads/", "refs/heads/../main", "refs/pull/1/head", "refs/heads/two words", "refs/heads/main.lock"):
-            with self.subTest(ref=ref):
-                with self.assertRaisesRegex(ValueError, "discovery_ref must be a full"):
-                    self.checker.Catalog(CATALOG + provenance_table(discovery_ref=ref))
-
-    def test_repository_names_and_upstream_integration_boundary(self):
-        for repository in ("https://github.com/johanw666/Signal-Android", "johanw666", "johanw666/Signal-Android/extra", "johanw666/Signal-Android.git", "johanw666/Signal-Android.GIT", "owner/..", "-owner/repo", "owner-/repo", "owner/repo name"):
-            with self.subTest(repository=repository):
-                with self.assertRaisesRegex(ValueError, "repository must be a GitHub owner/repo"):
-                    self.checker.Catalog(CATALOG + provenance_table(repository=repository))
-        for repository in (SIGNAL, MOLLY, SIGNAL.upper(), MOLLY.upper()):
-            with self.subTest(repository=repository):
-                with self.assertRaisesRegex(ValueError, "verified upstream merges"):
-                    self.checker.Catalog(CATALOG + provenance_table(repository=repository))
-        self.assertEqual(set(self.checker.UPSTREAM_URLS), {SIGNAL, MOLLY})
-
-    def test_provenance_belongs_only_to_canonical_features(self):
-        for layer in ("unified-push", "website", "upgrade"):
-            with self.subTest(layer=layer):
-                with self.assertRaisesRegex(ValueError, "only canonical feature"):
-                    self.checker.Catalog(UPSTREAM_CATALOG + provenance_table(layer=layer))
-        catalog = self.checker.Catalog(CATALOG + provenance_table())
-        self.assertIn("use 'Layer: relay'", catalog.problem("unified-push"))
-
-    def test_provenance_must_be_a_nonempty_table_with_known_fields(self):
-        for value in (False, [], "unknown", 42):
-            with self.subTest(value=value):
-                text = CATALOG.replace('about = "Relay"', f'about = "Relay"\nprovenance = {json.dumps(value)}')
-                with self.assertRaisesRegex(ValueError, "must be a table"):
-                    self.checker.Catalog(text)
-        with self.assertRaisesRegex(ValueError, "missing fields"):
-            self.checker.Catalog(CATALOG + "[layers.relay.provenance]\n")
-        for field in ("authors", "paths", "history", "app_commit", "selected_revision"):
-            with self.subTest(field=field):
-                with self.assertRaisesRegex(ValueError, f"unknown fields: {field}"):
-                    self.checker.Catalog(CATALOG + provenance_table(**{field: "not part of the contract"}))
-
-    def test_prerequisites_must_be_unique_other_canonical_features(self):
-        for prerequisites in ([], ["setup"]):
-            self.checker.Catalog(CATALOG + provenance_table(prerequisites=prerequisites))
-        for prerequisites in (False, "setup", {}, [False], [42], [[]]):
-            with self.subTest(prerequisites=prerequisites):
-                with self.assertRaisesRegex(ValueError, "list of canonical feature IDs"):
-                    self.checker.Catalog(CATALOG + provenance_table(prerequisites=prerequisites))
-        with self.assertRaisesRegex(ValueError, "duplicate feature IDs"):
-            self.checker.Catalog(CATALOG + provenance_table(prerequisites=["setup", "setup"]))
-        for prerequisite in ("unknown", "unified-push", "website", "upgrade", "relay", ""):
-            with self.subTest(prerequisite=prerequisite):
-                with self.assertRaisesRegex(ValueError, "must name another canonical feature"):
-                    self.checker.Catalog(UPSTREAM_CATALOG + provenance_table(prerequisites=[prerequisite]))
-
-    def test_prerequisite_chains_are_valid_but_cycles_are_rejected(self):
-        base = CATALOG + '[layers.stickers]\nkind = "feature"\nabout = "Stickers"\n'
-        chain = base + provenance_table(prerequisites=["setup"]) + provenance_table(layer="setup", prerequisites=["stickers"])
-        self.checker.Catalog(chain)
-        with self.assertRaisesRegex(ValueError, "cyclic provenance prerequisites"):
-            self.checker.Catalog(chain + provenance_table(layer="stickers", prerequisites=["relay"]))
+class CatalogTests(unittest.TestCase):
+    def test_repository_catalog_parses(self):
+        catalog = load_checker().Catalog(REPO_CATALOG.read_text(encoding="utf-8"))
+        self.assertIsNone(catalog.problem("unifiedpush"))
+        self.assertIn("use 'Layer: unifiedpush'", catalog.problem("unified-push"))
 
     def test_malformed_catalog_types_fail_with_validation_errors(self):
         for text in (
@@ -184,7 +57,7 @@ class ProvenanceTests(unittest.TestCase):
         ):
             with self.subTest(text=text):
                 with self.assertRaises(ValueError):
-                    self.checker.Catalog(text)
+                    load_checker().Catalog(text)
 
 
 class RepositoryTest(unittest.TestCase):
@@ -254,16 +127,20 @@ class RepositoryTest(unittest.TestCase):
 
 
 class LayerTrailerTests(RepositoryTest):
-    def test_original_blank_line_regression_is_rejected_by_commit_and_range(self):
+    def test_commits_without_layer_pass_message_and_range(self):
+        self.add_catalog()
         self.install()
-        rejected = self.commit(BROKEN, check=False)
-        self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("no blank line", rejected.stderr)
-        self.assertEqual(self.git("rev-parse", "HEAD").stdout.strip(), self.base)
-        self.git("-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-F", "-", input=BROKEN)
-        rejected = self.check_range(check=False)
-        self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("needs exactly one", rejected.stderr)
+        for message in (
+            "Ordinary commit",
+            "Layer: mentioned in the subject",
+            "Describe the change\n\nLayer: an example in the body\n\nCo-authored-by: Name <name@example.com>",
+        ):
+            with self.subTest(message=message):
+                path = self.root / "commit-message"
+                path.write_text(message + "\n", encoding="utf-8")
+                self.run_command(sys.executable, str(CHECKER), "message", str(path))
+                self.commit(message)
+        self.assertIn("checked 4 non-merge commits", self.check_range().stdout)
 
     def test_joined_trailers_pass_commit_and_range_without_changing_message(self):
         self.install()
@@ -286,14 +163,24 @@ class LayerTrailerTests(RepositoryTest):
         self.commit(BROKEN)
         rejected = self.run_command(sys.executable, str(extracted), "range", base, "HEAD", check=False)
         self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("needs exactly one", rejected.stderr)
+        self.assertIn("allows at most one", rejected.stderr)
 
-    def test_missing_duplicate_and_invalid_layers_are_rejected(self):
+    def test_duplicate_and_malformed_layers_fail_message_and_range(self):
         self.install()
-        for trailers in ("", "Layer: website\nLayer: website", "Layer: Website", "Layer: two words", "Layer: ../site", "Layer:"):
+        for trailers in (
+            "Layer: website\nlayer: website", "Layer: Website", "Layer: two words",
+            "Layer: ../site", "Layer:", "Layer = website", "Layer: website\nLayer = relay",
+        ):
             with self.subTest(trailers=trailers):
-                result = self.commit(f"Change\n\n{trailers}\n", check=False)
-                self.assertNotEqual(result.returncode, 0)
+                message = f"Change\n\n{trailers}\n"
+                rejected = self.commit(message, check=False)
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn("allows at most one 'Layer: <name>' trailer", rejected.stderr)
+                self.git("-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-F", "-", input=message)
+                rejected = self.check_range(check=False)
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn("allows at most one 'Layer: <name>' trailer", rejected.stderr)
+                self.git("reset", "--hard", self.base)
 
     def test_editor_comments_are_handled_by_git(self):
         self.install()
@@ -327,13 +214,14 @@ class LayerTrailerTests(RepositoryTest):
         self.git("commit", "-m", "Merge topic without a Layer")
         self.assertIn("checked 1 non-merge commits", self.check_range().stdout)
 
-    def test_squash_merge_still_requires_a_trailer(self):
+    def test_squash_merge_can_omit_trailer(self):
         self.git("switch", "-c", "topic")
         self.commit(GOOD)
         self.git("switch", "main")
         self.install()
         self.git("merge", "--squash", "topic")
-        self.assertNotEqual(self.commit("Squashed topic", check=False).returncode, 0)
+        self.commit("Squashed topic")
+        self.assertIn("checked 1 non-merge commits", self.check_range().stdout)
 
     def test_pre_push_blocks_bad_ancestor_even_when_head_is_valid(self):
         remote = self.bare_remote()
@@ -344,7 +232,7 @@ class LayerTrailerTests(RepositoryTest):
         self.install()
         result = self.git("push", "origin", "HEAD:refs/heads/topic", check=False)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("needs exactly one", result.stderr)
+        self.assertIn("allows at most one", result.stderr)
         self.assertEqual(self.git("--git-dir", str(remote), "rev-parse", "refs/heads/topic").stdout.strip(), previous)
 
     def test_new_branch_push_passes_and_branch_deletion_is_allowed(self):
@@ -362,8 +250,36 @@ class LayerTrailerTests(RepositoryTest):
         self.install()
         result = self.git("push", "origin", "HEAD:refs/heads/topic", check=False)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("needs exactly one", result.stderr)
+        self.assertIn("allows at most one", result.stderr)
         self.assertNotEqual(self.git("--git-dir", str(remote), "show-ref", "--verify", "refs/heads/topic", check=False).returncode, 0)
+
+    def test_fork_push_uses_the_canonical_remote_main(self):
+        self.bare_remote()
+        self.commit(BROKEN)  # A historical Collie commit absent from the fork's main.
+        canonical_main = self.git("rev-parse", "HEAD").stdout.strip()
+        self.commit("Fork contribution")
+        self.install()
+        for name, url in (
+            ("upstream", "https://github.com/0cwa/collieim-android.git"),
+            ("collie", "git@github.com:0cwa/collieim-android.git"),
+            ("collie", "ssh://git@github.com/0cwa/collieim-android"),
+        ):
+            with self.subTest(remote=name, url=url):
+                self.git("remote", "add", name, url)
+                self.git("update-ref", f"refs/remotes/{name}/main", canonical_main)
+                pushed = self.git("push", "origin", "HEAD:refs/heads/topic")
+                self.git("push", "origin", ":refs/heads/topic")
+                self.git("remote", "remove", name)
+                self.assertIn("checked 1 non-merge commits", pushed.stdout)
+
+    def test_fork_push_falls_back_to_upstream_main_before_origin_main(self):
+        self.bare_remote()
+        self.commit(BROKEN)
+        self.git("update-ref", "refs/remotes/upstream/main", "HEAD")
+        self.commit("Fork contribution")
+        self.install()
+        pushed = self.git("push", "origin", "HEAD:refs/heads/topic")
+        self.assertIn("checked 1 non-merge commits", pushed.stdout)
 
     def test_missing_base_fails_closed_with_fetch_instruction(self):
         remote = self.bare_remote()
@@ -405,7 +321,7 @@ class LayerTrailerTests(RepositoryTest):
             cwd=worktree, check=False
         )
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("needs exactly one", result.stderr)
+        self.assertIn("allows at most one", result.stderr)
 
     def test_installer_can_be_rerun_and_supports_custom_hooks_path(self):
         hooks = self.root / "custom hooks"
@@ -426,61 +342,34 @@ class LayerTrailerTests(RepositoryTest):
         self.assertNotEqual(self.commit(BROKEN, check=False).returncode, 0)
         self.commit(GOOD)
 
-
-    def test_repository_catalog_parses(self):
-        checker = load_checker()
-        catalog = checker.Catalog(REPO_CATALOG.read_text(encoding="utf-8"))
-        self.assertIsNone(catalog.problem("unifiedpush"))
-        self.assertIn("use 'Layer: unifiedpush'", catalog.problem("unified-push"))
-
-    def test_catalog_rejects_unknown_and_old_layer_names(self):
+    def test_unknown_layers_and_aliases_produce_notes(self):
         self.add_catalog()
         self.install()
-        rejected = self.commit("Change\n\nLayer: relays\n", check=False)
-        self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("not in tooling/layers.toml", rejected.stderr)
-        rejected = self.commit("Change\n\nLayer: unified-push\n", check=False)
-        self.assertIn("use 'Layer: relay'", rejected.stderr)
-        self.git("-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-m", "Change", "-m", "Layer: relays")
-        self.assertIn("not in tooling/layers.toml", self.check_range(check=False).stderr)
+        for layer, note in (
+            ("relays", "not in tooling/layers.toml"),
+            ("unified-push", "use 'Layer: relay'"),
+        ):
+            with self.subTest(layer=layer):
+                result = self.commit(f"Change\n\nLayer: {layer}\n")
+                self.assertIn("Note:", result.stderr)
+                self.assertIn(note, result.stderr)
+                self.assertIn(note, self.check_range().stderr)
 
-    def test_new_feature_is_accepted_with_its_catalog_entry_in_the_same_range(self):
-        self.add_catalog(CATALOG + '[layers.stickers]\nkind = "feature"\nabout = "Stickers"\n')
-        self.commit("Add sticker packs\n\nLayer: stickers\n")
-        self.assertIn("feature layer: stickers", self.check_pr(202).stdout)
-
-    def test_one_feature_per_pr_is_enforced_from_the_cutoff(self):
-        self.add_catalog(CATALOG + provenance_table())
-        self.commit("Relay change\n\nLayer: relay\n")
-        self.commit("Relay tests\n\nLayer: website\n")
-        self.assertEqual(self.check_pr(202).returncode, 0)  # One feature plus infra.
-        self.commit("Setup change\n\nLayer: setup\n")
-        enforced = self.check_pr(202)
-        self.assertNotEqual(enforced.returncode, 0)
-        self.assertIn("Error: this range changes 2 feature layers (relay, setup)", enforced.stderr)
-        older = self.check_pr(201)
-        self.assertEqual(older.returncode, 0)
-        self.assertIn("Warning:", older.stderr)
-        local = self.check_range()
-        self.assertIn("Warning:", local.stderr)
-
-    def test_pr_cannot_relabel_an_existing_feature_or_move_the_cutoff(self):
-        self.add_catalog(CATALOG + provenance_table())
-        self.base = self.git("rev-parse", "HEAD").stdout.strip()  # The catalog is on the base.
-        relabelled = CATALOG.replace('[layers.setup]\nkind = "feature"', '[layers.setup]\nkind = "infra"')
-        self.add_catalog(relabelled + provenance_table() + "[rules]\none_feature_per_pr_from = 999\n")
+    def test_pr_can_change_multiple_feature_layers(self):
+        self.add_catalog()
         self.commit("Relay change\n\nLayer: relay\n")
         self.commit("Setup change\n\nLayer: setup\n")
-        enforced = self.check_pr(202)
-        self.assertNotEqual(enforced.returncode, 0)
-        self.assertIn("2 feature layers (relay, setup)", enforced.stderr)
+        result = self.check_pr(300)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        self.assertIn("checked 3 non-merge commits", result.stdout)
 
     def test_pr_into_another_branch_skips_commits_already_on_main(self):
-        self.add_catalog(CATALOG + provenance_table(prerequisites=["setup"]))
+        self.add_catalog()
         self.base = self.git("rev-parse", "HEAD").stdout.strip()  # The Beta branch.
         self.git("switch", "--quiet", "-c", "main-tip")
         self.commit("Setup change on main\n\nLayer: setup\n")
-        self.commit("Main commit from before the trailer rule\n")
+        self.commit("Historical main message\n\nLayer: Legacy\n")
         self.git("update-ref", "refs/remotes/origin/main", "HEAD")
         self.git("switch", "--quiet", "--detach", self.base)
         self.commit("Relay change on the Beta branch\n\nLayer: relay\n")
@@ -488,28 +377,14 @@ class LayerTrailerTests(RepositoryTest):
         result = self.check_pr(202)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Skipped 2 commits already on main.", result.stdout)
-        self.assertIn("feature layer: relay.", result.stdout)
-        self.commit("Beta commit without a trailer\n")
+        self.assertIn("checked 1 non-merge commits", result.stdout)
+        self.commit("Beta commit with a malformed trailer\n\nLayer: Beta\n")
         self.assertNotEqual(self.check_pr(202).returncode, 0)
 
     def test_range_without_catalog_checks_only_the_format(self):
         self.commit("Change\n\nLayer: anything-new\n")
         self.assertEqual(self.check_pr(300).returncode, 0)
 
-    def test_provenance_is_validated_in_worktree_and_pr_head(self):
-        self.add_catalog(CATALOG + provenance_table())
-        self.install()
-        catalog = self.repo / "tooling/layers.toml"
-        catalog.write_text(CATALOG + provenance_table(revision="refs/heads/main"), encoding="utf-8")
-        self.git("add", str(catalog))
-        rejected = self.commit("Update provenance\n\nLayer: relay\n", check=False)
-        self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("revision must be an exact", rejected.stderr)
-        self.git("-c", "core.hooksPath=/dev/null", "commit", "-m", "Update provenance", "-m", "Layer: relay")
-        rejected = self.check_pr(300)
-        self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("revision must be an exact", rejected.stderr)
-        self.assertNotIn("Traceback", rejected.stderr)
 
 
 class UpstreamMergeTests(RepositoryTest):
@@ -531,7 +406,7 @@ class UpstreamMergeTests(RepositoryTest):
 
     def setUp(self):
         super().setUp()
-        self.add_catalog(UPSTREAM_CATALOG + provenance_table())
+        self.add_catalog(UPSTREAM_CATALOG)
         self.base = self.git("rev-parse", "HEAD").stdout.strip()  # The catalog is on the base.
         self.signal, self.signal_commit = self.upstream("signal", "main")
         self.git("tag", "-a", "-m", "Signal release", "v1.0", self.signal_commit)
@@ -554,7 +429,7 @@ class UpstreamMergeTests(RepositoryTest):
         try:
             with mock.patch.dict(os.environ, self.env, clear=True), \
                     contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
-                valid = checker.check_range(self.base, "HEAD", 202, verifier)
+                valid = checker.check_range(self.base, "HEAD", upstream=verifier)
         finally:
             os.chdir(cwd)
         return valid, stdout.getvalue(), stderr.getvalue()
@@ -596,7 +471,6 @@ class UpstreamMergeTests(RepositoryTest):
     def test_undeclared_or_malformed_upstream_is_rejected(self):
         for trailer, message in (
             ("Upstream: someone/Signal-Android v1.0", "only signalapp/Signal-Android and mollyim/mollyim-android"),
-            ("Upstream: johanw666/Signal-Android v1.0", "only signalapp/Signal-Android and mollyim/mollyim-android"),
             (f"Upstream: {SIGNAL} v2.0", "which signalapp/Signal-Android does not have"),
             (f"Upstream: {MOLLY} main", "<branch>@<full-sha>"),
             (f"Upstream: {SIGNAL} v1.0\nUpstream: {SIGNAL} v1.0", "exactly one 'Upstream:'"),
@@ -618,28 +492,25 @@ class UpstreamMergeTests(RepositoryTest):
                 self.assert_rejected(message)
                 self.git("reset", "--hard", "HEAD^")
 
-    def test_collie_commit_without_trailer_on_the_first_parent_side_still_fails(self):
-        self.commit("Collie change hidden before the upstream merge")
-        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
-        self.assert_rejected("needs exactly one 'Layer:")
+    def test_upstream_merge_requires_two_parents(self):
+        tree = self.git("rev-parse", "HEAD^{tree}").stdout.strip()
+        merge = self.git(
+            "commit-tree", tree, "-p", "HEAD", "-p", self.signal_commit, "-p", self.molly_commit,
+            "-m", "Octopus merge", "-m", f"Layer: upgrade\nUpstream: {SIGNAL} v1.0",
+        ).stdout.strip()
+        self.git("reset", "--hard", merge)
+        self.assert_rejected("needs exactly two parents")
 
-    def test_selected_source_provenance_does_not_exempt_its_commit(self):
-        self.git("switch", "--orphan", "selected-source")
-        self.commit("Selected fork feature without a Layer trailer")
-        selected = self.git("rev-parse", "HEAD").stdout.strip()
-        self.git("switch", "topic")
-        self.add_catalog(UPSTREAM_CATALOG + provenance_table(
-            revision=selected, revision_kind="feature-commit", relationship="direct-import", application="mechanical"
-        ))
-        self.git("merge", "-s", "ours", "--allow-unrelated-histories", "--no-edit", selected)
-        self.assert_rejected("needs exactly one 'Layer:")
-
-    def test_upstream_commits_do_not_count_as_features(self):
-        self.commit("Relay change\n\nLayer: relay\n")
+    def test_only_verified_parent_history_is_exempt_from_layer_validation(self):
+        self.commit("An ordinary first-parent commit without a trailer")
         self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
         valid, stdout, stderr = self.check()
         self.assertTrue(valid, stderr)
-        self.assertIn("feature layer: relay.", stdout)
+        self.assertIn("checked 2 non-merge commits, skipped 3 upstream commits", stdout)
+        self.git("reset", "--hard", "HEAD^")
+        self.commit(BROKEN)
+        self.merge(self.signal_commit, f"Layer: upgrade\nUpstream: {SIGNAL} v1.0")
+        self.assert_rejected("allows at most one 'Layer: <name>' trailer")
 
     def test_pre_push_can_skip_only_the_network_check_offline(self):
         self.bare_remote()

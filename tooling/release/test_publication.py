@@ -12,6 +12,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+from textwrap import dedent
 import unittest
 from unittest.mock import Mock, patch
 import zipfile
@@ -191,12 +192,57 @@ class PublicationTests(unittest.TestCase):
         result = self.publish()
         self.assertEqual(self.github.latest, 10)
         self.assertTrue(self.github.rows[20]["prerelease"])
-        self.assertEqual({asset["name"] for asset in result["identity"]["assets"]}, {*p.APK_NAMES, p.RECORD_NAME})
+        self.assertEqual({asset["name"] for asset in result["identity"]["assets"]},
+                         {*p.APK_NAMES, p.RECORD_NAME, p.MANIFEST_NAME})
         record = result["identity"]["publication"]
         self.assertEqual(record["release_id"], 20)
         self.assertEqual(record["source_commit"], self.helper.tag["source_commit"])
         self.assertEqual(len({asset["sha256"] for asset in record["apks"]}), 1)
         self.assertEqual(record["built_on"], "local")
+
+    def test_release_manifest_binds_signed_source_and_canonical_apk(self):
+        result = self.publish()
+        manifest = next(asset for asset in result["identity"]["assets"] if asset["name"] == "release.json")
+        self.assertEqual(json.loads(self.github.files[manifest["id"]]), {
+            "schema": 1,
+            "channel": "stable",
+            "tag": TAG,
+            "source_commit": self.helper.tag["source_commit"],
+            "version_name": NAME,
+            "version_code": CODE,
+            "package_id": p.PACKAGE,
+            "apk_name": "collie.apk",
+            "apk_sha256": hashlib.sha256(apk()).hexdigest(),
+            "native_artifacts_path": "build-inputs/native-artifacts.json",
+        })
+
+    def test_legacy_prerelease_can_promote_without_adding_a_manifest(self):
+        self.publish()
+        assets = self.github.rows[20]["assets"]
+        assets[:] = [asset for asset in assets if asset["name"] != p.MANIFEST_NAME]
+        writes = len(self.github.writes)
+        self.helper.promote(self.inspect("promote"), self.rebuilt(), RUN)
+        self.assertEqual(self.github.writes[writes:], [("transition", 20, False)])
+
+    def test_conflicting_manifest_blocks_publication(self):
+        self.github.add_asset(20, p.MANIFEST_NAME, b'{"schema":1,"apk_sha256":"wrong"}')
+        with self.assertRaisesRegex(p.Failure, "Release manifest differs"):
+            self.publish()
+        self.assertEqual(self.github.writes, [])
+
+    def test_manifest_upload_can_resume_after_record_upload(self):
+        upload = self.github.upload
+
+        def upload_without_manifest(tag, paths):
+            upload(tag, [path for path in paths if path.name != p.MANIFEST_NAME])
+
+        with patch.object(self.github, "upload", side_effect=upload_without_manifest):
+            with self.assertRaisesRegex(p.Failure, "missing release.json"):
+                self.publish()
+        self.assertTrue(self.github.rows[20]["draft"])
+        self.helper = Harness(self.root / "retry", self.github)
+        self.assertEqual(self.publish()["status"], "PRERELEASE_PUBLISHED")
+        self.assertEqual(self.github.writes[-2], ("upload", [p.MANIFEST_NAME]))
 
     def test_published_retry_is_read_only_and_never_demotes_full_release(self):
         self.publish()
@@ -275,7 +321,7 @@ class PublicationTests(unittest.TestCase):
         self.github.add_asset(20, p.BETA_NAME, self.beta_apk())
         result = self.publish()
         names = {asset["name"] for asset in result["identity"]["assets"]}
-        self.assertEqual(names, {*p.APK_NAMES, p.RECORD_NAME, p.BETA_NAME})
+        self.assertEqual(names, {*p.APK_NAMES, p.RECORD_NAME, p.MANIFEST_NAME, p.BETA_NAME})
         record = result["identity"]["publication"]
         self.assertEqual(record["beta_apk"]["name"], p.BETA_NAME)
         self.assertNotIn(p.BETA_NAME, {asset["name"] for asset in record["apks"]})
@@ -337,28 +383,42 @@ class PublicationTests(unittest.TestCase):
                         code=999999, name="8.36.0", certificate="c" * 64), prerelease=True)
         self.assertEqual(self.publish()["status"], "PRERELEASE_PUBLISHED")
 
-    def test_maintenance_publication_rejects_switching_to_main(self):
+    def test_maintenance_publication_and_promotion_are_rejected(self):
         branch = "release/stable/8.35"
-        policy = "a" * 40
-        result = self.helper.publish(self.inspect(), "local", "Human release notes", branch, policy)
-        self.assertEqual(p.publication_route(result["identity"]["publication"]), (branch, policy))
-        snapshot = self.inspect("promote")
-        with self.assertRaisesRegex(p.Failure, "Requested branch differs"):
-            self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch="main")
-        self.assertEqual(self.inspect("promote"), snapshot)
-        with self.assertRaisesRegex(p.Failure, "Source branch or trusted policy differs"):
-            self.helper.publish(snapshot, "local", "Human release notes", "main")
-        with self.assertRaisesRegex(p.Failure, "trusted policy differs"):
-            self.helper.publish(snapshot, "local", "Human release notes", branch, "b" * 40)
-        result = self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch=branch)
-        self.assertEqual(p.publication_route(result["identity"]["publication"]), (branch, policy))
+        with self.assertRaisesRegex(p.Failure, "requires the main source branch"):
+            self.helper.publish(self.inspect(), "local", "Human release notes", source_branch=branch)
+        self.assertFalse(self.github.writes)
+        snapshot = self.publish()["identity"]
+        assets = self.github.rows[20]["assets"]
+        assets[:] = [asset for asset in assets if asset["name"] != p.RECORD_NAME]
+        record = {**snapshot["publication"], "source_branch": branch, "trusted_main": "a" * 40}
+        self.github.add_asset(20, p.RECORD_NAME, json.dumps(record).encode())
+        writes = list(self.github.writes)
+        with self.assertRaisesRegex(p.Failure, "record must use the main source branch"):
+            self.inspect("promote")
+        with self.assertRaisesRegex(p.Failure, "record must use the main source branch"):
+            self.helper.promote(snapshot, self.rebuilt(), RUN)
+        self.assertEqual(self.github.writes, writes)
 
     def test_historical_record_keeps_main_route_without_rewriting_record(self):
         result = self.publish()
         record = result["identity"]["publication"]
         self.assertNotIn("source_branch", record)
-        self.assertEqual(p.publication_source_branch(record), "main")
         self.assertEqual(self.inspect("promote")["publication"], record)
+
+    def test_draft_tag_is_checked_again_after_final_history_scan(self):
+        floor = self.helper.published_floor
+
+        def change_tag_after_upload(candidate, *, promotion):
+            result = floor(candidate, promotion=promotion)
+            if any(asset["name"] == p.RECORD_NAME for asset in self.github.rows[20]["assets"]):
+                self.helper.tag["tag_object"] = "d" * 40
+            return result
+
+        with patch.object(self.helper, "published_floor", side_effect=change_tag_after_upload):
+            with self.assertRaisesRegex(p.Failure, "Publication record differs from the signed tag"):
+                self.publish()
+        self.assertTrue(self.github.rows[20]["draft"])
 
     def test_successful_promotion_keeps_every_immutable_asset(self):
         self.publish()
@@ -555,6 +615,50 @@ class SignedTagTests(unittest.TestCase):
         self.assertEqual(result["tag_object"], self.git(self.source, "rev-parse", TAG))
         self.assertEqual(result["version_code"], CODE)
 
+    @unittest.skipUnless(shutil.which("bash"), "Bash required")
+    def test_notes_step_reads_only_nonempty_regular_files_from_the_signed_commit(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text()
+        step = workflow.split("      - name: Read release notes from the signed tag commit\n", 1)[1]
+        step = step.split("\n      - ", 1)[0]
+        self.assertIn("SOURCE_COMMIT: ${{ steps.identity.outputs.source_commit }}", step)
+        script = dedent(step.split("        run: |\n", 1)[1])
+        relative = Path(f"docs/release-notes/{NAME}.md")
+        notes = self.source / relative
+        notes.parent.mkdir(parents=True)
+        payload = b"Signed notes with trailing spaces  \n"
+        for mode in ("regular", "executable", "empty", "symlink", "tree"):
+            with self.subTest(mode=mode):
+                if mode == "symlink":
+                    notes.symlink_to("../../gradle.properties")
+                elif mode == "tree":
+                    notes.mkdir()
+                    (notes / "child").write_bytes(payload)
+                else:
+                    notes.write_bytes(b"" if mode == "empty" else payload)
+                    if mode == "executable":
+                        notes.chmod(0o755)
+                self.git(self.source, "add", ".")
+                self.git(self.source, "-c", "commit.gpgSign=false", "commit", "-qm", mode)
+                self.git(self.source, "tag", "-fs", "-m", mode, TAG)
+                identity = self.helper.tag_identity(TAG)
+                result = subprocess.run(["bash", "-e", "-c", script], cwd=self.reader, text=True,
+                                        capture_output=True, env={
+                                            **os.environ, "SOURCE_COMMIT": identity["source_commit"],
+                                            "VERSION": NAME, "RUNNER_TEMP": str(self.root),
+                                            "GITHUB_SERVER_URL": "https://github.com",
+                                            "GITHUB_REPOSITORY": p.REPOSITORY, "GITHUB_RUN_ID": "123",
+                                        })
+                if mode == "regular":
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertTrue((self.root / "notes.md").read_bytes().startswith(payload))
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(f"nonempty regular file at {relative}", result.stdout)
+                if mode == "tree":
+                    shutil.rmtree(notes)
+                else:
+                    notes.unlink()
+
     def test_lightweight_and_unsigned_annotated_tags_are_rejected(self):
         for annotated in (False, True):
             self.git(self.source, "tag", "-d", TAG)
@@ -604,15 +708,12 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertIn('artifact-ids: ${{ needs.check.outputs.identity_artifact_id }}', final)
         self.assertNotIn('name: promotion-identity-${{ github.run_id }}-${{ github.run_attempt }}', final)
 
-    def test_promotion_uses_publication_route_for_both_ci_checks(self):
+    def test_promotion_requires_main_for_inspection_and_both_ci_checks(self):
         workflow = (ROOT / ".github/workflows/promote.yml").read_text()
         check, final = workflow.split("  compare-and-promote:", 1)
         self.assertNotIn("inputs.source_branch", workflow)
-        self.assertIn("source_branch: ${{ steps.identity.outputs.source_branch }}", check)
-        self.assertIn("SOURCE_BRANCH: ${{ steps.identity.outputs.source_branch }}", check)
-        self.assertIn("SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}", final)
-        self.assertIn("TRUSTED_MAIN: ${{ steps.identity.outputs.trusted_main }}", check)
-        self.assertIn("TRUSTED_MAIN: ${{ needs.check.outputs.trusted_main }}", final)
+        self.assertEqual(check.count("--source-branch main"), 2)
+        self.assertEqual(final.count("--source-branch main"), 2)
         self.assertIn('cmp "$RUNNER_TEMP/promotion-evidence/ci.json" "$RUNNER_TEMP/promotion-evidence/final-ci.json"', final)
 
     def test_prerelease_compares_draft_bytes_before_mutation(self):

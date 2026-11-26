@@ -4789,7 +4789,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
       put(UNREGISTERED_TIMESTAMP, contact.proto.unregisteredAtTimestamp)
       if (contact.proto.unregisteredAtTimestamp > 0L) {
         put(REGISTERED, RegisteredState.NOT_REGISTERED.id)
-      } else if (contact.proto.signalAci != null) {
+      } else if (contact.proto.signalAci != null || contact.proto.signalPni != null) {
         put(REGISTERED, RegisteredState.REGISTERED.id)
       } else {
         Log.w(TAG, "Contact is marked as registered, but has no serviceId! Can't locally mark registered. (Phone: ${contact.proto.e164.nullIfBlank()}, Username: ${username?.isNotEmpty()})")

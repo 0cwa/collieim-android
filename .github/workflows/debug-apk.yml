@@ -459,7 +459,7 @@ jobs:
           if-no-files-found: error
 
   navigation-validation:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.body, '<!-- run-api35-navigation -->'))
     name: Navigation host and API 35 validation
     runs-on: ubuntu-24.04
     timeout-minutes: 90

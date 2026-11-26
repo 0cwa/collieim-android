@@ -179,9 +179,12 @@ class AppSettingsNavigationDeviceTest {
       }
     }
 
-    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.help(context)).use { scenario ->
-      awaitNode(HelpSettingsTestTags.SCROLLER)
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(context)).use { scenario ->
+      awaitNode(AppSettingsTestTags.SCROLLER)
       withScreenSecurityTemporarilyDisabled(scenario) {
+        compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_HELP))
+        compose.onNodeWithTag(AppSettingsTestTags.ROW_HELP).performClick()
+        awaitNode(HelpSettingsTestTags.SCROLLER)
         compose.onNodeWithTag(HelpSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(HelpSettingsTestTags.ROW_PROJECT_LOG))
         compose.onNodeWithTag(HelpSettingsTestTags.ROW_PROJECT_LOG).performClick()
         val projectLogIntro = context.getString(R.string.CollieLog__intro)

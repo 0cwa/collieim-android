@@ -31,26 +31,23 @@ SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
-def require_cases(directory, classname, expected):
+def require_cases(directory, expected):
+    expected_cases = {(classname, method) for classname, methods in expected.items() for method in methods}
     cases = []
-    suites = []
     for path in directory.rglob('TEST-*.xml'):
         report = ET.parse(path).getroot()
         for suite in report.iter('testsuite'):
-            matching = [case for case in suite.iter('testcase') if case.get('classname') == classname]
-            if not matching:
-                continue
-            suites.append((suite, matching))
-            if int(suite.get('tests', '0')) != len(matching):
+            suite_cases = suite.findall('testcase')
+            if int(suite.get('tests', '0')) != len(suite_cases):
                 raise ValueError(f'unexpected test count: {path}')
             if any(int(suite.get(key, '0')) for key in ('failures', 'errors', 'skipped')):
                 raise ValueError(f'failed or skipped suite: {path}')
-            for case in matching:
+            for case in suite_cases:
                 if any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
                     raise ValueError(f'nonpassing case: {path}')
-                cases.append(case.get('name'))
-    if not suites or sum(len(matching) for _, matching in suites) != len(expected) or len(cases) != len(expected) or set(cases) != expected:
-        raise ValueError(f'missing, duplicate, or unexpected test cases: {classname}: {cases}')
+                cases.append((case.get('classname'), case.get('name')))
+    if len(cases) != len(expected_cases) or set(cases) != expected_cases:
+        raise ValueError(f'missing, duplicate, or unexpected test cases: {cases}')
 
 
 def hashes(path):
@@ -89,9 +86,11 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
     test_apk = 'app/build/outputs/apk/androidTest/prodWebsite/debug/app-prod-website-debug-androidTest.apk'
     if set(hashes(evidence / 'apk-before.txt')) != {app_apk, test_apk}:
         raise ValueError('expected matching prodWebsite app and Android test APKs')
-    require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', HOST_CLASS, HOST_METHODS)
-    require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CLASS, DEVICE_METHODS)
-    require_cases(root / 'app/build/outputs/androidTest-results', RELEASE_NOTES_CLASS, RELEASE_NOTES_METHODS)
+    require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', {HOST_CLASS: HOST_METHODS})
+    require_cases(root / 'app/build/outputs/androidTest-results', {
+        DEVICE_CLASS: DEVICE_METHODS,
+        RELEASE_NOTES_CLASS: RELEASE_NOTES_METHODS,
+    })
     screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
         raise ValueError('missing, duplicate or unexpected Settings screenshots')

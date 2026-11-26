@@ -31,9 +31,14 @@ class NavigationGateTest(unittest.TestCase):
             gate.ANDROID + 'targetPackage': 'im.collie.app',
         })
         ET.ElementTree(test_manifest).write(self.evidence / 'test-manifest.xml')
-        self.host = self.make_report('feature/app-settings/build/test-results/testDebugUnitTest/TEST-host.xml', gate.HOST_CLASS, gate.HOST_METHODS)
-        self.device = self.make_report('app/build/outputs/androidTest-results/device/TEST-device.xml', gate.DEVICE_CLASS, gate.DEVICE_METHODS)
-        self.release_notes = self.make_report('app/build/outputs/androidTest-results/release-notes/TEST-release-notes.xml', gate.RELEASE_NOTES_CLASS, gate.RELEASE_NOTES_METHODS)
+        self.host = self.make_report(
+            'feature/app-settings/build/test-results/testDebugUnitTest/TEST-host.xml',
+            {gate.HOST_CLASS: gate.HOST_METHODS},
+        )
+        self.device = self.make_report('app/build/outputs/androidTest-results/device/TEST-device.xml', {
+            gate.DEVICE_CLASS: gate.DEVICE_METHODS,
+            gate.RELEASE_NOTES_CLASS: gate.RELEASE_NOTES_METHODS,
+        })
         screenshots = self.evidence / 'screenshots'
         screenshots.mkdir()
         image = Image.new('RGB', (100, 100), 'white')
@@ -41,12 +46,14 @@ class NavigationGateTest(unittest.TestCase):
         for name in gate.SCREENSHOTS:
             image.save(screenshots / name)
 
-    def make_report(self, path, classname, methods):
+    def make_report(self, path, cases_by_class):
         file = self.root / path
         file.parent.mkdir(parents=True)
-        suite = ET.Element('testsuite', tests=str(len(methods)), failures='0', errors='0', skipped='0')
-        for method in sorted(methods):
-            ET.SubElement(suite, 'testcase', classname=classname, name=method)
+        count = sum(len(methods) for methods in cases_by_class.values())
+        suite = ET.Element('testsuite', tests=str(count), failures='0', errors='0', skipped='0')
+        for classname, methods in cases_by_class.items():
+            for method in sorted(methods):
+                ET.SubElement(suite, 'testcase', classname=classname, name=method)
         ET.ElementTree(suite).write(file)
         return file
 
@@ -57,29 +64,33 @@ class NavigationGateTest(unittest.TestCase):
         self.check()
 
     def test_missing_skipped_and_duplicate_device_fail(self):
-        for mutation in ('missing', 'skipped', 'duplicate'):
+        original = self.device.read_bytes()
+        for mutation in ('missing', 'skipped', 'duplicate', 'wrong class'):
             with self.subTest(mutation=mutation):
                 tree = ET.parse(self.device)
                 suite = tree.getroot()
                 case = suite.find('testcase')
-                if mutation == 'missing': suite.remove(case)
-                elif mutation == 'skipped': ET.SubElement(case, 'skipped')
-                else: suite.append(ET.fromstring(ET.tostring(case)))
+                if mutation == 'missing':
+                    suite.remove(case)
+                elif mutation == 'skipped':
+                    ET.SubElement(case, 'skipped')
+                elif mutation == 'duplicate':
+                    suite.append(ET.fromstring(ET.tostring(case)))
+                else:
+                    case.set('classname', 'unexpected.Class')
+                suite.set('tests', str(len(suite.findall('testcase'))))
                 tree.write(self.device)
-                with self.assertRaises(ValueError): self.check()
-                self.make_replacement(self.device, gate.DEVICE_CLASS, gate.DEVICE_METHODS)
-
-    def make_replacement(self, file, classname, methods):
-        suite = ET.Element('testsuite', tests=str(len(methods)), failures='0', errors='0', skipped='0')
-        for method in sorted(methods): ET.SubElement(suite, 'testcase', classname=classname, name=method)
-        ET.ElementTree(suite).write(file)
+                with self.assertRaises(ValueError):
+                    self.check()
+                self.device.write_bytes(original)
 
     def test_missing_host_method_and_changed_apk_fail(self):
+        original = self.host.read_bytes()
         tree = ET.parse(self.host)
         tree.getroot().remove(tree.getroot().find('testcase'))
         tree.write(self.host)
         with self.assertRaises(ValueError): self.check()
-        self.make_replacement(self.host, gate.HOST_CLASS, gate.HOST_METHODS)
+        self.host.write_bytes(original)
         (self.evidence / 'apk-after.txt').write_text(self.digests.replace('a' * 64, 'c' * 64))
         with self.assertRaisesRegex(ValueError, 'APK pair changed'): self.check()
 

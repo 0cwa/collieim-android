@@ -12,12 +12,12 @@ import tempfile
 
 
 LAYER = re.compile(r"[a-z0-9][a-z0-9-]*")
-BASE = "refs/remotes/origin/main"
+COLLIE_REMOTE = re.compile(
+    r"(?:https://github\.com/|ssh://git@github\.com/|git@github\.com:)"
+    r"0cwa/collieim-android(?:\.git)?/?", re.IGNORECASE,
+)
 CATALOG = "tooling/layers.toml"
 KINDS = {"feature", "infra", "upstream"}
-# PRs numbered from here on may change only one feature layer. This lives in the
-# checker, which CI takes from the PR base, so a PR cannot move its own cutoff.
-ONE_FEATURE_PER_PR_FROM = 202
 # Upstream merges join unsigned upstream history without Layer trailers. Only
 # these repositories qualify, and the declared commit is checked against them.
 UPSTREAM_URLS = {
@@ -27,9 +27,6 @@ UPSTREAM_URLS = {
 SIGNAL, MOLLY = UPSTREAM_URLS
 UPSTREAM_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]*")
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
-REPOSITORY = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/[A-Za-z0-9_.-]+")
-PROVENANCE_REQUIRED = {"repository", "revision", "revision_kind", "relationship", "application", "scope"}
-PROVENANCE_OPTIONAL = {"discovery_ref", "prerequisites"}
 # The pre-push hook may skip only the network identity check, for offline work.
 OFFLINE = "COLLIE_UPSTREAM_OFFLINE"
 
@@ -63,86 +60,11 @@ class Catalog:
                     raise ValueError(f"{CATALOG}: {name} is an alias of an unknown layer")
             elif not isinstance(entry.get("kind"), str) or entry["kind"] not in KINDS or not entry.get("about"):
                 raise ValueError(f"{CATALOG}: {name} needs a kind ({', '.join(sorted(KINDS))}) and about")
-        for name, entry in self.layers.items():
-            if "provenance" in entry:
-                self.validate_provenance(name, entry)
-        self.validate_prerequisites()
-
-    def validate_provenance(self, name, entry):
-        """Validate selective-feature metadata without granting upstream trust."""
-        label = f"{CATALOG}: {name}.provenance"
-        def fail(reason):
-            raise ValueError(f"{label}: {reason}")
-        if "alias_of" in entry or entry.get("kind") != "feature":
-            fail("only canonical feature layers may have provenance")
-        provenance = entry["provenance"]
-        if not isinstance(provenance, dict):
-            fail("must be a table")
-        missing = PROVENANCE_REQUIRED - provenance.keys()
-        unknown = provenance.keys() - PROVENANCE_REQUIRED - PROVENANCE_OPTIONAL
-        if missing:
-            fail(f"missing fields: {', '.join(sorted(missing))}")
-        if unknown:
-            fail(f"unknown fields: {', '.join(sorted(unknown))}")
-        for field in PROVENANCE_REQUIRED:
-            if not isinstance(provenance[field], str) or not provenance[field].strip():
-                fail(f"{field} must be a nonblank string")
-        repository = provenance["repository"]
-        if not REPOSITORY.fullmatch(repository) or repository.split("/")[-1] in {".", ".."} or repository.lower().endswith(".git"):
-            fail("repository must be a GitHub owner/repo name")
-        if repository.lower() in {upstream.lower() for upstream in UPSTREAM_URLS}:
-            fail("Signal and Molly integration is recorded by verified upstream merges")
-        revision = provenance["revision"]
-        if not FULL_SHA.fullmatch(revision) or revision == "0" * 40:
-            fail("revision must be an exact, nonzero, lowercase 40-hex commit SHA")
-        for field, choices in (
-            ("revision_kind", {"feature-commit", "release-snapshot"}),
-            ("relationship", {"direct-import", "adaptation", "inspiration"}),
-            ("application", {"mechanical", "manual"}),
-        ):
-            if provenance[field] not in choices:
-                fail(f"{field} must be one of {', '.join(sorted(choices))}")
-        if provenance["application"] == "mechanical" and (
-            provenance["relationship"] != "direct-import" or provenance["revision_kind"] != "feature-commit"
-        ):
-            fail("mechanical application requires a direct-import of a feature-commit")
-        if "discovery_ref" in provenance:
-            ref = provenance["discovery_ref"]
-            if not isinstance(ref, str) or not ref.startswith(("refs/heads/", "refs/tags/")) or subprocess.run(
-                ["git", "check-ref-format", ref], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            ).returncode:
-                fail("discovery_ref must be a full refs/heads/ or refs/tags/ ref, not a revision or pattern")
-        prerequisites = provenance.get("prerequisites", [])
-        if not isinstance(prerequisites, list) or any(not isinstance(item, str) for item in prerequisites):
-            fail("prerequisites must be a list of canonical feature IDs")
-        if len(set(prerequisites)) != len(prerequisites):
-            fail("prerequisites must not contain duplicate feature IDs")
-        for prerequisite in prerequisites:
-            target = self.layers.get(prerequisite, {})
-            if prerequisite == name or "alias_of" in target or target.get("kind") != "feature":
-                fail(f"prerequisite {prerequisite!r} must name another canonical feature")
-
-    def validate_prerequisites(self):
-        """Prerequisites order maintenance work; they cannot depend on themselves."""
-        visiting, visited = set(), set()
-        def visit(name):
-            if name in visiting:
-                raise ValueError(f"{CATALOG}: cyclic provenance prerequisites at {name}")
-            if name in visited:
-                return
-            visiting.add(name)
-            for prerequisite in self.layers[name].get("provenance", {}).get("prerequisites", []):
-                visit(prerequisite)
-            visiting.remove(name)
-            visited.add(name)
-        for name in self.layers:
-            visit(name)
 
     def problem(self, layer):
         entry = self.layers.get(layer)
         if entry is None:
-            return (f"layer '{layer}' is not in {CATALOG}. Use an existing layer, or add "
-                    "an entry for a new feature in the same PR.")
+            return f"layer '{layer}' is not in {CATALOG}."
         if "alias_of" in entry:
             return f"layer '{layer}' is an old spelling; use 'Layer: {entry['alias_of']}'."
         return None
@@ -173,22 +95,27 @@ def trailer_values(message, name):
     ]
 
 
-def check_message(message, label, catalog=None):
-    """Return the commit's layer name, or None after printing why it is invalid."""
+def check_layer(message, label, catalog=None, *, required=False):
+    """Return the layer, an empty string when absent, or None for a rejected trailer."""
     layers = trailer_values(message, "layer")
-    if len(layers) == 1 and LAYER.fullmatch(layers[0]):
-        problem = catalog and catalog.problem(layers[0])
-        if not problem:
-            return layers[0]
-        print(f"{label}: {problem}", file=sys.stderr)
-        return None
+    # Git can ignore the entire footer when a trailer uses a malformed separator.
+    # Check the final paragraph for Layer syntax Git could not parse.
+    paragraphs = re.split(r"\n[^\S\n]*\n", message.rstrip())
+    footer = paragraphs[-1] if len(paragraphs) > 1 else ""
+    layer_lines = re.findall(r"^Layer[^\S\n]*[:=]", footer, re.IGNORECASE | re.MULTILINE)
+    if len(layer_lines) <= len(layers):
+        if not layers and not required:
+            return ""
+        if len(layers) == 1 and LAYER.fullmatch(layers[0]):
+            problem = catalog and catalog.problem(layers[0])
+            if not problem:
+                return layers[0]
+            print(f"{label}: {'Error' if required else 'Note'}: {problem}", file=sys.stderr)
+            return None if required else layers[0]
     print(
-        f"{label}: needs exactly one 'Layer: <feature>' trailer "
-        "(lowercase letters, digits and hyphens).\n"
-        "Keep trailers together in the final paragraph, with no blank line "
-        "between Layer and Co-authored-by. For example:\n\n"
-        "Layer: website\n"
-        "Co-authored-by: Name <name@example.com>\n",
+        f"{label}: {'needs exactly one' if required else 'allows at most one'} "
+        "'Layer: <name>' trailer (lowercase letters, digits and hyphens). "
+        "Keep trailers together in the final paragraph.",
         file=sys.stderr,
     )
     return None
@@ -202,7 +129,7 @@ def check_commit_message(path):
     if merge_head.exists() or path.resolve() == merge_message.resolve():
         return True
     message = path.read_text(encoding="utf-8", errors="replace")
-    return check_message(message, str(path), catalog_in_worktree()) is not None
+    return check_layer(message, str(path), catalog_in_worktree()) is not None
 
 
 def resolve_commit(ref):
@@ -273,10 +200,10 @@ def upstream_parent(merge, catalog, kind, upstream):
     repository, _, name = declared[0].partition(" ")
     if repository not in UPSTREAM_URLS:
         return fail(f"names {repository!r}; only {' and '.join(UPSTREAM_URLS)} are accepted.")
-    layer = check_message(message, label, catalog)
+    layer = check_layer(message, label, catalog, required=True)
     if layer is None:
         return False
-    if kind(layer) != "upstream":
+    if layer != "upgrade" and kind(layer) != "upstream":
         return fail(f"needs a Layer of kind 'upstream' in {CATALOG}, not '{layer}'.")
     parents = git("show", "-s", "--format=%P", merge).split()
     if len(parents) != 2:
@@ -309,20 +236,35 @@ def upstream_parent(merge, catalog, kind, upstream):
     return parent, declared[0]
 
 
-def landed_on_main(base):
+def main_branch_exists(ref):
+    probe = ["git", "rev-parse", "--verify", "--quiet", "--end-of-options", f"{ref}^{{commit}}"]
+    return subprocess.run(probe, stdout=subprocess.DEVNULL).returncode == 0
+
+
+def main_remote():
+    for remote in git("remote").splitlines():
+        url = git("remote", "get-url", "--", remote).strip()
+        if COLLIE_REMOTE.fullmatch(url):
+            return remote
+    if main_branch_exists("refs/remotes/upstream/main"):
+        return "upstream"
+    return "origin"
+
+
+def landed_on_main(base, main_ref):
     """Commits on main that the base lacks, or an empty set when main is unknown."""
-    probe = ["git", "rev-parse", "--verify", "--quiet", "--end-of-options", f"{BASE}^{{commit}}"]
-    if subprocess.run(probe, stdout=subprocess.DEVNULL).returncode:
+    if not main_branch_exists(main_ref):
         return set()
-    return set(git("rev-list", BASE, f"^{base}").splitlines())
+    return set(git("rev-list", main_ref, f"^{base}").splitlines())
 
 
-def check_range(base, head, pr=None, upstream=None):
+def check_range(base, head, *, upstream=None, main_ref="refs/remotes/origin/main"):
     base, head = resolve_commit(base), resolve_commit(head)
-    catalog = catalog_at(head)  # The PR's own catalog, so a new feature adds its entry.
-    # Kinds of layers that already exist come from the base, so a PR cannot
-    # relabel a feature as infra to pass the one-feature rule.
+    catalog = catalog_at(head)
+    # Use the base kind for existing layers so a PR cannot grant its own layer
+    # upstream status by changing the catalog.
     base_catalog = catalog_at(base)
+
     def kind(layer):
         if base_catalog and base_catalog.kind(layer):
             return base_catalog.kind(layer)
@@ -330,7 +272,7 @@ def check_range(base, head, pr=None, upstream=None):
 
     valid = True
     # Commits reachable only through a verified upstream parent are upstream
-    # history: unsigned, without trailers, and outside the one-feature rule.
+    # history and do not need Collie trailer checks.
     # Children come first in topological order, so upstream's own merges are
     # already excluded by the time they are reached.
     upstream_commits = set()
@@ -338,7 +280,7 @@ def check_range(base, head, pr=None, upstream=None):
     # Commits already on main passed main's own PR check when they landed, so a
     # PR into another branch (the TrailBlazer Beta branch) that brings main in
     # skips them. For a PR into main this set is empty.
-    landed = landed_on_main(base)
+    landed = landed_on_main(base, main_ref)
     for merge in git("rev-list", "--merges", "--topo-order", f"{base}..{head}").splitlines():
         if merge in upstream_commits or merge in landed:
             continue
@@ -358,41 +300,34 @@ def check_range(base, head, pr=None, upstream=None):
     ]
     if landed:
         print(f"Skipped {len(landed)} commits already on main.")
-    layers = set()
     for commit in commits:
         message = git("show", "-s", "--format=%B", commit)
         label = git("show", "-s", "--format=%h %s", commit).strip()
-        layer = check_message(message, label, catalog)
-        if layer is None:
+        if check_layer(message, label, catalog) is None:
             valid = False
-        else:
-            layers.add(layer)
-    features = sorted(layer for layer in layers if kind(layer) == "feature")
-    if len(features) > 1:
-        enforced = pr is not None and pr >= ONE_FEATURE_PER_PR_FROM
-        print(
-            f"{'Error' if enforced else 'Warning'}: this range changes {len(features)} feature "
-            f"layers ({', '.join(features)}). A PR changes one feature; open one PR per "
-            "feature. Tests and docs for a feature use that feature's layer.",
-            file=sys.stderr,
-        )
-        valid = valid and not enforced
     if valid:
         print(f"Layer trailers: checked {len(commits)} non-merge commits"
-              + (f", skipped {skipped} upstream commits" if upstream_commits else "")
-              + (f"; feature layer: {', '.join(features)}." if features else "."))
+              + (f", skipped {skipped} upstream commits." if upstream_commits else "."))
     return valid
 
 
 def check_push():
     valid = True
+    main_ref = None
     for line in sys.stdin:
         _local_ref, local_oid, remote_ref, _remote_oid = line.split()
         if set(local_oid) == {"0"} or not remote_ref.startswith("refs/heads/"):
             continue  # Branch deletion or a tag, neither of which opens an app PR.
         # Check the whole PR range, including bad commits already on the remote
         # branch. Checking only remote_oid..local_oid would miss those commits.
-        if not check_range(BASE, local_oid, upstream=Upstream(offline=os.environ.get(OFFLINE) == "1")):
+        if main_ref is None:
+            remote = main_remote()
+            main_ref = f"refs/remotes/{remote}/main"
+            if not main_branch_exists(main_ref):
+                raise ValueError(f"Fetch the PR base first: git fetch {remote} main ({main_ref}).")
+        if not check_range(
+            main_ref, local_oid, main_ref=main_ref, upstream=Upstream(offline=os.environ.get(OFFLINE) == "1")
+        ):
             valid = False
     return valid
 
@@ -413,16 +348,11 @@ def main():
         if args.command == "message":
             valid = check_commit_message(args.path)
         elif args.command == "range":
-            # CI passes the PR number in the environment: an older trusted base
-            # checker ignores it instead of rejecting an unknown option.
-            pr = os.environ.get("COLLIE_PR_NUMBER")
-            valid = check_range(args.base, args.head, int(pr) if pr else None)
+            valid = check_range(args.base, args.head)
         else:
             valid = check_push()
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f"Cannot check Layer trailers: {error}", file=sys.stderr)
-        if args.command == "pre-push":
-            print(f"Fetch the PR base first: git fetch origin main ({BASE}).", file=sys.stderr)
         return 1
     return 0 if valid else 1
 

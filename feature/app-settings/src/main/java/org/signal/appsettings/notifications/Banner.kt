@@ -17,13 +17,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.SignalPreviewWrapper
 import org.signal.core.ui.compose.horizontalGutters
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * An outlined card with a message and an action, such as the one asking to turn notifications back on.
@@ -36,7 +34,7 @@ internal fun Banner(
 ) {
   OutlinedCard(
     shape = RoundedCornerShape(18.dp),
-    border = BorderStroke(width = 1.dp, color = colorResource(CoreUiR.color.signal_colorOutline_38)),
+    border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)),
     modifier = Modifier
       .horizontalGutters()
       .fillMaxWidth()

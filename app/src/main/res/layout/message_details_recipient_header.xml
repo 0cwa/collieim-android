@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            app:iconColor="@color/signal_inverse_primary" />
+            app:iconColor="?attr/signal_inverse_primary" />
 
     </FrameLayout>
 </com.google.android.material.card.MaterialCardView>

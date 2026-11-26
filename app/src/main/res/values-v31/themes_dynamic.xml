@@ -53,7 +53,20 @@
         <!-- Material You specs (overrides TextSecure.BaseLightTheme) -->
         <item name="dynamic_colors">true</item>
         <item name="signal_accent_primary">@color/dynamic_primary_light</item>
+        <item name="signal_inverse_primary">?attr/colorPrimaryInverse</item>
+        <item name="signal_background_dialog">?attr/colorSurfaceContainer</item>
+        <item name="signal_background_dialog_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_text_toolbar_title">?attr/colorOnSurface</item>
+        <item name="signal_icon_tint_secondary">?attr/colorOnSurfaceVariant</item>
+        <item name="signal_icon_tint_action">?attr/colorOnSurface</item>
         <item name="signal_button_primary">@color/dynamic_primary_light</item>
+        <item name="signal_button_primary_text">?attr/colorOnPrimary</item>
+        <item name="signal_button_primary_text_disabled">@color/signal_color_on_primary_20</item>
+        <item name="signal_button_primary_ripple">@color/signal_color_on_primary_12</item>
+        <item name="signal_button_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_button_secondary_ripple">@color/signal_color_on_surface_12</item>
+        <item name="signal_button_secondary_text_disabled">@color/signal_color_on_surface_38</item>
+        <item name="signal_button_secondary_stroke">?attr/colorOutline</item>
         <item name="signal_button_secondary_text">@color/dynamic_primary_light</item>
         <item name="reactions_overlay_any_emoji_background">@color/dynamic_outline_variant_light</item>
         <item name="reactions_overlay_any_emoji_foreground">@color/dynamic_on_surface_light</item>
@@ -127,7 +140,20 @@
         <!-- Material You specs (overrides TextSecure.BaseDarkTheme) -->
         <item name="dynamic_colors">true</item>
         <item name="signal_accent_primary">@color/dynamic_primary_dark</item>
+        <item name="signal_inverse_primary">?attr/colorPrimaryInverse</item>
+        <item name="signal_background_dialog">?attr/colorSurfaceContainer</item>
+        <item name="signal_background_dialog_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_text_toolbar_title">?attr/colorOnSurface</item>
+        <item name="signal_icon_tint_secondary">?attr/colorOnSurfaceVariant</item>
+        <item name="signal_icon_tint_action">?attr/colorOnSurface</item>
         <item name="signal_button_primary">@color/dynamic_primary_dark</item>
+        <item name="signal_button_primary_text">?attr/colorOnPrimary</item>
+        <item name="signal_button_primary_text_disabled">@color/signal_color_on_primary_20</item>
+        <item name="signal_button_primary_ripple">@color/signal_color_on_primary_12</item>
+        <item name="signal_button_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_button_secondary_ripple">@color/signal_color_on_surface_12</item>
+        <item name="signal_button_secondary_text_disabled">@color/signal_color_on_surface_38</item>
+        <item name="signal_button_secondary_stroke">?attr/colorOutline</item>
         <item name="signal_button_secondary_text">@color/dynamic_primary_dark</item>
         <item name="reactions_overlay_any_emoji_background">@color/dynamic_outline_variant_dark</item>
         <item name="reactions_overlay_any_emoji_foreground">@color/dynamic_on_surface_dark</item>

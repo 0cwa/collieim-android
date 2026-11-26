@@ -1069,7 +1069,7 @@ private fun RedemptionErrorAlert(
       .padding(top = 8.dp, bottom = 4.dp)
       .border(
         width = 1.dp,
-        color = colorResource(CoreUiR.color.signal_colorOutline_38),
+        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
         shape = RoundedCornerShape(12.dp)
       )
       .padding(vertical = 16.dp)

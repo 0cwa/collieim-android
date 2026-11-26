@@ -104,6 +104,32 @@ class UnifiedPushRefreshJobTest {
   private val retainedUpdate = ControlUpdate(5, "https://push.example.invalid/old", "p", "a", byteArrayOf(1), 1)
   private var controlState = ControlState(key = "retained-control-key", activeEpoch = 4, highestEpoch = 5, importSequence = 7, update = retainedUpdate)
 
+  @Test
+  fun `primary refresh is blocked by a pending v4 receiver before endpoint route exists`() {
+    val pending = ReceiverControlState(
+      receiverId = "33333333-3333-4333-8333-333333333333",
+      importId = "44444444-4444-4444-8444-444444444444",
+      accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      bridgeDeviceId = 2,
+      instance = "second-instance",
+      hostLabel = "Secondary phone",
+      controlKey = "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+      epoch = 1,
+      target = Target(
+        "https://push.example.invalid/pending",
+        "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4",
+        "EBESExQVFhcYGRobHB0eHw",
+      ),
+    )
+    every { unifiedPush.endpoint } returns null
+    every { unifiedPush.endpointInstance } returns null
+    every { unifiedPush.pairingEndpointBinding } returns null
+    every { unifiedPush.v4PendingReceiverState } returns pending.serialize()
+
+    assertNotNull("the fixture must be a readable pending v4 receiver", ReceiverControlState.parse(unifiedPush.v4PendingReceiverState))
+    assertTrue(synchronized(UnifiedPushLifecycle.monitor) { newRefreshJob().legacyRelayBlockedLocked() })
+  }
+
   @Before
   fun setUp() {
     Log.initialize(SystemOutLogger())

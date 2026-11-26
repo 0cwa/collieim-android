@@ -86,6 +86,11 @@ object RelayDisclosure {
     true
   }
 
+  /** Rechecks the same consented account and settings while a coordinated lifecycle transition is in progress. */
+  internal fun matchesDuringTransition(snapshot: Snapshot?): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    snapshot != null && matchesLocked(snapshot, requireReadyGeneration = false)
+  }
+
   /** Drain credentialed work before changing its destination; a stale or cancelled dialog commits nothing. */
   suspend fun selectRelay(
     snapshot: Snapshot?,

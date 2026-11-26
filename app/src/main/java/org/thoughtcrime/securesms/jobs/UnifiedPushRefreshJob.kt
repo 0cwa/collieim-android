@@ -280,13 +280,14 @@ class UnifiedPushRefreshJob private constructor(
     }
 
   /** Pairing admission and refresh admission share the lifecycle monitor so a stale job cannot submit scoped state. */
-  private fun legacyRelayBlockedLocked(): Boolean {
+  internal fun legacyRelayBlockedLocked(): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
     val protectedPairingRoute = values.pairingEndpointBinding != null ||
       PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: "")
-    if (!protectedPairingRoute) return false
-    if (SignalStore.account.isLinkedDevice && hasConfirmedLinkedV4Route()) return false
+    val pendingV4Receiver = im.molly.unifiedpush.control.ReceiverControlState.parse(values.v4PendingReceiverState)
+    if (!protectedPairingRoute && pendingV4Receiver == null) return false
+    if (pendingV4Receiver == null && SignalStore.account.isLinkedDevice && hasConfirmedLinkedV4Route()) return false
     return PairingRegistrationGate.blocksLegacyRelay(
       hasProtectedPairingEndpoint = true,
     )

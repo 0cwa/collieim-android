@@ -33,6 +33,28 @@ import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
+internal enum class PairingReceiptV4State { PENDING, CONFIRMED }
+
+/** Match the sealed attempt against its current route before accepting an authenticated HTTP receipt. */
+internal fun matchingV4ReceiptState(
+  expected: ReceiverControlState,
+  pending: ReceiverControlState?,
+  active: ReceiverControlState?,
+  currentAccountId: String?,
+  currentInstance: String?,
+  currentTarget: Target?,
+): PairingReceiptV4State? {
+  if (currentAccountId != expected.accountId || currentInstance != expected.instance || currentTarget != expected.target) return null
+  fun exact(state: ReceiverControlState) = state.receiverId == expected.receiverId && state.importId == expected.importId &&
+    state.accountId == expected.accountId && state.bridgeDeviceId == expected.bridgeDeviceId &&
+    state.instance == expected.instance && state.epoch == expected.epoch && state.target == expected.target
+  return when {
+    pending?.let { exact(it) && !it.confirmed } == true -> PairingReceiptV4State.PENDING
+    active?.let { exact(it) && it.confirmed } == true -> PairingReceiptV4State.CONFIRMED
+    else -> null
+  }
+}
+
 /** Owns the one in-memory phone-side pairing attempt. Request and receipt keys are never persisted. */
 internal class PairingV1Coordinator(private val context: Context) {
 
@@ -250,6 +272,7 @@ internal class PairingV1Coordinator(private val context: Context) {
                   previousAuth = SignalStore.unifiedpush.endpointAuth,
                   previousInstance = SignalStore.unifiedpush.endpointInstance ?: "default",
                   previousDistributorId = previousDistributor,
+                  disclosure = snapshot,
                   onComplete = onComplete,
                 ) ?: return@synchronized false
                 registration = created
@@ -610,7 +633,7 @@ internal class PairingV1Coordinator(private val context: Context) {
       return PairingTransport.Result.InvalidResponse
     }
     if (session.receiverStateJson != null) {
-      val state = ReceiverControlState.parse(session.receiverStateJson) ?: return PairingTransport.Result.InvalidResponse
+      val expected = ReceiverControlState.parse(session.receiverStateJson) ?: return PairingTransport.Result.InvalidResponse
       if (KeyCachingService.isLocked()) {
         session.sealed.receiptKey.fill(0)
         activeSession = null
@@ -618,19 +641,26 @@ internal class PairingV1Coordinator(private val context: Context) {
         requestDispatched = false
         return PairingTransport.Result.AwaitingPush
       }
-      val stillCurrent = synchronized(UnifiedPushLifecycle.monitor) {
-        val stored = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)
-        sessionBindingMatchesLocked(session) && stored != null &&
-          stored.receiverId == state.receiverId && stored.importId == state.importId
+      val receiptState = synchronized(UnifiedPushLifecycle.monitor) {
+        val values = SignalStore.unifiedpush
+        if (!sessionBindingMatchesLocked(session)) return@synchronized null
+        val pending = ReceiverControlState.parse(values.v4PendingReceiverState)
+        val active = ReceiverControlState.parse(values.v4ReceiverState)
+        val endpoint = values.endpoint ?: return@synchronized null
+        matchingV4ReceiptState(
+          expected, pending, active, SignalStore.account.aci?.toString(), values.endpointInstance ?: "default",
+          canonicalTarget(endpoint, values.endpointP256dh, values.endpointAuth),
+        )
       }
-      if (!stillCurrent) return PairingTransport.Result.Stale
+      if (receiptState == null) return PairingTransport.Result.Stale
       session.sealed.receiptKey.fill(0)
       activeSession = null
       registeringSessionId = null
       requestDispatched = false
       // The receipt authenticates the POST, while enrollment_imported is the v4 proof that
       // the bridge applied this receiver. Keep the persisted identity and wait for that event.
-      return PairingTransport.Result.AwaitingPush
+      return if (receiptState == PairingReceiptV4State.CONFIRMED) PairingTransport.Result.Accepted
+      else PairingTransport.Result.AwaitingPush
     }
     val promoted = !KeyCachingService.isLocked() && promoteReceiptConfirmedRoute(session)
     if (!promoted && !KeyCachingService.isLocked()) return PairingTransport.Result.Stale
@@ -722,6 +752,7 @@ internal class PairingV1Coordinator(private val context: Context) {
         ) {
           synchronized(UnifiedPushLifecycle.monitor) {
             if (System.currentTimeMillis() / 1000 >= session.deadlineSeconds ||
+              !RelayDisclosure.matchesDuringTransition(session.disclosure) ||
               !sessionBindingMatchesLocked(session, duringTransition = true) || !hasExactLocalImportLocked(session) ||
               PairingRegistrationGate.isRegistrationPending()) return@synchronized false
             val values = SignalStore.unifiedpush
@@ -731,7 +762,11 @@ internal class PairingV1Coordinator(private val context: Context) {
               session.instance, session.distributorId, session.vapidPublicKey, session.offer.providerOrigin, origin,
               session.offer.sessionId, session.deadlineSeconds, session.accountId, session.deviceId, session.offer.hostLabel, session.importRequestId,
             )
-            if (existing != null && (existing.instance != session.instance || existing.sessionId != session.offer.sessionId)) {
+            if (existing != null && (existing.instance != session.instance || existing.sessionId != session.offer.sessionId ||
+                existing.distributorId != session.distributorId || existing.vapidPublicKey != session.vapidPublicKey ||
+                existing.providerOrigin != session.offer.providerOrigin || existing.endpointOrigin != origin ||
+                existing.accountId != session.accountId || existing.deviceId != session.deviceId ||
+                existing.importId != session.importRequestId)) {
               return@synchronized false
             }
             values.setPairingEndpointRegistration(session.endpoint, session.endpointP256dh, session.endpointAuth, binding)

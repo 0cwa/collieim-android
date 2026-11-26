@@ -366,6 +366,63 @@ class UnifiedPushValuesControlTest {
   }
 
   @Test
+  fun `v4 promotion commits replay receiver and pairing route in one acknowledged write`() {
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
+    val values = UnifiedPushValues(KeyValueStore(storage))
+    values.mutateControl { ControlState() }
+    values.setEndpointRegistration("https://push.example.invalid/old", target.p256dh, target.auth, instance)
+    val pending = ReceiverControlState(
+      receiverId = "22222222-2222-4222-8222-222222222222",
+      importId = "33333333-3333-4333-8333-333333333333",
+      accountId = account,
+      bridgeDeviceId = 2,
+      instance = instance,
+      hostLabel = "Fixture bridge",
+      controlKey = key,
+      epoch = 1,
+      target = target,
+    )
+    val initialReplay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    values.commitV4ReceiverAttempt(pending.serialize(), initialReplay)
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      instance = instance,
+      distributorId = "org.collie.pack",
+      vapidPublicKey = "fixture-vapid",
+      providerOrigin = "https://push.example.test",
+      endpointOrigin = "https://push.example.invalid",
+      sessionId = "44444444-4444-4444-8444-444444444444",
+      expiresAt = System.currentTimeMillis() / 1000 + 600,
+      accountId = account,
+      deviceId = 3,
+      hostLabel = "Fixture bridge",
+      importId = pending.importId,
+    )
+    val registration = UnifiedPushValues.PairingEndpointRegistration(
+      target.endpoint, target.p256dh, target.auth, binding,
+    )
+    val acceptedReplay = EncryptedPush.ReplayState(
+      System.currentTimeMillis() / 1000,
+      listOf(EncryptedPush.ReplayState.Seen("55555555-5555-4555-8555-555555555555", System.currentTimeMillis() / 1000 + 120)),
+    ).serialize()
+    val writesBeforePromotion = storage.writes
+
+    values.mutateControlWithReceiverAndReplay(
+      acceptedReplay, pending.copy(confirmed = true).serialize(), clearPendingV4ReceiverState = true,
+      pairingEndpointRegistration = registration,
+    )
+
+    assertEquals("route metadata joins the acknowledged receiver and replay write", writesBeforePromotion + 1, storage.writes)
+    assertEquals(pending.copy(confirmed = true).serialize(), values.v4ReceiverState)
+    assertNull(values.v4PendingReceiverState)
+    assertEquals(acceptedReplay, values.replayState)
+    assertEquals(target.endpoint, values.endpoint)
+    assertEquals(target.p256dh, values.endpointP256dh)
+    assertEquals(target.auth, values.endpointAuth)
+    assertEquals(instance, values.endpointInstance)
+    assertEquals(binding, values.pairingEndpointBinding)
+  }
+
+  @Test
   fun `commitClearedDevice durably clears the relay device and surfaces persistence failures`() {
     val storage = SnapshotKeyValuePersistentStorage(KeyValueDataSet())
     val values = UnifiedPushValues(KeyValueStore(storage, Executor { it.run() }))

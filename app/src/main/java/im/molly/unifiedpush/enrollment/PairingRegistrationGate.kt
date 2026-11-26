@@ -21,6 +21,7 @@ object PairingRegistrationGate {
     val previousInstance: String = "default",
     val hostLabel: String,
     val previousDistributorId: String = distributorId,
+    val disclosure: RelayDisclosure.Snapshot? = null,
   ) {
     fun matchesDistributorSelection(saved: String?, acknowledged: String?): Boolean =
       saved == previousDistributorId && acknowledged == previousDistributorId
@@ -74,6 +75,7 @@ object PairingRegistrationGate {
     previousAuth: String? = null,
     previousInstance: String = "default",
     previousDistributorId: String = distributorId,
+    disclosure: RelayDisclosure.Snapshot? = null,
     onComplete: (Result<Endpoint>) -> Unit,
   ): Binding? {
     current()
@@ -95,6 +97,7 @@ object PairingRegistrationGate {
         previousInstance = previousInstance,
         hostLabel = offer.hostLabel,
         previousDistributorId = previousDistributorId,
+        disclosure = disclosure,
       )
       pending = Pending(binding, onComplete)
       binding

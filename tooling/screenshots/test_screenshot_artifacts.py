@@ -169,7 +169,8 @@ class ArtifactBoundaryTests(unittest.TestCase):
                     screenshots.check_head("owner/repo", "topic", BASE, "3")
 
     def test_protected_refs_and_command_injection_inputs_are_rejected(self):
-        for branch in ("main", "release", "8.35", "../topic", "topic\nother", "-bad", "topic.lock", "topic?", "refs//topic"):
+        for branch in ("main", "release", "release/stable/8.35", "8.35", "../topic", "topic\nother",
+                       "-bad", "topic.lock", "topic?", "refs//topic"):
             with self.subTest(branch=branch), self.assertRaises(screenshots.InvalidScreenshot):
                 screenshots.validate_target("owner/repo", branch, BASE, "release")
         for repository in ("owner/repo/extra", "https://attacker.invalid/repo", "owner/repo?query"):

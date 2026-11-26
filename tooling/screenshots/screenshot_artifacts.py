@@ -287,7 +287,7 @@ def validate_target(repository, branch, base_sha, protected_branch):
     if re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is None:
         raise InvalidScreenshot("Invalid GitHub repository")
     if (
-        not branch or branch in ("main", protected_branch) or branch.startswith("8.")
+        not branch or branch in ("main", protected_branch) or branch.startswith(("8.", "release/"))
         or branch.startswith(("/", "-")) or branch.endswith(("/", "."))
         or ".." in branch or "@{" in branch or "//" in branch
         or any(character in branch for character in " ~^:?*[\\")

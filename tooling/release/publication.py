@@ -112,32 +112,13 @@ def release_state(value):
     return {key: value[key] for key in ("id", "tag_name", "draft", "prerelease")}
 
 
-RELEASE_SOURCE_BRANCHES = ("main", "release/stable/8.35")
+RELEASE_SOURCE_BRANCHES = ("main",)
 
 
-def publication_source_branch(record):
-    branch = record.get("source_branch", "main")
-    require(branch in RELEASE_SOURCE_BRANCHES, "Publication record has an unsupported source branch")
-    return branch
-
-
-def publication_route(record):
-    branch = publication_source_branch(record)
-    trusted_main = record.get("trusted_main")
-    if branch != "main":
-        require(isinstance(trusted_main, str) and re.fullmatch(r"[0-9a-f]{40}", trusted_main),
-                "Maintenance publication requires its trusted main revision")
-    else:
-        require(trusted_main is None, "Main publication does not select a maintenance policy")
-    return branch, trusted_main
-
-
-def record_for(snapshot, built_on, source_branch="main", trusted_main=None):
-    publication_route({"source_branch": source_branch, "trusted_main": trusted_main})
+def record_for(snapshot, built_on):
     require(built_on in ("local", "github"), "Unknown build origin")
-    route = {"source_branch": source_branch, "trusted_main": trusted_main} if source_branch != "main" else {}
     beta = [asset for asset in snapshot["assets"] if asset["name"] == BETA_NAME]
-    return {**route, **({"beta_apk": beta[0]} if beta else {}),
+    return {**({"beta_apk": beta[0]} if beta else {}),
             "schema": 1, "edition": "collie", "repository": REPOSITORY,
             "release_id": snapshot["release"]["id"], "tag_name": snapshot["release"]["tag_name"],
             **{key: snapshot[key] for key in ("tag_object", "source_commit", "package",
@@ -150,9 +131,10 @@ def validate_record(snapshot):
     record = snapshot["publication"]
     require(isinstance(record, dict), "Prerelease has no structured publication record; legacy releases are not rewritten")
     require(type(record.get("schema")) is int and record["schema"] == 1, "Unsupported publication record schema")
+    require(record.get("source_branch", "main") == "main", "Publication record must use the main source branch")
     require({asset["name"] for asset in snapshot["assets"]} - {BETA_NAME, MANIFEST_NAME} == {*APK_NAMES, RECORD_NAME},
             "Published Collie must have all profile copies and its publication record")
-    require(record == record_for(snapshot, record.get("built_on"), *publication_route(record)),
+    require(record == record_for(snapshot, record.get("built_on")),
             "Publication record differs from the signed tag or exact APK assets")
     return record
 
@@ -422,14 +404,11 @@ class Publication:
     def unchanged(expected, actual):
         require(expected == actual, "Release, tag, publication record or APK assets changed; start a fresh verification")
 
-    def publish(self, expected, built_on, notes, source_branch="main", trusted_main=None):
-        route = publication_route({"source_branch": source_branch, "trusted_main": trusted_main})
+    def publish(self, expected, built_on, notes, source_branch="main"):
+        require(source_branch == "main", "Release publication requires the main source branch")
         current = self.inspect(expected["release"]["tag_name"], "publish")
         self.unchanged(expected, current)
         tag = current["release"]["tag_name"]
-        if current["publication"] is not None:
-            require(publication_route(current["publication"]) == route,
-                    "Source branch or trusted policy differs from the existing publication record")
         if not current["release"]["draft"]:
             require(validate_record(current)["built_on"] == built_on, "Published build origin differs")
             return {"status": "ALREADY_PRERELEASE", "identity": current}
@@ -451,10 +430,10 @@ class Publication:
                 "Profile upload did not produce the complete APK set")
         require(prepared["release"] == current["release"] and
                 all(asset in prepared["assets"] for asset in current["assets"]), "Draft changed while adding profile copies")
-        require(record_for(prepared, built_on, *route) == {**record_for(current, built_on, *route),
+        require(record_for(prepared, built_on) == {**record_for(current, built_on),
                 "apks": [asset for asset in prepared["assets"] if asset["name"] in APK_NAMES]},
                 "Signed source changed while adding profile copies")
-        record = record_for(prepared, built_on, *route)
+        record = record_for(prepared, built_on)
         upload = []
         if prepared["publication"] is None:
             path = self.scratch / RECORD_NAME
@@ -466,14 +445,14 @@ class Publication:
             upload.append(path)
         if upload:
             self.github.upload(tag, upload)
+        self.published_floor(prepared, promotion=False)
+        require(self.github.latest_id() == latest_before, "Latest changed during publication; retry")
         before = self.inspect(tag, "publish")
         require(before["release"]["draft"] and before["publication"] == record,
                 "Draft changed while recording publication identity")
         require(any(asset["name"] == MANIFEST_NAME for asset in before["assets"]),
                 "Draft is missing release.json before publication")
         require(all(asset in before["assets"] for asset in prepared["assets"]), "Release assets changed before publication")
-        self.published_floor(before, promotion=False)
-        require(self.github.latest_id() == latest_before, "Latest changed during publication; retry")
         body = notes.rstrip() + f"\n\n---\nBuilt on: {built_on}. Reproducibility: not yet verified.\n"
         self.github.transition(before["release"]["id"], prerelease=True, body=body)
         after = self.inspect(tag, "publish")
@@ -482,13 +461,11 @@ class Publication:
         return {"status": "PRERELEASE_PUBLISHED", "identity": after}
 
     def promote(self, expected, rebuilt, run_url, source_branch=None):
+        require(source_branch in (None, "main"), "Release promotion requires the main source branch")
         require(re.fullmatch(r"https://github\.com/0cwa/collieim-android/actions/runs/[1-9][0-9]*", run_url) is not None,
                 "Invalid rebuild workflow URL")
         current = self.inspect(expected["release"]["tag_name"], "promote")
         self.unchanged(expected, current)
-        branch = publication_source_branch(current["publication"])
-        require(source_branch is None or source_branch == branch,
-                "Requested branch differs from the existing publication record")
         rebuilt = Path(rebuilt).absolute()
         require(rebuilt.is_file() and not rebuilt.is_symlink(), "Expected one regular rebuilt APK")
         require(0 < rebuilt.stat().st_size <= MAX_APK_BYTES, "Invalid rebuilt APK size")
@@ -538,30 +515,21 @@ def main():
         if args.action == "inspect":
             require(args.tag is not None and args.purpose is not None, "Inspect requires tag and purpose")
             result = helper.inspect(args.tag, args.purpose)
-            if result["publication"] is None:
-                branch, trusted_main = args.source_branch or "main", None
-            else:
-                branch, trusted_main = publication_route(result["publication"])
-            require(args.source_branch is None or args.source_branch == branch,
-                    "Requested branch differs from the existing publication record")
             if args.github_output:
                 with args.github_output.open("a") as output:
                     for key in ("source_commit", "version_name", "version_code"):
                         output.write(f"{key}={result[key]}\n")
-                    output.write(f"source_branch={branch}\ntrusted_main={trusted_main or ''}\n")
         elif args.action == "publish":
             require(args.identity is not None and args.notes is not None and args.built_on is not None,
                     "Publish requires identity, build origin and release notes")
             expected = read_json(args.identity)
             branch = args.source_branch or "main"
-            trusted_main = None
             if args.ci_report:
                 approved = read_json(args.ci_report)
                 require(approved["source_commit"] == expected["source_commit"] and approved["source_branch"] == branch and
-                        approved["status"] == "EXACT_COMMIT_CI_PASSED",
+                        approved["status"] == "EXACT_COMMIT_CI_PASSED" and approved.get("trusted_main") is None,
                         "Approved CI identity differs from the draft")
-                trusted_main = approved["trusted_main"]
-            result = helper.publish(expected, args.built_on, args.notes.read_text(), branch, trusted_main)
+            result = helper.publish(expected, args.built_on, args.notes.read_text(), branch)
         else:
             require(args.identity is not None and args.rebuilt_directory is not None and args.run_url is not None,
                     "Promote requires identity, rebuilt APK directory and run URL")

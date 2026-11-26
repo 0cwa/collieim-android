@@ -26,9 +26,6 @@ jobs:
       actions: read
     outputs:
       source_commit: ${{ steps.identity.outputs.source_commit }}
-      # Use the recorded route so existing maintenance prereleases remain promotable.
-      source_branch: ${{ steps.identity.outputs.source_branch }}
-      trusted_main: ${{ steps.identity.outputs.trusted_main }}
       identity_artifact_id: ${{ steps.identity-artifact.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -41,16 +38,15 @@ jobs:
           mkdir -p "$RUNNER_TEMP/promotion-evidence"
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           python3 tooling/release/publication.py inspect --tag "$TAG" --purpose promote \
+            --source-branch main \
             --scratch "$RUNNER_TEMP/release-assets" --build-tools "$bt" \
             --output "$RUNNER_TEMP/promotion-evidence/before.json" --github-output "$GITHUB_OUTPUT"
       - name: Exact source commit still passes the release CI gate
         env:
           SOURCE_COMMIT: ${{ steps.identity.outputs.source_commit }}
-          SOURCE_BRANCH: ${{ steps.identity.outputs.source_branch }}
-          TRUSTED_MAIN: ${{ steps.identity.outputs.trusted_main }}
         run: |
           python3 tooling/ci/verify_release_readiness.py --repository "$GH_REPO" --sha "$SOURCE_COMMIT" \
-            --source-branch "$SOURCE_BRANCH" --trusted-main "$TRUSTED_MAIN" \
+            --source-branch main \
             --report "$RUNNER_TEMP/promotion-evidence/ci.json"
       - id: identity-artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -89,22 +85,18 @@ jobs:
       - name: Recheck exact-source CI after the independent rebuild
         env:
           SOURCE_COMMIT: ${{ needs.check.outputs.source_commit }}
-          SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}
-          TRUSTED_MAIN: ${{ needs.check.outputs.trusted_main }}
         run: |
           python3 tooling/ci/verify_release_readiness.py --repository "$GH_REPO" --sha "$SOURCE_COMMIT" \
-            --source-branch "$SOURCE_BRANCH" --trusted-main "$TRUSTED_MAIN" \
+            --source-branch main \
             --report "$RUNNER_TEMP/promotion-evidence/final-ci.json"
           cmp "$RUNNER_TEMP/promotion-evidence/ci.json" "$RUNNER_TEMP/promotion-evidence/final-ci.json"
       - name: Reverify unchanged identity, compare the rebuild and promote to Latest
-        env:
-          SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}
         run: |
           run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           python3 tooling/release/publication.py promote \
             --identity "$RUNNER_TEMP/promotion-evidence/before.json" --rebuilt-directory "$RUNNER_TEMP/rebuilt" \
-            --source-branch "$SOURCE_BRANCH" \
+            --source-branch main \
             --run-url "$run_url" --scratch "$RUNNER_TEMP/release-assets" --build-tools "$bt" \
             --output "$RUNNER_TEMP/promotion-evidence/promoted.json"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

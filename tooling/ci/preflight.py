@@ -18,6 +18,7 @@ def run_check(label, command):
     return passed
 
 
+PAIRING_CONTRACT_ROOT = Path(__file__).resolve().parents[2] / "app/src/test/resources/colliesocket-pairing-v1"
 PAIRING_MANIFEST_SHA256 = "353fd3876887eef4e88421a1bfd71d634b3a37ddb212623e1674b11edc060089"
 PAIRING_ARTIFACTS = {
     "README.md",
@@ -38,7 +39,7 @@ def _unique_json_object(pairs):
 
 
 def check_pairing_manifest():
-    root = Path("app/src/test/resources/colliesocket-pairing-v1").resolve()
+    root = PAIRING_CONTRACT_ROOT.resolve()
     manifest_path = root / "copy-manifest.json"
     try:
         if manifest_path.is_symlink() or not manifest_path.is_file():

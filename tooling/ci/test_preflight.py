@@ -4,7 +4,9 @@ from contextlib import redirect_stdout
 import importlib.util
 import io
 from pathlib import Path
+import shutil
 import subprocess
+from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
@@ -31,7 +33,27 @@ class PreflightTests(unittest.TestCase):
     def test_all_checks_pass(self):
         result, output = self.invoke({})
         self.assertEqual(result, 0)
-        self.assertIn("Preflight PASSED (3/3 checks)", output)
+        registered = sum(line.startswith(("PASS: ", "FAIL: ")) for line in output.splitlines())
+        self.assertGreater(registered, 0)
+        self.assertIn(f"Preflight PASSED ({registered}/{registered} checks)", output)
+
+    def test_pinned_pairing_manifest_passes(self):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertTrue(preflight.check_pairing_manifest())
+        self.assertIn("PASS: CollieSocket pairing v1 manifest", output.getvalue())
+
+    def test_tampered_pairing_artifact_fails_preflight(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary) / preflight.PAIRING_CONTRACT_ROOT.name
+            shutil.copytree(preflight.PAIRING_CONTRACT_ROOT, root)
+            offer = root / "offer.schema.json"
+            offer.write_bytes(offer.read_bytes() + b"\n")
+            with patch.object(preflight, "PAIRING_CONTRACT_ROOT", root):
+                result, output = self.invoke({})
+        self.assertEqual(result, 1)
+        self.assertIn("hash mismatch: offer.schema.json", output)
+        self.assertIn("FAIL: CollieSocket pairing v1 manifest", output)
 
     def test_layer_trailer_failure_is_reported(self):
         result, output = self.invoke({"trailers": 1, "trailers_output": "bad layer\n"})

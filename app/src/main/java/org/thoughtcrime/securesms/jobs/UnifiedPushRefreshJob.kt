@@ -6,6 +6,7 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.components.settings.app.notifications.hasLivePendingV4PairingConfirmation
 import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -283,13 +284,13 @@ class UnifiedPushRefreshJob private constructor(
   internal fun legacyRelayBlockedLocked(): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
+    val pendingV4Receiver = hasLivePendingV4PairingConfirmation(context)
     val protectedPairingRoute = values.pairingEndpointBinding != null ||
       PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: "")
-    val pendingV4Receiver = im.molly.unifiedpush.control.ReceiverControlState.parse(values.v4PendingReceiverState)
-    if (!protectedPairingRoute && pendingV4Receiver == null) return false
-    if (pendingV4Receiver == null && SignalStore.account.isLinkedDevice && hasConfirmedLinkedV4Route()) return false
+    if (!protectedPairingRoute && !pendingV4Receiver) return false
+    if (!pendingV4Receiver && SignalStore.account.isLinkedDevice && hasConfirmedLinkedV4Route()) return false
     return PairingRegistrationGate.blocksLegacyRelay(
-      hasProtectedPairingEndpoint = true,
+      hasProtectedPairingEndpoint = protectedPairingRoute || pendingV4Receiver,
     )
   }
 

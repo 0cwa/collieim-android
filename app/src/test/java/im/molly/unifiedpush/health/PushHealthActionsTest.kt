@@ -275,6 +275,42 @@ class PushHealthActionsTest {
   }
 
   @Test
+  fun `an unavailable distributor is diagnosed against the observed connector during route rotation`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val confirmedEndpoint = "https://push.example.invalid/confirmed"
+    val observedEndpoint = "https://push.example.invalid/rotating"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.endpoint = observedEndpoint
+    values.endpointInstance = instance
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    val receiver = ReceiverControlState(
+      "33333333-3333-4333-8333-333333333333", "22222222-2222-4222-8222-222222222222", accountId, 2, instance,
+      hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(confirmedEndpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    values.v4ReceiverState = receiver.serialize()
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.initializeFromSignalStore()
+    UnifiedPushHealthJob.distributorActive = { false }
+
+    UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    ).onRun()
+
+    assertEquals("the early distributor failure is retained", PushHealth.Hop.DISTRIBUTOR.code, health.lastResult)
+    assertEquals("diagnosis leaves the confirmed receiver intact", receiver.serialize(), values.v4ReceiverState)
+  }
+
+  @Test
   fun `a route replaced during timeout diagnosis receives no stale health verdict`() {
     val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
     val instance = "fixture-instance"

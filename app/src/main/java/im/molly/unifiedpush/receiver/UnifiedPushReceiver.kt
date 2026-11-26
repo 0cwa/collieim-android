@@ -14,6 +14,7 @@ import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.components.settings.app.notifications.pairingConfirmationScopeMatches
 import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.PairingV1
@@ -923,6 +924,12 @@ class UnifiedPushReceiver : MessagingReceiver() {
     if (pendingReceiver != null && confirmation != null) {
       val import = pendingReceiver.toImportBinding()
       val handling = synchronized(UnifiedPushLifecycle.monitor) {
+        val savedConfirmation = LockedPushState.peekPairingConfirmation(context) ?: return@synchronized null
+        if (savedConfirmation != confirmation || savedConfirmation.receiverId != pendingReceiver.receiverId ||
+          savedConfirmation.importId != pendingReceiver.importId || savedConfirmation.instance != pendingReceiver.instance ||
+          savedConfirmation.epoch != pendingReceiver.epoch || !pairingConfirmationScopeMatches(context, savedConfirmation)) {
+          return@synchronized null
+        }
         if (!candidateConfirmationPreflightLocked(message, import)) return@synchronized null
         val values = SignalStore.unifiedpush
         val endpoint = values.endpoint ?: return@synchronized null
@@ -997,7 +1004,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
           promotedConfirmation.importId == current.importId && account.accountId == current.accountId &&
           account.localDeviceId == SignalStore.account.deviceId && endpoint == current.target.endpoint &&
           values.endpointP256dh == current.target.p256dh && values.endpointAuth == current.target.auth &&
-          consentScope != null && RelayDisclosure.pairingScopeDigest(consentScope) == promotedConfirmation.scopeDigest &&
+          consentScope != null && pairingConfirmationScopeMatches(context, promotedConfirmation) &&
           RelayDisclosure.matchesDuringTransition(consentScope)
         if (confirmationStillMatches) {
           val origin = PairingV1.canonicalOrigin(checkNotNull(endpoint))

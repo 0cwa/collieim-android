@@ -15,6 +15,7 @@ import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.Target
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.control.ControlUpdate
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.model.ConnectionResult
@@ -79,6 +80,7 @@ import org.whispersystems.signalservice.api.messages.SendMessageResult
 import org.unifiedpush.android.connector.data.PublicKeySet
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
+import org.unifiedpush.android.connector.UnifiedPush
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
@@ -105,7 +107,8 @@ class UnifiedPushRefreshJobTest {
   private var controlState = ControlState(key = "retained-control-key", activeEpoch = 4, highestEpoch = 5, importSequence = 7, update = retainedUpdate)
 
   @Test
-  fun `primary refresh is blocked by a pending v4 receiver before endpoint route exists`() {
+  fun `pending v4 state without a live confirmation does not block primary refresh`() {
+    val context = ApplicationProvider.getApplicationContext<Application>()
     val pending = ReceiverControlState(
       receiverId = "33333333-3333-4333-8333-333333333333",
       importId = "44444444-4444-4444-8444-444444444444",
@@ -127,7 +130,113 @@ class UnifiedPushRefreshJobTest {
     every { unifiedPush.v4PendingReceiverState } returns pending.serialize()
 
     assertNotNull("the fixture must be a readable pending v4 receiver", ReceiverControlState.parse(unifiedPush.v4PendingReceiverState))
-    assertTrue(synchronized(UnifiedPushLifecycle.monitor) { newRefreshJob().legacyRelayBlockedLocked() })
+    val refresh = newRefreshJob().apply { setContext(context) }
+    assertFalse(synchronized(UnifiedPushLifecycle.monitor) { refresh.legacyRelayBlockedLocked() })
+  }
+
+  @Test
+  fun `expired pending v4 confirmation retires only the candidate and allows primary refresh`() {
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    val active = ReceiverControlState(
+      receiverId = "33333333-3333-4333-8333-333333333333",
+      importId = "44444444-4444-4444-8444-444444444444",
+      accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      bridgeDeviceId = 2,
+      instance = "default",
+      hostLabel = "Primary phone",
+      controlKey = "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+      epoch = 1,
+      target = Target("https://push.example.invalid/active", "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4", "EBESExQVFhcYGRobHB0eHw"),
+      confirmed = true,
+    )
+    val pending = active.copy(
+      receiverId = "55555555-5555-4555-8555-555555555555",
+      importId = "66666666-6666-4666-8666-666666666666",
+      instance = "pairing-v1-expired",
+      target = Target("https://push.example.invalid/candidate", active.target.p256dh, active.target.auth),
+      confirmed = false,
+    )
+    every { unifiedPush.v4ReceiverState } returns active.serialize()
+    every { unifiedPush.v4PendingReceiverState } returns pending.serialize()
+    var endpoint = pending.target.endpoint
+    var endpointP256dh: String? = pending.target.p256dh
+    var endpointAuth: String? = pending.target.auth
+    var endpointInstance = pending.instance
+    var receiverState: String? = active.serialize()
+    var pendingState: String? = pending.serialize()
+    var pairingBinding: UnifiedPushValues.PairingEndpointBinding? = UnifiedPushValues.PairingEndpointBinding(
+      instance = pending.instance, distributorId = "org.example.distributor", vapidPublicKey = "vapid-key",
+      providerOrigin = null, endpointOrigin = "https://push.example.invalid", sessionId = "expired-session",
+      expiresAt = System.currentTimeMillis() / 1000 - 1, accountId = pending.accountId, deviceId = 1, hostLabel = pending.hostLabel,
+      importId = pending.importId,
+    )
+    every { unifiedPush.endpoint } answers { endpoint }
+    every { unifiedPush.endpointP256dh } answers { endpointP256dh }
+    every { unifiedPush.endpointAuth } answers { endpointAuth }
+    every { unifiedPush.endpointInstance } answers { endpointInstance }
+    every { unifiedPush.v4ReceiverState } answers { receiverState }
+    every { unifiedPush.v4PendingReceiverState } answers { pendingState }
+    every { unifiedPush.pairingEndpointBinding } answers { pairingBinding }
+    every { unifiedPush.commitV4ReceiverStates(any(), any()) } answers {
+      receiverState = firstArg()
+      pendingState = secondArg()
+    }
+    every { unifiedPush.setEndpointRegistration(any(), any(), any(), any()) } answers {
+      endpoint = firstArg()
+      endpointP256dh = secondArg()
+      endpointAuth = thirdArg()
+      endpointInstance = arg(3)
+      pairingBinding = null
+    }
+    every { unifiedPush.controlStateRead } returns ControlStateRead.Current(controlState)
+
+    val account = UnifiedPushAccountTransition.AccountContext(
+      accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", localDeviceId = 1, pushDevice = null,
+      endpoint = "https://push.example.invalid/active", endpointP256dh = active.target.p256dh,
+      endpointAuth = active.target.auth, instance = "default",
+    )
+    val scope = RelayDisclosure.Snapshot(
+      0, account, RelayDisclosure.Configuration(
+        manual = false, url = "https://molly.example.invalid", vapid = "vapid-key",
+        deliveryMethod = org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH,
+        distributor = "org.example.distributor",
+      ), emptyList(),
+    )
+    val confirmation = LockedPushState.PairingConfirmation(
+      sessionId = "expired-session", instance = pending.instance, distributor = "org.example.distributor",
+      vapid = "vapid-key", providerOrigin = null, expiresAt = System.currentTimeMillis() / 1000 - 1,
+      hostLabel = pending.hostLabel, importId = pending.importId, keyId = "", epoch = pending.epoch,
+      scopeDigest = "expired-scope", receiverId = pending.receiverId,
+    )
+    mockkObject(RelayDisclosure, LockedPushState)
+    mockkStatic(UnifiedPush::class, LockedPushState::class)
+    try {
+      every { RelayDisclosure.capture(context) } returns scope
+      every { RelayDisclosure.pairingScopeDigest(scope) } answers { callOriginal() }
+      every { LockedPushState.peekPairingConfirmation(context) } returns confirmation
+      every { LockedPushState.clearPairingConfirmation(context, confirmation.sessionId) } returns Unit
+      every { LockedPushState.setEncryptedEnrollment(context, any()) } returns Unit
+      every { UnifiedPush.getSavedDistributor(context) } returns "org.example.distributor"
+      every { UnifiedPush.getAckDistributor(context) } returns "org.example.distributor"
+      every { UnifiedPush.getDistributors(context) } returns listOf("org.example.distributor")
+
+      val refresh = newRefreshJob().apply { setContext(context) }
+      assertFalse(synchronized(UnifiedPushLifecycle.monitor) { refresh.legacyRelayBlockedLocked() })
+
+      verify(exactly = 1) { unifiedPush.commitV4ReceiverStates(active.serialize(), null) }
+      verify(exactly = 1) {
+        unifiedPush.setEndpointRegistration(active.target.endpoint, active.target.p256dh, active.target.auth, active.instance)
+      }
+      assertEquals(active.serialize(), receiverState)
+      assertNull(pendingState)
+      assertEquals("the active endpoint is restored", active.target.endpoint, endpoint)
+      assertEquals("the pairing instance is retired", active.instance, endpointInstance)
+      assertNull(pairingBinding)
+      verify(exactly = 1) { LockedPushState.clearPairingConfirmation(context, confirmation.sessionId) }
+    } finally {
+      unmockkStatic(UnifiedPush::class, LockedPushState::class)
+      unmockkObject(RelayDisclosure, LockedPushState)
+    }
   }
 
   @Before

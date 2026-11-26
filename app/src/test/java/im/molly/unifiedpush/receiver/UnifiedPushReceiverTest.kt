@@ -885,6 +885,111 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `receipt admission uses the claimed route when a fresh v4 candidate has no active endpoint`() {
+    assertReceiptAdmissionOnCandidate(replacingEndpoint = false)
+  }
+
+  @Test
+  fun `receipt admission uses the claimed route while replacement retains the previous distributor route`() {
+    assertReceiptAdmissionOnCandidate(replacingEndpoint = true)
+  }
+
+  @Test
+  fun `receipt admission rejects a candidate route that changed after sealing`() {
+    assertReceiptAdmissionOnCandidate(replacingEndpoint = false, mutateCandidateAfterSealing = true)
+  }
+
+  @Test
+  fun `receipt after candidate confirmation is admitted only after promotion`() {
+    assertReceiptAdmissionOnCandidate(replacingEndpoint = false, confirmationFirst = true)
+  }
+
+  private fun assertReceiptAdmissionOnCandidate(
+    replacingEndpoint: Boolean,
+    mutateCandidateAfterSealing: Boolean = false,
+    confirmationFirst: Boolean = false,
+  ) {
+    fakeAccount()
+    val owner = "org.example.distributor"
+    val offer = freshPairingOffer().copy(intent = "add_receiver")
+    val candidateEndpoint = "https://push.example.test/candidate-${if (replacingEndpoint) "replacement" else "fresh"}"
+    values.vapidPublicKey = offer.vapidPublicKey
+    if (replacingEndpoint) {
+      values.setEndpointRegistration("https://push.example.invalid/retained", fixtureP256dh, fixtureAuth, "default")
+    } else {
+      values.setEndpointRegistration(null, null, null, null)
+    }
+    mockPendingEndpointStorage()
+    mockkStatic(UnifiedPush::class)
+    mockkObject(PairingV1, PairingTransport)
+    try {
+      every { UnifiedPush.getDistributors(context) } returns listOf(owner)
+      every { UnifiedPush.getSavedDistributor(context) } returns owner
+      every { UnifiedPush.getAckDistributor(context) } returns owner
+      every { PairingV1.seal(offer, any(), candidateEndpoint, any()) } returns
+        PairingV1.SealedRequest("{}", ByteArray(32), byteArrayOf(), byteArrayOf(), byteArrayOf())
+      every { PairingV1.openReceipt(offer, any(), any()) } returns "authenticated receipt"
+      every { LockedPushState.savePairingConfirmation(context, any()) } returns true
+      every { LockedPushState.clearPairingConfirmation(context, any()) } returns Unit
+      every { LockedPushState.setEncryptedEnrollment(context, any()) } returns Unit
+      every { PairingTransport.submit(any(), any(), any(), any()) } answers {
+        if (arg<(String) -> Boolean>(3)("{}")) PairingTransport.Result.Accepted
+        else PairingTransport.Result.InvalidResponse
+      }
+
+      val scope = checkNotNull(RelayDisclosure.capture(context))
+      val binding = checkNotNull(PairingRegistrationGate.begin(
+        owner, offer, checkNotNull(accountIdentityId), 1, lifecycleGeneration = scope.generation,
+        previousEndpoint = values.endpoint,
+        previousP256dh = values.endpointP256dh, previousAuth = values.endpointAuth,
+        previousInstance = values.endpointInstance ?: "default", previousDistributorId = owner, disclosure = scope,
+      ) { })
+      val endpoint = PairingRegistrationGate.Endpoint(candidateEndpoint, fixtureP256dh, fixtureAuth, binding.instance)
+      assertNotNull(PairingRegistrationGate.claim(binding.instance, owner, owner, checkNotNull(accountIdentityId), 1, endpoint))
+
+      val coordinator = PairingV1Coordinator(context)
+      val consent = checkNotNull(coordinator.consentDetails(offer))
+      val sealed = coordinator.sealAfterConsent(offer, scope, consent, null, false, bridgeDeviceId = 3)
+      assertTrue("candidate consent should seal a v4 receiver request: $sealed", sealed is PairingV1Coordinator.SealResult.Ready)
+      val session = (sealed as PairingV1Coordinator.SealResult.Ready).session
+      if (confirmationFirst) {
+        val pending = checkNotNull(ReceiverControlState.parse(values.v4PendingReceiverState))
+        val origin = checkNotNull(PairingV1.canonicalOrigin(candidateEndpoint))
+        values.setPairingEndpointRegistration(candidateEndpoint, fixtureP256dh, fixtureAuth,
+          UnifiedPushValues.PairingEndpointBinding(
+            binding.instance, owner, offer.vapidPublicKey, offer.providerOrigin, origin, offer.sessionId,
+            offer.expiresAt, checkNotNull(accountIdentityId), 1, offer.hostLabel, pending.importId,
+          ),
+        )
+        values.commitV4ReceiverStates(pending.copy(confirmed = true).serialize(), null)
+        PairingRegistrationGate.promote(binding.instance)
+      }
+      if (mutateCandidateAfterSealing) {
+        assertNotNull(PairingRegistrationGate.claim(
+          binding.instance, owner, owner, checkNotNull(accountIdentityId), 1,
+          endpoint.copy(url = "https://push.example.test/wrong-candidate"),
+        ))
+      }
+
+      assertEquals(
+        if (mutateCandidateAfterSealing) "a changed candidate cannot admit the receipt"
+        else if (confirmationFirst) "a receipt after promotion is admitted against the confirmed active route"
+        else "an authenticated receipt is admitted for the isolated candidate while its push confirmation is pending",
+        when {
+          mutateCandidateAfterSealing -> PairingTransport.Result.Stale
+          confirmationFirst -> PairingTransport.Result.Accepted
+          else -> PairingTransport.Result.AwaitingPush
+        },
+        coordinator.submit(session, PairingTransport.parseSubmitUrl("https://push.example.test/submit")),
+      )
+    } finally {
+      PairingRegistrationGate.current()?.binding?.let { PairingRegistrationGate.cancel(it.instance) }
+      unmockkObject(PairingV1, PairingTransport)
+      unmockkStatic(UnifiedPush::class)
+    }
+  }
+
+  @Test
   fun `unlock resumes a scoped retry when the app locked before the worker ran`() {
     fakeAccount()
     val owner = "org.example.distributor"
@@ -1281,18 +1386,20 @@ class UnifiedPushReceiverTest {
           accountId, instance, receiverState.target,
         ),
       )
+      mockkObject(LockedPushState)
+      lockedPushStateMocked = true
+      mockkStatic(UnifiedPush::class)
+      every { UnifiedPush.getDistributors(context) } returns listOf("org.example.distributor")
+      every { UnifiedPush.getSavedDistributor(context) } returns "org.example.distributor"
+      every { UnifiedPush.getAckDistributor(context) } returns "org.example.distributor"
       val confirmation = LockedPushState.PairingConfirmation(
         sessionId = receiverState.importId, instance = receiverState.instance, distributor = "org.example.distributor",
         vapid = "vapid-key", providerOrigin = "https://push.example.test", expiresAt = System.currentTimeMillis() / 1000 + 600,
         hostLabel = receiverState.hostLabel, importId = receiverState.importId, keyId = "", epoch = receiverState.epoch,
-        scopeDigest = "fixture-scope", receiverId = receiverState.receiverId,
+        scopeDigest = RelayDisclosure.pairingScopeDigest(checkNotNull(RelayDisclosure.capture(context))),
+        receiverId = receiverState.receiverId,
       )
-      mockkObject(LockedPushState)
-      lockedPushStateMocked = true
       var pendingConfirmation: LockedPushState.PairingConfirmation? = confirmation
-      mockkStatic(UnifiedPush::class)
-      every { UnifiedPush.getSavedDistributor(context) } returns "org.example.distributor"
-      every { UnifiedPush.getAckDistributor(context) } returns "org.example.distributor"
       every { LockedPushState.peekPairingConfirmation(context) } answers { pendingConfirmation }
       every { LockedPushState.clearPairingConfirmation(context, confirmation.sessionId) } answers { pendingConfirmation = null }
       val receiver = UnifiedPushReceiver()
@@ -1318,6 +1425,11 @@ class UnifiedPushReceiverTest {
       val importedBytes = event("imported")
       val importedEvent = checkNotNull(EncryptedPush.parse(importedBytes, System.currentTimeMillis() / 1000, setOf(4)))
       assertTrue(receiverState.identityMatches(importedEvent, accountId))
+      // A route tuple that happens to remain identical cannot revive consent after the live relay scope changes.
+      every { values.airGapped } returns true
+      receiver.onMessage(context, PushMessage(importedBytes, true), instance)
+      assertFalse(checkNotNull(ReceiverControlState.parse(values.v4PendingReceiverState)).confirmed)
+      every { values.airGapped } returns false
       val live = synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushAccountTransition.captureContextLocked() }
       assertEquals(accountId, live?.accountId)
       assertEquals(instance, live?.instance)

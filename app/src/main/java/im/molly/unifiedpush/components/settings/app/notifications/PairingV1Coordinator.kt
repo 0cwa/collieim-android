@@ -55,6 +55,77 @@ internal fun matchingV4ReceiptState(
   }
 }
 
+/** The saved confirmation is authority only while its original account, relay selection, and consent scope are live. */
+internal fun pairingConfirmationScopeMatches(
+  context: Context,
+  confirmation: LockedPushState.PairingConfirmation?,
+): Boolean {
+  check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+  confirmation ?: return false
+  if (System.currentTimeMillis() / 1000 >= confirmation.expiresAt) return false
+  val scope = RelayDisclosure.capture(context) ?: return false
+  val selected = scope.configuration.distributor ?: return false
+  return confirmation.scopeDigest == RelayDisclosure.pairingScopeDigest(scope) &&
+    confirmation.distributor == selected && UnifiedPush.getSavedDistributor(context) == selected &&
+    UnifiedPush.getAckDistributor(context) == selected && selected in UnifiedPush.getDistributors(context)
+}
+
+/** A v4 candidate isolates legacy refresh only while its exact saved confirmation can still be restored. */
+internal fun hasLivePendingV4PairingConfirmation(context: Context): Boolean {
+  check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+  val values = SignalStore.unifiedpush
+  val pending = ReceiverControlState.parse(values.v4PendingReceiverState)?.takeIf { !it.confirmed } ?: return false
+  val savedConfirmation = LockedPushState.peekPairingConfirmation(context)
+  val confirmation = savedConfirmation?.takeIf {
+    it.receiverId == pending.receiverId && it.importId == pending.importId && it.instance == pending.instance &&
+      it.epoch == pending.epoch
+  }
+  val scope = RelayDisclosure.capture(context) ?: return false
+  val selected = scope.configuration.distributor
+  val live = confirmation != null && System.currentTimeMillis() / 1000 < confirmation.expiresAt &&
+    scope.account.accountId == pending.accountId && selected != null && confirmation.distributor == selected &&
+    confirmation.scopeDigest == RelayDisclosure.pairingScopeDigest(scope) &&
+    UnifiedPush.getSavedDistributor(context) == selected && UnifiedPush.getAckDistributor(context) == selected &&
+    selected in UnifiedPush.getDistributors(context)
+  if (live) return true
+
+  // The confirmation no longer authorizes this exact pending identity. Clear only that candidate and preserve the
+  // already active receiver route and legacy enrollment state.
+  if (ReceiverControlState.parse(values.v4PendingReceiverState)?.let {
+      it.receiverId == pending.receiverId && it.importId == pending.importId && !it.confirmed
+    } == true) {
+    val registration = PairingRegistrationGate.current()?.takeIf {
+      it.binding.instance == pending.instance && (confirmation == null || it.binding.sessionId == confirmation.sessionId)
+    }?.binding
+    val pairingBinding = values.pairingEndpointBinding
+    val ownsCurrentRoute = values.endpointInstance == pending.instance || pairingBinding?.instance == pending.instance
+    values.commitV4ReceiverStates(values.v4ReceiverState, null)
+    if (confirmation != null) LockedPushState.clearPairingConfirmation(context, confirmation.sessionId)
+    PairingRegistrationGate.cancel(pending.instance)
+    val control = values.controlStateRead.stateOrNull
+    val active = ReceiverControlState.parse(values.v4ReceiverState)?.takeIf {
+      it.confirmed && it.accountId == scope.account.accountId
+    }
+    if (ownsCurrentRoute && scope.account.accountId == pending.accountId &&
+      (pairingBinding == null || pairingBinding.instance == pending.instance)) {
+      val rollback = registration?.takeIf { it.previousEndpoint != null }?.let {
+        listOf(it.previousEndpoint, it.previousP256dh, it.previousAuth, it.previousInstance)
+      } ?: active?.let { listOf(it.target.endpoint, it.target.p256dh, it.target.auth, it.instance) }
+        ?: control?.serverTarget?.takeIf { control.activeAccountId == null || control.activeAccountId == pending.accountId }?.let {
+          listOf(it.endpoint, it.p256dh, it.auth, control.activeInstance ?: "default")
+        } ?: values.endpoint?.let { listOf(it, values.endpointP256dh, values.endpointAuth, "default") }
+      values.setEndpointRegistration(
+        rollback?.get(0), rollback?.get(1), rollback?.get(2), rollback?.get(3),
+      )
+    }
+    val activeV4 = active != null
+    LockedPushState.setEncryptedEnrollment(
+      context, activeV4 || control?.let { it.activeEpoch > 0 || it.activeImportId != null } == true,
+    )
+  }
+  return false
+}
+
 /** Owns the one in-memory phone-side pairing attempt. Request and receipt keys are never persisted. */
 internal class PairingV1Coordinator(private val context: Context) {
 
@@ -646,10 +717,22 @@ internal class PairingV1Coordinator(private val context: Context) {
         if (!sessionBindingMatchesLocked(session)) return@synchronized null
         val pending = ReceiverControlState.parse(values.v4PendingReceiverState)
         val active = ReceiverControlState.parse(values.v4ReceiverState)
-        val endpoint = values.endpoint ?: return@synchronized null
+        val candidate = PairingRegistrationGate.current()?.takeIf {
+          it.binding.sessionId == session.offer.sessionId && it.binding.instance == session.instance &&
+            it.binding.accountId == session.accountId && it.binding.deviceId == session.deviceId
+        }
+        val candidateEndpoint = candidate?.claimedEndpoint?.takeIf { endpoint ->
+          candidate.importBinding?.let { identity -> identity.receiverId == expected.receiverId &&
+            identity.requestId == expected.importId && identity.epoch == expected.epoch && identity.instance == expected.instance
+          } == true && endpoint.instance == expected.instance
+        }
+        if (candidate != null && candidateEndpoint == null) return@synchronized null
+        val endpoint = candidateEndpoint?.url ?: values.endpoint ?: return@synchronized null
         matchingV4ReceiptState(
-          expected, pending, active, SignalStore.account.aci?.toString(), values.endpointInstance ?: "default",
-          canonicalTarget(endpoint, values.endpointP256dh, values.endpointAuth),
+          expected, pending, if (candidate == null) active else null, SignalStore.account.aci?.toString(),
+          candidateEndpoint?.instance ?: (values.endpointInstance ?: "default"),
+          canonicalTarget(endpoint, candidateEndpoint?.p256dh ?: values.endpointP256dh,
+            candidateEndpoint?.auth ?: values.endpointAuth),
         )
       }
       if (receiptState == null) return PairingTransport.Result.Stale
@@ -928,7 +1011,15 @@ internal class PairingV1Coordinator(private val context: Context) {
         matches = sessionBindingMatchesLocked(session)
       }
     }
-    return disclosureCurrent && matches
+    if (disclosureCurrent && matches) return true
+    return synchronized(UnifiedPushLifecycle.monitor) {
+      val expected = session.receiverStateJson?.let(ReceiverControlState::parse) ?: return@synchronized false
+      val active = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState) ?: return@synchronized false
+      active.confirmed && active.receiverId == expected.receiverId && active.importId == expected.importId &&
+        active.accountId == expected.accountId && active.bridgeDeviceId == expected.bridgeDeviceId &&
+        active.instance == expected.instance && active.epoch == expected.epoch && active.target == expected.target &&
+        sessionBindingMatchesLocked(session)
+    }
   }
 
   private fun sessionBindingMatchesLocked(session: Session, duringTransition: Boolean = false): Boolean {

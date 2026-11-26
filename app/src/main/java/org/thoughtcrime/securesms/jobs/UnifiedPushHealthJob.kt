@@ -5,6 +5,7 @@ import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.control.CorruptControlStateException
@@ -131,12 +132,16 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
     var failure: PushHealth.Hop? = null
     var pinned: ReceiverControlState? = null
     var observed: ReceiverControlState? = null
+    var observedConnector: Target? = null
     var generation = 0L
     synchronized(UnifiedPushLifecycle.monitor) {
       val receiver = ReceiverControlState.parse(values.v4ReceiverState)
       if (receiver?.confirmed != true) return@synchronized
       observed = receiver
       generation = UnifiedPushLifecycle.currentGeneration()
+      observedConnector = values.endpoint?.let { endpoint ->
+        Target(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+      }
       val context = UnifiedPushAccountTransition.captureContextLocked()
       val pairing = values.pairingEndpointBinding
       val currentInstance = values.endpointInstance ?: "default"
@@ -168,7 +173,9 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
     }
     if (!applicable) return false
     failure?.let {
-      if (manual || it == PushHealth.Hop.DISTRIBUTOR) publishV4VerdictIfCurrent(checkNotNull(observed), null, generation, it)
+      if (manual || it == PushHealth.Hop.DISTRIBUTOR) {
+        publishV4VerdictIfCurrent(checkNotNull(observed), null, generation, it, observedConnector)
+      }
       return true
     }
     val ping = checkNotNull(pinned)
@@ -211,6 +218,7 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
     attempted: ReceiverControlState?,
     generation: Long,
     hop: PushHealth.Hop,
+    observedConnector: Target? = null,
   ) {
     synchronized(UnifiedPushLifecycle.monitor) {
       if (!UnifiedPushLifecycle.isCurrentGeneration(generation)) return
@@ -218,12 +226,12 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
       val live = ReceiverControlState.parse(values.v4ReceiverState) ?: return
       val account = UnifiedPushAccountTransition.captureContextLocked() ?: return
       val pairing = values.pairingEndpointBinding
-      val target = attempted?.pendingTarget ?: live.target
+      val target = attempted?.pendingTarget ?: observedConnector ?: live.target
       if (live.receiverId != observed.receiverId || live.importId != observed.importId ||
         live.bridgeDeviceId != observed.bridgeDeviceId || live.controlKey != observed.controlKey ||
         live.accountId != observed.accountId || live.instance != observed.instance || !live.confirmed ||
         account.accountId != observed.accountId || account.instance != observed.instance || values.endpoint == null ||
-        values.endpoint != target.endpoint || values.endpointP256dh != target.p256dh || values.endpointAuth != target.auth ||
+        values.endpoint != target.endpoint || values.endpointP256dh.orEmpty() != target.p256dh || values.endpointAuth.orEmpty() != target.auth ||
         (values.endpointInstance ?: "default") != live.instance ||
         SignalStore.settings.preferredNotificationMethod != org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
         pairing != null && (pairing.importId != live.importId || pairing.accountId != live.accountId ||

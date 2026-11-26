@@ -546,6 +546,7 @@ jobs:
             timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
             mkdir -p "$evidence/screenshots"
             timeout 30s adb pull /sdcard/Download/collie-settings-navigation/. "$evidence/screenshots/" || true
+            timeout 30s adb pull /sdcard/Download/collie-release-notes/. "$evidence/screenshots/" || true
             sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
               app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
             exit "$status"
@@ -559,6 +560,7 @@ jobs:
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
             :app:connectedProdWebsiteDebugAndroidTest --no-configuration-cache -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
             '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest' \
+            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest' \
             2>&1 | tee "$evidence/connected.log"
           SH
       - name: Run navigation tests on API 35

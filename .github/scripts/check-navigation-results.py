@@ -20,12 +20,14 @@ HOST_METHODS = {
     'home selection follows a replaced section',
 }
 DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
+RELEASE_NOTES_CLASS = 'org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest'
+RELEASE_NOTES_METHODS = {'stableReleaseActionOpensWhatsNewHighlightsAndCapturesBothScreens'}
 DEVICE_METHODS = {
     'splitPaneHomeSelectionFollowsSectionChange',
     'settingsHomeOpensAppearanceAndBackMatchesLayout',
     'accountAndSupportRemainAvailableWithoutSignalCheckout',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png'}
+SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png', 'stable-release-action.png', 'stable-whats-new-highlights.png'}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
@@ -35,14 +37,19 @@ def require_cases(directory, classname, expected):
     for path in directory.rglob('TEST-*.xml'):
         report = ET.parse(path).getroot()
         for suite in report.iter('testsuite'):
-            suites.append(suite)
+            matching = [case for case in suite.iter('testcase') if case.get('classname') == classname]
+            if not matching:
+                continue
+            suites.append((suite, matching))
+            if int(suite.get('tests', '0')) != len(matching):
+                raise ValueError(f'unexpected test count: {path}')
             if any(int(suite.get(key, '0')) for key in ('failures', 'errors', 'skipped')):
                 raise ValueError(f'failed or skipped suite: {path}')
-        for case in report.iter('testcase'):
-            if case.get('classname') != classname or any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
-                raise ValueError(f'wrong class or nonpassing case: {path}')
-            cases.append(case.get('name'))
-    if len(suites) != 1 or int(suites[0].get('tests', '0')) != len(expected) or len(cases) != len(expected) or set(cases) != expected:
+            for case in matching:
+                if any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
+                    raise ValueError(f'nonpassing case: {path}')
+                cases.append(case.get('name'))
+    if not suites or sum(len(matching) for _, matching in suites) != len(expected) or len(cases) != len(expected) or set(cases) != expected:
         raise ValueError(f'missing, duplicate, or unexpected test cases: {classname}: {cases}')
 
 
@@ -84,6 +91,7 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
         raise ValueError('expected matching prodWebsite app and Android test APKs')
     require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', HOST_CLASS, HOST_METHODS)
     require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CLASS, DEVICE_METHODS)
+    require_cases(root / 'app/build/outputs/androidTest-results', RELEASE_NOTES_CLASS, RELEASE_NOTES_METHODS)
     screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
         raise ValueError('missing, duplicate or unexpected Settings screenshots')
@@ -94,7 +102,7 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases and three API 35 device cases with matching APKs and decoded Settings screenshots')
+    print('Passed eight host navigation cases, three API 35 navigation cases, and one Stable release-notes case with matching APKs and decoded screenshots')
 
 
 if __name__ == '__main__':

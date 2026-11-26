@@ -33,6 +33,7 @@ class NavigationGateTest(unittest.TestCase):
         ET.ElementTree(test_manifest).write(self.evidence / 'test-manifest.xml')
         self.host = self.make_report('feature/app-settings/build/test-results/testDebugUnitTest/TEST-host.xml', gate.HOST_CLASS, gate.HOST_METHODS)
         self.device = self.make_report('app/build/outputs/androidTest-results/device/TEST-device.xml', gate.DEVICE_CLASS, gate.DEVICE_METHODS)
+        self.release_notes = self.make_report('app/build/outputs/androidTest-results/release-notes/TEST-release-notes.xml', gate.RELEASE_NOTES_CLASS, gate.RELEASE_NOTES_METHODS)
         screenshots = self.evidence / 'screenshots'
         screenshots.mkdir()
         image = Image.new('RGB', (100, 100), 'white')

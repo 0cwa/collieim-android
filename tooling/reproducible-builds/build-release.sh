@@ -36,19 +36,19 @@ case "${COLLIE_REQUIRE_RELEASE_PREP:-0}" in
   0|1) require_prepared=${COLLIE_REQUIRE_RELEASE_PREP:-0} ;;
   *) echo "build-release: COLLIE_REQUIRE_RELEASE_PREP must be 0 or 1" >&2; exit 1 ;;
 esac
-# Derive the Gradle property for every build from this exact checkout and edition. Ordinary
-# commits can fail the preparation verifier; that means false unless this path is strict.
+# Derive the Gradle property for every build from this exact checkout and edition.
 if prepared=$(python3 tooling/reproducible-builds/verify-release-prep.py --edition "$edition" --build-state); then
   case "$prepared" in
     true|false) ;;
     *) echo "build-release: invalid preparation result" >&2; exit 1 ;;
   esac
 else
-  prepared=false
-  if [ "$require_prepared" = 1 ]; then
-    echo "build-release: required release preparation is not verified" >&2
+  # A shallow boundary can hide the recorded source of a valid preparation.
+  if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+    echo "build-release: preparation state could not be verified in this shallow checkout; fetch full history" >&2
     exit 1
   fi
+  prepared=false
 fi
 if [ "$require_prepared" = 1 ] && [ "$prepared" != true ]; then
   echo "build-release: required release preparation is not verified" >&2

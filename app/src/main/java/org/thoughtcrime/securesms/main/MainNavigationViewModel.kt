@@ -48,6 +48,7 @@ import org.thoughtcrime.securesms.megaphone.Megaphones
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.stories.Stories
+import org.thoughtcrime.securesms.wallpaper.PhotoWallpaperColors
 import java.util.Optional
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -217,13 +218,14 @@ class MainNavigationViewModel(
     val recipientSnapshot = liveRecipient.get()
     val wallpaper = recipientSnapshot.wallpaper
 
-    val updatedArgs = if (recipientSnapshot.isResolving || (wallpaper?.isPhoto == true && !wallpaper.isPrefetched)) {
+    val updatedArgs = if (recipientSnapshot.isResolving || (wallpaper?.isPhoto == true && !wallpaper.isPrefetched) || PhotoWallpaperColors.needsBackfill(wallpaper)) {
       withTimeoutOrNull(NAV_PREFETCH_TIMEOUT_MS.milliseconds) {
         withContext(Dispatchers.Default) {
           val freshWallpaper = liveRecipient.resolve().wallpaper
           if (freshWallpaper?.prefetch(AppDependencies.application, NAV_PREFETCH_TIMEOUT_MS) == false) {
             Log.w(TAG, "[goToConversation] Failed to prefetch wallpaper.")
           }
+          PhotoWallpaperColors.backfillFromPrefetched(freshWallpaper)
           args.copy(hasWallpaper = freshWallpaper != null)
         }
       } ?: run {

@@ -1,0 +1,7 @@
+/.github/workflows/ @0cwa
+/.github/release-signers @0cwa
+/.github/CODEOWNERS @0cwa
+/tooling/ci/ @0cwa
+/tooling/release/ @0cwa
+/tooling/reproducible-builds/ @0cwa
+/build-inputs/ @0cwa

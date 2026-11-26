@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches: [main, release/stable/8.35]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -11,13 +11,37 @@ concurrency:
   group: pr-checks-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
-  stable-tag-ref:
-    name: Stable tag ref marker
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/release/stable/8.35'
-    permissions: {}
+  changes:
+    name: Detect build input changes
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     runs-on: ubuntu-24.04
+    outputs:
+      build_changed: ${{ steps.detect.outputs.build_changed }}
     steps:
-      - run: test "$GITHUB_REF" = refs/tags/release/stable/8.35
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request'
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Compare the PR merge commit with its base
+        id: detect
+        shell: bash
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" != pull_request ]]; then
+            echo 'build_changed=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --no-renames --name-only "$BASE" HEAD -- \
+            gradle/ ':(glob)**/*.gradle.kts' ':(glob)**/gradle.properties' \
+            buildSrc/ build-logic/ build-inputs/ tooling/reproducible-builds/ \
+            'tooling/gradle.properties*' 'app/build.gradle*' .github/workflows/pr.yml)
+          if [[ -n "$changed" ]]; then
+            echo 'build_changed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'build_changed=false' >> "$GITHUB_OUTPUT"
+          fi
 
   layer-trailers:
     name: Layer trailers
@@ -103,8 +127,7 @@ jobs:
           python-version: '3.12.14'
       - name: Install pinned screenshot decoder
         run: |
-          printf '%s\n' 'Pillow==13.0.0 --hash=sha256:42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca' > "$RUNNER_TEMP/png-requirements.txt"
-          python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r "$RUNNER_TEMP/png-requirements.txt"
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r tooling/ci/png-requirements.txt
       - name: Check CI result gates
         run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/ci -p 'test_*.py'
       - name: Record the tested source
@@ -165,9 +188,7 @@ jobs:
           dir=org/robolectric/android-all-instrumented
           get() { timeout 600 curl -fsSL --connect-timeout 20 --max-time 300 --retry 3 --retry-all-errors \
                     --retry-delay 5 --retry-max-time 120 -o "$2" "$1"; }
-          for v in 6.0.1_r3-robolectric-r1-i7 8.0.0_r4-robolectric-r1-i7 9-robolectric-4913185-2-i7 \
-                   11-robolectric-6757853-i7 12-robolectric-7732740-i7 13-robolectric-9030017-i7 \
-                   14-robolectric-10818077-i7 15-robolectric-13954326-i7 16-robolectric-13921718-i7; do
+          while IFS= read -r v; do
             jar="$HOME/.m2/repository/$dir/$v/android-all-instrumented-$v.jar"
             [ -s "$jar" ] && continue
             mkdir -p "$(dirname "$jar")"
@@ -190,7 +211,7 @@ jobs:
               rm -f "$jar.part"
               echo "::warning::cannot fetch $v; Robolectric will try itself"
             fi
-          done
+          done < tooling/ci/robolectric-jars.txt
       - name: Run unit test shard
         env:
           SHARD: ${{ matrix.shard }}
@@ -244,11 +265,7 @@ jobs:
       - name: Combine and verify all unit test results
         env:
           SHARD_RESULT: ${{ needs.unit-test-shards.result }}
-          CI_TEST_POLICY: >-
-            ${{ ((github.event_name == 'pull_request' && github.base_ref == 'release/stable/8.35') ||
-                 ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-                  github.ref == 'refs/heads/release/stable/8.35')) &&
-                '.github/ci-required-tests-stable-8.35.json' || '.github/ci-required-tests.json' }}
+          CI_TEST_POLICY: .github/ci-required-tests.json
         run: |
           for shard in app-0 app-1 modules; do
             mkdir -p "build/shards/$shard"
@@ -270,24 +287,6 @@ jobs:
             --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
             --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
           test "$SHARD_RESULT" = success
-          if [[ "$GITHUB_REF" == refs/heads/release/stable/8.35 ]]; then
-            test "$CI_TEST_POLICY" = .github/ci-required-tests-stable-8.35.json
-            jq -n \
-              --arg commit "$(cat build/ci/source-commit.txt)" --arg ref "$GITHUB_REF" \
-              --arg event "$GITHUB_EVENT_NAME" --argjson id "$GITHUB_RUN_ID" --argjson attempt "$GITHUB_RUN_ATTEMPT" \
-              --arg policy "$CI_TEST_POLICY" --arg blob "$(git hash-object build/ci/ci-required-tests.json)" \
-              '{schema: 1, source_commit: $commit, source_ref: $ref, event: $event,
-                run_id: $id, run_attempt: $attempt, policy_path: $policy, policy_blob: $blob}' \
-              > build/ci/stable-source-route.json
-          fi
-      - name: Keep the exact Stable branch route and policy for this attempt
-        if: github.ref == 'refs/heads/release/stable/8.35'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: stable-ci-route-${{ github.run_id }}-${{ github.run_attempt }}
-          path: build/ci/stable-source-route.json
-          retention-days: 14
-          if-no-files-found: error
       - name: Keep combined unit test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -303,7 +302,8 @@ jobs:
 
   production-build:
     name: Unsigned production build
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
+    needs: changes
+    if: ${{ needs.changes.outputs.build_changed == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
@@ -328,7 +328,8 @@ jobs:
 
   beta-compile:
     name: TrailBlazer Beta compile
-    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && !github.event.pull_request.draft }}
+    needs: changes
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && needs.changes.outputs.build_changed == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -351,13 +352,21 @@ jobs:
   security-readiness:
     name: Security readiness
     if: ${{ always() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
-    needs: [unit-tests, production-build]
+    needs: [changes, unit-tests, production-build]
     runs-on: ubuntu-24.04
     steps:
-      - name: Require successful tests and production build
+      - name: Require successful tests and the expected production build result
         env:
+          BUILD_CHANGED: ${{ needs.changes.outputs.build_changed }}
+          CHANGES_RESULT: ${{ needs.changes.result }}
           UNIT_TESTS_RESULT: ${{ needs.unit-tests.result }}
           PRODUCTION_BUILD_RESULT: ${{ needs.production-build.result }}
         run: |
+          test "$CHANGES_RESULT" = success
           test "$UNIT_TESTS_RESULT" = success
-          test "$PRODUCTION_BUILD_RESULT" = success
+          if [[ "$GITHUB_EVENT_NAME" == pull_request && "$BUILD_CHANGED" == false ]]; then
+            test "$PRODUCTION_BUILD_RESULT" = skipped
+          else
+            test "$BUILD_CHANGED" = true
+            test "$PRODUCTION_BUILD_RESULT" = success
+          fi

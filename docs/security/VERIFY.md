@@ -7,12 +7,11 @@ The pull request signature and trailer checks below describe the maintainer work
 
 ## Verify an app source commit
 
-Identify the exact full commit SHA and source branch used by the build. Ordinary
-app changes use `main`; the approved Stable maintenance route uses
-`release/stable/8.35`, as described in [RELEASING.md](../RELEASING.md):
+Identify the exact full commit SHA and source branch used by the build. App changes
+and Stable releases use `main`, as described in [RELEASING.md](../RELEASING.md):
 
 ```sh
-SOURCE_BRANCH=main  # or release/stable/8.35 for the approved maintenance route
+SOURCE_BRANCH=main
 git fetch origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH" --tags
 SOURCE=<full-app-commit-sha>
 git show -s --format=fuller "$SOURCE"
@@ -125,11 +124,11 @@ Review the merge's own changes (`git show --remerge-diff "$MERGE"`) for conflict
 Stable tags are annotated and signed with the publication key listed in
 `.github/release-signers`. Use the `source_branch` recorded in `publication.json`,
 or `main` for historical records without that field. [RELEASING.md](../RELEASING.md)
-permits only `main` and `release/stable/8.35` for this route.
+permits only `main` for this route.
 
 ```sh
 TAG=<stable-release-tag>
-SOURCE_BRANCH=main  # or release/stable/8.35, matching publication.json
+SOURCE_BRANCH=main  # matching publication.json
 git fetch origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH" "refs/tags/$TAG:refs/tags/$TAG"
 test "$(git cat-file -t "$TAG")" = tag
 git -c gpg.ssh.allowedSignersFile=.github/release-signers verify-tag "$TAG"

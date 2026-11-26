@@ -61,6 +61,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       }
       commitPendingEndpoint(context)?.let { publishPendingEndpointEffects(context, it) }
       if (!KeyCachingService.isLocked()) {
+        recoverInterruptedV4Promotion(context)
         val confirmation = LockedPushState.peekPairingConfirmation(context)
         val bytes = confirmation?.message?.let { runCatching { Base64.getDecoder().decode(it) }.getOrNull() }
         if (confirmation != null && bytes != null) {
@@ -71,6 +72,47 @@ class UnifiedPushReceiver : MessagingReceiver() {
       // Now that the app can read its state: make sure the server holds the current endpoint, and send an update
       // that was built but never confirmed again.
       if (UnifiedPushLifecycle.isReady()) EndpointReconciler.reconcile(resume = true)
+    }
+
+    /** Complete a committed v4 receiver promotion if process death interrupted its connector preference write. */
+    internal fun recoverInterruptedV4Promotion(context: Context): Boolean {
+      if (KeyCachingService.isLocked()) return false
+      return synchronized(UnifiedPushLifecycle.monitor) {
+        val confirmation = LockedPushState.peekPairingConfirmation(context)?.takeIf {
+          it.receiverId != null && it.previousDistributor != null && it.previousDeliveryMethod != null &&
+            System.currentTimeMillis() / 1000 < it.expiresAt
+        } ?: return@synchronized false
+        val values = SignalStore.unifiedpush
+        val receiver = ReceiverControlState.parse(values.v4ReceiverState)?.takeIf { it.confirmed } ?: return@synchronized false
+        val binding = values.pairingEndpointBinding ?: return@synchronized false
+        val account = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized false
+        val target = values.endpoint?.let { Target(it, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty()) }
+          ?: return@synchronized false
+        val endpointOrigin = PairingV1.canonicalOrigin(target.endpoint) ?: return@synchronized false
+        if (receiver.receiverId != confirmation.receiverId || receiver.importId != confirmation.importId ||
+          receiver.instance != confirmation.instance || receiver.epoch != confirmation.epoch ||
+          receiver.accountId != account.accountId || receiver.instance != account.instance || receiver.target != target ||
+          binding.instance != receiver.instance || binding.sessionId != confirmation.sessionId ||
+          binding.importId != receiver.importId || binding.accountId != receiver.accountId ||
+          binding.deviceId != account.localDeviceId || binding.distributorId != confirmation.distributor ||
+          binding.vapidPublicKey != confirmation.vapid || binding.providerOrigin != confirmation.providerOrigin ||
+          binding.endpointOrigin != endpointOrigin ||
+          SignalStore.settings.preferredNotificationMethod.name != confirmation.previousDeliveryMethod &&
+            SignalStore.settings.preferredNotificationMethod !=
+              org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
+          confirmation.distributor !in UnifiedPush.getDistributors(context)) return@synchronized false
+        if (!PairingDistributorRegistration.recoverPromotionSelection(
+            context, checkNotNull(confirmation.previousDistributor), confirmation.distributor,
+          )) return@synchronized false
+
+        values.enabled = true
+        SignalStore.settings.preferredNotificationMethod =
+          org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+        LockedPushState.setEncryptedEnrollment(context, true)
+        LockedPushState.setProtectedPairingRoute(context, receiver.instance, confirmation.distributor)
+        LockedPushState.clearPairingConfirmation(context, confirmation.sessionId)
+        true
+      }
     }
 
     /** A passphrase lock can restart the app before the queued retry begins. */
@@ -768,6 +810,14 @@ class UnifiedPushReceiver : MessagingReceiver() {
       // SignalStore is unavailable while locked, so a custom instance can only be trusted after unlock.
       LockedPushState.recordPushArrived(context, System.currentTimeMillis())
       if (bufferPairingConfirmation(context, message, instance) || PairingRegistrationGate.isPairingInstance(instance)) return
+      val pendingCandidateRoute = LockedPushState.peekPairingConfirmation(context)?.takeIf {
+        it.receiverId != null && it.instance == instance && it.instance.startsWith("pairing-v1-") &&
+          System.currentTimeMillis() / 1000 < it.expiresAt
+      }
+      if (pendingCandidateRoute != null) {
+        Log.d(TAG, "Unconfirmed encrypted pairing route ignored while locked.")
+        return
+      }
       // Which kind of enrollment this is cannot be read from SignalStore while locked.
       if (LockedPushState.isEncryptedEnrollment(context)) {
         Log.d(TAG, "Encrypted push dropped while locked.")
@@ -776,6 +826,8 @@ class UnifiedPushReceiver : MessagingReceiver() {
       }
       return
     }
+
+    recoverInterruptedV4Promotion(context)
 
     // A retained pairing import must not be promoted by another status code that reuses its identity.
     // The exact enrollment confirmation is handled by the pairing restoration path below.
@@ -887,14 +939,42 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
               LockedPushState.setEncryptedEnrollment(context, true)
               LockedPushState.setProtectedPairingRoute(context, registration.instance, registration.distributorId)
-              PairingDistributorRegistration.promote(context, registration)
+              val connectorPromotionComplete = PairingDistributorRegistration.promote(context, registration)
               PairingRegistrationGate.promote(registration.instance)
-              LockedPushState.clearPairingConfirmation(context, registration.sessionId)
+              if (connectorPromotionComplete) LockedPushState.clearPairingConfirmation(context, registration.sessionId)
               accepted
             }
           }
         }
       } catch (_: Exception) { null }
+      if (handling == null) {
+        // The transition may have advanced the lifecycle generation before a persistence failure. Keep the exact
+        // durable approval, but move only its still-pending in-memory gate to the new generation so a retry can run.
+        synchronized(UnifiedPushLifecycle.monitor) {
+          val values = SignalStore.unifiedpush
+          val pending = ReceiverControlState.parse(values.v4PendingReceiverState)
+          val confirmation = LockedPushState.peekPairingConfirmation(context)
+          val generation = UnifiedPushLifecycle.currentGeneration()
+          val exactPending = pending?.let {
+            import.receiverId != null && it.receiverId == import.receiverId && it.importId == import.requestId &&
+              it.accountId == import.accountId && it.instance == import.instance && it.epoch == import.epoch &&
+              it.target == Target(import.endpoint, import.p256dh, import.auth) && !it.confirmed
+          } == true
+          val exactConsent = confirmation?.let {
+            it.sessionId == registration.sessionId && it.receiverId == import.receiverId &&
+              it.importId == import.requestId && it.instance == import.instance && it.epoch == import.epoch &&
+              System.currentTimeMillis() / 1000 < it.expiresAt
+          } == true
+          if (generation != registration.lifecycleGeneration && !UnifiedPushLifecycle.isTransitionInProgressLocked() &&
+            PairingRegistrationGate.current()?.binding == registration && exactPending && exactConsent &&
+            RelayDisclosure.matchesDuringTransition(registration.disclosure) &&
+            registration.matchesDistributorSelection(UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context)) &&
+            PairingRegistrationGate.rebindLifecycleGeneration(registration, import, generation)) {
+            Log.w(TAG, "Retained the exact pairing approval after a failed route transition; it can be retried.")
+          }
+        }
+        return
+      }
       if (handling != null) {
         SignalExecutors.BOUNDED.execute {
           org.thoughtcrime.securesms.ApplicationContext.getInstance(context).activatePushNotificationServicesAfterPairing()
@@ -1051,7 +1131,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
         val scopedPairingRoute = values.pairingEndpointBinding?.instance == instance
         val pendingOnlyRoute = pendingReceiver != null && !legacyOwnsRoute && receiver == null && !scopedPairingRoute
         val encryptedRoute = active > 0 && legacyOwnsRoute || scopedPairingRoute || receiver != null || pendingOnlyRoute
-        LockedPushState.setEncryptedEnrollment(context, active > 0 || scopedPairingRoute || receiver != null || pendingReceiver != null)
+        LockedPushState.setEncryptedEnrollment(context, active > 0 || scopedPairingRoute || receiver != null)
         if ((encryptedRoute && (receiver != null || pendingReceiver != null || scopedPairingRoute) || scopedPairingRoute && pending <= 0 && active <= 0) && !EncryptedPush.isEventShaped(message.content)) {
           return@synchronized MessageHandling(drop = true)
         }

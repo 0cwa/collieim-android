@@ -228,6 +228,7 @@ class PushHealthActionsTest {
     every { aci.toString() } returns accountId
     every { SignalStore.account.aci } returns aci
     every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.isUnauthorizedReceived } returns false
     every { SignalStore.account.hasAciIdentityKey() } returns true
     every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
     every { SignalStore.account.deviceId } returns 3
@@ -373,6 +374,66 @@ class PushHealthActionsTest {
     assertTrue("the route changed during final timeout diagnosis", replacedAtDiagnosis)
     assertEquals("a replacement route receives no stale verdict", 0L, health.lastResultAt)
     assertEquals(replacement.importId, ReceiverControlState.parse(values.v4ReceiverState)?.importId)
+  }
+
+  @Test
+  fun `queued v4 fallback rechecks the exact receiver route before switching modes`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val endpoint = "https://push.example.invalid/linked"
+    val importId = "22222222-2222-4222-8222-222222222222"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.isUnauthorizedReceived } returns false
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.enabled = true
+
+    fun receiver(import: String) = ReceiverControlState(
+      "33333333-3333-4333-8333-333333333333", import, accountId, 2, instance,
+      hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(endpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    fun installRoute(state: ReceiverControlState) {
+      values.setPairingEndpointRegistration(
+        endpoint, fixtureP256dh, fixtureAuth,
+        UnifiedPushValues.PairingEndpointBinding(
+          instance, "org.collie.pack", "fixture-vapid", "https://push.example.invalid",
+          "https://push.example.invalid", "44444444-4444-4444-8444-444444444444", System.currentTimeMillis() / 1000 + 600,
+          accountId, 3, "Fixture host", state.importId,
+        ),
+      )
+      values.v4ReceiverState = state.serialize()
+    }
+    installRoute(receiver(importId))
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.initializeFromSignalStore()
+    UnifiedPushHealthJob.distributorActive = { false }
+    inline = false
+    health.failures = 1
+    health.fallback = false
+    val job = UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    )
+
+    job.onRun()
+    assertEquals("one mode change is queued for the observed receiver", 1, queued.size)
+    installRoute(receiver("55555555-5555-4555-8555-555555555555"))
+    queued.removeAt(0).run()
+    assertEquals("the stale receiver cannot switch the replacement to WebSocket", ForceWebsocketMode.DISABLED_AUTOMATICALLY, mode)
+    assertEquals(0, resets)
+
+    health.failures = 1
+    health.fallback = false
+    job.onRun()
+    assertEquals(1, queued.size)
+    queued.removeAt(0).run()
+    assertEquals("a fallback for the still-current receiver remains valid", ForceWebsocketMode.ENABLED_AUTOMATICALLY, mode)
+    assertEquals(1, resets)
   }
 
   // --- B2: pushes dropped while locked are still pushes ---

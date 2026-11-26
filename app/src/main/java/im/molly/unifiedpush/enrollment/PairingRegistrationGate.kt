@@ -164,6 +164,26 @@ object PairingRegistrationGate {
     true
   }
 
+  /** Rebinds the same durable candidate after an aborted lifecycle transition advanced its generation. */
+  internal fun rebindLifecycleGeneration(
+    expectedBinding: Binding,
+    expectedIdentity: ImportBinding,
+    generation: Long,
+  ): Boolean = synchronized(lock) {
+    val active = pending?.takeIf { it.binding == expectedBinding } ?: return@synchronized false
+    if (active.importBinding != expectedIdentity || active.claimedEndpoint?.instance != expectedBinding.instance ||
+      System.currentTimeMillis() / 1000 >= expectedBinding.expiresAt) return@synchronized false
+    val replacement = Pending(expectedBinding.copy(lifecycleGeneration = generation), active.onComplete).also {
+      it.claimedEndpoint = active.claimedEndpoint
+      it.completionDelivered = active.completionDelivered
+      it.bufferedEndpoint = active.bufferedEndpoint
+      it.bufferedUnregistration = active.bufferedUnregistration
+      it.importBinding = active.importBinding
+    }
+    pending = replacement
+    true
+  }
+
   /** Admission before the reducer still checks the saved distributor and Signal account. */
   fun allowsCandidateConfirmation(
     instance: String,

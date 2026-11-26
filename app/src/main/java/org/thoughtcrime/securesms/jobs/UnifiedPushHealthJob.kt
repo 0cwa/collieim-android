@@ -241,8 +241,37 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
       } else if (live.pendingEpoch != attempted.pendingEpoch ||
         live.pendingFrame?.contentEquals(attempted.pendingFrame ?: byteArrayOf()) != true ||
         live.pendingTarget != attempted.pendingTarget) return
-      // onPing records its verdict synchronously before dispatching its UI/network effects.
-      PushHealthActions.onPing(hop)
+      // Pin a queued mode change to this verdict too; the connector may be replaced after this job returns.
+      val expectedPairing = pairing
+      PushHealthActions.onPing(hop) { outcome, applyModeChange ->
+        synchronized(UnifiedPushLifecycle.monitor) {
+          val currentHealth = values.health
+          if (currentHealth.failures != outcome.failures ||
+            outcome.enteredFallback && !currentHealth.fallback || outcome.leftFallback && currentHealth.fallback ||
+            !UnifiedPushLifecycle.isCurrentGeneration(generation)) return@synchronized false
+          val current = ReceiverControlState.parse(values.v4ReceiverState) ?: return@synchronized false
+          val currentAccount = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized false
+          val currentPairing = values.pairingEndpointBinding
+          if (current.receiverId != observed.receiverId || current.importId != observed.importId ||
+            current.bridgeDeviceId != observed.bridgeDeviceId || current.controlKey != observed.controlKey ||
+            current.accountId != observed.accountId || current.instance != observed.instance || !current.confirmed ||
+            currentAccount.accountId != observed.accountId || currentAccount.instance != observed.instance ||
+            values.endpoint != target.endpoint || values.endpointP256dh.orEmpty() != target.p256dh ||
+            values.endpointAuth.orEmpty() != target.auth || (values.endpointInstance ?: "default") != current.instance ||
+            currentPairing != expectedPairing ||
+            SignalStore.settings.preferredNotificationMethod != org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
+            !values.enabled || expectedPairing != null && (expectedPairing.importId != current.importId ||
+              expectedPairing.accountId != current.accountId || expectedPairing.instance != current.instance ||
+              expectedPairing.deviceId != currentAccount.localDeviceId)) return@synchronized false
+          if (attempted == null) {
+            if (current.serialize() != observed.serialize()) return@synchronized false
+          } else if (current.pendingEpoch != attempted.pendingEpoch ||
+            current.pendingFrame?.contentEquals(attempted.pendingFrame ?: byteArrayOf()) != true ||
+            current.pendingTarget != attempted.pendingTarget) return@synchronized false
+          applyModeChange()
+          true
+        }
+      }
     }
   }
 

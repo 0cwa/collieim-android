@@ -70,6 +70,32 @@ internal fun pairingConfirmationScopeMatches(
     UnifiedPush.getAckDistributor(context) == selected && selected in UnifiedPush.getDistributors(context)
 }
 
+/** Check the durable consent and route shared by restart recovery and refresh admission. */
+internal fun isRestorableV4Pairing(
+  context: Context,
+  scope: RelayDisclosure.Snapshot,
+  receiver: ReceiverControlState,
+  confirmation: LockedPushState.PairingConfirmation,
+): Boolean {
+  check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+  val account = scope.account
+  val selected = scope.configuration.distributor ?: return false
+  if (receiver.confirmed || receiver.accountId != account.accountId || receiver.instance != confirmation.instance ||
+    receiver.receiverId != confirmation.receiverId || receiver.importId != confirmation.importId || receiver.epoch != confirmation.epoch ||
+    System.currentTimeMillis() / 1000 >= confirmation.expiresAt || confirmation.scopeDigest != RelayDisclosure.pairingScopeDigest(scope) ||
+    UnifiedPush.getSavedDistributor(context) != selected || UnifiedPush.getAckDistributor(context) != selected ||
+    confirmation.distributor !in UnifiedPush.getDistributors(context)) return false
+  val origin = PairingV1.canonicalOrigin(receiver.target.endpoint) ?: return false
+  if (confirmation.providerOrigin != null && origin != confirmation.providerOrigin) return false
+  if (receiver.instance != account.instance) return PairingRegistrationGate.isPairingInstance(receiver.instance)
+  if (confirmation.distributor != selected || SignalStore.unifiedpush.vapidPublicKey != confirmation.vapid) return false
+  return try {
+    receiver.target.matches(ControlFrame.Subscription(account.endpoint ?: return false, account.endpointP256dh.orEmpty(), account.endpointAuth.orEmpty()))
+  } catch (_: EnrollmentFile.Invalid) {
+    false
+  }
+}
+
 /** A v4 candidate isolates legacy refresh only while its exact saved confirmation can still be restored. */
 internal fun hasLivePendingV4PairingConfirmation(context: Context): Boolean {
   check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
@@ -108,17 +134,8 @@ internal fun hasLivePendingV4PairingConfirmation(context: Context): Boolean {
     RelayDisclosure.matchesDuringTransition(snapshot)
   if (candidateRouteIsLive) return true
 
-  // A candidate registration intentionally leaves the previously acknowledged distributor selected
-  // until the authenticated import promotes the isolated route. Validate against that retained scope.
-  // For a reused route there is no isolated candidate, so its selected distributor remains strict.
   val scope = if (candidate != null) snapshot ?: return false else RelayDisclosure.capture(context) ?: return false
-  val selected = scope.configuration.distributor
-  val live = confirmation != null && System.currentTimeMillis() / 1000 < confirmation.expiresAt &&
-    scope.account.accountId == pending.accountId && selected != null && confirmation.distributor == selected &&
-    confirmation.scopeDigest == RelayDisclosure.pairingScopeDigest(scope) &&
-    UnifiedPush.getSavedDistributor(context) == selected && UnifiedPush.getAckDistributor(context) == selected &&
-    selected in UnifiedPush.getDistributors(context)
-  if (live) return true
+  if (candidate == null && confirmation != null && isRestorableV4Pairing(context, scope, pending, confirmation)) return true
 
   // The confirmation no longer authorizes this exact pending identity. Clear only that candidate and preserve the
   // already active receiver route and legacy enrollment state.

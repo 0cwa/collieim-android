@@ -152,6 +152,16 @@ class UnifiedPushRefreshJobTest {
   }
 
   @Test
+  fun `persisted isolated replacement protects refresh before receiver restoration`() {
+    assertIsolatedReplacementProtection(afterRestart = true)
+  }
+
+  @Test
+  fun `persisted candidate releases refresh after retained distributor changes`() {
+    assertIsolatedReplacementProtection(wrongDistributor = true, afterRestart = true)
+  }
+
+  @Test
   fun `expired isolated confirmation releases refresh and retires only the candidate`() {
     assertIsolatedReplacementProtection(expired = true)
   }
@@ -160,6 +170,7 @@ class UnifiedPushRefreshJobTest {
     wrongDistributor: Boolean = false,
     fresh: Boolean = false,
     expired: Boolean = false,
+    afterRestart: Boolean = false,
   ) {
     val context = ApplicationProvider.getApplicationContext<Application>()
     val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
@@ -286,6 +297,7 @@ class UnifiedPushRefreshJobTest {
       assertEquals(candidateAuth, gateCandidate.importBinding?.auth)
 
       val refresh = newRefreshJob()
+      if (afterRestart) PairingRegistrationGate.cancel(binding.instance)
       if (wrongDistributor) {
         savedDistributor = "org.example.distributor.wrong"
         ackDistributor = "org.example.distributor.wrong"
@@ -309,6 +321,7 @@ class UnifiedPushRefreshJobTest {
       assertEquals("the previously selected route remains active before confirmation", oldEndpoint, endpoint)
       assertEquals(oldDistributor, savedDistributor)
       assertEquals(oldDistributor, ackDistributor)
+      if (afterRestart) return
 
       // Model the exact authenticated enrollment_imported commit: install B, confirm this identity, and retire its gate.
       val origin = checkNotNull(im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(candidateEndpoint))

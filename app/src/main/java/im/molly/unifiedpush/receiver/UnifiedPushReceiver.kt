@@ -14,6 +14,7 @@ import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.components.settings.app.notifications.isRestorableV4Pairing
 import im.molly.unifiedpush.components.settings.app.notifications.pairingConfirmationScopeMatches
 import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.enrollment.EnrollmentFile
@@ -705,39 +706,29 @@ class UnifiedPushReceiver : MessagingReceiver() {
       val pending = matchingPairingConfirmation(context, message, instance) ?: return
       val scope = RelayDisclosure.capture(context) ?: return
       val previousDistributor = scope.configuration.distributor ?: return
+      val account = scope.account
+      if (pending.receiverId != null) {
+        val receiver = ReceiverControlState.parse(SignalStore.unifiedpush.v4PendingReceiverState) ?: return
+        if (!isRestorableV4Pairing(context, scope, receiver, pending)) return
+        val target = receiver.target
+        val binding = PairingRegistrationGate.Binding(
+          instance, pending.distributor, pending.vapid, pending.providerOrigin, pending.sessionId, pending.expiresAt,
+          account.accountId, account.localDeviceId, scope.generation, account.endpoint, account.endpointP256dh,
+          account.endpointAuth, account.instance, pending.hostLabel, previousDistributor, disclosure = scope,
+        )
+        PairingRegistrationGate.restore(
+          binding,
+          PairingRegistrationGate.Endpoint(target.endpoint, target.p256dh, target.auth, instance),
+          PairingRegistrationGate.ImportBinding(
+            receiver.importId, "", receiver.epoch, target.endpoint, target.p256dh, target.auth,
+            account.accountId, account.localDeviceId, instance, receiver.receiverId,
+          ),
+        )
+        return
+      }
       if (RelayDisclosure.pairingScopeDigest(scope) != pending.scopeDigest ||
         UnifiedPush.getAckDistributor(context) != previousDistributor ||
         pending.distributor !in UnifiedPush.getDistributors(context)) return
-      val account = scope.account
-    if (pending.receiverId != null) {
-      val receiver = ReceiverControlState.parse(SignalStore.unifiedpush.v4PendingReceiverState) ?: return
-      if (receiver.receiverId != pending.receiverId || receiver.importId != pending.importId ||
-        receiver.epoch != pending.epoch || receiver.accountId != account.accountId || receiver.instance != instance) return
-      val target = receiver.target
-      val origin = PairingV1.canonicalOrigin(target.endpoint) ?: return
-      if (pending.providerOrigin != null && origin != pending.providerOrigin) return
-      if (!PairingRegistrationGate.isPairingInstance(instance)) {
-        val current = try {
-          ControlFrame.Subscription(account.endpoint ?: return, account.endpointP256dh.orEmpty(), account.endpointAuth.orEmpty())
-        } catch (_: EnrollmentFile.Invalid) { return }
-        if (instance != account.instance || pending.distributor != previousDistributor || !target.matches(current) ||
-          SignalStore.unifiedpush.vapidPublicKey != pending.vapid) return
-      }
-      val binding = PairingRegistrationGate.Binding(
-        instance, pending.distributor, pending.vapid, pending.providerOrigin, pending.sessionId, pending.expiresAt,
-        account.accountId, account.localDeviceId, scope.generation, account.endpoint, account.endpointP256dh,
-        account.endpointAuth, account.instance, pending.hostLabel, previousDistributor, disclosure = scope,
-      )
-      PairingRegistrationGate.restore(
-        binding,
-        PairingRegistrationGate.Endpoint(target.endpoint, target.p256dh, target.auth, instance),
-        PairingRegistrationGate.ImportBinding(
-          receiver.importId, "", receiver.epoch, target.endpoint, target.p256dh, target.auth,
-          account.accountId, receiver.bridgeDeviceId, instance, receiver.receiverId,
-        ),
-      )
-      return
-    }
       val bridge = account.pushDevice ?: return
       val intent = scope.intents.firstOrNull {
         it.eligible && it.requestId == pending.importId && it.keyId == pending.keyId && it.epoch == pending.epoch &&

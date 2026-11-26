@@ -166,7 +166,7 @@ class AppSettingsNavigationDeviceTest {
   fun stableCollieSettingsAndProjectLogAreVisibleWithoutBetaFeatures() {
     val context = harness.context
     ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(context)).use { scenario ->
-      awaitNode(AppSettingsTestTags.ROW_COLLIE)
+      awaitNode(AppSettingsTestTags.SCROLLER)
       withScreenSecurityTemporarilyDisabled(scenario) {
         compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_COLLIE))
         compose.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).performClick()
@@ -176,14 +176,19 @@ class AppSettingsNavigationDeviceTest {
         compose.onNodeWithTag(CollieSettingsTestTags.SECTION_GROUP_PRIVACY).assertDoesNotExist()
         compose.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertDoesNotExist()
         captureScreenshot(scenario, "stable-collie-settings")
+      }
+    }
 
-        compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_HELP))
-        compose.onNodeWithTag(AppSettingsTestTags.ROW_HELP).performClick()
-        awaitNode(HelpSettingsTestTags.ROW_PROJECT_LOG)
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.help(context)).use { scenario ->
+      awaitNode(HelpSettingsTestTags.SCROLLER)
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        compose.onNodeWithTag(HelpSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(HelpSettingsTestTags.ROW_PROJECT_LOG))
         compose.onNodeWithTag(HelpSettingsTestTags.ROW_PROJECT_LOG).performClick()
+        val projectLogIntro = context.getString(R.string.CollieLog__intro)
         compose.waitUntil(15_000) {
-          compose.onAllNodesWithText("Project log").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+          compose.onAllNodesWithText(projectLogIntro).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
+        compose.onNodeWithText(projectLogIntro).assertIsDisplayed()
         captureScreenshot(scenario, "stable-project-log")
       }
     }

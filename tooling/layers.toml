@@ -179,6 +179,10 @@ about = "Name collision warnings"
 kind = "feature"
 about = "Theme propagation across screens"
 
+[layers.user-theming]
+kind = "feature"
+about = "Built-in color palettes: selection, persistence, generation and theme application"
+
 [layers.system-bars]
 kind = "feature"
 about = "System bar colors and insets"

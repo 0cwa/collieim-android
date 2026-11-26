@@ -2,6 +2,8 @@
 <resources>
     <attr name="theme_type" format="string"/>
     <attr name="dynamic_colors" format="boolean"/>
+    <!-- Built-in palette ID applied by a palette theme overlay; absent for Collie and System. -->
+    <attr name="collie_palette" format="string"/>
     <attr name="signal_accent_primary" format="color"/>
     <attr name="extended_action_button_container_color" format="color"/>
     <attr name="extended_action_button_icon_color" format="color"/>

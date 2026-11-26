@@ -11,6 +11,7 @@ import im.molly.unifiedpush.enrollment.PairingV1
 import im.molly.unifiedpush.enrollment.PairingTransport
 import okhttp3.HttpUrl
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
@@ -102,13 +103,13 @@ internal class PairingV1Coordinator(private val context: Context) {
   /** Capture the complete destination shown in consent, including the live subscription and distributor. */
   fun consentDetails(offer: PairingV1.Offer): ConsentDetails? = synchronized(UnifiedPushLifecycle.monitor) {
     if (!isUsableAccountLocked()) return@synchronized null
-    val distributorId = UnifiedPush.getSavedDistributor(context) ?: return@synchronized null
-    val ack = UnifiedPush.getAckDistributor(context)
-    if (ack != distributorId || !UnifiedPushDistributor.checkIfActive()) return@synchronized null
     val tentative = PairingRegistrationGate.current()?.takeIf {
       it.binding.sessionId == offer.sessionId && it.binding.vapidPublicKey == offer.vapidPublicKey &&
         it.binding.providerOrigin == offer.providerOrigin && it.claimedEndpoint != null && pairingScopeMatchesLocked(it.binding)
     }
+    val distributorId = tentative?.binding?.distributorId
+      ?: UnifiedPush.getAckDistributor(context)?.takeIf { it == UnifiedPush.getSavedDistributor(context) }
+      ?: return@synchronized null
     val endpoint = tentative?.claimedEndpoint?.url ?: SignalStore.unifiedpush.endpoint ?: return@synchronized null
     val origin = PairingV1.canonicalOrigin(endpoint) ?: return@synchronized null
     if (offer.providerOrigin != null && offer.providerOrigin != origin) return@synchronized null
@@ -131,7 +132,9 @@ internal class PairingV1Coordinator(private val context: Context) {
     }
     if (!isUsableAccountLocked()) return@synchronized OfferPlan.Failed(context.getString(R.string.PairingV1__endpoint_unavailable))
     if (isPromotedOfferLocked(offer)) return@synchronized OfferPlan.Failed(context.getString(R.string.PairingV1__offer_used))
-    consentDetails(offer)?.let { return@synchronized OfferPlan.Ready(it) }
+    consentDetails(offer)?.takeIf { selectedDistributor == null || it.distributorId == selectedDistributor }?.let {
+      return@synchronized OfferPlan.Ready(it)
+    }
     val distributors = UnifiedPush.getDistributors(context)
     val values = SignalStore.unifiedpush
     val endpoint = values.endpoint
@@ -170,10 +173,10 @@ internal class PairingV1Coordinator(private val context: Context) {
     val current = RelayDisclosure.runIfCurrent(snapshot) {
       synchronized(UnifiedPushLifecycle.monitor) {
         if (System.currentTimeMillis() / 1000 >= details.offer.expiresAt) return@synchronized
-        if (!isUsableAccountLocked() || UnifiedPush.getSavedDistributor(context) != details.distributorId ||
-          details.distributorId !in UnifiedPush.getDistributors(context)) return@synchronized
+        val previousDistributor = snapshot.configuration.distributor ?: return@synchronized
+        if (!isUsableAccountLocked() || details.distributorId !in UnifiedPush.getDistributors(context)) return@synchronized
         val origin = SignalStore.unifiedpush.endpoint?.let { PairingV1.canonicalOrigin(it) }
-        if (details.offer.providerOrigin != null && SignalStore.unifiedpush.endpoint != null &&
+        if (previousDistributor == details.distributorId && details.offer.providerOrigin != null && SignalStore.unifiedpush.endpoint != null &&
           UnifiedPushDistributor.checkIfActive() && origin != null && origin != details.offer.providerOrigin) return@synchronized
         eligible = true
       }
@@ -191,6 +194,7 @@ internal class PairingV1Coordinator(private val context: Context) {
               val endpoint = SignalStore.unifiedpush.endpoint
               val origin = endpoint?.let { PairingV1.canonicalOrigin(it) }
               val config = snapshot.configuration
+              val previousDistributor = config.distributor ?: return@synchronized false
               val account = UnifiedPushAccountTransition.captureContextLocked()
               val approvedAccount = snapshot.account
               val accountCurrent = account != null && account.accountId == approvedAccount.accountId &&
@@ -205,13 +209,16 @@ internal class PairingV1Coordinator(private val context: Context) {
                 SignalStore.unifiedpush.mollySocketUrl == config.url &&
                 SignalStore.unifiedpush.vapidPublicKey == config.vapid &&
                 SignalStore.settings.preferredNotificationMethod == config.deliveryMethod &&
-                config.distributor == details.distributorId && UnifiedPush.getSavedDistributor(context) == details.distributorId
-              val providerCurrent = details.offer.providerOrigin == null || endpoint == null ||
+                UnifiedPush.getSavedDistributor(context) == previousDistributor
+              val providerCurrent = previousDistributor != details.distributorId || details.offer.providerOrigin == null || endpoint == null ||
                 !UnifiedPushDistributor.checkIfActive() || origin == details.offer.providerOrigin
+              val acknowledged = UnifiedPush.getAckDistributor(context)
+              val distributorCurrent = if (previousDistributor == details.distributorId) {
+                acknowledged == null || acknowledged == previousDistributor
+              } else endpoint != null && acknowledged == previousDistributor
               if (registeringSessionId != details.offer.sessionId ||
                 System.currentTimeMillis() / 1000 >= details.offer.expiresAt || !accountCurrent || !configCurrent ||
-                !providerCurrent || details.distributorId !in UnifiedPush.getDistributors(context) ||
-                (UnifiedPush.getAckDistributor(context)?.let { it != details.distributorId } == true)) {
+                !providerCurrent || !distributorCurrent || details.distributorId !in UnifiedPush.getDistributors(context)) {
                 false
               } else {
                 val created = PairingRegistrationGate.begin(
@@ -224,20 +231,16 @@ internal class PairingV1Coordinator(private val context: Context) {
                   previousP256dh = SignalStore.unifiedpush.endpointP256dh,
                   previousAuth = SignalStore.unifiedpush.endpointAuth,
                   previousInstance = SignalStore.unifiedpush.endpointInstance ?: "default",
+                  previousDistributorId = previousDistributor,
                   onComplete = onComplete,
                 ) ?: return@synchronized false
                 registration = created
                 try {
-                  UnifiedPush.registerApp(
-                    context,
-                    created.instance,
-                    "CollieSocket pairing ${details.offer.hostLabel}",
-                    created.vapidPublicKey,
-                  )
+                  PairingDistributorRegistration.register(context, created)
                   true
                 } catch (_: Exception) {
                   PairingRegistrationGate.fail(created.instance)
-                  unregisterCandidateIfOwned(created.instance, created.distributorId)
+                  discardCandidate(created)
                   false
                 }
               }
@@ -248,7 +251,7 @@ internal class PairingV1Coordinator(private val context: Context) {
       } catch (_: Exception) {
         registration?.let {
           PairingRegistrationGate.fail(it.instance)
-          unregisterCandidateIfOwned(it.instance, it.distributorId)
+          discardCandidate(it)
         } ?: onComplete(Result.failure(IllegalStateException("Pairing registration could not start")))
       }
     }
@@ -490,8 +493,7 @@ internal class PairingV1Coordinator(private val context: Context) {
               values.endpoint == binding.previousEndpoint && values.endpointP256dh == binding.previousP256dh &&
               values.endpointAuth == binding.previousAuth && (values.endpointInstance ?: "default") == binding.previousInstance &&
               SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId &&
-              UnifiedPush.getSavedDistributor(context) == binding.distributorId &&
-              UnifiedPush.getAckDistributor(context) == binding.distributorId
+              binding.matchesDistributorSelection(UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context))
             if (routeStillMatches && hasExactLocalImportLocked(session)) {
               val origin = PairingV1.canonicalOrigin(endpoint.url)
               if (origin != null) {
@@ -507,6 +509,8 @@ internal class PairingV1Coordinator(private val context: Context) {
                   org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
                 LockedPushState.setEncryptedEnrollment(context, true)
                 LockedPushState.setProtectedPairingRoute(context, binding.instance, binding.distributorId)
+                PairingDistributorRegistration.promote(context, binding)
+                PairingRegistrationGate.promote(binding.instance)
                 true
               } else false
             } else false
@@ -515,7 +519,6 @@ internal class PairingV1Coordinator(private val context: Context) {
       }
     } catch (_: Exception) { false }
     if (promoted) {
-      PairingRegistrationGate.promote(binding.instance)
       activateUnifiedPushAfterPromotion()
     }
     return promoted
@@ -629,7 +632,7 @@ internal class PairingV1Coordinator(private val context: Context) {
     val attempt = PairingRegistrationGate.current()?.takeIf { !requestDispatched && it.binding.sessionId == registeringSessionId }
     if (attempt != null) {
       PairingRegistrationGate.cancel(attempt.binding.instance)
-      unregisterCandidateIfOwned(attempt.binding.instance, attempt.binding.distributorId)
+      discardCandidate(attempt.binding)
     }
     registeringSessionId = null
     requestDispatched = false
@@ -640,7 +643,7 @@ internal class PairingV1Coordinator(private val context: Context) {
     if (registeringSessionId == sessionId) registeringSessionId = null
     PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == sessionId }?.let { attempt ->
       PairingRegistrationGate.cancel(attempt.binding.instance)
-      unregisterCandidateIfOwned(attempt.binding.instance, attempt.binding.distributorId)
+      discardCandidate(attempt.binding)
     }
     if (activeSession?.offer?.sessionId == sessionId) {
       activeSession?.sealed?.receiptKey?.fill(0)
@@ -670,11 +673,11 @@ internal class PairingV1Coordinator(private val context: Context) {
   private fun sessionBindingMatchesLocked(session: Session, duringTransition: Boolean = false): Boolean {
     val usableAccount = if (duringTransition) isUsableAccountDuringTransitionLocked() else isUsableAccountLocked()
     if (!usableAccount || SignalStore.account.aci?.toString() != session.accountId ||
-      SignalStore.account.deviceId != session.deviceId || !hasOfferVapidBindingLocked(session.offer, session.distributorId) ||
-      UnifiedPush.getSavedDistributor(context) != session.distributorId ||
-      UnifiedPush.getAckDistributor(context) != session.distributorId || !UnifiedPushDistributor.checkIfActive()) return false
+      SignalStore.account.deviceId != session.deviceId || !hasOfferVapidBindingLocked(session.offer, session.distributorId)) return false
     val values = SignalStore.unifiedpush
     val tentative = PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == session.offer.sessionId }
+    if (tentative == null && (UnifiedPush.getSavedDistributor(context) != session.distributorId ||
+        UnifiedPush.getAckDistributor(context) != session.distributorId)) return false
     val endpoint = tentative?.claimedEndpoint?.url ?: values.endpoint ?: return false
     val p256dh = tentative?.claimedEndpoint?.p256dh ?: values.endpointP256dh ?: return false
     val auth = tentative?.claimedEndpoint?.auth ?: values.endpointAuth ?: return false
@@ -747,16 +750,12 @@ internal class PairingV1Coordinator(private val context: Context) {
       values.endpoint == binding.previousEndpoint && values.endpointP256dh == binding.previousP256dh &&
       values.endpointAuth == binding.previousAuth && (values.endpointInstance ?: "default") == binding.previousInstance &&
       account.accountId == binding.accountId && account.localDeviceId == binding.deviceId &&
-      UnifiedPush.getSavedDistributor(context) == binding.distributorId &&
-      UnifiedPush.getAckDistributor(context) == binding.distributorId
+      binding.matchesDistributorSelection(UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context))
   }
 
-  /** The connector instance overload addresses the saved distributor, so serialize ownership checking with it. */
-  private fun unregisterCandidateIfOwned(instance: String, distributorId: String) {
+  private fun discardCandidate(binding: PairingRegistrationGate.Binding) {
     synchronized(UnifiedPushLifecycle.monitor) {
-      if (UnifiedPush.getSavedDistributor(context) == distributorId) {
-        runCatching { UnifiedPush.unregisterApp(context, instance) }
-      }
+      PairingDistributorRegistration.discard(context, binding)
     }
   }
 

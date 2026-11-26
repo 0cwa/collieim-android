@@ -3,7 +3,10 @@ package im.molly.unifiedpush.receiver
 import android.app.Application
 import android.app.Notification
 import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
+import im.molly.unifiedpush.components.settings.app.notifications.PairingV1Coordinator
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import io.mockk.clearMocks
@@ -68,6 +71,9 @@ import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
+import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.enrollment.PairingV1
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import org.signal.core.models.ServiceId
@@ -660,6 +666,82 @@ class UnifiedPushReceiverTest {
       verify(exactly = 1) { UnifiedPush.saveDistributor(context, "distributor.b") }
       verify(exactly = 2) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
     } finally {
+      unmockkStatic(UnifiedPush::class)
+    }
+  }
+
+  @Test
+  fun `cancelled pairing migration leaves the previous distributor and endpoint active`() {
+    assertPairingMigrationRollback { binding ->
+      PairingV1Coordinator(context).cancelOfferAttempt(binding.sessionId)
+    }
+  }
+
+  @Test
+  fun `failed pairing migration leaves the previous distributor and endpoint active`() {
+    assertPairingMigrationRollback { binding ->
+      UnifiedPushReceiver().onRegistrationFailed(context, FailedReason.NETWORK, binding.instance)
+    }
+  }
+
+  private fun assertPairingMigrationRollback(cancel: (PairingRegistrationGate.Binding) -> Unit) {
+    val oldDistributor = "org.example.old"
+    val newDistributor = "org.example.new"
+    val oldEndpoint = "https://old.example.test/push"
+    val oldInstance = "pairing-v1-old"
+    val oldBinding = UnifiedPushValues.PairingEndpointBinding(
+      oldInstance, oldDistributor, "old-vapid", null, "https://old.example.test",
+      "old-session", Long.MAX_VALUE, "account-aci", 1, "Old relay",
+    )
+    values.setPairingEndpointRegistration(oldEndpoint, "old-key", "old-auth", oldBinding)
+    val fixture = checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json"))
+    val offerJson = fixture.use { com.fasterxml.jackson.databind.ObjectMapper().readTree(it)[0]["offer"] }
+    val offer = PairingV1.parseOffer(offerJson.toString(), 1_799_999_999L)
+    val binding = checkNotNull(PairingRegistrationGate.begin(
+      newDistributor, offer, "account-aci", 1,
+      previousEndpoint = oldEndpoint, previousP256dh = "old-key", previousAuth = "old-auth",
+      previousInstance = oldInstance, previousDistributorId = oldDistributor,
+    ) { })
+
+    val registerAction = "org.unifiedpush.android.distributor.REGISTER"
+    val unregisterAction = "org.unifiedpush.android.distributor.UNREGISTER"
+    mockkStatic(UnifiedPush::class)
+    try {
+      every { UnifiedPush.getSavedDistributor(context) } returns oldDistributor
+      every { UnifiedPush.getAckDistributor(context) } returns oldDistributor
+      every { UnifiedPush.registerApp(any(), binding.instance, any(), binding.vapidPublicKey) } answers {
+        firstArg<Context>().sendBroadcast(Intent(registerAction).setPackage(oldDistributor))
+      }
+      every { UnifiedPush.unregisterApp(any(), binding.instance) } answers {
+        firstArg<Context>().sendBroadcast(Intent(unregisterAction).setPackage(oldDistributor))
+      }
+
+      PairingDistributorRegistration.register(context, binding)
+      verify(exactly = 0) { UnifiedPush.unregisterApp(any(), any()) }
+      val candidate = PairingRegistrationGate.Endpoint(
+        "https://push.example.test/send/candidate", "candidate-key", "candidate-auth", binding.instance,
+      )
+      assertNotNull(PairingRegistrationGate.claim(
+        binding.instance, oldDistributor, oldDistributor, binding.accountId, binding.deviceId, candidate,
+      ))
+      assertTrue(PairingRegistrationGate.allowsMessageCallback(oldInstance, oldInstance, registrationPending = true))
+
+      cancel(binding)
+
+      assertEquals(oldBinding, values.pairingEndpointBinding)
+      assertEquals(oldEndpoint, values.endpoint)
+      assertEquals("old-key", values.endpointP256dh)
+      assertEquals("old-auth", values.endpointAuth)
+      assertNull(PairingRegistrationGate.current())
+      verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
+      verify(exactly = 0) { UnifiedPush.unregisterApp(any(), oldInstance) }
+      assertEquals(
+        listOf(registerAction to newDistributor, unregisterAction to newDistributor),
+        shadowOf(context).broadcastIntents.filter { it.action == registerAction || it.action == unregisterAction }
+          .map { it.action to it.`package` },
+      )
+    } finally {
+      PairingRegistrationGate.cancel(binding.instance)
       unmockkStatic(UnifiedPush::class)
     }
   }

@@ -100,6 +100,7 @@
     <string name="NotificationsSettingsFragment__mollysocket_server">MollySocket or CollieSocket server</string>
     <string name="UnifiedPushSettingsFragment__none_available">None available</string>
     <string name="UnifiedPushSettingsFragment__distributor_app">Distributor app</string>
+    <string name="PairingV1__scan_to_switch_distributor">Scan a pairing QR code to switch distributors. Your current distributor stays connected until pairing succeeds.</string>
     <string name="UnifiedPushSettingsFragment__status">Status</string>
     <string name="UnifiedPushSettingsFragment__tap_to_copy_to_clipboard">Tap to copy to clipboard</string>
     <string name="UnifiedPushSettingsFragment__server_parameters">Server parameters</string>

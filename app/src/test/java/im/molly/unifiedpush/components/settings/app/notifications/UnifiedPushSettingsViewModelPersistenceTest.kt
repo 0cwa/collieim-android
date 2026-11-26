@@ -92,6 +92,38 @@ class UnifiedPushSettingsViewModelPersistenceTest {
   }
 
   @Test
+  fun `choosing a replacement for a paired route stages the distributor until the next QR`() {
+    val previous = "org.example.old"
+    val replacement = "org.example.new"
+    val endpoint = "https://old.example.test/push"
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      "pairing-v1-old", previous, "old-vapid", null, "https://old.example.test",
+      "old-session", Long.MAX_VALUE, "account-aci", 1, "Old relay",
+    )
+    values.setPairingEndpointRegistration(endpoint, "old-key", "old-auth", binding)
+    every { UnifiedPush.getDistributors(application) } returns listOf(previous, replacement)
+    every { UnifiedPush.getSavedDistributor(application) } returns previous
+    every { UnifiedPush.getAckDistributor(application) } returns previous
+    mockkStatic(KeyCachingService::class)
+    try {
+      every { KeyCachingService.isLocked() } returns false
+      val viewModel = UnifiedPushSettingsViewModel(application)
+
+      viewModel.setUnifiedPushDistributor(replacement)
+
+      assertEquals(replacement, viewModel.pairingSelectedDistributor())
+      assertEquals(previous, viewModel.state.value?.distributors?.get(0)?.applicationId)
+      assertEquals(0, viewModel.state.value?.selected)
+      assertEquals(endpoint, values.endpoint)
+      assertEquals(binding, values.pairingEndpointBinding)
+      verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
+      verify(exactly = 0) { UnifiedPush.unregisterApp(any(), any()) }
+    } finally {
+      unmockkStatic(KeyCachingService::class)
+    }
+  }
+
+  @Test
   fun `forgetting an intent reports failed acknowledgement and displays persisted state`() {
     val requestId = "22222222-2222-4222-8222-222222222222"
     values.mutateControl {

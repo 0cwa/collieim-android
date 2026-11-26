@@ -44,7 +44,7 @@ object UnifiedPushDistributor {
         if (protectedOwner != null && distributor != protectedOwner) return false
       } else {
         val pendingPairing = PairingRegistrationGate.current()?.binding
-        if (pendingPairing != null && distributor != pendingPairing.distributorId) return false
+        if (pendingPairing != null && distributor != pendingPairing.previousDistributorId) return false
         val pairing = SignalStore.unifiedpush.pairingEndpointBinding
         val scopedInstance = pairing?.instance ?: SignalStore.unifiedpush.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
         val scopedOwner = pairing?.distributorId ?: if (scopedInstance != null) UnifiedPush.getSavedDistributor(context) else null

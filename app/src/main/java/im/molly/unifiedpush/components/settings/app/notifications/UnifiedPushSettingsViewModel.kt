@@ -28,6 +28,7 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -60,6 +61,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   internal var pairingFlowActive = false
     private set
   private var handledInitialPairingOffer: String? = null
+  private var distributorForNextPairing: String? = null
   private val pairingCoordinator = PairingV1Coordinator(application)
 
   internal fun claimInitialPairingOffer(offer: String): Boolean {
@@ -102,7 +104,8 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     Distributor(id, label)
   }
 
-  internal fun pairingSelectedDistributor(): String? = UnifiedPush.getSavedDistributor(application)
+  internal fun pairingSelectedDistributor(): String? =
+    distributorForNextPairing ?: UnifiedPush.getSavedDistributor(application)
 
   internal fun pair(
     scan: PairingTransport.Scan,
@@ -114,9 +117,15 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     pairingResult.value = PairingUi.Working
     refresh()
     viewModelScope.launch {
-      val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin)
-      pairingResult.value = result
-      refresh()
+      try {
+        val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin)
+        if (result is PairingUi.Paired) distributorForNextPairing = null
+        pairingResult.value = result
+        refresh()
+      } catch (cancelled: CancellationException) {
+        pairingCoordinator.cancelOfferAttempt(scan.offer.sessionId)
+        throw cancelled
+      }
     }
   }
 
@@ -129,14 +138,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val offer = scan.offer
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return pairingError(R.string.PairingV1__offer_expired)
 
-    // A distributor chosen in the picker takes effect only after Pair, while the account and
-    // previous route shown during scanning are still current.
     var approved: RelayDisclosure.Snapshot? = null
     RelayDisclosure.runIfCurrent(disclosure) {
-      if (distributorId in UnifiedPush.getDistributors(application) &&
-        (distributorId == UnifiedPush.getSavedDistributor(application) ||
-          UnifiedPushDistributor.saveDistributor(application, distributorId))) {
-        approved = RelayDisclosure.capture(application)
+      if (distributorId in UnifiedPush.getDistributors(application)) {
+        val previous = disclosure.configuration.distributor
+        val hasPreviousEndpoint = previous != null && disclosure.account.endpoint != null
+        approved = when {
+          distributorId == previous || hasPreviousEndpoint -> disclosure
+          UnifiedPushDistributor.saveDistributor(application, distributorId) -> RelayDisclosure.capture(application)
+          else -> null
+        }
       }
     }
     var snapshot = approved ?: return pairingError(R.string.PairingV1__endpoint_changed)
@@ -329,6 +340,17 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   fun setUnifiedPushDistributor(distributor: String) {
+    val staged = synchronized(UnifiedPushLifecycle.monitor) {
+      if (KeyCachingService.isLocked() || SignalStore.unifiedpush.pairingEndpointBinding == null) return@synchronized false
+      distributorForNextPairing = distributor.takeUnless { it == UnifiedPush.getSavedDistributor(application) }
+      true
+    }
+    if (staged) {
+      if (distributorForNextPairing != null) {
+        Toast.makeText(application, R.string.PairingV1__scan_to_switch_distributor, Toast.LENGTH_LONG).show()
+      }
+      return
+    }
     val changed = synchronized(UnifiedPushLifecycle.monitor) {
       if (!UnifiedPushDistributor.saveDistributor(application, distributor)) return@synchronized false
       if (!KeyCachingService.isLocked() && SignalStore.unifiedpush.pairingEndpointBinding == null) {

@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.receiver
 
 import android.content.Context
+import android.content.Intent
 import android.os.Looper
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.control.EndpointReconciler
@@ -10,6 +11,7 @@ import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -64,9 +66,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
       }
       val bufferedUnregistration = PairingRegistrationGate.takeBufferedUnregistration()
       if (bufferedUnregistration != null) {
-        val owner = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == bufferedUnregistration }?.distributorId
+        val binding = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == bufferedUnregistration }
         PairingRegistrationGate.fail(bufferedUnregistration)
-        if (owner != null) receiver.unregisterPairingIfOwned(context, bufferedUnregistration, owner)
+        if (binding != null) receiver.discardPairingCandidate(context, binding)
       } else {
         PairingRegistrationGate.takeBufferedEndpoint()?.let { buffered ->
           receiver.admitPairingEndpoint(
@@ -121,7 +123,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
             LockedPushState.clearPending(context)
             if (pending != null) {
               PairingRegistrationGate.fail(queued.instance)
-              receiver.unregisterPairingIfOwned(context, queued.instance, pending.distributorId)
+              receiver.discardPairingCandidate(context, pending)
             }
             return null
           }
@@ -243,7 +245,21 @@ class UnifiedPushReceiver : MessagingReceiver() {
   private val appLocked
     get() = KeyCachingService.isLocked()
 
+  override fun onReceive(context: Context, intent: Intent) {
+    super.onReceive(PairingDistributorRegistration.BroadcastContext(context), intent)
+  }
+
+  private fun routeCandidateAcknowledgment(context: Context, instance: String) {
+    if (context is PairingDistributorRegistration.BroadcastContext) {
+      context.distributor = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == instance }?.distributorId
+      if (context.distributor == null && PairingRegistrationGate.isPairingInstance(instance)) {
+        context.acknowledge = LockedPushState.protectedPairingInstance(context) == instance
+      }
+    }
+  }
+
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
+    routeCandidateAcknowledgment(context, instance)
     Log.i(TAG, "onNewEndpoint($instance)")
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
     // Locked callbacks are buffered before any SignalStore reads. A tentative pairing endpoint is
@@ -338,12 +354,12 @@ class UnifiedPushReceiver : MessagingReceiver() {
   private fun admitPairingEndpoint(context: Context, endpoint: LockedPushState.Endpoint) {
     var admitted: PairingRegistrationGate.Pending? = null
     var rejected: String? = null
-    var owner: String? = null
+    var candidateBinding: PairingRegistrationGate.Binding? = null
     synchronized(UnifiedPushLifecycle.monitor) {
       if (KeyCachingService.isLocked()) return
       val pending = PairingRegistrationGate.current() ?: return
       val binding = pending.binding
-      owner = binding.distributorId
+      candidateBinding = binding
       val values = SignalStore.unifiedpush
       val account = UnifiedPushAccountTransition.captureContextLocked()
       val routeInstance = values.endpointInstance ?: "default"
@@ -353,8 +369,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       val registrationScopeCurrent = UnifiedPushLifecycle.currentGeneration() == binding.lifecycleGeneration &&
         routeUnchanged && account != null && account.accountId == binding.accountId && account.localDeviceId == binding.deviceId &&
         SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId &&
-        UnifiedPush.getSavedDistributor(context) == binding.distributorId &&
-        UnifiedPush.getAckDistributor(context) == binding.distributorId
+        binding.matchesDistributorSelection(UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context))
       val candidate = endpoint.url?.let {
         PairingRegistrationGate.Endpoint(it, endpoint.p256dh, endpoint.auth, endpoint.instance)
       }
@@ -381,7 +396,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       Log.i(TAG, "Pairing-scoped endpoint captured for the approved session.")
     } else {
       PairingRegistrationGate.fail(endpoint.instance)
-      owner?.let { unregisterPairingIfOwned(context, endpoint.instance, it) }
+      candidateBinding?.let { discardPairingCandidate(context, it) }
       if (rejected != null) Log.w(TAG, rejected!!)
     }
   }
@@ -419,12 +434,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
       SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId
   }
 
-  /** The connector's instance overload targets the currently saved distributor; never use it for another owner. */
-  private fun unregisterPairingIfOwned(context: Context, instance: String, distributorId: String) {
+  private fun discardPairingCandidate(context: Context, binding: PairingRegistrationGate.Binding) {
     synchronized(UnifiedPushLifecycle.monitor) {
-      if (UnifiedPush.getSavedDistributor(context) == distributorId) {
-        runCatching { UnifiedPush.unregisterApp(context, instance) }
-      }
+      PairingDistributorRegistration.discard(context, binding)
     }
   }
 
@@ -479,11 +491,13 @@ class UnifiedPushReceiver : MessagingReceiver() {
         values.endpointP256dh == binding.previousP256dh && values.endpointAuth == binding.previousAuth &&
         (values.endpointInstance ?: "default") == binding.previousInstance &&
         SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId &&
-        UnifiedPush.getSavedDistributor(AppDependencies.application) == binding.distributorId
+        binding.matchesDistributorSelection(
+          UnifiedPush.getSavedDistributor(AppDependencies.application), UnifiedPush.getAckDistributor(AppDependencies.application),
+        )
       if (!scopeStillMatches) {
         PairingRegistrationGate.fail(binding.instance)
         SignalExecutors.BOUNDED.execute {
-          unregisterPairingIfOwned(AppDependencies.application, binding.instance, binding.distributorId)
+          discardPairingCandidate(AppDependencies.application, binding)
         }
       }
     }
@@ -523,7 +537,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       val candidate = PairingRegistrationGate.current()?.binding?.takeIf { it.instance == instance }
       if (candidate != null) {
         PairingRegistrationGate.fail(instance)
-        unregisterPairingIfOwned(context, instance, candidate.distributorId)
+        discardPairingCandidate(context, candidate)
         return
       }
       if (appLocked) return
@@ -573,10 +587,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
     if (appLocked) {
       synchronized(UnifiedPushLifecycle.monitor) {
         val protected = LockedPushState.protectedPairingInstance(context)
-        if (!PairingRegistrationGate.allowsLockedCallback(instance, protected)) return
         if (PairingRegistrationGate.current()?.binding?.instance == instance) {
           PairingRegistrationGate.bufferUnregistration(instance)
         } else {
+          if (!PairingRegistrationGate.allowsLockedCallback(instance, protected)) return
           LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
           if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
         }
@@ -646,6 +660,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {
+    routeCandidateAcknowledgment(context, instance)
     if (appLocked) {
       // SignalStore is unavailable while locked, so a custom instance can only be trusted after unlock.
       LockedPushState.recordPushArrived(context, System.currentTimeMillis())
@@ -692,8 +707,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 values.endpoint == registration.previousEndpoint && values.endpointP256dh == registration.previousP256dh &&
                 values.endpointAuth == registration.previousAuth && (values.endpointInstance ?: "default") == registration.previousInstance &&
                 SignalStore.account.aci?.toString() == registration.accountId && SignalStore.account.deviceId == registration.deviceId &&
-                UnifiedPush.getSavedDistributor(context) == registration.distributorId &&
-                UnifiedPush.getAckDistributor(context) == registration.distributorId
+                registration.matchesDistributorSelection(UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context))
               val state = values.controlStateRead.stateOrNull ?: return@synchronized null
               val exactIntent = state.intents.any { intent -> intent.eligible && intent.requestId == import.requestId &&
                 intent.keyId == import.keyId && intent.epoch == import.epoch && intent.instance == import.instance &&
@@ -741,6 +755,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
               LockedPushState.setEncryptedEnrollment(context, true)
               LockedPushState.setProtectedPairingRoute(context, registration.instance, registration.distributorId)
+              PairingDistributorRegistration.promote(context, registration)
               PairingRegistrationGate.promote(registration.instance)
               accepted
             }

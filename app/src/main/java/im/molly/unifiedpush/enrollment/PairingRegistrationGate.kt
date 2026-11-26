@@ -20,7 +20,11 @@ object PairingRegistrationGate {
     val previousAuth: String? = null,
     val previousInstance: String = "default",
     val hostLabel: String,
+    val previousDistributorId: String = distributorId,
   ) {
+    fun matchesDistributorSelection(saved: String?, acknowledged: String?): Boolean =
+      saved == previousDistributorId && acknowledged == previousDistributorId
+
     override fun toString() = "PairingRegistrationGate.Binding(sessionId=$sessionId, instance=$instance)"
   }
 
@@ -68,6 +72,7 @@ object PairingRegistrationGate {
     previousP256dh: String? = null,
     previousAuth: String? = null,
     previousInstance: String = "default",
+    previousDistributorId: String = distributorId,
     onComplete: (Result<Endpoint>) -> Unit,
   ): Binding? {
     current()
@@ -88,6 +93,7 @@ object PairingRegistrationGate {
         previousAuth = previousAuth,
         previousInstance = previousInstance,
         hostLabel = offer.hostLabel,
+        previousDistributorId = previousDistributorId,
       )
       pending = Pending(binding, onComplete)
       binding
@@ -149,7 +155,7 @@ object PairingRegistrationGate {
     val active = pending?.takeIf { it.binding.instance == instance } ?: return@synchronized false
     val binding = active.binding
     val identity = active.importBinding ?: return@synchronized false
-    savedDistributor == binding.distributorId && ackDistributor == binding.distributorId &&
+    binding.matchesDistributorSelection(savedDistributor, ackDistributor) &&
       accountId == binding.accountId && deviceId == binding.deviceId && identity.instance == instance
   }
 
@@ -188,7 +194,7 @@ object PairingRegistrationGate {
       val active = check.active ?: return@synchronized null
       val binding = active.binding
       if (instance != binding.instance || endpoint.instance != binding.instance || endpoint.p256dh == null || endpoint.auth == null ||
-        savedDistributor != binding.distributorId || (ackDistributor != null && ackDistributor != binding.distributorId) ||
+        !binding.matchesDistributorSelection(savedDistributor, ackDistributor) ||
         accountId != binding.accountId || deviceId != binding.deviceId) return@synchronized null
       val origin = PairingV1.canonicalOrigin(endpoint.url) ?: return@synchronized null
       if (binding.providerOrigin != null && binding.providerOrigin != origin) return@synchronized null

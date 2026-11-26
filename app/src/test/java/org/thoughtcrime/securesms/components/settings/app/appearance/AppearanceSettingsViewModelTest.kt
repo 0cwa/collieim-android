@@ -63,6 +63,11 @@ class AppearanceSettingsViewModelTest {
     every { AppearanceSettingsRepository.isSystemThemeAvailable() } returns true
     every { AppearanceSettingsRepository.isDynamicColorsAvailable() } returns true
     every { AppearanceSettingsRepository.isAppIconSupported() } returns true
+    every { AppearanceSettingsRepository.getPalette() } returns "collie"
+    every { AppearanceSettingsRepository.getAvailablePalettes() } returns ALL_PALETTES
+    every { AppearanceSettingsRepository.isPureBlackEnabled() } returns false
+    every { AppearanceSettingsRepository.setPalette(any()) } just Runs
+    every { AppearanceSettingsRepository.setPureBlack(any()) } just Runs
     every { AppearanceSettingsRepository.applyLanguage(any()) } just Runs
     every { AppearanceSettingsRepository.setAppearance(any(), any()) } just Runs
     every { AppearanceSettingsRepository.setMessageFontSize(any()) } just Runs
@@ -85,6 +90,9 @@ class AppearanceSettingsViewModelTest {
     every { AppearanceSettingsRepository.isSystemThemeAvailable() } returns false
     every { AppearanceSettingsRepository.isDynamicColorsAvailable() } returns false
     every { AppearanceSettingsRepository.isAppIconSupported() } returns false
+    every { AppearanceSettingsRepository.getPalette() } returns "slate_neutral"
+    every { AppearanceSettingsRepository.getAvailablePalettes() } returns ALL_PALETTES - "system"
+    every { AppearanceSettingsRepository.isPureBlackEnabled() } returns true
 
     val viewModel = createViewModel()
 
@@ -92,11 +100,12 @@ class AppearanceSettingsViewModelTest {
       AppearanceSettingsState(
         language = "de",
         theme = Theme.DARK,
-        dynamicColors = true,
+        palette = "slate_neutral",
+        availablePalettes = ALL_PALETTES - "system",
+        pureBlack = true,
         messageFontSize = 22,
         isCompactNavigationBar = true,
         isSystemThemeAvailable = false,
-        isDynamicColorsAvailable = false,
         isAppIconSupported = false
       )
     )
@@ -169,6 +178,7 @@ class AppearanceSettingsViewModelTest {
   @Test
   fun `ThemeSelected preserves dynamic colors`() = runTest(testDispatcher) {
     every { AppearanceSettingsRepository.isDynamicColorsEnabled() } returns true
+    every { AppearanceSettingsRepository.getPalette() } returns "system"
     val viewModel = createViewModel()
 
     viewModel.onEvent(AppearanceSettingsEvent.ThemeSelected(Theme.DARK))
@@ -179,17 +189,77 @@ class AppearanceSettingsViewModelTest {
   }
 
   @Test
-  fun `DynamicColorsChanged preserves the theme and updates the splash screen`() = runTest(testDispatcher) {
+  fun `ThemeSelected keeps a System flag that this device cannot show`() = runTest(testDispatcher) {
+    every { AppearanceSettingsRepository.isDynamicColorsEnabled() } returns true
+    every { AppearanceSettingsRepository.getAvailablePalettes() } returns ALL_PALETTES - "system"
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(AppearanceSettingsEvent.ThemeSelected(Theme.LIGHT))
+
+    verify { AppearanceSettingsRepository.setAppearance(Theme.LIGHT, true) }
+    verify(exactly = 0) { AppearanceSettingsRepository.setPalette(any()) }
+    assertThat(viewModel.state.value.palette).isEqualTo("collie")
+  }
+
+  @Test
+  fun `PaletteSelected stores a built-in palette and updates the splash screen`() = runTest(testDispatcher) {
     every { AppearanceSettingsRepository.getTheme() } returns Theme.DARK
     val viewModel = createViewModel()
     val actions = collectActions(viewModel.actions)
 
-    viewModel.onEvent(AppearanceSettingsEvent.DynamicColorsChanged(true))
+    viewModel.onEvent(AppearanceSettingsEvent.PaletteSelected("plum_expressive"))
 
-    verify { AppearanceSettingsRepository.setAppearance(Theme.DARK, true) }
+    verify(exactly = 1) { AppearanceSettingsRepository.setPalette("plum_expressive") }
+    verify(exactly = 0) { AppearanceSettingsRepository.setAppearance(any(), any()) }
+    assertThat(viewModel.state.value.palette).isEqualTo("plum_expressive")
     assertThat(viewModel.state.value.theme).isEqualTo(Theme.DARK)
-    assertThat(viewModel.state.value.dynamicColors).isTrue()
-    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, true)))
+    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, false)))
+  }
+
+  @Test
+  fun `PaletteSelected switches between every offered choice in turn`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+    val order = listOf("blue_tonal_spot", "teal_vibrant", "system", "plum_expressive", "slate_neutral", "collie")
+
+    order.forEach { viewModel.onEvent(AppearanceSettingsEvent.PaletteSelected(it)) }
+
+    order.forEach { verify(exactly = 1) { AppearanceSettingsRepository.setPalette(it) } }
+    assertThat(viewModel.state.value.palette).isEqualTo("collie")
+    assertThat(actions.map { (it as AppearanceSettingsAction.ApplySplashScreenTheme).dynamicColors })
+      .isEqualTo(listOf(false, false, true, false, false, false))
+  }
+
+  @Test
+  fun `PaletteSelected ignores the current choice and choices this device does not offer`() = runTest(testDispatcher) {
+    every { AppearanceSettingsRepository.getAvailablePalettes() } returns ALL_PALETTES - "system"
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    viewModel.onEvent(AppearanceSettingsEvent.PaletteSelected("collie"))
+    viewModel.onEvent(AppearanceSettingsEvent.PaletteSelected("system"))
+    viewModel.onEvent(AppearanceSettingsEvent.PaletteSelected("unknown"))
+
+    verify(exactly = 0) { AppearanceSettingsRepository.setPalette(any()) }
+    assertThat(viewModel.state.value.palette).isEqualTo("collie")
+    assertThat(actions).isEmpty()
+  }
+
+  @Test
+  fun `PureBlackChanged stores the flag without touching the theme or palette`() = runTest(testDispatcher) {
+    every { AppearanceSettingsRepository.getPalette() } returns "teal_vibrant"
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    viewModel.onEvent(AppearanceSettingsEvent.PureBlackChanged(true))
+    viewModel.onEvent(AppearanceSettingsEvent.PureBlackChanged(true))
+
+    verify(exactly = 1) { AppearanceSettingsRepository.setPureBlack(true) }
+    verify(exactly = 0) { AppearanceSettingsRepository.setPalette(any()) }
+    verify(exactly = 0) { AppearanceSettingsRepository.setAppearance(any(), any()) }
+    assertThat(viewModel.state.value.pureBlack).isTrue()
+    assertThat(viewModel.state.value.palette).isEqualTo("teal_vibrant")
+    assertThat(actions).isEmpty()
   }
 
   @Test
@@ -264,6 +334,10 @@ class AppearanceSettingsViewModelTest {
     viewModel.onEvent(AppearanceSettingsEvent.NavigationBarSizeConfirmed)
 
     verify(exactly = 0) { AppearanceSettingsRepository.setCompactNavigationBar(any()) }
+  }
+
+  companion object {
+    private val ALL_PALETTES = listOf("collie", "system", "blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral")
   }
 
   private fun createViewModel(): AppearanceSettingsViewModel {

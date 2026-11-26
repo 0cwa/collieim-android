@@ -22,8 +22,11 @@ sealed interface AppearanceSettingsEvent {
   /** The user picked a theme from the theme list. */
   data class ThemeSelected(val theme: AppearanceSettingsState.Theme) : AppearanceSettingsEvent
 
-  /** MOLLY: The user chose whether to follow the system's dynamic palette. */
-  data class DynamicColorsChanged(val enabled: Boolean) : AppearanceSettingsEvent
+  /** Collie: The user picked a color palette: Collie, System (the system's dynamic palette) or a built-in palette. */
+  data class PaletteSelected(val palette: String) : AppearanceSettingsEvent
+
+  /** Collie: The user turned Pure black on or off. */
+  data class PureBlackChanged(val enabled: Boolean) : AppearanceSettingsEvent
 
   /** The user tapped the chat color and wallpaper row. */
   data object ChatColorAndWallpaperClicked : AppearanceSettingsEvent

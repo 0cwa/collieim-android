@@ -23,7 +23,6 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ActivityScenario
@@ -177,7 +176,10 @@ class AppearanceThemePropagationTest {
       for (enabled in listOf(true, false)) {
         openAppearance(main, navigationSettings)
         val previousSettings = awaitSettings()
-        compose.onNodeWithText(context.getString(AppSettingsR.string.preferences_appearance__dynamic_colors)).performClick()
+        // Collie: System is an option of the color picker, which replaced the Dynamic Colors switch.
+        val option = AppearanceSettingsTestTags.paletteOption(if (enabled) "system" else "collie")
+        compose.onNodeWithTag(AppearanceSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(option))
+        compose.onNodeWithTag(option).performClick()
         compose.waitUntil(15_000) { SignalStore.settings.isDynamicColorsEnabled == enabled }
         closeSettings(previousSettings)
 

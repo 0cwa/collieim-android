@@ -6,7 +6,18 @@
 package org.signal.appsettings.appearance
 
 import android.app.Application
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasTestTag
@@ -19,6 +30,7 @@ import androidx.compose.ui.test.performScrollToNode
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsExactly
+import assertk.assertions.isLessThanOrEqualTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -75,26 +87,73 @@ class AppearanceSettingsScreenTest {
   }
 
   @Test
-  fun `toggling dynamic colors emits DynamicColorsChanged`() {
-    setContent(AppearanceSettingsState(dynamicColors = true, isDynamicColorsAvailable = true))
+  fun `the color picker names every choice and marks only the selected one`() {
+    setContent(AppearanceSettingsState(palette = "plum_expressive", availablePalettes = ALL_PALETTES))
 
-    scrollTo(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS)
-    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS).performClick()
-
-    assertThat(events).containsExactly(AppearanceSettingsEvent.DynamicColorsChanged(enabled = false))
+    scrollTo(AppearanceSettingsTestTags.ROW_COLOR)
+    for ((id, name) in ALL_PALETTES.zip(listOf("Collie", "System", "Blue", "Teal", "Plum", "Slate"))) {
+      val option = composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption(id))
+      option.assertTextEquals(name)
+      option.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+      if (id == "plum_expressive") option.assertIsSelected() else option.assertIsNotSelected()
+    }
+    // The selected name is also spelled out under the title, so the choice never depends on color alone.
+    composeTestRule.onAllNodesWithText("Plum").assertCountEquals(2)
   }
 
   @Test
-  fun `dynamic colors row is hidden when the device does not support it`() {
-    setContent(AppearanceSettingsState(isDynamicColorsAvailable = false))
+  fun `picking a color emits PaletteSelected`() {
+    setContent(AppearanceSettingsState(availablePalettes = ALL_PALETTES))
 
-    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_DYNAMIC_COLORS).assertDoesNotExist()
+    scrollTo(AppearanceSettingsTestTags.ROW_COLOR)
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption("teal_vibrant")).performClick()
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption("system")).performClick()
+
+    assertThat(events).containsExactly(
+      AppearanceSettingsEvent.PaletteSelected("teal_vibrant"),
+      AppearanceSettingsEvent.PaletteSelected("system")
+    )
+  }
+
+  @Test
+  fun `the System color is not offered when the device does not support it`() {
+    setContent(AppearanceSettingsState(availablePalettes = ALL_PALETTES - "system"))
+
+    scrollTo(AppearanceSettingsTestTags.ROW_COLOR)
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption("collie")).assertIsSelected()
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption("system")).assertDoesNotExist()
+  }
+
+  @Test
+  fun `the color picker wraps its full names at a large font size`() {
+    setContent(AppearanceSettingsState(availablePalettes = ALL_PALETTES), fontScale = 2f)
+
+    val picker = composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_COLOR).fetchSemanticsNode()
+    val root = composeTestRule.onRoot().fetchSemanticsNode()
+    assertThat(picker.boundsInRoot.right).isLessThanOrEqualTo(root.boundsInRoot.right)
+    for ((id, name) in ALL_PALETTES.zip(listOf("Collie", "System", "Blue", "Teal", "Plum", "Slate"))) {
+      scrollTo(AppearanceSettingsTestTags.paletteOption(id))
+      composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption(id)).assertTextEquals(name).assertIsDisplayed()
+      val option = composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.paletteOption(id)).fetchSemanticsNode()
+      assertThat(option.boundsInRoot.right).isLessThanOrEqualTo(root.boundsInRoot.right)
+    }
+  }
+
+  @Test
+  fun `toggling pure black emits PureBlackChanged`() {
+    setContent(AppearanceSettingsState(pureBlack = false))
+
+    scrollTo(AppearanceSettingsTestTags.ROW_PURE_BLACK)
+    composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_PURE_BLACK).performClick()
+
+    assertThat(events).containsExactly(AppearanceSettingsEvent.PureBlackChanged(enabled = true))
   }
 
   @Test
   fun `clicking chat color and wallpaper emits ChatColorAndWallpaperClicked`() {
     setContent(AppearanceSettingsState())
 
+    scrollTo(AppearanceSettingsTestTags.ROW_CHAT_COLOR_AND_WALLPAPER)
     composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_CHAT_COLOR_AND_WALLPAPER).performClick()
 
     assertThat(events).containsExactly(AppearanceSettingsEvent.ChatColorAndWallpaperClicked)
@@ -104,6 +163,7 @@ class AppearanceSettingsScreenTest {
   fun `clicking app icon emits AppIconClicked`() {
     setContent(AppearanceSettingsState(isAppIconSupported = true))
 
+    scrollTo(AppearanceSettingsTestTags.ROW_APP_ICON)
     composeTestRule.onNodeWithTag(AppearanceSettingsTestTags.ROW_APP_ICON).performClick()
 
     assertThat(events).containsExactly(AppearanceSettingsEvent.AppIconClicked)
@@ -193,13 +253,20 @@ class AppearanceSettingsScreenTest {
     assertThat(events).containsExactly(AppearanceSettingsEvent.NavigationBarSizeConfirmed)
   }
 
-  private fun setContent(state: AppearanceSettingsState) {
+  private fun setContent(state: AppearanceSettingsState, fontScale: Float? = null) {
     composeTestRule.setContent {
-      AppearanceSettingsScreen(
-        state = state,
-        onEvent = { events += it }
-      )
+      val density = LocalDensity.current
+      CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale ?: density.fontScale)) {
+        AppearanceSettingsScreen(
+          state = state,
+          onEvent = { events += it }
+        )
+      }
     }
+  }
+
+  companion object {
+    private val ALL_PALETTES = listOf("collie", "system", "blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral")
   }
 
   private fun scrollTo(testTag: String) {

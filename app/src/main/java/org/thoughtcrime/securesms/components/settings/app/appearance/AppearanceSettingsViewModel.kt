@@ -21,6 +21,7 @@ import org.signal.appsettings.routes.navigateBack
 import org.signal.appsettings.routes.navigateTo
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.util.ThemePalettes
 
 /**
  * Drives [org.signal.appsettings.appearance.AppearanceSettingsScreen]. Navigation goes straight to [parentEventEmitter].
@@ -55,15 +56,24 @@ class AppearanceSettingsViewModel(
       }
 
       is AppearanceSettingsEvent.ThemeSelected -> {
-        AppearanceSettingsRepository.setAppearance(event.theme, currentState.dynamicColors)
+        // Collie: the System flag is written as stored; a mode change never clears a palette or Pure black.
+        val dynamicColors = AppearanceSettingsRepository.isDynamicColorsEnabled()
+        AppearanceSettingsRepository.setAppearance(event.theme, dynamicColors)
         _state.update { it.copy(theme = event.theme) }
         _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(event.theme, currentState.dynamicColors))
       }
 
-      is AppearanceSettingsEvent.DynamicColorsChanged -> {
-        AppearanceSettingsRepository.setAppearance(currentState.theme, event.enabled)
-        _state.update { it.copy(dynamicColors = event.enabled) }
-        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(currentState.theme, event.enabled))
+      is AppearanceSettingsEvent.PaletteSelected -> {
+        if (event.palette == currentState.palette || event.palette !in currentState.availablePalettes) return
+        AppearanceSettingsRepository.setPalette(event.palette)
+        _state.update { it.copy(palette = event.palette) }
+        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(currentState.theme, event.palette == ThemePalettes.SYSTEM))
+      }
+
+      is AppearanceSettingsEvent.PureBlackChanged -> {
+        if (event.enabled == currentState.pureBlack) return
+        AppearanceSettingsRepository.setPureBlack(event.enabled)
+        _state.update { it.copy(pureBlack = event.enabled) }
       }
 
       AppearanceSettingsEvent.ChatColorAndWallpaperClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.AppearanceRoute.Wallpaper)
@@ -98,11 +108,12 @@ class AppearanceSettingsViewModel(
     return AppearanceSettingsState(
       language = AppearanceSettingsRepository.getLanguage(),
       theme = AppearanceSettingsRepository.getTheme(),
-      dynamicColors = AppearanceSettingsRepository.isDynamicColorsEnabled(),
+      palette = AppearanceSettingsRepository.getPalette(),
+      availablePalettes = AppearanceSettingsRepository.getAvailablePalettes(),
+      pureBlack = AppearanceSettingsRepository.isPureBlackEnabled(),
       messageFontSize = AppearanceSettingsRepository.getMessageFontSize(),
       isCompactNavigationBar = AppearanceSettingsRepository.isCompactNavigationBar(),
       isSystemThemeAvailable = AppearanceSettingsRepository.isSystemThemeAvailable(),
-      isDynamicColorsAvailable = AppearanceSettingsRepository.isDynamicColorsAvailable(),
       isAppIconSupported = AppearanceSettingsRepository.isAppIconSupported()
     )
   }

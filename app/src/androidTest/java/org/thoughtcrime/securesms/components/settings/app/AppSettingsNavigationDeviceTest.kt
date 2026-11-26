@@ -5,31 +5,35 @@
 package org.thoughtcrime.securesms.components.settings.app
 
 import android.content.ContentValues
+import android.app.Activity
 import android.graphics.Bitmap
-import android.view.WindowManager
-import android.provider.MediaStore
 import android.os.Environment
+import android.provider.MediaStore
+import android.view.WindowManager
+import androidx.test.core.app.ActivityScenario
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.ActivityScenario
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.appsettings.account.AccountSettingsTestTags
 import org.signal.appsettings.appearance.AppearanceSettingsTestTags
+import org.signal.appsettings.collie.CollieSettingsTestTags
+import org.signal.appsettings.help.HelpSettingsTestTags
 import org.signal.appsettings.home.AppSettingsTestTags
 import org.signal.appsettings.routes.AppSettingsNavigation
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
@@ -50,6 +54,16 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.Assert.assertEquals
+import org.signal.mediaviewer.MediaViewerScreenTestTags
+import org.signal.core.models.media.TransformProperties
+import org.thoughtcrime.securesms.attachments.UriAttachment
+import org.thoughtcrime.securesms.database.AttachmentTable
+import org.thoughtcrime.securesms.database.MmsHelper
+import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory
+import org.thoughtcrime.securesms.mediaviewer.MediaViewerActivity
+import org.thoughtcrime.securesms.mms.OutgoingMessage
 
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 35, maxSdkVersion = 35)
@@ -148,14 +162,95 @@ class AppSettingsNavigationDeviceTest {
     }
   }
 
+  @Test
+  fun stableCollieSettingsAndProjectLogAreVisibleWithoutBetaFeatures() {
+    val context = harness.context
+    ActivityScenario.launch<AppSettingsNavigationActivity>(AppSettingsActivity.home(context)).use { scenario ->
+      awaitNode(AppSettingsTestTags.ROW_COLLIE)
+      withScreenSecurityTemporarilyDisabled(scenario) {
+        compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_COLLIE))
+        compose.onNodeWithTag(AppSettingsTestTags.ROW_COLLIE).performClick()
+        awaitNode(CollieSettingsTestTags.ROW_APP_UPDATES)
+        compose.onNodeWithTag(CollieSettingsTestTags.ROW_APP_UPDATES).assertIsDisplayed()
+        compose.onNodeWithTag(CollieSettingsTestTags.SECTION_HARDENING).assertIsDisplayed()
+        compose.onNodeWithTag(CollieSettingsTestTags.SECTION_GROUP_PRIVACY).assertDoesNotExist()
+        compose.onNodeWithTag(CollieSettingsTestTags.ROW_GROUP_PRIVACY).assertDoesNotExist()
+        captureScreenshot(scenario, "stable-collie-settings")
+
+        compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_HELP))
+        compose.onNodeWithTag(AppSettingsTestTags.ROW_HELP).performClick()
+        awaitNode(HelpSettingsTestTags.ROW_PROJECT_LOG)
+        compose.onNodeWithTag(HelpSettingsTestTags.ROW_PROJECT_LOG).performClick()
+        compose.waitUntil(15_000) {
+          compose.onAllNodesWithText("Project log").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        captureScreenshot(scenario, "stable-project-log")
+      }
+    }
+  }
+
+  @Test
+  fun stableMediaMenuDoesNotOfferLocalAttachmentRemoval() {
+    val bytes = InstrumentationRegistry.getInstrumentation().context.assets.open("images/theme_sample.png").use { it.readBytes() }
+    val uri = AppDependencies.blobs.forData(bytes).withMimeType("image/png").createForSingleSessionInMemory()
+    val attachment = UriAttachment(
+      dataUri = uri,
+      contentType = "image/png",
+      transferState = AttachmentTable.TRANSFER_PROGRESS_DONE,
+      size = bytes.size.toLong(),
+      width = 160,
+      height = 90,
+      fileName = "theme_sample.png",
+      fastPreflightId = null,
+      voiceNote = false,
+      borderless = false,
+      videoGif = false,
+      quote = false,
+      quoteTargetContentType = null,
+      caption = "Stable API 35 media fixture",
+      stickerLocator = null,
+      blurHash = null,
+      audioHash = null,
+      transformProperties = TransformProperties.empty()
+    )
+    val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(harness.self)
+    val messageId = MmsHelper.insert(OutgoingMessage(
+      threadRecipient = harness.self,
+      sentTimeMillis = System.currentTimeMillis(),
+      body = "Stable API 35 media fixture",
+      isSecure = true,
+      attachments = listOf(attachment)
+    ), threadId)
+    try {
+      SignalDatabase.messages.markAsSent(messageId, true)
+      val stored = SignalDatabase.attachments.getAttachmentsForMessage(messageId).single()
+      val record = checkNotNull(SignalDatabase.media.getViewableGalleryMediaForAttachment(threadId, stored.attachmentId.id))
+      val intent = MediaIntentFactory.intentFromMediaRecord(harness.context, record, leftIsRecent = false, allMediaInRail = false)
+      val args = MediaIntentFactory.requireArguments(intent.extras!!).skipSharedElementTransition(true)
+      ActivityScenario.launch<MediaViewerActivity>(MediaIntentFactory.create(harness.context, args).setClass(harness.context, MediaViewerActivity::class.java)).use { scenario ->
+        compose.waitUntil(20_000) {
+          compose.onAllNodesWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        withScreenSecurityTemporarilyDisabled(scenario) {
+          compose.onNodeWithTag(MediaViewerScreenTestTags.OVERFLOW_BUTTON).performClick()
+          compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_SAVE).assertIsDisplayed()
+          compose.onNodeWithTag(MediaViewerScreenTestTags.MENU_REMOVE_ATTACHMENT).assertDoesNotExist()
+          captureScreenshot(scenario, "stable-media-menu")
+        }
+      }
+    } finally {
+      SignalDatabase.messages.deleteMessage(messageId)
+    }
+  }
+
   private fun awaitNode(tag: String) {
     compose.waitUntil(15_000) {
       compose.onAllNodesWithTag(tag).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
     }
   }
 
-  private fun withScreenSecurityTemporarilyDisabled(
-    scenario: ActivityScenario<AppSettingsNavigationActivity>,
+  private fun <T : Activity> withScreenSecurityTemporarilyDisabled(
+    scenario: ActivityScenario<T>,
     block: () -> Unit
   ) {
     val hadSecureFlag = AtomicBoolean()
@@ -176,7 +271,7 @@ class AppSettingsNavigationDeviceTest {
     }
   }
 
-  private fun awaitScreenshotFrame(scenario: ActivityScenario<AppSettingsNavigationActivity>) {
+  private fun <T : Activity> awaitScreenshotFrame(scenario: ActivityScenario<T>) {
     compose.waitForIdle()
 
     // Compose can report idle before the window submits a frame with the new content or security flags.
@@ -199,8 +294,8 @@ class AppSettingsNavigationDeviceTest {
     InstrumentationRegistry.getInstrumentation().uiAutomation.waitForIdle(500, 5_000)
   }
 
-  private fun captureScreenshot(
-    scenario: ActivityScenario<AppSettingsNavigationActivity>,
+  private fun <T : Activity> captureScreenshot(
+    scenario: ActivityScenario<T>,
     name: String
   ) {
     awaitScreenshotFrame(scenario)

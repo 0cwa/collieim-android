@@ -43,7 +43,7 @@ object ReceiverEnrollmentV4 {
     if (!UUID_V4.matches(input.requestId) || !UUID_ANY.matches(input.accountId) || !UUID_V4.matches(input.receiverId) ||
       input.bridgeDeviceId !in 2..Int.MAX_VALUE || !INSTANCE.matches(input.instance)) throw EnrollmentFile.Invalid("invalid_enrollment")
     EnrollmentFile.requireEndpoint(input.endpoint)
-    if (!input.endpoint.startsWith("https://")) throw EnrollmentFile.Invalid("invalid_endpoint")
+    if (!input.endpoint.startsWith("https://", ignoreCase = true)) throw EnrollmentFile.Invalid("invalid_endpoint")
     val p256dh = EnrollmentFile.canonicalKey(input.p256dh, 65)
     EnrollmentFile.requireOnCurve(Base64.getUrlDecoder().decode(p256dh))
     val auth = EnrollmentFile.canonicalKey(input.auth, 16)
@@ -77,12 +77,19 @@ object ReceiverEnrollmentV4 {
       val required = setOf("enrollment_version", "request_id", "import_seq", "account_id", "device_id", "subscription", "control_key", "receiver_id")
       val fields = required + "label"
       require(root.isObject && root.fieldNames().asSequence().toSet().all(fields::contains) && required.all(root::has))
-      require(root["enrollment_version"].intValue() == 4 && root["import_seq"].longValue() == 1L)
+      fun integer(node: JsonNode): Long {
+        require(node.isIntegralNumber && node.canConvertToLong())
+        return node.longValue()
+      }
+      require(integer(root["enrollment_version"]) == 4L && integer(root["import_seq"]) == 1L)
+      val device = integer(root["device_id"])
+      require(device in 2..Int.MAX_VALUE.toLong())
+      require(root["label"]?.isTextual != false)
       val subscription = root["subscription"]
       require(subscription.isObject && subscription.fieldNames().asSequence().toSet() == setOf("endpoint", "p256dh", "auth", "instance", "subscription_epoch", "encryption_required", "supported_event_versions", "capabilities"))
-      require(subscription["subscription_epoch"].longValue() == 1L && subscription["encryption_required"].booleanValue())
+      require(integer(subscription["subscription_epoch"]) == 1L && subscription["encryption_required"].booleanValue())
       require(subscription["supported_event_versions"].toString() == "[1,2,3,4]" && subscription["capabilities"].toString() == "[\"wake\",\"test\",\"status\"]")
-      val input = Input(root["request_id"].textValue(), root["account_id"].textValue(), root["device_id"].intValue(),
+      val input = Input(root["request_id"].textValue(), root["account_id"].textValue(), device.toInt(),
         subscription["endpoint"].textValue(), subscription["p256dh"].textValue(), subscription["auth"].textValue(),
         subscription["instance"].textValue(), root["receiver_id"].textValue(), root["control_key"].textValue(), root["label"]?.textValue())
       // Reuse render's field-level contract checks without generating or changing any identity.
@@ -95,7 +102,7 @@ object ReceiverEnrollmentV4 {
   private fun validateFields(input: Input) {
     if (!UUID_V4.matches(input.requestId) || !UUID_ANY.matches(input.accountId) || !UUID_V4.matches(input.receiverId) || input.bridgeDeviceId < 2 || !INSTANCE.matches(input.instance)) throw EnrollmentFile.Invalid("invalid_enrollment")
     EnrollmentFile.requireEndpoint(input.endpoint)
-    require(input.endpoint.startsWith("https://"))
+    require(input.endpoint.startsWith("https://", ignoreCase = true))
     val point = Base64.getUrlDecoder().decode(EnrollmentFile.canonicalKey(input.p256dh, 65))
     EnrollmentFile.requireOnCurve(point)
     EnrollmentFile.canonicalKey(input.auth, 16)

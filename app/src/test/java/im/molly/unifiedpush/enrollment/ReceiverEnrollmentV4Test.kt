@@ -1,9 +1,11 @@
 package im.molly.unifiedpush.enrollment
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -44,5 +46,20 @@ class ReceiverEnrollmentV4Test {
     catch (e: EnrollmentFile.Invalid) { assertEquals("invalid_enrollment", e.code) }
     try { ReceiverEnrollmentV4.render(input(2, "http://push.example.test/second")); throw AssertionError("accepted HTTP endpoint") }
     catch (e: EnrollmentFile.Invalid) { assertEquals("invalid_endpoint", e.code) }
+  }
+
+  @Test fun `receiver enrollment rejects noninteger numbers and mistyped labels`() {
+    val invalid = listOf(
+      receiver.deepCopy<ObjectNode>().put("enrollment_version", 4.5),
+      receiver.deepCopy<ObjectNode>().put("import_seq", 1.5),
+      receiver.deepCopy<ObjectNode>().put("device_id", 2.5),
+      receiver.deepCopy<ObjectNode>().put("device_id", 4_294_967_298L),
+      receiver.deepCopy<ObjectNode>().apply { (get("subscription") as ObjectNode).put("subscription_epoch", 1.5) },
+      receiver.deepCopy<ObjectNode>().putNull("label"),
+      receiver.deepCopy<ObjectNode>().put("label", 42),
+    )
+    for (enrollment in invalid) {
+      assertThrows(EnrollmentFile.Invalid::class.java) { ReceiverEnrollmentV4.validate(enrollment.toString()) }
+    }
   }
 }

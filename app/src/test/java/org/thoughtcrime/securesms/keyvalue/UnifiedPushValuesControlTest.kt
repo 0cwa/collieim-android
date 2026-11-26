@@ -230,11 +230,20 @@ class UnifiedPushValuesControlTest {
 
   @Test
   fun `explicit server removal is required before clearing a corrupt record`() {
-    val data = KeyValueDataSet().apply { putString("up.control.state", "{"); putString("up.enrollment.replay", "replay-retained") }
-    val values = values(data)
+    val data = KeyValueDataSet().apply {
+      putString("up.control.state", "{")
+      putString("up.enrollment.replay", "replay-retained")
+      putString("up.v4.receiver.state", "active-fixture")
+      putString("up.v4.pendingReceiver.state", "pending-fixture")
+    }
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(data))
+    val values = UnifiedPushValues(KeyValueStore(storage))
     assertTrue(values.clearCorruptControlAfterServerRemoval())
+    assertEquals(1, storage.writes)
     assertEquals(ControlState(), values.controlState)
     assertEquals("replay-retained", values.replayState)
+    assertNull(values.v4ReceiverState)
+    assertNull(values.v4PendingReceiverState)
     assertTrue(values.controlStateRead is ControlStateRead.Current)
   }
 
@@ -330,6 +339,7 @@ class UnifiedPushValuesControlTest {
       accountId = account,
       bridgeDeviceId = 2,
       instance = instance,
+      hostLabel = "Fixture bridge",
       controlKey = key,
       epoch = 1,
       target = target,
@@ -366,11 +376,23 @@ class UnifiedPushValuesControlTest {
   }
 
   @Test
+  fun `v4 pairing does not replace missing replay history on an existing enrollment`() {
+    val values = values()
+    values.mutateControl { ControlState(key = key, activeEpoch = 2, highestEpoch = 2) }
+    val replay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+
+    assertThrows(ReplayStateUnavailableException::class.java) { values.commitV4ReceiverAttempt("pending-fixture", replay) }
+
+    assertNull(values.v4PendingReceiverState)
+    assertNull(values.replayState)
+  }
+
+  @Test
   fun `v4 promotion commits replay receiver and pairing route in one acknowledged write`() {
     val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
     val values = UnifiedPushValues(KeyValueStore(storage))
     values.mutateControl { ControlState() }
-    values.setEndpointRegistration("https://push.example.invalid/old", target.p256dh, target.auth, instance)
+    values.setEndpointRegistration("https://push.example.invalid/old", "old-public-key", "old-auth-key", "old-instance")
     val pending = ReceiverControlState(
       receiverId = "22222222-2222-4222-8222-222222222222",
       importId = "33333333-3333-4333-8333-333333333333",

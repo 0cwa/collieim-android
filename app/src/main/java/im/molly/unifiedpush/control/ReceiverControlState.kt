@@ -15,7 +15,7 @@ data class ReceiverControlState(
   val accountId: String,
   val bridgeDeviceId: Int,
   val instance: String,
-  val hostLabel: String = "",
+  val hostLabel: String,
   val controlKey: String,
   val epoch: Long,
   val target: Target,
@@ -78,18 +78,21 @@ data class ReceiverControlState(
           return result
         }
         fun nullable(name: String): JsonNode? = root[name].takeUnless { it.isNull }
-        val pendingEpoch = nullable("pending_epoch")?.takeIf { it.isIntegralNumber && it.canConvertToLong() }?.longValue()
-        val pendingFrame = nullable("pending_frame")?.takeIf { it.isTextual }?.let { Base64.getUrlDecoder().decode(it.textValue()) }
+        val pendingEpoch = nullable("pending_epoch")?.let { long("pending_epoch") }
+        val pendingFrame = nullable("pending_frame")?.let { Base64.getUrlDecoder().decode(text("pending_frame")) }
+        val bridgeDeviceId = long("bridge_device_id")
+        require(bridgeDeviceId in 2..Int.MAX_VALUE.toLong())
         val result = ReceiverControlState(
-          text("receiver_id"), text("import_id"), text("account_id"), root["bridge_device_id"].intValue(), text("instance"), text("host_label"),
+          text("receiver_id"), text("import_id"), text("account_id"), bridgeDeviceId.toInt(), text("instance"), text("host_label"),
           text("control_key"), long("epoch"), target(root["target"]), root["confirmed"].takeIf { it.isBoolean }!!.booleanValue(), pendingEpoch,
           nullable("pending_target")?.let(::target), pendingFrame, long("pending_created_at"), long("pending_sent_at"),
         )
         require(UUID_V4.matches(result.receiverId) && UUID_V4.matches(result.importId) && UUID_ANY.matches(result.accountId))
-        require(result.bridgeDeviceId >= 2 && INSTANCE.matches(result.instance))
+        require(INSTANCE.matches(result.instance))
         require(result.hostLabel.length in 1..64 && result.hostLabel.all { it in ' '..'~' })
         require(result.controlKey == EnrollmentFile.canonicalKey(result.controlKey, 32) && result.epoch in 1..MAX_EPOCH)
-        require((result.pendingEpoch == null) == (result.pendingFrame == null && result.pendingTarget == null))
+        require((result.pendingEpoch == null) == (result.pendingFrame == null) &&
+          (result.pendingEpoch == null) == (result.pendingTarget == null))
         require(result.pendingEpoch == null || result.pendingEpoch in (result.epoch + 1)..MAX_EPOCH && result.pendingFrame!!.size in ControlFrameV4.HEADER_SIZE..ControlFrameV4.MAX_FRAME)
         require(result.pendingEpoch != null || result.pendingCreatedAt == 0L && result.pendingSentAt == 0L)
         result

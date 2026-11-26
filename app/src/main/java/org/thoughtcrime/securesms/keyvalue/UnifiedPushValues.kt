@@ -396,7 +396,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     }
   }
 
-  /** Acknowledged standalone write for a consented but not-yet-confirmed receiver request. */
+  /** Persist the active receiver and any exact frame that its control job will retry. */
   fun commitV4ReceiverState(receiverState: String?) {
     synchronized(UnifiedPushLifecycle.monitor) {
       store.beginWrite().putString(UNIFIEDPUSH_V4_RECEIVER_STATE, receiverState).commitAndWaitForPersistence()
@@ -410,7 +410,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
         if (EncryptedPush.ReplayState.parse(replayIfAbsent) == null) throw ReplayStateUnavailableException()
         val oldReplay = getString(UNIFIEDPUSH_REPLAY_STATE, null)
         if (oldReplay != null && EncryptedPush.ReplayState.parse(oldReplay) == null) throw ReplayStateUnavailableException()
-        if (oldReplay == null && controlStateRead !is ControlStateRead.Absent && controlStateRead !is ControlStateRead.Current) {
+        if (oldReplay == null && (controlStateRead !is ControlStateRead.Absent || v4ReceiverState != null || v4PendingReceiverState != null)) {
           throw ReplayStateUnavailableException()
         }
         val write = store.beginWrite().putString(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE, receiverState)
@@ -532,20 +532,21 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
   fun clearCorruptControlAfterServerRemoval(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
     synchronized(controlLock) {
       if (ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null)) != ControlStateRead.Corrupt) return@synchronized false
-      clearControlLocked()
+      clearControlLocked(clearV4Receivers = true)
       true
     }
   }
 
-  private fun clearControlLocked() {
+  private fun clearControlLocked(clearV4Receivers: Boolean = false) {
     // Keep first-setup typed as Absent. A serialized empty record after an explicit reset is different: it proves
     // that enrollment state once existed, so missing replay history must never be bootstrapped over it.
     if (controlStateRead is ControlStateRead.Absent) return
-    store.beginWrite()
+    val write = store.beginWrite()
       .putString(UNIFIEDPUSH_CONTROL_STATE, ControlState().serialize())
       .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
       .remove(UNIFIEDPUSH_PENDING_EPOCH)
-      .commitAndWaitForPersistence()
+    if (clearV4Receivers) write.remove(UNIFIEDPUSH_V4_RECEIVER_STATE).remove(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE)
+    write.commitAndWaitForPersistence()
   }
 
   /** Last generic status code the server reported in an accepted encrypted push status event. */

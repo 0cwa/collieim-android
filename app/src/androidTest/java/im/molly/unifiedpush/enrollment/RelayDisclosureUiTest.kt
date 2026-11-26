@@ -1,9 +1,14 @@
 package im.molly.unifiedpush.enrollment
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.test.core.app.ActivityScenario
@@ -43,7 +48,6 @@ import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.testing.actions.scrollToDescendant
 import java.io.File
-import java.io.FileOutputStream
 
 /** Real settings routes with synthetic account data only; `ep_screenshot` optionally saves each changed screen. */
 @RunWith(AndroidJUnit4::class)
@@ -134,24 +138,33 @@ class RelayDisclosureUiTest {
   }
 
   @Test
-  fun addReceiverConsentShowsFourRowsAndExactDeviceWording() = withSettings { scenario ->
-    val offer = ObjectMapper().readTree(
-      fixture("colliesocket-pairing-v1/fixtures/sealed-vectors.json"),
-    )[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
-    val url = "https://push.example.test/pairing/v1/submit"
-    val wrapper = """{"collie_pairing_transport":1,"submit_url":"$url","bridge_device_id":2,"offer":$offer}"""
-    scenario.onActivity { activity ->
-      val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-      (host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment).showPairingConsentFixtureForTest(wrapper)
+  fun addReceiverConsentShowsFourRowsAndExactDeviceWording() {
+    val previousDeviceId = SignalStore.account.deviceId
+    SignalStore.account.deviceId = 3
+    try {
+      withSettings { scenario ->
+        val offer = ObjectMapper().readTree(
+          fixture("colliesocket-pairing-v1/fixtures/sealed-vectors.json"),
+        )[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
+          .put("expires_at", System.currentTimeMillis() / 1000 + 600)
+        val url = "https://push.example.test/pairing/v1/submit"
+        val wrapper = """{"collie_pairing_transport":1,"submit_url":"$url","bridge_device_id":2,"offer":$offer}"""
+        scenario.onActivity { activity ->
+          val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+          (host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment).showPairingConsentFixtureForTest(wrapper)
+        }
+        val expectedTitle = "Add this device to “Collie Lab”?"
+        val expectedMessage = "Push server: https://push.example.test\nDistributor: Collie Pack\nEncrypted request will be sent to: $url\n\nAdds this device to your existing notification relay without linking another Signal device."
+        onView(withText(expectedTitle)).check(matches(isDisplayed()))
+        onView(withId(android.R.id.message)).check(matches(withText(expectedMessage)))
+        onView(withText(android.R.string.cancel)).check(matches(isDisplayed()))
+        onView(withText(R.string.PairingV1__add_receiver_consent_confirm)).check(matches(isDisplayed()))
+        screenshot("08-add-receiver-consent")
+        cancelDialog()
+      }
+    } finally {
+      SignalStore.account.deviceId = previousDeviceId
     }
-    val expectedTitle = "Add this device to “Collie Lab”?"
-    val expectedMessage = "Push server: https://push.example.test\nDistributor: Collie Pack\nEncrypted request will be sent to: $url\n\nAdds this device to your existing notification relay without linking another Signal device."
-    onView(withText(expectedTitle)).check(matches(isDisplayed()))
-    onView(withId(android.R.id.message)).check(matches(withText(expectedMessage)))
-    onView(withText(android.R.string.cancel)).check(matches(isDisplayed()))
-    onView(withText(R.string.PairingV1__add_receiver_consent_confirm)).check(matches(isDisplayed()))
-    screenshot("08-add-receiver-consent")
-    cancelDialog()
   }
 
   @Test
@@ -161,10 +174,18 @@ class RelayDisclosureUiTest {
     )
     val sub = fixture["subscription"]
     val previousDeviceId = SignalStore.account.deviceId
+    val distributor = instrumentation.context.packageName
+    val connector = context.getSharedPreferences("unifiedpush.connector", Context.MODE_PRIVATE)
+    val savedKey = "unifiedpush.distributor"
+    val ackKey = "unifiedpush.distributor_ack"
+    val previousDistributor = connector.getString(savedKey, null)
+    val previousAck = connector.getBoolean(ackKey, false).takeIf { connector.contains(ackKey) }
     SignalStore.account.deviceId = 3
     val instance = sub["instance"].asText()
     val endpoint = sub["endpoint"].asText()
     try {
+      check(distributor in org.unifiedpush.android.connector.UnifiedPush.getDistributors(context))
+      check(connector.edit().putString(savedKey, distributor).putBoolean(ackKey, true).commit())
       values.v4ReceiverState = ReceiverControlState(
         receiverId = fixture["receiver_id"].asText(), importId = fixture["request_id"].asText(),
         accountId = SignalStore.account.aci.toString(), bridgeDeviceId = 2, instance = instance,
@@ -174,7 +195,7 @@ class RelayDisclosureUiTest {
       values.setPairingEndpointRegistration(
         endpoint, sub["p256dh"].asText(), sub["auth"].asText(),
         org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding(
-          instance = instance, distributorId = "org.collie.pack", vapidPublicKey = values.vapidPublicKey.orEmpty(),
+          instance = instance, distributorId = distributor, vapidPublicKey = values.vapidPublicKey.orEmpty(),
           providerOrigin = "https://push.example.test", endpointOrigin = checkNotNull(PairingV1.canonicalOrigin(endpoint)),
           sessionId = fixture["request_id"].asText(), expiresAt = System.currentTimeMillis() / 1000 + 600,
           accountId = SignalStore.account.aci.toString(), deviceId = SignalStore.account.deviceId,
@@ -183,6 +204,7 @@ class RelayDisclosureUiTest {
       )
       withSettings {
         onView(withText(R.string.UnifiedPushSettingsFragment__status)).check(matches(isDisplayed()))
+        onView(withText(R.string.PairingV1__status_connected)).check(matches(isDisplayed()))
         onView(withText(R.string.PairingV1__notification_relay)).check(matches(isDisplayed()))
         onView(withText("Collie Lab · https://push.example.test")).check(matches(isDisplayed()))
         onView(withText(R.string.UnifiedPushSettingsFragment__distributor_app)).check(matches(isDisplayed()))
@@ -194,6 +216,9 @@ class RelayDisclosureUiTest {
     } finally {
       values.v4ReceiverState = null
       SignalStore.account.deviceId = previousDeviceId
+      check(connector.edit().putString(savedKey, previousDistributor).apply {
+        if (previousAck == null) remove(ackKey) else putBoolean(ackKey, previousAck)
+      }.commit())
     }
   }
 
@@ -338,9 +363,29 @@ class RelayDisclosureUiTest {
   private fun screenshot(suffix: String) {
     val prefix = screenshotPrefix ?: return
     val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
+    val name = "$prefix-$suffix.png"
+    val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/collie-relay-disclosure/"
+    val resolver = context.contentResolver
     try {
-      FileOutputStream(File(context.getExternalFilesDir(null), "$prefix-$suffix.png")).use {
-        check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+      resolver.delete(
+        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+        "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?",
+        arrayOf(name, relativePath),
+      )
+      val uri = checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+        put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+        put(MediaStore.MediaColumns.IS_PENDING, 1)
+      }))
+      try {
+        checkNotNull(resolver.openOutputStream(uri)).use {
+          check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+        }
+        check(resolver.update(uri, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null) == 1)
+      } catch (failure: Exception) {
+        resolver.delete(uri, null, null)
+        throw failure
       }
     } finally {
       bitmap.recycle()
@@ -348,4 +393,9 @@ class RelayDisclosureUiTest {
   }
 
   private fun fixture(path: String): ByteArray = instrumentation.context.assets.open(path).use { it.readBytes() }
+}
+
+/** Makes the synthetic distributor discoverable only from the instrumentation APK. */
+class RelayDisclosureFixtureDistributor : BroadcastReceiver() {
+  override fun onReceive(context: Context, intent: Intent) = Unit
 }

@@ -5,6 +5,7 @@ import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
@@ -77,7 +78,14 @@ object EndpointReconciler {
           null
         }
         if (updatedReceiver != null) {
-          values.v4ReceiverState = updatedReceiver.serialize()
+          if (updatedReceiver !== receiver) {
+            try {
+              values.commitV4ReceiverState(updatedReceiver.serialize())
+            } catch (_: KeyValuePersistenceException) {
+              Log.w(TAG, "Receiver endpoint update was not acknowledged by local storage.")
+              return
+            }
+          }
           val pendingAt = if (updatedReceiver.pendingSentAt > 0) updatedReceiver.pendingSentAt else updatedReceiver.pendingCreatedAt
           needsSend = updatedReceiver.pendingEpoch != null && (forceReceiver || retryPending || !updatedReceiver.pendingFrame!!.contentEquals(receiver.pendingFrame ?: byteArrayOf()) || resume && now - pendingAt >= RESUME_AFTER_SECONDS)
         }

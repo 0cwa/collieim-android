@@ -358,7 +358,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       pairingOrigin = pairing?.endpointOrigin ?: receiver?.target?.endpoint?.let(PairingV1::canonicalOrigin),
       encryptedEnrollment = pairing != null || controlRead?.key != null || receiverJson != null,
       awaitingPushConfirmation = awaitingV3 || awaitingV4,
-      receiverUpdatePending = receiver?.pendingEpoch != null,
       enrollmentEpoch = controlRead?.activeEpoch ?: receiver?.epoch ?: 0L,
       pushFallback = SignalStore.unifiedpush.health.fallback,
       pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),

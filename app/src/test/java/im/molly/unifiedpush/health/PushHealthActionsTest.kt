@@ -346,6 +346,7 @@ class PushHealthActionsTest {
       importId = "66666666-6666-4666-8666-666666666666",
     )
     var replacedAtDiagnosis = false
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.initializeFromSignalStore()
     UnifiedPushHealthJob.distributorActive = {
       val live = ReceiverControlState.parse(values.v4ReceiverState)
       if (!replacedAtDiagnosis && live?.pendingEpoch != null) {

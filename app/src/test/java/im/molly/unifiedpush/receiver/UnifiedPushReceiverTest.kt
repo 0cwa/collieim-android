@@ -747,16 +747,41 @@ class UnifiedPushReceiverTest {
     fakeAccount()
     every { SignalStore.account.isLinkedDevice } returns true
     values.device = null
+    val now = System.currentTimeMillis() / 1000
     val offerNode = ObjectMapper().readTree(
       checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json")).use { it.readBytes() },
-    )[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "pair_bridge")
-    val offerJson = """{"collie_pairing_transport":1,"bridge_device_id":2,"offer":$offerNode}"""
+    )[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+      .put("intent", "pair_bridge").put("expires_at", now + 600)
+    val offerJson = """{"collie_pairing_transport":1,"offer":$offerNode}"""
     val coordinator = PairingV1Coordinator(context)
 
-    org.junit.Assert.assertThrows(EnrollmentFile.Invalid::class.java) { coordinator.parseScan(offerJson) }
-    assertTrue(coordinator.evaluateOffer(PairingV1.parseOffer(offerNode.toString(), 0)).let { it is PairingV1Coordinator.OfferPlan.Failed })
+    val validOffer = PairingTransport.parse(offerJson, now).offer
+    assertEquals("pair_bridge", validOffer.intent)
+    org.junit.Assert.assertThrows(EnrollmentFile.Invalid::class.java) { coordinator.parseScan(offerJson, now) }
+    assertTrue(coordinator.evaluateOffer(validOffer) is PairingV1Coordinator.OfferPlan.Failed)
     assertNull(values.device)
     assertNull(PairingRegistrationGate.current())
+  }
+
+  @Test
+  fun `the observer claims linked wake demand without a local bridge credential`() {
+    fakeAccount()
+    every { SignalStore.account.isLinkedDevice } returns true
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.enabled = true
+
+    checkNotNull(UnifiedPushAccountTransition.acquireLease()).use { lease ->
+      val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+      val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
+      try {
+        assertEquals(listOf(admission), synchronized(UnifiedPushLifecycle.monitor) {
+          UnifiedPushAccountTransition.claimPendingFetchAdmissionsLocked()
+        })
+      } finally {
+        UnifiedPushLifecycle.finishFetchAdmission(admission)
+      }
+    }
   }
 
   @Test
@@ -1222,6 +1247,7 @@ class UnifiedPushReceiverTest {
     mockkObject(PairingV1, PairingTransport)
     val transitionFailure = AtomicReference<Throwable?>()
     var lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>? = null
+    var transitionWorker: Thread? = null
     try {
       every { UnifiedPush.getDistributors(context) } returns listOf(owner)
       every { UnifiedPush.getSavedDistributor(context) } returns owner
@@ -1283,7 +1309,10 @@ class UnifiedPushReceiverTest {
         } finally {
           transitionFinished.countDown()
         }
-      }.start()
+      }.also { worker ->
+        transitionWorker = worker
+        worker.start()
+      }
 
       awaitCondition("pairing promotion did not start draining the held lease") {
         synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushLifecycle.isTransitionInProgressLocked() }
@@ -1309,6 +1338,7 @@ class UnifiedPushReceiverTest {
       assertEquals(candidateEndpoint, values.endpoint)
     } finally {
       lease?.close()
+      transitionWorker?.join(5_000)
       PairingRegistrationGate.current()?.binding?.let { PairingRegistrationGate.cancel(it.instance) }
       unmockkObject(PairingV1, PairingTransport)
       unmockkStatic(UnifiedPush::class)

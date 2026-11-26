@@ -527,7 +527,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
   private fun getConfiguration(state: UnifiedPushSettingsState): DSLConfiguration = configure {
     textPref(
       title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__status),
-      summary = DSLSettingsText.from(if (state.receiverUpdatePending) R.string.PairingV1__waiting_confirmation else getStatusSummary(state)),
+      summary = DSLSettingsText.from(getStatusSummary(state)),
     )
 
     val relaySummary = when {

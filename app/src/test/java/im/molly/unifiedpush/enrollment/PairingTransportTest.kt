@@ -142,6 +142,7 @@ class PairingTransportTest {
       val wrongReceiver = ObjectMapper().readTree(receiptJson).deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
         .put("receiver_id", "f0000000-0000-4000-8000-000000000001")
       response.set(PairingV1.responseForTest(offer, sealed, wrongReceiver.toString()))
+      assertThrows(EnrollmentFile.Invalid::class.java) { PairingV1.openReceipt(offer, sealed, response.get()) }
       assertEquals(PairingTransport.Result.InvalidResponse, PairingTransport.submit(url, sealed.json) {
         PairingV1.openReceipt(offer, sealed, it) == receiptJson
       })

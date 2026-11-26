@@ -30,14 +30,11 @@ object ControlReset {
     }
   }
 
-  /** Explicit user recovery after server removal; clears only a corrupt local control record. */
+  /** Explicit user recovery after server removal when the local control record is corrupt. */
   @JvmStatic
   fun recoverCorrupt(context: Context): Boolean {
     val cleared = SignalStore.unifiedpush.clearCorruptControlAfterServerRemoval()
-    if (cleared) {
-      SignalStore.unifiedpush.commitV4ReceiverStates(null, null)
-      LockedPushState.setEncryptedEnrollment(context, false)
-    }
+    if (cleared) LockedPushState.setEncryptedEnrollment(context, false)
     return cleared
   }
 }

@@ -34,7 +34,6 @@ data class UnifiedPushSettingsState(
   val pairingOrigin: String? = null,
   val encryptedEnrollment: Boolean = false,
   val awaitingPushConfirmation: Boolean = false,
-  val receiverUpdatePending: Boolean = false,
   val enrollmentEpoch: Long = 0,
 ) {
   val serverParameters: String?

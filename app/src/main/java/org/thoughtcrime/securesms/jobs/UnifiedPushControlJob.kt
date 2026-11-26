@@ -11,6 +11,7 @@ import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
@@ -84,8 +85,11 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
           return
         }
         val receiverState = ReceiverControlState.parse(pairingValues.v4ReceiverState)
+        val pairing = pairingValues.pairingEndpointBinding
         if (receiverState?.confirmed == true && receiverState.pendingFrame != null &&
           receiverState.accountId == lease.snapshot.accountId && receiverState.instance == lease.snapshot.instance &&
+          pairing != null && pairing.importId == receiverState.importId && pairing.accountId == receiverState.accountId &&
+          pairing.instance == receiverState.instance && pairing.deviceId == lease.snapshot.localDeviceId &&
           receiverState.pendingEpoch != null &&
           ControlFrameV4.matchesIdentity(receiverState.pendingFrame, receiverState.accountId, receiverState.bridgeDeviceId, receiverState.receiverId, receiverState.pendingEpoch)) {
           val endpoint = lease.snapshot.endpoint ?: return
@@ -107,7 +111,6 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
         }
         if (!update.sameTarget(subscription)) return
 
-        val pairing = pairingValues.pairingEndpointBinding
         if (pairing == null && PairingRegistrationGate.isPairingInstance(lease.snapshot.instance)) return
         if (pairing != null && (state.activeImportId == null || state.activeInstance != pairing.instance ||
             state.activeAccountId != pairing.accountId || state.activeDeviceId != device.deviceId ||
@@ -129,7 +132,14 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
         }
         synchronized(UnifiedPushLifecycle.monitor) {
           val current = ReceiverControlState.parse(values.v4ReceiverState) ?: return
-          values.v4ReceiverState = ReceiverControlState.recordSent(current, selected.frame, System.currentTimeMillis() / 1000).serialize()
+          val sent = ReceiverControlState.recordSent(current, selected.frame, System.currentTimeMillis() / 1000)
+          if (sent !== current) {
+            try {
+              values.commitV4ReceiverState(sent.serialize())
+            } catch (failure: KeyValuePersistenceException) {
+              throw IOException("Receiver endpoint send could not be recorded", failure)
+            }
+          }
         }
         Log.i(TAG, "Receiver endpoint update for epoch ${selected.state.pendingEpoch} sent.")
         throw AwaitingConfirmation()

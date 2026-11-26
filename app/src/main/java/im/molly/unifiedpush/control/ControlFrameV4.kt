@@ -22,7 +22,7 @@ object ControlFrameV4 {
 
   fun plaintext(subscription: ControlFrame.Subscription): ByteArray {
     EnrollmentFile.requireEndpoint(subscription.endpoint)
-    if (!subscription.endpoint.startsWith("https://")) throw EnrollmentFile.Invalid("invalid_endpoint")
+    if (!subscription.endpoint.startsWith("https://", ignoreCase = true)) throw EnrollmentFile.Invalid("invalid_endpoint")
     return "{\"endpoint\":${EnrollmentFile.json(subscription.endpoint)},\"p256dh\":${EnrollmentFile.json(subscription.p256dh)},\"auth\":${EnrollmentFile.json(subscription.auth)}}"
       .toByteArray(Charsets.UTF_8).also { if (it.size > MAX_PLAINTEXT) throw EnrollmentFile.Invalid("invalid_endpoint") }
   }

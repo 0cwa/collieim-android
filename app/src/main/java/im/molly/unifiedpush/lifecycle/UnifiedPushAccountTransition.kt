@@ -276,7 +276,7 @@ object UnifiedPushAccountTransition {
       processId = UnifiedPushLifecycle.processInstanceId(),
       accountId = context?.accountId ?: "",
       localDeviceId = context?.localDeviceId ?: -1,
-      pushDeviceId = context?.pushDevice?.deviceId ?: -2,
+      pushDeviceId = if (context == null) -2 else context.pushDevice?.deviceId ?: -1,
       instance = context?.instance ?: "",
     )
   }

@@ -14,6 +14,7 @@ import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -169,7 +170,14 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
         failure = PushHealth.Hop.UNAVAILABLE
         return@synchronized
       }
-      values.v4ReceiverState = pinned!!.serialize()
+      val attempt = checkNotNull(pinned)
+      if (attempt !== receiver) {
+        try {
+          values.commitV4ReceiverState(attempt.serialize())
+        } catch (_: KeyValuePersistenceException) {
+          failure = PushHealth.Hop.UNAVAILABLE
+        }
+      }
     }
     if (!applicable) return false
     failure?.let {
@@ -201,14 +209,7 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
       if (current == null) return true
       Thread.sleep(POLL_MS)
     }
-    val current = ReceiverControlState.parse(values.v4ReceiverState)
-    if (current?.pendingEpoch != expectedEpoch || current.pendingFrame?.contentEquals(ping.pendingFrame ?: byteArrayOf()) != true) return true
-    val hop = when {
-      !distributorActive() || values.endpoint == null -> PushHealth.Hop.DISTRIBUTOR
-      current.pendingSentAt == 0L -> PushHealth.Hop.SIGNAL_SEND
-      else -> PushHealth.Hop.COLLIESOCKET_OR_PROVIDER
-    }
-    publishV4VerdictIfCurrent(ping, ping, generation, hop)
+    publishV4VerdictIfCurrent(ping, ping, generation)
     return true
   }
 
@@ -217,21 +218,30 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
     observed: ReceiverControlState,
     attempted: ReceiverControlState?,
     generation: Long,
-    hop: PushHealth.Hop,
+    hop: PushHealth.Hop? = null,
     observedConnector: Target? = null,
   ) {
     synchronized(UnifiedPushLifecycle.monitor) {
       if (!UnifiedPushLifecycle.isCurrentGeneration(generation)) return
+      val distributorAvailable = hop != null || distributorActive()
       val values = SignalStore.unifiedpush
       val live = ReceiverControlState.parse(values.v4ReceiverState) ?: return
       val account = UnifiedPushAccountTransition.captureContextLocked() ?: return
       val pairing = values.pairingEndpointBinding
       val target = attempted?.pendingTarget ?: observedConnector ?: live.target
+      fun targetStillMatches(): Boolean {
+        val endpoint = values.endpoint ?: return false
+        val p256dh = values.endpointP256dh.orEmpty()
+        val auth = values.endpointAuth.orEmpty()
+        if (attempted == null) return Target(endpoint, p256dh, auth) == target
+        return try {
+          target.matches(ControlFrame.Subscription(endpoint, p256dh, auth))
+        } catch (_: EnrollmentFile.Invalid) { false }
+      }
       if (live.receiverId != observed.receiverId || live.importId != observed.importId ||
         live.bridgeDeviceId != observed.bridgeDeviceId || live.controlKey != observed.controlKey ||
         live.accountId != observed.accountId || live.instance != observed.instance || !live.confirmed ||
-        account.accountId != observed.accountId || account.instance != observed.instance || values.endpoint == null ||
-        values.endpoint != target.endpoint || values.endpointP256dh.orEmpty() != target.p256dh || values.endpointAuth.orEmpty() != target.auth ||
+        account.accountId != observed.accountId || account.instance != observed.instance || !targetStillMatches() ||
         (values.endpointInstance ?: "default") != live.instance ||
         SignalStore.settings.preferredNotificationMethod != org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
         pairing != null && (pairing.importId != live.importId || pairing.accountId != live.accountId ||
@@ -243,7 +253,12 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
         live.pendingTarget != attempted.pendingTarget) return
       // Pin a queued mode change to this verdict too; the connector may be replaced after this job returns.
       val expectedPairing = pairing
-      PushHealthActions.onPing(hop) { outcome, applyModeChange ->
+      val result = hop ?: when {
+        !distributorAvailable -> PushHealth.Hop.DISTRIBUTOR
+        live.pendingSentAt == 0L -> PushHealth.Hop.SIGNAL_SEND
+        else -> PushHealth.Hop.COLLIESOCKET_OR_PROVIDER
+      }
+      PushHealthActions.onPing(result) { outcome, applyModeChange ->
         synchronized(UnifiedPushLifecycle.monitor) {
           val currentHealth = values.health
           if (currentHealth.failures != outcome.failures ||
@@ -256,8 +271,7 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
             current.bridgeDeviceId != observed.bridgeDeviceId || current.controlKey != observed.controlKey ||
             current.accountId != observed.accountId || current.instance != observed.instance || !current.confirmed ||
             currentAccount.accountId != observed.accountId || currentAccount.instance != observed.instance ||
-            values.endpoint != target.endpoint || values.endpointP256dh.orEmpty() != target.p256dh ||
-            values.endpointAuth.orEmpty() != target.auth || (values.endpointInstance ?: "default") != current.instance ||
+            !targetStillMatches() || (values.endpointInstance ?: "default") != current.instance ||
             currentPairing != expectedPairing ||
             SignalStore.settings.preferredNotificationMethod != org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
             !values.enabled || expectedPairing != null && (expectedPairing.importId != current.importId ||

@@ -46,8 +46,10 @@ class ControlFrameV4Test {
     assertTrue(confirmed.confirmed)
     assertTrue(confirmed.identityMatches(wake, confirmed.accountId))
     assertFalse(confirmed.identityMatches(updated, confirmed.accountId))
-    val changed = ControlFrame.Subscription("https://push.example.test/rotated", fixture("receiver")["subscription"]["p256dh"].asText(), fixture("receiver")["subscription"]["auth"].asText())
+    val changed = ControlFrame.Subscription("HTTPS://push.example.test/rotated", fixture("receiver")["subscription"]["p256dh"].asText(), fixture("receiver")["subscription"]["auth"].asText())
     val pending = ReceiverControlState.reconcile(confirmed, confirmed.accountId, 2, changed, 1_800_000_001L)!!
+    assertNotNull(ReceiverControlState.parse(pending.serialize()))
+    assertNull(ReceiverControlState.parse(pending.copy(pendingTarget = null).serialize()))
     assertTrue(pending.identityMatches(updated, pending.accountId))
     val complete = pending.accepted(updated, pending.accountId)!!
     assertEquals(2, complete.epoch)

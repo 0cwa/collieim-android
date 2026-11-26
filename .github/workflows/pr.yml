@@ -33,10 +33,13 @@ jobs:
             echo 'build_changed=true' >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # The proguard and r8 pathspecs also match files in shrinker-rule directories.
           changed=$(git diff --no-renames --name-only "$BASE" HEAD -- \
-            gradle/ ':(glob)**/*.gradle.kts' ':(glob)**/gradle.properties' \
+            gradle/ gradlew gradlew.bat ':(glob)**/*.gradle.kts' ':(glob)**/*.gradle' \
+            ':(glob)**/gradle.properties' ':(glob)**/AndroidManifest.xml' \
+            ':(glob)**/*.pro' '*proguard*' '*r8*' ':(glob)**/.gitattributes' \
             buildSrc/ build-logic/ build-inputs/ tooling/reproducible-builds/ \
-            'tooling/gradle.properties*' 'app/build.gradle*' .github/workflows/pr.yml)
+            'tooling/gradle.properties*' 'app/build.gradle*' .github/actions/ .github/workflows/pr.yml)
           if [[ -n "$changed" ]]; then
             echo 'build_changed=true' >> "$GITHUB_OUTPUT"
           else

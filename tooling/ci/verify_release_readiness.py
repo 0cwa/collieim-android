@@ -66,6 +66,21 @@ def resolve_workflow_id(repository, reader):
     return matches[0]["id"]
 
 
+def require_main_ancestry(repository, sha, reader):
+    prefix = f"repos/{repository}"
+    ref = reader(f"{prefix}/git/ref/heads/main", paginate=False)
+    main = ref["object"]
+    main_sha = main["sha"]
+    require(ref.get("ref") == "refs/heads/main" and main.get("type") == "commit"
+            and isinstance(main_sha, str) and re.fullmatch(r"[0-9a-f]{40}", main_sha),
+            "Invalid main ref identity")
+    if sha != main_sha:
+        # Use commit IDs so a tag named main cannot affect the comparison.
+        relation = reader(f"{prefix}/compare/{sha}...{main_sha}?per_page=1", paginate=False)
+        require(relation.get("status") == "ahead" and relation["merge_base_commit"]["sha"] == sha,
+                f"Release commit {sha} is outside refs/heads/main history")
+
+
 def select_run(runs, repository, sha, branch, workflow_id):
     require(branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
     eligible = [run for run in runs if
@@ -108,6 +123,7 @@ def verify(repository, sha, branch="main", reader=api):
     require(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is not None, "Invalid repository")
     require(re.fullmatch(r"[0-9a-f]{40}", sha) is not None, "Use the exact lowercase release commit SHA")
     require(branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
+    require_main_ancestry(repository, sha, reader)
     workflow_id = resolve_workflow_id(repository, reader)
     endpoint = f"repos/{repository}/actions/runs?head_sha={sha}&per_page=100"
 

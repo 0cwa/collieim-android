@@ -2,16 +2,23 @@
 from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
+import os
 from pathlib import Path
+import re
+import subprocess
 from tempfile import TemporaryDirectory
+from textwrap import dedent
 import unittest
 from unittest.mock import patch
 
 import verify_release_readiness as gate
 
 SHA = "a" * 40
+MAIN_TIP = "b" * 40
 REPO = "0cwa/collieim-android"
 WORKFLOW_ID = 202
+MAIN_ENDPOINT = f"repos/{REPO}/git/ref/heads/main"
+COMPARE_ENDPOINT = f"repos/{REPO}/compare/{SHA}...{MAIN_TIP}?per_page=1"
 WORKFLOW_ENDPOINT = f"repos/{REPO}/actions/workflows?per_page=100"
 RUNS_ENDPOINT = f"repos/{REPO}/actions/runs?head_sha={SHA}&per_page=100"
 JOBS_ENDPOINT = f"repos/{REPO}/actions/runs/100/attempts/2/jobs?per_page=100"
@@ -38,11 +45,16 @@ def workflow_record(**changes):
     return {"id": WORKFLOW_ID, "path": gate.WORKFLOW_PATH, **changes}
 
 
+def main_ref(sha=SHA):
+    return {"ref": "refs/heads/main", "object": {"type": "commit", "sha": sha}}
+
+
 class ReleaseReadinessTest(unittest.TestCase):
     def test_success_uses_registered_workflow_and_rechecks_current_attempt(self):
         for event in ("push", "workflow_dispatch"):
             with self.subTest(event=event):
                 reader = self.reader({
+                    MAIN_ENDPOINT: main_ref(),
                     WORKFLOW_ENDPOINT: [
                         {"total_count": 2, "workflows": [workflow_record(id=9, path=".github/workflows/other.yml")]},
                         {"total_count": 2, "workflows": [workflow_record()]},
@@ -59,12 +71,42 @@ class ReleaseReadinessTest(unittest.TestCase):
                 self.assertIsNone(evidence["trusted_main"])
                 self.assertEqual(evidence["run_attempt"], 2)
                 self.assertEqual([job["name"] for job in evidence["jobs"]], list(gate.REQUIRED_JOBS))
-                self.assertEqual(reader.calls, [WORKFLOW_ENDPOINT, RUNS_ENDPOINT, JOBS_ENDPOINT,
+                self.assertEqual(reader.calls, [MAIN_ENDPOINT, WORKFLOW_ENDPOINT, RUNS_ENDPOINT, JOBS_ENDPOINT,
                                                 WORKFLOW_ENDPOINT, RUNS_ENDPOINT])
+
+    def test_ancestor_of_current_main_tip_can_authorize_release(self):
+        reader = self.reader({
+            MAIN_ENDPOINT: main_ref(MAIN_TIP),
+            COMPARE_ENDPOINT: {"status": "ahead", "merge_base_commit": {"sha": SHA}},
+            WORKFLOW_ENDPOINT: page("workflows", [workflow_record()]),
+            RUNS_ENDPOINT: page("workflow_runs", [run_record()]),
+            JOBS_ENDPOINT: page("jobs", jobs()),
+        })
+        self.assertEqual(gate.verify(REPO, SHA, reader=reader)["source_commit"], SHA)
+        self.assertEqual(reader.calls[:2], [MAIN_ENDPOINT, COMPARE_ENDPOINT])
+
+    def test_successful_dispatch_named_main_outside_main_history_fails(self):
+        for status, merge_base in (("diverged", "c" * 40), ("behind", MAIN_TIP), ("ahead", "c" * 40)):
+            with self.subTest(status=status, merge_base=merge_base):
+                reader = self.reader({
+                    MAIN_ENDPOINT: main_ref(MAIN_TIP),
+                    COMPARE_ENDPOINT: {"status": status, "merge_base_commit": {"sha": merge_base}},
+                    WORKFLOW_ENDPOINT: page("workflows", [workflow_record()]),
+                    RUNS_ENDPOINT: page("workflow_runs", [run_record(event="workflow_dispatch", head_branch="main")]),
+                    JOBS_ENDPOINT: page("jobs", jobs()),
+                })
+                with self.assertRaisesRegex(gate.Failure, "outside refs/heads/main history"):
+                    gate.verify(REPO, SHA, reader=reader)
+                self.assertEqual(reader.calls, [MAIN_ENDPOINT, COMPARE_ENDPOINT])
+
+    def test_tag_ref_cannot_substitute_for_main_ref(self):
+        reader = self.reader({MAIN_ENDPOINT: {**main_ref(), "ref": "refs/tags/main"}})
+        with self.assertRaisesRegex(gate.Failure, "Invalid main ref identity"):
+            gate.verify(REPO, SHA, reader=reader)
 
     def reader(self, responses):
         def reader(endpoint, *, paginate):
-            self.assertTrue(paginate)
+            self.assertEqual(paginate, "/actions/" in endpoint)
             reader.calls.append(endpoint)
             return responses[endpoint]
 
@@ -79,7 +121,7 @@ class ReleaseReadinessTest(unittest.TestCase):
             [{"total_count": 2, "workflows": [workflow_record()]}],
         ):
             with self.subTest(listing=listing), self.assertRaises(gate.Failure):
-                gate.verify(REPO, SHA, reader=self.reader({WORKFLOW_ENDPOINT: listing}))
+                gate.verify(REPO, SHA, reader=self.reader({MAIN_ENDPOINT: main_ref(), WORKFLOW_ENDPOINT: listing}))
 
     def test_foreign_stale_or_untrusted_runs_cannot_authorize_release(self):
         for changes in ({"head_sha": "b" * 40}, {"event": "pull_request"},
@@ -131,7 +173,7 @@ class ReleaseReadinessTest(unittest.TestCase):
             run_record(event="workflow_dispatch"),
             run_record(status="in_progress", conclusion=None),
         ):
-            responses = iter([page("workflows", [workflow_record()]),
+            responses = iter([main_ref(), page("workflows", [workflow_record()]),
                               page("workflow_runs", [run_record()]),
                               page("jobs", jobs()),
                               page("workflows", [workflow_record()]),
@@ -140,7 +182,7 @@ class ReleaseReadinessTest(unittest.TestCase):
                 gate.verify(REPO, SHA, reader=lambda *args, **kwargs: next(responses))
 
     def test_workflow_recreation_during_verification_fails(self):
-        responses = iter([page("workflows", [workflow_record()]),
+        responses = iter([main_ref(), page("workflows", [workflow_record()]),
                           page("workflow_runs", [run_record()]),
                           page("jobs", jobs()),
                           page("workflows", [workflow_record(id=303)])])
@@ -177,6 +219,56 @@ class ReleaseReadinessTest(unittest.TestCase):
                                   (REPO, SHA, "refs/heads/main")):
             with self.subTest(repo=repo, sha=sha, branch=branch), self.assertRaises(gate.Failure):
                 gate.verify(repo, sha, branch, reader=forbidden)
+
+
+class BuildInputGateTest(unittest.TestCase):
+    def test_detects_build_paths_and_always_builds_non_pr_events(self):
+        workflow = (Path(__file__).resolve().parents[2] / gate.WORKFLOW_PATH).read_text()
+        step = re.search(r"(?ms)^        id: detect\n.*?^        run: \|\n((?:^          [^\n]*\n)+)", workflow)
+        self.assertIsNotNone(step, "Missing build input detection script")
+        script = dedent(step[1])
+
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def git(*args):
+                return subprocess.check_output(
+                    ["git", "-c", "user.name=CI fixture", "-c", "user.email=ci@example.invalid",
+                     "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", *args],
+                    cwd=root, text=True,
+                ).strip()
+
+            def detect(event, base):
+                output = root / "output"
+                output.write_text("")
+                subprocess.run(["bash", "-eo", "pipefail", "-c", script], cwd=root, check=True,
+                               env={**os.environ, "BASE": base, "GITHUB_EVENT_NAME": event,
+                                    "GITHUB_OUTPUT": str(output)})
+                return output.read_text()
+
+            for event in ("push", "workflow_dispatch"):
+                with self.subTest(event=event):
+                    self.assertEqual(detect(event, ""), "build_changed=true\n")
+
+            git("init", "-q")
+            git("commit", "--allow-empty", "-qm", "base")
+            base = git("rev-parse", "HEAD")
+            for path, build_changed in (
+                ("gradlew", "true"), ("gradlew.bat", "true"), ("lib/contacts/build.gradle", "true"),
+                ("app/src/main/AndroidManifest.xml", "true"), ("lib/image-editor/consumer-rules.pro", "true"),
+                ("app/proguard/extra.cfg", "true"), ("app/shrinker-config-r8.txt", "true"),
+                (".gitattributes", "true"), (".github/actions/disk-cleanup/action.yml", "true"),
+                ("gradle/libs.versions.toml", "true"), ("settings.gradle.kts", "true"),
+                ("docs/contributing.md", "false"), ("app/src/main/Example.kt", "false"),
+            ):
+                with self.subTest(path=path):
+                    git("reset", "--hard", "-q", base)
+                    file = root / path
+                    file.parent.mkdir(parents=True, exist_ok=True)
+                    file.touch()
+                    git("add", "--", path)
+                    git("commit", "-qm", "change build input")
+                    self.assertEqual(detect("pull_request", base), f"build_changed={build_changed}\n")
 
 
 if __name__ == "__main__":

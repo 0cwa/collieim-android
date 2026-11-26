@@ -8,9 +8,13 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.core.graphics.ColorUtils
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -64,6 +68,9 @@ class PhotoWallpaperAutomaticColorTest {
   @get:Rule
   val animations = DisableAnimationsRule()
 
+  @get:Rule
+  val compose = createEmptyComposeRule()
+
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
 
   @Test
@@ -104,13 +111,31 @@ class PhotoWallpaperAutomaticColorTest {
       assertEquals(color.asSingleColor(), picker.get(10, TimeUnit.SECONDS).asSingleColor())
 
       val preview = ChatWallpaperPreviewActivity.create(harness.context, wallpaper, recipientId, false)
-      ActivityScenario.launch<ChatWallpaperPreviewActivity>(preview).use {
+      ActivityScenario.launch<ChatWallpaperPreviewActivity>(preview).use { scenario ->
+        compose.waitUntil(timeoutMillis = 10_000) {
+          var photoReady = false
+          scenario.onActivity { activity ->
+            photoReady = activity.findViewById<ImageView>(R.id.chat_wallpaper_preview)?.drawable is BitmapDrawable
+          }
+          photoReady
+        }
         onView(withId(R.id.preview_bubble_2)).check(matches(isDisplayed()))
         onView(withId(R.id.colorizer)).check { view, noMatch ->
           if (noMatch != null) throw noMatch
           assertEquals(color.asSingleColor(), (view.background as ColorDrawable).color)
         }
-        screenshot("photo-wallpaper-preview").recycle()
+        compose.waitUntil(timeoutMillis = 10_000) {
+          val image = instrumentation.uiAutomation.takeScreenshot() ?: return@waitUntil false
+          try {
+            val photoVisible = image.getPixel(image.width / 2, image.height * 4 / 5) == Color.rgb(247, 203, 40)
+            if (photoVisible) {
+              saveScreenshot(image, "photo-wallpaper-preview")
+            }
+            photoVisible
+          } finally {
+            image.recycle()
+          }
+        }
       }
 
       assertRenderedBubble(recipientId, threadId, color.asSingleColor(), "after-automatic-light")
@@ -154,9 +179,16 @@ class PhotoWallpaperAutomaticColorTest {
         instrumentation.callActivityOnNewIntent(it, Intent(intent))
         it.intent = launcherIntent
       }
+      compose.waitUntil(timeoutMillis = 10_000) {
+        var conversationReady = false
+        scenario.onActivity {
+          conversationReady = it.findViewById<View>(R.id.conversation_item_recycler)?.isShown == true
+        }
+        conversationReady
+      }
       scrollToDescendant(R.id.conversation_item_recycler, withText(MESSAGE), timeoutMs = 20_000)
       val bounds = Rect()
-      onView(allOf(withId(R.id.body_bubble), hasDescendant(withText(MESSAGE)))).check { view, noMatch ->
+      onView(allOf(withId(R.id.conversation_item_body_wrapper), hasDescendant(withText(MESSAGE)))).check { view, noMatch ->
         if (noMatch != null) throw noMatch
         val body = view.findViewById<TextView>(R.id.conversation_item_body)
         assertTrue(ColorUtils.calculateContrast(body.currentTextColor, color) >= 4.5)
@@ -183,11 +215,15 @@ class PhotoWallpaperAutomaticColorTest {
   private fun screenshot(name: String): Bitmap {
     instrumentation.waitForIdleSync()
     val image = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
+    saveScreenshot(image, name)
+    return image
+  }
+
+  private fun saveScreenshot(image: Bitmap, name: String) {
     val output = InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")
       ?.let(::File) ?: File(harness.context.getExternalFilesDir(null), "theme-regression")
     assertTrue(output.isDirectory || output.mkdirs())
     File(output, "$name.png").outputStream().use { assertTrue(image.compress(Bitmap.CompressFormat.PNG, 100, it)) }
-    return image
   }
 
   private fun yellowWallpaper(): ByteArray {

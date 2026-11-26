@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Install Collie's Layer trailer checks without replacing unrelated Git hooks."""
+"""Opt in to Collie's Layer trailer hooks for maintainers and agents."""
 
+import argparse
 from pathlib import Path
 import subprocess
 import sys
@@ -12,6 +13,16 @@ MARKER = b"Collie Layer trailer hooks:"
 
 def install():
     source = Path(__file__).resolve().parent
+    global_hooks = subprocess.run(
+        ["git", "config", "--global", "--includes", "--get", "core.hooksPath"],
+        stdout=subprocess.DEVNULL,
+    )
+    if global_hooks.returncode == 0:
+        print(
+            "WARNING: core.hooksPath is set globally. If this repository uses that "
+            "directory, installing Collie's hooks there can affect other repositories.",
+            file=sys.stderr,
+        )
     destination = Path(subprocess.check_output(
         ["git", "rev-parse", "--path-format=absolute", "--git-path", "hooks"], text=True
     ).strip())
@@ -32,6 +43,8 @@ def install():
 
 
 if __name__ == "__main__":
+    argparse.ArgumentParser(description=__doc__).parse_args()
+    print("Collie hooks are opt-in for maintainers and agents. Fork contributors can skip them.")
     try:
         install()
     except (OSError, ValueError, subprocess.CalledProcessError) as error:

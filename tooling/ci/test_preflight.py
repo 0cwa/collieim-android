@@ -18,11 +18,18 @@ SPEC.loader.exec_module(preflight)
 
 
 class PreflightTests(unittest.TestCase):
-    def invoke(self, outcomes, argv=None):
+    def invoke(self, outcomes, argv=None, expected_base="origin/main"):
         def run(command, **kwargs):
-            if command[0] == "git":
+            if command[:3] == ["git", "remote", "-v"]:
+                return subprocess.CompletedProcess(command, 0, outcomes.get("remotes", ""), "")
+            if command[:2] == ["git", "for-each-ref"]:
+                return subprocess.CompletedProcess(command, 0, outcomes.get("refs", ""), "")
+            if command[:2] == ["git", "log"]:
+                self.assertEqual(command[-1], f"{expected_base}..HEAD")
                 return subprocess.CompletedProcess(command, 0, outcomes.get("signatures", "abc123 G\n"), "")
             check = "trailers" if "collie_check_layer_trailers.py" in command[1] else "metadata"
+            if check == "trailers":
+                self.assertEqual(command[2:], ["range", expected_base, "HEAD"])
             return subprocess.CompletedProcess(command, outcomes.get(check, 0), outcomes.get(f"{check}_output", ""), "")
 
         output = io.StringIO()
@@ -36,6 +43,43 @@ class PreflightTests(unittest.TestCase):
         registered = sum(line.startswith(("PASS: ", "FAIL: ")) for line in output.splitlines())
         self.assertGreater(registered, 0)
         self.assertIn(f"Preflight PASSED ({registered}/{registered} checks)", output)
+
+    def test_canonical_remote_wins_over_upstream_and_fork_origin(self):
+        for url in (
+            "https://github.com/0cwa/collieim-android.git",
+            "git@github.com:0cwa/collieim-android.git",
+            "ssh://git@github.com/0cwa/collieim-android",
+        ):
+            with self.subTest(url=url):
+                result, _ = self.invoke({
+                    "remotes": (
+                        "origin\thttps://github.com/contributor/collieim-android.git (fetch)\n"
+                        f"origin\t{url} (push)\n"
+                        f"collie\t{url} (fetch)\n"
+                    ),
+                    "refs": "origin/main\nupstream/main\ncollie/main\n",
+                }, expected_base="collie/main")
+                self.assertEqual(result, 0)
+
+    def test_unfetched_canonical_main_falls_back_to_upstream(self):
+        result, _ = self.invoke({
+            "remotes": "collie\thttps://github.com/0cwa/collieim-android (fetch)\n",
+            "refs": "origin/main\nupstream/main\n",
+        }, expected_base="upstream/main")
+        self.assertEqual(result, 0)
+
+    def test_similar_url_falls_back_to_origin(self):
+        result, _ = self.invoke({
+            "remotes": "collie\thttps://github.com/0cwa/collieim-android-fork (fetch)\n",
+            "refs": "collie/main\norigin/main\n",
+        })
+        self.assertEqual(result, 0)
+
+    def test_explicit_base_skips_remote_detection(self):
+        with patch.object(preflight, "default_base") as detect:
+            result, _ = self.invoke({}, ["--base", "release/stable/8.35"], expected_base="release/stable/8.35")
+        detect.assert_not_called()
+        self.assertEqual(result, 0)
 
     def test_pinned_pairing_manifest_passes(self):
         output = io.StringIO()
@@ -105,7 +149,7 @@ class PreflightTests(unittest.TestCase):
 
         output = io.StringIO()
         with patch.object(preflight.subprocess, "run", side_effect=run), redirect_stdout(output):
-            result = preflight.main([])
+            result = preflight.main(["--base", "origin/main"])
         self.assertEqual(result, 1)
         self.assertIn("git log failed: unknown ref", output.getvalue())
 

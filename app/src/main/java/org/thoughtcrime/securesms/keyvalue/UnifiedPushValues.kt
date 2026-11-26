@@ -40,6 +40,17 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_ENDPOINT_P256DH = "up.endpoint.p256dh"
     private const val UNIFIEDPUSH_ENDPOINT_AUTH = "up.endpoint.auth"
     private const val UNIFIEDPUSH_ENDPOINT_INSTANCE = "up.endpoint.instance"
+    private const val UNIFIEDPUSH_PAIRING_INSTANCE = "up.pairing.instance"
+    private const val UNIFIEDPUSH_PAIRING_DISTRIBUTOR = "up.pairing.distributor"
+    private const val UNIFIEDPUSH_PAIRING_VAPID = "up.pairing.vapid"
+    private const val UNIFIEDPUSH_PAIRING_ORIGIN = "up.pairing.origin"
+    private const val UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN = "up.pairing.endpointOrigin"
+    private const val UNIFIEDPUSH_PAIRING_SESSION = "up.pairing.session"
+    private const val UNIFIEDPUSH_PAIRING_EXPIRY = "up.pairing.expiry"
+    private const val UNIFIEDPUSH_PAIRING_ACCOUNT = "up.pairing.account"
+    private const val UNIFIEDPUSH_PAIRING_DEVICE = "up.pairing.device"
+    private const val UNIFIEDPUSH_PAIRING_HOST_LABEL = "up.pairing.hostLabel"
+    private const val UNIFIEDPUSH_PAIRING_IMPORT_ID = "up.pairing.importId"
     private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
@@ -188,6 +199,43 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   var endpointInstance: String? by stringValue(UNIFIEDPUSH_ENDPOINT_INSTANCE, null)
 
+  /** Pairing-created routes stay isolated from any previously configured legacy relay across restarts. */
+  data class PairingEndpointBinding(
+    val instance: String,
+    val distributorId: String,
+    val vapidPublicKey: String,
+    val providerOrigin: String?,
+    val endpointOrigin: String,
+    val sessionId: String,
+    val expiresAt: Long,
+    val accountId: String,
+    val deviceId: Int,
+    val hostLabel: String? = null,
+    val importId: String? = null,
+  ) {
+    override fun toString() = "PairingEndpointBinding(sessionId=$sessionId, instance=$instance)"
+  }
+
+  val pairingEndpointBinding: PairingEndpointBinding?
+    get() {
+      val snapshot = store.beginRead()
+      val instance = snapshot.getString(UNIFIEDPUSH_PAIRING_INSTANCE, null) ?: return null
+      val distributor = snapshot.getString(UNIFIEDPUSH_PAIRING_DISTRIBUTOR, null) ?: return null
+      val vapid = snapshot.getString(UNIFIEDPUSH_PAIRING_VAPID, null) ?: return null
+      val session = snapshot.getString(UNIFIEDPUSH_PAIRING_SESSION, null) ?: return null
+      val account = snapshot.getString(UNIFIEDPUSH_PAIRING_ACCOUNT, null) ?: return null
+      val origin = snapshot.getString(UNIFIEDPUSH_PAIRING_ORIGIN, null)
+      val endpointOrigin = snapshot.getString(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN, null) ?: return null
+      val expiry = snapshot.getLong(UNIFIEDPUSH_PAIRING_EXPIRY, 0L)
+      val deviceId = snapshot.getInteger(UNIFIEDPUSH_PAIRING_DEVICE, 0)
+      if (expiry <= 0L || deviceId <= 0) return null
+      return PairingEndpointBinding(
+        instance, distributor, vapid, origin, endpointOrigin, session, expiry, account, deviceId,
+        snapshot.getString(UNIFIEDPUSH_PAIRING_HOST_LABEL, null),
+        snapshot.getString(UNIFIEDPUSH_PAIRING_IMPORT_ID, null),
+      )
+    }
+
   /** Publishes one connector route tuple so readers never combine a new URL with old key material or instance. */
   fun setEndpointRegistration(endpoint: String?, p256dh: String?, auth: String?, instance: String?) {
     store.beginWrite()
@@ -195,6 +243,39 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putString(UNIFIEDPUSH_ENDPOINT_P256DH, p256dh)
       .putString(UNIFIEDPUSH_ENDPOINT_AUTH, auth)
       .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, instance)
+      .remove(UNIFIEDPUSH_PAIRING_INSTANCE)
+      .remove(UNIFIEDPUSH_PAIRING_DISTRIBUTOR)
+      .remove(UNIFIEDPUSH_PAIRING_VAPID)
+      .remove(UNIFIEDPUSH_PAIRING_ORIGIN)
+      .remove(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN)
+      .remove(UNIFIEDPUSH_PAIRING_SESSION)
+      .remove(UNIFIEDPUSH_PAIRING_EXPIRY)
+      .remove(UNIFIEDPUSH_PAIRING_ACCOUNT)
+      .remove(UNIFIEDPUSH_PAIRING_DEVICE)
+      .remove(UNIFIEDPUSH_PAIRING_HOST_LABEL)
+      .remove(UNIFIEDPUSH_PAIRING_IMPORT_ID)
+      .apply()
+  }
+
+  fun setPairingEndpointRegistration(
+    endpoint: String?, p256dh: String?, auth: String?, binding: PairingEndpointBinding,
+  ) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_ENDPOINT, endpoint)
+      .putString(UNIFIEDPUSH_ENDPOINT_P256DH, p256dh)
+      .putString(UNIFIEDPUSH_ENDPOINT_AUTH, auth)
+      .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, binding.instance)
+      .putString(UNIFIEDPUSH_PAIRING_INSTANCE, binding.instance)
+      .putString(UNIFIEDPUSH_PAIRING_DISTRIBUTOR, binding.distributorId)
+      .putString(UNIFIEDPUSH_PAIRING_VAPID, binding.vapidPublicKey)
+      .putString(UNIFIEDPUSH_PAIRING_ORIGIN, binding.providerOrigin)
+      .putString(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN, binding.endpointOrigin)
+      .putString(UNIFIEDPUSH_PAIRING_SESSION, binding.sessionId)
+      .putLong(UNIFIEDPUSH_PAIRING_EXPIRY, binding.expiresAt)
+      .putString(UNIFIEDPUSH_PAIRING_ACCOUNT, binding.accountId)
+      .putInteger(UNIFIEDPUSH_PAIRING_DEVICE, binding.deviceId)
+      .putString(UNIFIEDPUSH_PAIRING_HOST_LABEL, binding.hostLabel)
+      .putString(UNIFIEDPUSH_PAIRING_IMPORT_ID, binding.importId)
       .apply()
   }
 

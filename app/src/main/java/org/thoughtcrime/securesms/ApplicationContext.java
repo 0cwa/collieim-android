@@ -76,6 +76,8 @@ import org.thoughtcrime.securesms.crypto.UnrecoverableKeyException;
 import org.thoughtcrime.securesms.database.LogDatabase;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.events.PushServiceEvent;
+import org.signal.core.util.eventbus.EventBus;
 import org.thoughtcrime.securesms.dependencies.AppRemoteConfigDependencies;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider;
 import org.thoughtcrime.securesms.gcm.FcmFetchManager;
@@ -384,7 +386,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
       isAppInitialized = true;
     }
 
-    SignalExecutors.BOUNDED.execute(() -> UnifiedPushReceiver.applyPendingEndpoint(this));
+    SignalExecutors.BOUNDED.execute(() -> {
+      UnifiedPushReceiver.applyPendingEndpoint(this);
+      UnifiedPushReceiver.resumeScopedRegistration(this);
+    });
   }
 
   @MainThread
@@ -623,12 +628,27 @@ public class ApplicationContext extends Application implements AppForegroundObse
     updatePushNotificationServices(null);
   }
 
+  /** Activates the selected delivery service after pairing without starting a legacy relay refresh. */
+  public void activatePushNotificationServicesAfterPairing() {
+    updatePushNotificationServices(null, false);
+    restartPushDeliveryAfterPairing();
+  }
+
+  public void restartPushDeliveryAfterPairing() {
+    AppDependencies.resetNetwork(true);
+    EventBus.getDefault().post(PushServiceEvent.INSTANCE);
+  }
+
   private void updatePushNotificationServices(@Nullable UnifiedPushRefreshJob unifiedPushRefresh) {
+    updatePushNotificationServices(unifiedPushRefresh, true);
+  }
+
+  private void updatePushNotificationServices(@Nullable UnifiedPushRefreshJob unifiedPushRefresh, boolean scheduleRelayCleanup) {
     if (!SignalStore.account().isRegistered()) {
       return;
     }
 
-    if (SignalStore.unifiedpush().getPendingRelayCleanup() != null) {
+    if (scheduleRelayCleanup && SignalStore.unifiedpush().getPendingRelayCleanup() != null) {
       AppDependencies.getJobManager().add(new UnifiedPushRefreshJob());
     }
 

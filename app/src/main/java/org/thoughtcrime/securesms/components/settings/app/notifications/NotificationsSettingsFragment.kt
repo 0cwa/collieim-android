@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.launch
+import androidx.core.os.bundleOf
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
@@ -61,8 +62,10 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
+import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment
 import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
 import im.molly.unifiedpush.enrollment.RelayDisclosure
+import im.molly.unifiedpush.model.MollySocket
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -114,7 +117,16 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    callbacks = DefaultNotificationsSettingsCallbacks(requireActivity(), viewModel, appSettingsRouter, DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this), viewLifecycleOwner)
+    callbacks = DefaultNotificationsSettingsCallbacks(
+      requireActivity(), viewModel, appSettingsRouter,
+      DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this), viewLifecycleOwner,
+      onFirstPairingScan = { offer ->
+        findNavController().safeNavigate(
+          R.id.action_notificationsSettingsFragment_to_unifiedPushFragment,
+          bundleOf(UnifiedPushSettingsFragment.PAIRING_OFFER_ARGUMENT to offer),
+        )
+      },
+    )
 
     viewLifecycleOwner.lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -173,6 +185,7 @@ open class DefaultNotificationsSettingsCallbacks(
   val appSettingsRouter: AppSettingsRouter,
   activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity),
   private val owner: LifecycleOwner = activity,
+  private val onFirstPairingScan: ((String) -> Unit)? = null,
 ) : NotificationsSettingsCallbacks {
 
   companion object {
@@ -233,15 +246,22 @@ open class DefaultNotificationsSettingsCallbacks(
 
   private val qrScanLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = MollySocketQrScannerActivity.Contract(),
-    callback = { mollySocket ->
+    callback = { data ->
       val disclosure = viewModel.scanDisclosure
       viewModel.scanDisclosure = null
-      if (mollySocket != null) {
+      if (data?.trimStart()?.startsWith("{") == true) {
+        onFirstPairingScan?.invoke(data) ?: appSettingsRouter.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
+      } else if (data != null) {
         if (disclosure == null) {
           RelayDisclosureDialogs.showStaleAction(activity)
         } else {
-          RelayDisclosureDialogs.showRelay(activity, mollySocket) {
-            viewModel.initializeMollySocket(mollySocket, disclosure)
+          val mollySocket = MollySocket.parseLink(Uri.parse(data))
+          if (mollySocket == null) {
+            Toast.makeText(activity, R.string.PairingV1__invalid_offer, Toast.LENGTH_LONG).show()
+          } else {
+            RelayDisclosureDialogs.showRelay(activity, mollySocket) {
+              viewModel.initializeMollySocket(mollySocket, disclosure)
+            }
           }
         }
       }

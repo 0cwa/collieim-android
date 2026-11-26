@@ -1,9 +1,11 @@
 package org.thoughtcrime.securesms.jobs
 
+import android.content.Context
 import im.molly.unifiedpush.MollySocketRepository
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.enrollment.RelayDisclosure
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -72,6 +74,8 @@ class UnifiedPushRefreshJob private constructor(
   public override fun onRun() {
     val pendingCleanup = synchronized(UnifiedPushLifecycle.monitor) {
       if (authorization != null && !RelayDisclosure.matchesRefreshLocked(authorization)) return
+      // Owned credential cleanup is a local lifecycle obligation. It may finish while a scoped
+      // endpoint is protected; relay registration remains gated below before any submit can run.
       SignalStore.unifiedpush.pendingRelayCleanup?.let { it to UnifiedPushLifecycle.currentGeneration() }
     }
     val cleanupGeneration = pendingCleanup?.let { (cleanup, generation) ->
@@ -80,6 +84,7 @@ class UnifiedPushRefreshJob private constructor(
       result.generation
     }
     val lease = synchronized(UnifiedPushLifecycle.monitor) {
+      if (!configureDelivery && legacyRelayBlockedLocked()) return
       if (authorization != null && !RelayDisclosure.matchesRefreshLocked(authorization)) return
       UnifiedPushAccountTransition.acquireLease(cleanupGeneration)
     }
@@ -90,15 +95,18 @@ class UnifiedPushRefreshJob private constructor(
     }
     try {
       if (configureDelivery) {
-        synchronized(UnifiedPushLifecycle.monitor) {
+        val activateRetainedRoute = synchronized(UnifiedPushLifecycle.monitor) {
           if (authorization != null && !RelayDisclosure.matchesRefreshLocked(authorization)) return
           if (SignalStore.settings.preferredNotificationMethod != NotificationDeliveryMethod.UNIFIEDPUSH ||
             SignalStore.account.isLinkedDevice) return
           if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation) {
             throw IOException("UnifiedPush account context is transitioning")
           }
+          val enablingPairingRoute = !SignalStore.unifiedpush.enabled && SignalStore.unifiedpush.pairingEndpointBinding != null
           ApplicationContext.getInstance(context).applyPushNotificationServicesFromRefresh()
+          enablingPairingRoute && SignalStore.unifiedpush.enabled
         }
+        if (activateRetainedRoute) ApplicationContext.getInstance(context).restartPushDeliveryAfterPairing()
       }
       runWithLease(lease)
     } finally {
@@ -107,6 +115,7 @@ class UnifiedPushRefreshJob private constructor(
   }
 
   private fun runWithLease(lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>) {
+    if (synchronized(UnifiedPushLifecycle.monitor) { legacyRelayBlockedLocked() }) return
     val enabled = SignalStore.unifiedpush.enabled
     val currentStatus = SignalStore.unifiedpush.registrationStatus
 
@@ -161,6 +170,7 @@ class UnifiedPushRefreshJob private constructor(
 
   @Throws(IOException::class)
   private fun checkRegistrationStatus(lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): RegistrationStatus {
+    if (synchronized(UnifiedPushLifecycle.monitor) { legacyRelayBlockedLocked() }) return RegistrationStatus.PENDING
     val endpoint = SignalStore.unifiedpush.endpoint
     val airGapped = SignalStore.unifiedpush.airGapped
     val mollySocketUrl = SignalStore.unifiedpush.mollySocketUrl?.toHttpUrlOrNull()
@@ -188,7 +198,37 @@ class UnifiedPushRefreshJob private constructor(
       return RegistrationStatus.PENDING
     }
 
-    val device = lease.snapshot.pushDevice ?: try {
+    val device = provisionBridgeCredential(context, lease) ?: return RegistrationStatus.PENDING
+
+    if (airGapped) {
+      return if (lastReceivedTime > 0) {
+        Log.d(TAG, "Air-gapped server: Device is registered.")
+        RegistrationStatus.REGISTERED
+      } else {
+        Log.d(TAG, "Air gapped server: Manual registration required!")
+        RegistrationStatus.PENDING
+      }
+    }
+
+    Log.d(TAG, "Re-registering $device on MollySocket server...")
+
+    val result = MollySocketRepository.registerDeviceOnServer(
+      url = mollySocketUrl!!,
+      device = device,
+      endpoint = endpoint,
+      ping = testPing,
+    )
+
+    Log.d(TAG, "Registration result: $result")
+
+    return result.toRegistrationStatus()
+  }
+
+  /** Reuses Signal bridge provisioning without submitting the credential to a relay. */
+  internal fun provisionBridgeCredential(
+    context: Context,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+  ): MollySocketDevice? = lease.snapshot.pushDevice ?: try {
       val created = MollySocketRepository.createDevice()
       val published = try {
         synchronized(UnifiedPushLifecycle.monitor) {
@@ -213,38 +253,24 @@ class UnifiedPushRefreshJob private constructor(
       if (!published) {
         // The linked-device request completed for an obsolete context. Remove it while this lease still pins the old account.
         MollySocketRepository.removeDevice(created)
-        return RegistrationStatus.PENDING
+        null
+      } else {
+        Log.d(TAG, "Created new MollySocket device: $created")
+        created
       }
-      Log.d(TAG, "Created new MollySocket device: $created")
-      created
     } catch (e: DeviceLimitExceededException) {
       Log.e(TAG, "Device limit exceeded: ${e.max} total devices already.")
       UnifiedPushNotificationBuilder(context).setNotificationDeviceLimitExceeded(e.max)
-      return RegistrationStatus.PENDING
+      null
     }
 
-    if (airGapped) {
-      return if (lastReceivedTime > 0) {
-        Log.d(TAG, "Air-gapped server: Device is registered.")
-        RegistrationStatus.REGISTERED
-      } else {
-        Log.d(TAG, "Air gapped server: Manual registration required!")
-        RegistrationStatus.PENDING
-      }
-    }
-
-    Log.d(TAG, "Re-registering $device on MollySocket server...")
-
-    val result = MollySocketRepository.registerDeviceOnServer(
-      url = mollySocketUrl!!,
-      device = device,
-      endpoint = endpoint,
-      ping = testPing,
+  /** Pairing admission and refresh admission share the lifecycle monitor so a stale job cannot submit scoped state. */
+  private fun legacyRelayBlockedLocked(): Boolean {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    val values = SignalStore.unifiedpush
+    return PairingRegistrationGate.blocksLegacyRelay(
+      values.pairingEndpointBinding != null || PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: ""),
     )
-
-    Log.d(TAG, "Registration result: $result")
-
-    return result.toRegistrationStatus()
   }
 
   /**

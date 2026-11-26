@@ -5,6 +5,8 @@ import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import im.molly.unifiedpush.MollySocketRepository
+import im.molly.unifiedpush.enrollment.PairingTransport
+import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.model.MollySocket
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -23,6 +25,18 @@ object MollySocketQrScanRepository {
    * Resolves QR data to a MollySocket link URI, coercing it to a standard set of [QrScanResult]s.
    */
   fun lookupQrLink(data: String): Single<QrScanResult> {
+    // Pairing offers are strict JSON and need no network lookup. Keep add_receiver parseable so
+    // the settings flow can reject the reserved intent with specific copy before any mutation.
+    if (data.trimStart().startsWith("{")) {
+      return Single.fromCallable {
+        runCatching { PairingTransport.parse(data, System.currentTimeMillis() / 1000, allowExpiredForRouting = true) }
+          .fold({ QrScanResult.Success(data) }, { error ->
+            if (error is EnrollmentFile.Invalid && error.code == "invalid_submit_url") {
+              QrScanResult.InvalidPairingDestination
+            } else QrScanResult.InvalidData
+          })
+      }.subscribeOn(Schedulers.computation())
+    }
     val uri = Uri.parse(data)
     return when (val mollySocket = MollySocket.parseLink(uri)) {
       is MollySocket.AirGapped -> {

@@ -5,6 +5,7 @@ import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
@@ -27,6 +28,7 @@ import kotlin.math.min
 class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJob(parameters) {
 
   private class AwaitingConfirmation : IOException("Endpoint update sent; waiting for the confirmation push")
+  private class PairingPending : IOException("Endpoint update deferred by pairing")
 
   private constructor() : this(
     Parameters.Builder()
@@ -55,7 +57,7 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
   override fun onShouldRetry(e: Exception): Boolean = true
 
   override fun getNextRunAttemptBackoff(pastAttemptCount: Int, exception: Exception): Long =
-    min(BACKOFF_FIRST_MS shl min(pastAttemptCount - 1, 6), BACKOFF_MAX_MS)
+    if (exception is PairingPending) BACKOFF_FIRST_MS else min(BACKOFF_FIRST_MS shl min(pastAttemptCount - 1, 6), BACKOFF_MAX_MS)
 
   @Throws(Exception::class)
   public override fun onRun() {
@@ -70,6 +72,8 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     try {
       val selected = synchronized(UnifiedPushLifecycle.monitor) {
         if (!UnifiedPushLifecycle.isReadyLocked() || !UnifiedPushAccountTransition.contextStillMatchesLocked(lease.snapshot)) return
+        if (PairingRegistrationGate.isRegistrationPending()) throw PairingPending()
+        val pairingValues = SignalStore.unifiedpush
         val state = try {
           store.read()
         } catch (e: CorruptControlStateException) {
@@ -89,6 +93,13 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
           return
         }
         if (!update.sameTarget(subscription)) return
+
+        val pairing = pairingValues.pairingEndpointBinding
+        if (pairing == null && PairingRegistrationGate.isPairingInstance(lease.snapshot.instance)) return
+        if (pairing != null && (state.activeImportId == null || state.activeInstance != pairing.instance ||
+            state.activeAccountId != pairing.accountId || state.activeDeviceId != device.deviceId ||
+            lease.snapshot.localDeviceId != pairing.deviceId || lease.snapshot.instance != pairing.instance ||
+            lease.snapshot.accountId != pairing.accountId)) return
 
         if (state.activeImportId != null &&
           (state.activeAccountId != lease.snapshot.accountId || state.activeDeviceId != device.deviceId || state.activeInstance != lease.snapshot.instance)) return

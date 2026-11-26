@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.enrollment
 
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.VisibleForTesting
 import im.molly.unifiedpush.UnifiedPushDistributor
@@ -15,6 +16,7 @@ import im.molly.unifiedpush.receiver.EncryptedPush
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.ReplayStateUnavailableException
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.UUID
@@ -32,6 +34,21 @@ object EnrollmentExporter {
     val collides get() = epoch <= highestUsed
   }
 
+  internal class DocumentExport(val epoch: Long, val highestUsed: Long, private val contents: String) {
+    val collides get() = epoch <= highestUsed
+
+    fun writeTo(context: Context, destination: Uri) {
+      val stream = context.contentResolver.openOutputStream(destination, "wt")
+        ?: throw IOException("Could not open the selected document")
+      stream.use { it.write(contents.toByteArray(Charsets.UTF_8)) }
+    }
+  }
+
+  private data class PreparedExport(
+    val file: File?, val json: String, val epoch: Long, val highestUsed: Long, val requestId: String,
+    val intent: ImportIntent,
+  )
+
   @JvmStatic
   @Synchronized
   fun exportWithEpoch(
@@ -40,14 +57,29 @@ object EnrollmentExporter {
     mode: ExportMode,
     requestId: String? = null,
     isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive,
-  ): Export = exportWithEpochAtTime(
-    context = context,
-    serverEpoch = serverEpoch,
-    mode = mode,
-    requestId = requestId,
-    nowSeconds = System.currentTimeMillis() / 1000,
-    isDistributorActive = isDistributorActive,
-  )
+  ): Export {
+    val prepared = export(context, serverEpoch, mode, requestId, System.currentTimeMillis() / 1000, isDistributorActive, true, validateSealed = { _, _, _ -> })
+    return Export(checkNotNull(prepared.file), prepared.epoch, prepared.highestUsed, prepared.requestId)
+  }
+
+  /** Creates and validates pairing bytes entirely in memory; [validateSealed] runs before intent commit. */
+  @JvmStatic
+  @Synchronized
+  internal fun exportForPairing(
+    context: Context,
+    isDistributorActive: () -> Boolean,
+    validateBeforeCommit: (ImportIntent) -> Unit = {},
+    target: Target,
+    instance: String,
+    serverEpoch: Long? = null,
+    allowRecovery: Boolean = false,
+    validateSealed: (ImportIntent, MollySocketDevice, String) -> Unit,
+  ): ImportIntent {
+    return export(
+      context, serverEpoch, ExportMode.NEW_INTENT, null, System.currentTimeMillis() / 1000, isDistributorActive, false,
+      validateBeforeCommit, validateSealed, PairingRoute(target, instance, allowRecovery),
+    ).intent
+  }
 
   @VisibleForTesting
   @Synchronized
@@ -59,18 +91,54 @@ object EnrollmentExporter {
     nowSeconds: Long,
     isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive,
   ): Export {
-    val dir = context.getExternalFilesDir(null)
+    val prepared = export(context, serverEpoch, mode, requestId, nowSeconds, isDistributorActive, true, validateSealed = { _, _, _ -> })
+    return Export(checkNotNull(prepared.file), prepared.epoch, prepared.highestUsed, prepared.requestId)
+  }
+
+  /** Commits the enrollment intent and prepares its immutable document before provider I/O. */
+  @Synchronized
+  internal fun prepareDocument(
+    context: Context,
+    serverEpoch: Long?,
+    mode: ExportMode,
+    requestId: String?,
+  ): DocumentExport {
+    val prepared = export(
+      context, serverEpoch, mode, requestId, System.currentTimeMillis() / 1000,
+      UnifiedPushDistributor::checkIfActive, false, validateSealed = { _, _, _ -> },
+    )
+    return DocumentExport(prepared.epoch, prepared.highestUsed, prepared.json)
+  }
+
+  private data class PairingRoute(val target: Target, val instance: String, val allowRecovery: Boolean)
+
+  private fun export(
+    context: Context,
+    serverEpoch: Long?,
+    mode: ExportMode,
+    requestId: String?,
+    nowSeconds: Long,
+    isDistributorActive: () -> Boolean,
+    writeToDisk: Boolean,
+    validateBeforeCommit: ((ImportIntent) -> Unit)? = null,
+    validateSealed: (ImportIntent, MollySocketDevice, String) -> Unit,
+    pairingRoute: PairingRoute? = null,
+  ): PreparedExport {
+    val dir = if (writeToDisk) context.getExternalFilesDir(null) else null
     val temp = dir?.let { File(it, TEMP_NAME) }
     val output = dir?.let { File(it, FILE_NAME) }
-    removeFiles(context)
-    if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
-    if (dir == null || temp == null || output == null) throw EnrollmentFile.Invalid("storage_unavailable")
+    if (writeToDisk) {
+      removeFiles(context)
+      if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
+      if (dir == null || temp == null || output == null) throw EnrollmentFile.Invalid("storage_unavailable")
+    }
 
     val values = SignalStore.unifiedpush
     if (values.controlStateRead == ControlStateRead.Corrupt) throw EnrollmentFile.Invalid("state_unavailable")
     if (!isDistributorActive()) throw EnrollmentFile.Invalid("not_ready")
     val store = UnifiedPushControlStore(values)
     val before = store.read()
+    var highestUsed = before.highestEpoch
 
     val intent: ImportIntent
     val contents: String
@@ -94,22 +162,29 @@ object EnrollmentExporter {
         val (device, accountId, route) = synchronized(UnifiedPushLifecycle.monitor) {
           val aci = SignalStore.account.aci
           val device = values.device
-          val endpoint = values.endpoint
-          val p256dh = values.endpointP256dh
-          val auth = values.endpointAuth
+          val endpoint = pairingRoute?.target?.endpoint ?: values.endpoint
+          val p256dh = pairingRoute?.target?.p256dh ?: values.endpointP256dh
+          val auth = pairingRoute?.target?.auth ?: values.endpointAuth
           if (aci == null || device == null || endpoint == null || p256dh == null || auth == null ||
             values.isProvisioningPending(device)) {
             throw EnrollmentFile.Invalid("not_ready")
           }
-          Triple(device, aci.toString(), Target(endpoint, p256dh, auth) to (values.endpointInstance ?: "default"))
+          Triple(device, aci.toString(), Target(endpoint, p256dh, auth) to (pairingRoute?.instance ?: (values.endpointInstance ?: "default")))
         }
         val epoch = EndpointUpdates.exportEpoch(serverEpoch)
         val (target, instance) = route
         val exported = Target(target.endpoint, EnrollmentFile.canonicalKey(target.p256dh, 65), EnrollmentFile.canonicalKey(target.auth, 16))
-        val activeNow = mode == ExportMode.RECOVERY
+        val newPairingInstance = pairingRoute != null && instance != (values.endpointInstance ?: "default")
+        val activeNow = mode == ExportMode.RECOVERY || pairingRoute?.allowRecovery == true && epoch <= before.activeEpoch
         var rendered: String? = null
         intent = requireReplayStateAvailability {
-          EndpointUpdates.recordIntent(store, fullRecovery = activeNow, replayIfAbsent = replayIfAbsent) { old, sequence ->
+          EndpointUpdates.recordIntent(
+            store,
+            fullRecovery = activeNow,
+            replayIfAbsent = replayIfAbsent,
+            validateCandidate = { intent -> validateBeforeCommit?.invoke(intent) },
+          ) { old, sequence ->
+            highestUsed = old.highestEpoch
             if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
 
             // A matching epoch alone is not enough to reuse a candidate key: the intent may belong to a different
@@ -128,12 +203,12 @@ object EnrollmentExporter {
                 keys.single()
               }
               epoch == old.activeEpoch && old.key != null &&
-                (old.activeImportId == null ||
+                (old.activeImportId == null && !newPairingInstance ||
                   (old.activeAccountId == accountId && old.activeDeviceId == device.deviceId && old.activeInstance == instance)) -> {
                 if (old.serverTarget != exported) throw EnrollmentFile.Invalid("same_epoch_conflict")
                 old.key
               }
-              epoch == old.activeEpoch && old.key == null -> throw EnrollmentFile.Invalid("same_epoch_conflict")
+              epoch == old.activeEpoch && old.key == null && !newPairingInstance -> throw EnrollmentFile.Invalid("same_epoch_conflict")
               else -> null
             }
             val controlKey = sameEpochKey ?: EnrollmentFile.newControlKey()
@@ -153,6 +228,7 @@ object EnrollmentExporter {
             )
             // Validate immutable bytes while still inside the state transaction, before sequence/intent commit.
             rendered = EnrollmentFile.render(candidate.toInput())
+            if (!writeToDisk) validateSealed(candidate, device, checkNotNull(rendered))
             candidate
           }
         }
@@ -161,14 +237,15 @@ object EnrollmentExporter {
     }
 
     // New intents and their sequence are already committed. A failed file write keeps the intent for re-render.
-    try {
-      temp.outputStream().use { it.write(contents.toByteArray(Charsets.UTF_8)) }
-      Files.move(temp.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING)
-    } finally {
-      temp.delete()
+    if (writeToDisk) {
+      try {
+        checkNotNull(temp).outputStream().use { it.write(contents.toByteArray(Charsets.UTF_8)) }
+        Files.move(checkNotNull(temp).toPath(), checkNotNull(output).toPath(), StandardCopyOption.REPLACE_EXISTING)
+      } finally {
+        temp?.delete()
+      }
     }
-
-    return Export(output, intent.epoch, store.read().highestEpoch, intent.requestId)
+    return PreparedExport(if (writeToDisk) output else null, contents, intent.epoch, highestUsed, intent.requestId, intent)
   }
 
   /** Forget a chosen candidate only after the settings UI has warned that its file may still exist. */
@@ -220,4 +297,5 @@ object EnrollmentExporter {
   fun deleteStale(context: Context) {
     removeFiles(context)
   }
+
 }

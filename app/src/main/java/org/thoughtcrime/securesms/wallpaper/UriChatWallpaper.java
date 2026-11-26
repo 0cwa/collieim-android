@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
 import org.signal.core.util.logging.Log;
+import org.thoughtcrime.securesms.conversation.colors.ChatColors;
 import org.thoughtcrime.securesms.database.model.databaseprotos.Wallpaper;
 import org.signal.glide.decryptableuri.DecryptableUri;
 
@@ -49,6 +50,12 @@ public final class UriChatWallpaper implements ChatWallpaper, Parcelable {
   @Override
   public float getDimLevelForDarkTheme() {
     return dimLevelInDarkTheme;
+  }
+
+  @Override
+  public @NonNull ChatColors getAutoChatColors() {
+    ChatColors derived = PhotoWallpaperColors.getAutoChatColors(uri);
+    return derived != null ? derived : ChatWallpaper.super.getAutoChatColors();
   }
 
   @Override
@@ -122,6 +129,12 @@ public final class UriChatWallpaper implements ChatWallpaper, Parcelable {
   public boolean isPrefetched() {
     Bitmap cached = CACHE.get(uri);
     return cached != null && !cached.isRecycled();
+  }
+
+  /** The bitmap decoded by {@link #loadInto} or {@link #prefetch}, if still cached. */
+  @Nullable Bitmap getCachedBitmap() {
+    Bitmap cached = CACHE.get(uri);
+    return cached != null && !cached.isRecycled() ? cached : null;
   }
 
   public @NonNull Uri getUri() {

@@ -22,7 +22,7 @@ import org.thoughtcrime.securesms.wallpaper.UriChatWallpaper
 @Config(manifest = Config.NONE, application = Application::class)
 class CollieChatColorsTest {
   @Test
-  fun `automatic photo and sunset wallpapers use Collie Redwood`() {
+  fun `automatic photo without a derived color and sunset wallpapers use Collie Redwood`() {
     val photo = UriChatWallpaper(Uri.parse("content://wallpaper/example"), 0f)
     assertEquals(ChatColorsPalette.Bubbles.autoDefault, photo.autoChatColors)
     assertEquals(ChatColorsPalette.Bubbles.autoDefault, GradientChatWallpaper.SUNSET.autoChatColors)

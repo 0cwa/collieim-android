@@ -15,7 +15,10 @@ import org.thoughtcrime.securesms.wallpaper.WallpaperStorage;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public final class WallpaperValues extends SignalStoreValues {
 
@@ -23,8 +26,20 @@ public final class WallpaperValues extends SignalStoreValues {
 
   private static final String KEY_WALLPAPER = "wallpaper.wallpaper";
 
+  /**
+   * Local-only colors derived from photo wallpapers, keyed by wallpaper attachment ID. Excluded from
+   * {@link #getKeysToIncludeInBackup()} and never synced; see {@link org.thoughtcrime.securesms.wallpaper.PhotoWallpaperColors}.
+   * Encoded as {@code attachmentId,color,fingerprint} entries separated by {@code ;}.
+   */
+  private static final String KEY_PHOTO_AUTO_COLORS = "wallpaper.photo_auto_colors";
+
+  private final Object photoColorLock = new Object();
+
+  private volatile ParsedPhotoColors parsedPhotoColors = new ParsedPhotoColors(null, Collections.emptyMap());
+
   WallpaperValues(@NonNull KeyValueStore store) {
     super(store);
+    readPhotoColors();
   }
 
   @Override
@@ -114,6 +129,99 @@ public final class WallpaperValues extends SignalStoreValues {
     } else {
       return null;
     }
+  }
+
+  /** A derived photo wallpaper color. {@code color} is 0 when sampling found nothing usable. */
+  public static final class PhotoAutoColor {
+    public final int color;
+    public final int fingerprint;
+
+    public PhotoAutoColor(int color, int fingerprint) {
+      this.color       = color;
+      this.fingerprint = fingerprint;
+    }
+  }
+
+  /** Reads only the in-memory key-value cache; safe to call from synchronous color getters. */
+  public @Nullable PhotoAutoColor getPhotoAutoColor(long attachmentId) {
+    return parsedPhotoColors.colors.get(attachmentId);
+  }
+
+  public void setPhotoAutoColor(long attachmentId, int color, int fingerprint) {
+    synchronized (photoColorLock) {
+      Map<Long, PhotoAutoColor> updated = new LinkedHashMap<>(readPhotoColors());
+      updated.put(attachmentId, new PhotoAutoColor(color, fingerprint));
+      writePhotoColors(updated);
+    }
+  }
+
+  public void removePhotoAutoColor(long attachmentId) {
+    synchronized (photoColorLock) {
+      Map<Long, PhotoAutoColor> current = readPhotoColors();
+      if (current.containsKey(attachmentId)) {
+        Map<Long, PhotoAutoColor> updated = new LinkedHashMap<>(current);
+        updated.remove(attachmentId);
+        writePhotoColors(updated);
+      }
+    }
+  }
+
+  public void clearPhotoAutoColors() {
+    synchronized (photoColorLock) {
+      writePhotoColors(Collections.emptyMap());
+    }
+  }
+
+  private @NonNull Map<Long, PhotoAutoColor> readPhotoColors() {
+    String            raw    = getString(KEY_PHOTO_AUTO_COLORS, null);
+    ParsedPhotoColors cached = parsedPhotoColors;
+    if (Objects.equals(raw, cached.raw)) {
+      return cached.colors;
+    }
+
+    Map<Long, PhotoAutoColor> parsed = new LinkedHashMap<>();
+    if (raw != null && !raw.isEmpty()) {
+      for (String entry : raw.split(";")) {
+        String[] parts = entry.split(",");
+        if (parts.length != 3) continue;
+        try {
+          parsed.put(Long.parseLong(parts[0]), new PhotoAutoColor(Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
+        } catch (NumberFormatException e) {
+          Log.w(TAG, "Skipping malformed photo wallpaper color entry.");
+        }
+      }
+    }
+
+    Map<Long, PhotoAutoColor> result = Collections.unmodifiableMap(parsed);
+    parsedPhotoColors = new ParsedPhotoColors(raw, result);
+    return result;
+  }
+
+  private static final class ParsedPhotoColors {
+    final @Nullable String                    raw;
+    final @NonNull  Map<Long, PhotoAutoColor> colors;
+
+    ParsedPhotoColors(@Nullable String raw, @NonNull Map<Long, PhotoAutoColor> colors) {
+      this.raw    = raw;
+      this.colors = colors;
+    }
+  }
+
+  private void writePhotoColors(@NonNull Map<Long, PhotoAutoColor> colors) {
+    if (colors.isEmpty()) {
+      getStore().beginWrite().remove(KEY_PHOTO_AUTO_COLORS).apply();
+      parsedPhotoColors = new ParsedPhotoColors(null, Collections.emptyMap());
+      return;
+    }
+
+    StringBuilder builder = new StringBuilder();
+    for (Map.Entry<Long, PhotoAutoColor> entry : colors.entrySet()) {
+      if (builder.length() > 0) builder.append(';');
+      builder.append(entry.getKey()).append(',').append(entry.getValue().color).append(',').append(entry.getValue().fingerprint);
+    }
+    String raw = builder.toString();
+    putString(KEY_PHOTO_AUTO_COLORS, raw);
+    parsedPhotoColors = new ParsedPhotoColors(raw, Collections.unmodifiableMap(colors));
   }
 
   /**

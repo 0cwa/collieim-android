@@ -168,6 +168,10 @@ about = "Theme propagation across screens"
 kind = "feature"
 about = "System bar colors and insets"
 
+[layers.chat-colors]
+kind = "feature"
+about = "Chat bubble colors, including Automatic colors derived from chat wallpapers"
+
 [layers.logging]
 kind = "feature"
 about = "App logging and debug log controls"

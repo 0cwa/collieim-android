@@ -56,6 +56,8 @@ class ChatWallpaperRepository {
 
   void saveWallpaper(@Nullable RecipientId recipientId, @Nullable ChatWallpaper chatWallpaper, @NonNull Runnable onWallpaperSaved) {
     EXECUTOR.execute(() -> {
+      PhotoWallpaperColors.backfill(chatWallpaper);
+
       if (recipientId != null) {
         //noinspection CodeBlock2Expr
         SignalDatabase.recipients().setWallpaper(recipientId, chatWallpaper, true);

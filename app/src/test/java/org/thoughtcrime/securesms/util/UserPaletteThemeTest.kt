@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -44,6 +45,7 @@ import org.signal.core.ui.compose.theme.LocalSnackbarColors
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.compose.theme.SnackbarColors
 import org.signal.core.ui.compose.theme.UserPalettes
+import org.signal.core.ui.permissions.RationaleDialog
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
@@ -260,6 +262,33 @@ class UserPaletteThemeTest {
     assertSchemeEquals(pilot.dark, scheme!!)
   }
 
+  @Test
+  @Config(qualifiers = "night")
+  fun `dark pilot reaches permission dialogs and rounded sheets`() {
+    PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = PILOT)
+    val activity = createActivity<NoActionBarActivity>().get()
+    val rationale = RationaleDialog.createFor(activity, "Permission")
+    val roundedSheet = BottomSheetDialog(activity, R.style.Widget_Signal_FixedRoundedCorners)
+
+    for (context in listOf(rationale.context, roundedSheet.context)) {
+      assertEquals(PILOT, paletteMarker(context))
+      assertEquals(pilot.dark.primary.toArgb(), attrColor(context, MaterialR.attr.colorPrimary))
+      assertEquals(pilot.dark.surface.toArgb(), attrColor(context, MaterialR.attr.colorSurface))
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "night")
+  fun `dark pilot reaches the default bottom sheet`() {
+    PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = PILOT)
+    val activity = createActivity<NoActionBarActivity>().get()
+    val sheet = BottomSheetDialog(activity)
+
+    assertEquals(PILOT, paletteMarker(sheet.context))
+    assertEquals(pilot.dark.primary.toArgb(), attrColor(sheet.context, MaterialR.attr.colorPrimary))
+    assertEquals(pilot.dark.surface.toArgb(), attrColor(sheet.context, MaterialR.attr.colorSurface))
+  }
+
   private fun assertStoredPilot(dark: Boolean) {
     PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = PILOT)
     val activity = createActivity<NoActionBarActivity>().get()
@@ -274,6 +303,9 @@ class UserPaletteThemeTest {
     }
     assertEquals(expected.surface.toArgb(), statusBar(activity))
     assertEquals(expected.primary.toArgb(), attrColor(activity, R.attr.signal_button_primary))
+    assertEquals(expected.onSurfaceVariant.toArgb(), attrColor(activity, R.attr.signal_icon_tint_secondary))
+    assertEquals(expected.surfaceContainer.toArgb(), attrColor(activity, R.attr.signal_background_dialog))
+    assertEquals(expected.surfaceContainerLow.toArgb(), attrColor(activity, R.attr.signal_background_dialog_secondary))
     assertEquals(expected.secondaryContainer.toArgb(), attrColor(activity, CoreUiR.attr.extended_action_button_container_color))
     assertEquals(expected.surfaceContainerHigh.toArgb(), attrColor(activity, R.attr.navbar_container_color))
 
@@ -341,9 +373,9 @@ class UserPaletteThemeTest {
     return color
   }
 
-  private fun paletteMarker(activity: Activity): String? {
+  private fun paletteMarker(context: Context): String? {
     val value = TypedValue()
-    return if (activity.theme.resolveAttribute(CoreUiR.attr.collie_palette, value, true)) value.string?.toString() else null
+    return if (context.theme.resolveAttribute(CoreUiR.attr.collie_palette, value, true)) value.string?.toString() else null
   }
 
   private fun isDynamic(activity: Activity): Boolean {

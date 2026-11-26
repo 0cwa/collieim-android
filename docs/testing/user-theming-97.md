@@ -25,9 +25,10 @@ has no Appearance control yet. Select it in tests through
 `tooling/user-theming/palettes.json` defines each palette's stable ID, seed,
 scheme and contrast. `tooling/user-theming/generate.py` writes:
 
-- `app/src/main/res/values/user_theme_palettes.xml`: light and dark role colors
-  and overlays, including the `collie_palette` marker and Collie attributes
-  rebound to roles;
+- `core/ui/src/main/res/values/user_theme_palettes.xml`: light and dark role
+  colors and overlays, including the `collie_palette` marker;
+- `app/src/main/res/values/user_theme_palettes.xml`: app overlays that inherit
+  the shared roles and bind app-specific attributes to them;
 - `app/src/main/java/org/thoughtcrime/securesms/util/GeneratedPaletteOverlays.kt`:
   the ID to overlay map;
 - `core/ui/src/main/java/org/signal/core/ui/compose/theme/GeneratedUserPalettes.kt`:
@@ -44,7 +45,7 @@ python3 tooling/user-theming/generate.py                  # uses the Gradle cach
 python3 tooling/user-theming/generate.py --aar PATH.aar   # or a verified copy
 python3 tooling/user-theming/generate.py --download       # or the pinned Google Maven URL
 python3 tooling/user-theming/generate.py --check          # exits 1 on drift
-python3 tooling/user-theming/test_generate.py             # no AAR needed
+python3 -B tooling/user-theming/test_generate.py             # no AAR needed
 ```
 
 Java 17 or newer must be on `PATH` or in `JAVA_HOME`.
@@ -79,7 +80,7 @@ keeps Collie's light scheme for QR codes.
 `UserPaletteThemeTest` runs on Robolectric at API 27, 31 and 35. It covers View
 and Compose role parity at each brightness, Collie, palette and System
 switching on return, the API 27 return to Collie, forced dark, off-Activity
-lookups, media and translucent windows and the cache key. Report these as host
+lookups, media and translucent windows, dialog and sheet inheritance, and the cache key. Report these as host
 JVM results, separately from device runs.
 
 ## Device checks

@@ -2,9 +2,9 @@
 """Checks for generate.py that do not need the Material AAR: spec validity, pins and rendering."""
 
 from pathlib import Path
-import re
 import sys
 import unittest
+import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -27,19 +27,24 @@ class GenerateTest(unittest.TestCase):
         palette = generate.load_spec()["palettes"][0]
         palettes = [(palette, {"light": fake_roles(), "dark": fake_roles()})]
 
-        xml = generate.render_xml(palettes)
-        self.assertEqual(xml, generate.render_xml(palettes))
+        roles = generate.render_role_xml(palettes)
+        app = generate.render_app_xml(palettes)
+        self.assertEqual(roles, generate.render_role_xml(palettes))
+        self.assertEqual(app, generate.render_app_xml(palettes))
+
         for brightness in ("Light", "Dark"):
-            style = re.search(
-                rf'<style name="ThemeOverlay\.Collie\.Palette\.{palette["style_name"]}\.{brightness}" parent="">(.*?)</style>',
-                xml,
-                re.S,
-            ).group(1)
-            items = re.findall(r'<item name="([^"]+)">', style)
-            expected = ["collie_palette"] + [a for _, attrs, _ in generate.ROLES for a in attrs] + [a for a, _, _ in generate.APP_BINDINGS]
-            self.assertEqual(expected, items)
+            suffix = f'{palette["style_name"]}.{brightness}'
+            role_style_name = f"ThemeOverlay.Collie.PaletteRoles.{suffix}"
+            role_style = ET.fromstring(roles).find(f"./style[@name='{role_style_name}']")
+            app_style = ET.fromstring(app).find(f"./style[@name='ThemeOverlay.Collie.Palette.{suffix}']")
+            self.assertEqual("", role_style.get("parent"))
+            self.assertEqual(f"@style/{role_style_name}", app_style.get("parent"))
+            role_items = [item.get("name") for item in role_style.findall("item")]
+            app_items = [item.get("name") for item in app_style.findall("item")]
+            self.assertEqual(["collie_palette"] + [a for _, attrs, _ in generate.ROLES for a in attrs], role_items)
+            self.assertEqual([a for a, _, _ in generate.APP_BINDINGS], app_items)
             # Roles only: window, inset and system bar policy stays with each Activity's style.
-            self.assertFalse([i for i in items if i.startswith("android:window") or i.endswith("BarColor")])
+            self.assertFalse([i for i in role_items + app_items if i.startswith("android:window") or i.endswith("BarColor")])
 
         compose = generate.render_compose(palettes)
         self.assertEqual(compose, generate.render_compose(palettes))

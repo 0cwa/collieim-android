@@ -383,7 +383,8 @@ class MollyBackupPreferencesTest {
       preferences.edit().clear().commit()
       val records = listOf(
         SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.THEME_PALETTE).booleanValue(true).build(),
-        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.THEME_PALETTE).integerValue(3).build()
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.THEME_PALETTE).integerValue(3).build(),
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.THEME_PALETTE).value_(PILOT).booleanValue(true).build()
       )
 
       records.forEach { FullBackupImporter.processPreference(context, it, keyValueStorage) }

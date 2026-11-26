@@ -620,16 +620,15 @@
     </style>
 
     <!--
-      The bottom-sheet dialogs ask Material to lay their window out edge to edge, which it can only do when the
-      navigation bar colour below is non-opaque. Re-homed here from the API-qualified theme files the fork merged
-      into this one.
+      The bottom-sheet dialogs use an overlay to retain the host palette. Material needs a non-opaque
+      navigation bar colour to lay these windows out edge to edge.
     -->
-    <style name="Theme.Signal.Light.BottomSheetDialog" parent="Theme.Material3.Light.BottomSheetDialog">
+    <style name="Theme.Signal.Light.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="android:navigationBarColor">@color/signal_bottom_sheet_navigation_bar</item>
         <item name="enableEdgeToEdge">true</item>
     </style>
 
-    <style name="Theme.Signal.BottomSheetDialog" parent="Theme.Material3.Dark.BottomSheetDialog">
+    <style name="Theme.Signal.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="android:navigationBarColor">@color/signal_bottom_sheet_navigation_bar</item>
         <item name="enableEdgeToEdge">true</item>
     </style>

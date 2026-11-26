@@ -434,8 +434,8 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
-    if ((isDefaultFile || isHistoricalFile) && RESTORABLE_STRING_PREFERENCES.contains(preference.key) && preference.value_ == null) {
-      Log.w(TAG, "Skipping a non-string palette preference");
+    if (isDefaultFile && RESTORABLE_STRING_PREFERENCES.contains(preference.key) && !isRestorableMollyPreference(preference)) {
+      Log.w(TAG, "Skipping an invalid palette preference");
       return;
     }
 

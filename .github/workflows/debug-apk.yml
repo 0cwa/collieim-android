@@ -556,11 +556,12 @@ jobs:
           test "$(cat "$evidence/device-api.txt")" = 35
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
           timeout 10s adb logcat -c
+          navigation_test=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest
+          release_notes_test=org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest
           ./gradlew --no-daemon --console=plain \
             :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
             :app:connectedProdWebsiteDebugAndroidTest --no-configuration-cache -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
-            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest' \
-            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest' \
+            "-Pandroid.testInstrumentationRunnerArguments.class=$navigation_test,$release_notes_test" \
             2>&1 | tee "$evidence/connected.log"
           SH
       - name: Run navigation tests on API 35

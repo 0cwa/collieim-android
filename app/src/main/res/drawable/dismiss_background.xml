@@ -5,7 +5,7 @@
     android:insetRight="8dp"
     android:insetBottom="22dp">
     <shape android:shape="oval">
-        <solid android:color="@color/signal_colorSurface_60" />
+        <solid android:color="@color/signal_color_surface_60" />
     </shape>
 </inset>
 

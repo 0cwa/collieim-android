@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <corners android:radius="1000dp" />
 
-    <solid android:color="@color/signal_text_primary_disabled" />
+    <solid android:color="@color/signal_color_on_surface_38" />
 
     <size
         android:width="48dp"

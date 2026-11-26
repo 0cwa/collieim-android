@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorSurface"
-            app:tabIndicatorColor="@color/signal_inverse_primary"
+            app:tabIndicatorColor="?attr/signal_inverse_primary"
             app:tabIndicatorFullWidth="false"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="?attr/signal_text_primary"
@@ -58,7 +58,7 @@
             android:layout_marginBottom="12dp"
             android:gravity="center_vertical"
             android:textAppearance="@style/TextAppearance.Signal.Body1.Bold"
-            android:textColor="@color/signal_inverse_primary"
+            android:textColor="?attr/signal_inverse_primary"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/sorting"
             app:layout_constraintTop_toTopOf="parent"
@@ -70,7 +70,7 @@
             android:layout_height="16dp"
             android:layout_marginStart="8dp"
             android:importantForAccessibility="no"
-            android:tint="@color/signal_inverse_primary"
+            android:tint="?attr/signal_inverse_primary"
             app:layout_constraintBottom_toBottomOf="@+id/sort_order"
             app:layout_constraintStart_toEndOf="@+id/sort_order"
             app:layout_constraintTop_toTopOf="@+id/sort_order"
@@ -98,7 +98,7 @@
                 android:contentDescription="@string/MediaOverviewActivity_Grid_view_description"
                 android:focusable="true"
                 android:gravity="center_vertical"
-                android:tint="@color/signal_inverse_primary"
+                android:tint="?attr/signal_inverse_primary"
                 android:visibility="visible"
                 app:srcCompat="@drawable/symbol_grid_square_24" />
 
@@ -112,7 +112,7 @@
                 android:contentDescription="@string/MediaOverviewActivity_List_view_description"
                 android:focusable="true"
                 android:gravity="center_vertical"
-                android:tint="@color/signal_inverse_primary"
+                android:tint="?attr/signal_inverse_primary"
                 android:visibility="gone"
                 app:srcCompat="@drawable/symbol_list_bullet_24" />
 

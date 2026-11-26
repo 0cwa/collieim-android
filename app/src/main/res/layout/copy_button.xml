@@ -19,6 +19,6 @@
     app:iconSize="24dp"
     app:iconTint="?attr/colorOnSurface"
     app:rippleColor="?attr/colorOutline"
-    app:strokeColor="@color/signal_colorOutline_38"
+    app:strokeColor="@color/signal_color_outline_38"
     app:strokeWidth="1dp"
     tools:text="maya#2342" />

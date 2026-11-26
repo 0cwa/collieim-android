@@ -18,5 +18,5 @@
     app:iconGravity="start"
     app:iconPadding="12dp"
     app:iconTint="@null"
-    app:strokeColor="@color/signal_colorOutline_38"
+    app:strokeColor="@color/signal_color_outline_38"
     app:strokeWidth="1.5dp" />

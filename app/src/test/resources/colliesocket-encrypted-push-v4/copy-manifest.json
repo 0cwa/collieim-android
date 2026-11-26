@@ -1,0 +1,72 @@
+{
+  "manifest_version": 1,
+  "contract_version": "encrypted-push/v4",
+  "source_repository": "0cwa/colliesocket",
+  "source_revision": "f8db2525d9ea25661efd4903037cc3f2ecdbe918",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "daad4d684242434fa6b7d99b1739752c0741cba5cc745351cd635719f33e4236"
+    },
+    {
+      "path": "control.schema.json",
+      "sha256": "de6bcfa50c17b5c3d0b1d35fc33e411933af1b74fd0760b70eb53c9ebd2d1f5d"
+    },
+    {
+      "path": "enrollment.schema.json",
+      "sha256": "350f1a02ab053bf4250fa7d3061abb38b7a7034f1866f413bb5f9d8de216094e"
+    },
+    {
+      "path": "event.schema.json",
+      "sha256": "37d5d0a2065500782f387d08744a36f96e125c1b04df8f600c304474e51bdb9b"
+    },
+    {
+      "path": "fixtures/bridge.json",
+      "sha256": "332f8259d202a0612114d61bcf373e58c8e78fcc8c6cf93a482a79fe07454979"
+    },
+    {
+      "path": "fixtures/control-plaintext.json",
+      "sha256": "c88898fe8c513c5469b7fad57139b4eb1c05571665df0fb93df2a98903f6b585"
+    },
+    {
+      "path": "fixtures/control-vector.json",
+      "sha256": "d5accf92b86b8af7cd9cc8ec87fa27aecd0c0f40e98ceacad032c9b0411c0839"
+    },
+    {
+      "path": "fixtures/imported.json",
+      "sha256": "60864c7d495c3e6f5ea0a13b479015a95ee929f08fbc28062c426dfa8fb6f3b6"
+    },
+    {
+      "path": "fixtures/invalid.json",
+      "sha256": "f15dfea224606f8b6af41949d598bcaa694868096eafb4baf3c4df38eb48f3f5"
+    },
+    {
+      "path": "fixtures/receipt.json",
+      "sha256": "306a918ce3774b5c62d4f98074415ab7a3d6fc4295bbd5e4d7232fd522cfb689"
+    },
+    {
+      "path": "fixtures/receiver.json",
+      "sha256": "b746f4fdd3d34661d829ccd8645026920e5970b330820e6d34281234070a0c59"
+    },
+    {
+      "path": "fixtures/updated.json",
+      "sha256": "c5cad7be08cc679a095b66e4321da3ea89211ad3e51bc445dd747154a190035c"
+    },
+    {
+      "path": "fixtures/wake.json",
+      "sha256": "f826c22648a2a31cb55cefead07f299201b467f36b75e95d1713fe016caba5f2"
+    },
+    {
+      "path": "receipt.schema.json",
+      "sha256": "f75a4826e05f3a9b48743ef49047275e44b07c5eb595e6b372520b233eaffb5c"
+    },
+    {
+      "path": "receiver-enrollment.schema.json",
+      "sha256": "d926085297b18fc1496c4341f993339f526f119dcd26ebf07b9e37ab20b128a7"
+    },
+    {
+      "path": "tools/conformance.py",
+      "sha256": "f6985237a86546e214eefe20ad93f75036387bc0d1090c4a7f65077f8dc6d161"
+    }
+  ]
+}

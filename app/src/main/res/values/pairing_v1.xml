@@ -8,6 +8,9 @@
   <string name="PairingV1__submission_destination">Encrypted request will be sent to: %1$s</string>
   <string name="PairingV1__manual_submission">No automatic upload; share or save the encrypted request yourself.</string>
   <string name="PairingV1__consent_confirm">Pair</string>
+  <string name="PairingV1__add_receiver_consent_title">Add this device to “%1$s”?</string>
+  <string name="PairingV1__add_receiver_consent_message">%1$s\nDistributor: %2$s\n%3$s\n\nAdds this device to your existing notification relay without linking another Signal device.</string>
+  <string name="PairingV1__add_receiver_consent_confirm">Add device</string>
   <string name="PairingV1__push_server">Push server: %1$s</string>
   <string name="PairingV1__distributor_server">Using your distributor’s server (%1$s)</string>
   <string name="PairingV1__distributor_server_unknown">Using your distributor’s server</string>

@@ -132,6 +132,33 @@ class PairingRegistrationGateTest {
     }
   }
 
+  @Test fun `receiver import binds a strict v4 identity before candidate confirmation`() {
+    val binding = PairingRegistrationGate.begin(
+      "org.example.distributor", offer, "account-aci", 1,
+      previousEndpoint = "https://old.example.test/push", previousP256dh = "old-key", previousAuth = "old-auth",
+    ) { }!!
+    try {
+      val endpoint = PairingRegistrationGate.Endpoint("https://push.example.test/send/token", "p256dh", "auth", binding.instance)
+      assertNotNull(PairingRegistrationGate.claim(binding.instance, "org.example.distributor", "org.example.distributor", "account-aci", 1, endpoint))
+      val identity = PairingRegistrationGate.ImportBinding(
+        requestId = "f0000000-0000-4000-8000-000000000003", keyId = "", epoch = 1,
+        endpoint = endpoint.url, p256dh = endpoint.p256dh!!, auth = endpoint.auth!!,
+        accountId = "account-aci", deviceId = 1, instance = binding.instance,
+        receiverId = "f0000000-0000-4000-8000-000000000002",
+      )
+      assertTrue(PairingRegistrationGate.bindImport(binding.instance, identity))
+      assertTrue(PairingRegistrationGate.allowsCandidateConfirmation(
+        binding.instance, "org.example.distributor", "org.example.distributor", "account-aci", 1,
+      ))
+      assertFalse(PairingRegistrationGate.bindImport(binding.instance, identity.copy(receiverId = "not-a-uuid")))
+      assertFalse(PairingRegistrationGate.bindImport(binding.instance, identity.copy(keyId = "legacy-key")))
+      assertFalse(PairingRegistrationGate.bindImport(binding.instance, identity.copy(requestId = "not-a-uuid")))
+      assertFalse(PairingRegistrationGate.bindImport(binding.instance, identity.copy(accountId = "other-account")))
+    } finally {
+      PairingRegistrationGate.cancel(binding.instance)
+    }
+  }
+
   @Test fun `locked unregistration after endpoint discards only candidate callback`() {
     val binding = PairingRegistrationGate.begin("org.example.distributor", offer, "account-aci", 1) { }!!
     try {

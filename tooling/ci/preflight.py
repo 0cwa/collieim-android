@@ -27,6 +27,8 @@ PAIRING_ARTIFACTS = {
     "response.schema.json",
     "fixtures/sealed-vectors.json",
 }
+V4_CONTRACT_ROOT = Path(__file__).resolve().parents[2] / "app/src/test/resources/colliesocket-encrypted-push-v4"
+V4_MANIFEST_SHA256 = "5d493f3db2fcb0f54e07ab2ca88a57977883ed0ce532df1fafb6334c2223bd78"
 
 
 def _unique_json_object(pairs):
@@ -94,6 +96,61 @@ def check_pairing_manifest():
     return True
 
 
+def check_v4_contract_manifest():
+    root = V4_CONTRACT_ROOT.resolve()
+    manifest_path = root / "copy-manifest.json"
+    try:
+        if manifest_path.is_symlink() or not manifest_path.is_file():
+            raise ValueError("copy-manifest.json must be a regular file")
+        raw = manifest_path.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != V4_MANIFEST_SHA256:
+            raise ValueError("copy-manifest.json does not match the pinned manifest")
+        manifest = json.loads(raw, object_pairs_hook=_unique_json_object)
+        if not isinstance(manifest, dict) or (
+            manifest.get("manifest_version") != 1
+            or manifest.get("contract_version") != "encrypted-push/v4"
+            or manifest.get("source_repository") != "0cwa/colliesocket"
+            or manifest.get("source_revision") != "f8db2525d9ea25661efd4903037cc3f2ecdbe918"
+        ):
+            raise ValueError("unexpected encrypted-push v4 contract pin")
+        entries = manifest.get("files")
+        if not isinstance(entries, list):
+            raise ValueError("manifest files must be a list")
+        seen = set()
+        for entry in entries:
+            if not isinstance(entry, dict) or set(entry) != {"path", "sha256"}:
+                raise ValueError("malformed manifest file entry")
+            path, digest = entry["path"], entry["sha256"]
+            if not isinstance(path, str) or "\\" in path:
+                raise ValueError(f"unsafe manifest path: {path!r}")
+            parts = Path(path).parts
+            if Path(path).is_absolute() or ".." in parts or path in seen:
+                raise ValueError(f"unsafe or duplicate manifest path: {path}")
+            if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+                raise ValueError(f"invalid SHA-256 for {path}")
+            candidate = root.joinpath(*parts)
+            current = root
+            for part in parts:
+                current = current / part
+                if current.is_symlink():
+                    raise ValueError(f"manifest path traverses a symlink: {path}")
+            resolved = candidate.resolve(strict=True)
+            if not resolved.is_relative_to(root) or not resolved.is_file():
+                raise ValueError(f"unsafe manifest path: {path}")
+            if hashlib.sha256(resolved.read_bytes()).hexdigest() != digest:
+                raise ValueError(f"hash mismatch: {path}")
+            seen.add(path)
+        actual = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file() and p.name != "copy-manifest.json"}
+        if seen != actual:
+            raise ValueError("manifest file list does not match the copied contract tree")
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as error:
+        print(f"Encrypted push v4 manifest: {error}")
+        print("FAIL: CollieSocket encrypted push v4 manifest")
+        return False
+    print("PASS: CollieSocket encrypted push v4 manifest")
+    return True
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", default="origin/main", help="base commit or ref (default: origin/main)")
@@ -102,6 +159,7 @@ def main(argv=None):
 
     checks = [
         check_pairing_manifest(),
+        check_v4_contract_manifest(),
         run_check("Layer trailers", [sys.executable, "tooling/git-hooks/collie_check_layer_trailers.py",
                                       "range", args.base, "HEAD"]),
         run_check("Fastlane metadata", [sys.executable, "tooling/fastlane/check_metadata.py"]),

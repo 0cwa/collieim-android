@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.core.app.ShareCompat
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlFrame
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
@@ -16,6 +17,7 @@ import okhttp3.HttpUrl
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.enrollment.RelayDisclosure
+import im.molly.unifiedpush.enrollment.ReceiverEnrollmentV4
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.receiver.LockedPushState
@@ -88,6 +90,7 @@ internal class PairingV1Coordinator(private val context: Context) {
     internal val importEpoch: Long,
     internal val importDeviceId: Int,
     internal val importTarget: im.molly.unifiedpush.control.Target,
+    internal val receiverStateJson: String? = null,
   ) {
     override fun toString() = "PairingV1Coordinator.Session(id=$id, deadlineSeconds=$deadlineSeconds)"
   }
@@ -98,9 +101,7 @@ internal class PairingV1Coordinator(private val context: Context) {
 
   /** Reserved intent is rejected before reading or changing registration state. */
   fun parseScan(json: String, nowSeconds: Long = System.currentTimeMillis() / 1000): PairingTransport.Scan {
-    return PairingTransport.parse(json, nowSeconds).also { scan ->
-      if (scan.offer.intent == "add_receiver") PairingV1.rejectUnsupportedIntent(scan.offer)
-    }
+    return PairingTransport.parse(json, nowSeconds)
   }
 
   /** Capture the complete destination shown in consent, including the live subscription and distributor. */
@@ -276,8 +277,8 @@ internal class PairingV1Coordinator(private val context: Context) {
     consented: ConsentDetails,
     serverEpoch: Long?,
     allowRecovery: Boolean,
+    bridgeDeviceId: Int? = null,
   ): SealResult {
-    if (offer.intent == "add_receiver") return SealResult.Failed(context.getString(R.string.PairingV1__unsupported_add_receiver))
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return SealResult.Failed(context.getString(R.string.PairingV1__offer_expired))
     if (offer != consented.offer) return SealResult.Failed(context.getString(R.string.PairingV1__offer_changed))
     if (synchronized(UnifiedPushLifecycle.monitor) { isUsableAccountLocked() && isPromotedOfferLocked(offer) }) {
@@ -307,7 +308,140 @@ internal class PairingV1Coordinator(private val context: Context) {
     if (!disclosureCurrent) return SealResult.Failed(context.getString(R.string.UnifiedPushSettingsFragment__disclosure_stale))
     // exportIfCurrent takes its locks before UnifiedPushLifecycle.monitor. Keep this call outside
     // runIfCurrent's monitor section to preserve the enrollment exporter's global lock order.
-    return if (maySeal) createSealedRequest(offer, disclosure, consented, serverEpoch, allowRecovery) else outcome
+    return if (!maySeal) outcome else if (offer.intent == "add_receiver") {
+      createReceiverRequest(offer, disclosure, consented, bridgeDeviceId)
+    } else createSealedRequest(offer, disclosure, consented, serverEpoch, allowRecovery)
+  }
+
+  private fun createReceiverRequest(
+    offer: PairingV1.Offer,
+    disclosure: RelayDisclosure.Snapshot?,
+    consented: ConsentDetails,
+    bridgeDeviceId: Int?,
+  ): SealResult {
+    var sealedCandidate: PairingV1.SealedRequest? = null
+    return try {
+      val snapshot = disclosure ?: throw EnrollmentFile.Invalid("disclosure_changed")
+      val deviceId = bridgeDeviceId?.takeIf { it >= 2 } ?: throw EnrollmentFile.Invalid("invalid_enrollment")
+      val requestId = ReceiverEnrollmentV4.newUuid()
+      val receiverId = ReceiverEnrollmentV4.newUuid()
+      val controlKey = EnrollmentFile.newControlKey()
+      val enrollment = ReceiverEnrollmentV4.render(ReceiverEnrollmentV4.Input(
+        requestId = requestId,
+        accountId = consented.accountId,
+        bridgeDeviceId = deviceId,
+        endpoint = consented.endpoint,
+        p256dh = consented.p256dh,
+        auth = consented.auth,
+        instance = consented.instance,
+        receiverId = receiverId,
+        controlKey = controlKey,
+        label = ReceiverEnrollmentV4.sanitizedLabel(offer.hostLabel),
+      ))
+      val sealed = PairingV1.seal(offer, enrollment, consented.endpoint)
+      sealedCandidate = sealed
+      val receiverState = ReceiverControlState(
+        receiverId = receiverId,
+        importId = requestId,
+        accountId = consented.accountId,
+        bridgeDeviceId = deviceId,
+        instance = consented.instance,
+        hostLabel = ReceiverEnrollmentV4.sanitizedLabel(offer.hostLabel),
+        controlKey = controlKey,
+        epoch = 1,
+        target = Target(consented.endpoint, consented.p256dh, consented.auth),
+      ).serialize()
+      val created = Session(
+        id = offer.sessionId,
+        offer = offer,
+        requestJson = sealed.json,
+        deadlineSeconds = offer.expiresAt,
+        sealed = sealed,
+        accountId = consented.accountId,
+        deviceId = consented.deviceId,
+        endpoint = consented.endpoint,
+        endpointP256dh = consented.p256dh,
+        endpointAuth = consented.auth,
+        instance = consented.instance,
+        distributorId = consented.distributorId,
+        vapidPublicKey = offer.vapidPublicKey,
+        disclosure = snapshot,
+        importRequestId = requestId,
+        importKeyId = "",
+        importEpoch = 1,
+        importDeviceId = deviceId,
+        importTarget = Target(consented.endpoint, consented.p256dh, consented.auth),
+        receiverStateJson = receiverState,
+      )
+      if (!persistReceiverAttempt(created, receiverState)) throw EnrollmentFile.Invalid("disclosure_changed")
+      activeSession?.sealed?.receiptKey?.fill(0)
+      activeSession = created
+      requestDispatched = false
+      sealedCandidate = null
+      SealResult.Ready(created)
+    } catch (e: EnrollmentFile.Invalid) {
+      sealedCandidate?.receiptKey?.fill(0)
+      SealResult.Failed(context.getString(if (e.code == "disclosure_changed") R.string.UnifiedPushSettingsFragment__disclosure_stale else R.string.PairingV1__request_failed))
+    } catch (_: Exception) {
+      sealedCandidate?.receiptKey?.fill(0)
+      SealResult.Failed(context.getString(R.string.PairingV1__request_failed))
+    }
+  }
+
+  /** Persist the v4 identity before either HTTP submission or the encrypted Share/Save fallback. */
+  private fun persistReceiverAttempt(session: Session, receiverStateJson: String): Boolean {
+    val receiver = ReceiverControlState.parse(receiverStateJson) ?: return false
+    var persisted = false
+    val disclosureCurrent = RelayDisclosure.runIfCurrent(session.disclosure) {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        if (!sessionBindingMatchesLocked(session) || System.currentTimeMillis() / 1000 >= session.deadlineSeconds) return@synchronized
+        val gate = PairingRegistrationGate.current()
+        val candidate = gate?.takeIf {
+          it.binding.sessionId == session.offer.sessionId && it.binding.instance == session.instance &&
+            it.binding.accountId == session.accountId && it.binding.deviceId == session.deviceId
+        }
+        if (gate != null && candidate == null) return@synchronized
+        val priorReceiver = SignalStore.unifiedpush.v4ReceiverState
+        try {
+          SignalStore.unifiedpush.commitV4ReceiverState(receiver.serialize())
+          if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
+              session.offer.sessionId, session.instance, session.distributorId, session.vapidPublicKey,
+              session.offer.providerOrigin, session.deadlineSeconds, session.offer.hostLabel, session.importRequestId,
+              "", session.importEpoch, RelayDisclosure.pairingScopeDigest(session.disclosure), receiverId = receiver.receiverId,
+            ))) {
+            SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver)
+            return@synchronized
+          }
+          if (candidate != null) {
+            val endpoint = candidate.claimedEndpoint ?: run {
+              LockedPushState.clearPairingConfirmation(context, session.offer.sessionId)
+              SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver)
+              return@synchronized
+            }
+            val bound = PairingRegistrationGate.bindImport(
+              candidate.binding.instance,
+              PairingRegistrationGate.ImportBinding(
+                session.importRequestId, "", session.importEpoch, endpoint.url,
+                endpoint.p256dh.orEmpty(), endpoint.auth.orEmpty(), session.accountId, session.deviceId,
+                session.instance, receiver.receiverId,
+              ),
+            )
+            if (!bound) {
+              LockedPushState.clearPairingConfirmation(context, session.offer.sessionId)
+              SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver)
+              return@synchronized
+            }
+          }
+          // The receiver must reject plaintext immediately, including while this request is shared for later import.
+          LockedPushState.setEncryptedEnrollment(context, true)
+          persisted = true
+        } catch (_: Exception) {
+          LockedPushState.clearPairingConfirmation(context, session.offer.sessionId)
+          runCatching { SignalStore.unifiedpush.commitV4ReceiverState(priorReceiver) }
+        }
+      }
+    }
+    return disclosureCurrent && persisted
   }
 
   private fun createSealedRequest(
@@ -458,6 +592,29 @@ internal class PairingV1Coordinator(private val context: Context) {
       PairingV1.openReceipt(session.offer, session.sealed, json)
     } catch (_: Exception) {
       return PairingTransport.Result.InvalidResponse
+    }
+    if (session.receiverStateJson != null) {
+      val state = ReceiverControlState.parse(session.receiverStateJson) ?: return PairingTransport.Result.InvalidResponse
+      if (KeyCachingService.isLocked()) {
+        session.sealed.receiptKey.fill(0)
+        activeSession = null
+        registeringSessionId = null
+        requestDispatched = false
+        return PairingTransport.Result.AwaitingPush
+      }
+      val stillCurrent = synchronized(UnifiedPushLifecycle.monitor) {
+        val stored = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)
+        sessionBindingMatchesLocked(session) && stored != null &&
+          stored.receiverId == state.receiverId && stored.importId == state.importId
+      }
+      if (!stillCurrent) return PairingTransport.Result.Stale
+      session.sealed.receiptKey.fill(0)
+      activeSession = null
+      registeringSessionId = null
+      requestDispatched = false
+      // The receipt authenticates the POST, while enrollment_imported is the v4 proof that
+      // the bridge applied this receiver. Keep the persisted identity and wait for that event.
+      return PairingTransport.Result.AwaitingPush
     }
     val promoted = !KeyCachingService.isLocked() && promoteReceiptConfirmedRoute(session)
     if (!promoted && !KeyCachingService.isLocked()) return PairingTransport.Result.Stale
@@ -659,7 +816,10 @@ internal class PairingV1Coordinator(private val context: Context) {
         PairingRegistrationGate.cancel(attempt.binding.instance)
         discardCandidate(attempt.binding)
       }
-      if (!requestDispatched && session != null) LockedPushState.clearPairingConfirmation(context, session.id)
+      if (!requestDispatched && session != null) {
+        clearUnconfirmedReceiverAttemptLocked(session.id, session.receiverStateJson)
+        LockedPushState.clearPairingConfirmation(context, session.id)
+      }
       registeringSessionId = null
     }
     requestDispatched = false
@@ -669,6 +829,8 @@ internal class PairingV1Coordinator(private val context: Context) {
   fun cancelOfferAttempt(sessionId: String) {
     synchronized(UnifiedPushLifecycle.monitor) {
       if (registeringSessionId == sessionId) registeringSessionId = null
+      val session = activeSession?.takeIf { it.id == sessionId }
+      clearUnconfirmedReceiverAttemptLocked(sessionId, session?.receiverStateJson)
       LockedPushState.clearPairingConfirmation(context, sessionId)
       PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == sessionId }?.let { attempt ->
         PairingRegistrationGate.cancel(attempt.binding.instance)
@@ -679,6 +841,23 @@ internal class PairingV1Coordinator(private val context: Context) {
       activeSession?.sealed?.receiptKey?.fill(0)
       activeSession = null
       requestDispatched = false
+    }
+  }
+
+  /** Cancellation forgets an unconfirmed v4 identity; an authenticated import event wins the race. */
+  private fun clearUnconfirmedReceiverAttemptLocked(sessionId: String, sessionState: String?) {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    val confirmation = LockedPushState.peekPairingConfirmation(context)?.takeIf {
+      it.sessionId == sessionId && it.receiverId != null
+    }
+    val expected = sessionState?.let { ReceiverControlState.parse(it) }
+      ?: confirmation?.receiverId?.let { id -> ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)?.takeIf { it.receiverId == id } }
+    val stored = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState)
+    if (expected != null && stored?.receiverId == expected.receiverId && stored.importId == expected.importId && !stored.confirmed) {
+      val values = SignalStore.unifiedpush
+      values.commitV4ReceiverState(null)
+      val control = values.controlStateRead.stateOrNull
+      LockedPushState.setEncryptedEnrollment(context, control?.let { it.activeEpoch > 0 || it.activeImportId != null } == true)
     }
   }
 

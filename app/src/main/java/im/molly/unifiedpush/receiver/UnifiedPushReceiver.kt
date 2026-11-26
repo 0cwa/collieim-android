@@ -9,6 +9,7 @@ import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
@@ -418,19 +419,27 @@ class UnifiedPushReceiver : MessagingReceiver() {
       ackDistributor == binding.distributorId && endpointOrigin == binding.endpointOrigin
   }
 
-  /** A changed tuple may replace a scoped route only after the exact live account/instance has a v3 identity. */
+  /** A changed tuple may replace a scoped route only after its live v3 import or v4 receiver is confirmed. */
   internal fun pairingIdentityConfirmed(
     binding: org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding,
   ): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
     if (SignalStore.unifiedpush.pairingEndpointBinding != binding) return@synchronized false
     val values = SignalStore.unifiedpush
-    val state = values.controlStateRead.stateOrNull ?: return@synchronized false
     val context = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized false
-    state.activeImportId != null && state.activeKeyId != null && state.activeImportSeq > 0 && state.activeEpoch > 0 &&
+    val state = values.controlStateRead.stateOrNull
+    val v3Confirmed = state != null && state.activeImportId != null && state.activeKeyId != null &&
+      state.activeImportSeq > 0 && state.activeEpoch > 0 &&
       state.activeInstance == binding.instance && state.activeAccountId == binding.accountId &&
       state.activeDeviceId == context.pushDevice?.deviceId &&
       context.accountId == binding.accountId && context.instance == binding.instance &&
       SignalStore.account.aci?.toString() == binding.accountId && SignalStore.account.deviceId == binding.deviceId
+    val receiver = ReceiverControlState.parse(values.v4ReceiverState)
+    val v4Confirmed = receiver?.confirmed == true && receiver.importId == binding.importId &&
+      receiver.accountId == binding.accountId && receiver.instance == binding.instance &&
+      context.accountId == binding.accountId && context.instance == binding.instance &&
+      context.localDeviceId == binding.deviceId && SignalStore.account.aci?.toString() == binding.accountId &&
+      SignalStore.account.deviceId == binding.deviceId
+    v3Confirmed || v4Confirmed
   }
 
   private fun discardPairingCandidate(context: Context, binding: PairingRegistrationGate.Binding) {
@@ -668,7 +677,8 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val now = System.currentTimeMillis() / 1000
     val pending = LockedPushState.peekPairingConfirmation(context)
       ?.takeIf { it.instance == instance && now < it.expiresAt } ?: return null
-    val event = EncryptedPush.parse(message.content, now, setOf(3)) ?: return null
+    val version = if (pending.receiverId == null) 3 else 4
+    val event = EncryptedPush.parse(message.content, now, setOf(version)) ?: return null
     return pending.takeIf { it.matches(event) }
   }
 
@@ -676,9 +686,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
     synchronized(UnifiedPushLifecycle.monitor) {
       val pending = matchingPairingConfirmation(context, message, instance) ?: return@synchronized false
       val now = System.currentTimeMillis() / 1000
-      val incoming = EncryptedPush.parse(message.content, now, setOf(3)) ?: return@synchronized false
+      val version = if (pending.receiverId == null) 3 else 4
+      val incoming = EncryptedPush.parse(message.content, now, setOf(version)) ?: return@synchronized false
       val prior = pending.message?.let { stored ->
-        runCatching { Base64.getDecoder().decode(stored) }.getOrNull()?.let { EncryptedPush.parse(it, now, setOf(3)) }
+        runCatching { Base64.getDecoder().decode(stored) }.getOrNull()?.let { EncryptedPush.parse(it, now, setOf(version)) }
       }
       if (prior == null || incoming.expiresAt > prior.expiresAt) {
         LockedPushState.savePairingConfirmation(context, pending.copy(message = Base64.getEncoder().encodeToString(message.content)))
@@ -695,6 +706,35 @@ class UnifiedPushReceiver : MessagingReceiver() {
         UnifiedPush.getAckDistributor(context) != previousDistributor ||
         pending.distributor !in UnifiedPush.getDistributors(context)) return
       val account = scope.account
+    if (pending.receiverId != null) {
+      val receiver = ReceiverControlState.parse(SignalStore.unifiedpush.v4ReceiverState) ?: return
+      if (receiver.receiverId != pending.receiverId || receiver.importId != pending.importId ||
+        receiver.epoch != pending.epoch || receiver.accountId != account.accountId || receiver.instance != instance) return
+      val target = receiver.target
+      val origin = PairingV1.canonicalOrigin(target.endpoint) ?: return
+      if (pending.providerOrigin != null && origin != pending.providerOrigin) return
+      if (!PairingRegistrationGate.isPairingInstance(instance)) {
+        val current = try {
+          ControlFrame.Subscription(account.endpoint ?: return, account.endpointP256dh.orEmpty(), account.endpointAuth.orEmpty())
+        } catch (_: EnrollmentFile.Invalid) { return }
+        if (instance != account.instance || pending.distributor != previousDistributor || !target.matches(current) ||
+          SignalStore.unifiedpush.vapidPublicKey != pending.vapid) return
+      }
+      val binding = PairingRegistrationGate.Binding(
+        instance, pending.distributor, pending.vapid, pending.providerOrigin, pending.sessionId, pending.expiresAt,
+        account.accountId, account.localDeviceId, scope.generation, account.endpoint, account.endpointP256dh,
+        account.endpointAuth, account.instance, pending.hostLabel, previousDistributor,
+      )
+      PairingRegistrationGate.restore(
+        binding,
+        PairingRegistrationGate.Endpoint(target.endpoint, target.p256dh, target.auth, instance),
+        PairingRegistrationGate.ImportBinding(
+          receiver.importId, "", receiver.epoch, target.endpoint, target.p256dh, target.auth,
+          account.accountId, account.localDeviceId, instance, receiver.receiverId,
+        ),
+      )
+      return
+    }
       val bridge = account.pushDevice ?: return
       val intent = scope.intents.firstOrNull {
         it.eligible && it.requestId == pending.importId && it.keyId == pending.keyId && it.epoch == pending.epoch &&
@@ -778,10 +818,18 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 SignalStore.account.aci?.toString() == registration.accountId && SignalStore.account.deviceId == registration.deviceId &&
                 registration.matchesDistributorSelection(UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context))
               val state = values.controlStateRead.stateOrNull ?: return@synchronized null
-              val exactIntent = state.intents.any { intent -> intent.eligible && intent.requestId == import.requestId &&
-                intent.keyId == import.keyId && intent.epoch == import.epoch && intent.instance == import.instance &&
-                intent.accountId == import.accountId && intent.deviceId == import.deviceId &&
-                intent.target.endpoint == import.endpoint && intent.target.p256dh == import.p256dh && intent.target.auth == import.auth
+              val exactIntent = if (import.receiverId == null) {
+                state.intents.any { intent -> intent.eligible && intent.requestId == import.requestId &&
+                  intent.keyId == import.keyId && intent.epoch == import.epoch && intent.instance == import.instance &&
+                  intent.accountId == import.accountId && intent.deviceId == import.deviceId &&
+                  intent.target.endpoint == import.endpoint && intent.target.p256dh == import.p256dh && intent.target.auth == import.auth
+                }
+              } else {
+                ReceiverControlState.parse(values.v4ReceiverState)?.let { receiver ->
+                  receiver.receiverId == import.receiverId && receiver.importId == import.requestId &&
+                    receiver.accountId == import.accountId && receiver.instance == import.instance && receiver.epoch == import.epoch &&
+                    receiver.target.endpoint == import.endpoint && receiver.target.p256dh == import.p256dh && receiver.target.auth == import.auth
+                } == true
               }
               if (!routeStillMatches || !exactIntent || !PairingRegistrationGate.allowsCandidateConfirmation(
                   instance, UnifiedPush.getSavedDistributor(context), UnifiedPush.getAckDistributor(context),
@@ -811,10 +859,11 @@ class UnifiedPushReceiver : MessagingReceiver() {
               }
               val event = accepted.outcome.event
               val exactEvent = accepted.outcome.decision == EncryptedPush.Decision.ACCEPT_STATUS &&
-                accepted.effect == EndpointUpdates.Effect.PROMOTED && event != null && event.version == 3 &&
+                accepted.effect == EndpointUpdates.Effect.PROMOTED && event != null &&
                 event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED &&
-                event.importId == import.requestId && event.keyId == import.keyId && event.epoch == import.epoch &&
-                event.instance == import.instance
+                event.importId == import.requestId && event.epoch == import.epoch && event.instance == import.instance &&
+                (if (import.receiverId == null) event.version == 3 && event.keyId == import.keyId
+                else event.version == 4 && event.receiverId == import.receiverId)
               if (!exactEvent) {
                 restorePreviousRoute()
                 return@synchronized null
@@ -873,14 +922,17 @@ class UnifiedPushReceiver : MessagingReceiver() {
         }
         val active = controlState.activeEpoch
         val pending = controlState.pendingEpoch
+        val receiverJson = values.v4ReceiverState
+        val receiver = ReceiverControlState.parse(receiverJson)
         val scopedPairingRoute = values.pairingEndpointBinding?.instance == instance
-        LockedPushState.setEncryptedEnrollment(context, active > 0 || scopedPairingRoute)
-        if (scopedPairingRoute && (pending <= 0 && active <= 0 || !EncryptedPush.isEventShaped(message.content))) {
+        LockedPushState.setEncryptedEnrollment(context, active > 0 || scopedPairingRoute || receiverJson != null)
+        if (receiverJson != null && receiver == null) return@synchronized MessageHandling(drop = true)
+        if ((scopedPairingRoute && pending <= 0 && active <= 0 || receiverJson != null) && !EncryptedPush.isEventShaped(message.content)) {
           return@synchronized MessageHandling(drop = true)
         }
 
         // A saved import intent also requires encrypted delivery, before or after an active import is confirmed.
-        if (active > 0 || pending > 0) {
+        if (active > 0 || pending > 0 || receiver != null) {
           val encrypted = acceptEncryptedMessageLocked(context, message)
           if (encrypted != null && encrypted.effect != EndpointUpdates.Effect.REJECTED && encrypted.outcome.decision.accepted) {
             if (encrypted.effect == EndpointUpdates.Effect.PROMOTED) {
@@ -889,7 +941,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
             }
             return@synchronized MessageHandling(encrypted = encrypted)
           }
-          if (active > 0 || EncryptedPush.isEventShaped(message.content)) {
+          if (active > 0 || receiver != null || EncryptedPush.isEventShaped(message.content)) {
             return@synchronized MessageHandling(drop = true)
           }
         }
@@ -936,6 +988,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       return null
     }
     val currentContext = UnifiedPushAccountTransition.captureContextLocked()
+    val receiverState = ReceiverControlState.parse(values.v4ReceiverState)
     val currentRegistration = candidateImport?.let {
       EndpointUpdates.RegistrationContext(it.accountId, it.deviceId, it.instance)
     } ?: currentContext?.let {
@@ -954,11 +1007,14 @@ class UnifiedPushReceiver : MessagingReceiver() {
       now = now,
       locked = { appLocked },
       activeInstance = candidateImport?.instance ?: currentContext?.instance ?: values.endpointInstance ?: "default",
-      acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
+      acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot) + listOfNotNull(receiverState?.epoch, receiverState?.pendingEpoch),
       state = state,
-      versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
+      versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) + if (receiverState != null && (receiverState.epoch == epoch || receiverState.pendingEpoch == epoch)) setOf(4) else emptySet() },
       identityMatches = { event ->
-        EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration else null)
+        if (event.version == 4) receiverState?.let { receiver ->
+          currentContext?.accountId?.let { receiver.identityMatches(event, it) } == true
+        } == true
+        else EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration else null)
       },
     )
     if (!outcome.decision.accepted) {
@@ -967,13 +1023,26 @@ class UnifiedPushReceiver : MessagingReceiver() {
     if (outcome.decision.accepted) {
       // Replay and intent promotion share one acknowledged write before any effect starts.
       val event = outcome.event!!
-      if (candidateImport != null && (event.version != 3 || event.kind != EncryptedPush.Kind.STATUS ||
+      if (candidateImport != null) {
+        val matchingCandidate = if (candidateImport.receiverId == null) {
+          event.version == 3 && event.keyId == candidateImport.keyId
+        } else {
+          event.version == 4 && event.receiverId == candidateImport.receiverId
+        }
+        if (!matchingCandidate || event.kind != EncryptedPush.Kind.STATUS ||
           event.code != EncryptedPush.CODE_ENROLLMENT_IMPORTED || event.importId != candidateImport.requestId ||
-          event.keyId != candidateImport.keyId || event.epoch != candidateImport.epoch || event.instance != candidateImport.instance)) {
-        return null
+          event.epoch != candidateImport.epoch || event.instance != candidateImport.instance) return null
       }
       effect = try {
-        EndpointUpdates.accepted(controlStore, outcome.state.serialize(), event, if (event.version == 3) currentRegistration else null)
+        if (event.version == 4) {
+          val nextReceiver = receiverState?.accepted(event, currentContext?.accountId ?: return null) ?: return null
+          values.mutateControlWithReceiverAndReplay(outcome.state.serialize(), nextReceiver.serialize())
+          when {
+            event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED -> EndpointUpdates.Effect.PROMOTED
+            event.code == EncryptedPush.CODE_SUBSCRIPTION_UPDATED -> EndpointUpdates.Effect.CONFIRMED
+            else -> EndpointUpdates.Effect.NONE
+          }
+        } else EndpointUpdates.accepted(controlStore, outcome.state.serialize(), event, if (event.version == 3) currentRegistration else null)
       } catch (e: KeyValuePersistenceException) {
         Log.w(TAG, "Encrypted push state persistence was not acknowledged. Push dropped.", e)
         return null

@@ -43,6 +43,24 @@ class PreflightTests(unittest.TestCase):
             self.assertTrue(preflight.check_pairing_manifest())
         self.assertIn("PASS: CollieSocket pairing v1 manifest", output.getvalue())
 
+    def test_pinned_v4_contract_manifest_passes(self):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertTrue(preflight.check_v4_contract_manifest())
+        self.assertIn("PASS: CollieSocket encrypted push v4 manifest", output.getvalue())
+
+    def test_tampered_v4_contract_artifact_fails_preflight(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary) / preflight.V4_CONTRACT_ROOT.name
+            shutil.copytree(preflight.V4_CONTRACT_ROOT, root)
+            schema = root / "event.schema.json"
+            schema.write_bytes(schema.read_bytes() + b"\n")
+            with patch.object(preflight, "V4_CONTRACT_ROOT", root):
+                result, output = self.invoke({})
+        self.assertEqual(result, 1)
+        self.assertIn("hash mismatch: event.schema.json", output)
+        self.assertIn("FAIL: CollieSocket encrypted push v4 manifest", output)
+
     def test_tampered_pairing_artifact_fails_preflight(self):
         with TemporaryDirectory() as temporary:
             root = Path(temporary) / preflight.PAIRING_CONTRACT_ROOT.name

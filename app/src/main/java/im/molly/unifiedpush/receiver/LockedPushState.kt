@@ -39,11 +39,13 @@ object LockedPushState {
     val epoch: Long,
     val scopeDigest: String,
     val message: String? = null,
+    val receiverId: String? = null,
   ) {
     fun matches(event: EncryptedPush.Event): Boolean =
-      event.version == 3 && event.instance == instance && event.importId == importId &&
-        event.keyId == keyId && event.epoch == epoch &&
-        event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED
+      event.instance == instance && event.importId == importId && event.epoch == epoch &&
+        event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED &&
+        if (receiverId == null) event.version == 3 && event.keyId == keyId
+        else event.version == 4 && event.receiverId == receiverId
   }
 
   internal fun savePairingConfirmation(context: Context, pending: PairingConfirmation): Boolean = try {
@@ -52,6 +54,7 @@ object LockedPushState {
       .put("vapid", pending.vapid).put("provider", pending.providerOrigin).put("expires", pending.expiresAt)
       .put("host", pending.hostLabel).put("import", pending.importId).put("key", pending.keyId)
       .put("epoch", pending.epoch).put("scope", pending.scopeDigest).put("message", pending.message)
+      .put("receiver", pending.receiverId)
     val sealed = KeyStoreHelper.seal(json.toString().toByteArray(Charsets.UTF_8))
     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(PAIRING_CONFIRMATION, sealed.serialize()).commit()
   } catch (_: Exception) {
@@ -67,7 +70,7 @@ object LockedPushState {
         json.getString("session"), json.getString("instance"), json.getString("distributor"), json.getString("vapid"),
         json.optString("provider").ifEmpty { null }, json.getLong("expires"), json.getString("host"),
         json.getString("import"), json.getString("key"), json.getLong("epoch"), json.getString("scope"),
-        json.optString("message").ifEmpty { null },
+        json.optString("message").ifEmpty { null }, json.optString("receiver").ifEmpty { null },
       )
     } catch (_: Exception) {
       Log.w(TAG, "Could not read the retained pairing confirmation.")

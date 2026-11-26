@@ -1,5 +1,6 @@
 package im.molly.unifiedpush.enrollment
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -9,6 +10,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -16,7 +18,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
+import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment
 import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.receiver.EncryptedPush
@@ -53,10 +58,13 @@ class RelayDisclosureUiTest {
   private lateinit var export: File
   private lateinit var exportedBytes: ByteArray
   private lateinit var controlBefore: ControlState
+  private var previousReceiverState: String? = null
   private val device = MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
 
   @Before
   fun seedManualEnrollment() {
+    previousReceiverState = values.v4ReceiverState
+    values.v4ReceiverState = null
     values.enabled = true
     values.airGapped = true
     values.mollySocketUrl = null
@@ -79,6 +87,56 @@ class RelayDisclosureUiTest {
   @After
   fun removeSyntheticExport() {
     EnrollmentExporter.removeFiles(context)
+    values.v4ReceiverState = previousReceiverState
+  }
+
+  @Test
+  fun addReceiverConsentShowsFourRowsAndExactDeviceWording() = withSettings { scenario ->
+    val offer = ObjectMapper().readTree(
+      checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json")).use { it.readBytes() },
+    )[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
+    val url = "https://push.example.test/pairing/v1/submit"
+    val wrapper = """{"collie_pairing_transport":1,"submit_url":"$url","bridge_device_id":2,"offer":$offer}"""
+    scenario.onActivity { activity ->
+      val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+      (host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment).showPairingConsentFixtureForTest(wrapper)
+    }
+    val expectedTitle = "Add this device to “Collie Lab”?"
+    val expectedMessage = "Push server: https://push.example.test\nDistributor: Collie Pack\nEncrypted request will be sent to: $url\n\nAdds this device to your existing notification relay without linking another Signal device."
+    onView(withText(expectedTitle)).check(matches(isDisplayed()))
+    onView(withId(android.R.id.message)).check(matches(withText(expectedMessage)))
+    onView(withText(android.R.string.cancel)).check(matches(isDisplayed()))
+    onView(withText(R.string.PairingV1__add_receiver_consent_confirm)).check(matches(isDisplayed()))
+    screenshot("08-add-receiver-consent")
+    cancelDialog()
+  }
+
+  @Test
+  fun confirmedV4ReceiverAppearsInLinkedRelaySettings() {
+    val fixture = ObjectMapper().readTree(
+      checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json")).use { it.readBytes() },
+    )
+    val sub = fixture["subscription"]
+    values.v4ReceiverState = ReceiverControlState(
+      receiverId = fixture["receiver_id"].asText(), importId = fixture["request_id"].asText(),
+      accountId = SignalStore.account.aci.toString(), bridgeDeviceId = 2, instance = sub["instance"].asText(),
+      hostLabel = "Collie Lab", controlKey = fixture["control_key"].asText(), epoch = 1,
+      target = Target(sub["endpoint"].asText(), sub["p256dh"].asText(), sub["auth"].asText()),
+      confirmed = true,
+    ).serialize()
+    try {
+      withSettings {
+        onView(withText(R.string.UnifiedPushSettingsFragment__status)).check(matches(isDisplayed()))
+        onView(withText(R.string.PairingV1__notification_relay)).check(matches(isDisplayed()))
+        onView(withText("Collie Lab · https://push.example.test")).check(matches(isDisplayed()))
+        onView(withText(R.string.UnifiedPushSettingsFragment__distributor_app)).check(matches(isDisplayed()))
+        onView(withText(R.string.UnifiedPushSettingsFragment__test_push)).check(matches(isDisplayed()))
+        onView(withText(R.string.PairingV1__waiting_confirmation)).check(doesNotExist())
+        screenshot("09-v4-linked-settings")
+      }
+    } finally {
+      values.v4ReceiverState = null
+    }
   }
 
   @Test

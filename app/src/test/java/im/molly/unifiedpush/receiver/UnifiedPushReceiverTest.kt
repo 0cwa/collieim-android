@@ -68,6 +68,7 @@ import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
@@ -87,6 +88,7 @@ import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import com.fasterxml.jackson.databind.ObjectMapper
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [28])
@@ -731,6 +733,45 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `cancelling an unconfirmed v4 receiver restores the retained encrypted route`() {
+    fakeAccount()
+    val fixture = ObjectMapper().readTree(
+      checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json")).use { it.readBytes() },
+    )
+    val subscription = fixture["subscription"]
+    val receiver = ReceiverControlState(
+      receiverId = fixture["receiver_id"].asText(), importId = fixture["request_id"].asText(),
+      accountId = fixture["account_id"].asText(), bridgeDeviceId = fixture["device_id"].intValue(),
+      instance = subscription["instance"].asText(), hostLabel = fixture["label"].asText(),
+      controlKey = fixture["control_key"].asText(), epoch = subscription["subscription_epoch"].longValue(),
+      target = Target(subscription["endpoint"].asText(), subscription["p256dh"].asText(), subscription["auth"].asText()),
+    )
+    val sessionId = receiver.importId
+    val confirmation = LockedPushState.PairingConfirmation(
+      sessionId = sessionId, instance = receiver.instance, distributor = "org.example.distributor", vapid = "vapid-key",
+      providerOrigin = "https://push.example.test", expiresAt = System.currentTimeMillis() / 1000 + 600,
+      hostLabel = receiver.hostLabel, importId = receiver.importId, keyId = "", epoch = receiver.epoch,
+      scopeDigest = "fixture-scope", receiverId = receiver.receiverId,
+    )
+    mockkObject(LockedPushState)
+    lockedPushStateMocked = true
+    every { LockedPushState.peekPairingConfirmation(context) } returns confirmation
+    every { LockedPushState.clearPairingConfirmation(context, sessionId) } returns Unit
+
+    enrollment(active = 1, pending = 0, key = fixtureKey) {
+      values.v4ReceiverState = receiver.serialize()
+      PairingV1Coordinator(context).cancelOfferAttempt(sessionId)
+
+      assertNull(values.v4ReceiverState)
+      unmockkObject(LockedPushState)
+      lockedPushStateMocked = false
+      assertTrue("the previous keyed enrollment remains protected", LockedPushState.isEncryptedEnrollment(context))
+      assertEquals(1L, values.controlState.activeEpoch)
+      LockedPushState.setEncryptedEnrollment(context, false)
+    }
+  }
+
+  @Test
   fun `failed pairing migration leaves the previous distributor and endpoint active`() {
     assertPairingMigrationRollback { binding ->
       UnifiedPushReceiver().onRegistrationFailed(context, FailedReason.NETWORK, binding.instance)
@@ -1121,6 +1162,77 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(context, PushMessage(wake(), true), "default")
       fetches(1)
       verify(exactly = 1) { values.mutateControl(any(), any()) }
+    }
+  }
+
+  @Test
+  fun `v4 receiver rejects plaintext until import then accepts status wake and test events`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    fakeAccount(accountId)
+    val receiverFixture = ObjectMapper().readTree(
+      checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json")).use { it.readBytes() },
+    )
+    val subscription = receiverFixture["subscription"]
+    val endpoint = subscription["endpoint"].asText()
+    val p256dh = subscription["p256dh"].asText()
+    val auth = subscription["auth"].asText()
+    val instance = subscription["instance"].asText()
+    val receiverState = ReceiverControlState(
+      receiverId = receiverFixture["receiver_id"].asText(),
+      importId = receiverFixture["request_id"].asText(),
+      accountId = accountId,
+      bridgeDeviceId = receiverFixture["device_id"].intValue(),
+      instance = instance,
+      hostLabel = receiverFixture["label"].asText(),
+      controlKey = receiverFixture["control_key"].asText(),
+      epoch = subscription["subscription_epoch"].longValue(),
+      target = Target(endpoint, p256dh, auth),
+    )
+
+    enrollment(active = 0, pending = 0) {
+      values.setEndpointRegistration(endpoint, p256dh, auth, instance)
+      every { values.endpointInstance } returns instance
+      values.v4ReceiverState = "corrupt-v4-receiver-state"
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, PushMessage("urgent".toByteArray(), true), instance)
+      fetches(0)
+
+      values.v4ReceiverState = receiverState.serialize()
+      every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationTest() } returns Unit
+      fetches(0)
+
+      fun event(name: String, kind: String? = null): ByteArray {
+        val node = ObjectMapper().readTree(
+          checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/$name.json")).use { it.readBytes() },
+        ) as com.fasterxml.jackson.databind.node.ObjectNode
+        val now = System.currentTimeMillis() / 1000
+        node.put("issued_at", now).put("expires_at", now + 300)
+        if (kind != null) node.put("kind", kind).put("event_id", "77777777-7777-4777-8777-777777777777")
+        return node.toString().toByteArray()
+      }
+
+      receiver.onMessage(context, PushMessage(event("wake"), true), instance)
+      fetches(0)
+      val importedBytes = event("imported")
+      val importedEvent = checkNotNull(EncryptedPush.parse(importedBytes, System.currentTimeMillis() / 1000, setOf(4)))
+      assertTrue(receiverState.identityMatches(importedEvent, accountId))
+      val live = synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushAccountTransition.captureContextLocked() }
+      assertEquals(accountId, live?.accountId)
+      assertEquals(instance, live?.instance)
+      val replayState = checkNotNull(EncryptedPush.ReplayState.parse(values.replayState))
+      assertEquals(
+        EncryptedPush.Decision.ACCEPT_STATUS,
+        EncryptedPush.decide(
+          importedBytes, true, System.currentTimeMillis() / 1000, { false }, instance, setOf(receiverState.epoch),
+          replayState, versionsForEpoch = { setOf(4) }, identityMatches = { receiverState.identityMatches(it, live!!.accountId) },
+        ).decision,
+      )
+      receiver.onMessage(context, PushMessage(importedBytes, true), instance)
+      assertTrue(checkNotNull(ReceiverControlState.parse(values.v4ReceiverState)).confirmed)
+      receiver.onMessage(context, PushMessage(event("wake"), true), instance)
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
+      receiver.onMessage(context, PushMessage(event("wake", "test"), true), instance)
+      verify(timeout = 3000, exactly = 1) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationTest() }
     }
   }
 

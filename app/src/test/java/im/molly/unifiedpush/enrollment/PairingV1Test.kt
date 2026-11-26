@@ -164,10 +164,16 @@ class PairingV1Test {
     }
   }
 
-  @Test fun `reserved add receiver is rejected at app boundary`() {
+  @Test fun `add receiver keeps the v1 cryptographic envelope and intent`() {
     val v = vectors[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
     val reserved = PairingV1.parseOffer(v.toString(), 1_799_999_999L)
-    bad { PairingV1.seal(reserved, vectors[0]["enrollment_json"].asText(), "https://push.example.test/path") }
+    val subscription = vectors[0]["enrollment_json"].asText().replace("\"enrollment_version\":3", "\"enrollment_version\":4")
+      .replace("\"supported_event_versions\":[1,2,3]", "\"supported_event_versions\":[1,2,3,4]")
+      .replace("\"control_key\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\"}", "\"control_key\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\",\"receiver_id\":\"f0000000-0000-4000-8000-000000000002\"}")
+    val sealed = PairingV1.sealedFromVectorForTest(reserved, subscription, "https://push.example.test/path",
+      vectors[0]["request"]["client_public_key"].asText(), vectors[0]["shared_secret_hex"].asText(), vectors[0]["request"]["nonce"].asText())
+    assertEquals("add_receiver", mapper.readTree(sealed.json)["intent"].asText())
+    assertEquals("f0000000-0000-4000-8000-000000000002", sealed.expectedReceiverId)
   }
 
   private fun ByteArray.toHex() = joinToString("") { "%02x".format(it) }

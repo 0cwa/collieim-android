@@ -4,6 +4,7 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.health.PushHealth
@@ -70,6 +71,44 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
     val device = values.device
     val endpoint = values.endpoint
     val distributorActive = distributorActive()
+
+    val receiver = ReceiverControlState.parse(values.v4ReceiverState)
+    if (receiver?.confirmed == true) {
+      if (aci == null || endpoint == null || !distributorActive || receiver.accountId != aci.toString()) {
+        val hop = PushHealth.diagnose(null, distributorActive, endpoint != null)
+        if (manual || hop == PushHealth.Hop.DISTRIBUTOR) PushHealthActions.onPing(hop)
+        return
+      }
+      val subscription = try {
+        ControlFrame.Subscription(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+      } catch (_: EnrollmentFile.Invalid) {
+        PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
+        return
+      }
+      val ping = try {
+        ReceiverControlState.reconcile(receiver, aci.toString(), receiver.bridgeDeviceId, subscription, System.currentTimeMillis() / 1000, force = true)
+      } catch (_: EnrollmentFile.Invalid) { null }
+      if (ping == null) {
+        PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
+        return
+      }
+      values.v4ReceiverState = ping.serialize()
+      UnifiedPushControlJob.enqueue()
+      val deadline = System.currentTimeMillis() + timeoutMs
+      while (System.currentTimeMillis() < deadline) {
+        val current = ReceiverControlState.parse(values.v4ReceiverState) ?: return
+        if (current.pendingEpoch == null && current.epoch >= checkNotNull(ping.pendingEpoch)) return
+        Thread.sleep(POLL_MS)
+      }
+      val current = ReceiverControlState.parse(values.v4ReceiverState)
+      val hop = when {
+        !distributorActive() || values.endpoint == null -> PushHealth.Hop.DISTRIBUTOR
+        current?.pendingSentAt == 0L -> PushHealth.Hop.SIGNAL_SEND
+        else -> PushHealth.Hop.COLLIESOCKET_OR_PROVIDER
+      }
+      PushHealthActions.onPing(hop)
+      return
+    }
 
     if (aci == null || device == null || endpoint == null || !distributorActive || state.key == null || state.activeEpoch <= 0) {
       // Nothing can be sent. A missing distributor or endpoint is a verdict of its own; the rest is "unavailable",

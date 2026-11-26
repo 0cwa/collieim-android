@@ -57,6 +57,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val MAX_ENROLLMENT_EPOCH = 9007199254740991L
     private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
     private const val UNIFIEDPUSH_CONTROL_STATE = "up.control.state"
+    private const val UNIFIEDPUSH_V4_RECEIVER_STATE = "up.v4.receiver.state"
     private val controlLock = Any()
     private const val UNIFIEDPUSH_HEALTH_FAILURES = "up.health.failures"
     private const val UNIFIEDPUSH_HEALTH_FALLBACK = "up.health.fallback"
@@ -308,6 +309,9 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
   /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
   var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
 
+  /** Sealed receiver identity and retryable receiver-specific control frame; stored in encrypted key-value state. */
+  var v4ReceiverState: String? by stringValue(UNIFIEDPUSH_V4_RECEIVER_STATE, null)
+
   /** Durable fail-closed marker for identity writes that may have stopped before coherent registration completed. */
   val hasIncompleteAccountTransition: Boolean
     get() = getBoolean(UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING, false)
@@ -355,18 +359,37 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    */
   fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
     return synchronized(UnifiedPushLifecycle.monitor) {
-      mutateControl(replay, replayIfAbsent = null, block)
+      mutateControl(replay, replayIfAbsent = null, v4ReceiverState = null, block)
+    }
+  }
+
+  /** Atomically persists a v4 receiver transition with the event replay record that authorized it. */
+  fun mutateControlWithReceiverAndReplay(replay: String, receiverState: String): ControlState {
+    return synchronized(UnifiedPushLifecycle.monitor) {
+      mutateControl(replay, replayIfAbsent = null, v4ReceiverState = receiverState) { it }
     }
   }
 
   /** Commits [replayIfAbsent] with the state change only when replay has not been initialized yet. */
   fun mutateControlWithReplayIfAbsent(replayIfAbsent: String, block: (ControlState) -> ControlState): ControlState {
     return synchronized(UnifiedPushLifecycle.monitor) {
-      mutateControl(replay = null, replayIfAbsent = replayIfAbsent, block = block)
+      mutateControl(replay = null, replayIfAbsent = replayIfAbsent, v4ReceiverState = null, block = block)
     }
   }
 
-  private fun mutateControl(replay: String?, replayIfAbsent: String?, block: (ControlState) -> ControlState): ControlState {
+  /** Acknowledged standalone write for a consented but not-yet-confirmed receiver request. */
+  fun commitV4ReceiverState(receiverState: String?) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      store.beginWrite().putString(UNIFIEDPUSH_V4_RECEIVER_STATE, receiverState).commitAndWaitForPersistence()
+    }
+  }
+
+  private fun mutateControl(
+    replay: String?,
+    replayIfAbsent: String?,
+    v4ReceiverState: String?,
+    block: (ControlState) -> ControlState,
+  ): ControlState {
     synchronized(controlLock) {
       val loaded = controlStateRead
       val old = loaded.stateOrNull ?: throw CorruptControlStateException()
@@ -381,11 +404,12 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       }
       val migration = loaded is ControlStateRead.Legacy
       val missingReplay = replayIfAbsent != null && existingReplay == null
-      if (next == old && replay == null && !missingReplay && !migration) return old
+      if (next == old && replay == null && v4ReceiverState == null && !missingReplay && !migration) return old
       val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
       if (migration) write.remove(UNIFIEDPUSH_ENROLLMENT_EPOCH).remove(UNIFIEDPUSH_PENDING_EPOCH)
       if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
       else if (missingReplay) write.putString(UNIFIEDPUSH_REPLAY_STATE, replayIfAbsent)
+      if (v4ReceiverState != null) write.putString(UNIFIEDPUSH_V4_RECEIVER_STATE, v4ReceiverState)
       write.commitAndWaitForPersistence()
       return next
     }

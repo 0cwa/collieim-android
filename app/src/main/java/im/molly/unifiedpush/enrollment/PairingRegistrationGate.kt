@@ -45,6 +45,7 @@ object PairingRegistrationGate {
     val accountId: String,
     val deviceId: Int,
     val instance: String,
+    val receiverId: String? = null,
   )
 
   data class Pending internal constructor(
@@ -137,9 +138,14 @@ object PairingRegistrationGate {
     val active = pending?.takeIf { it.binding.instance == instance } ?: return@synchronized false
     val binding = active.binding
     val endpoint = active.claimedEndpoint ?: return@synchronized false
-    if (identity.instance != instance || identity.accountId != binding.accountId ||
+    val validIdentity = if (identity.receiverId == null) {
+      identity.keyId.isNotBlank()
+    } else {
+      UUID_V4.matches(identity.receiverId) && UUID_V4.matches(identity.requestId) && identity.keyId.isEmpty()
+    }
+    if (!validIdentity || identity.instance != instance || identity.accountId != binding.accountId ||
       identity.endpoint != endpoint.url || identity.p256dh != endpoint.p256dh || identity.auth != endpoint.auth ||
-      identity.epoch <= 0 || identity.requestId.isBlank() || identity.keyId.isBlank()) return@synchronized false
+      identity.epoch <= 0 || identity.requestId.isBlank()) return@synchronized false
     active.importBinding = identity
     true
   }
@@ -278,6 +284,7 @@ object PairingRegistrationGate {
   }
 
   private data class Current(val active: Pending?, val expired: Pending?)
+  private val UUID_V4 = Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
 
   /** Caller holds [lock]. Expiry callbacks run only after the lock is released. */
   private fun currentLocked(nowSeconds: Long): Current {

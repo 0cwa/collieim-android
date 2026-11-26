@@ -14,9 +14,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import im.molly.unifiedpush.control.ControlReset
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.enrollment.PairingV1
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.PairingTransport
-import im.molly.unifiedpush.enrollment.PairingV1
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.RelayDisclosure
@@ -202,7 +203,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     }
 
     return withContext(Dispatchers.IO) {
-      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent, serverEpoch, allowRecovery)
+      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent, serverEpoch, allowRecovery, scan.bridgeDeviceId)
       if (sealed is PairingV1Coordinator.SealResult.Failed) {
         pairingCoordinator.cancelOfferAttempt(offer.sessionId)
         return@withContext PairingUi.Error(sealed.message)
@@ -333,6 +334,8 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
     val controlRead = SignalStore.unifiedpush.controlStateRead.stateOrNull
     val pairing = SignalStore.unifiedpush.pairingEndpointBinding
+    val receiverJson = SignalStore.unifiedpush.v4ReceiverState
+    val receiver = ReceiverControlState.parse(receiverJson)
     UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
       device = SignalStore.unifiedpush.device?.takeUnless(SignalStore.unifiedpush::isProvisioningPending),
@@ -344,13 +347,15 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       selectedNotAck = !ack,
       endpoint = SignalStore.unifiedpush.endpoint,
       mollySocketUrl = mollySocketUrl,
-      pairingHost = pairing?.hostLabel,
-      pairingOrigin = pairing?.endpointOrigin,
-      encryptedEnrollment = pairing != null || controlRead?.key != null,
+      pairingHost = pairing?.hostLabel ?: receiver?.hostLabel,
+      pairingOrigin = pairing?.endpointOrigin ?: receiver?.target?.endpoint?.let(PairingV1::canonicalOrigin),
+      encryptedEnrollment = pairing != null || controlRead?.key != null || receiverJson != null,
       awaitingPushConfirmation = pairing != null &&
         (controlRead == null || controlRead.activeInstance != pairing.instance ||
-          pairing.importId != null && controlRead.activeImportId != pairing.importId),
-      enrollmentEpoch = controlRead?.activeEpoch ?: 0L,
+          pairing.importId != null && controlRead.activeImportId != pairing.importId) ||
+        receiverJson != null && (receiver?.confirmed != true || receiver.pendingEpoch != null),
+      receiverUpdatePending = receiver?.pendingEpoch != null,
+      enrollmentEpoch = controlRead?.activeEpoch ?: receiver?.epoch ?: 0L,
       pushFallback = SignalStore.unifiedpush.health.fallback,
       pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),
       pushTestResultAt = SignalStore.unifiedpush.health.lastResultAt,

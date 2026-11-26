@@ -46,6 +46,11 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -103,6 +108,7 @@ data class ReactionOverlaySelection(
   val isMessageOnLeft: Boolean,
   val lastSeenDownY: Float,
   val emoji: List<Drawable?>,
+  val emojiLabels: List<String?>,
   val appliedEmojiIndex: Int,
   val canReact: Boolean,
   val returnPosition: () -> Offset?
@@ -328,10 +334,12 @@ fun ChatReactionOverlay(
         ReactionEmoji(
           index = index,
           emoji = selection.emoji.getOrNull(index),
+          label = selection.emojiLabels.getOrNull(index),
           isApplied = index == selection.appliedEmojiIndex,
           reveal = emojiReveal[index].value,
           indicatorAlpha = indicatorReveal.value,
           selectedIndex = { controller.selectedIndex },
+          onActivate = { controller.onEmojiClicked(index) },
           onEdgeMeasured = { left, right ->
             // Layout direction order, so under RTL start is the greater edge.
             if (index == 0) {
@@ -362,10 +370,12 @@ fun ChatReactionOverlay(
 private fun ReactionEmoji(
   index: Int,
   emoji: Drawable?,
+  label: String?,
   isApplied: Boolean,
   reveal: Float,
   indicatorAlpha: Float,
   selectedIndex: () -> Int,
+  onActivate: () -> Unit,
   onEdgeMeasured: (Float, Float) -> Unit
 ) {
   val density = LocalDensity.current
@@ -395,6 +405,13 @@ private fun ReactionEmoji(
         val left = coordinates.positionInWindow().x
 
         onEdgeMeasured(left, left + coordinates.size.width)
+      }
+      .clearAndSetSemantics {
+        if (label != null) {
+          contentDescription = label
+          role = Role.Button
+          onClick { onActivate(); true }
+        }
       },
     contentAlignment = Alignment.Center
   ) {

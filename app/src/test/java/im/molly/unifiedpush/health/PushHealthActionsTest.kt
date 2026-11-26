@@ -3,6 +3,8 @@ package im.molly.unifiedpush.health
 import android.app.Application
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.LegacyPending
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.MollySocketDevice
@@ -68,6 +70,7 @@ class PushHealthActionsTest {
   @After
   fun tearDown() {
     UnifiedPushHealthJob.distributorActive = im.molly.unifiedpush.UnifiedPushDistributor::checkIfActive
+    UnifiedPushHealthJob.timeoutMs = im.molly.unifiedpush.health.PushHealth.PING_TIMEOUT_MS
   }
 
   private val health get() = values.health
@@ -212,6 +215,228 @@ class PushHealthActionsTest {
       subscription.unsubscribe()
       UnifiedPushHealthJob.timeoutMs = PushHealth.PING_TIMEOUT_MS
     }
+  }
+
+  @Test
+  fun `a linked receiver health ping is abandoned when its pinned receiver route changes`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val importId = "22222222-2222-4222-8222-222222222222"
+    val receiverId = "33333333-3333-4333-8333-333333333333"
+    val endpoint = "https://push.example.invalid/linked"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.isUnauthorizedReceived } returns false
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.endpoint = endpoint
+    values.endpointInstance = instance
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    values.setPairingEndpointRegistration(
+      endpoint, fixtureP256dh, fixtureAuth,
+      UnifiedPushValues.PairingEndpointBinding(
+        instance, "org.collie.pack", "fixture-vapid", "https://push.example.invalid",
+        "https://push.example.invalid", "44444444-4444-4444-8444-444444444444", System.currentTimeMillis() / 1000 + 600,
+        accountId, 3, "Fixture host", importId,
+      ),
+    )
+    val receiver = ReceiverControlState(
+      receiverId, importId, accountId, 2, instance, hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(endpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    values.v4ReceiverState = receiver.serialize()
+    UnifiedPushHealthJob.distributorActive = { true }
+    UnifiedPushHealthJob.timeoutMs = 10_000
+
+    val done = java.util.concurrent.CountDownLatch(1)
+    val error = java.util.concurrent.atomic.AtomicReference<Throwable?>()
+    val job = UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    )
+    Thread {
+      try { job.onRun() } catch (failure: Throwable) { error.set(failure) } finally { done.countDown() }
+    }.start()
+    val deadline = System.currentTimeMillis() + 3_000
+    while (ReceiverControlState.parse(values.v4ReceiverState)?.pendingEpoch == null && System.currentTimeMillis() < deadline) Thread.sleep(20)
+    assertEquals(null, error.get())
+    assertEquals(2L, ReceiverControlState.parse(values.v4ReceiverState)?.pendingEpoch)
+
+    values.v4ReceiverState = receiver.copy(importId = "55555555-5555-4555-8555-555555555555").serialize()
+
+    assertTrue("the stale health job exits after the route changes", done.await(3, java.util.concurrent.TimeUnit.SECONDS))
+    assertEquals(null, error.get())
+    assertEquals("a replaced receiver does not receive a health verdict", 0L, health.lastResultAt)
+    assertEquals("the stale ping does not alter the replacement receiver", "55555555-5555-4555-8555-555555555555", ReceiverControlState.parse(values.v4ReceiverState)?.importId)
+  }
+
+  @Test
+  fun `an unavailable distributor is diagnosed against the observed connector during route rotation`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val confirmedEndpoint = "https://push.example.invalid/confirmed"
+    val observedEndpoint = "https://push.example.invalid/rotating"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.endpoint = observedEndpoint
+    values.endpointInstance = instance
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    val receiver = ReceiverControlState(
+      "33333333-3333-4333-8333-333333333333", "22222222-2222-4222-8222-222222222222", accountId, 2, instance,
+      hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(confirmedEndpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    values.v4ReceiverState = receiver.serialize()
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.initializeFromSignalStore()
+    UnifiedPushHealthJob.distributorActive = { false }
+
+    UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    ).onRun()
+
+    assertEquals("the early distributor failure is retained", PushHealth.Hop.DISTRIBUTOR.code, health.lastResult)
+    assertEquals("diagnosis leaves the confirmed receiver intact", receiver.serialize(), values.v4ReceiverState)
+  }
+
+  @Test
+  fun `a route replaced during timeout diagnosis receives no stale health verdict`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val importId = "22222222-2222-4222-8222-222222222222"
+    val endpoint = "https://push.example.invalid/linked"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.endpoint = endpoint
+    values.endpointInstance = instance
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    val receiver = ReceiverControlState(
+      "33333333-3333-4333-8333-333333333333", importId, accountId, 2, instance,
+      hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(endpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    fun binding(currentImportId: String) = UnifiedPushValues.PairingEndpointBinding(
+      instance, "org.collie.pack", "fixture-vapid", "https://push.example.invalid",
+      "https://push.example.invalid", "44444444-4444-4444-8444-444444444444", System.currentTimeMillis() / 1000 + 600,
+      accountId, 3, "Fixture host", currentImportId,
+    )
+    values.setPairingEndpointRegistration(endpoint, fixtureP256dh, fixtureAuth, binding(importId))
+    values.v4ReceiverState = receiver.serialize()
+    val replacement = receiver.copy(
+      receiverId = "55555555-5555-4555-8555-555555555555",
+      importId = "66666666-6666-4666-8666-666666666666",
+    )
+    var replacedAtDiagnosis = false
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.initializeFromSignalStore()
+    UnifiedPushHealthJob.distributorActive = {
+      val live = ReceiverControlState.parse(values.v4ReceiverState)
+      if (!replacedAtDiagnosis && live?.pendingEpoch != null) {
+        replacedAtDiagnosis = true
+        values.setPairingEndpointRegistration(
+          endpoint, fixtureP256dh, fixtureAuth, binding(replacement.importId),
+        )
+        values.v4ReceiverState = replacement.serialize()
+      }
+      true
+    }
+    UnifiedPushHealthJob.timeoutMs = 1
+
+    val done = java.util.concurrent.CountDownLatch(1)
+    val error = java.util.concurrent.atomic.AtomicReference<Throwable?>()
+    val job = UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    )
+    Thread {
+      try { job.onRun() } catch (failure: Throwable) { error.set(failure) } finally { done.countDown() }
+    }.start()
+
+    assertTrue("timeout diagnosis finishes", done.await(5, java.util.concurrent.TimeUnit.SECONDS))
+    assertEquals(null, error.get())
+    assertTrue("the route changed during final timeout diagnosis", replacedAtDiagnosis)
+    assertEquals("a replacement route receives no stale verdict", 0L, health.lastResultAt)
+    assertEquals(replacement.importId, ReceiverControlState.parse(values.v4ReceiverState)?.importId)
+  }
+
+  @Test
+  fun `queued v4 fallback rechecks the exact receiver route before switching modes`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val instance = "fixture-instance"
+    val endpoint = "https://push.example.invalid/linked"
+    val importId = "22222222-2222-4222-8222-222222222222"
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.isUnauthorizedReceived } returns false
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 3
+    values.device = null
+    values.enabled = true
+
+    fun receiver(import: String) = ReceiverControlState(
+      "33333333-3333-4333-8333-333333333333", import, accountId, 2, instance,
+      hostLabel = "Fixture bridge", controlKey = controlKey, epoch = 1,
+      target = Target(endpoint, fixtureP256dh, fixtureAuth), confirmed = true,
+    )
+    fun installRoute(state: ReceiverControlState) {
+      values.setPairingEndpointRegistration(
+        endpoint, fixtureP256dh, fixtureAuth,
+        UnifiedPushValues.PairingEndpointBinding(
+          instance, "org.collie.pack", "fixture-vapid", "https://push.example.invalid",
+          "https://push.example.invalid", "44444444-4444-4444-8444-444444444444", System.currentTimeMillis() / 1000 + 600,
+          accountId, 3, "Fixture host", state.importId,
+        ),
+      )
+      values.v4ReceiverState = state.serialize()
+    }
+    installRoute(receiver(importId))
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.initializeFromSignalStore()
+    UnifiedPushHealthJob.distributorActive = { false }
+    inline = false
+    health.failures = 1
+    health.fallback = false
+    val job = UnifiedPushHealthJob.Factory().create(
+      org.thoughtcrime.securesms.jobmanager.Job.Parameters.Builder().build(),
+      org.thoughtcrime.securesms.jobmanager.JsonJobData.Builder().putBoolean("manual", true).serialize(),
+    )
+
+    job.onRun()
+    assertEquals("one mode change is queued for the observed receiver", 1, queued.size)
+    installRoute(receiver("55555555-5555-4555-8555-555555555555"))
+    queued.removeAt(0).run()
+    assertEquals("the stale receiver cannot switch the replacement to WebSocket", ForceWebsocketMode.DISABLED_AUTOMATICALLY, mode)
+    assertEquals(0, resets)
+
+    health.failures = 1
+    health.fallback = false
+    job.onRun()
+    job.onRun()
+    assertEquals(2, queued.size)
+    queued.removeAt(0).run()
+    queued.removeAt(0).run()
+    assertEquals("a repeated verdict keeps the still-current receiver in fallback", ForceWebsocketMode.ENABLED_AUTOMATICALLY, mode)
+    assertEquals(1, resets)
   }
 
   // --- B2: pushes dropped while locked are still pushes ---

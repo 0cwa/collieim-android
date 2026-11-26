@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.receiver
 
 import android.content.Context
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.json.JSONObject
 import org.signal.core.util.crypto.KeyStoreHelper
 import org.signal.core.util.logging.Log
@@ -39,11 +40,17 @@ object LockedPushState {
     val epoch: Long,
     val scopeDigest: String,
     val message: String? = null,
+    val receiverId: String? = null,
+    val previousDistributor: String? = null,
+    val previousInstance: String? = null,
   ) {
-    fun matches(event: EncryptedPush.Event): Boolean =
-      event.version == 3 && event.instance == instance && event.importId == importId &&
-        event.keyId == keyId && event.epoch == epoch &&
-        event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED
+    fun identityMatches(event: EncryptedPush.Event): Boolean =
+      event.instance == instance && event.importId == importId && event.epoch == epoch &&
+        if (receiverId == null) event.version == 3 && event.keyId == keyId
+        else event.version == 4 && event.receiverId == receiverId
+
+    fun matches(event: EncryptedPush.Event): Boolean = identityMatches(event) &&
+      event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED
   }
 
   internal fun savePairingConfirmation(context: Context, pending: PairingConfirmation): Boolean = try {
@@ -52,6 +59,8 @@ object LockedPushState {
       .put("vapid", pending.vapid).put("provider", pending.providerOrigin).put("expires", pending.expiresAt)
       .put("host", pending.hostLabel).put("import", pending.importId).put("key", pending.keyId)
       .put("epoch", pending.epoch).put("scope", pending.scopeDigest).put("message", pending.message)
+      .put("receiver", pending.receiverId).put("previousDistributor", pending.previousDistributor)
+      .put("previousInstance", pending.previousInstance)
     val sealed = KeyStoreHelper.seal(json.toString().toByteArray(Charsets.UTF_8))
     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(PAIRING_CONFIRMATION, sealed.serialize()).commit()
   } catch (_: Exception) {
@@ -67,7 +76,8 @@ object LockedPushState {
         json.getString("session"), json.getString("instance"), json.getString("distributor"), json.getString("vapid"),
         json.optString("provider").ifEmpty { null }, json.getLong("expires"), json.getString("host"),
         json.getString("import"), json.getString("key"), json.getLong("epoch"), json.getString("scope"),
-        json.optString("message").ifEmpty { null },
+        json.optString("message").ifEmpty { null }, json.optString("receiver").ifEmpty { null },
+        json.optString("previousDistributor").ifEmpty { null }, json.optString("previousInstance").ifEmpty { null },
       )
     } catch (_: Exception) {
       Log.w(TAG, "Could not read the retained pairing confirmation.")
@@ -79,6 +89,15 @@ object LockedPushState {
   internal fun clearPairingConfirmation(context: Context, sessionId: String) {
     if (peekPairingConfirmation(context)?.sessionId == sessionId) {
       context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PAIRING_CONFIRMATION).commit()
+    }
+  }
+
+  /** A user's switch away from UnifiedPush revokes a retained v4 promotion before startup can resume it. */
+  internal fun revokeV4PairingConfirmationForUserChoice(context: Context) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      peekPairingConfirmation(context)?.takeIf { it.receiverId != null }?.let {
+        clearPairingConfirmation(context, it.sessionId)
+      }
     }
   }
 

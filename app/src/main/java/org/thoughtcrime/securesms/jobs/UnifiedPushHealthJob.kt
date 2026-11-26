@@ -4,12 +4,17 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -57,6 +62,7 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
   }
 
   private fun runPing() {
+    if (runV4PingIfCurrent()) return
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
     val state = try {
@@ -118,6 +124,169 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
 
     val hop = PushHealth.diagnose(store.read().update, distributorActive(), SignalStore.unifiedpush.endpoint != null)
     PushHealthActions.onPing(hop)
+  }
+
+  /** Pins a v4 ping and every poll to the same live account, route, receiver and pending frame. */
+  private fun runV4PingIfCurrent(): Boolean {
+    val values = SignalStore.unifiedpush
+    var applicable = false
+    var failure: PushHealth.Hop? = null
+    var pinned: ReceiverControlState? = null
+    var observed: ReceiverControlState? = null
+    var observedConnector: Target? = null
+    var generation = 0L
+    synchronized(UnifiedPushLifecycle.monitor) {
+      val receiver = ReceiverControlState.parse(values.v4ReceiverState)
+      if (receiver?.confirmed != true) return@synchronized
+      observed = receiver
+      generation = UnifiedPushLifecycle.currentGeneration()
+      observedConnector = values.endpoint?.let { endpoint ->
+        Target(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+      }
+      val context = UnifiedPushAccountTransition.captureContextLocked()
+      val pairing = values.pairingEndpointBinding
+      val currentInstance = values.endpointInstance ?: "default"
+      if (receiver.instance != currentInstance && pairing?.instance != currentInstance) return@synchronized
+      applicable = true
+      val routeMatches = context != null && receiver.accountId == context.accountId && receiver.instance == context.instance &&
+        values.endpoint != null && receiver.instance == currentInstance &&
+        (pairing == null || pairing.importId == receiver.importId && pairing.instance == receiver.instance &&
+          pairing.accountId == context.accountId && pairing.deviceId == context.localDeviceId)
+      if (!routeMatches || !distributorActive()) {
+        failure = PushHealth.diagnose(null, distributorActive(), values.endpoint != null)
+        return@synchronized
+      }
+      val subscription = try {
+        ControlFrame.Subscription(values.endpoint!!, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
+      } catch (_: EnrollmentFile.Invalid) {
+        failure = PushHealth.Hop.UNAVAILABLE
+        return@synchronized
+      }
+      pinned = try {
+        ReceiverControlState.reconcile(receiver, receiver.accountId, receiver.bridgeDeviceId, subscription,
+          System.currentTimeMillis() / 1000, force = true)
+      } catch (_: EnrollmentFile.Invalid) { null }
+      if (pinned == null) {
+        failure = PushHealth.Hop.UNAVAILABLE
+        return@synchronized
+      }
+      val attempt = checkNotNull(pinned)
+      if (attempt !== receiver) {
+        try {
+          values.commitV4ReceiverState(attempt.serialize())
+        } catch (_: KeyValuePersistenceException) {
+          failure = PushHealth.Hop.UNAVAILABLE
+        }
+      }
+    }
+    if (!applicable) return false
+    failure?.let {
+      if (manual || it == PushHealth.Hop.DISTRIBUTOR) {
+        publishV4VerdictIfCurrent(checkNotNull(observed), null, generation, it, observedConnector)
+      }
+      return true
+    }
+    val ping = checkNotNull(pinned)
+    val expectedEpoch = checkNotNull(ping.pendingEpoch)
+    UnifiedPushControlJob.enqueue()
+    val deadline = System.currentTimeMillis() + timeoutMs
+    while (System.currentTimeMillis() < deadline) {
+      val current = synchronized(UnifiedPushLifecycle.monitor) {
+        val live = ReceiverControlState.parse(values.v4ReceiverState) ?: return true
+        val context = UnifiedPushAccountTransition.captureContextLocked() ?: return true
+        val pairing = values.pairingEndpointBinding
+        val routeMatches = live.receiverId == ping.receiverId && live.bridgeDeviceId == ping.bridgeDeviceId &&
+          live.controlKey == ping.controlKey && live.confirmed && live.accountId == ping.accountId &&
+          live.instance == ping.instance && live.importId == ping.importId &&
+          context.accountId == ping.accountId && context.instance == ping.instance && values.endpoint != null &&
+          (pairing == null || pairing.importId == ping.importId && pairing.accountId == ping.accountId &&
+            pairing.instance == ping.instance && pairing.deviceId == context.localDeviceId)
+        if (!routeMatches) return true
+        if (live.pendingEpoch == null && live.epoch >= expectedEpoch) return true
+        if (live.pendingEpoch != expectedEpoch || live.pendingFrame?.contentEquals(ping.pendingFrame ?: byteArrayOf()) != true) return true
+        live
+      }
+      if (current == null) return true
+      Thread.sleep(POLL_MS)
+    }
+    publishV4VerdictIfCurrent(ping, ping, generation)
+    return true
+  }
+
+  /** Publish while the same lifecycle lock still protects the exact receiver and pending frame. */
+  private fun publishV4VerdictIfCurrent(
+    observed: ReceiverControlState,
+    attempted: ReceiverControlState?,
+    generation: Long,
+    hop: PushHealth.Hop? = null,
+    observedConnector: Target? = null,
+  ) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (!UnifiedPushLifecycle.isCurrentGeneration(generation)) return
+      val distributorAvailable = hop != null || distributorActive()
+      val values = SignalStore.unifiedpush
+      val live = ReceiverControlState.parse(values.v4ReceiverState) ?: return
+      val account = UnifiedPushAccountTransition.captureContextLocked() ?: return
+      val pairing = values.pairingEndpointBinding
+      val target = attempted?.pendingTarget ?: observedConnector ?: live.target
+      fun targetStillMatches(): Boolean {
+        val endpoint = values.endpoint ?: return false
+        val p256dh = values.endpointP256dh.orEmpty()
+        val auth = values.endpointAuth.orEmpty()
+        if (attempted == null) return Target(endpoint, p256dh, auth) == target
+        return try {
+          target.matches(ControlFrame.Subscription(endpoint, p256dh, auth))
+        } catch (_: EnrollmentFile.Invalid) { false }
+      }
+      if (live.receiverId != observed.receiverId || live.importId != observed.importId ||
+        live.bridgeDeviceId != observed.bridgeDeviceId || live.controlKey != observed.controlKey ||
+        live.accountId != observed.accountId || live.instance != observed.instance || !live.confirmed ||
+        account.accountId != observed.accountId || account.instance != observed.instance || !targetStillMatches() ||
+        (values.endpointInstance ?: "default") != live.instance ||
+        SignalStore.settings.preferredNotificationMethod != org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
+        pairing != null && (pairing.importId != live.importId || pairing.accountId != live.accountId ||
+          pairing.instance != live.instance || pairing.deviceId != account.localDeviceId)) return
+      if (attempted == null) {
+        if (live.serialize() != observed.serialize()) return
+      } else if (live.pendingEpoch != attempted.pendingEpoch ||
+        live.pendingFrame?.contentEquals(attempted.pendingFrame ?: byteArrayOf()) != true ||
+        live.pendingTarget != attempted.pendingTarget) return
+      // Pin a queued mode change to this verdict too; the connector may be replaced after this job returns.
+      val expectedPairing = pairing
+      val result = hop ?: when {
+        !distributorAvailable -> PushHealth.Hop.DISTRIBUTOR
+        live.pendingSentAt == 0L -> PushHealth.Hop.SIGNAL_SEND
+        else -> PushHealth.Hop.COLLIESOCKET_OR_PROVIDER
+      }
+      PushHealthActions.onPing(result) { outcome, applyModeChange ->
+        synchronized(UnifiedPushLifecycle.monitor) {
+          val currentHealth = values.health
+          if (currentHealth.failures != outcome.failures ||
+            outcome.enteredFallback && !currentHealth.fallback || outcome.leftFallback && currentHealth.fallback ||
+            !UnifiedPushLifecycle.isCurrentGeneration(generation)) return@synchronized false
+          val current = ReceiverControlState.parse(values.v4ReceiverState) ?: return@synchronized false
+          val currentAccount = UnifiedPushAccountTransition.captureContextLocked() ?: return@synchronized false
+          val currentPairing = values.pairingEndpointBinding
+          if (current.receiverId != observed.receiverId || current.importId != observed.importId ||
+            current.bridgeDeviceId != observed.bridgeDeviceId || current.controlKey != observed.controlKey ||
+            current.accountId != observed.accountId || current.instance != observed.instance || !current.confirmed ||
+            currentAccount.accountId != observed.accountId || currentAccount.instance != observed.instance ||
+            !targetStillMatches() || (values.endpointInstance ?: "default") != current.instance ||
+            currentPairing != expectedPairing ||
+            SignalStore.settings.preferredNotificationMethod != org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH ||
+            !values.enabled || expectedPairing != null && (expectedPairing.importId != current.importId ||
+              expectedPairing.accountId != current.accountId || expectedPairing.instance != current.instance ||
+              expectedPairing.deviceId != currentAccount.localDeviceId)) return@synchronized false
+          if (attempted == null) {
+            if (current.serialize() != observed.serialize()) return@synchronized false
+          } else if (current.pendingEpoch != attempted.pendingEpoch ||
+            current.pendingFrame?.contentEquals(attempted.pendingFrame ?: byteArrayOf()) != true ||
+            current.pendingTarget != attempted.pendingTarget) return@synchronized false
+          applyModeChange()
+          true
+        }
+      }
+    }
   }
 
   class Factory : Job.Factory<UnifiedPushHealthJob> {

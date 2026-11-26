@@ -17,6 +17,7 @@ object PushHealthActions {
 
   private val TAG = Log.tag(PushHealthActions::class.java)
   private val lock = Any()
+  private var effectVersion = 0L
 
   /** Restarts the network layer so the message connection follows the new mode. A test replaces it. */
   @androidx.annotation.VisibleForTesting
@@ -44,7 +45,9 @@ object PushHealthActions {
     val lastPush = maxOf(values.lastReceivedTime, lockedPushArrived())
     if (!PushHealth.isMiss(urgent, serverTimestampMs, deliveredMs, lastPush)) return
 
-    val outcome = synchronized(lock) { PushHealth.recordMiss(values.health, System.currentTimeMillis()) } ?: return
+    val outcome = synchronized(lock) {
+      PushHealth.recordMiss(values.health, System.currentTimeMillis())?.also { effectVersion++ }
+    } ?: return
     Log.w(TAG, "An urgent message reached the app ${(deliveredMs - serverTimestampMs) / 1000} s after the server had it and no push came. Failures: ${outcome.failures}")
     // One late message could be a phone that was offline: a ping settles it before it counts for good. Not while an
     // export awaits import: the server's copy is about to be replaced and the ping could not be matched to it.
@@ -57,28 +60,73 @@ object PushHealthActions {
 
   /** Records the verdict of a ping and applies it. */
   @JvmStatic
-  fun onPing(hop: PushHealth.Hop) {
-    val outcome = synchronized(lock) { PushHealth.recordPing(SignalStore.unifiedpush.health, hop, System.currentTimeMillis() / 1000) }
+  fun onPing(hop: PushHealth.Hop) = onPing(hop, null)
+
+  /** A route-pinned verdict supplies an execution-time check for queued mode changes. */
+  internal fun onPing(
+    hop: PushHealth.Hop,
+    applyIfCurrent: ((PushHealth.Outcome, () -> Unit) -> Boolean)?,
+  ) {
+    val (outcome, version, fallback) = synchronized(lock) {
+      effectVersion++
+      val health = SignalStore.unifiedpush.health
+      val outcome = PushHealth.recordPing(health, hop, System.currentTimeMillis() / 1000)
+      Triple(outcome, effectVersion, health.fallback)
+    }
     Log.i(TAG, "Push test: ${hop.code}. Failures: ${outcome.failures}")
-    executor.execute { apply(outcome) }
+    executor.execute { apply(outcome, version, fallback, applyIfCurrent) }
   }
 
   /** An accepted push is proof that push works, so earlier failures stop counting. */
   @JvmStatic
   fun onPushAccepted() {
     val health = SignalStore.unifiedpush.health
-    if (health.failures != 0 && !health.fallback) synchronized(lock) { health.failures = 0 }
+    if (health.failures != 0 && !health.fallback) synchronized(lock) {
+      health.failures = 0
+      effectVersion++
+    }
   }
 
-  private fun apply(outcome: PushHealth.Outcome) {
-    val settings = SignalStore.settings
-    if (outcome.enteredFallback) {
-      if (settings.forceWebsocketMode != ForceWebsocketMode.ENABLED_BY_USER) settings.forceWebsocketMode = ForceWebsocketMode.ENABLED_AUTOMATICALLY
-      resetNetwork()
-    } else if (outcome.leftFallback) {
-      if (settings.forceWebsocketMode == ForceWebsocketMode.ENABLED_AUTOMATICALLY) settings.forceWebsocketMode = ForceWebsocketMode.DISABLED_AUTOMATICALLY
-      resetNetwork()
+  private fun apply(
+    outcome: PushHealth.Outcome,
+    version: Long? = null,
+    fallback: Boolean? = null,
+    applyIfCurrent: ((PushHealth.Outcome, () -> Unit) -> Boolean)? = null,
+  ) {
+    var shouldResetNetwork = false
+    if (applyIfCurrent != null) {
+      val applied = applyIfCurrent(outcome) {
+        synchronized(lock) {
+          if (version != effectVersion || fallback != SignalStore.unifiedpush.health.fallback) return@synchronized
+          val settings = SignalStore.settings
+          val mode = settings.forceWebsocketMode
+          val nextMode = when {
+            fallback == true && mode != ForceWebsocketMode.ENABLED_BY_USER -> ForceWebsocketMode.ENABLED_AUTOMATICALLY
+            fallback == false && mode == ForceWebsocketMode.ENABLED_AUTOMATICALLY -> ForceWebsocketMode.DISABLED_AUTOMATICALLY
+            else -> mode
+          }
+          if (mode != nextMode) {
+            settings.forceWebsocketMode = nextMode
+            shouldResetNetwork = true
+          }
+        }
+      }
+      if (!applied) return
+    } else if (outcome.enteredFallback || outcome.leftFallback) {
+      val settings = SignalStore.settings
+      if (outcome.enteredFallback) {
+        if (settings.forceWebsocketMode != ForceWebsocketMode.ENABLED_BY_USER) {
+          settings.forceWebsocketMode = ForceWebsocketMode.ENABLED_AUTOMATICALLY
+        }
+        shouldResetNetwork = true
+      } else if (outcome.leftFallback) {
+        if (settings.forceWebsocketMode == ForceWebsocketMode.ENABLED_AUTOMATICALLY) {
+          settings.forceWebsocketMode = ForceWebsocketMode.DISABLED_AUTOMATICALLY
+        }
+        shouldResetNetwork = true
+      }
     }
+    if (shouldResetNetwork) resetNetwork()
     EventBus.default.post(PushServiceEvent)
   }
 }

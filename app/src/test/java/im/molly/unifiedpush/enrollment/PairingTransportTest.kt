@@ -44,6 +44,22 @@ class PairingTransportTest {
   }
 
   @Test
+  fun `add receiver wrapper requires bridge device id and keeps submit url optional`() {
+    val receiverOffer = ObjectMapper().readTree(offerJson).deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
+    val wrapper = """{"collie_pairing_transport":1,"bridge_device_id":2,"offer":$receiverOffer}"""
+    val parsed = PairingTransport.parse(wrapper, now)
+    assertEquals("add_receiver", parsed.offer.intent)
+    assertEquals(2, parsed.bridgeDeviceId)
+    assertNull(parsed.submitUrl)
+    for (invalid in listOf(
+      """{"collie_pairing_transport":1,"offer":$receiverOffer}""",
+      wrapper.replace("\"bridge_device_id\":2", "\"bridge_device_id\":1"),
+      wrapper.replace("\"bridge_device_id\":2", "\"bridge_device_id\":2.0"),
+    )) assertThrows(EnrollmentFile.Invalid::class.java) { PairingTransport.parse(invalid, now) }
+    assertThrows(EnrollmentFile.Invalid::class.java) { PairingTransport.parse(receiverOffer.toString(), now) }
+  }
+
+  @Test
   fun `HTTP requires local addresses and all URLs reject credentials and fragments`() {
     val allowed = listOf("10.1.2.3", "172.16.0.1", "172.31.255.254", "192.168.1.42", "100.64.0.1", "100.127.0.1",
       "127.0.0.1", "[::1]", "[fc00::1]", "[fd00::1]", "[fe80::1]", "[febf::1]", "relay.local", "localhost")
@@ -90,6 +106,46 @@ class PairingTransportTest {
       assertEquals("application/json", contentType.get())
       assertEquals(sealed.json, received.get())
       assertEquals(PairingTransport.Result.InvalidResponse, PairingTransport.submit(url, sealed.json) { false })
+    }
+  }
+
+  @Test
+  fun `v4 add receiver HTTP authenticates the exact receiver receipt and rejects wrong receiver`() {
+    val offerNode = vector["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
+    val offer = PairingV1.parseOffer(offerNode.toString(), now)
+    val enrollment = checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json")).use { it.readBytes().toString(Charsets.UTF_8) }
+    val receiptJson = checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receipt.json")).use { it.readBytes().toString(Charsets.UTF_8) }
+    val sealed = PairingV1.sealedFromVectorForTest(
+      offer, enrollment, "https://push.example.test/second", vector["request"]["client_public_key"].asText(),
+      vector["shared_secret_hex"].asText(), vector["request"]["nonce"].asText(),
+    )
+    assertEquals("f0000000-0000-4000-8000-000000000003", sealed.expectedRequestId)
+    assertEquals("f0000000-0000-4000-8000-000000000002", sealed.expectedReceiverId)
+    assertEquals("second-instance", sealed.expectedInstance)
+    assertEquals(1L, sealed.expectedEpoch)
+    val response = AtomicReference(PairingV1.responseForTest(offer, sealed, receiptJson))
+    val received = AtomicReference<String>()
+    withServer { server ->
+      server.createContext("/submit") { exchange ->
+        exchange.use {
+          received.set(it.requestBody.readBytes().toString(Charsets.UTF_8))
+          val body = response.get().toByteArray(Charsets.UTF_8)
+          it.sendResponseHeaders(200, body.size.toLong())
+          it.responseBody.write(body)
+        }
+      }
+      val url = PairingTransport.parseSubmitUrl("http://127.0.0.1:${server.address.port}/submit")
+      assertEquals(PairingTransport.Result.Accepted, PairingTransport.submit(url, sealed.json) {
+        PairingV1.openReceipt(offer, sealed, it) == receiptJson
+      })
+      assertEquals(sealed.json, received.get())
+      val wrongReceiver = ObjectMapper().readTree(receiptJson).deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+        .put("receiver_id", "f0000000-0000-4000-8000-000000000001")
+      response.set(PairingV1.responseForTest(offer, sealed, wrongReceiver.toString()))
+      assertThrows(EnrollmentFile.Invalid::class.java) { PairingV1.openReceipt(offer, sealed, response.get()) }
+      assertEquals(PairingTransport.Result.InvalidResponse, PairingTransport.submit(url, sealed.json) {
+        PairingV1.openReceipt(offer, sealed, it) == receiptJson
+      })
     }
   }
 

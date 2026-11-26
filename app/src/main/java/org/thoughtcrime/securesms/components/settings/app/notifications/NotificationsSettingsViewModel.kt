@@ -11,6 +11,7 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
+import im.molly.unifiedpush.receiver.LockedPushState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -162,6 +163,9 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
   fun setPreferredNotificationMethod(method: NotificationDeliveryMethod) {
     synchronized(UnifiedPushLifecycle.monitor) {
+      if (method != NotificationDeliveryMethod.UNIFIEDPUSH) {
+        LockedPushState.revokeV4PairingConfirmationForUserChoice(AppDependencies.application)
+      }
       SignalStore.settings.preferredNotificationMethod = method
       SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
       ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices()

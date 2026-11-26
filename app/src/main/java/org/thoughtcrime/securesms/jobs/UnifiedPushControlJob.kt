@@ -4,11 +4,14 @@ import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.ControlFrameV4
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
@@ -48,7 +51,8 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     // failure is different: keep the durable update moving through another bounded job lifecycle.
     if (isCanceled()) return
     try {
-      if (UnifiedPushControlStore(SignalStore.unifiedpush).read().update != null) enqueue()
+      val values = SignalStore.unifiedpush
+      if (UnifiedPushControlStore(values).read().update != null || ReceiverControlState.parse(values.v4ReceiverState)?.pendingEpoch != null) enqueue()
     } catch (e: CorruptControlStateException) {
       Log.w(TAG, "Endpoint update stopped: control state unavailable")
     }
@@ -80,6 +84,19 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
           Log.w(TAG, "Endpoint update stopped: control state unavailable")
           return
         }
+        val receiverState = ReceiverControlState.parse(pairingValues.v4ReceiverState)
+        val pairing = pairingValues.pairingEndpointBinding
+        if (receiverState?.confirmed == true && receiverState.pendingFrame != null &&
+          receiverState.accountId == lease.snapshot.accountId && receiverState.instance == lease.snapshot.instance &&
+          pairing != null && pairing.importId == receiverState.importId && pairing.accountId == receiverState.accountId &&
+          pairing.instance == receiverState.instance && pairing.deviceId == lease.snapshot.localDeviceId &&
+          receiverState.pendingEpoch != null &&
+          ControlFrameV4.matchesIdentity(receiverState.pendingFrame, receiverState.accountId, receiverState.bridgeDeviceId, receiverState.receiverId, receiverState.pendingEpoch)) {
+          val endpoint = lease.snapshot.endpoint ?: return
+          val subscription = try { ControlFrame.Subscription(endpoint, lease.snapshot.endpointP256dh.orEmpty(), lease.snapshot.endpointAuth.orEmpty()) }
+          catch (_: EnrollmentFile.Invalid) { return }
+          if (receiverState.pendingTarget?.matches(subscription) == true) return@synchronized ReceiverSelection(receiverState, receiverState.pendingFrame.copyOf())
+        }
         val update = state.update ?: run {
           Log.d(TAG, "No endpoint update pending.")
           return
@@ -94,7 +111,6 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
         }
         if (!update.sameTarget(subscription)) return
 
-        val pairing = pairingValues.pairingEndpointBinding
         if (pairing == null && PairingRegistrationGate.isPairingInstance(lease.snapshot.instance)) return
         if (pairing != null && (state.activeImportId == null || state.activeInstance != pairing.instance ||
             state.activeAccountId != pairing.accountId || state.activeDeviceId != device.deviceId ||
@@ -103,23 +119,46 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
 
         if (state.activeImportId != null &&
           (state.activeAccountId != lease.snapshot.accountId || state.activeDeviceId != device.deviceId || state.activeInstance != lease.snapshot.instance)) return
-        update to device
+        LegacySelection(update, device)
       }
 
+      if (selected is ReceiverSelection) {
+        try {
+          AppDependencies.signalServiceMessageSender.sendControlMessage(
+            lease.snapshot.accountId, lease.snapshot.localDeviceId, selected.state.bridgeDeviceId, selected.frame,
+          )
+        } catch (e: Exception) {
+          throw if (e is IOException) e else IOException("Receiver endpoint update send failed", e)
+        }
+        synchronized(UnifiedPushLifecycle.monitor) {
+          val current = ReceiverControlState.parse(values.v4ReceiverState) ?: return
+          val sent = ReceiverControlState.recordSent(current, selected.frame, System.currentTimeMillis() / 1000)
+          if (sent !== current) {
+            try {
+              values.commitV4ReceiverState(sent.serialize())
+            } catch (failure: KeyValuePersistenceException) {
+              throw IOException("Receiver endpoint send could not be recorded", failure)
+            }
+          }
+        }
+        Log.i(TAG, "Receiver endpoint update for epoch ${selected.state.pendingEpoch} sent.")
+        throw AwaitingConfirmation()
+      }
+      selected as LegacySelection
       try {
         AppDependencies.signalServiceMessageSender.sendControlMessage(
           lease.snapshot.accountId,
           lease.snapshot.localDeviceId,
-          selected.second.deviceId,
-          selected.first.frame,
+          selected.device.deviceId,
+          selected.update.frame,
         )
       } catch (e: Exception) {
-        EndpointUpdates.recordAttempt(store, selected.first, lease.generation, System.currentTimeMillis() / 1000, e.javaClass.simpleName)
+        EndpointUpdates.recordAttempt(store, selected.update, lease.generation, System.currentTimeMillis() / 1000, e.javaClass.simpleName)
         // BaseJob turns a RuntimeException into a crash; a failed send is only a reason to try again.
         throw if (e is IOException) e else IOException("Endpoint update send failed", e)
       }
-      EndpointUpdates.recordAttempt(store, selected.first, lease.generation, System.currentTimeMillis() / 1000, null)
-      Log.i(TAG, "Endpoint update for epoch ${selected.first.epoch} sent (attempt ${selected.first.attempts + 1}).")
+      EndpointUpdates.recordAttempt(store, selected.update, lease.generation, System.currentTimeMillis() / 1000, null)
+      Log.i(TAG, "Endpoint update for epoch ${selected.update.epoch} sent (attempt ${selected.update.attempts + 1}).")
       throw AwaitingConfirmation()
     } finally {
       lease.close()
@@ -129,6 +168,10 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
   class Factory : Job.Factory<UnifiedPushControlJob> {
     override fun create(parameters: Parameters, serializedData: ByteArray?) = UnifiedPushControlJob(parameters)
   }
+
+  private sealed interface Selection
+  private data class LegacySelection(val update: im.molly.unifiedpush.control.ControlUpdate, val device: im.molly.unifiedpush.model.MollySocketDevice) : Selection
+  private data class ReceiverSelection(val state: ReceiverControlState, val frame: ByteArray) : Selection
 
   companion object {
     private val TAG = Log.tag(UnifiedPushControlJob::class.java)

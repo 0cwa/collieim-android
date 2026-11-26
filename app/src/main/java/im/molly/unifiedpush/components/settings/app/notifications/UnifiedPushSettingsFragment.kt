@@ -234,15 +234,27 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
     }
   }
 
+  /** UI fixture used by API 35 screenshot instrumentation to render the real approval dialog. */
+  internal fun showPairingConsentFixtureForTest(wrapperJson: String) {
+    val scan = viewModel.parsePairingScan(wrapperJson)
+    require(scan.offer.intent == "add_receiver" && scan.bridgeDeviceId != null)
+    val disclosure = requireNotNull(RelayDisclosure.capture(requireContext()))
+    val pending = UnifiedPushSettingsViewModel.PendingPairingConsent(scan, disclosure)
+    viewModel.pendingPairingConsent = pending
+    viewModel.enterPairingFlow()
+    showPairingConsent(pending, Distributor("org.collie.pack", "Collie Pack"), scan.offer.providerOrigin)
+  }
+
   private fun showPairingConsent(
     choice: UnifiedPushSettingsViewModel.PendingPairingConsent,
     distributor: Distributor,
+    fixtureOrigin: String? = null,
   ) {
     val pending = choice.copy(distributor = distributor)
     viewModel.pendingPairingConsent = pending
     val scan = pending.scan
     val offer = scan.offer
-    val origin = when (val plan = viewModel.evaluatePairingOffer(offer, distributor.applicationId)) {
+    val origin = fixtureOrigin ?: when (val plan = viewModel.evaluatePairingOffer(offer, distributor.applicationId)) {
       is PairingV1Coordinator.OfferPlan.Ready -> plan.consent.providerOrigin
       is PairingV1Coordinator.OfferPlan.Register -> plan.details.currentOrigin
       is PairingV1Coordinator.OfferPlan.Failed -> {
@@ -252,6 +264,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
       }
     }
     val provider = when {
+      offer.intent == "add_receiver" && origin != null -> getString(R.string.PairingV1__push_server, origin)
       offer.providerOrigin != null -> getString(R.string.PairingV1__push_server, offer.providerOrigin)
       origin != null -> getString(R.string.PairingV1__distributor_server, origin)
       else -> getString(R.string.PairingV1__distributor_server_unknown)
@@ -259,14 +272,15 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
     val submission = scan.submitUrl?.let {
       getString(R.string.PairingV1__submission_destination, it.toString())
     } ?: getString(R.string.PairingV1__manual_submission)
+    val isReceiver = offer.intent == "add_receiver"
     val builder = MaterialAlertDialogBuilder(requireContext())
-      .setTitle(getString(R.string.PairingV1__consent_title, offer.hostLabel))
-      .setMessage(getString(R.string.PairingV1__consent_message, provider, distributor.name, submission))
+      .setTitle(getString(if (isReceiver) R.string.PairingV1__add_receiver_consent_title else R.string.PairingV1__consent_title, offer.hostLabel))
+      .setMessage(getString(if (isReceiver) R.string.PairingV1__add_receiver_consent_message else R.string.PairingV1__consent_message, provider, distributor.name, submission))
       .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.pendingPairingConsent = null }
       .setOnCancelListener { viewModel.pendingPairingConsent = null }
-      .setPositiveButton(R.string.PairingV1__consent_confirm, null)
+      .setPositiveButton(if (isReceiver) R.string.PairingV1__add_receiver_consent_confirm else R.string.PairingV1__consent_confirm, null)
     val state = viewModel.state.value
-    val needsServerEpoch = state != null && (state.enrollmentEpoch > 0 || state.savedExports.isNotEmpty() || state.hasLegacyPendingExport)
+    val needsServerEpoch = !isReceiver && state != null && (state.enrollmentEpoch > 0 || state.savedExports.isNotEmpty() || state.hasLegacyPendingExport)
     val epochInput = if (needsServerEpoch) EditText(requireContext()).apply {
       inputType = InputType.TYPE_CLASS_NUMBER
       hint = getString(R.string.PairingV1__current_relay_epoch)

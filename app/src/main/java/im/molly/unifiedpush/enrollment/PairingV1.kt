@@ -58,6 +58,7 @@ object PairingV1 {
     val expectedRequestId: String = "",
     val expectedInstance: String = "",
     val expectedEpoch: Long = 0,
+    val expectedReceiverId: String? = null,
   ) {
     override fun toString() = "PairingV1.SealedRequest"
   }
@@ -91,7 +92,7 @@ object PairingV1 {
 
   /** Sealing is called only after host and provider consent, and after endpoint-origin checks. */
   fun seal(offer: Offer, enrollmentJson: String, actualEndpoint: String, random: SecureRandom = SecureRandom()): SealedRequest {
-    if (offer.intent != "pair_bridge") invalid("unsupported_intent")
+    if (offer.intent !in setOf("pair_bridge", "add_receiver")) invalid("unsupported_intent")
     if (enrollmentJson.toByteArray(StandardCharsets.UTF_8).size !in 1..8192) invalid("invalid_enrollment")
     strictObject(enrollmentJson, null)
     val origin = canonicalOrigin(actualEndpoint) ?: invalid("invalid_endpoint")
@@ -113,7 +114,7 @@ object PairingV1 {
   fun openReceipt(offer: Offer, sealed: SealedRequest, json: String): String {
     if (json.startsWith('\uFEFF') || json.toByteArray(StandardCharsets.UTF_8).size > 2048) invalid("invalid_response")
     val root = strictObject(json, setOf("pairing_version", "session_id", "intent", "nonce", "ciphertext"))
-    if (root.size() != 5 || root["pairing_version"]?.let { !it.isIntegralNumber || !it.canConvertToInt() || it.intValue() != 1 } != false || root.text("session_id") != offer.sessionId || root.text("intent") != "pair_bridge") invalid("invalid_response")
+    if (root.size() != 5 || root["pairing_version"]?.let { !it.isIntegralNumber || !it.canConvertToInt() || it.intValue() != 1 } != false || root.text("session_id") != offer.sessionId || root.text("intent") != offer.intent) invalid("invalid_response")
     val nonce = decode(root.text("nonce"), 12)
     val ciphertext = decode(root.text("ciphertext"), null).also { if (it.size !in 17..1040) invalid("invalid_response") }
     val aad = sealed.transcript + MessageDigest.getInstance("SHA-256").digest(sealed.requestNonce + sealed.requestCiphertext)
@@ -121,7 +122,7 @@ object PairingV1 {
     if (plaintext.isEmpty() || plaintext.size > 1024) invalid("invalid_response")
     val receipt = decodeUtf8(plaintext)
     if (receipt.startsWith('\uFEFF')) invalid("invalid_response")
-    validateReceipt(strictObject(receipt, setOf("enrollment_version", "request_id", "instance", "subscription_epoch", "selected_event_version", "capabilities", "status", "replayed")), sealed)
+    validateReceipt(strictObject(receipt, null), sealed)
     return receipt
   }
 
@@ -132,7 +133,7 @@ object PairingV1 {
     val nonce = ByteArray(12) { (it + 1).toByte() }
     val aad = sealed.transcript + MessageDigest.getInstance("SHA-256").digest(sealed.requestNonce + sealed.requestCiphertext)
     val ciphertext = aesGcm(sealed.receiptKey, nonce, aad, receiptJson.toByteArray(StandardCharsets.UTF_8))
-    return """{"pairing_version":1,"session_id":"${offer.sessionId}","intent":"pair_bridge","nonce":"${encode(nonce)}","ciphertext":"${encode(ciphertext)}"}"""
+    return """{"pairing_version":1,"session_id":"${offer.sessionId}","intent":"${offer.intent}","nonce":"${encode(nonce)}","ciphertext":"${encode(ciphertext)}"}"""
   }
 
   /** Test seam supplies only the pinned X25519 outputs; production transcript, KDF, and AES stay shared. */
@@ -144,7 +145,7 @@ object PairingV1 {
     sharedSecretHex: String,
     nonce: String,
   ): SealedRequest {
-    if (offer.intent != "pair_bridge") invalid("unsupported_intent")
+    if (offer.intent !in setOf("pair_bridge", "add_receiver")) invalid("unsupported_intent")
     if (enrollmentJson.toByteArray(StandardCharsets.UTF_8).size !in 1..8192) invalid("invalid_enrollment")
     strictObject(enrollmentJson, null)
     val origin = canonicalOrigin(actualEndpoint) ?: invalid("invalid_endpoint")
@@ -310,6 +311,17 @@ object PairingV1 {
   private fun validateReceipt(receipt: JsonNode, sealed: SealedRequest) {
     val status = receipt["status"]?.takeIf { it.isTextual }?.textValue()
     val replayed = receipt["replayed"]?.takeIf { it.isBoolean }?.booleanValue()
+    if (sealed.expectedReceiverId != null) {
+      if (receipt.size() != 9 ||
+        receipt["enrollment_version"]?.let { !it.isIntegralNumber || !it.canConvertToInt() || it.intValue() != 4 } != false ||
+        receipt.textOrNull("request_id") != sealed.expectedRequestId ||
+        receipt.textOrNull("receiver_id") != sealed.expectedReceiverId ||
+        receipt.textOrNull("instance") != sealed.expectedInstance ||
+        receipt["subscription_epoch"]?.let { !it.isIntegralNumber || !it.canConvertToLong() || it.longValue() != sealed.expectedEpoch } != false ||
+        receipt["selected_event_version"]?.let { !it.isIntegralNumber || !it.canConvertToInt() || it.intValue() != 4 } != false ||
+        receipt["capabilities"]?.toString() != "[\"wake\",\"test\",\"status\"]" || status != "accepted" || replayed == null) invalid("invalid_response")
+      return
+    }
     if (receipt.size() != 8 ||
       receipt["enrollment_version"]?.let { !it.isIntegralNumber || !it.canConvertToInt() || it.intValue() != 3 } != false ||
       receipt.textOrNull("request_id") != sealed.expectedRequestId ||
@@ -361,9 +373,10 @@ object PairingV1 {
       val keys = deriveKeys(shared, MessageDigest.getInstance("SHA-256").digest(transcript))
       try {
         val ciphertext = aesGcm(keys.first, nonce, transcript, enrollmentJson.toByteArray(StandardCharsets.UTF_8))
-        val request = """{"pairing_version":1,"session_id":"${offer.sessionId}","intent":"pair_bridge","client_public_key":"${encode(clientPublic)}","nonce":"${encode(nonce)}","ciphertext":"${encode(ciphertext)}"}"""
+      val receiverId = if (offer.intent == "add_receiver") enrollment["receiver_id"]?.takeIf { it.isTextual }?.textValue() ?: invalid("invalid_enrollment") else null
+      val request = """{"pairing_version":1,"session_id":"${offer.sessionId}","intent":"${offer.intent}","client_public_key":"${encode(clientPublic)}","nonce":"${encode(nonce)}","ciphertext":"${encode(ciphertext)}"}"""
         if (request.toByteArray(StandardCharsets.UTF_8).size > 11264) invalid("invalid_request")
-        return SealedRequest(request, keys.second, transcript, nonce, ciphertext, requestId, instance, epoch)
+        return SealedRequest(request, keys.second, transcript, nonce, ciphertext, requestId, instance, epoch, receiverId)
       } catch (e: Exception) {
         keys.second.fill(0)
         throw e

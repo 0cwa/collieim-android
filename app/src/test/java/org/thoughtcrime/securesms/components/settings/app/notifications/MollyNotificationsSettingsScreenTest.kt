@@ -9,6 +9,7 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -37,12 +38,19 @@ class MollyNotificationsSettingsScreenTest {
   private val context: Application = ApplicationProvider.getApplicationContext()
 
   @Test
-  fun `linked devices cannot select or configure UnifiedPush`() {
-    show(state(isLinkedDevice = true))
+  fun `linked devices can select and configure UnifiedPush`() {
+    var configured = false
+    val callbacks = object : NotificationsSettingsCallbacks {
+      override fun onNavigationUnifiedPushSettings() { configured = true }
+    }
+    show(state(isLinkedDevice = true).copy(preferredNotificationMethod = NotificationDeliveryMethod.UNIFIEDPUSH), callbacks)
     scrollTo(R.string.NotificationsSettingsFragment__delivery_service)
     compose.onNodeWithText(text(R.string.NotificationsSettingsFragment__delivery_service)).performClick()
-    compose.onNodeWithText(text(NotificationDeliveryMethod.UNIFIEDPUSH.stringId)).assertDoesNotExist()
-    compose.onNodeWithText(text(R.string.NotificationsSettingsFragment__configure_unifiedpush)).assertDoesNotExist()
+    compose.onAllNodesWithText(text(NotificationDeliveryMethod.UNIFIEDPUSH.stringId))[1].performClick()
+    scrollTo(R.string.NotificationsSettingsFragment__configure_unifiedpush)
+    compose.onNodeWithText(text(R.string.NotificationsSettingsFragment__configure_unifiedpush)).assertIsDisplayed()
+    compose.onNodeWithText(text(R.string.NotificationsSettingsFragment__configure_unifiedpush)).performClick()
+    compose.runOnIdle { assertEquals(true, configured) }
   }
 
   @Test

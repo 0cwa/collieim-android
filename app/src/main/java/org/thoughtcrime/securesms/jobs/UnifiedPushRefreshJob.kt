@@ -6,6 +6,7 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.components.settings.app.notifications.hasLivePendingV4PairingConfirmation
 import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -171,6 +172,9 @@ class UnifiedPushRefreshJob private constructor(
   @Throws(IOException::class)
   private fun checkRegistrationStatus(lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): RegistrationStatus {
     if (synchronized(UnifiedPushLifecycle.monitor) { legacyRelayBlockedLocked() }) return RegistrationStatus.PENDING
+    if (SignalStore.account.isLinkedDevice) {
+      return if (hasConfirmedLinkedV4Route()) RegistrationStatus.REGISTERED else RegistrationStatus.PENDING
+    }
     val endpoint = SignalStore.unifiedpush.endpoint
     val airGapped = SignalStore.unifiedpush.airGapped
     val mollySocketUrl = SignalStore.unifiedpush.mollySocketUrl?.toHttpUrlOrNull()
@@ -224,6 +228,18 @@ class UnifiedPushRefreshJob private constructor(
     return result.toRegistrationStatus()
   }
 
+  /** Linked devices use their confirmed receiver subscription and must never create bridge credentials. */
+  private fun hasConfirmedLinkedV4Route(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    val values = SignalStore.unifiedpush
+    val receiver = im.molly.unifiedpush.control.ReceiverControlState.parse(values.v4ReceiverState)
+    val binding = values.pairingEndpointBinding
+    val accountId = SignalStore.account.aci?.toString()
+    receiver?.confirmed == true && binding != null && accountId != null && receiver.accountId == accountId &&
+      receiver.instance == values.endpointInstance && receiver.instance == binding.instance &&
+      receiver.importId == binding.importId && binding.accountId == accountId &&
+      binding.deviceId == SignalStore.account.deviceId && values.endpoint != null
+  }
+
   /** Reuses Signal bridge provisioning without submitting the credential to a relay. */
   internal fun provisionBridgeCredential(
     context: Context,
@@ -265,11 +281,16 @@ class UnifiedPushRefreshJob private constructor(
     }
 
   /** Pairing admission and refresh admission share the lifecycle monitor so a stale job cannot submit scoped state. */
-  private fun legacyRelayBlockedLocked(): Boolean {
+  internal fun legacyRelayBlockedLocked(): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
+    val pendingV4Receiver = hasLivePendingV4PairingConfirmation(context)
+    val protectedPairingRoute = values.pairingEndpointBinding != null ||
+      PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: "")
+    if (!protectedPairingRoute && !pendingV4Receiver) return false
+    if (!pendingV4Receiver && SignalStore.account.isLinkedDevice && hasConfirmedLinkedV4Route()) return false
     return PairingRegistrationGate.blocksLegacyRelay(
-      values.pairingEndpointBinding != null || PairingRegistrationGate.isPairingInstance(values.endpointInstance ?: ""),
+      hasProtectedPairingEndpoint = protectedPairingRoute || pendingV4Receiver,
     )
   }
 

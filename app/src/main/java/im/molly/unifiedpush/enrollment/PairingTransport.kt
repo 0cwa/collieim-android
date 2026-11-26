@@ -40,7 +40,7 @@ internal object PairingTransport {
     .callTimeout(TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
     .build()
 
-  data class Scan(val offer: PairingV1.Offer, val submitUrl: HttpUrl?) {
+  data class Scan(val offer: PairingV1.Offer, val submitUrl: HttpUrl?, val bridgeDeviceId: Int? = null) {
     override fun toString() = "PairingTransport.Scan(offer=$offer)"
   }
 
@@ -58,13 +58,23 @@ internal object PairingTransport {
     if (json.startsWith('\uFEFF') || json.toByteArray(Charsets.UTF_8).size > MAX_QR_BYTES) invalid("invalid_offer")
     val root = readObject(json) ?: invalid("invalid_offer")
     val offerTime = if (allowExpiredForRouting) 0 else nowSeconds
-    if (!root.has("collie_pairing_transport")) return Scan(parseOffer(json, root, offerTime), null)
+    if (!root.has("collie_pairing_transport")) {
+      val offer = parseOffer(json, root, offerTime)
+      if (offer.intent == "add_receiver") invalid("invalid_offer")
+      return Scan(offer, null)
+    }
     val version = root["collie_pairing_transport"]
     val url = root["submit_url"]
     val offer = root["offer"]
-    if (root.size() != 3 || !version.isIntegralNumber || !version.canConvertToInt() || version.intValue() != 1 ||
-      url?.isTextual != true || offer?.isObject != true) invalid("invalid_offer")
-    return Scan(parseOffer(offer.toString(), offer, offerTime), parseSubmitUrl(url.textValue()))
+    val allowed = setOf("collie_pairing_transport", "submit_url", "bridge_device_id", "offer")
+    val device = root["bridge_device_id"]
+    if (root.fieldNames().asSequence().any { it !in allowed } ||
+      !version.isIntegralNumber || !version.canConvertToInt() || version.intValue() != 1 ||
+      offer?.isObject != true || url?.let { !it.isTextual } == true ||
+      device?.let { !it.isIntegralNumber || !it.canConvertToInt() || it.intValue() < 2 } == true) invalid("invalid_offer")
+    val parsed = parseOffer(offer.toString(), offer, offerTime)
+    if (parsed.intent == "add_receiver" && device?.isIntegralNumber != true) invalid("invalid_offer")
+    return Scan(parsed, url?.takeIf { it.isTextual }?.textValue()?.let(::parseSubmitUrl), device?.intValue())
   }
 
   private fun parseOffer(json: String, root: JsonNode, nowSeconds: Long): PairingV1.Offer {
@@ -115,7 +125,12 @@ internal object PairingTransport {
       return Result.InvalidResponse
     }
     if (response.code in 200..299) {
-      return if (acceptReceipt(json)) Result.Accepted else Result.InvalidResponse
+      val authenticated = try {
+        acceptReceipt(json)
+      } catch (_: EnrollmentFile.Invalid) {
+        false
+      }
+      return if (authenticated) Result.Accepted else Result.InvalidResponse
     }
     val error = readObject(json)
     val code = error?.get("error")?.takeIf { it.isTextual }?.textValue()

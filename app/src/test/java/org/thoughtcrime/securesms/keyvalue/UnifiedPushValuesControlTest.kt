@@ -4,12 +4,14 @@ import android.app.Application
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.CorruptControlStateException
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.model.MollySocketDevice
+import im.molly.unifiedpush.receiver.EncryptedPush
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -228,11 +230,20 @@ class UnifiedPushValuesControlTest {
 
   @Test
   fun `explicit server removal is required before clearing a corrupt record`() {
-    val data = KeyValueDataSet().apply { putString("up.control.state", "{"); putString("up.enrollment.replay", "replay-retained") }
-    val values = values(data)
+    val data = KeyValueDataSet().apply {
+      putString("up.control.state", "{")
+      putString("up.enrollment.replay", "replay-retained")
+      putString("up.v4.receiver.state", "active-fixture")
+      putString("up.v4.pendingReceiver.state", "pending-fixture")
+    }
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(data))
+    val values = UnifiedPushValues(KeyValueStore(storage))
     assertTrue(values.clearCorruptControlAfterServerRemoval())
+    assertEquals(1, storage.writes)
     assertEquals(ControlState(), values.controlState)
     assertEquals("replay-retained", values.replayState)
+    assertNull(values.v4ReceiverState)
+    assertNull(values.v4PendingReceiverState)
     assertTrue(values.controlStateRead is ControlStateRead.Current)
   }
 
@@ -316,6 +327,124 @@ class UnifiedPushValuesControlTest {
     val absent = values(KeyValueDataSet())
     absent.clearControl()
     assertTrue(absent.controlStateRead is ControlStateRead.Absent)
+  }
+
+  @Test
+  fun `pending v4 receiver initializes replay atomically and preserves existing replay history`() {
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
+    val values = UnifiedPushValues(KeyValueStore(storage))
+    val receiver = ReceiverControlState(
+      receiverId = "22222222-2222-4222-8222-222222222222",
+      importId = "33333333-3333-4333-8333-333333333333",
+      accountId = account,
+      bridgeDeviceId = 2,
+      instance = instance,
+      hostLabel = "Fixture bridge",
+      controlKey = key,
+      epoch = 1,
+      target = target,
+    )
+    val initialReplay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    val writesBeforeEnrollment = storage.writes
+
+    values.commitV4ReceiverAttempt(receiver.serialize(), initialReplay)
+
+    assertEquals("receiver and replay are acknowledged in one write", writesBeforeEnrollment + 1, storage.writes)
+    assertEquals(receiver.serialize(), values.v4PendingReceiverState)
+    assertEquals(initialReplay, values.replayState)
+    val replacement = receiver.copy(
+      receiverId = "44444444-4444-4444-8444-444444444444",
+      importId = "55555555-5555-4555-8555-555555555555",
+    )
+    values.commitV4ReceiverAttempt(replacement.serialize(), initialReplay)
+    values.mutateControlWithReceiverAndReplay(initialReplay, receiver.copy(confirmed = true).serialize())
+    assertEquals("an active receiver event keeps the separate pending candidate", replacement.serialize(), values.v4PendingReceiverState)
+    values.mutateControlWithReceiverAndReplay(
+      initialReplay, replacement.copy(confirmed = true).serialize(), clearPendingV4ReceiverState = true,
+    )
+    assertNull("candidate promotion clears only the pending record after writing it active", values.v4PendingReceiverState)
+
+    val existingReplay = EncryptedPush.ReplayState(
+      System.currentTimeMillis() / 1000,
+      listOf(EncryptedPush.ReplayState.Seen("11111111-1111-4111-8111-111111111111", System.currentTimeMillis() / 1000 + 120)),
+    ).serialize()
+    values.replayState = existingReplay
+
+    values.commitV4ReceiverAttempt(receiver.serialize(), initialReplay)
+
+    assertEquals("replacement enrollment keeps the existing replay history", existingReplay, values.replayState)
+  }
+
+  @Test
+  fun `v4 pairing does not replace missing replay history on an existing enrollment`() {
+    val values = values()
+    values.mutateControl { ControlState(key = key, activeEpoch = 2, highestEpoch = 2) }
+    val replay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+
+    assertThrows(ReplayStateUnavailableException::class.java) { values.commitV4ReceiverAttempt("pending-fixture", replay) }
+
+    assertNull(values.v4PendingReceiverState)
+    assertNull(values.replayState)
+  }
+
+  @Test
+  fun `v4 promotion commits replay receiver route and delivery choice in one acknowledged write`() {
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
+    val store = KeyValueStore(storage)
+    val values = UnifiedPushValues(store)
+    values.mutateControl { ControlState() }
+    values.setEndpointRegistration("https://push.example.invalid/old", "old-public-key", "old-auth-key", "old-instance")
+    val pending = ReceiverControlState(
+      receiverId = "22222222-2222-4222-8222-222222222222",
+      importId = "33333333-3333-4333-8333-333333333333",
+      accountId = account,
+      bridgeDeviceId = 2,
+      instance = instance,
+      hostLabel = "Fixture bridge",
+      controlKey = key,
+      epoch = 1,
+      target = target,
+    )
+    val initialReplay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    values.commitV4ReceiverAttempt(pending.serialize(), initialReplay)
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      instance = instance,
+      distributorId = "org.collie.pack",
+      vapidPublicKey = "fixture-vapid",
+      providerOrigin = "https://push.example.test",
+      endpointOrigin = "https://push.example.invalid",
+      sessionId = "44444444-4444-4444-8444-444444444444",
+      expiresAt = System.currentTimeMillis() / 1000 + 600,
+      accountId = account,
+      deviceId = 3,
+      hostLabel = "Fixture bridge",
+      importId = pending.importId,
+    )
+    val registration = UnifiedPushValues.PairingEndpointRegistration(
+      target.endpoint, target.p256dh, target.auth, binding,
+    )
+    val acceptedReplay = EncryptedPush.ReplayState(
+      System.currentTimeMillis() / 1000,
+      listOf(EncryptedPush.ReplayState.Seen("55555555-5555-4555-8555-555555555555", System.currentTimeMillis() / 1000 + 120)),
+    ).serialize()
+    val writesBeforePromotion = storage.writes
+
+    values.mutateControlWithReceiverAndReplay(
+      acceptedReplay, pending.copy(confirmed = true).serialize(), clearPendingV4ReceiverState = true,
+      pairingEndpointRegistration = registration,
+    )
+
+    assertEquals("route metadata joins the acknowledged receiver and replay write", writesBeforePromotion + 1, storage.writes)
+    assertEquals(pending.copy(confirmed = true).serialize(), values.v4ReceiverState)
+    assertNull(values.v4PendingReceiverState)
+    assertEquals(acceptedReplay, values.replayState)
+    assertEquals(target.endpoint, values.endpoint)
+    assertEquals(target.p256dh, values.endpointP256dh)
+    assertEquals(target.auth, values.endpointAuth)
+    assertEquals(instance, values.endpointInstance)
+    assertEquals(binding, values.pairingEndpointBinding)
+    assertTrue(values.enabled)
+    assertEquals("UNIFIEDPUSH", store.getString("molly.notificationMethod", null))
   }
 
   @Test

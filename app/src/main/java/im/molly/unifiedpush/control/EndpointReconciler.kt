@@ -2,8 +2,10 @@ package im.molly.unifiedpush.control
 
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
@@ -23,7 +25,7 @@ object EndpointReconciler {
    */
   @JvmStatic
   @JvmOverloads
-  fun reconcile(resume: Boolean = false, retryPending: Boolean = false) {
+  fun reconcile(resume: Boolean = false, retryPending: Boolean = false, forceReceiver: Boolean = false) {
     val shouldEnqueue = synchronized(UnifiedPushLifecycle.monitor) {
       if (KeyCachingService.isLocked() || !UnifiedPushLifecycle.isReadyLocked()) return
       val values = SignalStore.unifiedpush
@@ -37,11 +39,16 @@ object EndpointReconciler {
         Log.w(TAG, "Endpoint update not built: control state unavailable")
         return
       }
-      if (controlState.key == null) return
+      val receiver = ReceiverControlState.parse(values.v4ReceiverState)
+      if (controlState.key == null && receiver?.confirmed != true) return
       val context = im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.captureContextLocked() ?: return
+      val pairing = values.pairingEndpointBinding
+      val v4Current = receiver != null && receiver.confirmed && receiver.accountId == context.accountId && receiver.instance == context.instance &&
+        (pairing == null || pairing.importId == receiver.importId && pairing.instance == receiver.instance &&
+          pairing.accountId == context.accountId && pairing.deviceId == context.localDeviceId)
       if (controlState.activeImportId != null &&
-        (controlState.activeAccountId != context.accountId || controlState.activeDeviceId != context.pushDevice?.deviceId || controlState.activeInstance != context.instance)) return
-      val device = context.pushDevice ?: return
+        (controlState.activeAccountId != context.accountId || controlState.activeDeviceId != context.pushDevice?.deviceId || controlState.activeInstance != context.instance) && !v4Current) return
+      val device = context.pushDevice
 
       val now = System.currentTimeMillis() / 1000
       val subscription = try {
@@ -52,20 +59,50 @@ object EndpointReconciler {
         Log.w(TAG, "Endpoint update not built: ${e.code}")
         null
       }
-      val pairing = values.pairingEndpointBinding
       if (pairing == null && PairingRegistrationGate.isPairingInstance(context.instance)) return
-      if (pairing != null && (controlState.activeImportId == null || controlState.activeInstance != pairing.instance ||
-          controlState.activeAccountId != pairing.accountId || controlState.activeDeviceId != context.pushDevice?.deviceId ||
-          context.localDeviceId != pairing.deviceId || context.instance != pairing.instance || context.accountId != pairing.accountId ||
-          context.pushDevice == null || subscription == null)) return
-      val result = try {
-        EndpointUpdates.reconcile(store, context.accountId, device.deviceId, subscription, now)
-      } catch (e: CorruptControlStateException) {
-        Log.w(TAG, "Endpoint update not built: control state unavailable")
-        return
+      if (pairing != null) {
+        val v3Identity = controlState.activeImportId != null && controlState.activeInstance == pairing.instance &&
+          controlState.activeAccountId == pairing.accountId && controlState.activeDeviceId == context.pushDevice?.deviceId
+        val v4Identity = v4Current && receiver != null && receiver.importId == pairing.importId &&
+          receiver.accountId == pairing.accountId && receiver.instance == pairing.instance
+        if ((!v3Identity && !v4Identity) || context.localDeviceId != pairing.deviceId ||
+          context.instance != pairing.instance || context.accountId != pairing.accountId ||
+          (!v4Identity && context.pushDevice == null) || subscription == null) return
       }
-      val update = result.update ?: return
-      result.built || retryPending || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)
+      var needsSend = false
+      if (receiver?.confirmed == true && subscription != null && receiver.accountId == context.accountId && receiver.instance == context.instance) {
+        val updatedReceiver = try {
+          ReceiverControlState.reconcile(receiver, context.accountId, receiver.bridgeDeviceId, subscription, now, forceReceiver)
+        } catch (e: EnrollmentFile.Invalid) {
+          Log.w(TAG, "Receiver endpoint update not built: ${e.code}")
+          null
+        }
+        if (updatedReceiver != null) {
+          if (updatedReceiver !== receiver) {
+            try {
+              values.commitV4ReceiverState(updatedReceiver.serialize())
+            } catch (_: KeyValuePersistenceException) {
+              Log.w(TAG, "Receiver endpoint update was not acknowledged by local storage.")
+              return
+            }
+          }
+          val pendingAt = if (updatedReceiver.pendingSentAt > 0) updatedReceiver.pendingSentAt else updatedReceiver.pendingCreatedAt
+          needsSend = updatedReceiver.pendingEpoch != null && (forceReceiver || retryPending || !updatedReceiver.pendingFrame!!.contentEquals(receiver.pendingFrame ?: byteArrayOf()) || resume && now - pendingAt >= RESUME_AFTER_SECONDS)
+        }
+      }
+      // Once the confirmed v4 receiver owns this connector route, do not also update a retained
+      // legacy record through the same registration.
+      if (!v4Current && controlState.key != null && device != null) {
+        val result = try {
+          EndpointUpdates.reconcile(store, context.accountId, device.deviceId, subscription, now)
+        } catch (e: CorruptControlStateException) {
+          Log.w(TAG, "Endpoint update not built: control state unavailable")
+          return
+        }
+        val update = result.update
+        if (update != null) needsSend = needsSend || result.built || retryPending || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)
+      }
+      needsSend
     }
     if (shouldEnqueue) UnifiedPushControlJob.enqueue()
   }

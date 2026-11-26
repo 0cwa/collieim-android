@@ -164,10 +164,16 @@ class PairingV1Test {
     }
   }
 
-  @Test fun `reserved add receiver is rejected at app boundary`() {
+  @Test fun `add receiver keeps the v1 cryptographic envelope and intent`() {
     val v = vectors[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
     val reserved = PairingV1.parseOffer(v.toString(), 1_799_999_999L)
-    bad { PairingV1.seal(reserved, vectors[0]["enrollment_json"].asText(), "https://push.example.test/path") }
+    val enrollment = checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json"))
+      .bufferedReader(Charsets.UTF_8).use { it.readText() }
+    val endpoint = mapper.readTree(enrollment)["subscription"]["endpoint"].textValue()
+    val sealed = PairingV1.sealedFromVectorForTest(reserved, enrollment, endpoint,
+      vectors[0]["request"]["client_public_key"].asText(), vectors[0]["shared_secret_hex"].asText(), vectors[0]["request"]["nonce"].asText())
+    assertEquals("add_receiver", mapper.readTree(sealed.json)["intent"].asText())
+    assertEquals("f0000000-0000-4000-8000-000000000002", sealed.expectedReceiverId)
   }
 
   private fun ByteArray.toHex() = joinToString("") { "%02x".format(it) }

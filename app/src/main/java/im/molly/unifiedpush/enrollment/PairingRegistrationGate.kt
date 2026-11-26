@@ -21,6 +21,7 @@ object PairingRegistrationGate {
     val previousInstance: String = "default",
     val hostLabel: String,
     val previousDistributorId: String = distributorId,
+    val disclosure: RelayDisclosure.Snapshot? = null,
   ) {
     fun matchesDistributorSelection(saved: String?, acknowledged: String?): Boolean =
       saved == previousDistributorId && acknowledged == previousDistributorId
@@ -45,6 +46,7 @@ object PairingRegistrationGate {
     val accountId: String,
     val deviceId: Int,
     val instance: String,
+    val receiverId: String? = null,
   )
 
   data class Pending internal constructor(
@@ -73,6 +75,7 @@ object PairingRegistrationGate {
     previousAuth: String? = null,
     previousInstance: String = "default",
     previousDistributorId: String = distributorId,
+    disclosure: RelayDisclosure.Snapshot? = null,
     onComplete: (Result<Endpoint>) -> Unit,
   ): Binding? {
     current()
@@ -94,6 +97,7 @@ object PairingRegistrationGate {
         previousInstance = previousInstance,
         hostLabel = offer.hostLabel,
         previousDistributorId = previousDistributorId,
+        disclosure = disclosure,
       )
       pending = Pending(binding, onComplete)
       binding
@@ -137,9 +141,14 @@ object PairingRegistrationGate {
     val active = pending?.takeIf { it.binding.instance == instance } ?: return@synchronized false
     val binding = active.binding
     val endpoint = active.claimedEndpoint ?: return@synchronized false
-    if (identity.instance != instance || identity.accountId != binding.accountId ||
+    val validIdentity = if (identity.receiverId == null) {
+      identity.keyId.isNotBlank()
+    } else {
+      UUID_V4.matches(identity.receiverId) && UUID_V4.matches(identity.requestId) && identity.keyId.isEmpty()
+    }
+    if (!validIdentity || identity.instance != instance || identity.accountId != binding.accountId ||
       identity.endpoint != endpoint.url || identity.p256dh != endpoint.p256dh || identity.auth != endpoint.auth ||
-      identity.epoch <= 0 || identity.requestId.isBlank() || identity.keyId.isBlank()) return@synchronized false
+      identity.epoch <= 0 || identity.requestId.isBlank()) return@synchronized false
     active.importBinding = identity
     true
   }
@@ -152,6 +161,26 @@ object PairingRegistrationGate {
       completionDelivered = true
       importBinding = identity
     }
+    true
+  }
+
+  /** Rebinds the same durable candidate after an aborted lifecycle transition advanced its generation. */
+  internal fun rebindLifecycleGeneration(
+    expectedBinding: Binding,
+    expectedIdentity: ImportBinding,
+    generation: Long,
+  ): Boolean = synchronized(lock) {
+    val active = pending?.takeIf { it.binding == expectedBinding } ?: return@synchronized false
+    if (active.importBinding != expectedIdentity || active.claimedEndpoint?.instance != expectedBinding.instance ||
+      System.currentTimeMillis() / 1000 >= expectedBinding.expiresAt) return@synchronized false
+    val replacement = Pending(expectedBinding.copy(lifecycleGeneration = generation), active.onComplete).also {
+      it.claimedEndpoint = active.claimedEndpoint
+      it.completionDelivered = active.completionDelivered
+      it.bufferedEndpoint = active.bufferedEndpoint
+      it.bufferedUnregistration = active.bufferedUnregistration
+      it.importBinding = active.importBinding
+    }
+    pending = replacement
     true
   }
 
@@ -278,6 +307,7 @@ object PairingRegistrationGate {
   }
 
   private data class Current(val active: Pending?, val expired: Pending?)
+  private val UUID_V4 = Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
 
   /** Caller holds [lock]. Expiry callbacks run only after the lock is released. */
   private fun currentLocked(nowSeconds: Long): Current {

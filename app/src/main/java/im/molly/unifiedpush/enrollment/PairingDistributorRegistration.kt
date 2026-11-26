@@ -25,15 +25,37 @@ internal object PairingDistributorRegistration {
   }
 
   /** Both the endpoint callback and an authenticated pairing confirmation have been accepted. */
-  fun promote(context: Context, binding: PairingRegistrationGate.Binding) {
-    if (binding.previousDistributorId == binding.distributorId) return
-    // Connector 3.0.10's saveDistributor clears the acknowledgment on an owner change.
-    // Publish the new owner and its already-acknowledged endpoint together.
-    context.getSharedPreferences("unifiedpush.connector", Context.MODE_PRIVATE).edit()
-      .putString("unifiedpush.distributor", binding.distributorId)
-      .putBoolean("unifiedpush.distributor_ack", true)
-      .apply()
+  fun promote(context: Context, binding: PairingRegistrationGate.Binding): Boolean {
+    if (binding.previousDistributorId == binding.distributorId) return true
+    if (!publishSelectedDistributor(context, binding.distributorId)) return false
     unregister(context, binding.previousDistributorId, binding.previousInstance)
+    return true
+  }
+
+  /** Repeats only the connector half of a committed, consented promotion after process death. */
+  internal fun recoverPromotionSelection(
+    context: Context,
+    previousDistributorId: String,
+    distributorId: String,
+    previousInstance: String,
+  ): Boolean {
+    val saved = UnifiedPush.getSavedDistributor(context)
+    val acknowledged = UnifiedPush.getAckDistributor(context)
+    if (saved != distributorId || acknowledged != distributorId) {
+      if (saved != previousDistributorId || acknowledged != previousDistributorId) return false
+      if (!publishSelectedDistributor(context, distributorId)) return false
+    }
+    if (previousDistributorId != distributorId) unregister(context, previousDistributorId, previousInstance)
+    return true
+  }
+
+  // Connector 3.0.10's saveDistributor clears the acknowledgment on an owner change. Publish the
+  // owner and its already-acknowledged endpoint in one preferences edit.
+  private fun publishSelectedDistributor(context: Context, distributorId: String): Boolean {
+    return context.getSharedPreferences("unifiedpush.connector", Context.MODE_PRIVATE).edit()
+      .putString("unifiedpush.distributor", distributorId)
+      .putBoolean("unifiedpush.distributor_ack", true)
+      .commit()
   }
 
   private fun unregister(context: Context, distributor: String, instance: String) {

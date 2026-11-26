@@ -114,6 +114,10 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
 
     const val BACKUP_DEFAULT_HOUR = 2
     const val BACKUP_DEFAULT_MINUTE = 0
+
+    internal fun writeNotificationDeliveryMethod(writer: KeyValueStore.Writer, method: NotificationDeliveryMethod) {
+      writer.putString(MOLLY_NOTIFICATION_METHOD, method.serialize())
+    }
   }
 
   private val configurationSettingChanged = SingleLiveEvent<String>()

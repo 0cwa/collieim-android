@@ -3,6 +3,8 @@ from pathlib import Path
 
 
 WORKFLOW = Path(__file__).parents[2] / '.github/workflows/build-release.yml'
+PR_WORKFLOW = Path(__file__).parents[2] / '.github/workflows/pr.yml'
+RECIPE = Path(__file__).with_name('build-release.sh')
 
 
 class WorkflowContractTests(unittest.TestCase):
@@ -62,6 +64,18 @@ class WorkflowContractTests(unittest.TestCase):
                        if (line := raw.strip()).startswith(prefix)]
         self.assertEqual(expressions, ["${{ " + " && ".join(gates) + " && '1' || '0' }}"])
         self.assertNotIn("COLLIE_DEVELOPMENT_BASE", self.workflow)
+
+    def test_workflow_builds_share_the_recipe_and_full_history_for_state(self):
+        pr_workflow = PR_WORKFLOW.read_text()
+        self.assertIn('tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/production-build"', pr_workflow)
+        self.assertIn('run: tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"', self.workflow)
+        self.assertIn('fetch-depth: 0', self.workflow)
+        production_job = pr_workflow.split('  production-build:', 1)[1].split('\n  beta-compile:', 1)[0]
+        self.assertIn('fetch-depth: 0', production_job)
+        recipe = RECIPE.read_text()
+        self.assertIn('verify-release-prep.py --edition "$edition" --build-state', recipe)
+        self.assertIn('"-PcollieReleasePrepared=$prepared"', recipe)
+        self.assertIn('if [ "$require_prepared" = 1 ] && [ "$prepared" != true ]', recipe)
 
     def test_release_preparation_tests_run_only_for_pull_requests(self):
         self.assertIn("test-preparation:\n    name: Test release preparation\n    if: github.event_name == 'pull_request'", self.workflow)

@@ -32,19 +32,28 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   exit 1
 fi
 commit=$(git rev-parse HEAD)
-prepared=false
 case "${COLLIE_REQUIRE_RELEASE_PREP:-0}" in
-  0) ;;
-  1)
-    prepared=$(python3 tooling/reproducible-builds/verify-release-prep.py --edition "$edition" --build-state)
-    case "$prepared" in
-      true) ;;
-      false) echo "build-release: required release preparation is not verified" >&2; exit 1 ;;
-      *) echo "build-release: invalid preparation result" >&2; exit 1 ;;
-    esac
-    ;;
+  0|1) require_prepared=${COLLIE_REQUIRE_RELEASE_PREP:-0} ;;
   *) echo "build-release: COLLIE_REQUIRE_RELEASE_PREP must be 0 or 1" >&2; exit 1 ;;
 esac
+# Derive the Gradle property for every build from this exact checkout and edition. Ordinary
+# commits can fail the preparation verifier; that means false unless this path is strict.
+if prepared=$(python3 tooling/reproducible-builds/verify-release-prep.py --edition "$edition" --build-state); then
+  case "$prepared" in
+    true|false) ;;
+    *) echo "build-release: invalid preparation result" >&2; exit 1 ;;
+  esac
+else
+  prepared=false
+  if [ "$require_prepared" = 1 ]; then
+    echo "build-release: required release preparation is not verified" >&2
+    exit 1
+  fi
+fi
+if [ "$require_prepared" = 1 ] && [ "$prepared" != true ]; then
+  echo "build-release: required release preparation is not verified" >&2
+  exit 1
+fi
 dockerfile=tooling/reproducible-builds/Dockerfile
 mkdir -p "$out"
 

@@ -192,6 +192,23 @@ class ReleasePreparationTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("development build", result.stdout)
 
+    def test_build_state_is_false_for_an_ordinary_stable_commit(self):
+        result = self.check("--edition", "stable", "--build-state")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "false")
+
+    def test_build_state_is_true_for_a_verified_stable_preparation(self):
+        self.prepare()
+        result = self.check("--edition", "stable", "--build-state")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "true")
+
+    def test_build_state_is_true_for_a_verified_beta_preparation(self):
+        self.prepare_beta()
+        result = self.check("--edition", "beta", "--build-state")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "true")
+
     def test_beta_uses_its_pair_and_listing_from_build_edition(self):
         self.prepare_beta()
         result = subprocess.run([sys.executable, str(SCRIPT)], cwd=self.root, text=True, capture_output=True,

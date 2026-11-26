@@ -19,11 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Rows
+import org.signal.core.ui.compose.Rows.TextAndLabel
 import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.SignalPreviewWrapper
@@ -86,8 +89,13 @@ fun GroupPrivacySettingsScreen(
           item(key = mode.name) {
             Rows.RadioRow(
               selected = state.mode == mode,
-              text = stringResource(mode.title()),
-              label = stringResource(mode.description()),
+              content = {
+                TextAndLabel(
+                  text = stringResource(mode.title()).asCollieSettingTitle(),
+                  label = AnnotatedString(stringResource(mode.description())),
+                  enabled = state.canChange
+                )
+              },
               enabled = state.canChange,
               modifier = Modifier
                 .selectable(
@@ -113,8 +121,8 @@ fun GroupPrivacySettingsScreen(
           item { Texts.SectionHeader(text = stringResource(R.string.GroupPrivacySettings__chosen_people)) }
           item {
             Rows.TextRow(
-              text = stringResource(R.string.GroupPrivacySettings__choose_people),
-              label = stringResource(R.string.GroupPrivacySettings__choose_people_description),
+              text = stringResource(R.string.GroupPrivacySettings__choose_people).asCollieSettingTitle(),
+              label = AnnotatedString(stringResource(R.string.GroupPrivacySettings__choose_people_description)),
               enabled = state.canChange,
               onClick = { onEvent(GroupPrivacySettingsEvent.ChoosePeopleClicked) },
               modifier = Modifier.testTag(GroupPrivacySettingsTestTags.CHOOSE_PEOPLE)

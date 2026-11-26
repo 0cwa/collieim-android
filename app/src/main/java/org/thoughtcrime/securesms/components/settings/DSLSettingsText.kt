@@ -75,6 +75,11 @@ sealed class DSLSettingsText {
     override fun hashCode(): Int = textAppearance
   }
 
+  object ItalicModifier : Modifier {
+    override fun modify(context: Context, charSequence: CharSequence): CharSequence =
+      SpanUtil.italic(charSequence)
+  }
+
   object BoldModifier : Modifier {
     override fun modify(context: Context, charSequence: CharSequence): CharSequence {
       return SpanUtil.bold(charSequence)

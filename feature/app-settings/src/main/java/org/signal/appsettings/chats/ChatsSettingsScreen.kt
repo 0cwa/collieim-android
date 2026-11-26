@@ -14,11 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import kotlinx.coroutines.launch
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.appsettings.backups.BackupCreationProgress
 import org.signal.appsettings.backups.BackupCreationProgressRow
 import org.signal.core.ui.biometrics.rememberBiometricsAuthentication
@@ -98,8 +100,8 @@ fun ChatsSettingsScreen(
       item {
         Rows.ToggleRow(
           modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES),
-          text = stringResource(R.string.ChatsSettingsScreen__web_link_preview_images),
-          label = stringResource(R.string.ChatsSettingsScreen__web_link_preview_images_summary),
+          text = stringResource(R.string.ChatsSettingsScreen__web_link_preview_images).asCollieSettingTitle(),
+          label = AnnotatedString(stringResource(R.string.ChatsSettingsScreen__web_link_preview_images_summary)),
           enabled = state.isRegisteredAndUpToDate() && state.generateLinkPreviews,
           checked = state.webLinkPreviewImagesEnabled,
           onCheckChanged = { onEvent(ChatsSettingsEvents.WebLinkPreviewImagesChanged(it)) }

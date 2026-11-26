@@ -15,10 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Scaffolds
@@ -83,8 +85,8 @@ fun AppUpdatesSettingsScreen(
         item {
           Rows.ToggleRow(
             checked = state.autoUpdateEnabled,
-            text = stringResource(R.string.CollieUpdates__check_automatically),
-            label = stringResource(R.string.CollieUpdates__check_automatically_summary),
+            text = stringResource(R.string.CollieUpdates__check_automatically).asCollieSettingTitle(),
+            label = AnnotatedString(stringResource(R.string.CollieUpdates__check_automatically_summary)),
             onCheckChanged = { onEvent(AppUpdatesSettingsEvent.AutoUpdateToggled(it)) },
             modifier = Modifier.testTag(AppUpdatesSettingsTestTags.ROW_AUTO_UPDATE)
           )
@@ -97,8 +99,8 @@ fun AppUpdatesSettingsScreen(
         if (state.availableVersionName != null) {
           item {
             Rows.TextRow(
-              text = stringResource(R.string.CollieUpdates__view_release, state.availableVersionName),
-              label = stringResource(R.string.CollieUpdates__open_official_release),
+              text = stringResource(R.string.CollieUpdates__view_release, state.availableVersionName).asCollieSettingTitle(),
+              label = AnnotatedString(stringResource(R.string.CollieUpdates__open_official_release)),
               onClick = { onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked) },
               modifier = Modifier.testTag(AppUpdatesSettingsTestTags.ROW_RELEASE)
             )
@@ -113,8 +115,8 @@ fun AppUpdatesSettingsScreen(
 
         item {
           Rows.TextRow(
-            text = stringResource(R.string.EnableAppUpdatesMegaphone_check_for_updates),
-            label = stringResource(R.string.AppUpdatesSettingsFragment__last_checked_s, rememberLastSuccessfulUpdateString(state.lastCheckedTime)),
+            text = stringResource(R.string.EnableAppUpdatesMegaphone_check_for_updates).asCollieSettingTitle(),
+            label = AnnotatedString(stringResource(R.string.AppUpdatesSettingsFragment__last_checked_s, rememberLastSuccessfulUpdateString(state.lastCheckedTime))),
             enabled = state.autoUpdateEnabled,
             onClick = { onEvent(AppUpdatesSettingsEvent.CheckForUpdatesClicked) },
             modifier = Modifier.testTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES)

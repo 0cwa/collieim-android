@@ -13,6 +13,7 @@
 - Website UI changes also require browser screenshots at affected viewport widths, embedded in the PR description before handoff or merge.
 - Instrumentation: install the app and test APKs from the same build. A run that collected 0 tests failed.
 - Put new UI only where the request says. If it doesn't say, ask.
+- Italicize the visible title of every Collie-added setting outside the Collie settings screen in both editions. In Compose, use `asCollieSettingTitle()`. In legacy settings, use `DSLSettingsText.ItalicModifier`. Keep descriptions, values, and the controls on the Collie settings screen in their normal style.
 - Ported upstream changes keep their original author (`git am`, or a `Co-authored-by:` trailer).
 - CodeRabbit: its rate-limit and "review in progress" comments are not findings. Translation strings are excluded (`.coderabbit.yaml`).
 - Encrypted push follows the applicable versioned contract and exact pin in `0cwa/colliesocket`. If the contract is wrong or unclear, open an issue or PR in that repo and continue here with the pinned contract as written; do not reinterpret a field here.

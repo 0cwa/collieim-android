@@ -31,25 +31,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.base.sha || github.sha }}
           path: trusted-policy
-          sparse-checkout: .github/codeql
+          sparse-checkout: |
+            .github/codeql
+            tooling/codeql
           persist-credentials: false
           lfs: false
       - name: Require trusted base CodeQL configuration
         run: |
           test -f trusted-policy/.github/codeql/codeql-config.yml
           test -s trusted-policy/.github/codeql/codeql-config.yml
-      - name: Load the independently reviewed engineering policy
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: 0cwa/collie-release-engineering
-          ref: 12d80a20a3d714cd0531532c178b0f4290bc2769
-          path: policy
-          sparse-checkout: tools/codeql
-          persist-credentials: false
       - name: State the exact analyzed source and coverage limit
         run: |
           git rev-parse HEAD HEAD^{tree}
-          printf '%s\n' 'Actions workflow analysis only. Java/Kotlin and native-dependency source analysis: NOT RUN; a reviewed traced Android build with verified public native inputs is required before activation.' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'This job analyzes GitHub Actions workflows only. Java/Kotlin and native-dependency source analysis are outside its scope.' >> "$GITHUB_STEP_SUMMARY"
       - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           tools: linked
@@ -74,7 +68,7 @@ jobs:
             review_file="$RUNNER_TEMP/codeql-evidence/empty-reviews.json"
             printf '%s\n' '{"schema":1,"reviews":[]}' > "$review_file"
           fi
-          python3 policy/tools/codeql/report.py "$RUNNER_TEMP/codeql-sarif" \
+          python3 trusted-policy/tooling/codeql/report.py "$RUNNER_TEMP/codeql-sarif" \
             --language actions --reviews "$review_file" \
             --source-root . --output "$RUNNER_TEMP/codeql-evidence/audit.json" \
             --summary "$RUNNER_TEMP/codeql-evidence/audit.md"

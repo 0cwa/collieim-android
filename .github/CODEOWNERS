@@ -1,6 +1,9 @@
 /.github/ @0cwa
+*.gradle @0cwa
+*.gradle.kts @0cwa
 /build-inputs/ @0cwa
 /gradle/ @0cwa
+/gradle.properties @0cwa
 /gradlew @0cwa
 /gradlew.bat @0cwa
 /settings.gradle.kts @0cwa

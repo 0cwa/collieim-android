@@ -259,6 +259,8 @@ class BuildInputGateTest(unittest.TestCase):
                 ("app/proguard/extra.cfg", "true"), ("app/shrinker-config-r8.txt", "true"),
                 (".gitattributes", "true"), (".github/actions/disk-cleanup/action.yml", "true"),
                 ("gradle/libs.versions.toml", "true"), ("settings.gradle.kts", "true"),
+                ("app/src/beta/branding/trailblazer.svg", "true"),
+                ("app/src/prodWebsiteBeta/kotlin/Example.kt", "true"),
                 ("docs/contributing.md", "false"), ("app/src/main/Example.kt", "false"),
             ):
                 with self.subTest(path=path):

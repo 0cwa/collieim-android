@@ -38,6 +38,7 @@ jobs:
             gradle/ gradlew gradlew.bat ':(glob)**/*.gradle.kts' ':(glob)**/*.gradle' \
             ':(glob)**/gradle.properties' ':(glob)**/AndroidManifest.xml' \
             ':(glob)**/*.pro' '*proguard*' '*r8*' ':(glob)**/.gitattributes' \
+            ':(glob)**/src/*[Bb]eta*/**' \
             buildSrc/ build-logic/ build-inputs/ tooling/reproducible-builds/ \
             'tooling/gradle.properties*' 'app/build.gradle*' .github/actions/ .github/workflows/pr.yml)
           if [[ -n "$changed" ]]; then

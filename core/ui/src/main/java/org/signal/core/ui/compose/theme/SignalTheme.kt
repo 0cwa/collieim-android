@@ -265,7 +265,7 @@ fun SignalTheme(
   // - API 34+: Use Compose's built-in dynamic scheme (matches system Material You).
   // - API 31–33: Use mapped color resources to approximate system dynamic palette, avoiding Compose's more saturated fallback.
   // - Otherwise: Use app light/dark color schemes.
-  val colorScheme = when {
+  val paletteScheme = when {
     dynamicColors -> {
       if (Build.VERSION.SDK_INT >= 34) {
         if (isDarkMode) dynamicDarkColorScheme(context)
@@ -279,6 +279,9 @@ fun SignalTheme(
     isDarkMode -> darkColorScheme
     else -> lightColorScheme
   }
+  // Collie: the host theme marks Pure black only where its Activity is effectively dark and follows the app's mode, so a
+  // forced-dark composable in a light Activity, or a forced-light one in a dark Activity, keeps its usual surfaces.
+  val colorScheme = if (isDarkMode && isThemeUsingPureBlack(context)) paletteScheme.withPureBlack() else paletteScheme
 
   val derivedRoles = dynamicColors || userPalette != null
   val extendedColors = extendedColors(colorScheme, isDarkMode = isDarkMode, isDynamic = derivedRoles)
@@ -293,6 +296,29 @@ fun SignalTheme(
       )
     }
   }
+}
+
+/**
+ * Collie: the colors a palette choice shows in a preview, in the same order as [UserPalette.swatch]: primary, secondary
+ * container, tertiary and surface. [paletteId] is [UserPalettes.COLLIE_ID], [UserPalettes.SYSTEM_ID] or a built-in
+ * palette ID. System uses the same scheme as [SignalTheme] where Dynamic Colors is supported and Collie elsewhere.
+ */
+@Composable
+fun paletteSwatch(paletteId: String, isDarkMode: Boolean): List<Color> {
+  UserPalettes.byId(paletteId)?.let { return it.swatch(isDarkMode) }
+
+  val scheme = when {
+    paletteId == UserPalettes.SYSTEM_ID && Build.VERSION.SDK_INT >= 34 -> {
+      val context = LocalContext.current
+      if (isDarkMode) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    }
+    paletteId == UserPalettes.SYSTEM_ID && Build.VERSION.SDK_INT >= 31 -> {
+      if (isDarkMode) systemAlignedDarkColorScheme() else systemAlignedLightColorScheme()
+    }
+    isDarkMode -> darkColorScheme
+    else -> lightColorScheme
+  }
+  return listOf(scheme.primary, scheme.secondaryContainer, scheme.tertiary, scheme.surface)
 }
 
 @Composable
@@ -376,6 +402,11 @@ private fun isThemeUsingDynamicColors(context: Context): Boolean {
   val typedValue = TypedValue()
   return theme.resolveAttribute(R.attr.dynamic_colors, typedValue, false)
     && typedValue.data != 0
+}
+
+private fun isThemeUsingPureBlack(context: Context): Boolean {
+  val typedValue = TypedValue()
+  return context.theme.resolveAttribute(R.attr.collie_pure_black, typedValue, true) && typedValue.data != 0
 }
 
 private fun themePaletteId(context: Context): String? {

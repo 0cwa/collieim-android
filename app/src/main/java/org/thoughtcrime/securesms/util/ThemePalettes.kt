@@ -4,6 +4,7 @@
 
 package org.thoughtcrime.securesms.util
 
+import org.signal.core.ui.compose.theme.UserPalettes
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 
 /**
@@ -12,8 +13,17 @@ import org.signal.storage.keyvalue.PlainTextKeyValueStore
  */
 object ThemePalettes {
 
-  const val COLLIE = "collie"
-  const val SYSTEM = "system"
+  const val COLLIE = UserPalettes.COLLIE_ID
+  const val SYSTEM = UserPalettes.SYSTEM_ID
+
+  /**
+   * The choices to offer, in display order: Collie, System where Dynamic Colors is supported, then the built-in
+   * palettes.
+   */
+  @JvmStatic
+  fun selectableIds(systemAvailable: Boolean): List<String> {
+    return listOf(COLLIE) + (if (systemAvailable) listOf(SYSTEM) else emptyList()) + GeneratedPaletteOverlays.IDS
+  }
 
   /** Whether [id] names Collie, System or a built-in palette. */
   @JvmStatic

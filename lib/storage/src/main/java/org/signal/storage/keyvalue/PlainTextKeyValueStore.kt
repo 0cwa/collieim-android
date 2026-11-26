@@ -32,6 +32,12 @@ object PlainTextKeyValueStore {
    * authoritative System choice, so older versions, which ignore this key, keep showing System or Collie.
    */
   const val THEME_PALETTE = "pref_theme_palette"
+
+  /**
+   * Collie: black base surfaces in an effectively dark theme, independent of the theme mode and palette. Older
+   * versions ignore it.
+   */
+  const val PURE_BLACK = "pref_pure_black"
   const val SYSTEM_EMOJI_PREFERRED = "pref_system_emoji"
   const val PASSPHRASE_LOCK_ENABLED = "pref_passphrase_lock"
   const val PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED = "pref_passphrase_lock_notifications"
@@ -189,6 +195,16 @@ object PlainTextKeyValueStore {
     }
   }
 
+  /** Collie: whether Pure black is on. A record of another type, such as from a malformed backup, reads as off. */
+  @JvmStatic
+  var isPureBlackEnabled: Boolean
+    get() = try {
+      sharedPrefs.getBoolean(PURE_BLACK, false)
+    } catch (e: ClassCastException) {
+      false
+    }
+    set(value) = sharedPrefs.edit(commit = true) { putBoolean(PURE_BLACK, value) }
+
   /** Collie: the stored palette ID for the backup record, or null for Collie. */
   @JvmStatic
   fun getThemePaletteToBackup(): String? = themePalette
@@ -208,7 +224,11 @@ object PlainTextKeyValueStore {
     val values = LinkedHashMap<String, Boolean>()
     for (key in BOOTSTRAP_BOOLEAN_KEYS_TO_BACKUP) {
       if (sharedPrefs.contains(key)) {
-        values[key] = sharedPrefs.getBoolean(key, false)
+        try {
+          values[key] = sharedPrefs.getBoolean(key, false)
+        } catch (e: ClassCastException) {
+          // Collie: a record of another type is not a setting the user chose; leave it out of the backup.
+        }
       }
     }
     return values
@@ -224,5 +244,6 @@ object PlainTextKeyValueStore {
     BIOMETRIC_SCREEN_LOCK_ENABLED,
     PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED,
     DYNAMIC_COLORS_ENABLED,
+    PURE_BLACK,
   )
 }

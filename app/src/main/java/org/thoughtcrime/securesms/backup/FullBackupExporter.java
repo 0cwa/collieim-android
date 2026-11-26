@@ -599,8 +599,8 @@ public class FullBackupExporter extends FullBackupBase {
 
   /**
    * MOLLY: Settings without a V1 SignalStore mirror keep their preference-based backup records. Dynamic colors use
-   * this path deliberately, as does the
-   * Collie palette ID. The records are built here because Signal 8.36 moved {@link PlainTextKeyValueStore} to
+   * this path deliberately, as do the
+   * Collie palette ID and Pure black flag. The records are built here because Signal 8.36 moved {@link PlainTextKeyValueStore} to
    * lib/storage, which cannot see the backup protos.
    */
   public static @NonNull List<SharedPreference> getPlainTextPreferencesToSaveToBackup() {

@@ -395,6 +395,64 @@ class MollyBackupPreferencesTest {
   }
 
   @Test
+  fun `every built-in palette and pure black round trip through current and historical filenames`() {
+    val filenames = listOf(SecurePreferenceManager.getSecurePreferencesName()) + HISTORICAL_FILENAMES
+
+    for (filename in filenames) {
+      for (palette in PALETTES) {
+        for (pureBlack in listOf(true, false)) {
+          preferences.edit().clear().commit()
+          PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = palette)
+          PlainTextKeyValueStore.isPureBlackEnabled = pureBlack
+          val exported = FullBackupExporter.getPlainTextPreferencesToSaveToBackup()
+            .map { SharedPreference.ADAPTER.decode(it.newBuilder().file_(filename).build().encode()) }
+          preferences.edit().clear().commit()
+
+          exported.forEach { FullBackupImporter.processPreference(context, it, keyValueStorage) }
+          SignalStore.onPostBackupRestore()
+
+          val label = "$filename $palette $pureBlack"
+          assertEquals(label, palette, ThemePalettes.selectedId())
+          assertEquals(label, pureBlack, PlainTextKeyValueStore.isPureBlackEnabled)
+        }
+      }
+    }
+  }
+
+  @Test
+  fun `restoring an older backup without a pure black record leaves it off`() {
+    preferences.edit().clear().commit()
+    val record = SharedPreference.Builder()
+      .file_(SecurePreferenceManager.getSecurePreferencesName())
+      .key(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)
+      .booleanValue(false)
+      .build()
+
+    FullBackupImporter.processPreference(context, record, keyValueStorage)
+    SignalStore.onPostBackupRestore()
+
+    assertFalse(preferences.contains(PlainTextKeyValueStore.PURE_BLACK))
+    assertFalse(PlainTextKeyValueStore.isPureBlackEnabled)
+  }
+
+  @Test
+  fun `pure black records of the wrong type are skipped for every filename`() {
+    for (filename in listOf(SecurePreferenceManager.getSecurePreferencesName()) + HISTORICAL_FILENAMES) {
+      preferences.edit().clear().commit()
+      val records = listOf(
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.PURE_BLACK).value_("true").build(),
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.PURE_BLACK).integerValue(1).build(),
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.PURE_BLACK).booleanValue(true).value_("true").build()
+      )
+
+      records.forEach { FullBackupImporter.processPreference(context, it, keyValueStorage) }
+
+      assertFalse(filename, preferences.contains(PlainTextKeyValueStore.PURE_BLACK))
+      assertFalse(filename, PlainTextKeyValueStore.isPureBlackEnabled)
+    }
+  }
+
+  @Test
   fun `stale shared preferences for migrated Signal settings are not exported`() {
     preferences.edit()
       .putBoolean("pref_read_receipts", false)
@@ -414,6 +472,7 @@ class MollyBackupPreferencesTest {
 
   companion object {
     private const val PILOT = "teal_vibrant"
+    private val PALETTES = listOf("blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral")
 
     private val HISTORICAL_FILENAMES = listOf(
       "im.molly.app",

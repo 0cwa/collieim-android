@@ -26,6 +26,7 @@ public class SecurePreferenceManager {
       case PlainTextKeyValueStore.THEME,
            PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED,
            PlainTextKeyValueStore.THEME_PALETTE,
+           PlainTextKeyValueStore.PURE_BLACK,
            PlainTextKeyValueStore.LANGUAGE,
            PlainTextKeyValueStore.PASSPHRASE_LOCK_ENABLED,
            PlainTextKeyValueStore.PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED,

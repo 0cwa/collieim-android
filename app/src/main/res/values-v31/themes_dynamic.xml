@@ -83,9 +83,9 @@
         <item name="navbar_active_indicator_color">@color/dynamic_secondary_container_light</item>
         <item name="navbar_container_color">@color/dynamic_surface_container_high_light</item>
 
-        <!-- System Bars -->
-        <item name="android:navigationBarColor">@color/dynamic_surface_light</item>
-        <item name="android:statusBarColor">@color/dynamic_surface_light</item>
+        <!-- System Bars: the surface role (dynamic_surface_light here), so the Pure black overlay reaches them. -->
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
     </style>
 
     <style name="Theme.Molly.Dynamic.Dark" parent="TextSecure.BaseDarkTheme">
@@ -170,9 +170,9 @@
         <item name="navbar_active_indicator_color">@color/dynamic_secondary_container_dark</item>
         <item name="navbar_container_color">@color/dynamic_surface_container_high_dark</item>
 
-        <!-- System Bars -->
-        <item name="android:navigationBarColor">@color/dynamic_surface_dark</item>
-        <item name="android:statusBarColor">@color/dynamic_surface_dark</item>
+        <!-- System Bars: the surface role (dynamic_surface_dark here), so the Pure black overlay reaches them. -->
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
     </style>
 
     <style name="Theme.Molly.Dynamic.BaseNoActionBar.Light" parent="Theme.Molly.Dynamic.Light">

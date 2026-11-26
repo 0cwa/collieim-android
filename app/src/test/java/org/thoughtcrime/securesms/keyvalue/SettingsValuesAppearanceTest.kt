@@ -214,6 +214,64 @@ class SettingsValuesAppearanceTest {
     assertEquals(ThemePalettes.COLLIE, values.colorPalette)
   }
 
+  @Test
+  fun `switching straight from one built-in palette to another keeps System off`() {
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor()), context)
+    val events = mutableListOf<String>()
+    values.onConfigurationSettingChanged.observeForever { events += it }
+
+    for (palette in listOf("blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral")) {
+      values.setColorPalette(palette)
+      shadowOf(Looper.getMainLooper()).idle()
+      assertEquals(palette, PlainTextKeyValueStore.themePalette)
+      assertEquals(palette, values.colorPalette)
+      assertFalse(PlainTextKeyValueStore.isDynamicColorsEnabled)
+    }
+    assertEquals(List(4) { SettingsValues.THEME }, events)
+  }
+
+  @Test
+  fun `pure black is independent of the theme mode and palette and notifies once per change`() {
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor()), context)
+    val events = mutableListOf<String>()
+    values.onConfigurationSettingChanged.observeForever { events += it }
+    assertFalse(values.isPureBlackEnabled)
+
+    values.isPureBlackEnabled = true
+    values.isPureBlackEnabled = true
+    shadowOf(Looper.getMainLooper()).idle()
+    assertTrue(PlainTextKeyValueStore.isPureBlackEnabled)
+    assertEquals(listOf(SettingsValues.THEME), events)
+
+    values.setColorPalette("plum_expressive")
+    values.setColorPalette(ThemePalettes.SYSTEM)
+    values.setColorPalette(ThemePalettes.COLLIE)
+    values.setAppearance(SettingsValues.Theme.LIGHT, false)
+    values.theme = SettingsValues.Theme.DARK
+    assertTrue(values.isPureBlackEnabled)
+
+    values.isPureBlackEnabled = false
+    assertFalse(PlainTextKeyValueStore.isPureBlackEnabled)
+    assertEquals("dark", PlainTextKeyValueStore.theme)
+  }
+
+  @Test
+  fun `post-restore theme synchronization keeps pure black`() {
+    legacyPreferences().edit()
+      .putString(PlainTextKeyValueStore.THEME, "light")
+      .putBoolean(PlainTextKeyValueStore.PURE_BLACK, true)
+      .commit()
+
+    val dataSet = KeyValueDataSet()
+    dataSet.putString(SettingsValues.THEME, "dark")
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(dataSet), DirectExecutor()), context)
+
+    values.onPostBackupRestore()
+
+    assertEquals("dark", PlainTextKeyValueStore.theme)
+    assertTrue(values.isPureBlackEnabled)
+  }
+
   private fun legacyPreferences() = SecurePreferenceManager.getSecurePreferences(context)
 
   private fun clearLegacyBootstrapValues() {
@@ -221,6 +279,7 @@ class SettingsValuesAppearanceTest {
       .remove(PlainTextKeyValueStore.THEME)
       .remove(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)
       .remove(PlainTextKeyValueStore.THEME_PALETTE)
+      .remove(PlainTextKeyValueStore.PURE_BLACK)
       .remove(PlainTextKeyValueStore.SYSTEM_EMOJI_PREFERRED)
       .commit()
   }

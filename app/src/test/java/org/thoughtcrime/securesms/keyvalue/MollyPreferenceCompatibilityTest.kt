@@ -140,6 +140,26 @@ class MollyPreferenceCompatibilityTest {
   }
 
   @Test
+  fun `pure black remains readable before unlock without using upstream default file`() {
+    PlainTextKeyValueStore.isPureBlackEnabled = true
+    KeyCachingService.clearMasterSecret()
+
+    assertEquals(true, PlainTextKeyValueStore.isPureBlackEnabled)
+    assertEquals(true, rawMollyValues()[PlainTextKeyValueStore.PURE_BLACK])
+    assertFalse(PreferenceManager.getDefaultSharedPreferences(context).contains(PlainTextKeyValueStore.PURE_BLACK))
+  }
+
+  @Test
+  fun `older installs without a pure black key and mistyped values read as off`() {
+    PlainTextKeyValueStore.theme = "dark"
+    assertFalse(PlainTextKeyValueStore.isPureBlackEnabled)
+
+    SecurePreferenceManager.getSecurePreferences(context).edit().putString(PlainTextKeyValueStore.PURE_BLACK, "true").commit()
+    assertFalse(PlainTextKeyValueStore.isPureBlackEnabled)
+    assertFalse(PlainTextKeyValueStore.getBooleanValuesToBackup().containsKey(PlainTextKeyValueStore.PURE_BLACK))
+  }
+
+  @Test
   fun `language remains readable before unlock without exposing it in upstream default file`() {
     PlainTextKeyValueStore.language = "en"
     KeyCachingService.clearMasterSecret()
@@ -187,6 +207,18 @@ class MollyPreferenceCompatibilityTest {
   }
 
   @Test
+  fun `pure black is exported as a typed boolean record only once chosen`() {
+    assertFalse(FullBackupExporter.getPlainTextPreferencesToSaveToBackup().any { it.key == PlainTextKeyValueStore.PURE_BLACK })
+
+    PlainTextKeyValueStore.isPureBlackEnabled = true
+    val record = FullBackupExporter.getPlainTextPreferencesToSaveToBackup().single { it.key == PlainTextKeyValueStore.PURE_BLACK }
+
+    assertEquals(true, record.booleanValue)
+    assertEquals(null, record.value_)
+    assertEquals(SecurePreferenceManager.getSecurePreferencesName(), record.file_)
+  }
+
+  @Test
   fun `legacy plaintext first-install integer migrates without decryption`() {
     // Old installs wrote this key as a raw int while it was exempt from encryption. Use the same cached preferences
     // as the migration so the test remains isolated from Robolectric's per-method Application instances.
@@ -218,6 +250,7 @@ class MollyPreferenceCompatibilityTest {
       .remove(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)
       .remove(PlainTextKeyValueStore.THEME)
       .remove(PlainTextKeyValueStore.THEME_PALETTE)
+      .remove(PlainTextKeyValueStore.PURE_BLACK)
       .remove(PlainTextKeyValueStore.FIRST_INSTALL_VERSION)
       .commit()
 

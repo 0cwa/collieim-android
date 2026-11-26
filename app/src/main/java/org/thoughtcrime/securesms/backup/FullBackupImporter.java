@@ -434,8 +434,8 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
-    if (isDefaultFile && RESTORABLE_STRING_PREFERENCES.contains(preference.key) && !isRestorableMollyPreference(preference)) {
-      Log.w(TAG, "Skipping an invalid palette preference");
+    if (isDefaultFile && TYPED_APPEARANCE_PREFERENCES.contains(preference.key) && !isRestorableMollyPreference(preference)) {
+      Log.w(TAG, "Skipping an invalid appearance preference");
       return;
     }
 
@@ -539,7 +539,14 @@ public class FullBackupImporter extends FullBackupBase {
       MollyValues.BLOCK_UNKNOWN,
       PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED,
       PlainTextKeyValueStore.PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED,
-      PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED
+      PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED,
+      PlainTextKeyValueStore.PURE_BLACK
+  );
+
+  /** Collie: appearance records whose type is checked even in the current file, so a wrong type is never stored. */
+  private static final List<String> TYPED_APPEARANCE_PREFERENCES = List.of(
+      PlainTextKeyValueStore.THEME_PALETTE,
+      PlainTextKeyValueStore.PURE_BLACK
   );
 
   /** Collie: the palette ID stays preference-only, like the Dynamic Colors flag it accompanies. */

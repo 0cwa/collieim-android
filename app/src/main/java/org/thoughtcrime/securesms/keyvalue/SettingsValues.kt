@@ -294,6 +294,20 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     configurationSettingChanged.postValue(THEME)
   }
 
+  /**
+   * Collie: black base surfaces whenever the app is effectively dark, independent of [theme] and [colorPalette]. Stored
+   * before unlock with its own preference-based V1 backup record. A change notifies activities once, like a theme change.
+   */
+  var isPureBlackEnabled: Boolean
+    get() = PlainTextKeyValueStore.isPureBlackEnabled
+    set(value) {
+      if (value == PlainTextKeyValueStore.isPureBlackEnabled) {
+        return
+      }
+      PlainTextKeyValueStore.isPureBlackEnabled = value
+      configurationSettingChanged.postValue(THEME)
+    }
+
   var messageFontSize: Int by integerValue(MESSAGE_FONT_SIZE, 16)
 
   fun getMessageQuoteFontSize(context: Context): Int {

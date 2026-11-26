@@ -300,8 +300,9 @@
         <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Filled</item>
         <item name="collapsingToolbarLayoutStyle">@style/Signal.Widget.CollapsingToolbar</item>
         <item name="dynamic_colors">false</item>
-        <item name="android:navigationBarColor">@color/molly_surface_light</item>
-        <item name="android:statusBarColor">@color/molly_surface_light</item>
+        <!-- The surface role, so a palette overlay reaches the bars that this style colors. -->
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="conversation_toolbar_color">?attr/colorSurface</item>
@@ -474,8 +475,9 @@
         <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Filled</item>
         <item name="collapsingToolbarLayoutStyle">@style/Signal.Widget.CollapsingToolbar</item>
         <item name="dynamic_colors">false</item>
-        <item name="android:navigationBarColor">@color/molly_surface_dark</item>
-        <item name="android:statusBarColor">@color/molly_surface_dark</item>
+        <!-- The surface role, so a palette overlay reaches the bars that this style colors. -->
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="conversation_toolbar_color">?attr/colorSurface</item>

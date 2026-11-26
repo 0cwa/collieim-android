@@ -3,12 +3,16 @@ package org.thoughtcrime.securesms.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.color.DynamicColors;
@@ -20,15 +24,27 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.Theme;
 import org.signal.core.util.ConfigurationUtil;
 
+import java.util.Objects;
+
 public class DynamicTheme {
 
   private static final String TAG = Log.tag(DynamicTheme.class);
 
-  private static int globalNightModeConfiguration;
-  private static boolean globalDynamicColors;
+  /** How an Activity takes a built-in palette. Its own style keeps the window, inset and system bar policy. */
+  public enum PalettePolicy {
+    /** Palette roles at the Activity's effective brightness. */
+    FOLLOW_ACTIVITY,
+    /** Palette dark roles, for always-dark windows. */
+    ALWAYS_DARK,
+    /** Keeps the Collie roles. */
+    NONE
+  }
 
-  private int onCreateNightModeConfiguration;
-  private @StyleRes int onCreateTheme;
+  private static int                globalNightModeConfiguration;
+  private static @Nullable Identity globalIdentity;
+
+  private int               onCreateNightModeConfiguration;
+  private @Nullable Identity onCreateIdentity;
 
   private static final int regularTheme = R.style.Signal_DayNight;
   private static final int dynamicTheme = R.style.Theme_Molly_Dynamic;
@@ -41,27 +57,35 @@ public class DynamicTheme {
     return dynamicTheme;
   }
 
+  protected @NonNull PalettePolicy getPalettePolicy() {
+    return PalettePolicy.FOLLOW_ACTIVITY;
+  }
+
   public void onCreate(@NonNull Activity activity) {
-    int     previousGlobalConfiguration = globalNightModeConfiguration;
-    boolean previousGlobalDynamicColors = globalDynamicColors;
+    int      previousGlobalConfiguration = globalNightModeConfiguration;
+    Identity previousGlobalIdentity      = globalIdentity;
 
     onCreateNightModeConfiguration = ConfigurationUtil.getNightModeConfiguration(activity);
-    onCreateTheme                  = getTheme();
+    onCreateIdentity               = resolveIdentity(activity);
     globalNightModeConfiguration   = onCreateNightModeConfiguration;
-    globalDynamicColors            = useDynamicColors();
+    globalIdentity                 = onCreateIdentity.withoutActivityStyle();
 
-    activity.setTheme(onCreateTheme);
+    activity.setTheme(onCreateIdentity.baseTheme);
+    if (onCreateIdentity.paletteOverlay != 0) {
+      activity.getTheme().applyStyle(onCreateIdentity.paletteOverlay, true);
+    }
 
-    if (previousGlobalConfiguration != globalNightModeConfiguration || previousGlobalDynamicColors != globalDynamicColors) {
-      Log.d(TAG, "Night mode or dynamic colors changed. Clearing cached layouts.");
+    if (previousGlobalConfiguration != globalNightModeConfiguration || !Objects.equals(previousGlobalIdentity, globalIdentity)) {
+      Log.d(TAG, "Night mode or palette changed. Clearing cached layouts.");
       CachedInflater.from(activity).clear();
     }
   }
 
   public void onResume(@NonNull Activity activity) {
-    if (onCreateTheme != getTheme()) {
-      // Changing palettes does not change uiMode, so AppCompat will not recreate a retained activity.
-      // Rebuild its view and Compose hierarchies with the selected theme when returning from Settings.
+    if (onCreateIdentity != null && !onCreateIdentity.equals(resolveIdentity(activity))) {
+      // Changing palettes does not change uiMode, so AppCompat will not recreate a retained activity. An activity that
+      // handles uiMode itself would also keep a palette overlay of the old brightness. Rebuild its view and Compose
+      // hierarchies with the selected theme when returning from Settings.
       Log.d(TAG, "Theme changed since creation. Recreating activity.");
       CachedInflater.from(activity).clear();
       activity.recreate();
@@ -75,6 +99,20 @@ public class DynamicTheme {
     return useDynamicColors() ? getDynamicTheme() : getRegularTheme();
   }
 
+  private @NonNull Identity resolveIdentity(@NonNull Activity activity) {
+    boolean dark = ConfigurationUtil.getNightModeConfiguration(activity) == Configuration.UI_MODE_NIGHT_YES;
+    return resolveIdentity(getTheme(), getPalettePolicy(), dark);
+  }
+
+  @VisibleForTesting
+  static @NonNull Identity resolveIdentity(@StyleRes int baseTheme, @NonNull PalettePolicy policy, boolean effectiveDark) {
+    String  paletteId = policy == PalettePolicy.NONE ? null : ThemePalettes.activePaletteId();
+    boolean dark      = policy == PalettePolicy.ALWAYS_DARK || effectiveDark;
+    int     overlay   = paletteId != null ? GeneratedPaletteOverlays.overlay(paletteId, dark) : 0;
+
+    return new Identity(baseTheme, useDynamicColors(), paletteId, overlay);
+  }
+
   public static boolean useDynamicColors() {
     return isDynamicColorsAvailable() && PlainTextKeyValueStore.isDynamicColorsEnabled();
   }
@@ -83,10 +121,60 @@ public class DynamicTheme {
     return DynamicColors.isDynamicColorAvailable();
   }
 
+  /**
+   * Resolves a color of the app theme for contexts without an Activity theme, such as services. Uses the same
+   * identity as activities: AppCompat's effective night mode, the System flag and the palette overlay.
+   */
   public static @ColorInt int resolveColor(@NonNull Context context, int colorRef) {
-    int resId = useDynamicColors() ? dynamicTheme : regularTheme;
-    ContextThemeWrapper themeWrapper = new ContextThemeWrapper(context, resId);
-    return ThemeUtil.getThemedColor(context, colorRef, themeWrapper.getTheme());
+    boolean  dark       = isEffectiveDark(context);
+    Context  configured = withNightMode(context, dark);
+    int      resId      = useDynamicColors() ? dynamicTheme : regularTheme;
+    Identity identity   = resolveIdentity(resId, PalettePolicy.FOLLOW_ACTIVITY, dark);
+
+    ContextThemeWrapper themeWrapper = new ContextThemeWrapper(configured, identity.baseTheme);
+    Resources.Theme     theme        = themeWrapper.getTheme();
+    if (identity.paletteOverlay != 0) {
+      theme.applyStyle(identity.paletteOverlay, true);
+    }
+    return ThemeUtil.getThemedColor(configured, colorRef, theme);
+  }
+
+  /**
+   * A key for the theme a context inflates views with, read from its markers. Cached views are only reused for the
+   * same key, so a palette or System change never hands out views inflated with the previous roles.
+   */
+  public static @NonNull String themeKey(@NonNull Context context) {
+    Resources.Theme theme = context.getTheme();
+    TypedValue      value = new TypedValue();
+
+    boolean dynamic = theme.resolveAttribute(org.signal.core.ui.R.attr.dynamic_colors, value, true) && value.data != 0;
+    CharSequence palette = theme.resolveAttribute(org.signal.core.ui.R.attr.collie_palette, value, true) ? value.string : null;
+
+    return ConfigurationUtil.getNightModeConfiguration(context) + "|" + dynamic + "|" + (palette != null ? palette : "");
+  }
+
+  private static boolean isEffectiveDark(@NonNull Context context) {
+    switch (AppCompatDelegate.getDefaultNightMode()) {
+      case AppCompatDelegate.MODE_NIGHT_YES:
+        return true;
+      case AppCompatDelegate.MODE_NIGHT_NO:
+        return false;
+      default:
+        return isSystemInDarkTheme(context);
+    }
+  }
+
+  private static @NonNull Context withNightMode(@NonNull Context context, boolean dark) {
+    Configuration current = context.getResources().getConfiguration();
+    int           night   = dark ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
+
+    if (ConfigurationUtil.getNightModeConfiguration(current) == night) {
+      return context;
+    }
+
+    Configuration configuration = new Configuration(current);
+    configuration.uiMode = (configuration.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | night;
+    return context.createConfigurationContext(configuration);
   }
 
   public static boolean systemThemeAvailable() {
@@ -125,5 +213,45 @@ public class DynamicTheme {
 
   private static boolean isSystemInDarkTheme(@NonNull Context context) {
     return (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+  }
+
+  /**
+   * The theme an Activity is created with: its base style, the System flag, the palette and its overlay, whose variant
+   * follows the Activity's effective brightness and palette policy. Activities recreate when it changes. Cached layouts
+   * are cleared when the night mode or the System and palette part changes.
+   */
+  @VisibleForTesting
+  static final class Identity {
+    final @StyleRes int     baseTheme;
+    final boolean           dynamicColors;
+    final @Nullable String  paletteId;
+    final @StyleRes int     paletteOverlay;
+
+    Identity(@StyleRes int baseTheme, boolean dynamicColors, @Nullable String paletteId, @StyleRes int paletteOverlay) {
+      this.baseTheme      = baseTheme;
+      this.dynamicColors  = dynamicColors;
+      this.paletteId      = paletteId;
+      this.paletteOverlay = paletteOverlay;
+    }
+
+    @NonNull Identity withoutActivityStyle() {
+      return new Identity(0, dynamicColors, paletteId, 0);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof Identity)) return false;
+      Identity other = (Identity) o;
+      return baseTheme == other.baseTheme &&
+             dynamicColors == other.dynamicColors &&
+             paletteOverlay == other.paletteOverlay &&
+             Objects.equals(paletteId, other.paletteId);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(baseTheme, dynamicColors, paletteId, paletteOverlay);
+    }
   }
 }

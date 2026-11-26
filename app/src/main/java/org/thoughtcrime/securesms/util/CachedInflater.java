@@ -58,7 +58,7 @@ public class CachedInflater {
   @MainThread
   @SuppressWarnings("unchecked")
   public <V extends View> V inflate(@LayoutRes int layoutRes, @Nullable ViewGroup parent, boolean attachToRoot) {
-    View cached = ViewCache.getInstance().pull(layoutRes, context.getResources().getConfiguration());
+    View cached = ViewCache.getInstance().pull(layoutRes, context);
     if (cached != null) {
       if (parent != null && attachToRoot) {
         parent.addView(cached);
@@ -95,8 +95,9 @@ public class CachedInflater {
 
     private long  lastClearTime;
     private int   nightModeConfiguration;
-    private float fontScale;
-    private int   layoutDirection;
+    private float  fontScale;
+    private int    layoutDirection;
+    private String themeKey = "";
 
     static ViewCache getInstance() {
       return INSTANCE;
@@ -108,15 +109,18 @@ public class CachedInflater {
       int           currentNightModeConfiguration = ConfigurationUtil.getNightModeConfiguration(configuration);
       float         currentFontScale              = ConfigurationUtil.getFontScale(configuration);
       int           currentLayoutDirection        = configuration.getLayoutDirection();
+      String        currentThemeKey               = DynamicTheme.themeKey(context);
 
       if (nightModeConfiguration != currentNightModeConfiguration ||
           fontScale              != currentFontScale              ||
-          layoutDirection        != currentLayoutDirection)
+          layoutDirection        != currentLayoutDirection        ||
+          !themeKey.equals(currentThemeKey))
       {
         clear();
         nightModeConfiguration = currentNightModeConfiguration;
         fontScale              = currentFontScale;
         layoutDirection        = currentLayoutDirection;
+        themeKey               = currentThemeKey;
       }
 
       AsyncLayoutInflater inflater = new AsyncLayoutInflater(context, new AsyncAppCompatFactory());
@@ -155,10 +159,13 @@ public class CachedInflater {
     }
 
     @MainThread
-    @Nullable View pull(@LayoutRes int layoutRes, @NonNull Configuration configuration) {
+    @Nullable View pull(@LayoutRes int layoutRes, @NonNull Context context) {
+      Configuration configuration = context.getResources().getConfiguration();
+
       if (this.nightModeConfiguration != ConfigurationUtil.getNightModeConfiguration(configuration) ||
           this.fontScale              != ConfigurationUtil.getFontScale(configuration)              ||
-          this.layoutDirection        != configuration.getLayoutDirection())
+          this.layoutDirection        != configuration.getLayoutDirection()                         ||
+          !this.themeKey.equals(DynamicTheme.themeKey(context)))
       {
         clear();
         return null;

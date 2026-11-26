@@ -257,6 +257,9 @@ fun SignalTheme(
   val context = LocalContext.current
   val maySupportDynamicColor = Build.VERSION.SDK_INT >= 31
   val dynamicColors = maySupportDynamicColor && (useDynamicColors ?: isThemeUsingDynamicColors(context))
+  // Collie: a built-in palette comes from the host theme's marker. Its variant follows isDarkMode, so a forced-dark
+  // composable in a light Activity uses the palette's dark roles. An explicit useDynamicColors keeps its old meaning.
+  val userPalette = if (dynamicColors || useDynamicColors != null) null else UserPalettes.byId(themePaletteId(context))
 
   // MOLLY: Apply dynamic color if supported and enabled:
   // - API 34+: Use Compose's built-in dynamic scheme (matches system Material You).
@@ -272,12 +275,14 @@ fun SignalTheme(
         else systemAlignedLightColorScheme()
       }
     }
+    userPalette != null -> userPalette.colorScheme(isDarkMode)
     isDarkMode -> darkColorScheme
     else -> lightColorScheme
   }
 
-  val extendedColors = extendedColors(colorScheme, isDarkMode = isDarkMode, isDynamic = dynamicColors)
-  val snackbarColors = snackbarColors(colorScheme, isDarkMode = isDarkMode, isDynamic = dynamicColors)
+  val derivedRoles = dynamicColors || userPalette != null
+  val extendedColors = extendedColors(colorScheme, isDarkMode = isDarkMode, isDynamic = derivedRoles)
+  val snackbarColors = snackbarColors(colorScheme, isDarkMode = isDarkMode, isDynamic = derivedRoles)
 
   ProvideIncognitoKeyboard(enabled = incognitoKeyboardEnabled) {
     CompositionLocalProvider(LocalExtendedColors provides extendedColors, LocalSnackbarColors provides snackbarColors) {
@@ -371,6 +376,11 @@ private fun isThemeUsingDynamicColors(context: Context): Boolean {
   val typedValue = TypedValue()
   return theme.resolveAttribute(R.attr.dynamic_colors, typedValue, false)
     && typedValue.data != 0
+}
+
+private fun themePaletteId(context: Context): String? {
+  val typedValue = TypedValue()
+  return if (context.theme.resolveAttribute(R.attr.collie_palette, typedValue, true)) typedValue.string?.toString() else null
 }
 
 private fun extendedColors(colorScheme: ColorScheme, isDarkMode: Boolean, isDynamic: Boolean): ExtendedColors {

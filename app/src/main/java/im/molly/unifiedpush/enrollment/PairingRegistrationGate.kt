@@ -144,6 +144,17 @@ object PairingRegistrationGate {
     true
   }
 
+  /** Restore a previously consented, durably exported candidate after process restart. */
+  internal fun restore(binding: Binding, endpoint: Endpoint, identity: ImportBinding): Boolean = synchronized(lock) {
+    if (pending != null || System.currentTimeMillis() / 1000 >= binding.expiresAt) return@synchronized false
+    pending = Pending(binding) {}.apply {
+      claimedEndpoint = endpoint
+      completionDelivered = true
+      importBinding = identity
+    }
+    true
+  }
+
   /** Admission before the reducer still checks the saved distributor and Signal account. */
   fun allowsCandidateConfirmation(
     instance: String,

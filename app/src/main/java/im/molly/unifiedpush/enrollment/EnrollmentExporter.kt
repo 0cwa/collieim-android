@@ -65,11 +65,13 @@ object EnrollmentExporter {
     validateBeforeCommit: (ImportIntent) -> Unit = {},
     target: Target,
     instance: String,
+    serverEpoch: Long? = null,
+    allowRecovery: Boolean = false,
     validateSealed: (ImportIntent, MollySocketDevice, String) -> Unit,
   ): ImportIntent {
     return export(
-      context, null, ExportMode.NEW_INTENT, null, System.currentTimeMillis() / 1000, isDistributorActive, false,
-      validateBeforeCommit, validateSealed, PairingRoute(target, instance),
+      context, serverEpoch, ExportMode.NEW_INTENT, null, System.currentTimeMillis() / 1000, isDistributorActive, false,
+      validateBeforeCommit, validateSealed, PairingRoute(target, instance, allowRecovery),
     ).intent
   }
 
@@ -104,7 +106,7 @@ object EnrollmentExporter {
     return SaveResult(prepared.epoch, prepared.highestUsed, prepared.requestId)
   }
 
-  private data class PairingRoute(val target: Target, val instance: String)
+  private data class PairingRoute(val target: Target, val instance: String, val allowRecovery: Boolean)
 
   private fun export(
     context: Context,
@@ -169,7 +171,8 @@ object EnrollmentExporter {
         val epoch = EndpointUpdates.exportEpoch(serverEpoch)
         val (target, instance) = route
         val exported = Target(target.endpoint, EnrollmentFile.canonicalKey(target.p256dh, 65), EnrollmentFile.canonicalKey(target.auth, 16))
-        val activeNow = mode == ExportMode.RECOVERY
+        val newPairingInstance = pairingRoute != null && instance != (values.endpointInstance ?: "default")
+        val activeNow = mode == ExportMode.RECOVERY || pairingRoute?.allowRecovery == true && epoch <= before.activeEpoch
         var rendered: String? = null
         intent = requireReplayStateAvailability {
           EndpointUpdates.recordIntent(
@@ -197,12 +200,12 @@ object EnrollmentExporter {
                 keys.single()
               }
               epoch == old.activeEpoch && old.key != null &&
-                (old.activeImportId == null ||
+                (old.activeImportId == null && !newPairingInstance ||
                   (old.activeAccountId == accountId && old.activeDeviceId == device.deviceId && old.activeInstance == instance)) -> {
                 if (old.serverTarget != exported) throw EnrollmentFile.Invalid("same_epoch_conflict")
                 old.key
               }
-              epoch == old.activeEpoch && old.key == null -> throw EnrollmentFile.Invalid("same_epoch_conflict")
+              epoch == old.activeEpoch && old.key == null && !newPairingInstance -> throw EnrollmentFile.Invalid("same_epoch_conflict")
               else -> null
             }
             val controlKey = sameEpochKey ?: EnrollmentFile.newControlKey()

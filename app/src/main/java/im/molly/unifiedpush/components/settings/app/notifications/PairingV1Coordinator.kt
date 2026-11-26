@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.app.ShareCompat
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.control.EndpointReconciler
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
@@ -267,6 +269,8 @@ internal class PairingV1Coordinator(private val context: Context) {
     offer: PairingV1.Offer,
     disclosure: RelayDisclosure.Snapshot?,
     consented: ConsentDetails,
+    serverEpoch: Long?,
+    allowRecovery: Boolean,
   ): SealResult {
     if (offer.intent == "add_receiver") return SealResult.Failed(context.getString(R.string.PairingV1__unsupported_add_receiver))
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return SealResult.Failed(context.getString(R.string.PairingV1__offer_expired))
@@ -298,13 +302,15 @@ internal class PairingV1Coordinator(private val context: Context) {
     if (!disclosureCurrent) return SealResult.Failed(context.getString(R.string.UnifiedPushSettingsFragment__disclosure_stale))
     // exportIfCurrent takes its locks before UnifiedPushLifecycle.monitor. Keep this call outside
     // runIfCurrent's monitor section to preserve the enrollment exporter's global lock order.
-    return if (maySeal) createSealedRequest(offer, disclosure, consented) else outcome
+    return if (maySeal) createSealedRequest(offer, disclosure, consented, serverEpoch, allowRecovery) else outcome
   }
 
   private fun createSealedRequest(
     offer: PairingV1.Offer,
     disclosure: RelayDisclosure.Snapshot?,
     consented: ConsentDetails,
+    serverEpoch: Long?,
+    allowRecovery: Boolean,
   ): SealResult {
     var sealedCandidate: PairingV1.SealedRequest? = null
     return try {
@@ -315,7 +321,7 @@ internal class PairingV1Coordinator(private val context: Context) {
       lease.use {
         var snapshot = approvedSnapshot
         if (SignalStore.unifiedpush.device == null) {
-          if (UnifiedPushRefreshJob().provisionBridgeCredential(lease) == null) throw EnrollmentFile.Invalid("not_ready")
+          if (UnifiedPushRefreshJob().provisionBridgeCredential(context, lease) == null) throw EnrollmentFile.Invalid("not_ready")
           snapshot = RelayDisclosure.capture(context) ?: throw EnrollmentFile.Invalid("disclosure_changed")
           if (snapshot.account.accountId != approvedSnapshot.account.accountId ||
             snapshot.account.localDeviceId != approvedSnapshot.account.localDeviceId ||
@@ -325,11 +331,16 @@ internal class PairingV1Coordinator(private val context: Context) {
         }
         RelayDisclosure.exportIfCurrent(snapshot, ExportMode.NEW_INTENT, null) {
           if (System.currentTimeMillis() / 1000 >= offer.expiresAt) throw EnrollmentFile.Invalid("offer_expired")
+          val target = Target(
+            consented.endpoint, EnrollmentFile.canonicalKey(consented.p256dh, 65), EnrollmentFile.canonicalKey(consented.auth, 16),
+          )
           val importedIntent = EnrollmentExporter.exportForPairing(
           context = context,
           isDistributorActive = { activeBindingStillMatches(consented) },
-          target = im.molly.unifiedpush.control.Target(consented.endpoint, consented.p256dh, consented.auth),
+          target = target,
           instance = consented.instance,
+          serverEpoch = serverEpoch,
+          allowRecovery = allowRecovery,
           validateBeforeCommit = { intent ->
             if (System.currentTimeMillis() / 1000 >= offer.expiresAt) throw EnrollmentFile.Invalid("offer_expired")
             val disclosureStillCurrent = RelayDisclosure.runIfCurrent(snapshot) {}
@@ -342,8 +353,7 @@ internal class PairingV1Coordinator(private val context: Context) {
               current.instance != consented.instance || current.accountId != consented.accountId || current.deviceId != consented.deviceId ||
               !hasOfferVapidBindingLocked(offer, consented.distributorId) ||
               intent.accountId != SignalStore.account.aci?.toString() || intent.deviceId != device.deviceId ||
-              intent.password != device.password || intent.target.endpoint != consented.endpoint ||
-              intent.target.p256dh != consented.p256dh || intent.target.auth != consented.auth ||
+              intent.password != device.password || intent.target != target ||
               intent.instance != consented.instance || intent.accountId != consented.accountId ||
               !UnifiedPushDistributor.checkIfActive()) {
               throw EnrollmentFile.Invalid("disclosure_changed")
@@ -358,8 +368,7 @@ internal class PairingV1Coordinator(private val context: Context) {
             if (!activeBindingStillMatches(consented) || candidate.accountId != consented.accountId ||
               candidate.deviceId != bridgeCredential.deviceId || bridgeCredential.deviceId != device.deviceId ||
               candidate.password != bridgeCredential.password || candidate.password != device.password ||
-              candidate.target.endpoint != consented.endpoint ||
-              candidate.target.p256dh != consented.p256dh || candidate.target.auth != consented.auth ||
+              candidate.target != target ||
               candidate.instance != consented.instance ||
               SignalStore.account.aci?.toString() != consented.accountId || SignalStore.account.deviceId != consented.deviceId ||
               !hasOfferVapidBindingLocked(offer, consented.distributorId)) {
@@ -404,6 +413,11 @@ internal class PairingV1Coordinator(private val context: Context) {
               ),
             )
             if (!bound) throw EnrollmentFile.Invalid("disclosure_changed")
+            if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
+                offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
+                offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
+                RelayDisclosure.pairingScopeDigest(snapshot),
+              ))) throw EnrollmentFile.Invalid("state_unavailable")
           }
         }
       }
@@ -434,23 +448,21 @@ internal class PairingV1Coordinator(private val context: Context) {
 
   /** Authenticates an outer receipt before publishing any receipt text as accepted. */
   @Synchronized
-  private fun acceptReceipt(sessionId: String, json: String): Boolean {
-    val session = activeSession?.takeIf { it.id == sessionId } ?: return false
-    var authenticated = false
-    synchronized(UnifiedPushLifecycle.monitor) {
-      if (sessionBindingMatchesLocked(session) && hasExactLocalImportLocked(session) &&
-        System.currentTimeMillis() / 1000 < session.deadlineSeconds) {
-        try {
-          PairingV1.openReceipt(session.offer, session.sealed, json)
-          authenticated = true
-        } catch (_: Exception) { }
-      }
+  private fun acceptReceipt(sessionId: String, json: String): PairingTransport.Result {
+    val session = activeSession?.takeIf { it.id == sessionId } ?: return PairingTransport.Result.Stale
+    if (System.currentTimeMillis() / 1000 >= session.deadlineSeconds) return PairingTransport.Result.Stale
+    try {
+      PairingV1.openReceipt(session.offer, session.sealed, json)
+    } catch (_: Exception) {
+      return PairingTransport.Result.InvalidResponse
     }
-    if (!authenticated || !promoteReceiptConfirmedRoute(session)) return false
+    val promoted = !KeyCachingService.isLocked() && promoteReceiptConfirmedRoute(session)
+    if (!promoted && !KeyCachingService.isLocked()) return PairingTransport.Result.Stale
     session.sealed.receiptKey.fill(0)
     activeSession = null
     registeringSessionId = null
-    return true
+    // A matching v3 event can still confirm the durably exported candidate on unlock.
+    return if (promoted) PairingTransport.Result.Accepted else PairingTransport.Result.AwaitingPush
   }
 
   /** Promote the isolated connector only after the receipt authenticates the exact sealed request. */
@@ -575,7 +587,12 @@ internal class PairingV1Coordinator(private val context: Context) {
       current
     }
     if (!ready) return PairingTransport.Result.Stale
-    return PairingTransport.submit(submitUrl, session.requestJson) { acceptReceipt(session.id, it) }
+    var receipt: PairingTransport.Result = PairingTransport.Result.InvalidResponse
+    val submitted = PairingTransport.submit(submitUrl, session.requestJson) {
+      receipt = acceptReceipt(session.id, it)
+      receipt != PairingTransport.Result.InvalidResponse
+    }
+    return if (submitted == PairingTransport.Result.Accepted) receipt else submitted
   }
 
   @Synchronized
@@ -591,23 +608,24 @@ internal class PairingV1Coordinator(private val context: Context) {
     }
   }
 
-  @Synchronized
   fun writeRequest(context: Context, sessionId: String, uri: Uri): Boolean {
-    val session = activeSession?.takeIf { it.id == sessionId } ?: return false
-    if (System.currentTimeMillis() / 1000 >= session.deadlineSeconds) return false
-    var wrote = false
-    val disclosureCurrent = RelayDisclosure.runIfCurrent(session.disclosure) {
-      synchronized(UnifiedPushLifecycle.monitor) {
-        if (sessionBindingMatchesLocked(session) && System.currentTimeMillis() / 1000 < session.deadlineSeconds) {
-          try {
-            context.contentResolver.openOutputStream(uri, "wt")?.bufferedWriter(StandardCharsets.UTF_8)?.use {
-              it.write(session.requestJson)
-            }?.also { wrote = true }
-          } catch (_: IOException) { } catch (_: SecurityException) { }
-        }
+    val session = synchronized(this) {
+      activeSession?.takeIf { it.id == sessionId && runIfCurrentSession(it) {} }
+    } ?: return false
+    // The provider receives only the immutable sealed envelope. Provider I/O must not hold the
+    // account monitor, since an external DocumentsProvider may block even while closing a file.
+    try {
+      val stream = context.contentResolver.openOutputStream(uri, "wt") ?: return false
+      stream.bufferedWriter(StandardCharsets.UTF_8).use { it.write(session.requestJson) }
+      synchronized(this) {
+        if (activeSession === session) requestDispatched = true
       }
+      return true
+    } catch (_: IOException) {
+      return false
+    } catch (_: SecurityException) {
+      return false
     }
-    return (disclosureCurrent && wrote).also { if (it) requestDispatched = true }
   }
 
   private fun runIfCurrentSession(session: Session, action: () -> Unit): Boolean {
@@ -629,21 +647,26 @@ internal class PairingV1Coordinator(private val context: Context) {
     activeSession?.sealed?.receiptKey?.fill(0)
     activeSession = null
     // A shared request can still finish through an authenticated push after the settings screen closes.
-    val attempt = PairingRegistrationGate.current()?.takeIf { !requestDispatched && it.binding.sessionId == registeringSessionId }
-    if (attempt != null) {
-      PairingRegistrationGate.cancel(attempt.binding.instance)
-      discardCandidate(attempt.binding)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      val attempt = PairingRegistrationGate.current()?.takeIf { !requestDispatched && it.binding.sessionId == registeringSessionId }
+      if (attempt != null) {
+        PairingRegistrationGate.cancel(attempt.binding.instance)
+        discardCandidate(attempt.binding)
+      }
+      registeringSessionId = null
     }
-    registeringSessionId = null
     requestDispatched = false
   }
 
   @Synchronized
   fun cancelOfferAttempt(sessionId: String) {
-    if (registeringSessionId == sessionId) registeringSessionId = null
-    PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == sessionId }?.let { attempt ->
-      PairingRegistrationGate.cancel(attempt.binding.instance)
-      discardCandidate(attempt.binding)
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (registeringSessionId == sessionId) registeringSessionId = null
+      LockedPushState.clearPairingConfirmation(context, sessionId)
+      PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == sessionId }?.let { attempt ->
+        PairingRegistrationGate.cancel(attempt.binding.instance)
+        discardCandidate(attempt.binding)
+      }
     }
     if (activeSession?.offer?.sessionId == sessionId) {
       activeSession?.sealed?.receiptKey?.fill(0)
@@ -756,7 +779,9 @@ internal class PairingV1Coordinator(private val context: Context) {
   private fun discardCandidate(binding: PairingRegistrationGate.Binding) {
     synchronized(UnifiedPushLifecycle.monitor) {
       PairingDistributorRegistration.discard(context, binding)
+      LockedPushState.clearPairingConfirmation(context, binding.sessionId)
     }
+    SignalExecutors.BOUNDED.execute { EndpointReconciler.reconcile(retryPending = true) }
   }
 
 }

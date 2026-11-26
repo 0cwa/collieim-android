@@ -6,6 +6,7 @@ import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.service.KeyCachingService
 
 /** Runs [EndpointUpdates.reconcile] for the app's own state and starts the send. */
 object EndpointReconciler {
@@ -22,9 +23,9 @@ object EndpointReconciler {
    */
   @JvmStatic
   @JvmOverloads
-  fun reconcile(resume: Boolean = false) {
+  fun reconcile(resume: Boolean = false, retryPending: Boolean = false) {
     val shouldEnqueue = synchronized(UnifiedPushLifecycle.monitor) {
-      if (!UnifiedPushLifecycle.isReadyLocked()) return
+      if (KeyCachingService.isLocked() || !UnifiedPushLifecycle.isReadyLocked()) return
       val values = SignalStore.unifiedpush
       // The v2 frame encrypts the complete endpoint tuple. Do not build or queue one while a
       // pairing-scoped route is tentative or active; its only safe promotion is the signed v3 path.
@@ -52,6 +53,7 @@ object EndpointReconciler {
         null
       }
       val pairing = values.pairingEndpointBinding
+      if (pairing == null && PairingRegistrationGate.isPairingInstance(context.instance)) return
       if (pairing != null && (controlState.activeImportId == null || controlState.activeInstance != pairing.instance ||
           controlState.activeAccountId != pairing.accountId || controlState.activeDeviceId != context.pushDevice?.deviceId ||
           context.localDeviceId != pairing.deviceId || context.instance != pairing.instance || context.accountId != pairing.accountId ||
@@ -63,7 +65,7 @@ object EndpointReconciler {
         return
       }
       val update = result.update ?: return
-      result.built || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)
+      result.built || retryPending || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)
     }
     if (shouldEnqueue) UnifiedPushControlJob.enqueue()
   }

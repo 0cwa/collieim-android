@@ -7,16 +7,20 @@ import android.text.InputType
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.checkbox.MaterialCheckBox
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.PairingTransport
@@ -47,6 +51,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
   }
 
   private lateinit var viewModel: UnifiedPushSettingsViewModel
+  private var pairingDialog: AlertDialog? = null
 
   private val enrollmentDocumentLauncher: ActivityResultLauncher<String> =
     registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri: Uri? ->
@@ -54,11 +59,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
     }
 
   private val pairingSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-    val sessionId = viewModel.pendingPairingSaveId
-    viewModel.pendingPairingSaveId = null
-    if (uri != null && (sessionId == null || !viewModel.savePairingRequest(requireContext(), sessionId, uri))) {
-      Toast.makeText(requireContext(), R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
-    }
+    viewModel.completePairingSave(uri)
   }
 
   private val qrScanLauncher: ActivityResultLauncher<Unit> =
@@ -102,8 +103,11 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
             .show()
         }
         is UnifiedPushSettingsViewModel.PairingUi.Offline -> {
+          if (viewModel.pendingPairingSaveId == null) showOfflinePairing(result.sessionId, result.hadSubmitUrl)
+        }
+        UnifiedPushSettingsViewModel.PairingUi.AwaitingPush -> {
           viewModel.consumePairingResult()
-          showOfflinePairing(result.sessionId, result.hadSubmitUrl)
+          Toast.makeText(requireContext(), R.string.PairingV1__waiting_confirmation, Toast.LENGTH_LONG).show()
         }
         is UnifiedPushSettingsViewModel.PairingUi.Error -> {
           viewModel.consumePairingResult()
@@ -122,7 +126,10 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
       .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
 
     val firstScanOffer = arguments?.getString(PAIRING_OFFER_ARGUMENT)
-    if (firstScanOffer != null) {
+    val pendingConsent = viewModel.pendingPairingConsent
+    if (pendingConsent != null) {
+      showPairingDistributor(pendingConsent)
+    } else if (firstScanOffer != null) {
       if (viewModel.claimInitialPairingOffer(firstScanOffer)) {
         handlePairingOffer(firstScanOffer, RelayDisclosure.capture(requireContext()))
       }
@@ -134,6 +141,12 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
   override fun onResume() {
     super.onResume()
     if (::viewModel.isInitialized) showPendingExportResult()
+  }
+
+  override fun onDestroyView() {
+    pairingDialog?.dismiss()
+    pairingDialog = null
+    super.onDestroyView()
   }
 
   private fun showPendingExportResult() {
@@ -195,31 +208,45 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
       return
     }
     viewModel.enterPairingFlow()
+    val pending = UnifiedPushSettingsViewModel.PendingPairingConsent(scan, disclosure)
+    viewModel.pendingPairingConsent = pending
+    showPairingDistributor(pending)
+  }
+
+  private fun showPairingDistributor(pending: UnifiedPushSettingsViewModel.PendingPairingConsent) {
     val distributors = viewModel.pairingDistributors()
-    val selected = distributors.firstOrNull { it.applicationId == viewModel.pairingSelectedDistributor() }
+    val selectedId = pending.distributor?.applicationId ?: viewModel.pairingSelectedDistributor()
+    val selected = distributors.firstOrNull { it.applicationId == selectedId }
     when {
-      distributors.isEmpty() -> showPairingError(R.string.PairingV1__select_distributor_first)
-      selected != null -> showPairingConsent(scan, disclosure, selected)
-      else -> MaterialAlertDialogBuilder(requireContext())
+      distributors.isEmpty() -> {
+        viewModel.pendingPairingConsent = null
+        showPairingError(R.string.PairingV1__select_distributor_first)
+      }
+      selected != null -> showPairingConsent(pending, selected)
+      else -> pairingDialog = MaterialAlertDialogBuilder(requireContext())
         .setTitle(R.string.PairingV1__select_distributor_title)
         .setItems(distributors.map { it.name }.toTypedArray()) { _, index ->
-          showPairingConsent(scan, disclosure, distributors[index])
+          showPairingConsent(pending, distributors[index])
         }
-        .setNegativeButton(android.R.string.cancel, null)
+        .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.pendingPairingConsent = null }
+        .setOnCancelListener { viewModel.pendingPairingConsent = null }
         .show()
     }
   }
 
   private fun showPairingConsent(
-    scan: PairingTransport.Scan,
-    disclosure: RelayDisclosure.Snapshot,
+    choice: UnifiedPushSettingsViewModel.PendingPairingConsent,
     distributor: Distributor,
   ) {
+    val pending = choice.copy(distributor = distributor)
+    viewModel.pendingPairingConsent = pending
+    val scan = pending.scan
     val offer = scan.offer
     val origin = when (val plan = viewModel.evaluatePairingOffer(offer, distributor.applicationId)) {
       is PairingV1Coordinator.OfferPlan.Ready -> plan.consent.providerOrigin
       is PairingV1Coordinator.OfferPlan.Register -> plan.details.currentOrigin
       is PairingV1Coordinator.OfferPlan.Failed -> {
+        viewModel.pendingPairingConsent = null
         Toast.makeText(requireContext(), plan.message, Toast.LENGTH_LONG).show()
         return
       }
@@ -232,27 +259,63 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
     val submission = scan.submitUrl?.let {
       getString(R.string.PairingV1__submission_destination, it.toString())
     } ?: getString(R.string.PairingV1__manual_submission)
-    MaterialAlertDialogBuilder(requireContext())
+    val builder = MaterialAlertDialogBuilder(requireContext())
       .setTitle(getString(R.string.PairingV1__consent_title, offer.hostLabel))
       .setMessage(getString(R.string.PairingV1__consent_message, provider, distributor.name, submission))
-      .setNegativeButton(android.R.string.cancel, null)
-      .setPositiveButton(R.string.PairingV1__consent_confirm) { _, _ ->
-        viewModel.pair(scan, disclosure, distributor.applicationId, offer.providerOrigin ?: origin)
+      .setNegativeButton(android.R.string.cancel) { _, _ -> viewModel.pendingPairingConsent = null }
+      .setOnCancelListener { viewModel.pendingPairingConsent = null }
+      .setPositiveButton(R.string.PairingV1__consent_confirm, null)
+    val state = viewModel.state.value
+    val needsServerEpoch = state != null && (state.enrollmentEpoch > 0 || state.savedExports.isNotEmpty() || state.hasLegacyPendingExport)
+    val epochInput = if (needsServerEpoch) EditText(requireContext()).apply {
+      inputType = InputType.TYPE_CLASS_NUMBER
+      hint = getString(R.string.PairingV1__current_relay_epoch)
+      setText(pending.serverEpoch)
+      doAfterTextChanged { pending.serverEpoch = it.toString() }
+    } else null
+    if (epochInput != null) {
+      val recovery = MaterialCheckBox(requireContext()).apply {
+        setText(R.string.PairingV1__allow_epoch_recovery)
+        isChecked = pending.allowRecovery
+        setOnCheckedChangeListener { _, checked -> pending.allowRecovery = checked }
       }
-      .show()
+      val padding = (24 * resources.displayMetrics.density).toInt()
+      builder.setView(LinearLayout(requireContext()).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(padding, 0, padding, 0)
+        addView(epochInput)
+        addView(recovery)
+      })
+    }
+    val dialog = builder.show()
+    pairingDialog = dialog
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+      val epoch = pending.serverEpoch.toLongOrNull()
+      if (epochInput != null && (epoch == null || epoch !in 0L until 9007199254740991L)) {
+        epochInput.error = getString(R.string.UnifiedPushSettingsFragment__export_enrollment_invalid_epoch)
+      } else if (state != null && epoch != null && epoch < state.enrollmentEpoch && !pending.allowRecovery) {
+        epochInput?.error = getString(R.string.PairingV1__epoch_recovery_required)
+      } else {
+        viewModel.pendingPairingConsent = null
+        dialog.dismiss()
+        viewModel.pair(scan, pending.disclosure, distributor.applicationId, offer.providerOrigin ?: origin, epoch, pending.allowRecovery)
+      }
+    }
   }
 
   private fun showOfflinePairing(sessionId: String, hadSubmitUrl: Boolean) {
-    MaterialAlertDialogBuilder(requireContext())
+    pairingDialog = MaterialAlertDialogBuilder(requireContext())
       .setTitle(R.string.PairingV1__offline_title)
       .setMessage(if (hadSubmitUrl) R.string.PairingV1__offline_unreachable else R.string.PairingV1__offline_manual)
       .setPositiveButton(R.string.PairingV1__share_request) { _, _ ->
-        if (!viewModel.sharePairingRequest(requireContext(), sessionId)) showPairingError(R.string.PairingV1__file_action_failed)
+        if (viewModel.sharePairingRequest(requireContext(), sessionId)) viewModel.consumePairingResult()
+        else showPairingError(R.string.PairingV1__file_action_failed)
       }
       .setNegativeButton(R.string.PairingV1__save_request) { _, _ ->
         viewModel.pendingPairingSaveId = sessionId
         pairingSaveLauncher.launch("colliesocket-pairing-request.json")
       }
+      .setOnCancelListener { viewModel.cancelOfflinePairing(sessionId) }
       .show()
   }
 
@@ -398,10 +461,11 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
         val disclosure = state.relayDisclosure
         if (disclosure == null) {
           RelayDisclosureDialogs.showStaleAction(requireContext())
+        } else if (state.enrollmentEpoch > 0 || state.savedExports.isNotEmpty() || state.hasLegacyPendingExport) {
+          showExportEpochDialog(ExportMode.NEW_INTENT, disclosure)
         } else {
-          val epoch = state.enrollmentEpoch.takeIf { it > 0 }?.toString().orEmpty()
           RelayDisclosureDialogs.showExport(requireContext()) {
-            viewModel.prepareEnrollmentExport(epoch, ExportMode.NEW_INTENT, disclosure = disclosure)
+            viewModel.prepareEnrollmentExport("", ExportMode.NEW_INTENT, disclosure = disclosure)
               ?.let(enrollmentDocumentLauncher::launch)
           }
         }

@@ -183,6 +183,13 @@ object PairingV1 {
     val canonical = host.removeSuffix(".")
     if (canonical.isEmpty()) return null
     val labels = canonical.split('.')
+    // Numeric hosts in the pinned conformance checker must be strict dotted-decimal IPv4.
+    if (labels.last().matches(Regex("[0-9]+|0x[0-9a-f]*"))) {
+      if (host != canonical || labels.size != 4 || labels.any { octet ->
+          !octet.matches(Regex("0|[1-9][0-9]{0,2}")) || octet.toInt() > 255
+        }) return null
+      return canonical
+    }
     val decodedLabels = labels.map { label ->
       if (!label.startsWith("xn--")) {
         label

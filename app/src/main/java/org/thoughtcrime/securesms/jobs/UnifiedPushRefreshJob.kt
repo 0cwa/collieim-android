@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.jobs
 
+import android.content.Context
 import im.molly.unifiedpush.MollySocketRepository
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
@@ -83,7 +84,7 @@ class UnifiedPushRefreshJob private constructor(
       result.generation
     }
     val lease = synchronized(UnifiedPushLifecycle.monitor) {
-      if (legacyRelayBlockedLocked()) return
+      if (!configureDelivery && legacyRelayBlockedLocked()) return
       if (authorization != null && !RelayDisclosure.matchesRefreshLocked(authorization)) return
       UnifiedPushAccountTransition.acquireLease(cleanupGeneration)
     }
@@ -194,7 +195,7 @@ class UnifiedPushRefreshJob private constructor(
       return RegistrationStatus.PENDING
     }
 
-    val device = provisionBridgeCredential(lease) ?: return RegistrationStatus.PENDING
+    val device = provisionBridgeCredential(context, lease) ?: return RegistrationStatus.PENDING
 
     if (airGapped) {
       return if (lastReceivedTime > 0) {
@@ -222,6 +223,7 @@ class UnifiedPushRefreshJob private constructor(
 
   /** Reuses Signal bridge provisioning without submitting the credential to a relay. */
   internal fun provisionBridgeCredential(
+    context: Context,
     lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
   ): MollySocketDevice? = lease.snapshot.pushDevice ?: try {
       val created = MollySocketRepository.createDevice()

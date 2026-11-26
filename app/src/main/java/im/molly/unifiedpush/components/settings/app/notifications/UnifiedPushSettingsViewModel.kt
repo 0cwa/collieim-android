@@ -62,6 +62,14 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     private set
   private var handledInitialPairingOffer: String? = null
   private var distributorForNextPairing: String? = null
+  internal data class PendingPairingConsent(
+    val scan: PairingTransport.Scan,
+    val disclosure: RelayDisclosure.Snapshot,
+    val distributor: Distributor? = null,
+    var serverEpoch: String = "",
+    var allowRecovery: Boolean = false,
+  )
+  internal var pendingPairingConsent: PendingPairingConsent? = null
   private val pairingCoordinator = PairingV1Coordinator(application)
 
   internal fun claimInitialPairingOffer(offer: String): Boolean {
@@ -78,6 +86,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   internal sealed interface PairingUi {
     data object Working : PairingUi
     data class Paired(val hostLabel: String) : PairingUi
+    data object AwaitingPush : PairingUi
     data class Offline(val sessionId: String, val hadSubmitUrl: Boolean) : PairingUi
     data class Error(val message: String) : PairingUi
   }
@@ -112,13 +121,15 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     disclosure: RelayDisclosure.Snapshot,
     distributorId: String,
     approvedOrigin: String?,
+    serverEpoch: Long?,
+    allowRecovery: Boolean,
   ) {
     if (pairingBusy) return
     pairingResult.value = PairingUi.Working
     refresh()
     viewModelScope.launch {
       try {
-        val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin)
+        val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin, serverEpoch, allowRecovery)
         if (result is PairingUi.Paired) distributorForNextPairing = null
         pairingResult.value = result
         refresh()
@@ -134,6 +145,8 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     disclosure: RelayDisclosure.Snapshot,
     distributorId: String,
     approvedOrigin: String?,
+    serverEpoch: Long?,
+    allowRecovery: Boolean,
   ): PairingUi {
     val offer = scan.offer
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return pairingError(R.string.PairingV1__offer_expired)
@@ -189,7 +202,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     }
 
     return withContext(Dispatchers.IO) {
-      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent)
+      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent, serverEpoch, allowRecovery)
       if (sealed is PairingV1Coordinator.SealResult.Failed) {
         pairingCoordinator.cancelOfferAttempt(offer.sessionId)
         return@withContext PairingUi.Error(sealed.message)
@@ -197,6 +210,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       val session = (sealed as PairingV1Coordinator.SealResult.Ready).session
       when (val submitted = pairingCoordinator.submit(session, scan.submitUrl)) {
         PairingTransport.Result.Accepted -> PairingUi.Paired(offer.hostLabel)
+        PairingTransport.Result.AwaitingPush -> PairingUi.AwaitingPush
         PairingTransport.Result.Offline -> PairingUi.Offline(session.id, scan.submitUrl != null)
         else -> {
           pairingCoordinator.cancelOfferAttempt(offer.sessionId)
@@ -221,7 +235,28 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   private fun pairingError(@StringRes message: Int): PairingUi.Error = PairingUi.Error(application.getString(message))
 
   internal fun sharePairingRequest(context: Context, sessionId: String): Boolean = pairingCoordinator.shareRequest(context, sessionId)
-  internal fun savePairingRequest(context: Context, sessionId: String, uri: Uri): Boolean = pairingCoordinator.writeRequest(context, sessionId, uri)
+
+  internal fun completePairingSave(uri: Uri?) {
+    val sessionId = pendingPairingSaveId
+    pendingPairingSaveId = null
+    if (uri == null) {
+      pairingResult.value = pairingResult.value
+      return
+    }
+    viewModelScope.launch {
+      val saved = sessionId != null && withContext(Dispatchers.IO) { pairingCoordinator.writeRequest(application, sessionId, uri) }
+      if (saved) consumePairingResult()
+      else {
+        Toast.makeText(application, R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
+        pairingResult.value = pairingResult.value
+      }
+    }
+  }
+
+  internal fun cancelOfflinePairing(sessionId: String) {
+    pairingCoordinator.cancelOfferAttempt(sessionId)
+    consumePairingResult()
+  }
 
   override fun onCleared() {
     pairingCoordinator.clear()
@@ -452,9 +487,13 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   /** Starts the export only after the user selects a document; cancelling leaves enrollment state unchanged. */
   @MainThread
   fun completeEnrollmentExport(destination: Uri?) {
-    val request = pendingDestinationExport ?: return
+    val request = pendingDestinationExport
     pendingDestinationExport = null
     if (destination != null) {
+      if (request == null) {
+        Toast.makeText(application, R.string.UnifiedPushSettingsFragment__export_enrollment_interrupted, Toast.LENGTH_LONG).show()
+        return
+      }
       exportEnrollment(application, request.serverEpochText, request.mode, request.requestId, request.disclosure, destination)
     }
   }

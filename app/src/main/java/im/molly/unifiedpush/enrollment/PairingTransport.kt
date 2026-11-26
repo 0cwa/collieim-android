@@ -46,6 +46,7 @@ internal object PairingTransport {
 
   sealed interface Result {
     data object Accepted : Result
+    data object AwaitingPush : Result
     data object Offline : Result
     data object Stale : Result
     data object InvalidResponse : Result
@@ -92,10 +93,15 @@ internal object PairingTransport {
   }
 
   /** The callback authenticates the exact receipt and commits the app's route. */
-  fun submit(url: HttpUrl?, request: String, acceptReceipt: (String) -> Boolean): Result {
+  fun submit(
+    url: HttpUrl?,
+    request: String,
+    lookup: (String) -> List<InetAddress> = Dns.SYSTEM::lookup,
+    acceptReceipt: (String) -> Boolean,
+  ): Result {
     if (url == null) return Result.Offline
     val response = try {
-      if (url.isHttps) postHttps(url, request) else postLocal(url, request)
+      if (url.isHttps) postHttps(url, request) else postLocal(url, request, lookup)
     } catch (_: UnsafeTarget) {
       return Result.UnsafeDestination
     } catch (_: InvalidHttp) {
@@ -128,10 +134,10 @@ internal object PairingTransport {
 
   // Android's domain exceptions cannot express these IP ranges. Only this encrypted pairing
   // envelope uses a private-address socket. The app-wide cleartext prohibition stays in effect.
-  private fun postLocal(url: HttpUrl, json: String): Response {
+  private fun postLocal(url: HttpUrl, json: String, lookup: (String) -> List<InetAddress>): Response {
     val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(TIMEOUT_MS.toLong())
     val addresses = literalAddress(url.host)?.let(::listOf) ?: if (isLocalName(url.host)) {
-      Dns.SYSTEM.lookup(url.host.removeSuffix("."))
+      lookup(url.host.removeSuffix("."))
     } else {
       throw UnsafeTarget()
     }
@@ -139,19 +145,29 @@ internal object PairingTransport {
     val target = if (url.encodedQuery == null) url.encodedPath else "${url.encodedPath}?${url.encodedQuery}"
     val host = if (':' in url.host) "[${url.host}]" else url.host
     val bytes = json.toByteArray(Charsets.UTF_8)
-    return Socket(Proxy.NO_PROXY).use { socket ->
-      val remaining = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime())
-      if (remaining <= 0) throw java.net.SocketTimeoutException()
-      socket.connect(InetSocketAddress(addresses.first(), url.port), remaining.toInt())
-      val output = socket.sink().buffer()
-      output.timeout().deadlineNanoTime(deadline)
-      output.writeUtf8("POST $target HTTP/1.1\r\nHost: $host:${url.port}\r\nContent-Type: application/json\r\n")
-      output.writeUtf8("Content-Length: ${bytes.size}\r\nConnection: close\r\n\r\n")
-      output.write(bytes).flush()
-      val input = socket.source().buffer()
-      input.timeout().deadlineNanoTime(deadline)
-      readLocalResponse(input)
+    var connectFailure: IOException? = null
+    for (address in addresses.distinct()) {
+      Socket(Proxy.NO_PROXY).use { socket ->
+        val remaining = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime())
+        if (remaining <= 0) throw java.net.SocketTimeoutException()
+        try {
+          socket.connect(InetSocketAddress(address, url.port), remaining.toInt())
+        } catch (e: IOException) {
+          connectFailure = e
+          return@use
+        }
+        // Only retry connection failures. The relay may consume a request once any body is sent.
+        val output = socket.sink().buffer()
+        output.timeout().deadlineNanoTime(deadline)
+        output.writeUtf8("POST $target HTTP/1.1\r\nHost: $host:${url.port}\r\nContent-Type: application/json\r\n")
+        output.writeUtf8("Content-Length: ${bytes.size}\r\nConnection: close\r\n\r\n")
+        output.write(bytes).flush()
+        val input = socket.source().buffer()
+        input.timeout().deadlineNanoTime(deadline)
+        return readLocalResponse(input)
+      }
     }
+    throw connectFailure ?: IOException("No pairing destination could be reached")
   }
 
   private fun readLocalResponse(input: BufferedSource): Response {

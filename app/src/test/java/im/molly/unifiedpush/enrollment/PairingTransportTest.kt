@@ -133,6 +133,24 @@ class PairingTransportTest {
   }
 
   @Test
+  fun `local pairing tries a second validated address before sending the request`() {
+    withServer { server ->
+      server.createContext("/") { exchange ->
+        exchange.requestBody.use { it.readBytes() }
+        val receipt = "{}".toByteArray()
+        exchange.sendResponseHeaders(200, receipt.size.toLong())
+        exchange.responseBody.use { it.write(receipt) }
+      }
+      val url = PairingTransport.parseSubmitUrl("http://relay.local:${server.address.port}/")
+      val lookup: (String) -> List<InetAddress> = { host ->
+        assertEquals("relay.local", host)
+        listOf(InetAddress.getByName("127.0.0.2"), InetAddress.getByName("127.0.0.1"))
+      }
+      assertEquals(PairingTransport.Result.Accepted, PairingTransport.submit(url, "{}", lookup) { it == "{}" })
+    }
+  }
+
+  @Test
   fun `bare offers and connection failures enter offline fallback`() {
     val port = ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { it.localPort }
     val unreachable = PairingTransport.parseSubmitUrl("http://127.0.0.1:$port/")

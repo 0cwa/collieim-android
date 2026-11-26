@@ -8,7 +8,9 @@ class PairingRegistrationGateTest {
   private val offer = ObjectMapper().readTree(
     (javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json") ?: error("vectors"))
       .bufferedReader().use { it.readText() },
-  )[0]["offer"].let { PairingV1.parseOffer(it.toString(), 1_799_999_999L) }
+  )[0]["offer"].let {
+    PairingV1.parseOffer(it.toString(), 1_799_999_999L).copy(expiresAt = System.currentTimeMillis() / 1000 + 600)
+  }
 
   @Test fun `first use registration is bound to the offer account distributor and instance`() {
     var result: Result<PairingRegistrationGate.Endpoint>? = null

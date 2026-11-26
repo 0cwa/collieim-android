@@ -74,6 +74,7 @@ import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
 import im.molly.unifiedpush.enrollment.PairingV1
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import org.signal.core.models.ServiceId
@@ -339,7 +340,8 @@ class UnifiedPushReceiverTest {
     every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() } returns Unit
 
     val committed = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
-    assertNull(committed.value?.warning)
+    assertNull(checkNotNull(committed.value).warning)
+    assertEquals("rotated-auth", values.endpointAuth)
     UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
 
     verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
@@ -684,6 +686,69 @@ class UnifiedPushReceiverTest {
     }
   }
 
+  @Test
+  fun `exact locked confirmation restores a pairing candidate without its original process state`() {
+    fakeAccount()
+    every { SignalStore.account.isUnauthorizedReceived } returns false
+    val owner = "org.example.distributor"
+    val instance = "pairing-v1-restarted"
+    values.setEndpointRegistration("https://push.example.invalid/old", fixtureP256dh, fixtureAuth, "default")
+    every { SignalStore.settings.preferredNotificationMethod } returns
+      org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+    every { SignalStore.settings.preferredNotificationMethod = any() } returns Unit
+    mockPendingEndpointStorage()
+    mockkStatic(UnifiedPush::class, org.thoughtcrime.securesms.ApplicationContext::class)
+    try {
+      every { UnifiedPush.getDistributors(context) } returns listOf(owner)
+      every { UnifiedPush.getSavedDistributor(context) } returns owner
+      every { UnifiedPush.getAckDistributor(context) } returns owner
+      val application = mockk<org.thoughtcrime.securesms.ApplicationContext>(relaxed = true)
+      every { org.thoughtcrime.securesms.ApplicationContext.getInstance(context) } returns application
+      val target = Target("https://push.example.invalid/new", fixtureP256dh, fixtureAuth)
+      val intent = EnrollmentExporter.exportForPairing(
+        context, { true }, target = target, instance = instance,
+      ) { _, _, _ -> }
+      val scope = checkNotNull(RelayDisclosure.capture(context))
+      val confirmation = AtomicReference<LockedPushState.PairingConfirmation?>(LockedPushState.PairingConfirmation(
+        "paired-session", instance, owner, "vapid-key", "https://push.example.invalid",
+        System.currentTimeMillis() / 1000 + 600, "Relay", intent.requestId, intent.keyId,
+        intent.epoch, RelayDisclosure.pairingScopeDigest(scope),
+      ))
+      every { LockedPushState.peekPairingConfirmation(context) } answers { confirmation.get() }
+      every { LockedPushState.savePairingConfirmation(context, any()) } answers {
+        confirmation.set(secondArg())
+        true
+      }
+      every { LockedPushState.clearPairingConfirmation(context, "paired-session") } answers { confirmation.set(null) }
+      every { LockedPushState.setEncryptedEnrollment(context, true) } returns Unit
+      every { LockedPushState.setProtectedPairingRoute(context, instance, owner) } returns Unit
+
+      val event = v3Event(intent, "11111111-1111-4111-8111-111111111111", "status")
+        .decodeToString().dropLast(1).plus(""","code":"enrollment_imported"}""").toByteArray()
+      val receiver = UnifiedPushReceiver()
+      every { KeyCachingService.isLocked() } returns true
+      receiver.onMessage(context, PushMessage(event, false), instance)
+      assertNull(confirmation.get()?.message)
+      receiver.onMessage(context, PushMessage(event, true), instance)
+      assertNotNull(confirmation.get()?.message)
+      assertNull(PairingRegistrationGate.current())
+      assertEquals("default", values.endpointInstance)
+
+      every { KeyCachingService.isLocked() } returns false
+      val buffered = java.util.Base64.getDecoder().decode(checkNotNull(confirmation.get()?.message))
+      receiver.onMessage(context, PushMessage(buffered, true), instance)
+
+      assertEquals(instance, values.pairingEndpointBinding?.instance)
+      assertEquals(target.endpoint, values.endpoint)
+      assertEquals(intent.requestId, values.controlState.activeImportId)
+      assertNull(PairingRegistrationGate.current())
+      assertNull(confirmation.get())
+    } finally {
+      PairingRegistrationGate.current()?.binding?.let { PairingRegistrationGate.cancel(it.instance) }
+      unmockkStatic(UnifiedPush::class, org.thoughtcrime.securesms.ApplicationContext::class)
+    }
+  }
+
   private fun assertPairingMigrationRollback(cancel: (PairingRegistrationGate.Binding) -> Unit) {
     val oldDistributor = "org.example.old"
     val newDistributor = "org.example.new"
@@ -696,7 +761,7 @@ class UnifiedPushReceiverTest {
     values.setPairingEndpointRegistration(oldEndpoint, "old-key", "old-auth", oldBinding)
     val fixture = checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json"))
     val offerJson = fixture.use { com.fasterxml.jackson.databind.ObjectMapper().readTree(it)[0]["offer"] }
-    val offer = PairingV1.parseOffer(offerJson.toString(), 1_799_999_999L)
+    val offer = PairingV1.parseOffer(offerJson.toString(), 1_799_999_999L).copy(expiresAt = System.currentTimeMillis() / 1000 + 600)
     val binding = checkNotNull(PairingRegistrationGate.begin(
       newDistributor, offer, "account-aci", 1,
       previousEndpoint = oldEndpoint, previousP256dh = "old-key", previousAuth = "old-auth",

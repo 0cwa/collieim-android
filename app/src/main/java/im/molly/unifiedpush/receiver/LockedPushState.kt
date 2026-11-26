@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.receiver
 
 import android.content.Context
+import org.json.JSONObject
 import org.signal.core.util.crypto.KeyStoreHelper
 import org.signal.core.util.logging.Log
 
@@ -18,10 +19,68 @@ object LockedPushState {
   private const val PROTECTED_PAIRING_INSTANCE = "protected_pairing_instance"
   private const val PROTECTED_PAIRING_DISTRIBUTOR = "protected_pairing_distributor"
   private const val PUSH_ARRIVED = "last_push_arrived"
+  private const val PAIRING_CONFIRMATION = "pending_pairing_confirmation"
   private const val SEPARATOR = '\n'
 
   /** A null URL is the persisted unregister tombstone used while account state is locked or transitioning. */
   data class Endpoint(val url: String?, val p256dh: String?, val auth: String?, val instance: String)
+
+  /** No receipt key or registration credential is kept outside SignalStore. */
+  internal data class PairingConfirmation(
+    val sessionId: String,
+    val instance: String,
+    val distributor: String,
+    val vapid: String,
+    val providerOrigin: String?,
+    val expiresAt: Long,
+    val hostLabel: String,
+    val importId: String,
+    val keyId: String,
+    val epoch: Long,
+    val scopeDigest: String,
+    val message: String? = null,
+  ) {
+    fun matches(event: EncryptedPush.Event): Boolean =
+      event.version == 3 && event.instance == instance && event.importId == importId &&
+        event.keyId == keyId && event.epoch == epoch &&
+        event.kind == EncryptedPush.Kind.STATUS && event.code == EncryptedPush.CODE_ENROLLMENT_IMPORTED
+  }
+
+  internal fun savePairingConfirmation(context: Context, pending: PairingConfirmation): Boolean = try {
+    val json = JSONObject()
+      .put("session", pending.sessionId).put("instance", pending.instance).put("distributor", pending.distributor)
+      .put("vapid", pending.vapid).put("provider", pending.providerOrigin).put("expires", pending.expiresAt)
+      .put("host", pending.hostLabel).put("import", pending.importId).put("key", pending.keyId)
+      .put("epoch", pending.epoch).put("scope", pending.scopeDigest).put("message", pending.message)
+    val sealed = KeyStoreHelper.seal(json.toString().toByteArray(Charsets.UTF_8))
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(PAIRING_CONFIRMATION, sealed.serialize()).commit()
+  } catch (_: Exception) {
+    Log.w(TAG, "Could not retain the pairing confirmation.")
+    false
+  }
+
+  internal fun peekPairingConfirmation(context: Context): PairingConfirmation? {
+    val value = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(PAIRING_CONFIRMATION, null) ?: return null
+    return try {
+      val json = JSONObject(String(KeyStoreHelper.unseal(KeyStoreHelper.SealedData.fromString(value)), Charsets.UTF_8))
+      PairingConfirmation(
+        json.getString("session"), json.getString("instance"), json.getString("distributor"), json.getString("vapid"),
+        json.optString("provider").ifEmpty { null }, json.getLong("expires"), json.getString("host"),
+        json.getString("import"), json.getString("key"), json.getLong("epoch"), json.getString("scope"),
+        json.optString("message").ifEmpty { null },
+      )
+    } catch (_: Exception) {
+      Log.w(TAG, "Could not read the retained pairing confirmation.")
+      null
+    }
+  }
+
+  /** Called under the lifecycle monitor so an old cancellation cannot erase a newer approval. */
+  internal fun clearPairingConfirmation(context: Context, sessionId: String) {
+    if (peekPairingConfirmation(context)?.sessionId == sessionId) {
+      context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PAIRING_CONFIRMATION).commit()
+    }
+  }
 
   @JvmStatic
   fun isEncryptedEnrollment(context: Context): Boolean =

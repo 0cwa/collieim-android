@@ -94,6 +94,7 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
         if (!update.sameTarget(subscription)) return
 
         val pairing = pairingValues.pairingEndpointBinding
+        if (pairing == null && PairingRegistrationGate.isPairingInstance(lease.snapshot.instance)) return
         if (pairing != null && (state.activeImportId == null || state.activeInstance != pairing.instance ||
             state.activeAccountId != pairing.accountId || state.activeDeviceId != device.deviceId ||
             lease.snapshot.localDeviceId != pairing.deviceId || lease.snapshot.instance != pairing.instance ||

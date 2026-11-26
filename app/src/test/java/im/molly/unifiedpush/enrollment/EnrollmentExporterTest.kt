@@ -187,6 +187,33 @@ class EnrollmentExporterTest {
   }
 
   @Test
+  fun `replacement pairing uses the relay epoch and requires explicit recovery before lowering it`() {
+    val previous = Target(endpoint, p256dh, auth)
+    values.mutateControl { ControlState(key = key, activeEpoch = 5, highestEpoch = 5, serverTarget = previous) }
+    val target = Target("https://replacement.example.test/push", p256dh, auth)
+
+    try {
+      EnrollmentExporter.exportForPairing(context, { true }, target = target, instance = "pairing-v1-replacement") { _, _, _ -> }
+      fail("expected explicit confirmation before lowering the epoch")
+    } catch (e: EnrollmentFile.Invalid) {
+      assertEquals("recovery_ack_required", e.code)
+    }
+    assertTrue(values.controlState.intents.isEmpty())
+
+    val replacement = EnrollmentExporter.exportForPairing(
+      context, { true }, target = target, instance = "pairing-v1-replacement", serverEpoch = 5,
+    ) { _, _, _ -> }
+    assertEquals(6L, replacement.epoch)
+    assertFalse(replacement.recovery)
+    val freshRelay = EnrollmentExporter.exportForPairing(
+      context, { true }, target = target, instance = "pairing-v1-new-relay", serverEpoch = 0, allowRecovery = true,
+    ) { _, _, _ -> }
+    assertEquals(1L, freshRelay.epoch)
+    assertTrue(freshRelay.recovery)
+    assertEquals(previous, values.controlState.serverTarget)
+  }
+
+  @Test
   fun `pairing final binding validation runs before an intent can supersede prior state`() {
     val before = values.controlState
     var sealed = false

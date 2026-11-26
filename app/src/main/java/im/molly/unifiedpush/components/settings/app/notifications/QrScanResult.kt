@@ -7,6 +7,8 @@ sealed class QrScanResult {
 
   data object InvalidData : QrScanResult()
 
+  data object InvalidPairingDestination : QrScanResult()
+
   data object NetworkError : QrScanResult()
 
   data object QrNotFound : QrScanResult()

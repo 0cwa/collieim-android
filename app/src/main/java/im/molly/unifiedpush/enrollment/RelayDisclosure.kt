@@ -20,6 +20,8 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.unifiedpush.android.connector.UnifiedPush
+import org.json.JSONArray
+import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 
 /** Binds a user-confirmed disclosure to the account and configuration that the screen actually displayed. */
@@ -40,6 +42,17 @@ object RelayDisclosure {
     internal val intents: List<ImportIntent>,
   ) {
     override fun toString() = "RelayDisclosure.Snapshot(generation=$generation)"
+  }
+
+  /** A fresh process can match a pending import to its original account and route without its old generation. */
+  internal fun pairingScopeDigest(snapshot: Snapshot): String {
+    val account = snapshot.account
+    val config = snapshot.configuration
+    val fields = JSONArray(listOf(
+      account.accountId, account.localDeviceId, account.endpoint, account.endpointP256dh, account.endpointAuth,
+      account.instance, config.manual, config.url, config.vapid, config.deliveryMethod.name, config.distributor,
+    )).toString().toByteArray(Charsets.UTF_8)
+    return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(fields))
   }
 
   /** Contains no password or endpoint keys. Ordinary endpoint registration may advance the lifecycle generation. */
@@ -105,12 +118,22 @@ object RelayDisclosure {
               if (destinationChanged && !LockedPushState.discardPending(AppDependencies.application)) return@synchronized null
               if (destinationChanged) {
                 val values = SignalStore.unifiedpush
+                LockedPushState.peekPairingConfirmation(AppDependencies.application)?.let {
+                  LockedPushState.clearPairingConfirmation(AppDependencies.application, it.sessionId)
+                }
                 val pairing = values.pairingEndpointBinding
                 if (pairing != null) {
                   if (UnifiedPush.getSavedDistributor(AppDependencies.application) == pairing.distributorId) {
-                    runCatching { UnifiedPush.unregisterApp(AppDependencies.application, pairing.instance) }
+                    runCatching {
+                      val context = AppDependencies.application
+                      UnifiedPush.unregisterApp(context, pairing.instance)
+                      if (UnifiedPush.getSavedDistributor(context) == null) {
+                        UnifiedPush.saveDistributor(context, pairing.distributorId)
+                      }
+                    }
                   }
                   values.setEndpointRegistration(null, null, null, null)
+                  LockedPushState.setProtectedPairingRoute(AppDependencies.application, null, null)
                 }
               }
               SignalStore.unifiedpush.updateMollySocket(relay)

@@ -386,7 +386,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
       isAppInitialized = true;
     }
 
-    SignalExecutors.BOUNDED.execute(() -> UnifiedPushReceiver.applyPendingEndpoint(this));
+    SignalExecutors.BOUNDED.execute(() -> {
+      UnifiedPushReceiver.applyPendingEndpoint(this);
+      UnifiedPushReceiver.resumeScopedRegistration(this);
+    });
   }
 
   @MainThread

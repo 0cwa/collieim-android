@@ -51,8 +51,10 @@ import org.unifiedpush.android.connector.data.PublicKeySet
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
 import org.thoughtcrime.securesms.gcm.PushFetchHandler
+import org.thoughtcrime.securesms.jobmanager.Job
 import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.control.ControlUpdate
+import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
@@ -73,6 +75,7 @@ import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.PairingDistributorRegistration
 import im.molly.unifiedpush.enrollment.PairingRegistrationGate
+import im.molly.unifiedpush.enrollment.PairingTransport
 import im.molly.unifiedpush.enrollment.PairingV1
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
@@ -81,7 +84,9 @@ import org.signal.core.models.ServiceId
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Executor
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 @RunWith(RobolectricTestRunner::class)
@@ -687,6 +692,127 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `padded connector keys stay valid from consent through sealing and submission`() {
+    fakeAccount()
+    every { SignalStore.account.isUnauthorizedReceived } returns false
+    every { SignalStore.settings.preferredNotificationMethod } returns
+      org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+    val offer = freshPairingOffer()
+    val endpoint = "https://push.example.test/send/token"
+    values.vapidPublicKey = offer.vapidPublicKey
+    values.setEndpointRegistration(endpoint, "$fixtureP256dh=", "$fixtureAuth==", "default")
+    mockkStatic(UnifiedPush::class)
+    mockkObject(PairingV1)
+    val coordinator = PairingV1Coordinator(context)
+    try {
+      every { UnifiedPush.getSavedDistributor(any()) } returns "org.example.distributor"
+      every { UnifiedPush.getAckDistributor(any()) } returns "org.example.distributor"
+      every { PairingV1.seal(offer, any(), endpoint, any()) } returns
+        PairingV1.SealedRequest("{}", ByteArray(32), byteArrayOf(), byteArrayOf(), byteArrayOf())
+
+      val consent = checkNotNull(coordinator.consentDetails(offer))
+      assertEquals(fixtureP256dh, consent.p256dh)
+      assertEquals(fixtureAuth, consent.auth)
+      val result = coordinator.sealAfterConsent(offer, RelayDisclosure.capture(context), consent, null, false)
+      assertTrue("padded subscription should seal, got $result", result is PairingV1Coordinator.SealResult.Ready)
+      val session = (result as PairingV1Coordinator.SealResult.Ready).session
+      assertEquals(Target(endpoint, fixtureP256dh, fixtureAuth), values.controlState.intents.single().target)
+      assertEquals(PairingTransport.Result.Offline, coordinator.submit(session, null))
+
+      values.endpointAuth = "malformed"
+      assertNull(coordinator.consentDetails(offer))
+      assertEquals(PairingTransport.Result.Stale, coordinator.submit(session, null))
+
+      val offCurve = ByteArray(65).also { it[0] = 4 }
+      values.setEndpointRegistration(endpoint, java.util.Base64.getUrlEncoder().encodeToString(offCurve), fixtureAuth, "default")
+      assertNull(coordinator.consentDetails(offer))
+    } finally {
+      coordinator.clear()
+      unmockkObject(PairingV1)
+      unmockkStatic(UnifiedPush::class)
+    }
+  }
+
+  @Test
+  fun `unlock resumes a scoped retry when the app locked before the worker ran`() {
+    fakeAccount()
+    val owner = "org.example.distributor"
+    val instance = "pairing-v1-established"
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      instance, owner, "vapid-key", null, "https://push.example.test",
+      "session", Long.MAX_VALUE, checkNotNull(accountIdentityId), 1, "Relay",
+    )
+    values.setPairingEndpointRegistration("https://push.example.test/send/token", fixtureP256dh, fixtureAuth, binding)
+    val locked = AtomicBoolean()
+    val checkedWhileLocked = CountDownLatch(1)
+    every { KeyCachingService.isLocked() } answers {
+      locked.get().also { if (it) checkedWhileLocked.countDown() }
+    }
+    mockkStatic(UnifiedPush::class)
+    try {
+      every { UnifiedPush.getSavedDistributor(context) } returns owner
+      every { UnifiedPush.getAckDistributor(context) } returns owner
+      every { UnifiedPush.registerApp(context, instance, "CollieSocket pairing", binding.vapidPublicKey) } returns Unit
+
+      synchronized(UnifiedPushLifecycle.monitor) {
+        UnifiedPushReceiver().onRegistrationFailed(context, FailedReason.NETWORK, instance)
+        assertTrue(retryScheduled)
+        locked.set(true)
+      }
+      assertTrue(checkedWhileLocked.await(5, TimeUnit.SECONDS))
+      synchronized(UnifiedPushLifecycle.monitor) {
+        verify(exactly = 0) { UnifiedPush.registerApp(any(), any(), any(), any()) }
+        assertTrue(retryScheduled)
+        locked.set(false)
+      }
+
+      UnifiedPushReceiver.resumeScopedRegistration(context)
+
+      verify(exactly = 1) { UnifiedPush.registerApp(context, instance, "CollieSocket pairing", binding.vapidPublicKey) }
+    } finally {
+      unmockkStatic(UnifiedPush::class)
+    }
+  }
+
+  @Test
+  fun `cancelling a candidate requeues the parked control update for the retained route`() {
+    fakeAccount()
+    val accountId = checkNotNull(accountIdentityId)
+    val owner = "org.example.distributor"
+    val endpoint = "https://push.example.test/send/retained"
+    values.setEndpointRegistration(endpoint, fixtureP256dh, fixtureAuth, "default")
+    val subscription = ControlFrame.Subscription(endpoint, fixtureP256dh, fixtureAuth)
+    val frame = ControlFrame.build(fixtureKey, accountId, 2, 2, subscription)
+    val now = System.currentTimeMillis() / 1000
+    val update = ControlUpdate(2, endpoint, fixtureP256dh, fixtureAuth, frame, now, attempts = 1, lastAttemptAt = now)
+    values.mutateControl {
+      ControlState(key = fixtureKey, activeEpoch = 1, highestEpoch = 2, serverTarget = oldTarget, update = update)
+    }
+    val offer = freshPairingOffer()
+    val candidate = checkNotNull(PairingRegistrationGate.begin(owner, offer, accountId, 1) { })
+    mockkStatic(UnifiedPush::class)
+    try {
+      every { UnifiedPush.getSavedDistributor(context) } returns owner
+      every { UnifiedPush.unregisterApp(any(), candidate.instance) } returns Unit
+
+      UnifiedPushControlJob.Factory().create(Job.Parameters.Builder().build(), null).onRun()
+      verify(exactly = 0) { AppDependencies.signalServiceMessageSender.sendControlMessage(any(), any(), any(), any()) }
+      controlJobAdds(0)
+      assertEquals(update.serialize(), values.controlState.update?.serialize())
+
+      PairingV1Coordinator(context).cancelOfferAttempt(offer.sessionId)
+
+      verify(timeout = 3000, exactly = 1) { AppDependencies.jobManager.add(any<UnifiedPushControlJob>()) }
+      assertNull(PairingRegistrationGate.current())
+      assertEquals(endpoint, values.endpoint)
+      assertEquals(update.serialize(), values.controlState.update?.serialize())
+    } finally {
+      PairingRegistrationGate.cancel(candidate.instance)
+      unmockkStatic(UnifiedPush::class)
+    }
+  }
+
+  @Test
   fun `exact locked confirmation restores a pairing candidate without its original process state`() {
     fakeAccount()
     every { SignalStore.account.isUnauthorizedReceived } returns false
@@ -721,7 +847,7 @@ class UnifiedPushReceiverTest {
       }
       every { LockedPushState.clearPairingConfirmation(context, "paired-session") } answers { confirmation.set(null) }
       every { LockedPushState.setEncryptedEnrollment(context, true) } returns Unit
-      every { LockedPushState.setProtectedPairingRoute(context, instance, owner) } returns Unit
+      every { LockedPushState.setProtectedPairingRoute(context, any(), any()) } returns Unit
 
       val event = v3Event(intent, "11111111-1111-4111-8111-111111111111", "status")
         .decodeToString().dropLast(1).plus(""","code":"enrollment_imported"}""").toByteArray()
@@ -729,14 +855,18 @@ class UnifiedPushReceiverTest {
       every { KeyCachingService.isLocked() } returns true
       receiver.onMessage(context, PushMessage(event, false), instance)
       assertNull(confirmation.get()?.message)
+      val wrongImport = event.decodeToString().replace(intent.requestId, "22222222-2222-4222-8222-222222222222").toByteArray()
+      receiver.onMessage(context, PushMessage(wrongImport, true), instance)
+      assertNull(confirmation.get()?.message)
       receiver.onMessage(context, PushMessage(event, true), instance)
       assertNotNull(confirmation.get()?.message)
       assertNull(PairingRegistrationGate.current())
       assertEquals("default", values.endpointInstance)
 
       every { KeyCachingService.isLocked() } returns false
-      val buffered = java.util.Base64.getDecoder().decode(checkNotNull(confirmation.get()?.message))
-      receiver.onMessage(context, PushMessage(buffered, true), instance)
+      val unlock = FutureTask { UnifiedPushReceiver.applyPendingEndpoint(context) }
+      Thread(unlock).start()
+      unlock.get(5, TimeUnit.SECONDS)
 
       assertEquals(instance, values.pairingEndpointBinding?.instance)
       assertEquals(target.endpoint, values.endpoint)
@@ -759,9 +889,7 @@ class UnifiedPushReceiverTest {
       "old-session", Long.MAX_VALUE, "account-aci", 1, "Old relay",
     )
     values.setPairingEndpointRegistration(oldEndpoint, "old-key", "old-auth", oldBinding)
-    val fixture = checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json"))
-    val offerJson = fixture.use { com.fasterxml.jackson.databind.ObjectMapper().readTree(it)[0]["offer"] }
-    val offer = PairingV1.parseOffer(offerJson.toString(), 1_799_999_999L).copy(expiresAt = System.currentTimeMillis() / 1000 + 600)
+    val offer = freshPairingOffer()
     val binding = checkNotNull(PairingRegistrationGate.begin(
       newDistributor, offer, "account-aci", 1,
       previousEndpoint = oldEndpoint, previousP256dh = "old-key", previousAuth = "old-auth",
@@ -809,6 +937,12 @@ class UnifiedPushReceiverTest {
       PairingRegistrationGate.cancel(binding.instance)
       unmockkStatic(UnifiedPush::class)
     }
+  }
+
+  private fun freshPairingOffer(): PairingV1.Offer {
+    val fixture = checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json"))
+    val offerJson = fixture.use { com.fasterxml.jackson.databind.ObjectMapper().readTree(it)[0]["offer"] }
+    return PairingV1.parseOffer(offerJson.toString(), 1_799_999_999L).copy(expiresAt = System.currentTimeMillis() / 1000 + 600)
   }
 
   @Test

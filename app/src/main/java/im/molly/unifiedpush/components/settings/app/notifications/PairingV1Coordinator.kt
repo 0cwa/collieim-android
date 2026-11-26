@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.app.ShareCompat
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
@@ -116,13 +117,17 @@ internal class PairingV1Coordinator(private val context: Context) {
     val origin = PairingV1.canonicalOrigin(endpoint) ?: return@synchronized null
     if (offer.providerOrigin != null && offer.providerOrigin != origin) return@synchronized null
     if (!hasOfferVapidBindingLocked(offer, distributorId)) return@synchronized null
+    val target = canonicalTarget(
+      endpoint,
+      tentative?.claimedEndpoint?.p256dh ?: SignalStore.unifiedpush.endpointP256dh,
+      tentative?.claimedEndpoint?.auth ?: SignalStore.unifiedpush.endpointAuth,
+    ) ?: return@synchronized null
     val appLabel = try {
       context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(distributorId, 0)).toString()
     } catch (_: Exception) { distributorId }
     ConsentDetails(
       offer, distributorId, appLabel, origin, SignalStore.account.aci.toString(), SignalStore.account.deviceId,
-      endpoint, tentative?.claimedEndpoint?.p256dh ?: SignalStore.unifiedpush.endpointP256dh ?: return@synchronized null,
-      tentative?.claimedEndpoint?.auth ?: SignalStore.unifiedpush.endpointAuth ?: return@synchronized null,
+      target.endpoint, target.p256dh, target.auth,
       tentative?.binding?.instance ?: (SignalStore.unifiedpush.endpointInstance ?: "default"),
     )
   }
@@ -331,9 +336,7 @@ internal class PairingV1Coordinator(private val context: Context) {
         }
         RelayDisclosure.exportIfCurrent(snapshot, ExportMode.NEW_INTENT, null) {
           if (System.currentTimeMillis() / 1000 >= offer.expiresAt) throw EnrollmentFile.Invalid("offer_expired")
-          val target = Target(
-            consented.endpoint, EnrollmentFile.canonicalKey(consented.p256dh, 65), EnrollmentFile.canonicalKey(consented.auth, 16),
-          )
+          val target = Target(consented.endpoint, consented.p256dh, consented.auth)
           val importedIntent = EnrollmentExporter.exportForPairing(
           context = context,
           isDistributorActive = { activeBindingStillMatches(consented) },
@@ -702,14 +705,24 @@ internal class PairingV1Coordinator(private val context: Context) {
     if (tentative == null && (UnifiedPush.getSavedDistributor(context) != session.distributorId ||
         UnifiedPush.getAckDistributor(context) != session.distributorId)) return false
     val endpoint = tentative?.claimedEndpoint?.url ?: values.endpoint ?: return false
-    val p256dh = tentative?.claimedEndpoint?.p256dh ?: values.endpointP256dh ?: return false
-    val auth = tentative?.claimedEndpoint?.auth ?: values.endpointAuth ?: return false
+    val target = canonicalTarget(
+      endpoint, tentative?.claimedEndpoint?.p256dh ?: values.endpointP256dh,
+      tentative?.claimedEndpoint?.auth ?: values.endpointAuth,
+    ) ?: return false
     val instance = tentative?.binding?.instance ?: (values.endpointInstance ?: "default")
     val origin = PairingV1.canonicalOrigin(endpoint) ?: return false
     return (session.offer.providerOrigin == null || session.offer.providerOrigin == origin) &&
-      hasOfferVapidBindingLocked(session.offer, session.distributorId) &&
-      endpoint == session.endpoint && p256dh == session.endpointP256dh && auth == session.endpointAuth &&
-      instance == session.instance
+      target == session.importTarget && instance == session.instance
+  }
+
+  private fun canonicalTarget(endpoint: String, p256dh: String?, auth: String?): Target? {
+    if (p256dh == null || auth == null) return null
+    return try {
+      val subscription = ControlFrame.Subscription(endpoint, p256dh, auth)
+      Target(subscription.endpoint, subscription.p256dh, subscription.auth)
+    } catch (_: EnrollmentFile.Invalid) {
+      null
+    }
   }
 
   /** The receipt has no import id; only the sealed request's exact durable intent can authorize promotion. */

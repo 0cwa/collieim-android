@@ -253,6 +253,7 @@ jobs:
           cat > "$RUNNER_TEMP/run-relay-disclosure-api35.sh" <<'SH'
           set -euo pipefail
           evidence=build/relay-disclosure
+          mkdir -p "$evidence/screenshots"
           collect() {
             status=$?
             trap - EXIT
@@ -270,10 +271,12 @@ jobs:
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
           run_case() {
             method=$1
+            rm -rf app/build/outputs/androidTest-results
             ./gradlew --no-daemon --console=plain \
               :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
               :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-relay-disclosure-apks.gradle" \
               "-Pandroid.testInstrumentationRunnerArguments.class=im.molly.unifiedpush.enrollment.RelayDisclosureUiTest#$method" \
+              -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
               -Pandroid.testInstrumentationRunnerArguments.ep_screenshot=relay
             mkdir -p "$evidence/results/$method"
             cp -R app/build/outputs/androidTest-results/. "$evidence/results/$method/"

@@ -59,15 +59,46 @@ class RelayDisclosureUiTest {
   private lateinit var export: File
   private lateinit var exportedBytes: ByteArray
   private lateinit var controlBefore: ControlState
+  private var previousControlState: ControlState? = null
+  private var previousPendingReceiverState: String? = null
+  private var replayBefore: String? = null
+  private var previousVapid: String? = null
+  private var previousEndpoint: String? = null
+  private var previousP256dh: String? = null
+  private var previousAuth: String? = null
+  private var previousInstance: String? = null
+  private var previousPairingBinding: org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding? = null
+  private var previousDevice: MollySocketDevice? = null
+  private var previousEnabled = false
+  private var previousAirGapped = false
+  private var previousSocketUrl: String? = null
+  private var previousDeliveryMethod = org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
   private var previousReceiverState: String? = null
   private val device = MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
 
   @Before
   fun seedManualEnrollment() {
     previousReceiverState = values.v4ReceiverState
+    previousPendingReceiverState = values.v4PendingReceiverState
+    previousControlState = values.controlStateRead.stateOrNull
+    replayBefore = values.replayState
+    previousVapid = values.vapidPublicKey
+    previousEndpoint = values.endpoint
+    previousP256dh = values.endpointP256dh
+    previousAuth = values.endpointAuth
+    previousInstance = values.endpointInstance
+    previousPairingBinding = values.pairingEndpointBinding
+    previousDevice = values.device
+    previousEnabled = values.enabled
+    previousAirGapped = values.airGapped
+    previousSocketUrl = values.mollySocketUrl
+    previousDeliveryMethod = SignalStore.settings.preferredNotificationMethod
     values.v4ReceiverState = null
+    values.v4PendingReceiverState = null
     values.enabled = true
     values.airGapped = true
+    SignalStore.settings.preferredNotificationMethod =
+      org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
     values.mollySocketUrl = null
     values.vapidPublicKey = "v".repeat(87)
     values.device = device
@@ -78,23 +109,34 @@ class RelayDisclosureUiTest {
       "default",
     )
     values.mutateControl { ControlState() }
+    controlBefore = values.controlState
     values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     export = EnrollmentExporter.exportWithEpoch(context, null, ExportMode.NEW_INTENT, isDistributorActive = { true }).file
     exportedBytes = export.readBytes()
-    controlBefore = values.controlState
     assertNotNull("Synthetic registration must be ready for disclosure tests", RelayDisclosure.capture(context))
   }
 
   @After
   fun removeSyntheticExport() {
     EnrollmentExporter.removeFiles(context)
+    values.setEndpointRegistration(previousEndpoint, previousP256dh, previousAuth, previousInstance)
+    previousPairingBinding?.let { values.setPairingEndpointRegistration(previousEndpoint, previousP256dh, previousAuth, it) }
+    values.vapidPublicKey = previousVapid
+    values.device = previousDevice
+    values.enabled = previousEnabled
+    values.airGapped = previousAirGapped
+    values.mollySocketUrl = previousSocketUrl
+    values.mutateControl { previousControlState ?: ControlState() }
+    values.replayState = replayBefore
+    values.v4PendingReceiverState = previousPendingReceiverState
     values.v4ReceiverState = previousReceiverState
+    SignalStore.settings.preferredNotificationMethod = previousDeliveryMethod
   }
 
   @Test
   fun addReceiverConsentShowsFourRowsAndExactDeviceWording() = withSettings { scenario ->
     val offer = ObjectMapper().readTree(
-      checkNotNull(javaClass.getResourceAsStream("/colliesocket-pairing-v1/fixtures/sealed-vectors.json")).use { it.readBytes() },
+      fixture("colliesocket-pairing-v1/fixtures/sealed-vectors.json"),
     )[0]["offer"].deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>().put("intent", "add_receiver")
     val url = "https://push.example.test/pairing/v1/submit"
     val wrapper = """{"collie_pairing_transport":1,"submit_url":"$url","bridge_device_id":2,"offer":$offer}"""
@@ -115,7 +157,7 @@ class RelayDisclosureUiTest {
   @Test
   fun confirmedV4ReceiverAppearsInLinkedRelaySettings() {
     val fixture = ObjectMapper().readTree(
-      checkNotNull(javaClass.getResourceAsStream("/colliesocket-encrypted-push-v4/fixtures/receiver.json")).use { it.readBytes() },
+      fixture("colliesocket-encrypted-push-v4/fixtures/receiver.json"),
     )
     val sub = fixture["subscription"]
     val previousDeviceId = SignalStore.account.deviceId
@@ -304,4 +346,6 @@ class RelayDisclosureUiTest {
       bitmap.recycle()
     }
   }
+
+  private fun fixture(path: String): ByteArray = instrumentation.context.assets.open(path).use { it.readBytes() }
 }

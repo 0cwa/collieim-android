@@ -21,7 +21,6 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -350,6 +349,53 @@ class UnifiedPushReceiverTest {
     UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
 
     verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationEndpointChangedAirGapped() }
+  }
+
+  @Test
+  fun `a confirmed route rejects a replacement with an invalid origin at commit`() {
+    fakeAccount()
+    val account = checkNotNull(accountIdentityId)
+    val owner = "org.example.distributor"
+    val oldUrl = "https://push.example.test/current"
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      "default", owner, "vapid", null, "https://push.example.test", "session", Long.MAX_VALUE, account, 1, "Relay",
+    )
+    values.setPairingEndpointRegistration(oldUrl, fixtureP256dh, fixtureAuth, binding)
+    values.mutateControl {
+      ControlState(
+        key = fixtureKey,
+        activeKeyId = ControlKeyId.derive(fixtureKey, account, 2, "default"),
+        activeImportId = "22222222-2222-4222-8222-222222222222",
+        activeImportSeq = 1,
+        activeAccountId = account,
+        activeDeviceId = 2,
+        activeInstance = "default",
+        activeEpoch = 1,
+        highestEpoch = 1,
+        importSequence = 1,
+      )
+    }
+    val valid = LockedPushState.Endpoint("https://push.example.test/rotated", fixtureP256dh, fixtureAuth, "default")
+    val invalid = valid.copy(url = "https://user@push.example.test/rotated")
+    val pending = mockPendingEndpointStorage(valid)
+    every { LockedPushState.setProtectedPairingRoute(context, any(), any()) } returns Unit
+    every { LockedPushState.peekPending(context) } answers {
+      pending.get()?.let { if (UnifiedPushLifecycle.isReady()) it else invalid }
+    }
+    mockkStatic(UnifiedPush::class)
+    try {
+      every { UnifiedPush.getSavedDistributor(context) } returns owner
+      every { UnifiedPush.getAckDistributor(context) } returns owner
+      assertTrue(UnifiedPushReceiver().pairingIdentityConfirmed(binding))
+
+      assertNull(checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context)).value)
+      assertEquals(binding, values.pairingEndpointBinding)
+      assertEquals(oldUrl, values.endpoint)
+      assertNull(pending.get())
+      assertTrue(UnifiedPushLifecycle.isReady())
+    } finally {
+      unmockkStatic(UnifiedPush::class)
+    }
   }
 
   private fun assertEndpointChangeRevokesWork(endpoint: LockedPushState.Endpoint) {
@@ -701,6 +747,7 @@ class UnifiedPushReceiverTest {
     val endpoint = "https://push.example.test/send/token"
     values.vapidPublicKey = offer.vapidPublicKey
     values.setEndpointRegistration(endpoint, "$fixtureP256dh=", "$fixtureAuth==", "default")
+    mockPendingEndpointStorage()
     mockkStatic(UnifiedPush::class)
     mockkObject(PairingV1)
     val coordinator = PairingV1Coordinator(context)
@@ -709,6 +756,7 @@ class UnifiedPushReceiverTest {
       every { UnifiedPush.getAckDistributor(any()) } returns "org.example.distributor"
       every { PairingV1.seal(offer, any(), endpoint, any()) } returns
         PairingV1.SealedRequest("{}", ByteArray(32), byteArrayOf(), byteArrayOf(), byteArrayOf())
+      every { LockedPushState.savePairingConfirmation(context, any()) } returns true
 
       val consent = checkNotNull(coordinator.consentDetails(offer))
       assertEquals(fixtureP256dh, consent.p256dh)
@@ -717,6 +765,7 @@ class UnifiedPushReceiverTest {
       assertTrue("padded subscription should seal, got $result", result is PairingV1Coordinator.SealResult.Ready)
       val session = (result as PairingV1Coordinator.SealResult.Ready).session
       assertEquals(Target(endpoint, fixtureP256dh, fixtureAuth), values.controlState.intents.single().target)
+      verify(exactly = 1) { LockedPushState.savePairingConfirmation(context, match { it.instance == "default" && it.importId == session.importRequestId }) }
       assertEquals(PairingTransport.Result.Offline, coordinator.submit(session, null))
 
       values.endpointAuth = "malformed"
@@ -795,7 +844,9 @@ class UnifiedPushReceiverTest {
       every { UnifiedPush.getSavedDistributor(context) } returns owner
       every { UnifiedPush.unregisterApp(any(), candidate.instance) } returns Unit
 
-      UnifiedPushControlJob.Factory().create(Job.Parameters.Builder().build(), null).onRun()
+      val job = UnifiedPushControlJob.Factory().create(Job.Parameters.Builder().build(), null)
+      val deferred = org.junit.Assert.assertThrows(java.io.IOException::class.java) { job.onRun() }
+      assertEquals(TimeUnit.SECONDS.toMillis(30), job.getNextRunAttemptBackoff(6, deferred))
       verify(exactly = 0) { AppDependencies.signalServiceMessageSender.sendControlMessage(any(), any(), any(), any()) }
       controlJobAdds(0)
       assertEquals(update.serialize(), values.controlState.update?.serialize())
@@ -814,11 +865,24 @@ class UnifiedPushReceiverTest {
 
   @Test
   fun `exact locked confirmation restores a pairing candidate without its original process state`() {
+    assertLockedConfirmationReplay(reusingEndpoint = false)
+  }
+
+  @Test
+  fun `a locked confirmation completes pairing for a reused connector instance`() {
+    assertLockedConfirmationReplay(reusingEndpoint = true)
+  }
+
+  private fun assertLockedConfirmationReplay(reusingEndpoint: Boolean) {
     fakeAccount()
     every { SignalStore.account.isUnauthorizedReceived } returns false
     val owner = "org.example.distributor"
-    val instance = "pairing-v1-restarted"
-    values.setEndpointRegistration("https://push.example.invalid/old", fixtureP256dh, fixtureAuth, "default")
+    val instance = if (reusingEndpoint) "default" else "pairing-v1-restarted"
+    val newEndpoint = "https://push.example.invalid/new"
+    values.vapidPublicKey = "vapid-key"
+    values.setEndpointRegistration(
+      if (reusingEndpoint) newEndpoint else "https://push.example.invalid/old", fixtureP256dh, fixtureAuth, "default",
+    )
     every { SignalStore.settings.preferredNotificationMethod } returns
       org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
     every { SignalStore.settings.preferredNotificationMethod = any() } returns Unit
@@ -830,7 +894,7 @@ class UnifiedPushReceiverTest {
       every { UnifiedPush.getAckDistributor(context) } returns owner
       val application = mockk<org.thoughtcrime.securesms.ApplicationContext>(relaxed = true)
       every { org.thoughtcrime.securesms.ApplicationContext.getInstance(context) } returns application
-      val target = Target("https://push.example.invalid/new", fixtureP256dh, fixtureAuth)
+      val target = Target(newEndpoint, fixtureP256dh, fixtureAuth)
       val intent = EnrollmentExporter.exportForPairing(
         context, { true }, target = target, instance = instance,
       ) { _, _, _ -> }
@@ -858,8 +922,14 @@ class UnifiedPushReceiverTest {
       val wrongImport = event.decodeToString().replace(intent.requestId, "22222222-2222-4222-8222-222222222222").toByteArray()
       receiver.onMessage(context, PushMessage(wrongImport, true), instance)
       assertNull(confirmation.get()?.message)
+      val expiry = checkNotNull(EncryptedPush.parse(event, System.currentTimeMillis() / 1000, setOf(3))).expiresAt
+      val shorterEvent = event.decodeToString().replace("\"expires_at\":$expiry", "\"expires_at\":${expiry - 60}").toByteArray()
+      receiver.onMessage(context, PushMessage(shorterEvent, true), instance)
+      assertEquals(java.util.Base64.getEncoder().encodeToString(shorterEvent), confirmation.get()?.message)
       receiver.onMessage(context, PushMessage(event, true), instance)
-      assertNotNull(confirmation.get()?.message)
+      assertEquals(java.util.Base64.getEncoder().encodeToString(event), confirmation.get()?.message)
+      receiver.onMessage(context, PushMessage(shorterEvent, true), instance)
+      assertEquals(java.util.Base64.getEncoder().encodeToString(event), confirmation.get()?.message)
       assertNull(PairingRegistrationGate.current())
       assertEquals("default", values.endpointInstance)
 
@@ -873,6 +943,7 @@ class UnifiedPushReceiverTest {
       assertEquals(intent.requestId, values.controlState.activeImportId)
       assertNull(PairingRegistrationGate.current())
       assertNull(confirmation.get())
+      verify(timeout = 3000, exactly = 1) { application.activatePushNotificationServicesAfterPairing() }
     } finally {
       PairingRegistrationGate.current()?.binding?.let { PairingRegistrationGate.cancel(it.instance) }
       unmockkStatic(UnifiedPush::class, org.thoughtcrime.securesms.ApplicationContext::class)

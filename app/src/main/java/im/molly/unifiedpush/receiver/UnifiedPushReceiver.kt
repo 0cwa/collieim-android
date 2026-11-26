@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Looper
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
+import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
@@ -109,32 +110,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
         // the app locked must leave the saved endpoint untouched for a later unlock path.
         if (KeyCachingService.isLocked()) return null
         val queued = LockedPushState.peekPending(context)
-        val activePairing = SignalStore.unifiedpush.pairingEndpointBinding
-        val sourceMismatch = queued != null && UnifiedPush.getSavedDistributor(context) != UnifiedPush.getAckDistributor(context)
-        if (queued != null && (sourceMismatch || activePairing != null && queued.instance != activePairing.instance)) {
+        if (queued != null && !receiver.pendingEndpointAllowedLocked(context, queued)) {
           if (LockedPushState.discardPending(context)) discardedGeneration = UnifiedPushLifecycle.currentGeneration()
           return@synchronized null
-        }
-        if (queued != null && PairingRegistrationGate.isPairingInstance(queued.instance)) {
-          val values = SignalStore.unifiedpush
-          val persisted = values.pairingEndpointBinding?.takeIf { it.instance == queued.instance }
-          val accountId = SignalStore.account.aci?.toString()
-          val endpointOrigin = queued.url?.let { im.molly.unifiedpush.enrollment.PairingV1.canonicalOrigin(it) }
-          val ackDistributor = UnifiedPush.getAckDistributor(context)
-          val tupleChanged = queued.url != SignalStore.unifiedpush.endpoint || queued.p256dh != SignalStore.unifiedpush.endpointP256dh ||
-            queued.auth != SignalStore.unifiedpush.endpointAuth || queued.instance != (SignalStore.unifiedpush.endpointInstance ?: "default")
-          val endpointMatchesBinding = persisted?.let {
-              val validTuple = if (queued.url == null) true else endpointOrigin != null && queued.p256dh != null && queued.auth != null &&
-                (it.endpointOrigin == endpointOrigin || receiver.pairingIdentityConfirmed(it))
-              validTuple && (!tupleChanged || receiver.pairingIdentityConfirmed(it))
-          } == true
-          val bindingCurrent = persisted != null && persisted.accountId == accountId &&
-            persisted.deviceId == SignalStore.account.deviceId && UnifiedPush.getSavedDistributor(context) == persisted.distributorId &&
-            ackDistributor == persisted.distributorId && endpointMatchesBinding
-          if (!bindingCurrent) {
-            if (LockedPushState.discardPending(context)) discardedGeneration = UnifiedPushLifecycle.currentGeneration()
-            return@synchronized null
-          }
         }
         if (!UnifiedPushLifecycle.isReadyLocked() && !UnifiedPushLifecycle.hasPendingEndpointInvalidationLocked()) return null
         if (LockedPushState.peekPending(context) == null) return null
@@ -159,24 +137,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 null
               } else {
                 LockedPushState.peekPending(context)?.let { pending ->
-                  val persistedPairing = SignalStore.unifiedpush.pairingEndpointBinding?.takeIf { it.instance == pending.instance }
-                  if (PairingRegistrationGate.isPairingInstance(pending.instance) && persistedPairing == null) {
-                    LockedPushState.clearPending(context)
-                    null
-                  } else if (persistedPairing != null) {
-                    val values = SignalStore.unifiedpush
-                    val tupleChanged = pending.url != values.endpoint || pending.p256dh != values.endpointP256dh ||
-                      pending.auth != values.endpointAuth || pending.instance != (values.endpointInstance ?: "default")
-                    val missingKeys = pending.url != null && (pending.p256dh == null || pending.auth == null)
-                    if (missingKeys || tupleChanged && !receiver.pairingIdentityConfirmed(persistedPairing)) {
-                      LockedPushState.clearPending(context)
-                      null
-                    } else {
-                      receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
-                    }
-                  } else {
-                    receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
-                  }
+                  val effects = if (receiver.pendingEndpointAllowedLocked(context, pending)) receiver.applyEndpointLocked(pending) else null
+                  LockedPushState.clearPending(context)
+                  effects
                 }
               }
             }
@@ -423,6 +386,24 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val current = UnifiedPushAccountTransition.captureContextLocked() ?: return false
     return current.endpoint == endpoint.url && current.endpointP256dh == endpoint.p256dh &&
       current.endpointAuth == endpoint.auth && current.instance == endpoint.instance
+  }
+
+  private fun pendingEndpointAllowedLocked(context: Context, pending: LockedPushState.Endpoint): Boolean {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    val owner = UnifiedPush.getSavedDistributor(context)
+    if (owner != UnifiedPush.getAckDistributor(context)) return false
+    val values = SignalStore.unifiedpush
+    val pairing = values.pairingEndpointBinding ?: return !PairingRegistrationGate.isPairingInstance(pending.instance)
+    if (pending.instance != pairing.instance || owner != pairing.distributorId ||
+      pairing.accountId != SignalStore.account.aci?.toString() || pairing.deviceId != SignalStore.account.deviceId) return false
+    val confirmed = pairingIdentityConfirmed(pairing)
+    if (pending.url != null) {
+      val origin = PairingV1.canonicalOrigin(pending.url) ?: return false
+      if (pending.p256dh == null || pending.auth == null || origin != pairing.endpointOrigin && !confirmed) return false
+    }
+    val changed = pending.url != values.endpoint || pending.p256dh != values.endpointP256dh ||
+      pending.auth != values.endpointAuth || pending.instance != (values.endpointInstance ?: "default")
+    return !changed || confirmed
   }
 
   private fun pairingBindingMatchesCurrent(
@@ -691,14 +672,19 @@ class UnifiedPushReceiver : MessagingReceiver() {
     return pending.takeIf { it.matches(event) }
   }
 
-  private fun bufferPairingConfirmation(context: Context, message: PushMessage, instance: String) {
+  private fun bufferPairingConfirmation(context: Context, message: PushMessage, instance: String): Boolean =
     synchronized(UnifiedPushLifecycle.monitor) {
-      val pending = matchingPairingConfirmation(context, message, instance) ?: return
-      if (pending.message == null) {
+      val pending = matchingPairingConfirmation(context, message, instance) ?: return@synchronized false
+      val now = System.currentTimeMillis() / 1000
+      val incoming = EncryptedPush.parse(message.content, now, setOf(3)) ?: return@synchronized false
+      val prior = pending.message?.let { stored ->
+        runCatching { Base64.getDecoder().decode(stored) }.getOrNull()?.let { EncryptedPush.parse(it, now, setOf(3)) }
+      }
+      if (prior == null || incoming.expiresAt > prior.expiresAt) {
         LockedPushState.savePairingConfirmation(context, pending.copy(message = Base64.getEncoder().encodeToString(message.content)))
       }
+      true
     }
-  }
 
   private fun restorePairingCandidate(context: Context, message: PushMessage, instance: String) {
     synchronized(UnifiedPushLifecycle.monitor) {
@@ -718,6 +704,15 @@ class UnifiedPushReceiver : MessagingReceiver() {
       val target = intent.target
       val origin = PairingV1.canonicalOrigin(target.endpoint) ?: return
       if (pending.providerOrigin != null && origin != pending.providerOrigin) return
+      if (!PairingRegistrationGate.isPairingInstance(instance)) {
+        val current = try {
+          ControlFrame.Subscription(account.endpoint ?: return, account.endpointP256dh.orEmpty(), account.endpointAuth.orEmpty())
+        } catch (_: EnrollmentFile.Invalid) {
+          return
+        }
+        if (instance != account.instance || pending.distributor != previousDistributor || !target.matches(current) ||
+          SignalStore.unifiedpush.vapidPublicKey != pending.vapid) return
+      }
       PairingRegistrationGate.restore(
         PairingRegistrationGate.Binding(
           instance, pending.distributor, pending.vapid, pending.providerOrigin, pending.sessionId, pending.expiresAt,
@@ -738,10 +733,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
     if (appLocked) {
       // SignalStore is unavailable while locked, so a custom instance can only be trusted after unlock.
       LockedPushState.recordPushArrived(context, System.currentTimeMillis())
-      if (PairingRegistrationGate.isPairingInstance(instance)) {
-        bufferPairingConfirmation(context, message, instance)
-        return
-      }
+      if (bufferPairingConfirmation(context, message, instance) || PairingRegistrationGate.isPairingInstance(instance)) return
       // Which kind of enrollment this is cannot be read from SignalStore while locked.
       if (LockedPushState.isEncryptedEnrollment(context)) {
         Log.d(TAG, "Encrypted push dropped while locked.")
@@ -754,8 +746,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val pairingBinding = SignalStore.unifiedpush.pairingEndpointBinding
     val protectedPairingInstance = pairingBinding?.instance
       ?: SignalStore.unifiedpush.endpointInstance?.takeIf { PairingRegistrationGate.isPairingInstance(it) }
-    if (instance != protectedPairingInstance && PairingRegistrationGate.isPairingInstance(instance) &&
-      !PairingRegistrationGate.isRegistrationPending()) {
+    if (instance != protectedPairingInstance && !PairingRegistrationGate.isRegistrationPending()) {
       restorePairingCandidate(context, message, instance)
     }
     val pendingCandidate = PairingRegistrationGate.current()?.takeIf { it.binding.instance == instance }

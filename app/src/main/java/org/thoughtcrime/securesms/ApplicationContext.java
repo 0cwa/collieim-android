@@ -631,6 +631,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
   /** Activates the selected delivery service after pairing without starting a legacy relay refresh. */
   public void activatePushNotificationServicesAfterPairing() {
     updatePushNotificationServices(null, false);
+    restartPushDeliveryAfterPairing();
+  }
+
+  public void restartPushDeliveryAfterPairing() {
     AppDependencies.resetNetwork(true);
     EventBus.getDefault().post(PushServiceEvent.INSTANCE);
   }

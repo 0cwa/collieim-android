@@ -515,20 +515,32 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
       var successMessage: String? = null
+      var documentWriteStarted = false
       val failureMessage = try {
         val lease = UnifiedPushLifecycle.acquireLease(request.generation) { request.takeIf { it.belongsToCurrentAccount() } }
           ?: throw EnrollmentFile.Invalid("not_ready")
         val export = lease.use {
-          RelayDisclosure.exportIfCurrent(disclosure, mode, requestId) {
+          fun authorizedEpoch(): Long? {
             // An authorized invalid epoch still removes the old password file.
             EnrollmentExporter.removeFiles(app)
-            val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-            if (destination != null) {
-              val saved = EnrollmentExporter.exportToDestination(app, serverEpoch, mode, requestId, destination)
-              if (!request.belongsToCurrentAccount()) throw EnrollmentFile.Invalid("disclosure_changed")
-              ExportSummary(null, saved.epoch, saved.highestUsed, saved.collides)
-            } else {
-              val written = EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
+            return serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
+          }
+          if (destination != null) {
+            val document = RelayDisclosure.exportIfCurrent(disclosure, mode, requestId) {
+              EnrollmentExporter.prepareDocument(app, authorizedEpoch(), mode, requestId)
+            }
+            if (!request.belongsToCurrentAccount() || !RelayDisclosure.runIfCurrent(disclosure) {}) {
+              throw EnrollmentFile.Invalid("disclosure_changed")
+            }
+            documentWriteStarted = true
+            document.writeTo(app, destination)
+            if (!request.belongsToCurrentAccount() || !RelayDisclosure.runIfCurrent(disclosure) {}) {
+              throw IOException("Enrollment authorization changed during document write")
+            }
+            ExportSummary(null, document.epoch, document.highestUsed, document.collides)
+          } else {
+            RelayDisclosure.exportIfCurrent(disclosure, mode, requestId) {
+              val written = EnrollmentExporter.exportWithEpoch(app, authorizedEpoch(), mode, requestId)
               if (!request.belongsToCurrentAccount()) {
                 EnrollmentExporter.removeFiles(app)
                 throw EnrollmentFile.Invalid("disclosure_changed")
@@ -579,6 +591,9 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       ThreadUtil.runOnMain {
         if (!request.belongsToCurrentAccount()) {
           pendingExport.value = null
+          if (documentWriteStarted) {
+            Toast.makeText(app, R.string.UnifiedPushSettingsFragment__export_enrollment_failed_destination, Toast.LENGTH_LONG).show()
+          }
         } else if (successMessage != null) {
           pendingExport.value = request.copy(message = successMessage)
         } else {

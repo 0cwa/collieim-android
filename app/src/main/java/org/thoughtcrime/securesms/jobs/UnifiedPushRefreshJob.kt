@@ -95,15 +95,18 @@ class UnifiedPushRefreshJob private constructor(
     }
     try {
       if (configureDelivery) {
-        synchronized(UnifiedPushLifecycle.monitor) {
+        val activateRetainedRoute = synchronized(UnifiedPushLifecycle.monitor) {
           if (authorization != null && !RelayDisclosure.matchesRefreshLocked(authorization)) return
           if (SignalStore.settings.preferredNotificationMethod != NotificationDeliveryMethod.UNIFIEDPUSH ||
             SignalStore.account.isLinkedDevice) return
           if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation) {
             throw IOException("UnifiedPush account context is transitioning")
           }
+          val enablingPairingRoute = !SignalStore.unifiedpush.enabled && SignalStore.unifiedpush.pairingEndpointBinding != null
           ApplicationContext.getInstance(context).applyPushNotificationServicesFromRefresh()
+          enablingPairingRoute && SignalStore.unifiedpush.enabled
         }
+        if (activateRetainedRoute) ApplicationContext.getInstance(context).restartPushDeliveryAfterPairing()
       }
       runWithLease(lease)
     } finally {

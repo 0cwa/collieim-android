@@ -34,8 +34,14 @@ object EnrollmentExporter {
     val collides get() = epoch <= highestUsed
   }
 
-  data class SaveResult(val epoch: Long, val highestUsed: Long, val requestId: String) {
+  internal class DocumentExport(val epoch: Long, val highestUsed: Long, private val contents: String) {
     val collides get() = epoch <= highestUsed
+
+    fun writeTo(context: Context, destination: Uri) {
+      val stream = context.contentResolver.openOutputStream(destination, "wt")
+        ?: throw IOException("Could not open the selected document")
+      stream.use { it.write(contents.toByteArray(Charsets.UTF_8)) }
+    }
   }
 
   private data class PreparedExport(
@@ -89,21 +95,19 @@ object EnrollmentExporter {
     return Export(checkNotNull(prepared.file), prepared.epoch, prepared.highestUsed, prepared.requestId)
   }
 
-  /** Builds and writes an export directly to the selected SAF document under the caller's lease. */
-  @JvmStatic
+  /** Commits the enrollment intent and prepares its immutable document before provider I/O. */
   @Synchronized
-  fun exportToDestination(
+  internal fun prepareDocument(
     context: Context,
     serverEpoch: Long?,
     mode: ExportMode,
     requestId: String?,
-    destination: Uri,
-  ): SaveResult {
+  ): DocumentExport {
     val prepared = export(
       context, serverEpoch, mode, requestId, System.currentTimeMillis() / 1000,
-      UnifiedPushDistributor::checkIfActive, false, validateSealed = { _, _, _ -> }, destination = destination,
+      UnifiedPushDistributor::checkIfActive, false, validateSealed = { _, _, _ -> },
     )
-    return SaveResult(prepared.epoch, prepared.highestUsed, prepared.requestId)
+    return DocumentExport(prepared.epoch, prepared.highestUsed, prepared.json)
   }
 
   private data class PairingRoute(val target: Target, val instance: String, val allowRecovery: Boolean)
@@ -119,7 +123,6 @@ object EnrollmentExporter {
     validateBeforeCommit: ((ImportIntent) -> Unit)? = null,
     validateSealed: (ImportIntent, MollySocketDevice, String) -> Unit,
     pairingRoute: PairingRoute? = null,
-    destination: Uri? = null,
   ): PreparedExport {
     val dir = if (writeToDisk) context.getExternalFilesDir(null) else null
     val temp = dir?.let { File(it, TEMP_NAME) }
@@ -242,12 +245,6 @@ object EnrollmentExporter {
         temp?.delete()
       }
     }
-    if (destination != null) {
-      val outputStream = context.contentResolver.openOutputStream(destination, "wt")
-        ?: throw IOException("Could not open the selected document")
-      outputStream.use { it.write(contents.toByteArray(Charsets.UTF_8)) }
-    }
-
     return PreparedExport(if (writeToDisk) output else null, contents, intent.epoch, highestUsed, intent.requestId, intent)
   }
 

@@ -416,12 +416,12 @@ internal class PairingV1Coordinator(private val context: Context) {
               ),
             )
             if (!bound) throw EnrollmentFile.Invalid("disclosure_changed")
-            if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
-                offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
-                offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
-                RelayDisclosure.pairingScopeDigest(snapshot),
-              ))) throw EnrollmentFile.Invalid("state_unavailable")
           }
+          if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
+              offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
+              offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
+              RelayDisclosure.pairingScopeDigest(snapshot),
+            ))) throw EnrollmentFile.Invalid("state_unavailable")
         }
       }
       val session = checkNotNull(created)
@@ -613,16 +613,18 @@ internal class PairingV1Coordinator(private val context: Context) {
 
   fun writeRequest(context: Context, sessionId: String, uri: Uri): Boolean {
     val session = synchronized(this) {
-      activeSession?.takeIf { it.id == sessionId && runIfCurrentSession(it) {} }
+      activeSession?.takeIf {
+        it.id == sessionId && runIfCurrentSession(it) {
+          // A provider may publish bytes before the write or close reports success.
+          requestDispatched = true
+        }
+      }
     } ?: return false
     // The provider receives only the immutable sealed envelope. Provider I/O must not hold the
     // account monitor, since an external DocumentsProvider may block even while closing a file.
     try {
       val stream = context.contentResolver.openOutputStream(uri, "wt") ?: return false
       stream.bufferedWriter(StandardCharsets.UTF_8).use { it.write(session.requestJson) }
-      synchronized(this) {
-        if (activeSession === session) requestDispatched = true
-      }
       return true
     } catch (_: IOException) {
       return false
@@ -647,7 +649,8 @@ internal class PairingV1Coordinator(private val context: Context) {
 
   @Synchronized
   fun clear() {
-    activeSession?.sealed?.receiptKey?.fill(0)
+    val session = activeSession
+    session?.sealed?.receiptKey?.fill(0)
     activeSession = null
     // A shared request can still finish through an authenticated push after the settings screen closes.
     synchronized(UnifiedPushLifecycle.monitor) {
@@ -656,6 +659,7 @@ internal class PairingV1Coordinator(private val context: Context) {
         PairingRegistrationGate.cancel(attempt.binding.instance)
         discardCandidate(attempt.binding)
       }
+      if (!requestDispatched && session != null) LockedPushState.clearPairingConfirmation(context, session.id)
       registeringSessionId = null
     }
     requestDispatched = false

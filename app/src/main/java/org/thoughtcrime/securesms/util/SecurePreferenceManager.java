@@ -25,6 +25,7 @@ public class SecurePreferenceManager {
     prefs.setEncryptionFilter((key) -> switch (key) {
       case PlainTextKeyValueStore.THEME,
            PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED,
+           PlainTextKeyValueStore.THEME_PALETTE,
            PlainTextKeyValueStore.LANGUAGE,
            PlainTextKeyValueStore.PASSPHRASE_LOCK_ENABLED,
            PlainTextKeyValueStore.PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED,

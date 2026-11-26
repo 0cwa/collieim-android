@@ -26,6 +26,12 @@ object PlainTextKeyValueStore {
   const val LANGUAGE = "pref_language"
   const val THEME = "pref_theme"
   const val DYNAMIC_COLORS_ENABLED = "pref_dynamic_colors"
+
+  /**
+   * Collie: stable ID of a built-in color palette, absent for the Collie palette. [DYNAMIC_COLORS_ENABLED] stays the
+   * authoritative System choice, so older versions, which ignore this key, keep showing System or Collie.
+   */
+  const val THEME_PALETTE = "pref_theme_palette"
   const val SYSTEM_EMOJI_PREFERRED = "pref_system_emoji"
   const val PASSPHRASE_LOCK_ENABLED = "pref_passphrase_lock"
   const val PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED = "pref_passphrase_lock_notifications"
@@ -144,6 +150,48 @@ object PlainTextKeyValueStore {
   var isDynamicColorsEnabled: Boolean
     get() = sharedPrefs.getBoolean(DYNAMIC_COLORS_ENABLED, false)
     set(value) = sharedPrefs.edit(commit = true) { putBoolean(DYNAMIC_COLORS_ENABLED, value) }
+
+  /** The stored palette ID, kept as-is even when this version does not know it. Null means Collie. */
+  @JvmStatic
+  val themePalette: String?
+    get() = try {
+      sharedPrefs.getString(THEME_PALETTE, null)
+    } catch (e: ClassCastException) {
+      null
+    }
+
+  /**
+   * Commits the theme mode and System flag together. Turning the System flag on clears a stored palette, so choosing
+   * System and then turning it off returns to Collie. Mode changes and unchanged flags keep the stored palette.
+   */
+  @JvmStatic
+  fun setAppearance(theme: String, dynamicColorsEnabled: Boolean) {
+    val enablingDynamicColors = dynamicColorsEnabled && !isDynamicColorsEnabled
+    sharedPrefs.edit(commit = true) {
+      putString(THEME, theme)
+      putBoolean(DYNAMIC_COLORS_ENABLED, dynamicColorsEnabled)
+      if (enablingDynamicColors) {
+        remove(THEME_PALETTE)
+      }
+    }
+  }
+
+  /** Commits an explicit palette choice: System sets the flag and clears the ID; Collie or a palette clears the flag. */
+  @JvmStatic
+  fun setPalette(dynamicColorsEnabled: Boolean, paletteId: String?) {
+    sharedPrefs.edit(commit = true) {
+      putBoolean(DYNAMIC_COLORS_ENABLED, dynamicColorsEnabled)
+      if (paletteId == null) {
+        remove(THEME_PALETTE)
+      } else {
+        putString(THEME_PALETTE, paletteId)
+      }
+    }
+  }
+
+  /** Collie: the stored palette ID for the backup record, or null for Collie. */
+  @JvmStatic
+  fun getThemePaletteToBackup(): String? = themePalette
 
   @JvmStatic
   var isSystemEmojiPreferred: Boolean

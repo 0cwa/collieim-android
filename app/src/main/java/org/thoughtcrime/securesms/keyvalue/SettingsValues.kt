@@ -28,6 +28,7 @@ import org.thoughtcrime.securesms.backup.proto.SharedPreference
 import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference
 import org.thoughtcrime.securesms.util.DynamicTheme
+import org.thoughtcrime.securesms.util.ThemePalettes
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.SingleLiveEvent
 import java.util.Arrays
@@ -271,8 +272,25 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
    */
   fun setAppearance(theme: Theme, dynamicColorsEnabled: Boolean) {
     putString(THEME, theme.serialize())
-    PlainTextKeyValueStore.theme = theme.serialize()
-    PlainTextKeyValueStore.isDynamicColorsEnabled = dynamicColorsEnabled
+    PlainTextKeyValueStore.setAppearance(theme.serialize(), dynamicColorsEnabled)
+    configurationSettingChanged.postValue(THEME)
+  }
+
+  /** Collie: [ThemePalettes.COLLIE], [ThemePalettes.SYSTEM] or a built-in palette ID. */
+  val colorPalette: String
+    get() = ThemePalettes.selectedId()
+
+  /**
+   * Collie: commits an explicit color choice before notifying activities once. System keeps using the Dynamic Colors
+   * flag; Collie and built-in palettes clear it. The palette ID has its own preference-based V1 backup record.
+   */
+  fun setColorPalette(paletteId: String) {
+    require(ThemePalettes.isSelectable(paletteId)) { "Unknown palette: $paletteId" }
+    when (paletteId) {
+      ThemePalettes.SYSTEM -> PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = true, paletteId = null)
+      ThemePalettes.COLLIE -> PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = null)
+      else -> PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = paletteId)
+    }
     configurationSettingChanged.postValue(THEME)
   }
 

@@ -42,6 +42,7 @@ import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPrefe
 import org.thoughtcrime.securesms.testutil.DirectExecutor
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
+import org.thoughtcrime.securesms.util.ThemePalettes
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -339,6 +340,60 @@ class MollyBackupPreferencesTest {
   }
 
   @Test
+  fun `palette ID round trips through current and historical preference filenames`() {
+    val filenames = listOf(SecurePreferenceManager.getSecurePreferencesName()) + HISTORICAL_FILENAMES
+
+    for (filename in filenames) {
+      preferences.edit().clear().commit()
+      PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = PILOT)
+      val exported = FullBackupExporter.getPlainTextPreferencesToSaveToBackup()
+        .map { SharedPreference.ADAPTER.decode(it.newBuilder().file_(filename).build().encode()) }
+      preferences.edit().clear().commit()
+
+      exported.forEach { FullBackupImporter.processPreference(context, it, keyValueStorage) }
+      SignalStore.onPostBackupRestore()
+
+      assertEquals(filename, PILOT, PlainTextKeyValueStore.themePalette)
+      assertFalse(filename, PlainTextKeyValueStore.isDynamicColorsEnabled)
+      assertEquals(filename, PILOT, ThemePalettes.selectedId())
+    }
+  }
+
+  @Test
+  fun `restoring an older backup without a palette record keeps Collie or System`() {
+    for (dynamic in listOf(false, true)) {
+      preferences.edit().clear().commit()
+      val record = SharedPreference.Builder()
+        .file_(SecurePreferenceManager.getSecurePreferencesName())
+        .key(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)
+        .booleanValue(dynamic)
+        .build()
+
+      FullBackupImporter.processPreference(context, record, keyValueStorage)
+      SignalStore.onPostBackupRestore()
+
+      assertNull(PlainTextKeyValueStore.themePalette)
+      assertEquals(if (dynamic) ThemePalettes.SYSTEM else ThemePalettes.COLLIE, ThemePalettes.selectedId())
+    }
+  }
+
+  @Test
+  fun `palette records of the wrong type are skipped for every filename`() {
+    for (filename in listOf(SecurePreferenceManager.getSecurePreferencesName()) + HISTORICAL_FILENAMES) {
+      preferences.edit().clear().commit()
+      val records = listOf(
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.THEME_PALETTE).booleanValue(true).build(),
+        SharedPreference.Builder().file_(filename).key(PlainTextKeyValueStore.THEME_PALETTE).integerValue(3).build()
+      )
+
+      records.forEach { FullBackupImporter.processPreference(context, it, keyValueStorage) }
+
+      assertFalse(filename, preferences.contains(PlainTextKeyValueStore.THEME_PALETTE))
+      assertEquals(filename, ThemePalettes.COLLIE, ThemePalettes.selectedId())
+    }
+  }
+
+  @Test
   fun `stale shared preferences for migrated Signal settings are not exported`() {
     preferences.edit()
       .putBoolean("pref_read_receipts", false)
@@ -354,5 +409,20 @@ class MollyBackupPreferencesTest {
     // Only the pre-unlock settings without a SignalStore mirror are exported as preference records.
     assertEquals(listOf(PlainTextKeyValueStore.BIOMETRIC_SCREEN_LOCK_ENABLED), records.map { it.key })
     assertTrue(records.single().booleanValue!!)
+  }
+
+  companion object {
+    private const val PILOT = "teal_vibrant"
+
+    private val HISTORICAL_FILENAMES = listOf(
+      "im.molly.app",
+      "im.molly.app_preferences",
+      "im.molly.app.staging",
+      "im.molly.app.staging_preferences",
+      "im.collie.app",
+      "im.collie.app_preferences",
+      "im.collie.app.staging",
+      "im.collie.app.staging_preferences"
+    )
   }
 }

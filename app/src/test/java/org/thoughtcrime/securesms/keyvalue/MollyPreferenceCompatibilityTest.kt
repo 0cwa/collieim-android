@@ -119,6 +119,27 @@ class MollyPreferenceCompatibilityTest {
   }
 
   @Test
+  fun `palette remains readable before unlock without using upstream default file`() {
+    PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = "teal_vibrant")
+    KeyCachingService.clearMasterSecret()
+
+    assertEquals("teal_vibrant", PlainTextKeyValueStore.themePalette)
+    assertEquals("teal_vibrant", rawMollyValues()[PlainTextKeyValueStore.THEME_PALETTE])
+    assertEquals(false, rawMollyValues()[PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED])
+    assertFalse(PreferenceManager.getDefaultSharedPreferences(context).contains(PlainTextKeyValueStore.THEME_PALETTE))
+  }
+
+  @Test
+  fun `older installs without a palette key and mistyped values read as Collie`() {
+    PlainTextKeyValueStore.theme = "dark"
+    PlainTextKeyValueStore.isDynamicColorsEnabled = false
+    assertEquals(null, PlainTextKeyValueStore.themePalette)
+
+    SecurePreferenceManager.getSecurePreferences(context).edit().putBoolean(PlainTextKeyValueStore.THEME_PALETTE, true).commit()
+    assertEquals(null, PlainTextKeyValueStore.themePalette)
+  }
+
+  @Test
   fun `language remains readable before unlock without exposing it in upstream default file`() {
     PlainTextKeyValueStore.language = "en"
     KeyCachingService.clearMasterSecret()
@@ -153,6 +174,19 @@ class MollyPreferenceCompatibilityTest {
   }
 
   @Test
+  fun `a stored palette ID is exported as a typed string record beside the Dynamic Colors flag`() {
+    PlainTextKeyValueStore.setPalette(dynamicColorsEnabled = false, paletteId = "teal_vibrant")
+
+    val exported = FullBackupExporter.getPlainTextPreferencesToSaveToBackup()
+    val palette = exported.single { it.key == PlainTextKeyValueStore.THEME_PALETTE }
+
+    assertEquals("teal_vibrant", palette.value_)
+    assertEquals(null, palette.booleanValue)
+    assertEquals(SecurePreferenceManager.getSecurePreferencesName(), palette.file_)
+    assertEquals(false, exported.single { it.key == PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED }.booleanValue)
+  }
+
+  @Test
   fun `legacy plaintext first-install integer migrates without decryption`() {
     // Old installs wrote this key as a raw int while it was exempt from encryption. Use the same cached preferences
     // as the migration so the test remains isolated from Robolectric's per-method Application instances.
@@ -183,6 +217,7 @@ class MollyPreferenceCompatibilityTest {
       .remove(PlainTextKeyValueStore.PASSPHRASE_LOCK_NOTIFICATIONS_ENABLED)
       .remove(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)
       .remove(PlainTextKeyValueStore.THEME)
+      .remove(PlainTextKeyValueStore.THEME_PALETTE)
       .remove(PlainTextKeyValueStore.FIRST_INSTALL_VERSION)
       .commit()
 

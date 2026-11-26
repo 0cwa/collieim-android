@@ -434,6 +434,11 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
+    if ((isDefaultFile || isHistoricalFile) && RESTORABLE_STRING_PREFERENCES.contains(preference.key) && preference.value_ == null) {
+      Log.w(TAG, "Skipping a non-string palette preference");
+      return;
+    }
+
     if (isDefaultFile || isHistoricalFile) {
       preferences = SecurePreferenceManager.getSecurePreferences(context);
     } else {
@@ -537,6 +542,11 @@ public class FullBackupImporter extends FullBackupBase {
       PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED
   );
 
+  /** Collie: the palette ID stays preference-only, like the Dynamic Colors flag it accompanies. */
+  private static final List<String> RESTORABLE_STRING_PREFERENCES = List.of(
+      PlainTextKeyValueStore.THEME_PALETTE
+  );
+
   /** Only portable settings exported by Molly may be remapped from another application's file. */
   @VisibleForTesting
   static boolean isRestorableMollyPreference(@NonNull SharedPreference preference) {
@@ -552,6 +562,10 @@ public class FullBackupImporter extends FullBackupBase {
 
     if (RESTORABLE_MOLLY_BOOLEAN_PREFERENCES.contains(preference.key)) {
       return preference.booleanValue != null;
+    }
+
+    if (RESTORABLE_STRING_PREFERENCES.contains(preference.key)) {
+      return preference.value_ != null;
     }
 
     if (MollyValues.PASSPHRASE_LOCK_TRIGGER.equals(preference.key)) {

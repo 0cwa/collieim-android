@@ -2,11 +2,14 @@
 
 `0cwa/collieim-android` `main` is the application source. App changes land directly through ordinary pull requests; generated source commits and engineering-layer receipts are not part of the current source path. Follow the [release engineering development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md) for the full policy.
 
+For external fork pull requests, follow the [contributor guide](../../.github/CONTRIBUTING.md).
+The pull request signature and trailer checks below describe the maintainer workflow.
+
 ## Verify an app source commit
 
 Identify the exact full commit SHA and source branch used by the build. Ordinary
 app changes use `main`; the approved Stable maintenance route uses
-`release/stable/8.35`, as described in [RELEASING.md](RELEASING.md):
+`release/stable/8.35`, as described in [RELEASING.md](../RELEASING.md):
 
 ```sh
 SOURCE_BRANCH=main  # or release/stable/8.35 for the approved maintenance route
@@ -31,15 +34,16 @@ git diff --stat "$BASE...$HEAD"
 For a range containing upstream merges, first verify each declared merge's signature and upstream parent as described under [Verify an upstream merge](#verify-an-upstream-merge). Exclude only the history reached through those verified Signal or Molly parents from the non-merge signature loop, and verify the remaining Collie commits. A selective fork's provenance table never grants this exemption.
 
 The PR check requires one `Layer:` trailer on every non-merge commit, naming an
-entry in [`tooling/layers.toml`](../tooling/layers.toml). From PR #202 on, a PR may
-change only one `feature` layer; PRs land with a merge commit so each commit keeps
-its layer. [PR checks](../.github/workflows/pr.yml) runs unit tests, an unsigned
-production build and the aggregate `Security readiness` check. Merge requirements
-are maintained in the development cycle linked above.
+entry in [`tooling/layers.toml`](../../tooling/layers.toml). From PR #202 on, a
+maintainer PR may change only one `feature` layer and lands with a merge commit
+so each commit keeps its layer. [PR checks](../../.github/workflows/pr.yml) runs
+unit tests, an unsigned production build and the aggregate `Security readiness`
+check. Merge requirements are maintained in the development cycle linked above.
 
 ## Catch trailer mistakes locally
 
-Install the local checks once per clone, and rerun the installer after hook updates:
+Maintainers and agents can opt in to the local checks once per clone and rerun
+the installer after hook updates:
 
 ```sh
 python3 tooling/git-hooks/install.py
@@ -72,7 +76,7 @@ The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) ru
 
 ## Selected-fork provenance
 
-[`tooling/layers.toml`](../tooling/layers.toml) is the canonical feature catalog. A canonical entry with `kind = "feature"` may contain one optional `provenance` table for its selected fork origin. Aliases refer to their canonical entry and cannot carry provenance. Existing entries without provenance, and historical trees without a catalog, remain valid: missing provenance means **tracking is unknown**, not that the feature is unimplemented.
+[`tooling/layers.toml`](../../tooling/layers.toml) is the canonical feature catalog. A canonical entry with `kind = "feature"` may contain one optional `provenance` table for its selected fork origin. Aliases refer to their canonical entry and cannot carry provenance. Existing entries without provenance, and historical trees without a catalog, remain valid: missing provenance means **tracking is unknown**, not that the feature is unimplemented.
 
 The engineering planner reads the catalog at the exact app revision being planned. It uses this contract for selective fork maintenance; the engineering source registry still supplies source discovery policy. The table records a reviewed selection, not an additional applied-source baseline or an inventory of every historical contribution.
 
@@ -120,7 +124,7 @@ Review the merge's own changes (`git show --remerge-diff "$MERGE"`) for conflict
 
 Stable tags are annotated and signed with the publication key listed in
 `.github/release-signers`. Use the `source_branch` recorded in `publication.json`,
-or `main` for historical records without that field. [RELEASING.md](RELEASING.md)
+or `main` for historical records without that field. [RELEASING.md](../RELEASING.md)
 permits only `main` and `release/stable/8.35` for this route.
 
 ```sh
@@ -133,4 +137,4 @@ git show -s --format=fuller "$TAG^{commit}"
 git merge-base --is-ancestor "$TAG^{commit}" "origin/$SOURCE_BRANCH"
 ```
 
-Artifact signing, release checks, and independent rebuild requirements are in [RELEASING.md](RELEASING.md). A source signature or successful source build alone does not establish artifact reproducibility or runtime acceptance.
+Artifact signing, release checks, and independent rebuild requirements are in [RELEASING.md](../RELEASING.md). A source signature or successful source build alone does not establish artifact reproducibility or runtime acceptance.

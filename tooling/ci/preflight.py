@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -151,22 +152,49 @@ def check_v4_contract_manifest():
     return True
 
 
+CANONICAL_REMOTE = re.compile(
+    r"(?:(?:https?|ssh|git)://(?:[^/@]+@)?github\.com/|git@github\.com:)"
+    r"0cwa/collieim-android(?:\.git)?/?",
+    re.IGNORECASE,
+)
+
+
+def default_base():
+    remotes = subprocess.check_output(["git", "remote", "-v"], text=True)
+    remote_refs = set(subprocess.check_output(
+        ["git", "for-each-ref", "--format=%(refname:strip=2)", "refs/remotes/"],
+        text=True,
+    ).splitlines())
+    for line in remotes.splitlines():
+        remote, _, direction = line.rpartition(" ")
+        name, _, url = remote.partition("\t")
+        ref = f"{name}/main"
+        if direction == "(fetch)" and ref in remote_refs and CANONICAL_REMOTE.fullmatch(url):
+            return ref
+    return "upstream/main" if "upstream/main" in remote_refs else "origin/main"
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base", default="origin/main", help="base commit or ref (default: origin/main)")
+    parser.add_argument("--base", help="base commit or ref (default: fetched Collie main, upstream/main, or origin/main)")
     parser.add_argument("--allow-unsigned", action="store_true", help="do not fail for unsigned commits")
     args = parser.parse_args(argv)
+    try:
+        base = args.base if args.base is not None else default_base()
+    except subprocess.CalledProcessError:
+        print("Cannot detect the preflight base. Run preflight from the repository root.", file=sys.stderr)
+        return 1
 
     checks = [
         check_pairing_manifest(),
         check_v4_contract_manifest(),
         run_check("Layer trailers", [sys.executable, "tooling/git-hooks/collie_check_layer_trailers.py",
-                                      "range", args.base, "HEAD"]),
+                                      "range", base, "HEAD"]),
         run_check("Fastlane metadata", [sys.executable, "tooling/fastlane/check_metadata.py"]),
     ]
 
     log = subprocess.run(
-        ["git", "log", "--no-merges", "--format=%H %G?", f"{args.base}..HEAD"],
+        ["git", "log", "--no-merges", "--format=%H %G?", f"{base}..HEAD"],
         text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     signatures_ok = log.returncode == 0

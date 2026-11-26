@@ -1,3 +1,5 @@
+# Keep the CI and release build heap when contributor defaults change.
+org.gradle.jvmargs=-Xmx12g -Xms256m -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC -Dcom.android.tools.r8.deterministicdebugging=true -XX:+UnlockExperimentalVMOptions -XX:hashCode=3
 kotlin.compiler.execution.strategy=in-process
 org.gradle.configuration-cache=false
 org.gradle.daemon=false

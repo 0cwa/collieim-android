@@ -109,10 +109,10 @@ class RelayDisclosureUiTest {
       "default",
     )
     values.mutateControl { ControlState() }
-    controlBefore = values.controlState
     values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     export = EnrollmentExporter.exportWithEpoch(context, null, ExportMode.NEW_INTENT, isDistributorActive = { true }).file
     exportedBytes = export.readBytes()
+    controlBefore = values.controlState
     assertNotNull("Synthetic registration must be ready for disclosure tests", RelayDisclosure.capture(context))
   }
 

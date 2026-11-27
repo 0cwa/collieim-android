@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Molly.Dynamic.Light" parent="TextSecure.BaseLightTheme">
+    <style name="Theme.Molly.Dynamic.Shared.Light" parent="TextSecure.BaseLightTheme">
         <!-- Material You colors (overrides Theme.Molly.Material3.Light) -->
         <item name="colorPrimaryInverse">@color/dynamic_primary_inverse_light</item>
         <item name="colorPrimary">@color/dynamic_primary_light</item>
@@ -75,7 +75,9 @@
         <item name="android:statusBarColor">@color/dynamic_surface_light</item>
     </style>
 
-    <style name="Theme.Molly.Dynamic.Dark" parent="TextSecure.BaseDarkTheme">
+    <style name="Theme.Molly.Dynamic.Light" parent="Theme.Molly.Dynamic.Shared.Light" />
+
+    <style name="Theme.Molly.Dynamic.Shared.Dark" parent="TextSecure.BaseDarkTheme">
         <!-- Material You colors (overrides Theme.Molly.Material3.Dark) -->
         <item name="colorPrimaryInverse">@color/dynamic_primary_inverse_dark</item>
         <item name="colorPrimary">@color/dynamic_primary_dark</item>
@@ -148,6 +150,8 @@
         <item name="android:navigationBarColor">@color/dynamic_surface_dark</item>
         <item name="android:statusBarColor">@color/dynamic_surface_dark</item>
     </style>
+
+    <style name="Theme.Molly.Dynamic.Dark" parent="Theme.Molly.Dynamic.Shared.Dark" />
 
     <style name="Theme.Molly.Dynamic.BaseNoActionBar.Light" parent="Theme.Molly.Dynamic.Light">
         <item name="windowActionBar">false</item>

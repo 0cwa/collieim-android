@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.horizontalGutters
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.signal.core.ui.R as CoreUiR
 
 /**
@@ -33,9 +34,14 @@ fun Banner(
   action: String,
   onActionClick: () -> Unit
 ) {
+  val outlineColor = if (CollieFlags.userTheming) {
+    MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)
+  } else {
+    colorResource(CoreUiR.color.signal_colorOutline_38)
+  }
   OutlinedCard(
     shape = RoundedCornerShape(18.dp),
-    border = BorderStroke(width = 1.dp, color = colorResource(CoreUiR.color.signal_colorOutline_38)),
+    border = BorderStroke(width = 1.dp, color = outlineColor),
     modifier = Modifier
       .horizontalGutters()
       .fillMaxWidth()

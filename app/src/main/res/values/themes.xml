@@ -222,7 +222,7 @@
         <!-- Allows for Overrides -->
     </style>
 
-    <style name="TextSecure.BaseLightTheme" parent="@style/Theme.Molly.Material3.Light">
+    <style name="TextSecure.SharedLightTheme" parent="@style/Theme.Molly.Material3.Light">
         <item name="theme_type">light</item>
         <item name="fullScreenDialogStyle">@style/Signal.DayNight.Dialog.FullScreen</item>
         <item name="fixedRoundedCornerBottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners</item>
@@ -392,11 +392,13 @@
         <item name="navbar_container_color">@color/molly_secondary_fixed</item>
     </style>
 
+    <style name="TextSecure.BaseLightTheme" parent="TextSecure.SharedLightTheme" />
+
     <style name="TextSecure.DarkTheme" parent="@style/TextSecure.BaseDarkTheme">
         <!-- leave empty to allow overriding -->
     </style>
 
-    <style name="TextSecure.BaseDarkTheme" parent="@style/Theme.Molly.Material3.Dark">
+    <style name="TextSecure.SharedDarkTheme" parent="@style/Theme.Molly.Material3.Dark">
         <item name="theme_type">dark</item>
         <item name="fullScreenDialogStyle">@style/Signal.DayNight.Dialog.FullScreen</item>
         <item name="fixedRoundedCornerBottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners</item>
@@ -563,6 +565,8 @@
         <item name="navbar_active_indicator_color">@color/molly_secondary_container_dark</item>
         <item name="navbar_container_color">@color/molly_surface_container_dark</item>
     </style>
+
+    <style name="TextSecure.BaseDarkTheme" parent="TextSecure.SharedDarkTheme" />
 
     <style name="Theme.Signal.AlertDialog.Light.Cornered" parent="MaterialAlertDialog.Material3">
         <item name="android:windowBackground">@drawable/dialog_corners</item>

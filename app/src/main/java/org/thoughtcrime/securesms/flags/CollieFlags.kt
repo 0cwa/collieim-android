@@ -9,6 +9,10 @@ import org.thoughtcrime.securesms.BuildConfig
 
 /** Build-variant flags for Collie-only features. */
 object CollieFlags {
+  /** Enables the Material You propagation prepared for TrailBlazer Beta. */
+  val userTheming: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
+
   val appUpdatesInCollieSettings: Boolean
     get() = true
 

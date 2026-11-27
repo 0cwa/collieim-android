@@ -287,8 +287,9 @@ android {
       initWith(getByName("release"))
       matchingFallbacks += "release"
       if (betaInstrumentation) {
-        // Use a debug-signed, unminified Beta app for local/device instrumentation runs.
+        // MockK attaches a JVM TI agent during instrumentation startup.
         signingConfig = signingConfigs.getByName("debug")
+        isDebuggable = true
         isMinifyEnabled = false
         isShrinkResources = false
       }

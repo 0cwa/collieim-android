@@ -4,6 +4,7 @@
 
 package org.thoughtcrime.securesms.conversation.v2
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
@@ -160,7 +161,10 @@ class MessageOverlayThemeTest {
           val value = TypedValue()
           assertTrue(it.theme.resolveAttribute(CoreUiR.attr.dynamic_colors, value, true))
           assertEquals(dynamicColors, value.data != 0)
-          it.startActivity(conversationIntent)
+          // ActivityScenario matches lifecycle events against the original launcher intent.
+          val launcherIntent = it.intent
+          instrumentation.callActivityOnNewIntent(it, Intent(conversationIntent))
+          it.intent = launcherIntent
         }
 
         scrollToDescendant(R.id.conversation_item_recycler, withText(MESSAGE_BODY), timeoutMs = 20_000)

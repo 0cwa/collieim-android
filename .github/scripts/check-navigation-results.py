@@ -93,10 +93,8 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
     if set(hashes(evidence / 'apk-before.txt')) != {app_apk, test_apk}:
         raise ValueError('expected matching prodWebsite app and Android test APKs')
     require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', {HOST_CLASS: HOST_METHODS})
-    require_cases(root / 'app/build/outputs/androidTest-results', {
-        DEVICE_CLASS: DEVICE_METHODS,
-        RELEASE_NOTES_CLASS: RELEASE_NOTES_METHODS,
-    })
+    require_cases(evidence / 'results/navigation', {DEVICE_CLASS: DEVICE_METHODS})
+    require_cases(evidence / 'results/release-notes', {RELEASE_NOTES_CLASS: RELEASE_NOTES_METHODS})
     screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
         raise ValueError('missing, duplicate or unexpected Settings screenshots')

@@ -546,9 +546,6 @@ jobs:
             trap - EXIT
             printf '%s\n' "$status" > "$evidence/exit-code.txt"
             timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
-            mkdir -p "$evidence/screenshots"
-            timeout 30s adb pull /sdcard/Download/collie-settings-navigation/. "$evidence/screenshots/" || true
-            timeout 30s adb pull /sdcard/Download/collie-release-notes/. "$evidence/screenshots/" || true
             sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
               app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
             exit "$status"
@@ -558,13 +555,25 @@ jobs:
           test "$(cat "$evidence/device-api.txt")" = 35
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
           timeout 10s adb logcat -c
-          navigation_test=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest
-          release_notes_test=org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest
-          ./gradlew --no-daemon --console=plain \
-            :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
-            :app:connectedProdWebsiteDebugAndroidTest --no-configuration-cache -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
-            "-Pandroid.testInstrumentationRunnerArguments.class=$navigation_test,$release_notes_test" \
-            2>&1 | tee "$evidence/connected.log"
+          run_suite() {
+            local suite=$1 test_class=$2 screenshot_dir=$3 status=0
+            local results=app/build/outputs/androidTest-results
+            rm -rf "$results"
+            ./gradlew --no-daemon --console=plain \
+              :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
+              :app:connectedProdWebsiteDebugAndroidTest --no-configuration-cache -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
+              "-Pandroid.testInstrumentationRunnerArguments.class=$test_class" \
+              2>&1 | tee "$evidence/connected-$suite.log" || status=$?
+            if [ -d "$results" ]; then
+              mkdir -p "$evidence/results/$suite"
+              cp -R "$results/." "$evidence/results/$suite/"
+            fi
+            mkdir -p "$evidence/screenshots"
+            timeout 30s adb pull "/sdcard/Download/$screenshot_dir/." "$evidence/screenshots/" || true
+            return "$status"
+          }
+          run_suite navigation org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest collie-settings-navigation
+          run_suite release-notes org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest collie-release-notes
           SH
       - name: Run navigation tests on API 35
         id: device
@@ -595,7 +604,6 @@ jobs:
           path: |
             build/navigation-validation
             feature/app-settings/build/test-results/testDebugUnitTest
-            app/build/outputs/androidTest-results
             app/build/reports/androidTests
           retention-days: 14
           if-no-files-found: error

@@ -35,8 +35,10 @@ class NavigationGateTest(unittest.TestCase):
             'feature/app-settings/build/test-results/testDebugUnitTest/TEST-host.xml',
             {gate.HOST_CLASS: gate.HOST_METHODS},
         )
-        self.device = self.make_report('app/build/outputs/androidTest-results/device/TEST-device.xml', {
+        self.device = self.make_report('build/navigation-validation/results/navigation/device/TEST-device.xml', {
             gate.DEVICE_CLASS: gate.DEVICE_METHODS,
+        })
+        self.release_notes = self.make_report('build/navigation-validation/results/release-notes/device/TEST-device.xml', {
             gate.RELEASE_NOTES_CLASS: gate.RELEASE_NOTES_METHODS,
         })
         screenshots = self.evidence / 'screenshots'
@@ -62,6 +64,11 @@ class NavigationGateTest(unittest.TestCase):
 
     def test_complete_host_and_device_pass(self):
         self.check()
+
+    def test_missing_release_notes_report_fails(self):
+        self.release_notes.unlink()
+        with self.assertRaises(ValueError):
+            self.check()
 
     def test_missing_skipped_and_duplicate_device_fail(self):
         original = self.device.read_bytes()

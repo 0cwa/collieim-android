@@ -14,18 +14,19 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import shutil
 import subprocess
 import sys
 
 REPOSITORY = "0cwa/collieim-android"
 PACKAGE = "im.collie.app"
 CERTIFICATE = "f8cc0c0c052e5635c26fcd293c2b0af3e87d61ff7f2df3602a9af6e91f73c826"
-APK_NAMES = ("collie-foss.apk", "collie.apk", "molly-continued.apk",
-             "molly-foss-continued.apk", "molly-minimal.apk")
+APK_NAME = "collie.apk"
+LAST_LEGACY_VERSION_CODE = 178205  # v8.36.3-3
+LEGACY_APK_NAMES = {APK_NAME, "collie-foss.apk", "molly-continued.apk",
+                    "molly-foss-continued.apk", "molly-minimal.apk"}
 RECORD_NAME = "publication.json"
 MANIFEST_NAME = "release.json"
-# A Stable release may also carry the TrailBlazer Beta APK released alongside it.
+# Historical Stable releases could carry a TrailBlazer Beta companion.
 BETA_NAME = "collie-beta.apk"
 BETA_PACKAGE = "im.collie.app.trailblazer"
 BETA_CERTIFICATE = "a515c03498bce8852b835544910b09ccc11a3abbed23e826e9c62c002680fe98"
@@ -124,7 +125,7 @@ def record_for(snapshot, built_on):
             **{key: snapshot[key] for key in ("tag_object", "source_commit", "package",
                                              "version_name", "version_code", "apk_certificate_sha256")},
             "built_on": built_on,
-            "apks": [asset for asset in snapshot["assets"] if asset["name"] in APK_NAMES]}
+            "apks": [asset for asset in snapshot["assets"] if asset["name"] in LEGACY_APK_NAMES]}
 
 
 def validate_record(snapshot):
@@ -132,8 +133,12 @@ def validate_record(snapshot):
     require(isinstance(record, dict), "Prerelease has no structured publication record; legacy releases are not rewritten")
     require(type(record.get("schema")) is int and record["schema"] == 1, "Unsupported publication record schema")
     require(record.get("source_branch", "main") == "main", "Publication record must use the main source branch")
-    require({asset["name"] for asset in snapshot["assets"]} - {BETA_NAME, MANIFEST_NAME} == {*APK_NAMES, RECORD_NAME},
-            "Published Collie must have all profile copies and its publication record")
+    names = {asset["name"] for asset in snapshot["assets"]}
+    if names - {BETA_NAME, MANIFEST_NAME} != LEGACY_APK_NAMES | {RECORD_NAME}:
+        require(names - {MANIFEST_NAME} == {APK_NAME, RECORD_NAME},
+                "Expected only the canonical APK or the complete historical APK set")
+        require(snapshot["release"]["draft"] or MANIFEST_NAME in names,
+                "Published canonical-only release is missing release.json")
     require(record == record_for(snapshot, record.get("built_on")),
             "Publication record differs from the signed tag or exact APK assets")
     return record
@@ -339,16 +344,19 @@ class Publication:
         identity = self.tag_identity(tag)
         assets = self.asset_list(state["id"])
         names = {asset["name"] for asset in assets}
-        require("collie.apk" in names and names <= {*APK_NAMES, RECORD_NAME, MANIFEST_NAME, BETA_NAME},
-                "Only Collie APKs, collie-beta.apk, publication.json and release.json are accepted by this publisher")
-        canonical = next(asset for asset in assets if asset["name"] == "collie.apk")
+        allowed = {APK_NAME, RECORD_NAME, MANIFEST_NAME}
+        if not state["draft"] and identity["version_code"] <= LAST_LEGACY_VERSION_CODE:
+            allowed |= LEGACY_APK_NAMES | {BETA_NAME}
+        require(APK_NAME in names and names <= allowed,
+                "Unexpected release asset set; new releases use collie.apk, publication.json and release.json")
+        canonical = next(asset for asset in assets if asset["name"] == APK_NAME)
         actual = self.inspected_apk(canonical)
         require(actual == {"package": PACKAGE, "version_name": identity["version_name"],
                            "version_code": identity["version_code"]}, "APK identity differs from signed tag source")
         snapshot = {"schema": 1, "repository": REPOSITORY, "release": state, **identity, "package": PACKAGE,
                     "apk_certificate_sha256": CERTIFICATE, "assets": assets, "publication": None}
         for asset in assets:
-            if asset["name"] in APK_NAMES:
+            if asset["name"] in LEGACY_APK_NAMES:
                 require(asset["sha256"] == canonical["sha256"], "Profile copy differs from collie.apk")
                 self.downloaded(asset)
             elif asset["name"] == BETA_NAME:
@@ -416,43 +424,27 @@ class Publication:
         latest_before = self.github.latest_id()
         if current["publication"] is not None:
             require(validate_record(current)["built_on"] == built_on, "Draft build origin differs")
-        canonical = next(asset for asset in current["assets"] if asset["name"] == "collie.apk")
+        canonical = next(asset for asset in current["assets"] if asset["name"] == APK_NAME)
+        record = record_for(current, built_on)
         upload = []
-        for name in APK_NAMES:
-            if name not in {asset["name"] for asset in current["assets"]}:
-                path = self.scratch / name
-                shutil.copyfile(self.downloaded(canonical), path)
-                upload.append(path)
-        if upload:
-            self.github.upload(tag, upload)
-        prepared = self.inspect(tag, "publish")
-        require({asset["name"] for asset in prepared["assets"] if asset["name"] in APK_NAMES} == set(APK_NAMES),
-                "Profile upload did not produce the complete APK set")
-        require(prepared["release"] == current["release"] and
-                all(asset in prepared["assets"] for asset in current["assets"]), "Draft changed while adding profile copies")
-        require(record_for(prepared, built_on) == {**record_for(current, built_on),
-                "apks": [asset for asset in prepared["assets"] if asset["name"] in APK_NAMES]},
-                "Signed source changed while adding profile copies")
-        record = record_for(prepared, built_on)
-        upload = []
-        if prepared["publication"] is None:
+        if current["publication"] is None:
             path = self.scratch / RECORD_NAME
             write_json(path, record)
             upload.append(path)
-        if not any(asset["name"] == MANIFEST_NAME for asset in prepared["assets"]):
+        if not any(asset["name"] == MANIFEST_NAME for asset in current["assets"]):
             path = self.scratch / MANIFEST_NAME
-            write_json(path, release_manifest(prepared, canonical))
+            write_json(path, release_manifest(current, canonical))
             upload.append(path)
         if upload:
             self.github.upload(tag, upload)
-        self.published_floor(prepared, promotion=False)
+        self.published_floor(current, promotion=False)
         require(self.github.latest_id() == latest_before, "Latest changed during publication; retry")
         before = self.inspect(tag, "publish")
         require(before["release"]["draft"] and before["publication"] == record,
                 "Draft changed while recording publication identity")
         require(any(asset["name"] == MANIFEST_NAME for asset in before["assets"]),
                 "Draft is missing release.json before publication")
-        require(all(asset in before["assets"] for asset in prepared["assets"]), "Release assets changed before publication")
+        require(all(asset in before["assets"] for asset in current["assets"]), "Release assets changed before publication")
         body = notes.rstrip() + f"\n\n---\nBuilt on: {built_on}. Reproducibility: not yet verified.\n"
         self.github.transition(before["release"]["id"], prerelease=True, body=body)
         after = self.inspect(tag, "publish")
@@ -471,7 +463,7 @@ class Publication:
         require(0 < rebuilt.stat().st_size <= MAX_APK_BYTES, "Invalid rebuilt APK size")
         require(self.apk_metadata(rebuilt, signed=False) == {key: current[key] for key in
                 ("package", "version_name", "version_code")}, "Rebuilt APK identity differs")
-        canonical = next(asset for asset in current["assets"] if asset["name"] == "collie.apk")
+        canonical = next(asset for asset in current["assets"] if asset["name"] == APK_NAME)
         unsigned_digest = sha256(rebuilt)
         self.run([sys.executable, self.root / "tooling/reproducible-builds/apkdiff/apkdiff.py",
                   rebuilt, self.downloaded(canonical)], cwd=self.scratch)

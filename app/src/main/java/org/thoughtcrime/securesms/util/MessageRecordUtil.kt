@@ -15,6 +15,7 @@ import org.thoughtcrime.securesms.polls.PollRecord
 import org.thoughtcrime.securesms.stickers.StickerUrl
 
 const val MAX_BODY_DISPLAY_LENGTH = 1000
+const val MAX_BODY_DISPLAY_LINES = 16
 
 fun MessageRecord.isMediaMessage(): Boolean {
   return isMms &&
@@ -64,9 +65,30 @@ fun MessageRecord.hasDocument(): Boolean = isMms && (this as MmsMessageRecord).s
 fun MessageRecord.isViewOnceMessage(): Boolean = isMms && (this as MmsMessageRecord).isViewOnce
 
 fun MessageRecord.hasExtraText(): Boolean {
-  val hasOverflowText: Boolean = body.length > MAX_BODY_DISPLAY_LENGTH
+  val hasOverflowText: Boolean = hasOverflowingBody(body)
 
   return isBodyTruncated() || hasOverflowText
+}
+
+internal fun hasOverflowingBody(body: CharSequence): Boolean {
+  return body.length > MAX_BODY_DISPLAY_LENGTH || body.count { it == '\n' } >= MAX_BODY_DISPLAY_LINES
+}
+
+/** Returns the character limit reached first by the body length or line count. */
+fun MessageRecord.getMaxBodyDisplayLength(): Int = getMaxBodyDisplayLength(body)
+
+internal fun getMaxBodyDisplayLength(body: CharSequence): Int {
+  var lineCount = 0
+  for (i in body.indices) {
+    if (body[i] == '\n') {
+      lineCount++
+      if (lineCount == MAX_BODY_DISPLAY_LINES) {
+        return minOf(MAX_BODY_DISPLAY_LENGTH, i)
+      }
+    }
+  }
+
+  return MAX_BODY_DISPLAY_LENGTH
 }
 
 /**

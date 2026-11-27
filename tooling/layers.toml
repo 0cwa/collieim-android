@@ -160,6 +160,10 @@ about = "Device-local group invitation policy and explicit admission"
 kind = "feature"
 about = "Name collision warnings"
 
+[layers.message-rendering]
+kind = "feature"
+about = "Conversation message body rendering and truncation"
+
 [layers.theme-propagation]
 kind = "feature"
 about = "Theme propagation across screens"

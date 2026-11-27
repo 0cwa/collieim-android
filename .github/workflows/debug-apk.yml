@@ -42,6 +42,7 @@ jobs:
             ':(icase,glob)app/**/*unifiedpush*' ':(icase,glob)app/**/*unifiedpush*/**' \
             ':(icase,glob)app/**/*relay*' ':(icase,glob)app/**/*colliesocket*/**' \
             ':(glob)app/**/LinkedDevices*' app/src/main/AndroidManifest.xml \
+            app/src/androidTest/AndroidManifest.xml \
             ':(glob)app/src/main/res/values*/pairing_v1.xml' \
             app/src/main/res/navigation/app_settings_with_change_number.xml \
             .github/workflows/debug-apk.yml .github/scripts/check-relay-disclosure-results.py)
@@ -289,23 +290,6 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - name: Prepare selected instrumentation cases
         run: |
-          cat > "$RUNNER_TEMP/reuse-relay-disclosure-apks.gradle" <<'GRADLE'
-          def packageTasks = [':app:packageProdWebsiteDebug', ':app:packageProdWebsiteDebugAndroidTest']
-          if (gradle.parent == null) {
-            gradle.beforeProject { project ->
-              project.tasks.configureEach { task ->
-                if (packageTasks.contains(task.path)) {
-                  task.onlyIf('reuse the previously built and hashed APK') { false }
-                }
-              }
-            }
-            gradle.taskGraph.whenReady { graph ->
-              packageTasks.each { path ->
-                if (!graph.hasTask(path)) throw new GradleException("Missing APK packaging task: $path")
-              }
-            }
-          }
-          GRADLE
           cat > "$RUNNER_TEMP/run-relay-disclosure-api35.sh" <<'SH'
           set -euo pipefail
           evidence=build/relay-disclosure
@@ -335,9 +319,10 @@ jobs:
           run_case() {
             local method=$1 result=0
             rm -rf app/build/outputs/androidTest-results
+            # Both APKs and their metadata already exist. Exclude packaging and its prerequisites.
             ./gradlew --no-daemon --console=plain \
-              :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
-              :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-relay-disclosure-apks.gradle" \
+              :app:connectedProdWebsiteDebugAndroidTest \
+              -x :app:packageProdWebsiteDebug -x :app:packageProdWebsiteDebugAndroidTest \
               "-Pandroid.testInstrumentationRunnerArguments.class=im.molly.unifiedpush.enrollment.RelayDisclosureUiTest#$method" \
               -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
               -Pandroid.testInstrumentationRunnerArguments.ep_screenshot=relay || result=$?

@@ -83,7 +83,18 @@ object Linkifier {
   )
 
   /**
-   * Finds all web URLs in [text], in left-to-right order.
+   * Matches a `geo:` URI per RFC 5870 plus Google's `?q=`/`?z=` query extension. Coordinate shape
+   * is permissive here — lat/lon ranges are validated separately by [hasValidGeoCoordinates].
+   */
+  private val GEO_URI_PATTERN: Pattern = Pattern.compile(
+    "(?i)geo:" +
+      "-?\\d{1,3}(?:\\.\\d+)?,-?\\d{1,3}(?:\\.\\d+)?" +
+      "(?:,-?\\d+(?:\\.\\d+)?)?" +
+      "(?:[;?]" + URL_CHAR + "*)?"
+  )
+
+  /**
+   * Finds all web URLs and `geo:` URIs in [text], in left-to-right order.
    */
   @JvmStatic
   fun findLinks(text: CharSequence): List<DetectedLink> {
@@ -91,11 +102,12 @@ object Linkifier {
       return emptyList()
     }
 
-    val matcher = WEB_URL_PATTERN.matcher(text)
     val out = ArrayList<DetectedLink>()
-    while (matcher.find()) {
-      val start = matcher.start()
-      val rawEnd = matcher.end()
+
+    val webMatcher = WEB_URL_PATTERN.matcher(text)
+    while (webMatcher.find()) {
+      val start = webMatcher.start()
+      val rawEnd = webMatcher.end()
 
       if (!isAtLeadingBoundary(text, start)) {
         continue
@@ -119,6 +131,36 @@ object Linkifier {
 
       val normalized = if (raw.contains("://")) raw else "http://$raw"
       out.add(DetectedLink(start, end, normalized))
+    }
+
+    val geoMatcher = GEO_URI_PATTERN.matcher(text)
+    while (geoMatcher.find()) {
+      val start = geoMatcher.start()
+      val rawEnd = geoMatcher.end()
+
+      if (!isAtLeadingBoundary(text, start)) {
+        continue
+      }
+
+      val end = trimTrailingNonUrlChars(text, start, rawEnd)
+      if (end <= start) {
+        continue
+      }
+
+      if (end < text.length && isFormatOrZeroWidth(text[end])) {
+        continue
+      }
+
+      val raw = text.subSequence(start, end).toString()
+      if (!hasValidGeoCoordinates(raw)) {
+        continue
+      }
+
+      out.add(DetectedLink(start, end, raw))
+    }
+
+    if (out.size > 1) {
+      out.sortBy { it.start }
     }
     return out
   }
@@ -225,6 +267,20 @@ object Linkifier {
     return tld.lowercase() in TOP_LEVEL_DOMAINS
   }
 
+  /**
+   * Checks that the lat/lon embedded in a geo URI fall within valid Earth ranges. The regex is
+   * permissive so out-of-range coordinates (e.g. lat 91) still need to be rejected here.
+   */
+  private fun hasValidGeoCoordinates(geoUri: String): Boolean {
+    val body = geoUri.substring("geo:".length)
+    val coordEnd = body.indexOfAny(charArrayOf(';', '?')).let { if (it < 0) body.length else it }
+    val parts = body.substring(0, coordEnd).split(',')
+    if (parts.size < 2 || parts.size > 3) return false
+    val lat = parts[0].toDoubleOrNull() ?: return false
+    val lon = parts[1].toDoubleOrNull() ?: return false
+    return lat in -90.0..90.0 && lon in -180.0..180.0
+  }
+
   /** Returns a set containing every entry in [unicode] plus its punycode form (where applicable). */
   private fun withPunycode(unicode: Set<String>): Set<String> {
     val out: MutableSet<String> = HashSet(unicode.size * 2)
@@ -241,7 +297,7 @@ object Linkifier {
    *
    * @property start  Inclusive start offset within the source text.
    * @property end    Exclusive end offset within the source text.
-   * @property url    The link target. `http://` is added if no scheme was present in the source.
+   * @property url    The link target. `http://` is added to web links without a scheme; `geo:` links keep their URI.
    */
   data class DetectedLink(
     val start: Int,

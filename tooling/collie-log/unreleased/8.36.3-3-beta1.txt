@@ -1,0 +1,119 @@
+topic: setup
+pr: 267
+The Collie setup checklist and message delivery status make it easier to see what needs attention.
+
+topic: push
+pr: 282
+Linked devices can receive encrypted push notifications.
+
+topic: push
+pr: 280
+Pair UnifiedPush with one QR scan, or export your enrollment through Android's file picker.
+
+topic: push
+pr: 268
+UnifiedPush refreshes when your relay rotates keys at the same address.
+
+topic: backups
+pr: 260
+Choose a Round Sync task to run after a successful on-device V2 backup.
+
+topic: backups
+pr: 277
+Backups preserve rollback state and check that the backup belongs to the importing account.
+
+topic: backups
+pr: 262
+Restoring a backup preserves attachment aliases so saved media can still be found.
+
+topic: backups
+pr: 272
+Failed device transfers now report failure correctly.
+
+topic: backups
+pr: 276
+Interrupted archive uploads retry with the correct attachment.
+
+topic: privacy
+pr: 279
+Remove selected attachments from this device while keeping the message text and reactions.
+
+topic: privacy
+pr: 278
+Choose whose group additions Collie accepts automatically in Settings → Collie → Privacy.
+
+topic: privacy
+pr: 141
+Review what a push relay needs from your linked device before you approve setup.
+
+topic: updates
+pr: 252
+What's new shows the current release with clearer notes and separate Stable and Beta histories.
+
+topic: updates
+pr: 251
+Find App updates at the top of Settings → Collie.
+
+topic: devices
+pr: 250
+Link a device by pasting its linking code.
+
+topic: devices
+pr: 238
+Get notified sooner when a device is linked and get a later reminder.
+
+topic: settings
+pr: 293
+Collie-added settings are italicized outside the Collie settings screen.
+
+topic: look
+pr: 304
+Automatic outgoing chat bubble colors now use the colors in your photo wallpaper.
+
+topic: look
+pr: 302
+Choose a color palette or Pure black in Appearance. Your choices stay on this device.
+
+topic: fixes
+pr: 229
+A wrong app unlock passphrase now shows an error and clears the entry field.
+
+topic: signal
+pr: 292
+Shared links appear under Links even when the message has no link preview.
+
+topic: signal
+pr: 291
+Screen readers can use conversation actions directly from conversation rows.
+
+topic: signal
+pr: 290
+Sharing a photo from another app keeps any draft already in the conversation.
+
+topic: signal
+pr: 289
+Messages with many blank lines take up less space in the chat.
+
+topic: signal
+pr: 288
+Tap a geo: location link in a message to open it in a maps app.
+
+topic: signal
+pr: 287
+Received polls use the same visible-character limits as sent polls, including for emoji.
+
+topic: signal
+pr: 286
+Poll votes received before the poll now count when it arrives.
+
+topic: signal
+pr: 285
+Reactions and pins stay in place when an edit arrives for an older version of a message.
+
+topic: signal
+pr: 284
+Screen readers can identify and select each reaction in the reaction picker.
+
+topic: signal
+pr: 283
+Synced contacts known only by their phone number are now recognized as registered.

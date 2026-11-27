@@ -1,3 +1,7 @@
+version: 8.36.3-3-beta1
+date: 2026-11-27
+tag: trailblazer-v8.36.3-3-beta1
+
 topic: setup
 pr: 267
 The Collie setup checklist and message delivery status make it easier to see what needs attention.
@@ -15,24 +19,24 @@ pr: 268
 UnifiedPush refreshes when your relay rotates keys at the same address.
 
 topic: backups
-pr: 260
-Choose a Round Sync task to run after a successful on-device V2 backup.
-
-topic: backups
 pr: 277
 Backups preserve rollback state and check that the backup belongs to the importing account.
 
 topic: backups
-pr: 262
-Restoring a backup preserves attachment aliases so saved media can still be found.
+pr: 276
+Interrupted archive uploads retry with the correct attachment.
 
 topic: backups
 pr: 272
 Failed device transfers now report failure correctly.
 
 topic: backups
-pr: 276
-Interrupted archive uploads retry with the correct attachment.
+pr: 262
+Restoring a backup preserves attachment aliases so saved media can still be found.
+
+topic: backups
+pr: 260
+Choose a Round Sync task to run after a successful on-device V2 backup.
 
 topic: privacy
 pr: 279

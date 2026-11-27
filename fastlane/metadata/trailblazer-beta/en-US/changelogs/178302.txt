@@ -1,0 +1,7 @@
+- Pick a color palette or Pure black in Appearance. Photo wallpapers can color chat bubbles.
+- Find shared links without previews. Remove attachments locally and keep text and reactions.
+- Choose who can add you to groups automatically.
+- Pair UnifiedPush with one QR scan. Linked devices receive encrypted push.
+- Run a Round Sync task after an on-device V2 backup.
+- Redesigned What's new. Find App updates in Settings > Collie.
+- Improved screen-reader actions, polls, and photo sharing.

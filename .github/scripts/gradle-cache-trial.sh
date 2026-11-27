@@ -48,7 +48,8 @@ snapshot() {
 snapshot > "$evidence/$mode-before.tsv"
 start=$SECONDS
 status=0
-./gradlew --no-daemon --no-build-cache --no-configuration-cache --console=plain \
+# Gradle test reports use Unicode test names in filesystem paths.
+LC_ALL=C.UTF-8 ./gradlew --no-daemon --no-build-cache --no-configuration-cache --console=plain \
     "${offline[@]}" "${args[@]}" "${tasks[@]}" || status=$?
 elapsed=$((SECONDS - start))
 snapshot > "$evidence/$mode-after.tsv"

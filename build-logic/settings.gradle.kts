@@ -1,9 +1,24 @@
 pluginManagement {
   repositories {
-    // The kotlin-dsl plugin and its Kotlin libraries otherwise come from the Gradle plugin portal,
-    // which forwards to Maven Central and fails with HTTP 429 on CI runners. Mirror first.
-    maven("https://maven-central.storage-download.googleapis.com/maven2/")
-    mavenCentral()
+    // Resolve the kotlin-dsl plugin from its publishing repository; mirror other dependencies first.
+    gradlePluginPortal {
+      content {
+        includeGroup("org.gradle.kotlin.kotlin-dsl")
+        includeModule("org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
+      }
+    }
+    maven("https://maven-central.storage-download.googleapis.com/maven2/") {
+      content {
+        excludeGroup("org.gradle.kotlin.kotlin-dsl")
+        excludeModule("org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
+      }
+    }
+    mavenCentral {
+      content {
+        excludeGroup("org.gradle.kotlin.kotlin-dsl")
+        excludeModule("org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
+      }
+    }
     gradlePluginPortal()
   }
 }

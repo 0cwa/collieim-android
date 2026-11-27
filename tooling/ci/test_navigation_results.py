@@ -125,6 +125,10 @@ class NavigationGateTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'screenshots'): self.check()
         Image.new('RGB', (100, 100), 'white').save(screenshot)
         with self.assertRaisesRegex(ValueError, 'blank'): self.check()
+        bars_only = Image.new('RGB', (100, 100), 'white')
+        ImageDraw.Draw(bars_only).rectangle((10, 96, 90, 99), fill='black')
+        bars_only.save(screenshot)
+        with self.assertRaisesRegex(ValueError, 'blank'): self.check()
         screenshot.write_bytes(original)
 
 

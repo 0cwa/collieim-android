@@ -103,7 +103,9 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.verify()
         with Image.open(path, formats=['PNG']) as image:
             image.load()
-            if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
+            inset = image.height // 20
+            content = image.crop((0, inset, image.width, image.height - inset))
+            if min(image.size) < 50 or max(ImageStat.Stat(content.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
     print('Passed eight host navigation cases, five API 35 navigation cases, and one Stable release-notes case with matching APKs and decoded screenshots')
 

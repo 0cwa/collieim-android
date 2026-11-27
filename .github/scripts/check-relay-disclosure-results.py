@@ -29,6 +29,28 @@ def hashes(path):
     return result
 
 
+def require_instrumentation_pass(raw, method):
+    status = {}
+    test_events = []
+    run_codes = []
+    for line in raw.splitlines():
+        kind, _, value = line.partition(': ')
+        if kind == 'INSTRUMENTATION_STATUS':
+            key, _, item = value.partition('=')
+            status[key] = item
+        elif kind == 'INSTRUMENTATION_STATUS_CODE':
+            test_events.append((value, status.get('class'), status.get('test')))
+            status.clear()
+        elif kind == 'INSTRUMENTATION_CODE':
+            run_codes.append(value)
+        elif kind == 'INSTRUMENTATION_FAILED' or line.startswith('INSTRUMENTATION_RESULT: shortMsg='):
+            raise ValueError(f'instrumentation failed for {method}: {line}')
+    # am instrument can exit with status zero after failed or missing tests.
+    expected_events = [('1', CLASS, method), ('0', CLASS, method)]
+    if test_events != expected_events or run_codes != ['-1']:
+        raise ValueError(f'expected one passing instrumentation case for {method}: {test_events}, {run_codes}')
+
+
 def check(root, build_outcome, device_outcome, expected_sha):
     evidence = root / 'build/relay-disclosure'
     if (build_outcome, device_outcome) != ('success', 'success'):
@@ -37,7 +59,7 @@ def check(root, build_outcome, device_outcome, expected_sha):
     if len(source) != 2 or any(not re.fullmatch(r'[0-9a-f]{40}', value) for value in source) or source[0] != expected_sha:
         raise ValueError('missing or mismatched source identity')
     if (evidence / 'exit-code.txt').read_text().strip() != '0':
-        raise ValueError('connected test command failed')
+        raise ValueError('instrumentation command failed')
     if (evidence / 'device-api.txt').read_text().strip() != '35' or not (evidence / 'device-fingerprint.txt').read_text().strip():
         raise ValueError('missing API 35 device identity')
     app = ET.parse(evidence / 'app-manifest.xml').getroot()
@@ -55,18 +77,8 @@ def check(root, build_outcome, device_outcome, expected_sha):
     if set(before) != expected_apks:
         raise ValueError('expected matching prodWebsite app and Android test APKs')
 
-    cases = []
-    for path in (evidence / 'results').rglob('TEST-*.xml'):
-        report = ET.parse(path).getroot()
-        for suite in report.iter('testsuite'):
-            if any(int(suite.get(key, '0')) for key in ('failures', 'errors', 'skipped')):
-                raise ValueError(f'failed or skipped test suite: {path}')
-        for case in report.iter('testcase'):
-            if case.get('classname') != CLASS or any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
-                raise ValueError(f'wrong class or nonpassing test case: {path}')
-            cases.append(case.get('name'))
-    if len(cases) != 2 or set(cases) != METHODS:
-        raise ValueError(f'missing, duplicate, or unexpected selected test cases: {cases}')
+    for method in sorted(METHODS):
+        require_instrumentation_pass((evidence / f'{method}.log').read_text(), method)
 
     screenshots = list((evidence / 'screenshots').glob('*.png'))
     if len(screenshots) != len(SCREENSHOTS) or {path.name for path in screenshots} != SCREENSHOTS:
@@ -78,8 +90,15 @@ def check(root, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized screenshot: {path.name}')
+    result = evidence / 'results' / f'TEST-{CLASS}.xml'
+    result.parent.mkdir(exist_ok=True)
+    suite = ET.Element('testsuite', name=CLASS, tests=str(len(METHODS)), failures='0', errors='0', skipped='0')
+    for method in sorted(METHODS):
+        ET.SubElement(suite, 'testcase', classname=CLASS, name=method)
+    ET.ElementTree(suite).write(result, encoding='utf-8', xml_declaration=True)
+
     report = [f'Source commit: {source[0]}', 'Device API: 35', 'Passing tests:']
-    report.extend(f'- {name}' for name in sorted(cases))
+    report.extend(f'- {name}' for name in sorted(METHODS))
     report.append('Screenshots:')
     report.extend(f'- {path.name} ({path.stat().st_size} bytes)' for path in sorted(screenshots))
     (evidence / 'report.txt').write_text('\n'.join(report) + '\n')

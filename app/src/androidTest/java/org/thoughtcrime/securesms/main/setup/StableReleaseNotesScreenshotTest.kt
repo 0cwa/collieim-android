@@ -28,12 +28,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /** Renders the Stable release UI from an offline prepared-release fixture without touching app state. */
 @RunWith(AndroidJUnit4::class)
@@ -98,7 +101,25 @@ class StableReleaseNotesScreenshotTest {
 
   private fun saveScreenshot(name: String) {
     compose.waitForIdle()
-    val bitmap = instrumentation.uiAutomation.takeScreenshot()
+    // Compose semantics can be ready before the first frame reaches the window.
+    val frameCommitted = CountDownLatch(1)
+    val callback = Runnable { frameCommitted.countDown() }
+    val decor = compose.activity.window.decorView
+    compose.runOnUiThread {
+      assertTrue("Release notice must use hardware rendering", decor.isHardwareAccelerated)
+      decor.viewTreeObserver.registerFrameCommitCallback(callback)
+      decor.postInvalidateOnAnimation()
+    }
+    try {
+      assertTrue("Release notice did not submit a rendered frame", frameCommitted.await(15, TimeUnit.SECONDS))
+    } finally {
+      compose.runOnUiThread {
+        val observer = decor.viewTreeObserver
+        if (observer.isAlive) observer.unregisterFrameCommitCallback(callback)
+      }
+    }
+    instrumentation.uiAutomation.waitForIdle(500, 5_000)
+    val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot()) { "Could not capture $name" }
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/collie-release-notes/"
     try {
       val resolver = context.contentResolver

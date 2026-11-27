@@ -222,7 +222,7 @@
         <!-- Allows for Overrides -->
     </style>
 
-    <style name="TextSecure.BaseLightTheme" parent="@style/Theme.Molly.Material3.Light">
+    <style name="TextSecure.SharedLightTheme" parent="@style/Theme.Molly.Material3.Light">
         <item name="theme_type">light</item>
         <item name="fullScreenDialogStyle">@style/Signal.DayNight.Dialog.FullScreen</item>
         <item name="fixedRoundedCornerBottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners</item>
@@ -305,7 +305,6 @@
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="conversation_toolbar_color">?attr/colorSurface</item>
-        <item name="signal_inverse_primary">@color/signal_inverse_primary</item>
         <item name="signal_accent_primary">@color/core_ultramarine</item>
         <item name="signal_background_primary">?attr/colorSurface</item>
         <item name="signal_background_secondary">?attr/colorSurfaceContainerLow</item>
@@ -358,8 +357,8 @@
         <item name="quote_view_background_outgoing_normal">@color/signal_colorTransparent4</item>
         <item name="quote_view_bar_outgoing_normal">@color/signal_colorOnCustom</item>
         <item name="quote_view_foreground_outgoing_normal">?attr/colorOnSurface</item>
-        <item name="quote_view_label_background_incoming_normal">@color/signal_color_on_surface_8</item>
-        <item name="quote_view_label_background_incoming_wallpaper">@color/signal_color_on_surface_8</item>
+        <item name="quote_view_label_background_incoming_normal">@color/signal_colorOnSurface_8</item>
+        <item name="quote_view_label_background_incoming_wallpaper">@color/signal_colorOnSurface_8</item>
         <item name="quote_view_label_background_outgoing_normal">@color/transparent_white_36</item>
         <item name="quote_view_label_background_outgoing_wallpaper">@color/transparent_white_36</item>
         <item name="react_with_any_background">?attr/colorSurfaceContainerLow</item>
@@ -387,18 +386,19 @@
 
         <item name="context_menu_container_color">@color/molly_surface_container_light</item>
         <item name="reactions_overlay_shade_color">@color/reactions_screen_dark_shade_color</item>
-        <!-- Keep the Collie selected-emoji fill; the System themes use a surface-container role. -->
         <item name="reactions_overlay_selected_emoji_background">@color/signal_colorSurfaceVariant_16_no_alpha</item>
 
         <item name="navbar_active_indicator_color">@color/molly_secondary_container_light</item>
         <item name="navbar_container_color">@color/molly_secondary_fixed</item>
     </style>
 
+    <style name="TextSecure.BaseLightTheme" parent="TextSecure.SharedLightTheme" />
+
     <style name="TextSecure.DarkTheme" parent="@style/TextSecure.BaseDarkTheme">
         <!-- leave empty to allow overriding -->
     </style>
 
-    <style name="TextSecure.BaseDarkTheme" parent="@style/Theme.Molly.Material3.Dark">
+    <style name="TextSecure.SharedDarkTheme" parent="@style/Theme.Molly.Material3.Dark">
         <item name="theme_type">dark</item>
         <item name="fullScreenDialogStyle">@style/Signal.DayNight.Dialog.FullScreen</item>
         <item name="fixedRoundedCornerBottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners</item>
@@ -479,7 +479,6 @@
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="conversation_toolbar_color">?attr/colorSurface</item>
-        <item name="signal_inverse_primary">@color/signal_inverse_primary</item>
         <item name="signal_accent_primary">@color/core_ultramarine_light</item>
         <item name="signal_background_primary">?attr/colorSurface</item>
         <item name="signal_background_secondary">?attr/colorSurfaceContainerLow</item>
@@ -561,12 +560,13 @@
 
         <item name="context_menu_container_color">@color/molly_surface_container_high_dark</item>
         <item name="reactions_overlay_shade_color">@color/reactions_screen_dark_shade_color</item>
-        <!-- Keep the Collie selected-emoji fill; the System themes use a surface-container role. -->
         <item name="reactions_overlay_selected_emoji_background">@color/signal_colorSurfaceVariant_16_no_alpha</item>
 
         <item name="navbar_active_indicator_color">@color/molly_secondary_container_dark</item>
         <item name="navbar_container_color">@color/molly_surface_container_dark</item>
     </style>
+
+    <style name="TextSecure.BaseDarkTheme" parent="TextSecure.SharedDarkTheme" />
 
     <style name="Theme.Signal.AlertDialog.Light.Cornered" parent="MaterialAlertDialog.Material3">
         <item name="android:windowBackground">@drawable/dialog_corners</item>

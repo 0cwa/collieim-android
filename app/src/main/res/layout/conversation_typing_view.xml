@@ -140,7 +140,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp"
-                app:typingIndicator_tint="?attr/signal_inverse_primary" />
+                app:typingIndicator_tint="@color/signal_inverse_primary" />
 
         </FrameLayout>
     </org.thoughtcrime.securesms.components.ClippedCardView>

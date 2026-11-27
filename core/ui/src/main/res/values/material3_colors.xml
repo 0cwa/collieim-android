@@ -36,6 +36,7 @@
     <!-- Core color alpha variants -->
     <color name="signal_colorSecondaryContainer_12">#1FB7C597</color>
     <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
+    <color name="signal_colorSurface_60">#99FFF8F0</color>
     <color name="signal_colorSurfaceVariant_38">#61F8E2C0</color>
     <color name="signal_colorSurfaceVariant_64">#A3F8E2C0</color>
     <color name="signal_colorOnSurface_8">#1424130D</color>

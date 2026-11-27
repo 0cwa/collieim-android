@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Molly.Dynamic.Light" parent="Theme.Molly.Dynamic.Shared.Light">
+        <item name="signal_inverse_primary">?attr/colorPrimaryInverse</item>
+        <item name="signal_background_dialog">?attr/colorSurfaceContainer</item>
+        <item name="signal_background_dialog_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_text_toolbar_title">?attr/colorOnSurface</item>
+        <item name="signal_icon_tint_secondary">?attr/colorOnSurfaceVariant</item>
+        <item name="signal_icon_tint_action">?attr/colorOnSurface</item>
+        <item name="signal_button_primary_text">?attr/colorOnPrimary</item>
+        <item name="signal_button_primary_text_disabled">@color/signal_color_on_primary_20</item>
+        <item name="signal_button_primary_ripple">@color/signal_color_on_primary_12</item>
+        <item name="signal_button_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_button_secondary_ripple">@color/signal_color_on_surface_12</item>
+        <item name="signal_button_secondary_text_disabled">@color/signal_color_on_surface_38</item>
+        <item name="signal_button_secondary_stroke">?attr/colorOutline</item>
+    </style>
+
+    <style name="Theme.Molly.Dynamic.Dark" parent="Theme.Molly.Dynamic.Shared.Dark">
+        <item name="signal_inverse_primary">?attr/colorPrimaryInverse</item>
+        <item name="signal_background_dialog">?attr/colorSurfaceContainer</item>
+        <item name="signal_background_dialog_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_text_toolbar_title">?attr/colorOnSurface</item>
+        <item name="signal_icon_tint_secondary">?attr/colorOnSurfaceVariant</item>
+        <item name="signal_icon_tint_action">?attr/colorOnSurface</item>
+        <item name="signal_button_primary_text">?attr/colorOnPrimary</item>
+        <item name="signal_button_primary_text_disabled">@color/signal_color_on_primary_20</item>
+        <item name="signal_button_primary_ripple">@color/signal_color_on_primary_12</item>
+        <item name="signal_button_secondary">?attr/colorSurfaceContainerLow</item>
+        <item name="signal_button_secondary_ripple">@color/signal_color_on_surface_12</item>
+        <item name="signal_button_secondary_text_disabled">@color/signal_color_on_surface_38</item>
+        <item name="signal_button_secondary_stroke">?attr/colorOutline</item>
+    </style>
+</resources>

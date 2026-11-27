@@ -18,10 +18,12 @@ import com.google.android.material.R as MaterialR
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.core.ui.R as CoreUiR
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.flags.CollieFlags
 import kotlin.math.roundToInt
 
 /** Verifies theme attributes inside a color state list on the app's API 27 floor. */
@@ -31,6 +33,7 @@ class ThemeStateListApi27Test {
 
   @Test
   fun themedDismissShapeAndDisabledSelectorsResolveDistinctRoles() {
+    assumeTrue(CollieFlags.userTheming)
     val baseContext = ApplicationProvider.getApplicationContext<Context>()
     verifyTheme(baseContext, R.style.TextSecure_LightTheme)
     verifyTheme(baseContext, R.style.TextSecure_DarkTheme)

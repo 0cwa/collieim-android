@@ -8,8 +8,10 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import org.signal.core.ui.util.ThemeUtil;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.flags.CollieFlags;
 
 public class AsciiEmojiView extends View {
 
@@ -38,7 +40,9 @@ public class AsciiEmojiView extends View {
     float targetFontSize = 0.75f * getHeight() - getPaddingTop() - getPaddingBottom();
 
     paint.setTextSize(targetFontSize);
-    paint.setColor(ThemeUtil.getThemedColor(getContext(), R.attr.signal_inverse_primary));
+    paint.setColor(CollieFlags.INSTANCE.getUserTheming()
+                   ? ThemeUtil.getThemedColor(getContext(), R.attr.signal_inverse_primary)
+                   : ContextCompat.getColor(getContext(), org.signal.core.ui.R.color.signal_inverse_primary));
     paint.setTextAlign(Paint.Align.CENTER);
 
     int xPos = (getWidth() / 2);

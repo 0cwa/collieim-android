@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true" android:state_selected="true">
         <shape android:shape="rectangle">
-            <solid android:color="@color/signal_color_outline_38" />
+            <solid android:color="@color/signal_colorOutline_38" />
             <stroke android:color="?attr/colorPrimary" android:width="1.5dp" />
             <corners android:radius="18dp" />
         </shape>
@@ -15,13 +15,13 @@
     </item>
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <solid android:color="@color/signal_color_outline_38" />
+            <solid android:color="@color/signal_colorOutline_38" />
             <corners android:radius="18dp" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
-            <stroke android:color="@color/signal_color_outline_38" android:width="1.5dp" />
+            <stroke android:color="@color/signal_colorOutline_38" android:width="1.5dp" />
             <corners android:radius="18dp" />
         </shape>
     </item>

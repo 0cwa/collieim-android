@@ -222,7 +222,7 @@
             android:textAppearance="@style/Signal.Text.BodyMedium"
             android:textColor="?attr/colorOnSurface"
             android:visibility="gone"
-            app:backgroundTint="@color/signal_color_surface_variant_64"
+            app:backgroundTint="@color/signal_colorSurfaceVariant_64"
             app:backgroundTintMode="src_in"
             app:cornerRadius="16dp"
             app:icon="@drawable/add_to_story_16"

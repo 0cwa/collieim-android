@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextSecure.BaseLightTheme" parent="TextSecure.SharedLightTheme">
+        <item name="signal_inverse_primary">@color/signal_inverse_primary</item>
+        <item name="quote_view_label_background_incoming_normal">@color/signal_color_on_surface_8</item>
+        <item name="quote_view_label_background_incoming_wallpaper">@color/signal_color_on_surface_8</item>
+    </style>
+
+    <style name="TextSecure.BaseDarkTheme" parent="TextSecure.SharedDarkTheme">
+        <item name="signal_inverse_primary">@color/signal_inverse_primary</item>
+    </style>
+</resources>

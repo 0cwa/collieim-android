@@ -59,7 +59,7 @@
             android:layout_height="48dp"
             app:audioView_mode="small"
             app:autoRewind="true"
-            app:foregroundTintColor="?attr/signal_inverse_primary"
+            app:foregroundTintColor="@color/signal_inverse_primary"
             app:progressAndPlayTint="?attr/signal_background_secondary" />
     </FrameLayout>
 

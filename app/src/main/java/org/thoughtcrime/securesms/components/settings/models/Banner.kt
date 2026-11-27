@@ -17,10 +17,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.horizontalGutters
+import org.thoughtcrime.securesms.flags.CollieFlags
+import org.signal.core.ui.R as CoreUiR
 
 /**
  * Replicates the Banner DSL preference for use in compose components.
@@ -31,9 +34,14 @@ fun Banner(
   action: String,
   onActionClick: () -> Unit
 ) {
+  val outlineColor = if (CollieFlags.userTheming) {
+    MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)
+  } else {
+    colorResource(CoreUiR.color.signal_colorOutline_38)
+  }
   OutlinedCard(
     shape = RoundedCornerShape(18.dp),
-    border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)),
+    border = BorderStroke(width = 1.dp, color = outlineColor),
     modifier = Modifier
       .horizontalGutters()
       .fillMaxWidth()

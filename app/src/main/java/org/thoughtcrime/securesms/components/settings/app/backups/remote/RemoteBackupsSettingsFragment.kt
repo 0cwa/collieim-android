@@ -89,6 +89,7 @@ import org.signal.core.util.gibiBytes
 import org.signal.core.util.mebiBytes
 import org.signal.core.util.money.FiatMoney
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.backup.DeletionState
 import org.thoughtcrime.securesms.backup.RestoreState
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgressState
@@ -1069,7 +1070,11 @@ private fun RedemptionErrorAlert(
       .padding(top = 8.dp, bottom = 4.dp)
       .border(
         width = 1.dp,
-        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
+        color = if (CollieFlags.userTheming) {
+          MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)
+        } else {
+          colorResource(CoreUiR.color.signal_colorOutline_38)
+        },
         shape = RoundedCornerShape(12.dp)
       )
       .padding(vertical = 16.dp)

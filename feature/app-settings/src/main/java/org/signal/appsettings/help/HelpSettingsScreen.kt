@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Rows
@@ -117,7 +118,7 @@ fun HelpSettingsScreen(
       if (state.showAppUpdates && showAppUpdatesRow) {
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences_app_updates__title),
+            text = stringResource(R.string.preferences_app_updates__title).asCollieSettingTitle(),
             icon = SignalIcons.Calendar.painter,
             onClick = { onEvent(HelpSettingsEvent.VersionClicked) },
             modifier = Modifier.testTag(HelpSettingsTestTags.ROW_APP_UPDATES)
@@ -153,7 +154,7 @@ fun HelpSettingsScreen(
 
       if (state.showProjectLog) item {
         Rows.TextRow(
-          text = stringResource(R.string.HelpSettingsFragment__project_log),
+          text = stringResource(R.string.HelpSettingsFragment__project_log).asCollieSettingTitle(),
           onClick = { onEvent(HelpSettingsEvent.ProjectLogClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_PROJECT_LOG)
         )

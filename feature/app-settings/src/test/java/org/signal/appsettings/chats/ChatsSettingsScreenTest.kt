@@ -8,6 +8,7 @@ package org.signal.appsettings.chats
 import android.app.Application
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -21,9 +22,12 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.text.font.FontStyle
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -103,6 +107,19 @@ class ChatsSettingsScreenTest {
     ).assertIsOn()
 
     assertThat(events).doesNotContain(ChatsSettingsEvents.WebLinkPreviewImagesChanged(false))
+  }
+
+  @Test
+  fun onlyTheCollieAddedLinkPreviewSettingHasAnItalicTitle() {
+    setContent(createState())
+
+    val imagesTitle = composeTestRule.onNodeWithText(context.getString(R.string.ChatsSettingsScreen__web_link_preview_images), useUnmergedTree = true)
+      .fetchSemanticsNode().config[SemanticsProperties.Text].single()
+    val previewsTitle = composeTestRule.onNodeWithText(context.getString(R.string.preferences__generate_link_previews), useUnmergedTree = true)
+      .fetchSemanticsNode().config[SemanticsProperties.Text].single()
+
+    assertThat(imagesTitle.spanStyles.any { it.start == 0 && it.end == imagesTitle.length && it.item.fontStyle == FontStyle.Italic }).isTrue()
+    assertThat(previewsTitle.spanStyles.any { it.item.fontStyle == FontStyle.Italic }).isFalse()
   }
 
   @Test

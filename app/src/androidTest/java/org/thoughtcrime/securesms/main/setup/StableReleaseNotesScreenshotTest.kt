@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
@@ -19,13 +20,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
@@ -40,6 +40,7 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 @RunWith(AndroidJUnit4::class)
 class StableReleaseNotesScreenshotTest {
   @get:Rule val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
+  @get:Rule val compose = createComposeRule()
 
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
   private val context: Context get() = instrumentation.targetContext
@@ -79,7 +80,7 @@ class StableReleaseNotesScreenshotTest {
                   problem = Problem.RELEASE_ACTION,
                   onFix = { showWhatsNew = true },
                   onDismiss = null,
-                  contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                  contentPadding = PaddingValues(0.dp),
                   releaseAction = CollieReleaseNotes.edition(notes.current.highlightsId)?.action
                 )
               }
@@ -89,18 +90,18 @@ class StableReleaseNotesScreenshotTest {
       }
 
       val action = requireNotNull(CollieReleaseNotes.edition(notes.current.highlightsId)?.action)
-      onView(withText(context.getString(action.title))).check(matches(isDisplayed()))
+      compose.onNodeWithText(context.getString(action.title)).assertIsDisplayed()
       saveScreenshot("stable-release-action")
 
-      onView(withText(context.getString(action.button))).check(matches(isDisplayed())).perform(click())
-      onView(withText(context.getString(R.string.CollieWhatsNew__heading))).check(matches(isDisplayed()))
-      onView(withText(context.getString(R.string.CollieWhatsNew__stable_setup_title))).check(matches(isDisplayed()))
+      compose.onNodeWithText(context.getString(action.button)).assertIsDisplayed().performClick()
+      compose.onNodeWithText(context.getString(R.string.CollieWhatsNew__heading)).assertIsDisplayed()
+      compose.onNodeWithText(context.getString(R.string.CollieWhatsNew__stable_setup_title)).assertIsDisplayed()
       saveScreenshot("stable-whats-new-highlights")
     }
   }
 
   private fun saveScreenshot(name: String) {
-    instrumentation.waitForIdleSync()
+    compose.waitForIdle()
     val bitmap = instrumentation.uiAutomation.takeScreenshot()
     val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/collie-release-notes/"
     try {

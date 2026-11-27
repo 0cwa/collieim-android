@@ -97,12 +97,12 @@
     <string name="CollieWhatsNew__signal_body">Includes fixes from Signal.</string>
 
     <!-- Stable 8.36.3-3 highlights -->
-    <string name="CollieWhatsNew__stable_setup_title">A clearer setup checklist</string>
-    <string name="CollieWhatsNew__stable_setup_body">See what still needs attention before you start chatting.</string>
+    <string name="CollieWhatsNew__stable_setup_title">Setup checklist and push health</string>
+    <string name="CollieWhatsNew__stable_setup_body">See what needs attention and test push delivery in Notifications settings.</string>
     <string name="CollieWhatsNew__stable_updates_title">App updates in Collie settings</string>
     <string name="CollieWhatsNew__stable_updates_body">Find update checks at the top of Settings → Collie.</string>
-    <string name="CollieWhatsNew__stable_controls_title">More control over privacy and security</string>
-    <string name="CollieWhatsNew__stable_controls_body">Beta adds hardening controls for recovery actions, with phone authentication before backup-key access.</string>
+    <string name="CollieWhatsNew__stable_controls_title">Hardening controls</string>
+    <string name="CollieWhatsNew__stable_controls_body">You can require phone authentication to access your backup recovery key and your current PIN to change recovery PIN settings.</string>
     <string name="CollieWhatsNew__stable_unifiedpush_title">Simpler UnifiedPush setup</string>
     <string name="CollieWhatsNew__stable_unifiedpush_body">Pair with one QR scan, including linked-device push.</string>
     <string name="CollieWhatsNew__stable_signal_title">Based on Signal 8.36.3</string>

@@ -37,8 +37,8 @@ class NotificationMethodsTest {
     assertEquals(listOf(NotificationDeliveryMethod.WEBSOCKET, NotificationDeliveryMethod.UNIFIEDPUSH), availableNotificationMethods(false, false))
   }
 
-  @Test fun `default linked device offers FCM and websocket`() {
-    assertEquals(listOf(NotificationDeliveryMethod.FCM, NotificationDeliveryMethod.WEBSOCKET), availableNotificationMethods(true, true))
+  @Test fun `linked device offers UnifiedPush alongside supported methods`() {
+    assertEquals(listOf(NotificationDeliveryMethod.FCM, NotificationDeliveryMethod.WEBSOCKET, NotificationDeliveryMethod.UNIFIEDPUSH), availableNotificationMethods(true, true))
   }
 
   @Test fun `implicit FCM choice survives Firebase-free disabling FCM and returning to Firebase`() {

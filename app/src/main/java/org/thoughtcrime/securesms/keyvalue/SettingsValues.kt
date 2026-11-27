@@ -114,6 +114,10 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
 
     const val BACKUP_DEFAULT_HOUR = 2
     const val BACKUP_DEFAULT_MINUTE = 0
+
+    internal fun writeNotificationDeliveryMethod(writer: KeyValueStore.Writer, method: NotificationDeliveryMethod) {
+      writer.putString(MOLLY_NOTIFICATION_METHOD, method.serialize())
+    }
   }
 
   private val configurationSettingChanged = SingleLiveEvent<String>()
@@ -492,6 +496,13 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     }
     set(value) {
       putInteger(FORCE_WEBSOCKET_MODE, value.serialize())
+    }
+
+  /** The person picked the delivery method in effect, rather than getting it as a default. */
+  val hasChosenNotificationMethod: Boolean
+    get() {
+      val effective = preferredNotificationMethod
+      return store.containsKey(MOLLY_NOTIFICATION_METHOD) && getString(MOLLY_NOTIFICATION_METHOD, null) == effective.serialize()
     }
 
   /** MOLLY: FCM/Websocket/UnifiedPush delivery choice. Defaults to FCM, or Websocket when Google services are absent. */

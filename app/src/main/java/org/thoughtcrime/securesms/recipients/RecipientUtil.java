@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 
+import org.signal.core.models.ServiceId;
 import org.signal.core.util.groups.GroupChangeBusyException;
 import org.signal.core.util.groups.GroupChangeException;
 import org.signal.core.util.groups.GroupChangeFailedException;
@@ -20,6 +21,7 @@ import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.database.model.RecipientRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceBlockedUpdateJob;
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob;
@@ -29,7 +31,6 @@ import org.thoughtcrime.securesms.mms.MmsException;
 import org.thoughtcrime.securesms.mms.OutgoingMessage;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.storage.StorageSyncHelper;
-import org.signal.core.models.ServiceId;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.push.exceptions.NotFoundException;
 
@@ -138,6 +139,7 @@ public class RecipientUtil {
   public static List<Recipient> getEligibleForSending(@NonNull List<Recipient> recipients) {
     return recipients.stream()
                      .filter(r -> r.getRegistered() != RegisteredState.NOT_REGISTERED)
+                     .filter(r -> !GroupAdmission.isHeld(r))
                      .filter(r -> !r.isBlocked()).collect(Collectors.toList());
   }
 
@@ -333,7 +335,7 @@ public class RecipientUtil {
 
   @WorkerThread
   public static void shareProfileIfFirstSecureMessage(@NonNull Recipient recipient) {
-    if (recipient.isProfileSharing()) {
+    if (GroupAdmission.isHeld(recipient) || recipient.isProfileSharing()) {
       return;
     }
 
@@ -346,6 +348,10 @@ public class RecipientUtil {
   }
 
   public static boolean isLegacyProfileSharingAccepted(@NonNull Recipient threadRecipient) {
+    if (GroupAdmission.isHeld(threadRecipient)) {
+      return false;
+    }
+
     return threadRecipient.isSelf() ||
            threadRecipient.isProfileSharing() ||
            threadRecipient.isSystemContact() ||
@@ -358,7 +364,7 @@ public class RecipientUtil {
    */
   @WorkerThread
   public static boolean shouldHaveProfileKey(@NonNull Recipient recipient) {
-    if (recipient.isBlocked()) {
+    if (recipient.isBlocked() || GroupAdmission.isHeld(recipient)) {
       return false;
     }
 
@@ -381,7 +387,7 @@ public class RecipientUtil {
   @WorkerThread
   private static boolean isSharingProfileWithGroup(@NonNull GroupRecord group) {
     Recipient groupRecipient = Recipient.resolved(group.getRecipientId());
-    return !groupRecipient.isBlocked() && groupRecipient.isProfileSharing();
+    return !groupRecipient.isBlocked() && !GroupAdmission.isHeld(groupRecipient) && groupRecipient.isProfileSharing();
   }
 
   /**
@@ -408,6 +414,10 @@ public class RecipientUtil {
 
   @WorkerThread
   public static boolean isMessageRequestAccepted(@Nullable Long threadId, @Nullable Recipient threadRecipient) {
+    if (threadRecipient != null && GroupAdmission.isHeld(threadRecipient)) {
+      return false;
+    }
+
     return threadRecipient == null ||
            threadRecipient.isSelf() ||
            threadRecipient.isProfileSharing() ||
@@ -421,6 +431,10 @@ public class RecipientUtil {
 
   @WorkerThread
   private static boolean isCallRequestAccepted(@Nullable Long threadId, @NonNull Recipient threadRecipient) {
+    if (GroupAdmission.isHeld(threadRecipient)) {
+      return false;
+    }
+
     return threadRecipient.isProfileSharing() ||
            threadRecipient.isSystemContact() ||
            (!threadRecipient.isHidden() && hasSentMessageInThread(threadId));
@@ -444,6 +458,6 @@ public class RecipientUtil {
   @WorkerThread
   public static boolean isProfileSharedViaGroup(@NonNull Recipient recipient) {
     return SignalDatabase.groups().getPushGroupsContainingMember(recipient.getId()).stream()
-                         .anyMatch(group -> Recipient.resolved(group.getRecipientId()).isProfileSharing());
+                         .anyMatch(RecipientUtil::isSharingProfileWithGroup);
   }
 }

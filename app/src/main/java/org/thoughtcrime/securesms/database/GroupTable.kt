@@ -239,14 +239,12 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
             val remaps = RemappedRecords.getInstance().buildRemapDescription(groupRecord.get().members)
             Log.w(TAG, "Found a group with remapped recipients in it's membership list! Updating the list. GroupId: $groupId, Remaps: $remaps", true)
 
-            val oldToNew: List<Pair<RecipientId, RecipientId>> = groupRecord.get().members
-              .map { it to RemappedRecords.getInstance().getRecipient(it).orElse(null) }
-              .filterNot { (old, new) -> new == null || old == new }
+            writableDatabase.withinTransaction {
+              val oldToNew = groupRecord.get().members
+                .map { it to RemappedRecords.getInstance().getRecipient(it).orElse(null) }
+                .filterNot { (old, new) -> new == null || old == new }
 
-            if (oldToNew.isNotEmpty()) {
-              writableDatabase.withinTransaction {
-                oldToNew.forEach { remapRecipient(it.first, it.second) }
-              }
+              oldToNew.forEach { (old, new) -> remapRecipient(old, new) }
             }
 
             readableDatabase.query(select, query.whereArgs).use { refreshedCursor ->
@@ -335,6 +333,18 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
       .where("$GROUP_ID = ?", groupId.toString())
       .run()
       .readToSingleInt(-1)
+  }
+
+  /** Reads the stored state and local membership flag without loading or remapping recipient rows. */
+  internal fun getGroupAdmissionState(groupId: GroupId.V2): Pair<DecryptedGroup, Boolean>? {
+    return readableDatabase
+      .select(V2_DECRYPTED_GROUP, IS_MEMBER)
+      .from(TABLE_NAME)
+      .where("$GROUP_ID = ?", groupId)
+      .run()
+      .readToSingleObject { cursor ->
+        cursor.requireBlob(V2_DECRYPTED_GROUP)?.let { DecryptedGroup.ADAPTER.decode(it) to cursor.requireBoolean(IS_MEMBER) }
+      }
   }
 
   fun isUnknownGroup(groupId: GroupId): Boolean {
@@ -1667,9 +1677,8 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
 
     return if (RemappedRecords.getInstance().areAnyRemapped(ids)) {
       if (shouldRetry) {
-        Log.w(TAG, "Found remapped records where we shouldn't. Clearing cache and trying again.")
+        Log.w(TAG, "Found remapped records where we shouldn't. Clearing recipient IDs and trying again.")
         RecipientIds.clearCache()
-        RemappedRecords.getInstance().resetCache()
         getV2GroupMembers(decryptedGroup, false)
       } else {
         throw IllegalStateException("Remapped records in group membership!")

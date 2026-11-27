@@ -30,6 +30,11 @@ data class UnifiedPushSettingsState(
   val pendingExportCount: Int = 0,
   val hasLegacyPendingExport: Boolean = false,
   val relayDisclosure: RelayDisclosure.Snapshot? = null,
+  val pairingHost: String? = null,
+  val pairingOrigin: String? = null,
+  val encryptedEnrollment: Boolean = false,
+  val awaitingPushConfirmation: Boolean = false,
+  val enrollmentEpoch: Long = 0,
 ) {
   val serverParameters: String?
     get() {

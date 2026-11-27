@@ -65,7 +65,7 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
     routeApplicationState(locked);
 
     if (!isFinishing()) {
-      super.onCreate(savedInstanceState);
+      super.onCreate(frameworkSavedInstanceState(savedInstanceState));
       initializeClearKeyReceiver();
       onCreate(savedInstanceState, true);
     } else {
@@ -76,6 +76,11 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
   }
 
   protected void onPreCreate() {}
+
+  /** Lets a protected activity defer rebuilding its views until it authorizes access again. */
+  protected @Nullable Bundle frameworkSavedInstanceState(@Nullable Bundle savedInstanceState) {
+    return savedInstanceState;
+  }
 
   /** Registration hosts still require the local passphrase, but own their registration navigation. */
   protected boolean isRegistrationFlow() { return false; }

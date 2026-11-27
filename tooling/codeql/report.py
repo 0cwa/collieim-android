@@ -1,0 +1,793 @@
+#!/usr/bin/env python3
+"""Audit CodeQL SARIF without discarding findings or mistaking metrics for alerts."""
+
+from __future__ import annotations
+
+import argparse
+from collections import Counter
+import hashlib
+import html
+import json
+import math
+from pathlib import Path
+import re
+from typing import Any
+from urllib.parse import unquote, urlsplit
+
+import review_snapshots
+
+
+LANGUAGES = {"actions": "actions", "python": "py", "javascript-typescript": "js", "c-cpp": "cpp", "java-kotlin": "java"}
+# CLI baseline descriptors use extractor names, not query ID prefixes.
+EXTRACTORS = {"actions": "actions", "python": "python", "javascript-typescript": "javascript", "c-cpp": "cpp", "java-kotlin": "java"}
+LEVELS = {"none", "note", "warning", "error"}
+
+
+class SarifError(ValueError):
+    """The input cannot establish a successful, complete CodeQL analysis."""
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise SarifError(f"JSON contains duplicate object key: {key}")
+        result[key] = value
+    return result
+
+
+def objects(value: Any, label: str) -> list[dict]:
+    if not isinstance(value, list) or any(not isinstance(item, dict) for item in value):
+        raise SarifError(f"{label} must be an array of objects")
+    return value
+
+
+def indexed(values: list, index: Any, label: str) -> dict:
+    if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < len(values):
+        raise SarifError(f"Invalid {label} index: {index!r}")
+    return values[index]
+
+
+def descriptor(run: dict, reference: dict, collection: str) -> dict:
+    """Resolve both driver rules and --sarif-group-rules-by-pack references."""
+    tool = run["tool"]
+    component = tool["driver"]
+    component_ref = reference.get("toolComponent")
+    if component_ref:
+        extensions = objects(tool.get("extensions", []), "tool.extensions")
+        if "index" in component_ref:
+            component = indexed(extensions, component_ref["index"], "tool component")
+        else:
+            matches = [item for item in [component, *extensions]
+                       if any(component_ref.get(key) and component_ref[key] == item.get(key)
+                              for key in ("name", "guid"))]
+            if len(matches) != 1:
+                raise SarifError("Unresolved tool component")
+            component = matches[0]
+    candidates = objects(component.get(collection, []), collection)
+    if "index" in reference:
+        item = indexed(candidates, reference["index"], collection)
+        if reference.get("id", item.get("id")) != item.get("id"):
+            raise SarifError(f"Mismatched {collection} ID and index")
+        return item
+    if reference.get("id"):
+        return next((item for item in candidates if item.get("id") == reference["id"]),
+                    {"id": reference["id"]})
+    raise SarifError(f"Missing {collection} reference")
+
+
+def rule(run: dict, result: dict) -> dict:
+    reference = dict(result.get("rule", {}))
+    for source, target in (("ruleId", "id"), ("ruleIndex", "index")):
+        if source in result:
+            if target in reference and reference[target] != result[source]:
+                raise SarifError(f"Mismatched {source}")
+            reference[target] = result[source]
+    return descriptor(run, reference, "rules")
+
+
+def message(value: dict, metadata: dict) -> str:
+    if not isinstance(value, dict):
+        raise SarifError("A SARIF message must be an object")
+    template = value.get("text", value.get("markdown"))
+    if template is None:
+        entry = metadata.get("messageStrings", {}).get(value.get("id"), {})
+        template = entry.get("text", entry.get("markdown", value.get("id", "")))
+    if not isinstance(template, str):
+        raise SarifError("A SARIF message must contain text")
+    arguments = value.get("arguments", [])
+    return re.sub(r"\{([0-9]+)\}",
+                  lambda match: str(arguments[int(match[1])]) if int(match[1]) < len(arguments) else match[0],
+                  template)
+
+
+def locations(run: dict, entries: list) -> list[dict]:
+    result = []
+    for entry in objects(entries, "locations"):
+        physical = entry.get("physicalLocation", {})
+        artifact = physical.get("artifactLocation", {})
+        if "uri" not in artifact and "index" in artifact:
+            artifact = {**indexed(objects(run.get("artifacts", []), "artifacts"),
+                                   artifact["index"], "artifact").get("location", {}), **artifact}
+        region = physical.get("region", {})
+        result.append({
+            "uri": artifact.get("uri"), "uri_base_id": artifact.get("uriBaseId"),
+            "start_line": region.get("startLine"), "start_column": region.get("startColumn"),
+            "end_line": region.get("endLine"), "end_column": region.get("endColumn"),
+        })
+    return result
+
+
+def nested_context_locations(run: dict, value: Any) -> list[dict]:
+    """Resolve locations anywhere in flow/related evidence, including stacks."""
+    found = []
+
+    def visit(item: Any, is_location: bool = False) -> None:
+        if is_location and not isinstance(item, dict):
+            raise SarifError("Flow context location must be an object")
+        if isinstance(item, dict):
+            if is_location or "physicalLocation" in item:
+                found.extend(locations(run, [item]))
+            for key, child in item.items():
+                visit(child, key == "location")
+        elif isinstance(item, list):
+            for child in item:
+                visit(child)
+
+    visit(value)
+    return found
+
+
+
+def canonical_context(run: dict, value: Any, kind: str | None = None) -> Any:
+    """Resolve ephemeral SARIF references while preserving their full targets.
+
+    The original SARIF is retained in the audit. Only verified redundant table
+    indices/identities are removed; all other context and target metadata stays.
+    """
+    if isinstance(value, list):
+        return [canonical_context(run, item, kind) for item in value]
+    if not isinstance(value, dict):
+        return value
+    if kind == "threadFlowLocation" and "index" in value:
+        raise SarifError("Indexed thread-flow locations are not supported")
+    if kind == "logicalLocation" and ("index" in value or "parentIndex" in value):
+        raise SarifError("Indexed logical locations and parents are not supported")
+    if kind == "artifact" and "parentIndex" in value:
+        raise SarifError("Indexed artifact parents are not supported")
+    if kind == "message" and "id" in value:
+        raise SarifError("ID-based context messages are not supported")
+    if kind == "artifactLocation":
+        supplied = {k: v for k, v in value.items() if k != "index"}
+        metadata = {}
+        if "index" in value:
+            index = value["index"]
+            entry = indexed(objects(run.get("artifacts", []), "artifacts"), index, "artifact")
+            location = entry.get("location")
+            if not isinstance(location, dict):
+                raise SarifError("Indexed artifact lacks a location")
+            if "index" in location and (isinstance(location["index"], bool) or not isinstance(location["index"], int) or location["index"] != index):
+                raise SarifError("Mismatched artifact self-index")
+            resolved = {k: v for k, v in location.items() if k != "index"}
+            if not isinstance(resolved.get("uri"), str) or not resolved["uri"]:
+                raise SarifError("Indexed artifact has no resolved URI")
+            for key in supplied.keys() & resolved.keys():
+                if supplied[key] != resolved[key]:
+                    raise SarifError("Mismatched artifact location and index")
+            supplied = {**resolved, **supplied}
+            metadata = {k: v for k, v in entry.items() if k != "location"}
+        return {"resolved": supplied,
+                "artifact_metadata": canonical_context(run, metadata, "artifact")}
+    if kind == "taxa-entry":
+        tool = run["tool"]
+        component = tool["driver"]
+        reference = value.get("toolComponent", {})
+        if not isinstance(reference, dict):
+            raise SarifError("Invalid tool component reference")
+        if reference:
+            extensions = objects(tool.get("extensions", []), "tool.extensions")
+            if "index" in reference:
+                component = indexed(extensions, reference["index"], "tool component")
+            else:
+                matches = [item for item in [component, *extensions]
+                           if any(reference.get(k) and reference[k] == item.get(k) for k in ("name", "guid"))]
+                if len(matches) != 1:
+                    raise SarifError("Unresolved tool component")
+                component = matches[0]
+            for key in ("name", "guid"):
+                if key in reference:
+                    if reference[key] != component.get(key):
+                        raise SarifError("Mismatched tool component reference")
+                    if sum(item.get(key) == reference[key] for item in [tool["driver"], *extensions]) != 1:
+                        raise SarifError("Ambiguous tool component reference")
+        candidates = objects(component.get("taxa", []), "taxa")
+        if "index" in value:
+            taxon = indexed(candidates, value["index"], "taxa")
+        elif (not reference and isinstance(value.get("id"), str) and value["id"]
+              and not any(item.get("id") == value["id"] for item in candidates)):
+            # CodeQL emits standalone heuristic IDs without a component/table.
+            # Preserve the whole object exactly, never equating it with a table reference.
+            return value
+        else:
+            matches = [item for item in candidates if value.get("id") and value["id"] == item.get("id")]
+            if len(matches) != 1:
+                raise SarifError("Unresolved taxon")
+            taxon = matches[0]
+        for key in ("id", "guid"):
+            if key in value:
+                if value[key] != taxon.get(key):
+                    raise SarifError("Mismatched taxa reference")
+                if sum(item.get(key) == value[key] for item in candidates) != 1:
+                    raise SarifError("Ambiguous taxa reference")
+        if not any(isinstance(component.get(k), str) and component[k] for k in ("name", "guid")):
+            raise SarifError("Tool component lacks stable identity")
+        components = [tool["driver"], *objects(tool.get("extensions", []), "tool.extensions")]
+        for key in ("name", "guid"):
+            if component.get(key) and sum(item.get(key) == component[key] for item in components) != 1:
+                raise SarifError("Ambiguous tool component identity")
+        if not any(isinstance(taxon.get(k), str) and taxon[k] for k in ("id", "guid")):
+            raise SarifError("Taxon lacks stable identity")
+        for key in ("id", "guid"):
+            if taxon.get(key) and sum(item.get(key) == taxon[key] for item in candidates) != 1:
+                raise SarifError("Ambiguous taxon identity")
+        component_identity = {k: v for k, v in component.items() if k not in ("taxa", "rules", "notifications")}
+        return {"resolved_taxon": taxon,
+                "component": canonical_context(run, component_identity, "component"),
+                "component_reference": {k: v for k, v in reference.items() if k not in ("index", "name", "guid")},
+                "reference": {k: v for k, v in value.items() if k not in ("index", "id", "guid", "toolComponent")}}
+    # Traverse only SARIF schema-defined reference-bearing paths. Property bags,
+    # extension fields, and other unknown objects are retained literally.
+    edges = {
+        None: {"codeFlows": "codeFlow", "relatedLocations": "location"},
+        "codeFlow": {"threadFlows": "threadFlow", "message": "message"},
+        "threadFlow": {"locations": "threadFlowLocation", "message": "message"},
+        "threadFlowLocation": {"location": "location", "taxa": "taxa-entry", "stack": "stack"},
+        "stack": {"frames": "stackFrame", "message": "message"},
+        "stackFrame": {"location": "location"},
+        "location": {"physicalLocation": "physicalLocation", "logicalLocations": "logicalLocation",
+                     "message": "message", "annotations": "region", "relationships": "locationRelationship"},
+        "locationRelationship": {"description": "message"},
+        "physicalLocation": {"artifactLocation": "artifactLocation", "region": "region",
+                             "contextRegion": "region"},
+        "region": {"message": "message"},
+        "artifact": {"description": "message"},
+        "component": {"locations": "artifactLocation"},
+    }
+    fields = edges.get(kind, {})
+    return {key: canonical_context(run, child, fields[key]) if key in fields else child
+            for key, child in value.items()}
+
+
+def canonical_context_sha256(run: dict, context: dict) -> str:
+    canonical = canonical_context(run, context)
+    encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+def level(item: dict, metadata: dict) -> str:
+    value = item.get("level", metadata.get("defaultConfiguration", {}).get("level", "warning"))
+    if value not in LEVELS:
+        raise SarifError(f"Unknown SARIF level: {value!r}")
+    return value
+
+
+def audit_run(run: dict, language: str, source: str) -> dict:
+    driver = run.get("tool", {}).get("driver", {})
+    if driver.get("name") != "CodeQL":
+        raise SarifError("Expected a CodeQL SARIF run")
+    prefix = LANGUAGES[language] + "/"
+    components = [driver, *objects(run.get("tool", {}).get("extensions", []), "tool.extensions")]
+    rules = [item for component in components for item in objects(component.get("rules", []), "rules")]
+    language_rules = [item for item in rules if item.get("id", "").startswith(prefix)]
+    errors = []
+    properties = run.get("properties", {})
+    incremental_mode = properties.get("incrementalMode")
+    query_scope = "full"
+    if "incrementalMode" in properties:
+        # The pinned action adds this property for diff-informed and overlay
+        # runs. Such a run can report zero findings after restricting queries
+        # to changed ranges; it cannot establish this gate's full-scan claim.
+        # Do not accept a future or malformed mode as an implicit full scan.
+        query_scope = "incremental"
+        if not isinstance(incremental_mode, str) or not incremental_mode.strip():
+            query_scope = "invalid"
+            errors.append("CodeQL reported an invalid incremental analysis mode")
+        else:
+            errors.append(f"Incremental analysis mode {incremental_mode!r} cannot establish a full repository scan")
+    if not language_rules:
+        errors.append(f"No {language} rules were reported")
+    if not any(item.get("properties", {}).get("kind") in {"problem", "path-problem"}
+               for item in language_rules):
+        errors.append(f"No {language} alert queries were reported")
+    findings = []
+    if "results" not in run:
+        errors.append("No results array establishes that alert queries completed")
+    for result in objects(run.get("results", []), "results"):
+        metadata = rule(run, result)
+        flow = []
+        for code_flow in objects(result.get("codeFlows", []), "codeFlows"):
+            for thread in objects(code_flow.get("threadFlows", []), "threadFlows"):
+                flow.append(locations(run, [item.get("location", {}) for item in
+                                            objects(thread.get("locations", []), "threadFlow.locations")]))
+        # Every result is retained, including note/none levels, suppressed results,
+        # absent baselines and unrecognized query kinds. Metrics have their own
+        # CodeQL SARIF property and are never identified by a severity threshold.
+        findings.append({
+            "rule": metadata["id"], "level": level(result, metadata),
+            "security_severity": metadata.get("properties", {}).get("security-severity"),
+            "query_kind": metadata.get("properties", {}).get("kind"),
+            "query_precision": metadata.get("properties", {}).get("precision"),
+            "result_kind": result.get("kind", "fail"),
+            "message": message(result.get("message", {}), metadata),
+            "locations": locations(run, result.get("locations", [])),
+            "related_locations": locations(run, result.get("relatedLocations", [])),
+            "code_flows": flow,
+            "context_locations": nested_context_locations(
+                run, [result.get("codeFlows", []), result.get("relatedLocations", [])]),
+            # Preserve every SARIF flow/related field as well as resolved paths.
+            "review_context": {"codeFlows": result.get("codeFlows", []),
+                               "relatedLocations": result.get("relatedLocations", [])},
+            "canonical_context_sha256": canonical_context_sha256(
+                run, {"codeFlows": result.get("codeFlows", []),
+                      "relatedLocations": result.get("relatedLocations", [])}),
+            "baseline_state": result.get("baselineState"),
+            "suppressions": result.get("suppressions", []),
+        })
+    metrics = []
+    for metric in objects(run.get("properties", {}).get("metricResults", []), "metricResults"):
+        metadata = rule(run, metric)
+        if metadata.get("properties", {}).get("kind") != "metric":
+            raise SarifError("metricResults contains a rule not declared as a metric")
+        for field in ("value", "baseline"):
+            if field in metric and (isinstance(metric[field], bool) or
+                                    not isinstance(metric[field], (int, float)) or not math.isfinite(metric[field])):
+                raise SarifError(f"Metric {field} must be numeric")
+        if "value" not in metric:
+            raise SarifError("Metric value is missing")
+        metrics.append({"rule": metadata["id"], "value": metric["value"],
+                        "baseline": metric.get("baseline"),
+                        "name": metadata.get("shortDescription", {}).get("text", metadata["id"]),
+                        "message": message(metric.get("message", {}), metadata),
+                        "locations": locations(run, metric.get("locations", []))})
+        # C/C++ puts these extraction failures in metricResults, even when all
+        # files were nominally extracted and no warning notification was emitted.
+        if metadata["id"] in {"cpp/telemetry/failed-includes", "cpp/telemetry/compiler-errors"} and metric["value"] > 0:
+            errors.append(f"{metadata['id']}: {metric['value']} — {metrics[-1]['message']}")
+
+    diagnostics = []
+    diagnostic_counts = Counter()
+    extracted, expected = set(), set()
+    invocations = objects(run.get("invocations", []), "invocations")
+    if not invocations:
+        errors.append("No invocation records establish analysis success")
+    for invocation in invocations:
+        if invocation.get("executionSuccessful") is not True:
+            errors.append("CodeQL invocation did not report executionSuccessful=true")
+        for collection in ("toolExecutionNotifications", "toolConfigurationNotifications"):
+            for notification in objects(invocation.get(collection, []), collection):
+                metadata = (descriptor(run, notification["descriptor"], "notifications")
+                            if notification.get("descriptor") else {"id": "unidentified-notification"})
+                severity = level(notification, metadata)
+                identifier = metadata["id"]
+                diagnostic_counts[(identifier, severity)] += 1
+                if identifier == "cpp/extractor/summary":
+                    # This is a note even when one compilation failed. Other
+                    # ABIs can still cover every file, so file counts alone do
+                    # not establish a complete traced multi-architecture build.
+                    failures = notification.get("properties", {}).get("attributes", {}).get("extractor-failures")
+                    if isinstance(failures, bool) or not isinstance(failures, int) or failures < 0:
+                        errors.append("C/C++ extractor summary has no valid failure count")
+                    elif failures:
+                        errors.append(f"C/C++ extractor reported {failures} failed compilation(s)")
+                tags = metadata.get("properties", {}).get("tags", [])
+                where = locations(run, notification.get("locations", []))
+                file_set = None
+                # The CLI emits baselines outside the query language namespace
+                # (for example cli/expected-extracted-files/actions). Match the
+                # exact extractor suffix so another language cannot supply the
+                # baseline, and never treat CLI baseline locations as extracted.
+                if (identifier == f"cli/expected-extracted-files/{EXTRACTORS[language]}"
+                        and "expected-extracted-files" in tags):
+                    file_set = expected
+                elif identifier.startswith(prefix):
+                    if "successfully-extracted-files" in tags:
+                        file_set = extracted
+                    elif "expected-extracted-files" in tags:
+                        file_set = expected
+                if file_set is not None:
+                    file_set.update((item["uri_base_id"] or "", item["uri"]) for item in where if item["uri"])
+                # Per-file coverage can contain thousands of entries for OTHER
+                # languages. Summarize them by descriptor, without claiming that
+                # their presence in the baseline means those files were scanned.
+                is_coverage = any(tag in tags for tag in ("successfully-extracted-files", "expected-extracted-files"))
+                if not is_coverage or severity in {"warning", "error"}:
+                    diagnostics.append({
+                        "id": identifier, "level": severity,
+                        "message": message(notification.get("message", {}), metadata),
+                        "locations": where, "properties": notification.get("properties", {}),
+                    })
+    if not extracted:
+        errors.append(f"No successfully extracted {language} files were reported")
+    if not expected and language != "java-kotlin":
+        errors.append(f"No matching expected-file baseline establishes {language} coverage")
+    # CLI's repository-wide baseline includes tests and variants not built by
+    # the selected Android task. Java/Kotlin uses the separate compiler scope.
+    missing = expected - extracted if language != "java-kotlin" else set()
+    if missing:
+        errors.append(f"{len(missing)} expected {language} file(s) were not extracted")
+    return {
+        "source": source, "category": run.get("automationDetails", {}).get("id"),
+        "tool_version": driver.get("semanticVersion", driver.get("version")),
+        "query_scope": query_scope, "incremental_mode": incremental_mode,
+        "rule_count": len(language_rules), "findings": findings, "metrics": metrics,
+        "diagnostics": diagnostics,
+        "diagnostic_counts": [{"id": key[0], "level": key[1], "count": count}
+                              for key, count in sorted(diagnostic_counts.items())],
+        "coverage": {
+            "language": language, "extracted_file_count": len(extracted),
+            "expected_file_count": len(expected) if expected else None,
+            "matched_expected_file_count": len(expected & extracted) if expected else None,
+            "missing_files": [uri for _, uri in sorted(missing)],
+            "extracted_files": [uri for _, uri in sorted(extracted)],
+        },
+        "errors": errors,
+    }
+
+
+def audit(paths: list[Path], language: str) -> dict:
+    report = {"schema": 1, "language": language, "runs": [], "errors": [], "retired_reviews": []}
+    if language == "java-kotlin":
+        report["errors"].append("Java/Kotlin compiler scope has not been verified")
+    if not paths:
+        report["errors"].append("No SARIF files were found")
+    for path in paths:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=_unique_json_object)
+            if not isinstance(data, dict) or data.get("version") != "2.1.0":
+                raise SarifError("Expected SARIF version 2.1.0")
+            runs = objects(data.get("runs"), "runs")
+            if not runs:
+                raise SarifError("SARIF contains no runs")
+            for run in runs:
+                report["runs"].append(audit_run(run, language, str(path)))
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+            report["errors"].append(f"{path}: {error}")
+    update_outcome(report)
+    return report
+
+
+def update_outcome(report: dict) -> None:
+    report["finding_count"] = sum(len(run["findings"]) for run in report["runs"])
+    report["reviewed_finding_count"] = sum(bool(finding.get("review")) for run in report["runs"]
+                                            for finding in run["findings"])
+    for disposition in ("false-positive", "intentional-use"):
+        key = disposition.replace("-", "_") + "_finding_count"
+        report[key] = sum(finding.get("review", {}).get("disposition") == disposition
+                          for run in report["runs"] for finding in run["findings"])
+    report["unreviewed_finding_count"] = report["finding_count"] - report["reviewed_finding_count"]
+    report["diagnostic_warning_count"] = sum(item["count"] for run in report["runs"]
+                                             for item in run["diagnostic_counts"] if item["level"] == "warning")
+    report["diagnostic_error_count"] = sum(item["count"] for run in report["runs"]
+                                           for item in run["diagnostic_counts"] if item["level"] == "error")
+    report["passed"] = not (report["errors"] or report["unreviewed_finding_count"] or
+                            report["diagnostic_warning_count"] or report["diagnostic_error_count"] or
+                            any(run["errors"] for run in report["runs"]))
+
+
+def context_source_hashes(finding: dict, source_root: Path) -> dict[str, str]:
+    """Return hashes of checkout files referenced by the complete SARIF context.
+
+    External, missing, unavailable generated, ambiguous and unsafe paths cannot establish
+    source-bound evidence. They are never read outside the checkout.
+    """
+    paths = set()
+    evidence = [*finding["context_locations"], *finding["related_locations"],
+                *(location for thread in finding["code_flows"] for location in thread)]
+    for location in evidence:
+        uri = location.get("uri")
+        if not isinstance(uri, str) or not uri or location.get("uri_base_id") != "%SRCROOT%":
+            raise SarifError("Flow context contains an unbound or external location")
+        parts = urlsplit(uri)
+        path = unquote(parts.path, errors="strict")
+        relative = Path(path)
+        if (parts.scheme or parts.netloc or parts.query or parts.fragment or not path or
+                "\\" in path or relative.is_absolute() or ".." in relative.parts):
+            raise SarifError("Flow context contains an unsafe or external source path")
+        source = source_root / relative
+        if not source.resolve().is_relative_to(source_root.resolve()):
+            raise SarifError("Flow context source escapes its checkout")
+        paths.add(path)
+    if not evidence:
+        raise SarifError("Flow context has no bound source locations")
+    hashes = {}
+    for path in sorted(paths):
+        source = source_root / path
+        if source.is_symlink() or not source.is_file():
+            raise SarifError(f"Flow context source is unavailable or a symlink: {path}")
+        hashes[path] = hashlib.sha256(source.read_bytes()).hexdigest()
+    return hashes
+
+
+def context_sha256(finding: dict, source_root: Path) -> str:
+    """Bind complete SARIF context and resolved checkout files to a review."""
+    hashes = context_source_hashes(finding, source_root)
+    context = {"version": 2, "canonical_sarif_sha256": finding["canonical_context_sha256"],
+               "resolved_context_locations": finding["context_locations"],
+               "resolved_code_flows": finding["code_flows"],
+               "resolved_related_locations": finding["related_locations"], "sources": hashes}
+    encoded = json.dumps(context, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def reviewed_source_hashes(review: dict, source_root: Path) -> None:
+    """Require every explicitly reviewed dependency to retain its bytes."""
+    sources = review.get("reviewed_sources", {})
+    if not isinstance(sources, dict):
+        raise SarifError("reviewed_sources must be a map of source paths to SHA-256 hashes")
+    root = source_root.resolve()
+    for path, expected in sources.items():
+        if (not isinstance(path, str) or not path or "\\" in path or
+                Path(path).is_absolute() or any(part in (".", "..", "") for part in path.split("/"))):
+            raise SarifError("reviewed_sources contains an unsafe source path")
+        if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{64}", expected):
+            raise SarifError("reviewed_sources needs lowercase SHA-256 hashes")
+        source = source_root / path
+        if not source.resolve().is_relative_to(root):
+            raise SarifError("reviewed_sources source escapes its checkout")
+        current = source_root
+        for part in Path(path).parts:
+            current = current / part
+            if current.is_symlink():
+                raise SarifError("reviewed_sources does not allow symlinks")
+        if not source.is_file():
+            raise SarifError(f"reviewed_sources source is unavailable: {path}")
+        if hashlib.sha256(source.read_bytes()).hexdigest() != expected:
+            raise SarifError(f"reviewed_sources source bytes changed: {path}")
+
+
+def apply_reviews(report: dict, review_file: Path, source_root: Path) -> None:
+    """Recognize exact source-bound reviews without editing or dropping SARIF."""
+    try:
+        document = json.loads(review_file.read_text(encoding="utf-8"), object_pairs_hook=_unique_json_object)
+        if document.get("schema") != 1:
+            raise SarifError("Unsupported reviewed-finding schema")
+        reviews = objects(document.get("reviews"), "reviews")
+        identifiers = set()
+        for review in reviews:
+            identifier = review.get("id")
+            if not isinstance(identifier, str) or not identifier or identifier in identifiers:
+                raise SarifError("Reviewed-finding IDs must be unique nonempty strings")
+            identifiers.add(identifier)
+            if review.get("disposition") not in ("false-positive", "intentional-use") or not review.get("reason"):
+                raise SarifError(f"Review {identifier} needs a supported disposition and explanation")
+            if review.get("language") != report["language"]:
+                continue
+            where = review.get("location")
+            if not isinstance(where, dict) or not isinstance(where.get("uri"), str):
+                raise SarifError(f"Review {identifier} needs an exact source location")
+            relative = Path(where["uri"])
+            if relative.is_absolute() or ".." in relative.parts:
+                raise SarifError(f"Review {identifier} has an unsafe source path")
+            source = source_root / relative
+            if not source.resolve().is_relative_to(source_root.resolve()) or source.is_symlink():
+                raise SarifError(f"Review {identifier} source escapes its checkout")
+            if not re.fullmatch(r"[0-9a-f]{64}", review.get("source_sha256", "")):
+                raise SarifError(f"Review {identifier} needs a SHA-256 source fingerprint")
+            fields = ("rule", "level", "security_severity", "query_kind", "query_precision", "message")
+            if any(field not in review for field in fields) or not review.get("tool_version") or not review.get("category"):
+                raise SarifError(f"Review {identifier} is missing an exact finding identity")
+            try:
+                source_bytes = source.read_bytes()
+            except FileNotFoundError:
+                # A base-bound review for a source file removed from this revision
+                # cannot match or suppress a current SARIF result. Retain its exact
+                # old digest in the audit for migration visibility; findings remain
+                # unreviewed unless an active source-bound review matches them.
+                report["retired_reviews"].append({
+                    "id": identifier,
+                    "path": where["uri"],
+                    "source_sha256": review["source_sha256"],
+                    "reason": "source path absent from analyzed revision",
+                })
+                continue
+            if hashlib.sha256(source_bytes).hexdigest() != review["source_sha256"]:
+                raise SarifError(f"Review {identifier} is stale: source bytes changed; re-review required")
+            matches = []
+            for run in report["runs"]:
+                if (run["category"], run["tool_version"]) != (review["category"], review["tool_version"]):
+                    continue
+                for finding in run["findings"]:
+                    if (all(finding.get(field) == review[field] for field in fields) and
+                            finding["locations"] == [where]):
+                        matches.append(finding)
+            if len(matches) > 1:
+                raise SarifError(f"Review {identifier} ambiguously matches multiple findings")
+            if matches and matches[0].get("review"):
+                raise SarifError(f"Review {identifier} duplicates another review of the same finding")
+            if matches:
+                finding = matches[0]
+                reviewed_source_hashes(review, source_root)
+                needs_context = (finding["query_kind"] == "path-problem" or
+                                 finding["review_context"]["codeFlows"] or
+                                 finding["review_context"]["relatedLocations"] or
+                                 "context_sha256" in review)
+                if needs_context:
+                    if "context_sha256" not in review:
+                        continue
+                    fingerprints = review["context_sha256"]
+                    if isinstance(fingerprints, str):
+                        fingerprints = [fingerprints]
+                    if (not isinstance(fingerprints, list) or not fingerprints or
+                            any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
+                                for value in fingerprints) or len(set(fingerprints)) != len(fingerprints)):
+                        raise SarifError(f"Review {identifier} needs a nonempty unique set of SHA-256 context fingerprints")
+                    if context_sha256(finding, source_root) not in fingerprints:
+                        continue
+                matches[0]["review"] = {"id": identifier, "disposition": review["disposition"],
+                                         "reason": review["reason"], "source_sha256": review["source_sha256"]}
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+        report["errors"].append(f"{review_file}: {error}")
+    update_outcome(report)
+
+
+def cell(value: Any) -> str:
+    return html.escape(str(value)).replace("|", "\\|").replace("`", "\\`").replace("\n", " ").replace("\r", " ")
+
+
+def location_text(where: list[dict]) -> str:
+    return ", ".join((item["uri"] or "location unavailable") +
+                     (f":{item['start_line']}" if item["start_line"] is not None else "") for item in where) or "location unavailable"
+
+
+def markdown(report: dict) -> str:
+    lines = [f"## CodeQL audit: {cell(report['language'])}", "",
+             f"**{'PASS' if report['passed'] else 'FAIL'}** — {report['finding_count']} raw findings; "
+             f"{report['false_positive_finding_count']} reviewed false positives; "
+             f"{report['intentional_use_finding_count']} reviewed intentional uses; "
+             f"{report['unreviewed_finding_count']} unreviewed findings; "
+             f"{report['diagnostic_error_count']} diagnostic errors; "
+             f"{report['diagnostic_warning_count']} diagnostic warnings.", "",
+             "Unreviewed findings fail this gate regardless of severity, suppression or baseline state. "
+             "Both review dispositions must match the exact rule, location, message, tool version and source-file SHA-256; flow and related evidence also requires a matching context SHA-256. All remain in SARIF. "
+             "Extraction warnings, errors and missing expected files also fail. This result covers only the selected language.", ""]
+    selection = report.get("review_snapshot_selection")
+    if selection:
+        lines += ["### Trusted review snapshot", ""]
+        if selection.get("selection") == "error":
+            lines += ["Selection failed; no review manifest was applied.", ""]
+        else:
+            lines += [f"Selection: `{cell(selection['selection'])}` from `{cell(selection['catalog_path'])}` "
+                      f"(SHA-256 `{cell(selection['catalog_sha256'])}`).",
+                      f"Selected manifest: `{cell(selection['selected_review_path'])}` "
+                      f"(SHA-256 `{cell(selection['selected_review_sha256'])}`).",
+                      f"Language: `{cell(selection['language'])}`; profile: `{cell(selection['profile'])}`; "
+                      f"source SHA-256: `{cell(selection['source_sha256'])}`.",
+                      f"Trusted analysis config: `{cell(selection['analysis_config_path'])}` "
+                      f"(SHA-256 `{cell(selection['analysis_config_sha256'])}`).", ""]
+    if report.get("retired_reviews"):
+        lines += ["", "### Retired source-bound reviews", ""]
+        for retired in report["retired_reviews"]:
+            lines.append(
+                f"- {cell(retired['id'])}: {cell(retired['path'])} is absent from the analyzed revision; "
+                f"recorded source SHA-256 `{cell(retired['source_sha256'])}` retained. "
+                "This record does not suppress SARIF findings."
+            )
+    for error in report["errors"]:
+        lines.append(f"- {cell(error)}")
+    if "compiler_scope" in report:
+        for language in ("java", "kotlin"):
+            scope = report["compiler_scope"].get(language, {})
+            lines.append(f"- {language}: {len(scope.get('expected', []))} tracked compiler inputs; "
+                         f"{len(scope.get('extracted', []))} successfully extracted; "
+                         f"{len(scope.get('missing', []))} missing.")
+    for run in report["runs"]:
+        coverage = run["coverage"]
+        lines += ["", f"### {cell(run['source'])}", "",
+                  f"CodeQL {cell(run['tool_version'])}; category: {cell(run['category'] or 'not recorded')}; "
+                  f"{run['rule_count']} rules.", "",
+                  f"Query scope: {cell(run['query_scope'])}. "
+                  f"Incremental mode: {cell(run['incremental_mode']) if run['query_scope'] != 'full' else 'not enabled'}. "
+                  "Query scope does not establish extraction coverage; see the file evidence below.", "",
+                  f"Extracted files: {coverage['extracted_file_count']}. "
+                  f"Expected baseline: {coverage['expected_file_count'] if coverage['expected_file_count'] is not None else 'not recorded'}. "
+                  f"Missing expected files: {len(coverage['missing_files'])}.", ""]
+        for error in run["errors"]:
+            lines.append(f"- {cell(error)}")
+        for path in coverage["missing_files"]:
+            lines.append(f"- Missing: {cell(path)}")
+        if run["findings"]:
+            lines += ["", "| Rule | Level | Location | Message | Review |", "| --- | --- | --- | --- | --- |"]
+            for finding in run["findings"]:
+                lines.append("| " + " | ".join(cell(value) for value in (
+                    finding["rule"], finding["level"], location_text(finding["locations"]), finding["message"],
+                    (f"{finding['review']['id']} ({finding['review']['disposition']})"
+                     if finding.get("review") else "unreviewed"))) + " |")
+            for finding in run["findings"]:
+                if finding.get("review"):
+                    lines += ["", f"Review {cell(finding['review']['id'])}: {cell(finding['review']['reason'])}", ""]
+        if run["metrics"]:
+            lines += ["", "Metrics are reported values, not findings or file coverage percentages.", "",
+                      "| Metric | Value | Baseline | Detail |", "| --- | --- | --- | --- |"]
+            for metric in run["metrics"]:
+                lines.append(f"| {cell(metric['rule'])} | {cell(metric['value'])} | {cell(metric['baseline'])} | {cell(metric['message'])} |")
+        if run["diagnostic_counts"]:
+            lines += ["", "| Diagnostic | Level | Count |", "| --- | --- | --- |"]
+            for diagnostic in run["diagnostic_counts"]:
+                lines.append(f"| {cell(diagnostic['id'])} | {cell(diagnostic['level'])} | {diagnostic['count']} |")
+        for diagnostic in run["diagnostics"]:
+            if diagnostic["level"] in {"warning", "error"}:
+                lines += ["", f"- {cell(diagnostic['id'])}: {cell(diagnostic['message'])} "
+                          f"({cell(location_text(diagnostic['locations']))})"]
+    return "\n".join(lines) + "\n"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("sarif", nargs="*", type=Path, help="SARIF files or result directories")
+    parser.add_argument("--sarif", dest="sarif_options", action="append", default=[], type=Path,
+                        help="SARIF file or result directory (may be repeated)")
+    parser.add_argument("--language", required=True, choices=sorted(LANGUAGES))
+    parser.add_argument("--output", required=True, type=Path, help="JSON audit report")
+    parser.add_argument("--summary", required=True, type=Path, help="Markdown audit report")
+    parser.add_argument("--reviews", type=Path, help="Exact source-bound reviews; SARIF remains unchanged")
+    parser.add_argument("--source-root", type=Path, default=Path("."))
+    parser.add_argument("--review-catalog", help="Trusted-base catalog path relative to --trusted-policy-root")
+    parser.add_argument("--trusted-policy-root", type=Path,
+                        help="Checkout root containing trusted catalog, manifests, and CodeQL config")
+    parser.add_argument("--analysis-config", help="Trusted CodeQL config path relative to --trusted-policy-root")
+    parser.add_argument("--analysis-config-sha256", help="Expected SHA-256 of the exact config used by CodeQL init")
+    parser.add_argument("--compiler-inputs", type=Path)
+    parser.add_argument("--extracted-inputs", type=Path)
+    args = parser.parse_args(argv)
+    if not args.sarif and not args.sarif_options:
+        parser.error("provide a SARIF file or directory")
+    paths = sorted({file for path in [*args.sarif, *args.sarif_options] for file in
+                    (path.rglob("*.sarif") if path.is_dir() else [path])})
+    report = audit(paths, args.language)
+    selection_args = (args.review_catalog, args.trusted_policy_root, args.analysis_config,
+                      args.analysis_config_sha256)
+    use_snapshot_catalog = any(value is not None for value in selection_args)
+    if use_snapshot_catalog and (not all(value is not None for value in selection_args) or not args.reviews):
+        report["errors"].append("Trusted review snapshot selection requires catalog, policy root, reviews fallback, "
+                                "analysis config path, and config SHA-256")
+        report["review_snapshot_selection"] = {"selection": "error"}
+        update_outcome(report)
+    elif use_snapshot_catalog:
+        try:
+            selected_reviews, selection = review_snapshots.resolve_review_snapshot(
+                source_root=args.source_root,
+                trusted_policy_root=args.trusted_policy_root,
+                catalog_relative_path=args.review_catalog,
+                default_reviews_relative_path=args.reviews.as_posix(),
+                language=args.language,
+                analysis_config_relative_path=args.analysis_config,
+                analysis_config_sha256=args.analysis_config_sha256,
+            )
+            report["review_snapshot_selection"] = selection
+            apply_reviews(report, selected_reviews, args.source_root)
+        except review_snapshots.SnapshotSelectionError as error:
+            # Resolver messages are fixed and bounded; source-controlled paths and JSON
+            # contents are never echoed into the gate log.
+            report["errors"].append(f"Trusted review snapshot selection: {str(error)[:240]}")
+            report["review_snapshot_selection"] = {"selection": "error"}
+            update_outcome(report)
+    elif args.reviews:
+        apply_reviews(report, args.reviews, args.source_root)
+    if args.language == "java-kotlin" and args.compiler_inputs and args.extracted_inputs:
+        import compile_scope
+        try:
+            scope = compile_scope.check(args.source_root, args.compiler_inputs, args.extracted_inputs)
+            report["compiler_scope"] = scope
+            if scope["passed"]:
+                report["errors"].remove("Java/Kotlin compiler scope has not been verified")
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            report["errors"].append(f"Compiler scope: {error}")
+        update_outcome(report)
+    for path, content in ((args.output, json.dumps(report, indent=2) + "\n"), (args.summary, markdown(report))):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    print(f"CodeQL audit: {'PASS' if report['passed'] else 'FAIL'}; {report['finding_count']} findings")
+    return 0 if report["passed"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

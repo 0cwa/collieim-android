@@ -131,6 +131,16 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
   @Serializable
   @Parcelize
+  sealed interface CollieRoute : AppSettingsRoute {
+    @Serializable
+    data object GroupPrivacy : CollieRoute
+
+    @Serializable
+    data object ChooseGroupPeople : CollieRoute
+  }
+
+  @Serializable
+  @Parcelize
   sealed interface StoriesRoute : AppSettingsRoute {
     @Serializable
     data class Privacy(@StringRes val titleId: Int) : StoriesRoute
@@ -336,6 +346,9 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object Licenses : HelpRoute
+
+    @Serializable
+    data object ProjectLog : HelpRoute
   }
 
   @Serializable

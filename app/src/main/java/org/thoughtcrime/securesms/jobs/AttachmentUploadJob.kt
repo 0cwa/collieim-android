@@ -7,13 +7,14 @@ package org.thoughtcrime.securesms.jobs
 import android.text.TextUtils
 import kotlinx.coroutines.runBlocking
 import okhttp3.internal.http2.StreamResetException
+import okio.ByteString.Companion.toByteString
 import org.signal.core.models.database.AttachmentId
+import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.Base64
 import org.signal.core.util.Util
+import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.crypto.AttachmentSecretProvider
 import org.signal.core.util.crypto.ModernDecryptingPartInputStream
-import okio.ByteString.Companion.toByteString
-import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.inRoundedDays
 import org.signal.core.util.logging.Log
@@ -35,6 +36,8 @@ import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PartProgressEvent
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmissionSendGate
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec
@@ -75,9 +78,13 @@ class AttachmentUploadJob private constructor(
   private var snapshot: AttachmentUploadSnapshot.Identity?,
   private var owner: Pair<String, ByteArray>?,
   private var ownerIdentity: String?,
-  private var captureOwner: Boolean
+  private var captureOwner: Boolean,
+  private val admissionRecipientId: RecipientId?
 ) : BaseJob(parameters) {
   private var attemptedSource: AttachmentTable.DataFileInfo? = null
+
+  @Volatile
+  private var admissionRejected = false
 
   companion object {
     const val KEY = "AttachmentUploadJobV3"
@@ -106,7 +113,8 @@ class AttachmentUploadJob private constructor(
     }
   }
 
-  constructor(attachmentId: AttachmentId) : this(
+  @JvmOverloads
+  constructor(attachmentId: AttachmentId, admissionRecipientId: RecipientId? = null) : this(
     Parameters.Builder()
       .addConstraint(NetworkConstraint.KEY)
       .setLifespan(TimeUnit.DAYS.toMillis(1))
@@ -117,7 +125,8 @@ class AttachmentUploadJob private constructor(
     null,
     null,
     null,
-    true
+    true,
+    admissionRecipientId
   )
 
   override fun serialize(): ByteArray {
@@ -136,7 +145,8 @@ class AttachmentUploadJob private constructor(
       snapshotSourcePath = snapshot?.sourcePath ?: owner?.first,
       snapshotSourceRandom = (snapshot?.sourceRandom ?: owner?.second)?.toByteString(),
       snapshotPlaintextDigest = snapshot?.plaintextDigest,
-      ownerIdentity = ownerIdentity
+      ownerIdentity = ownerIdentity,
+      admissionRecipientId = admissionRecipientId?.toLong()
     ).encode()
   }
 
@@ -165,6 +175,10 @@ class AttachmentUploadJob private constructor(
 
   @Throws(Exception::class)
   public override fun onRun() {
+    if (admissionRecipientId != null && GroupAdmission.isHeld(admissionRecipientId)) {
+      throw GroupAdmissionSendGate.HeldGroupException()
+    }
+
     if (!Recipient.self().isRegistered) {
       throw NotPushRegisteredException()
     }
@@ -174,6 +188,7 @@ class AttachmentUploadJob private constructor(
     val expectedOwner = if (runAttempt == 0 && inputData != null) inputData!!.toString(Charsets.UTF_8) else ownerIdentity
     ownerIdentity = null
     val current = SignalDatabase.attachments.getUploadCandidate(attachmentId) ?: throw InvalidAttachmentException("Cannot find the specified attachment.")
+    requireGroupAdmission(current.attachment)
     if (expectedOwner != null && SignalDatabase.attachments.uploadOwnerToken(current) == expectedOwner) ownerIdentity = expectedOwner
     validateUploadSize(current.attachment)
     // A recent remote object can be completed by exact candidate CAS even when
@@ -231,6 +246,7 @@ class AttachmentUploadJob private constructor(
 
       val ciphertextLength = AttachmentCipherStreamUtil.getCiphertextLength(PaddingInputStream.getPaddedSize(stable.length))
 
+      requireGroupAdmission(databaseAttachment)
       val uploadForm = if (existingSpec == null) {
         when (val result = SignalNetwork.attachmentApi.getAttachmentV4UploadForm(ciphertextLength)) {
           is RequestResult.Success -> result.result
@@ -256,6 +272,7 @@ class AttachmentUploadJob private constructor(
       getAttachmentNotificationIfNeeded(databaseAttachment).use { notification ->
         buildAttachmentStream(databaseAttachment, notification, snapshots.open(stable), stable.length) { snapshots.visualHash(stable, databaseAttachment.contentType) }.use { localAttachment ->
           val result = runBlocking {
+            requireGroupAdmission(databaseAttachment)
             SignalNetwork.cdnService.uploadAttachment(
               form = uploadForm,
               key = key,
@@ -267,6 +284,7 @@ class AttachmentUploadJob private constructor(
             )
           }
 
+          requireGroupAdmission(databaseAttachment)
           val uploadResult: AttachmentUploadResult = when (result) {
             is RequestResult.Success -> result.result
             is RequestResult.NonSuccess -> throw handleUploadError(result.error)
@@ -312,6 +330,7 @@ class AttachmentUploadJob private constructor(
       releaseSnapshot(snapshots)
       uploadSpec = null
     } catch (e: StreamResetException) {
+      requireGroupAdmission(databaseAttachment)
       val lastReset = SignalStore.misc.lastNetworkResetDueToStreamResets
       val now = System.currentTimeMillis()
 
@@ -327,6 +346,7 @@ class AttachmentUploadJob private constructor(
 
       throw e
     } catch (e: IOException) {
+      requireGroupAdmission(databaseAttachment)
       if (e is ProtocolException || e.cause is ProtocolException) {
         Log.w(TAG, "[$attachmentId] Length may be incorrect. Recalculating.", e)
         val actualLength = SignalDatabase.attachments.getAttachmentStream(attachmentId, 0).use { it.readLength() }
@@ -434,6 +454,30 @@ class AttachmentUploadJob private constructor(
     AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret()
   )
 
+  private fun isGroupHeld(attachment: DatabaseAttachment): Boolean {
+    if (admissionRejected) {
+      return true
+    }
+    if (admissionRecipientId != null && GroupAdmission.isHeld(admissionRecipientId)) {
+      admissionRejected = true
+      return true
+    }
+    // Re-read the current owner: a pre-upload may have acquired a message while queued.
+    val current = SignalDatabase.attachments.getAttachment(attachment.attachmentId) ?: return false
+    if (current.mmsId == AttachmentTable.PREUPLOAD_MESSAGE_ID) {
+      return false
+    }
+    val message = SignalDatabase.messages.getMessageRecordOrNull(current.mmsId) ?: return false
+    val recipient = SignalDatabase.threads.getRecipientForThreadId(message.threadId) ?: return false
+    return GroupAdmission.isHeld(recipient).also { if (it) admissionRejected = true }
+  }
+
+  private fun requireGroupAdmission(attachment: DatabaseAttachment) {
+    if (isGroupHeld(attachment)) {
+      throw GroupAdmissionSendGate.HeldGroupException()
+    }
+  }
+
   @Throws(InvalidAttachmentException::class)
   private fun buildAttachmentStream(attachment: Attachment, notification: AttachmentProgressService.Controller?, input: java.io.InputStream, length: Long, visualHash: () -> String?): SignalServiceAttachmentStream {
     if (attachment.uri == null || length == 0L) {
@@ -445,7 +489,7 @@ class AttachmentUploadJob private constructor(
       AttachmentUploadUtil.buildSignalServiceAttachmentStream(
         context = context,
         attachment = attachment,
-        cancellationSignal = { isCanceled },
+        cancellationSignal = { isCanceled || (attachment is DatabaseAttachment && isGroupHeld(attachment)) },
         inputStream = input,
         inputLength = length,
         snapshotVisualHash = visualHash,
@@ -458,7 +502,7 @@ class AttachmentUploadJob private constructor(
           }
 
           override fun shouldCancel(): Boolean {
-            return isCanceled
+            return isCanceled || (attachment is DatabaseAttachment && isGroupHeld(attachment))
           }
         }
       )
@@ -481,7 +525,8 @@ class AttachmentUploadJob private constructor(
           AttachmentUploadSnapshot.Identity(data.snapshotId, data.snapshotLength, data.snapshotDigest, data.snapshotSourcePath, data.snapshotSourceRandom.toByteArray(), data.snapshotPlaintextDigest) else null,
         if (data.snapshotSourcePath != null && data.snapshotSourceRandom != null) data.snapshotSourcePath to data.snapshotSourceRandom.toByteArray() else null,
         data.ownerIdentity,
-        false
+        false,
+        data.admissionRecipientId?.let { RecipientId.from(it) }
       )
     }
   }

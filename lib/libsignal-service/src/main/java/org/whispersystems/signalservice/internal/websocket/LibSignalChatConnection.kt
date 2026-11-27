@@ -180,11 +180,17 @@ class LibSignalChatConnection(
     }
   }
 
-  private fun sendRequestInternal(request: WebSocketRequestMessage, timeoutSeconds: Long, single: SingleSubject<WebsocketResponse>) {
+  private fun sendRequestInternal(request: WebSocketRequestMessage, timeoutSeconds: Long, single: SingleSubject<WebsocketResponse>, beforeSend: (() -> Unit)?) {
     CHAT_SERVICE_LOCK.withLock {
       check(state.value == WebSocketConnectionState.CONNECTED)
 
       val internalRequest = request.toLibSignalRequest(timeout = timeoutSeconds.seconds)
+      try {
+        beforeSend?.invoke()
+      } catch (e: Exception) {
+        single.onError(e)
+        return
+      }
       chatConnection!!.send(internalRequest)
         .whenComplete(
           onSuccess = { response ->
@@ -378,6 +384,10 @@ class LibSignalChatConnection(
   }
 
   override fun sendRequest(request: WebSocketRequestMessage, timeoutSeconds: Long): Single<WebsocketResponse> {
+    return sendRequest(request, timeoutSeconds, beforeSend = null)
+  }
+
+  override fun sendRequest(request: WebSocketRequestMessage, timeoutSeconds: Long, beforeSend: (() -> Unit)?): Single<WebsocketResponse> {
     CHAT_SERVICE_LOCK.withLock {
       if (isDead()) {
         // Match OkHttpWebSocketConnection by throwing here.
@@ -391,7 +401,7 @@ class LibSignalChatConnection(
           Log.i(TAG, "[sendRequest] Enqueuing request send for after connection")
           pendingCallbacks.add(
             PendingAction(
-              onConnectionSuccess = { _ -> sendRequestInternal(request, timeoutSeconds, single) },
+              onConnectionSuccess = { _ -> sendRequestInternal(request, timeoutSeconds, single, beforeSend) },
               onFailure = { error -> single.onError(error) }
             )
           )
@@ -399,7 +409,7 @@ class LibSignalChatConnection(
         }
 
         WebSocketConnectionState.CONNECTED -> {
-          sendRequestInternal(request, timeoutSeconds, single)
+          sendRequestInternal(request, timeoutSeconds, single, beforeSend)
           single
         }
 

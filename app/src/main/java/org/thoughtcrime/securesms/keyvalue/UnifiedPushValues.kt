@@ -40,12 +40,25 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_ENDPOINT_P256DH = "up.endpoint.p256dh"
     private const val UNIFIEDPUSH_ENDPOINT_AUTH = "up.endpoint.auth"
     private const val UNIFIEDPUSH_ENDPOINT_INSTANCE = "up.endpoint.instance"
+    private const val UNIFIEDPUSH_PAIRING_INSTANCE = "up.pairing.instance"
+    private const val UNIFIEDPUSH_PAIRING_DISTRIBUTOR = "up.pairing.distributor"
+    private const val UNIFIEDPUSH_PAIRING_VAPID = "up.pairing.vapid"
+    private const val UNIFIEDPUSH_PAIRING_ORIGIN = "up.pairing.origin"
+    private const val UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN = "up.pairing.endpointOrigin"
+    private const val UNIFIEDPUSH_PAIRING_SESSION = "up.pairing.session"
+    private const val UNIFIEDPUSH_PAIRING_EXPIRY = "up.pairing.expiry"
+    private const val UNIFIEDPUSH_PAIRING_ACCOUNT = "up.pairing.account"
+    private const val UNIFIEDPUSH_PAIRING_DEVICE = "up.pairing.device"
+    private const val UNIFIEDPUSH_PAIRING_HOST_LABEL = "up.pairing.hostLabel"
+    private const val UNIFIEDPUSH_PAIRING_IMPORT_ID = "up.pairing.importId"
     private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
     private const val MAX_ENROLLMENT_EPOCH = 9007199254740991L
     private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
     private const val UNIFIEDPUSH_CONTROL_STATE = "up.control.state"
+    private const val UNIFIEDPUSH_V4_RECEIVER_STATE = "up.v4.receiver.state"
+    private const val UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE = "up.v4.pendingReceiver.state"
     private val controlLock = Any()
     private const val UNIFIEDPUSH_HEALTH_FAILURES = "up.health.failures"
     private const val UNIFIEDPUSH_HEALTH_FALLBACK = "up.health.fallback"
@@ -188,6 +201,51 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   var endpointInstance: String? by stringValue(UNIFIEDPUSH_ENDPOINT_INSTANCE, null)
 
+  /** Pairing-created routes stay isolated from any previously configured legacy relay across restarts. */
+  data class PairingEndpointBinding(
+    val instance: String,
+    val distributorId: String,
+    val vapidPublicKey: String,
+    val providerOrigin: String?,
+    val endpointOrigin: String,
+    val sessionId: String,
+    val expiresAt: Long,
+    val accountId: String,
+    val deviceId: Int,
+    val hostLabel: String? = null,
+    val importId: String? = null,
+  ) {
+    override fun toString() = "PairingEndpointBinding(sessionId=$sessionId, instance=$instance)"
+  }
+
+  /** A route and its owner metadata to publish with an authenticated v4 promotion. */
+  data class PairingEndpointRegistration(
+    val endpoint: String,
+    val p256dh: String?,
+    val auth: String?,
+    val binding: PairingEndpointBinding,
+  )
+
+  val pairingEndpointBinding: PairingEndpointBinding?
+    get() {
+      val snapshot = store.beginRead()
+      val instance = snapshot.getString(UNIFIEDPUSH_PAIRING_INSTANCE, null) ?: return null
+      val distributor = snapshot.getString(UNIFIEDPUSH_PAIRING_DISTRIBUTOR, null) ?: return null
+      val vapid = snapshot.getString(UNIFIEDPUSH_PAIRING_VAPID, null) ?: return null
+      val session = snapshot.getString(UNIFIEDPUSH_PAIRING_SESSION, null) ?: return null
+      val account = snapshot.getString(UNIFIEDPUSH_PAIRING_ACCOUNT, null) ?: return null
+      val origin = snapshot.getString(UNIFIEDPUSH_PAIRING_ORIGIN, null)
+      val endpointOrigin = snapshot.getString(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN, null) ?: return null
+      val expiry = snapshot.getLong(UNIFIEDPUSH_PAIRING_EXPIRY, 0L)
+      val deviceId = snapshot.getInteger(UNIFIEDPUSH_PAIRING_DEVICE, 0)
+      if (expiry <= 0L || deviceId <= 0) return null
+      return PairingEndpointBinding(
+        instance, distributor, vapid, origin, endpointOrigin, session, expiry, account, deviceId,
+        snapshot.getString(UNIFIEDPUSH_PAIRING_HOST_LABEL, null),
+        snapshot.getString(UNIFIEDPUSH_PAIRING_IMPORT_ID, null),
+      )
+    }
+
   /** Publishes one connector route tuple so readers never combine a new URL with old key material or instance. */
   fun setEndpointRegistration(endpoint: String?, p256dh: String?, auth: String?, instance: String?) {
     store.beginWrite()
@@ -195,6 +253,39 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putString(UNIFIEDPUSH_ENDPOINT_P256DH, p256dh)
       .putString(UNIFIEDPUSH_ENDPOINT_AUTH, auth)
       .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, instance)
+      .remove(UNIFIEDPUSH_PAIRING_INSTANCE)
+      .remove(UNIFIEDPUSH_PAIRING_DISTRIBUTOR)
+      .remove(UNIFIEDPUSH_PAIRING_VAPID)
+      .remove(UNIFIEDPUSH_PAIRING_ORIGIN)
+      .remove(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN)
+      .remove(UNIFIEDPUSH_PAIRING_SESSION)
+      .remove(UNIFIEDPUSH_PAIRING_EXPIRY)
+      .remove(UNIFIEDPUSH_PAIRING_ACCOUNT)
+      .remove(UNIFIEDPUSH_PAIRING_DEVICE)
+      .remove(UNIFIEDPUSH_PAIRING_HOST_LABEL)
+      .remove(UNIFIEDPUSH_PAIRING_IMPORT_ID)
+      .apply()
+  }
+
+  fun setPairingEndpointRegistration(
+    endpoint: String?, p256dh: String?, auth: String?, binding: PairingEndpointBinding,
+  ) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_ENDPOINT, endpoint)
+      .putString(UNIFIEDPUSH_ENDPOINT_P256DH, p256dh)
+      .putString(UNIFIEDPUSH_ENDPOINT_AUTH, auth)
+      .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, binding.instance)
+      .putString(UNIFIEDPUSH_PAIRING_INSTANCE, binding.instance)
+      .putString(UNIFIEDPUSH_PAIRING_DISTRIBUTOR, binding.distributorId)
+      .putString(UNIFIEDPUSH_PAIRING_VAPID, binding.vapidPublicKey)
+      .putString(UNIFIEDPUSH_PAIRING_ORIGIN, binding.providerOrigin)
+      .putString(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN, binding.endpointOrigin)
+      .putString(UNIFIEDPUSH_PAIRING_SESSION, binding.sessionId)
+      .putLong(UNIFIEDPUSH_PAIRING_EXPIRY, binding.expiresAt)
+      .putString(UNIFIEDPUSH_PAIRING_ACCOUNT, binding.accountId)
+      .putInteger(UNIFIEDPUSH_PAIRING_DEVICE, binding.deviceId)
+      .putString(UNIFIEDPUSH_PAIRING_HOST_LABEL, binding.hostLabel)
+      .putString(UNIFIEDPUSH_PAIRING_IMPORT_ID, binding.importId)
       .apply()
   }
 
@@ -226,6 +317,12 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
   var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
+
+  /** Sealed receiver identity and retryable receiver-specific control frame; stored in encrypted key-value state. */
+  var v4ReceiverState: String? by stringValue(UNIFIEDPUSH_V4_RECEIVER_STATE, null)
+
+  /** Replacement candidate is separate so cancellation cannot remove the currently active v4 receiver. */
+  var v4PendingReceiverState: String? by stringValue(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE, null)
 
   /** Durable fail-closed marker for identity writes that may have stopped before coherent registration completed. */
   val hasIncompleteAccountTransition: Boolean
@@ -274,18 +371,73 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    */
   fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
     return synchronized(UnifiedPushLifecycle.monitor) {
-      mutateControl(replay, replayIfAbsent = null, block)
+      mutateControl(replay, replayIfAbsent = null, v4ReceiverState = null, block = block)
+    }
+  }
+
+  /** Atomically persists a v4 receiver transition with the event replay record that authorized it. */
+  fun mutateControlWithReceiverAndReplay(
+    replay: String,
+    receiverState: String,
+    clearPendingV4ReceiverState: Boolean = false,
+    pairingEndpointRegistration: PairingEndpointRegistration? = null,
+  ): ControlState {
+    return synchronized(UnifiedPushLifecycle.monitor) {
+      mutateControl(replay, replayIfAbsent = null, v4ReceiverState = receiverState,
+        clearPendingV4ReceiverState = clearPendingV4ReceiverState,
+        pairingEndpointRegistration = pairingEndpointRegistration) { it }
     }
   }
 
   /** Commits [replayIfAbsent] with the state change only when replay has not been initialized yet. */
   fun mutateControlWithReplayIfAbsent(replayIfAbsent: String, block: (ControlState) -> ControlState): ControlState {
     return synchronized(UnifiedPushLifecycle.monitor) {
-      mutateControl(replay = null, replayIfAbsent = replayIfAbsent, block = block)
+      mutateControl(replay = null, replayIfAbsent = replayIfAbsent, v4ReceiverState = null, block = block)
     }
   }
 
-  private fun mutateControl(replay: String?, replayIfAbsent: String?, block: (ControlState) -> ControlState): ControlState {
+  /** Persist the active receiver and any exact frame that its control job will retry. */
+  fun commitV4ReceiverState(receiverState: String?) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      store.beginWrite().putString(UNIFIEDPUSH_V4_RECEIVER_STATE, receiverState).commitAndWaitForPersistence()
+    }
+  }
+
+  /** Writes a pending receiver and initializes replay protection in the same acknowledged enrollment write. */
+  fun commitV4ReceiverAttempt(receiverState: String, replayIfAbsent: String) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      synchronized(controlLock) {
+        if (EncryptedPush.ReplayState.parse(replayIfAbsent) == null) throw ReplayStateUnavailableException()
+        val oldReplay = getString(UNIFIEDPUSH_REPLAY_STATE, null)
+        if (oldReplay != null && EncryptedPush.ReplayState.parse(oldReplay) == null) throw ReplayStateUnavailableException()
+        if (oldReplay == null && (controlStateRead !is ControlStateRead.Absent || v4ReceiverState != null || v4PendingReceiverState != null)) {
+          throw ReplayStateUnavailableException()
+        }
+        val write = store.beginWrite().putString(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE, receiverState)
+        if (oldReplay == null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replayIfAbsent)
+        write.commitAndWaitForPersistence()
+      }
+    }
+  }
+
+  /** Atomically publishes the promoted receiver and discards only its pending candidate. */
+  fun commitV4ReceiverStates(active: String?, pending: String?) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      val write = store.beginWrite().putString(UNIFIEDPUSH_V4_RECEIVER_STATE, active)
+      if (pending == null) write.remove(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE)
+      else write.putString(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE, pending)
+      write.commitAndWaitForPersistence()
+    }
+  }
+
+  private fun mutateControl(
+    replay: String?,
+    replayIfAbsent: String?,
+    v4ReceiverState: String?,
+    clearPendingV4ReceiverState: Boolean = false,
+    pairingEndpointRegistration: PairingEndpointRegistration? = null,
+    block: (ControlState) -> ControlState,
+  ): ControlState {
     synchronized(controlLock) {
       val loaded = controlStateRead
       val old = loaded.stateOrNull ?: throw CorruptControlStateException()
@@ -300,11 +452,36 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       }
       val migration = loaded is ControlStateRead.Legacy
       val missingReplay = replayIfAbsent != null && existingReplay == null
-      if (next == old && replay == null && !missingReplay && !migration) return old
+      if (next == old && replay == null && v4ReceiverState == null && !clearPendingV4ReceiverState &&
+        pairingEndpointRegistration == null && !missingReplay && !migration) return old
       val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
       if (migration) write.remove(UNIFIEDPUSH_ENROLLMENT_EPOCH).remove(UNIFIEDPUSH_PENDING_EPOCH)
       if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
       else if (missingReplay) write.putString(UNIFIEDPUSH_REPLAY_STATE, replayIfAbsent)
+      if (v4ReceiverState != null) write.putString(UNIFIEDPUSH_V4_RECEIVER_STATE, v4ReceiverState)
+      if (clearPendingV4ReceiverState) write.remove(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE)
+      pairingEndpointRegistration?.let { registration ->
+        val binding = registration.binding
+        write.putString(UNIFIEDPUSH_ENDPOINT, registration.endpoint)
+          .putString(UNIFIEDPUSH_ENDPOINT_P256DH, registration.p256dh)
+          .putString(UNIFIEDPUSH_ENDPOINT_AUTH, registration.auth)
+          .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, binding.instance)
+          .putString(UNIFIEDPUSH_PAIRING_INSTANCE, binding.instance)
+          .putString(UNIFIEDPUSH_PAIRING_DISTRIBUTOR, binding.distributorId)
+          .putString(UNIFIEDPUSH_PAIRING_VAPID, binding.vapidPublicKey)
+          .putString(UNIFIEDPUSH_PAIRING_ORIGIN, binding.providerOrigin)
+          .putString(UNIFIEDPUSH_PAIRING_ENDPOINT_ORIGIN, binding.endpointOrigin)
+          .putString(UNIFIEDPUSH_PAIRING_SESSION, binding.sessionId)
+          .putLong(UNIFIEDPUSH_PAIRING_EXPIRY, binding.expiresAt)
+          .putString(UNIFIEDPUSH_PAIRING_ACCOUNT, binding.accountId)
+          .putInteger(UNIFIEDPUSH_PAIRING_DEVICE, binding.deviceId)
+          .putString(UNIFIEDPUSH_PAIRING_HOST_LABEL, binding.hostLabel)
+          .putString(UNIFIEDPUSH_PAIRING_IMPORT_ID, binding.importId)
+        if (clearPendingV4ReceiverState) {
+          write.putBoolean(UNIFIEDPUSH_ENABLED, true)
+          SettingsValues.writeNotificationDeliveryMethod(write, SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH)
+        }
+      }
       write.commitAndWaitForPersistence()
       return next
     }
@@ -359,20 +536,21 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
   fun clearCorruptControlAfterServerRemoval(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
     synchronized(controlLock) {
       if (ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null)) != ControlStateRead.Corrupt) return@synchronized false
-      clearControlLocked()
+      clearControlLocked(clearV4Receivers = true)
       true
     }
   }
 
-  private fun clearControlLocked() {
+  private fun clearControlLocked(clearV4Receivers: Boolean = false) {
     // Keep first-setup typed as Absent. A serialized empty record after an explicit reset is different: it proves
     // that enrollment state once existed, so missing replay history must never be bootstrapped over it.
     if (controlStateRead is ControlStateRead.Absent) return
-    store.beginWrite()
+    val write = store.beginWrite()
       .putString(UNIFIEDPUSH_CONTROL_STATE, ControlState().serialize())
       .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
       .remove(UNIFIEDPUSH_PENDING_EPOCH)
-      .commitAndWaitForPersistence()
+    if (clearV4Receivers) write.remove(UNIFIEDPUSH_V4_RECEIVER_STATE).remove(UNIFIEDPUSH_V4_PENDING_RECEIVER_STATE)
+    write.commitAndWaitForPersistence()
   }
 
   /** Last generic status code the server reported in an accepted encrypted push status event. */

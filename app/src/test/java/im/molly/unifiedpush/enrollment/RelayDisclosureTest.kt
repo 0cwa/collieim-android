@@ -130,6 +130,15 @@ class RelayDisclosureTest {
     assertEquals(1, effects)
   }
 
+  @Test fun `reused route promotion rejects a saved disclosure after delivery mode changes`() {
+    val snapshot = capture()
+    assertTrue(RelayDisclosure.matchesDuringTransition(snapshot))
+
+    deliveryMethod = NotificationDeliveryMethod.WEBSOCKET
+
+    assertFalse(RelayDisclosure.matchesDuringTransition(snapshot))
+  }
+
   @Test fun `changing the relay discards a buffered endpoint but reselecting it preserves one`() = runBlocking {
     val pending = application.getSharedPreferences("collie_locked_push", android.content.Context.MODE_PRIVATE)
     pending.edit().putString("pending_endpoint", "synthetic buffered endpoint").commit()

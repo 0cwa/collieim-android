@@ -1,0 +1,3 @@
+topic: updates
+pr: 251
+App updates is now at the top of Settings → Collie instead of Help.

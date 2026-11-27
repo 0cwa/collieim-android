@@ -59,6 +59,7 @@ object EndpointUpdates {
     store: ControlStore,
     fullRecovery: Boolean,
     replayIfAbsent: String? = null,
+    validateCandidate: (ImportIntent) -> Unit = {},
     create: (ControlState, Long) -> ImportIntent,
   ): ImportIntent {
     var created: ImportIntent? = null
@@ -71,6 +72,9 @@ object EndpointUpdates {
       val sequence = old.importSequence + 1
       val intent = create(old, sequence)
       if (intent.sequence != sequence || intent.epoch !in 1..MAX_EPOCH || intent.requestId.isBlank()) throw EnrollmentFile.Invalid("invalid_enrollment")
+      // Pairing can recheck offer expiry and the complete live registration binding here, after
+      // the sealed bytes exist and immediately before the candidate can supersede an old intent.
+      validateCandidate(intent)
       val retained = old.intents.map { previous ->
         if (previous.eligible && (fullRecovery || previous.epoch >= intent.epoch)) previous.copy(eligible = false) else previous
       }

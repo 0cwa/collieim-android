@@ -102,7 +102,8 @@ open class IndividualMessageService(
     sealedSenderAccess: SealedSenderAccess?,
     isOnline: Boolean,
     urgent: Boolean = true,
-    onEncrypted: (() -> Unit)? = null
+    onEncrypted: (() -> Unit)? = null,
+    beforeSend: (() -> Unit)? = null
   ): Either<SendError, SendSuccess> = withContext(Dispatchers.IO) {
     either {
       checkContentSize(envelopeContent, timestamp).bind()
@@ -121,7 +122,7 @@ open class IndividualMessageService(
 
       when (sealedSenderAccess) {
         is SealedSenderAccess.Story -> {
-          when (val outcome = sendSealedWithDeviceRecovery(serviceId, envelopeContent, sealedSenderAccess, timestamp, isOnline, urgent, reportEncrypted)) {
+          when (val outcome = sendSealedWithDeviceRecovery(serviceId, envelopeContent, sealedSenderAccess, timestamp, isOnline, urgent, reportEncrypted, beforeSend)) {
             is SealedSendOutcome.Sent -> outcome.success
             SealedSendOutcome.SealedSenderAccessRejected -> {
               Log.w(TAG, "[$timestamp] Story send was rejected as unauthorized for $serviceId.")
@@ -131,15 +132,15 @@ open class IndividualMessageService(
         }
         is SealedSenderAccess.IndividualGroupSendTokenFirst,
         is SealedSenderAccess.IndividualUnidentifiedAccessFirst -> {
-          when (val outcome = sendSealedWithDeviceRecovery(serviceId, envelopeContent, sealedSenderAccess, timestamp, isOnline, urgent, reportEncrypted)) {
+          when (val outcome = sendSealedWithDeviceRecovery(serviceId, envelopeContent, sealedSenderAccess, timestamp, isOnline, urgent, reportEncrypted, beforeSend)) {
             is SealedSendOutcome.Sent -> outcome.success
             SealedSendOutcome.SealedSenderAccessRejected -> {
               Log.w(TAG, "[$timestamp] Sealed sender access was rejected for $serviceId. Falling back to an unsealed send.")
-              sendUnsealedWithDeviceRecovery(serviceId, envelopeContent, timestamp, isOnline, urgent, reportEncrypted)
+              sendUnsealedWithDeviceRecovery(serviceId, envelopeContent, timestamp, isOnline, urgent, reportEncrypted, beforeSend)
             }
           }
         }
-        null -> sendUnsealedWithDeviceRecovery(serviceId, envelopeContent, timestamp, isOnline, urgent, reportEncrypted)
+        null -> sendUnsealedWithDeviceRecovery(serviceId, envelopeContent, timestamp, isOnline, urgent, reportEncrypted, beforeSend)
       }
     }
   }
@@ -152,7 +153,8 @@ open class IndividualMessageService(
     timestamp: Long,
     isOnline: Boolean,
     urgent: Boolean,
-    reportEncrypted: () -> Unit
+    reportEncrypted: () -> Unit,
+    beforeSend: (() -> Unit)?
   ): SealedSendOutcome {
     // Certain errors self-resolve by mutating external state, like creating new sessions.
     // Trying several times in a loop lets us re-read that external state and use it in the next attempt.
@@ -165,7 +167,8 @@ open class IndividualMessageService(
       reportEncrypted()
 
       val contents = encryptedMessages.toSealedSenderContents()
-      val response = messageApi.sendSealedSenderMessage(serviceId, timestamp, contents, sealedSenderAccess, isOnline, urgent)
+      beforeSend?.invoke()
+      val response = messageApi.sendSealedSenderMessage(serviceId, timestamp, contents, sealedSenderAccess, isOnline, urgent, beforeSend)
 
       when (handleSealedSendResult(response, sealedSenderAccess, timestamp)) {
         SealedSendResult.Success -> {
@@ -190,14 +193,16 @@ open class IndividualMessageService(
     timestamp: Long,
     isOnline: Boolean,
     urgent: Boolean,
-    reportEncrypted: () -> Unit
+    reportEncrypted: () -> Unit,
+    beforeSend: (() -> Unit)?
   ): SendSuccess {
     for (attempt in 0 until MAX_DEVICE_RECOVERY_ATTEMPTS) {
       Log.d(TAG, "[$timestamp] Starting unsealed send attempt ${attempt + 1} to $serviceId")
       val encryptedMessages = encryptUnsealedForAllDevices(serviceId, envelopeContent, timestamp)
       reportEncrypted()
 
-      when (sendUnsealed(serviceId, timestamp, encryptedMessages, isOnline, urgent)) {
+      beforeSend?.invoke()
+      when (sendUnsealed(serviceId, timestamp, encryptedMessages, isOnline, urgent, beforeSend)) {
         UnsealedSendResult.Success -> {
           val devices = encryptedMessages.map { it.destinationDeviceId }
           Log.d(TAG, "[$timestamp] Successfully sent an unsealed message to $serviceId, devices: $devices")
@@ -218,7 +223,8 @@ open class IndividualMessageService(
     timestamp: Long,
     envelopeContent: EnvelopeContent,
     urgent: Boolean,
-    onEncrypted: (() -> Unit)?
+    onEncrypted: (() -> Unit)?,
+    beforeSend: (() -> Unit)? = null
   ): Either<SendError, SendSuccess> = withContext(Dispatchers.IO) {
     either {
       checkContentSize(envelopeContent, timestamp).bind()
@@ -240,10 +246,12 @@ open class IndividualMessageService(
           encryptedReported = true
         }
 
+        beforeSend?.invoke()
         val result = messageApi.sendSyncMessage(
           timestamp = timestamp,
           contents = encryptedMessages.map { it.toUnsealedMessage() },
-          urgent = urgent
+          urgent = urgent,
+          beforeSend = beforeSend
         )
 
         when (result) {
@@ -322,14 +330,16 @@ open class IndividualMessageService(
     timestamp: Long,
     encryptedMessages: List<OutgoingPushMessage>,
     online: Boolean,
-    urgent: Boolean
+    urgent: Boolean,
+    beforeSend: (() -> Unit)?
   ): UnsealedSendResult {
     val result = messageApi.sendUnsealedSenderMessage(
       serviceId = serviceId,
       timestamp = timestamp,
       contents = encryptedMessages.map { it.toUnsealedMessage() },
       onlineOnly = online,
-      urgent = urgent
+      urgent = urgent,
+      beforeSend = beforeSend
     )
 
     return when (result) {

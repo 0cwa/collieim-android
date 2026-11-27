@@ -64,6 +64,7 @@ object AttachmentBackfill {
   private val messageTimeoutJobs: ConcurrentHashMap<Long, Job> = ConcurrentHashMap()
 
   private val messageAttachments: ConcurrentHashMap<Long, Set<AttachmentId>> = ConcurrentHashMap()
+  private val registrationLock = Any()
 
   private val _awaiting = MutableStateFlow<Set<AttachmentId>>(emptySet())
 
@@ -85,7 +86,7 @@ object AttachmentBackfill {
    */
   @JvmStatic
   fun maybeRequest(messageId: Long, attachment: DatabaseAttachment) {
-    if (SignalStore.account.isPrimaryDevice) {
+    if (SignalStore.account.isPrimaryDevice || attachment.isLocallyRemoved || SignalDatabase.attachments.getAttachment(attachment.attachmentId)?.isLocallyRemoved == true) {
       return
     }
 
@@ -100,32 +101,42 @@ object AttachmentBackfill {
       return
     }
 
-    markAwaiting(messageId, attachment.attachmentId)
-
-    val now = System.currentTimeMillis()
-    val previous = messageBackfillLastRequestedAt[messageId]
-    if (previous != null && now - previous < DEDUP_REQUEST_BACKFILL_WINDOW) {
-      Log.d(TAG, "[$messageId] Request already sent ${now - previous} ms ago; attachment flagged, not re-requesting.")
-      return
+    val shouldSend = synchronized(registrationLock) {
+      markAwaiting(messageId, attachment.attachmentId)
+      val now = System.currentTimeMillis()
+      val previous = messageBackfillLastRequestedAt[messageId]
+      if (previous != null && now - previous < DEDUP_REQUEST_BACKFILL_WINDOW) {
+        Log.d(TAG, "[$messageId] Request already sent ${now - previous} ms ago; attachment flagged, not re-requesting.")
+        false
+      } else {
+        messageBackfillLastRequestedAt[messageId] = now
+        startTimeout(messageId, record.threadId, INITIAL_RESPONSE_TIMEOUT)
+        true
+      }
     }
-    messageBackfillLastRequestedAt[messageId] = now
 
-    Log.i(TAG, "[$messageId] Enqueuing attachment backfill request.")
-    AppDependencies.jobManager.add(MultiDeviceAttachmentBackfillRequestJob(messageId))
+    // Recheck outside the state lock. Removal commits the database tombstone
+    // before acquiring the same lock to clear this registration.
+    if (SignalDatabase.attachments.getAttachment(attachment.attachmentId)?.isLocallyRemoved == true) {
+      onAttachmentTerminal(attachment.attachmentId, messageId)
+    }
 
-    startTimeout(messageId, record.threadId, INITIAL_RESPONSE_TIMEOUT)
+    if (shouldSend && messageAttachments.containsKey(messageId)) {
+      Log.i(TAG, "[$messageId] Enqueuing attachment backfill request.")
+      AppDependencies.jobManager.add(MultiDeviceAttachmentBackfillRequestJob(messageId))
+    }
   }
 
   /**
    * Manages only the response timeout: extend it while the primary still reports work pending, else cancel it.
    */
   @JvmStatic
-  fun onResponseProcessed(messageId: Long, anyPending: Boolean) {
+  fun onResponseProcessed(messageId: Long, anyPending: Boolean): Unit = synchronized(registrationLock) {
     if (anyPending) {
       val threadId = messageThreads[messageId]
       if (threadId == null) {
         Log.d(TAG, "[$messageId] Pending response for a message we're no longer tracking; ignoring.")
-        return
+        return@synchronized
       }
 
       Log.i(TAG, "[$messageId] Backfill response still pending; extending timeout.")
@@ -141,9 +152,9 @@ object AttachmentBackfill {
    * Only drops the message's bookkeeping once none of its attachments are awaiting.
    */
   @JvmStatic
-  fun onAttachmentTerminal(attachmentId: AttachmentId, messageId: Long) {
+  fun onAttachmentTerminal(attachmentId: AttachmentId, messageId: Long): Unit = synchronized(registrationLock) {
     if (!_awaiting.value.contains(attachmentId)) {
-      return
+      return@synchronized
     }
 
     Log.i(TAG, "[$messageId] Backfill resolved for $attachmentId.")
@@ -160,14 +171,14 @@ object AttachmentBackfill {
 
   /** Primary could not find the message; stop awaiting all of its attachments and surface a not-found failure. */
   @JvmStatic
-  fun onResponseMessageNotFound(messageId: Long, threadId: Long) {
+  fun onResponseMessageNotFound(messageId: Long, threadId: Long): Unit = synchronized(registrationLock) {
     Log.w(TAG, "[$messageId] Backfill response reported message not found.")
     clearMessageAndAwaiting(messageId)
     _failures.tryEmit(BackfillFailure(messageId, threadId, FailureReason.NOT_FOUND))
   }
 
   @JvmStatic
-  fun clearPending(messageId: Long) {
+  fun clearPending(messageId: Long): Unit = synchronized(registrationLock) {
     clearMessageAndAwaiting(messageId)
   }
 
@@ -185,10 +196,12 @@ object AttachmentBackfill {
       delay(timeout)
 
       // Conditional remove: fails if a response replaced or cleared our entry, so we never fire a stale timeout.
-      if (messageTimeoutJobs.remove(messageId, coroutineContext[Job])) {
-        Log.w(TAG, "[$messageId] Backfill request timed out after $timeout.")
-        clearMessageAndAwaiting(messageId)
-        _failures.tryEmit(BackfillFailure(messageId, threadId, FailureReason.TIMEOUT))
+      synchronized(registrationLock) {
+        if (messageTimeoutJobs.remove(messageId, coroutineContext[Job])) {
+          Log.w(TAG, "[$messageId] Backfill request timed out after $timeout.")
+          clearMessageAndAwaiting(messageId)
+          _failures.tryEmit(BackfillFailure(messageId, threadId, FailureReason.TIMEOUT))
+        }
       }
     }
     messageTimeoutJobs[messageId] = timeoutJob

@@ -33,7 +33,7 @@ import org.signal.core.ui.R as CoreUiR
 
 @VisibleForTesting
 object HelpSettingsTestTags {
-  const val SCROLLER = "scroller"
+  const val SCROLLER = "help-settings-scroller"
   const val ROW_WEBSITE = "row-website"
   const val ROW_SUPPORT_CENTER = "row-support-center"
   const val ROW_CONTACT_US = "row-contact-us"
@@ -42,6 +42,7 @@ object HelpSettingsTestTags {
   const val ROW_DEBUG_LOGGING = "row-debug-logging"
   const val ROW_DEBUG_LOG = "row-debug-log"
   const val ROW_LICENSES = "row-licenses"
+  const val ROW_PROJECT_LOG = "row-project-log"
   const val ROW_TERMS_AND_PRIVACY_POLICY = "row-terms-and-privacy-policy"
 }
 
@@ -52,7 +53,8 @@ object HelpSettingsTestTags {
 fun HelpSettingsScreen(
   state: HelpSettingsState,
   onEvent: (HelpSettingsEvent) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  showAppUpdatesRow: Boolean = true
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.preferences__help),
@@ -112,7 +114,7 @@ fun HelpSettingsScreen(
         )
       }
 
-      if (state.showAppUpdates) {
+      if (state.showAppUpdates && showAppUpdatesRow) {
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences_app_updates__title),
@@ -146,6 +148,14 @@ fun HelpSettingsScreen(
           text = stringResource(R.string.HelpSettingsFragment__licenses),
           onClick = { onEvent(HelpSettingsEvent.LicensesClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_LICENSES)
+        )
+      }
+
+      if (state.showProjectLog) item {
+        Rows.TextRow(
+          text = stringResource(R.string.HelpSettingsFragment__project_log),
+          onClick = { onEvent(HelpSettingsEvent.ProjectLogClicked) },
+          modifier = Modifier.testTag(HelpSettingsTestTags.ROW_PROJECT_LOG)
         )
       }
 

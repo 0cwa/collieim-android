@@ -249,6 +249,12 @@ object UnifiedPushLifecycle {
     return initialized && ready && transitionGeneration == null && pendingInvalidationGeneration == null
   }
 
+  /** Must be called from inside [monitor]. Distinguishes a lease-draining transition from invalidation. */
+  fun isTransitionInProgressLocked(): Boolean {
+    check(Thread.holdsLock(monitor))
+    return transitionGeneration != null
+  }
+
   /** Immediately revokes effect authorization; the caller must queue a transition that completes the invalidation. */
   fun invalidateLocked(credentialOnly: Boolean = false) {
     check(Thread.holdsLock(monitor))

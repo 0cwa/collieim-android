@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.conversation.toStyledString
 import org.thoughtcrime.securesms.database.DatabaseObserver
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory
 import org.thoughtcrime.securesms.mms.PartAuthority
 
@@ -80,6 +81,7 @@ class MediaViewerViewModel(
     MediaViewerState(
       showThread = args.showThread,
       allMediaInRail = args.allMediaInRail,
+      attachmentRemovalEnabled = CollieFlags.attachmentRemoval,
       messageBodies = args.initialMessageBody
         ?.let { mapOf(args.messageId to it.toStyledString()) }
         ?: emptyMap()
@@ -97,6 +99,7 @@ class MediaViewerViewModel(
   private var dataSource: MediaViewerPagedDataSource? = null
   private val startingAttachmentId: AttachmentId? = args.initialMediaUri.takeIf { PartAuthority.isAttachmentUri(it) }?.let { PartAuthority.requireAttachmentId(it) }
   private var deletedAttachmentId: AttachmentId? = null
+  private var destructiveRequestId = 0L
   private var initialDisplayIndex = 0
   private var hasAppliedPagedData = false
   private var pagerScrollInProgress = false
@@ -150,6 +153,9 @@ class MediaViewerViewModel(
       is MediaViewerEvent.DeleteClicked -> applyDeleteClicked()
       is MediaViewerEvent.DeleteForEveryoneValidityResolved -> applyDeleteForEveryoneValidityResolved(event)
       is MediaViewerEvent.DeleteConfirmed -> applyDeleteConfirmed(event)
+      is MediaViewerEvent.RemoveAttachmentClicked -> applyRemoveAttachmentClicked()
+      is MediaViewerEvent.RemoveAttachmentValidityResolved -> applyRemoveAttachmentValidityResolved(event)
+      is MediaViewerEvent.RemoveAttachmentConfirmed -> applyRemoveAttachmentConfirmed()
       is MediaViewerEvent.ViewStorageSettingsClicked -> applyViewStorageSettingsClicked()
       is MediaViewerEvent.DialogDismissed -> applyDialogDismissed()
       is MediaViewerEvent.DataInvalidated -> applyDataInvalidated()
@@ -331,32 +337,79 @@ class MediaViewerViewModel(
   }
 
   private fun applyDeleteClicked() {
+    if (_state.value.dialog != MediaViewerState.Dialog.None || _state.value.isDraft) return
     val item = _state.value.currentItem ?: return
+    val requestId = ++destructiveRequestId
     viewModelScope.launch {
       val validity = repository.getDeleteValidity(item.attachmentId)
-      onEvent(MediaViewerEvent.DeleteForEveryoneValidityResolved(validity.canDeleteForEveryone, validity.isNoteToSelf))
+      onEvent(MediaViewerEvent.DeleteForEveryoneValidityResolved(validity.canDeleteForEveryone, validity.isNoteToSelf, item.attachmentId, requestId))
+    }
+  }
+
+  private fun applyRemoveAttachmentClicked() {
+    if (!CollieFlags.attachmentRemoval) return
+    if (_state.value.dialog != MediaViewerState.Dialog.None || _state.value.isDraft) return
+    val attachmentId = _state.value.currentItem?.attachmentId ?: return
+    val requestId = ++destructiveRequestId
+    viewModelScope.launch {
+      val result = repository.canRemoveAttachment(attachmentId)
+      onEvent(MediaViewerEvent.RemoveAttachmentValidityResolved(attachmentId, result.getOrNull() == true, requestId))
+    }
+  }
+
+  private suspend fun applyRemoveAttachmentValidityResolved(event: MediaViewerEvent.RemoveAttachmentValidityResolved) {
+    // Never show a delayed confirmation over a different image or another dialog.
+    if (event.requestId != destructiveRequestId || _state.value.currentItem?.attachmentId != event.attachmentId || _state.value.dialog != MediaViewerState.Dialog.None) return
+    if (event.canRemove) {
+      _state.update { it.copy(dialog = MediaViewerState.Dialog.RemoveAttachmentConfirmation(event.attachmentId)) }
+    } else {
+      _actions.send(MediaViewerAction.ShowToast(R.string.CollieAttachmentRemoval_unavailable))
+    }
+  }
+
+  private fun applyRemoveAttachmentConfirmed() {
+    if (!CollieFlags.attachmentRemoval) return
+    val dialog = _state.value.dialog as? MediaViewerState.Dialog.RemoveAttachmentConfirmation ?: return
+    // The confirmed ID comes from the dialog, never the current pager position.
+    _state.update { it.copy(dialog = MediaViewerState.Dialog.RemovingAttachment) }
+    viewModelScope.launch {
+      val result = repository.removeAttachment(dialog.attachmentId)
+      _state.update { it.copy(dialog = MediaViewerState.Dialog.None) }
+      if (result.getOrNull() == true) {
+        deletedAttachmentId = dialog.attachmentId
+        _actions.send(MediaViewerAction.ShowToast(R.string.CollieAttachmentRemoval_success))
+        // Close decoded media immediately; the retained DB marker is deliberately not viewable.
+        _actions.send(MediaViewerAction.Finish)
+      } else {
+        if (result is Either.Left) Log.w(TAG, "Attachment removal failed", result.value)
+        _actions.send(MediaViewerAction.ShowToast(R.string.CollieAttachmentRemoval_unavailable))
+        onEvent(MediaViewerEvent.DataInvalidated)
+      }
     }
   }
 
   private fun applyDeleteForEveryoneValidityResolved(event: MediaViewerEvent.DeleteForEveryoneValidityResolved) {
+    if (event.requestId != destructiveRequestId || _state.value.currentItem?.attachmentId != event.attachmentId || _state.value.dialog != MediaViewerState.Dialog.None) return
     _state.update {
-      it.copy(dialog = MediaViewerState.Dialog.DeleteConfirmation(event.canDeleteForEveryone, event.isNoteToSelf))
+      it.copy(dialog = MediaViewerState.Dialog.DeleteConfirmation(event.canDeleteForEveryone, event.isNoteToSelf, event.attachmentId))
     }
   }
 
   private fun applyDeleteConfirmed(event: MediaViewerEvent.DeleteConfirmed) {
-    val item = _state.value.currentItem ?: return
+    val dialog = _state.value.dialog as? MediaViewerState.Dialog.DeleteConfirmation ?: return
+    val attachmentId = dialog.attachmentId ?: return
+    if (event.deleteForEveryone && !dialog.canDeleteForEveryone) return
     _state.update { it.copy(dialog = MediaViewerState.Dialog.None) }
     viewModelScope.launch {
       val result = if (event.deleteForEveryone) {
-        repository.remoteDelete(item.attachmentId)
+        repository.remoteDelete(attachmentId)
       } else {
-        repository.localDelete(item.attachmentId)
+        repository.localDelete(attachmentId)
       }
 
       when (result) {
         is Either.Right -> {
-          deletedAttachmentId = item.attachmentId
+          deletedAttachmentId = attachmentId
           if (dataSource == null) {
             _actions.send(MediaViewerAction.Finish)
             return@launch
@@ -377,6 +430,8 @@ class MediaViewerViewModel(
   }
 
   private fun applyDialogDismissed() {
+    if (_state.value.dialog == MediaViewerState.Dialog.RemovingAttachment) return
+    destructiveRequestId++
     _state.update { it.copy(dialog = MediaViewerState.Dialog.None) }
   }
 

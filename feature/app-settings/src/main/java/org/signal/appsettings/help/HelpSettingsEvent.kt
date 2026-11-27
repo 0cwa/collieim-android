@@ -40,6 +40,8 @@ sealed interface HelpSettingsEvent {
   /** The user tapped the licenses row. */
   data object LicensesClicked : HelpSettingsEvent
 
+  data object ProjectLogClicked : HelpSettingsEvent
+
   /** The user tapped the terms and privacy policy row. */
   data object TermsAndPrivacyPolicyClicked : HelpSettingsEvent
 

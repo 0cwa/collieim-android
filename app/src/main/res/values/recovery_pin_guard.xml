@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="RecoveryPinGuard__enter_current_pin">Enter your current PIN</string>
+    <string name="RecoveryPinGuard__incorrect_pin">Incorrect PIN</string>
+    <string name="RecoveryPinGuard__no_pin">A current PIN must be set and available on this device.</string>
+</resources>

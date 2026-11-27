@@ -644,6 +644,11 @@
             android:defaultValue="0"
             app:argType="integer" />
 
+        <argument
+            android:name="focus_push_notifications"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
     </fragment>
 
     <!-- region Privacy -->
@@ -733,6 +738,13 @@
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
         <action
+            android:id="@+id/action_helpSettingsFragment_to_projectLogFragment"
+            app:destination="@id/projectLogFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <action
             android:id="@+id/action_helpSettingsFragment_to_licenseFragment"
             app:destination="@id/licenseFragment"
             app:enterAnim="@anim/fragment_open_enter"
@@ -759,6 +771,11 @@
             app:argType="integer"
             app:nullable="false" />
     </fragment>
+
+    <fragment
+        android:id="@+id/projectLogFragment"
+        android:name="org.thoughtcrime.securesms.components.settings.app.help.ProjectLogFragment"
+        android:label="project_log_fragment" />
 
     <fragment
         android:id="@+id/licenseFragment"
@@ -845,6 +862,26 @@
     <action
         android:id="@+id/action_direct_to_notificationsSettingsFragment"
         app:destination="@id/notificationsSettingsFragment"
+        app:enterAnim="@anim/fragment_open_enter"
+        app:exitAnim="@anim/fragment_open_exit"
+        app:popEnterAnim="@anim/fragment_close_enter"
+        app:popExitAnim="@anim/fragment_close_exit" />
+
+    <action
+        android:id="@+id/action_direct_to_appUpdatesSettingsFragment"
+        app:destination="@id/appUpdatesFragment"
+        app:popUpTo="@id/appSettingsFragment"
+        app:popUpToInclusive="true"
+        app:enterAnim="@anim/fragment_open_enter"
+        app:exitAnim="@anim/fragment_open_exit"
+        app:popEnterAnim="@anim/fragment_close_enter"
+        app:popExitAnim="@anim/fragment_close_exit" />
+
+    <action
+        android:id="@+id/action_direct_to_unifiedPushFragment"
+        app:destination="@id/notificationUnifiedPushFragment"
+        app:popUpTo="@id/appSettingsFragment"
+        app:popUpToInclusive="true"
         app:enterAnim="@anim/fragment_open_enter"
         app:exitAnim="@anim/fragment_open_exit"
         app:popEnterAnim="@anim/fragment_close_enter"
@@ -1031,7 +1068,16 @@
     <fragment
         android:id="@+id/collieSettingsFragment"
         android:name="org.thoughtcrime.securesms.components.settings.app.collie.CollieSettingsFragment"
-        android:label="@string/CollieSettings__title" />
+        android:label="@string/CollieSettings__title">
+
+        <action
+            android:id="@+id/action_collieSettingsFragment_to_appUpdatesFragment"
+            app:destination="@id/appUpdatesFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
 
     <!-- Labs Settings -->
 
@@ -1187,7 +1233,13 @@
     <!-- UnifiedPush -->
     <fragment
         android:id="@+id/notificationUnifiedPushFragment"
-        android:name="im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment" />
+        android:name="im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment">
+        <argument
+            android:name="pairingOffer"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
     <fragment
         android:id="@+id/editNotificationProfileFragment"

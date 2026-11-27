@@ -1,0 +1,12 @@
+version: 8.33.2-1-rc3
+date: 2026-11-05
+tag: v8.33.2-1-rc3
+
+topic: devices
+Linking a new device offers to bring your message history along when your phone supports it.
+
+topic: look
+A refreshed Collie palette and icon.
+
+topic: settings
+Donate to Collie comes first, with Donate to Molly next to it.

@@ -56,6 +56,10 @@ fun MollySocketQrScanScreen(
       QrScanResultDialog(message = stringResource(AppSettingsR.string.UsernameLinkSettings_qr_result_invalid), onDismiss = onQrResultHandled)
     }
 
+    QrScanResult.InvalidPairingDestination -> {
+      QrScanResultDialog(message = stringResource(R.string.PairingV1__invalid_submit_url), onDismiss = onQrResultHandled)
+    }
+
     QrScanResult.NetworkError -> {
       QrScanResultDialog(message = stringResource(R.string.MollySocketLink_experienced_a_network_error_please_try_again), onDismiss = onQrResultHandled)
     }
@@ -103,7 +107,7 @@ fun MollySocketQrScanScreen(
           QrCrosshair(modifier = Modifier.fillMaxSize())
 
           Text(
-            text = stringResource(R.string.MollySocketLink_scan_the_qr_code),
+            text = stringResource(R.string.PairingV1__scan_instructions),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White,
             textAlign = TextAlign.Center,

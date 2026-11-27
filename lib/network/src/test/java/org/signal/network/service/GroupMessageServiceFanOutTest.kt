@@ -36,6 +36,7 @@ import org.whispersystems.signalservice.api.crypto.EnvelopeContent
 import org.whispersystems.signalservice.api.crypto.SignalServiceCipher
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.internal.push.OutgoingPushMessage
+import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -68,6 +69,22 @@ class GroupMessageServiceFanOutTest {
     assertThat(results.map { it.serviceId }).isEqualTo(targets.map { it.serviceId })
     assertThat(results.all { it.result is Either.Right }).isEqualTo(true)
     targets.forEach { target -> coVerify(exactly = 1) { messageApi.sendSealedSenderMessage(eq(target.serviceId), any(), any(), any(), any(), any()) } }
+  }
+
+  @Test
+  fun `fan-out checks the guard after encryption and before network send`() = runTest {
+    val service = newService()
+    val stale = IOException("group admission changed")
+    every { protocolStore.getSubDeviceSessions(any()) } returns emptyList()
+    every { cipher.encrypt(any(), any(), any()) } returns OutgoingPushMessage(1, 1, 100, "AAAA")
+
+    val result = runCatching {
+      service.sendFanOut(fanOutTargets(1), envelopeContent, timestamp, isOnline = false, urgent = true, beforeSend = { throw stale })
+    }
+
+    assertThat(result.exceptionOrNull()?.javaClass).isEqualTo(IOException::class.java)
+    assertThat(result.exceptionOrNull()?.message).isEqualTo(stale.message)
+    coVerify(exactly = 0) { messageApi.sendSealedSenderMessage(any(), any(), any(), any(), any(), any(), any()) }
   }
 
   @Test

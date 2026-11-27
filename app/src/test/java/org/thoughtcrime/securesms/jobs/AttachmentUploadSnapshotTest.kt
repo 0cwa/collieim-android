@@ -48,6 +48,39 @@ class AttachmentUploadSnapshotTest {
     assertFalse(snapshots.valid(id))
   }
 
+  @Test fun unchangedCiphertextWithAnotherLocalSecretCannotResumeTheSavedSpec() {
+    val originalStore = snapshots()
+    val plaintext = "saved upload plaintext".toByteArray()
+    val original = originalStore.create(plaintext.size.toLong(), "source", byteArrayOf(1)) { ByteArrayInputStream(plaintext) }
+    val file = folder.root.listFiles()!!.single()
+    val encryptedBytes = file.readBytes()
+    val restartedStore = AttachmentUploadSnapshot(folder.root, AttachmentSecret(null, null, ByteArray(32) { 8 }))
+    // CTR accepts the different local key; unchanged encrypted bytes alone are insufficient.
+    assertFalse(plaintext.contentEquals(restartedStore.open(original).use { it.readBytes() }))
+    assertArrayEquals(encryptedBytes, file.readBytes())
+    val savedSpec = ResumableUpload(iv = okio.ByteString.of(*ByteArray(16) { 9 }))
+
+    val prepared = restartedStore.prepare(savedSpec, original, plaintext.size.toLong(), "source", byteArrayOf(1), { ByteArrayInputStream(plaintext) }, { false })
+
+    assertNull(prepared.spec)
+    assertNotEquals(original.id, prepared.identity.id)
+    assertArrayEquals(plaintext, restartedStore.open(prepared.identity).use { it.readBytes() })
+    assertTrue(restartedStore.valid(prepared.identity))
+  }
+
+  @Test fun changedRecordedPlaintextDigestCannotRetainTheSavedSpec() {
+    val store = snapshots()
+    val plaintext = byteArrayOf(1, 2, 3)
+    val original = store.create(3, "source", byteArrayOf(1)) { ByteArrayInputStream(plaintext) }
+    val changedIdentity = original.copy(plaintextDigest = org.signal.core.util.Base64.encodeWithPadding(ByteArray(32)))
+
+    val prepared = store.prepare(ResumableUpload(), changedIdentity, 3, "source", byteArrayOf(1), { ByteArrayInputStream(plaintext) }, { false })
+
+    assertNull(prepared.spec)
+    assertNotEquals(original.id, prepared.identity.id)
+    assertEquals(original.plaintextDigest, prepared.identity.plaintextDigest)
+  }
+
   @Test fun shortLongAndThrowingSourcesLeaveNoSnapshot() {
     val snapshots = snapshots()
     val sources = listOf({ ByteArrayInputStream(byteArrayOf(1)) }, { ByteArrayInputStream(byteArrayOf(1, 2, 3)) }, { throw IOException("cancelled") })

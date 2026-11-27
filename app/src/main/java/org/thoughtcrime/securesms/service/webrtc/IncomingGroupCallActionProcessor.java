@@ -5,6 +5,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 
 import org.signal.core.models.ServiceId.ACI;
+import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.logging.Log;
 import org.signal.remoteconfig.RemoteConfig;
 import org.signal.ringrtc.CallException;
@@ -19,6 +20,7 @@ import org.thoughtcrime.securesms.events.CallParticipant;
 import org.thoughtcrime.securesms.events.CallParticipantId;
 import org.thoughtcrime.securesms.events.WebRtcViewModel;
 import org.thoughtcrime.securesms.groups.GroupId;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.notifications.DoNotDisturbUtil;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
@@ -26,7 +28,6 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.ringrtc.OutgoingVideoSourceRouter;
 import org.thoughtcrime.securesms.ringrtc.RemotePeer;
 import org.thoughtcrime.securesms.service.webrtc.state.WebRtcServiceState;
-import org.signal.core.util.AppForegroundObserver;
 import org.thoughtcrime.securesms.util.NetworkUtil;
 import org.thoughtcrime.securesms.webrtc.locks.LockManager;
 
@@ -217,6 +218,10 @@ public final class IncomingGroupCallActionProcessor extends DeviceAwareActionPro
 
   @Override
   protected @NonNull WebRtcServiceState handleAcceptCall(@NonNull WebRtcServiceState currentState, boolean answerWithVideo) {
+    if (GroupAdmission.isHeld(currentState.getCallInfoState().getCallRecipient())) {
+      return terminateGroupCall(currentState);
+    }
+
     currentState = WebRtcVideoUtil.reinitializeCamera(context, webRtcInteractor.getCameraEventListener(), currentState);
 
     byte      dredDuration = (byte) RemoteConfig.dredDuration();

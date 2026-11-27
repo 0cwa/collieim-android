@@ -121,7 +121,7 @@ class MessageServiceTest {
 
     messageService.sendGroupMessage(destination, listOf(alice), SendRequest(EnvelopeContent.encrypted(content, ContentHint.RESENDABLE), timestamp = 1000L, urgent = false, isOnline = true))
 
-    coVerify { groupMessageService.sendMessage(destination, listOf(alice), content, ContentHint.RESENDABLE, 1000L, true, false, any()) }
+    coVerify { groupMessageService.sendMessage(destination, listOf(alice), content, ContentHint.RESENDABLE, 1000L, true, false, onResult = any()) }
   }
 
   private val destination = GroupSendDestination.Group(GroupIdentifier(ByteArray(32)))
@@ -132,12 +132,12 @@ class MessageServiceTest {
   }
 
   private fun stubGroupSend(vararg recipients: GroupSendRecipient, failed: Set<GroupSendRecipient> = emptySet()) {
-    coEvery { groupMessageService.sendMessage(any(), any(), any(), any(), any(), any(), any(), any()) } answers {
+    coEvery { groupMessageService.sendMessage(any(), any(), any(), any(), any(), any(), any(), onResult = any()) } answers {
       val results = recipients.map {
         val result = if (it in failed) MessageService.SendError.NotRegistered().left() else MessageService.SendSuccess(envelopeContent, true, listOf(1)).right()
         RecipientSendResult(it.serviceId, result)
       }
-      results.forEach { arg<(RecipientSendResult) -> Unit>(7)(it) }
+      results.forEach { arg<(RecipientSendResult) -> Unit>(8)(it) }
       results.right()
     }
   }

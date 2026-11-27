@@ -1,0 +1,7 @@
+# Merge into the Gradle user home gradle.properties for lower-memory local builds.
+# This keeps concurrent worktrees and an emulator within a typical 16 GB agent limit.
+org.gradle.caching=true
+org.gradle.jvmargs=-Xmx6g -Xms256m -XX:MaxMetaspaceSize=768m -XX:+UseParallelGC -Dcom.android.tools.r8.deterministicdebugging=true -XX:+UnlockExperimentalVMOptions -XX:hashCode=3
+kotlin.daemon.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m
+
+# For builds alongside an emulator, pass --max-workers=2 (or --max-workers=1 if needed).

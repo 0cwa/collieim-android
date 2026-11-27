@@ -28,6 +28,7 @@ class HelpSettingsFragment : ComposeFragment() {
       is AppSettingsRoute.HelpRoute.Help -> findNavController().safeNavigate(R.id.action_helpSettingsFragment_to_helpFragment)
       AppSettingsRoute.HelpRoute.DebugLog -> findNavController().safeNavigate(R.id.action_helpSettingsFragment_to_submitDebugLogActivity)
       AppSettingsRoute.HelpRoute.Licenses -> findNavController().safeNavigate(R.id.action_helpSettingsFragment_to_licenseFragment)
+      AppSettingsRoute.HelpRoute.ProjectLog -> findNavController().safeNavigate(R.id.action_helpSettingsFragment_to_projectLogFragment)
       else -> error("Unexpected route: ${route.javaClass.name}")
     }
   }

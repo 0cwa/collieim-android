@@ -31,6 +31,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +64,7 @@ import org.signal.paging.PagingController
 import org.signal.paging.StateFlowPagedData
 import org.signal.uicomponents.styledtext.StyleRange
 import org.signal.uicomponents.styledtext.StyledString
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.spoiler.SpoilerAnnotation
 import org.thoughtcrime.securesms.database.DatabaseObserver
@@ -93,6 +96,8 @@ class MediaViewerViewModelTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
+    mockkObject(CollieFlags)
+    every { CollieFlags.attachmentRemoval } returns true
 
     coEvery { repository.attachmentExists(any()) } returns false
     coEvery { repository.getInitialItem(any(), any(), any()) } returns null
@@ -107,6 +112,7 @@ class MediaViewerViewModelTest {
 
   @After
   fun tearDown() {
+    unmockkObject(CollieFlags)
     Dispatchers.resetMain()
   }
 
@@ -284,6 +290,7 @@ class MediaViewerViewModelTest {
 
     val viewModel = createViewModel()
     val actions = collectActions(viewModel.actions)
+    viewModel.onEvent(MediaViewerEvent.DeleteClicked)
     viewModel.onEvent(MediaViewerEvent.DeleteConfirmed(deleteForEveryone = false))
 
     assertThat(actions).containsExactly(MediaViewerAction.Finish)
@@ -298,6 +305,7 @@ class MediaViewerViewModelTest {
 
     every { dataSource.isStillViewable(AttachmentId(1)) } returns false
     coEvery { repository.localDelete(AttachmentId(1)) } returns Unit.right()
+    viewModel.onEvent(MediaViewerEvent.DeleteClicked)
     viewModel.onEvent(MediaViewerEvent.DeleteConfirmed(deleteForEveryone = false))
 
     coVerify { repository.localDelete(AttachmentId(1)) }
@@ -325,6 +333,8 @@ class MediaViewerViewModelTest {
     viewModel.onEvent(MediaViewerEvent.PageSettled(0))
 
     coEvery { repository.remoteDelete(AttachmentId(1)) } returns IllegalStateException().left()
+    coEvery { repository.getDeleteValidity(AttachmentId(1)) } returns MediaViewerRepository.DeleteValidity(canDeleteForEveryone = true, isNoteToSelf = false)
+    viewModel.onEvent(MediaViewerEvent.DeleteClicked)
     viewModel.onEvent(MediaViewerEvent.DeleteConfirmed(deleteForEveryone = true))
 
     assertThat(actions).contains(MediaViewerAction.ShowToast(R.string.MediaPreviewFragment_media_delete_error))
@@ -339,7 +349,129 @@ class MediaViewerViewModelTest {
 
     viewModel.onEvent(MediaViewerEvent.DeleteClicked)
 
-    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.DeleteConfirmation(canDeleteForEveryone = true, isNoteToSelf = false))
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.DeleteConfirmation(canDeleteForEveryone = true, isNoteToSelf = false, attachmentId = AttachmentId(1)))
+  }
+
+  @Test
+  fun `a late delete eligibility result cannot replace a removal confirmation or authorize deletion`() = runTest(testDispatcher) {
+    val deleteEligibility = CompletableDeferred<MediaViewerRepository.DeleteValidity>()
+    coEvery { repository.getDeleteValidity(AttachmentId(1)) } coAnswers { deleteEligibility.await() }
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } returns true.right()
+    val viewModel = createViewModel()
+    pagedFlow.value = listOf(createItem(1))
+
+    viewModel.onEvent(MediaViewerEvent.DeleteClicked)
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+    deleteEligibility.complete(MediaViewerRepository.DeleteValidity(canDeleteForEveryone = true, isNoteToSelf = false))
+    viewModel.onEvent(MediaViewerEvent.DeleteConfirmed(deleteForEveryone = true))
+
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.RemoveAttachmentConfirmation(AttachmentId(1)))
+    coVerify(exactly = 0) { repository.remoteDelete(any()) }
+    coVerify(exactly = 0) { repository.localDelete(any()) }
+  }
+
+  @Test
+  fun `removal needs a current confirmation and cancelling never mutates the attachment`() = runTest(testDispatcher) {
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } returns true.right()
+    val viewModel = createViewModel()
+    pagedFlow.value = listOf(createItem(1))
+
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.RemoveAttachmentConfirmation(AttachmentId(1)))
+    viewModel.onEvent(MediaViewerEvent.DialogDismissed)
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
+
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.None)
+    coVerify(exactly = 0) { repository.removeAttachment(any()) }
+    coVerify(exactly = 0) { repository.localDelete(any()) }
+    coVerify(exactly = 0) { repository.remoteDelete(any()) }
+  }
+
+  @Test
+  fun `delayed removal eligibility cannot open a dialog over a different attachment`() = runTest(testDispatcher) {
+    val eligibility = CompletableDeferred<arrow.core.Either<Throwable, Boolean>>()
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } coAnswers { eligibility.await() }
+    val viewModel = createViewModel()
+    pagedFlow.value = listOf(createItem(1), createItem(2))
+    viewModel.onEvent(MediaViewerEvent.PageSettled(0))
+
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+    viewModel.onEvent(MediaViewerEvent.PageScrolled(1))
+    assertThat(viewModel.state.value.currentItem?.attachmentId).isEqualTo(AttachmentId(2))
+    eligibility.complete(true.right())
+
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.None)
+    coVerify(exactly = 0) { repository.removeAttachment(any()) }
+  }
+
+  @Test
+  fun `removal uses the confirmed attachment even if the pager position changes`() = runTest(testDispatcher) {
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } returns true.right()
+    coEvery { repository.removeAttachment(AttachmentId(1)) } returns true.right()
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+    pagedFlow.value = listOf(createItem(1), createItem(2))
+    viewModel.onEvent(MediaViewerEvent.PageSettled(0))
+
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+    viewModel.onEvent(MediaViewerEvent.PageScrolled(1))
+    assertThat(viewModel.state.value.currentItem?.attachmentId).isEqualTo(AttachmentId(2))
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
+
+    coVerify(exactly = 1) { repository.removeAttachment(AttachmentId(1)) }
+    coVerify(exactly = 0) { repository.removeAttachment(AttachmentId(2)) }
+    coVerify(exactly = 0) { repository.localDelete(any()) }
+    coVerify(exactly = 0) { repository.remoteDelete(any()) }
+    assertThat(actions).containsExactly(MediaViewerAction.ShowToast(R.string.CollieAttachmentRemoval_success), MediaViewerAction.Finish)
+  }
+
+  @Test
+  fun `repeated removal confirmations cannot start a second operation`() = runTest(testDispatcher) {
+    val result = CompletableDeferred<arrow.core.Either<Throwable, Boolean>>()
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } returns true.right()
+    coEvery { repository.removeAttachment(AttachmentId(1)) } coAnswers { result.await() }
+    val viewModel = createViewModel()
+    collectActions(viewModel.actions)
+    pagedFlow.value = listOf(createItem(1))
+
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
+    viewModel.onEvent(MediaViewerEvent.DialogDismissed)
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
+
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.RemovingAttachment)
+    coVerify(exactly = 1) { repository.removeAttachment(AttachmentId(1)) }
+    result.complete(true.right())
+  }
+
+  @Test
+  fun `failed local removal reports the failure without claiming success or closing media`() = runTest(testDispatcher) {
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } returns true.right()
+    coEvery { repository.removeAttachment(AttachmentId(1)) } returns IllegalStateException("storage unavailable").left()
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+    pagedFlow.value = listOf(createItem(1))
+
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentConfirmed)
+
+    assertThat(actions).containsExactly(MediaViewerAction.ShowToast(R.string.CollieAttachmentRemoval_unavailable))
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.None)
+  }
+
+  @Test
+  fun `ineligible attachment does not offer removal confirmation`() = runTest(testDispatcher) {
+    coEvery { repository.canRemoveAttachment(AttachmentId(1)) } returns false.right()
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+    pagedFlow.value = listOf(createItem(1))
+
+    viewModel.onEvent(MediaViewerEvent.RemoveAttachmentClicked)
+
+    assertThat(viewModel.state.value.dialog).isEqualTo(MediaViewerState.Dialog.None)
+    assertThat(actions).containsExactly(MediaViewerAction.ShowToast(R.string.CollieAttachmentRemoval_unavailable))
+    coVerify(exactly = 0) { repository.removeAttachment(any()) }
   }
 
   @Test

@@ -11,19 +11,31 @@ import assertk.assertions.isEqualTo
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.spyk
+import io.mockk.unmockkConstructor
+import io.mockk.verify
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.signal.core.models.ServiceId
+import org.signal.libsignal.internal.CompletableFuture
+import org.signal.libsignal.net.ChatConnection
 import org.signal.libsignal.net.MismatchedDeviceException
 import org.signal.libsignal.net.RequestResult
 import org.signal.libsignal.net.RequestUnauthorizedException
 import org.signal.libsignal.net.SealedSendFailure
+import org.signal.libsignal.net.UnauthMessagesService
+import org.signal.libsignal.net.UnauthenticatedChatConnection
 import org.signal.libsignal.net.UserBasedAuthorization
 import org.signal.libsignal.net.UserBasedSendAuthorization
 import org.signal.libsignal.zkgroup.groupsend.GroupSendFullToken
 import org.signal.network.crypto.SealedSenderAccess
 import org.signal.network.crypto.UnidentifiedAccess
+import org.whispersystems.signalservice.api.websocket.SignalWebSocket
+import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
+import org.whispersystems.signalservice.internal.websocket.WebSocketConnection
+import java.io.IOException
 import java.util.UUID
 
 class MessageApiV2Test {
@@ -75,6 +87,46 @@ class MessageApiV2Test {
   }
 
   @Test
+  fun `a hold during fallback connection acquisition prevents a second payload dispatch`() = runTest {
+    val socket = mockk<WebSocketConnection>()
+    val chat = mockk<UnauthenticatedChatConnection>()
+    every { socket.name } returns "test"
+    every { socket.connect() } returns Observable.just(WebSocketConnectionState.CONNECTED)
+    every { socket.isDead() } returns false
+    var acquisitions = 0
+    var held = false
+    coEvery { socket.runWithChatConnection<Any>(any()) } coAnswers {
+      acquisitions++
+      if (acquisitions == 2) held = true
+      firstArg<(ChatConnection) -> Any>().invoke(chat)
+    }
+
+    val rejected = IOException("group admission changed")
+    val websocket = SignalWebSocket.UnauthenticatedWebSocket({ socket }, { true }, mockk(), 0).apply {
+      registerKeepAliveToken(SignalWebSocket.FOREGROUND_KEEPALIVE)
+    }
+    val api = MessageApiV2(mockk(), websocket)
+    mockkConstructor(UnauthMessagesService::class)
+    try {
+      every { anyConstructed<UnauthMessagesService>().sendMessage(any(), any(), any(), any(), any(), any()) } returns
+        CompletableFuture<RequestResult<Unit, SealedSendFailure>>().apply { complete(unauthorized) }
+
+      val result = runCatching {
+        api.sendSealedSenderMessage(
+          recipient, 1L, emptyList(), individualUnidentifiedAccessFirst(accessKey) { token }, onlineOnly = false, urgent = true,
+          beforeSend = { if (held) throw rejected }
+        )
+      }
+
+      assertThat(result.exceptionOrNull()).isEqualTo(rejected)
+      assertThat(acquisitions).isEqualTo(2)
+      verify(exactly = 1) { anyConstructed<UnauthMessagesService>().sendMessage(any(), any(), any(), any(), any(), any()) }
+    } finally {
+      unmockkConstructor(UnauthMessagesService::class)
+    }
+  }
+
+  @Test
   fun `rejected access key without a fallback returns the rejection`() = runTest {
     val api = apiReturning(unauthorized)
 
@@ -118,7 +170,7 @@ class MessageApiV2Test {
   private fun apiReturning(vararg results: RequestResult<Unit, SealedSendFailure>): MessageApiV2 {
     val api = spyk(MessageApiV2(mockk(), mockk()))
     val remaining = ArrayDeque(results.toList())
-    coEvery { api.sendSealed(any(), any(), any(), any(), any(), any()) } coAnswers {
+    coEvery { api.sendSealed(any(), any(), any(), any(), any(), any(), any()) } coAnswers {
       sentWith += arg<UserBasedSendAuthorization>(3)
       remaining.removeFirst()
     }

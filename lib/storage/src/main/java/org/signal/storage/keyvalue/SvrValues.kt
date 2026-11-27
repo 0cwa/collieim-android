@@ -39,6 +39,7 @@ class SvrValues(
   @Synchronized
   fun clearRegistrationLockAndPin() {
     store.beginWrite()
+      .putBoolean(PinValues.RECOVERY_PIN_GUARD_ENABLED, false)
       .remove(REGISTRATION_LOCK_ENABLED)
       .remove(LOCK_LOCAL_PIN_HASH)
       .remove(PIN)
@@ -230,6 +231,7 @@ class SvrValues(
   fun optOut() {
     store.beginWrite()
       .putBoolean(OPTED_OUT, true)
+      .putBoolean(PinValues.RECOVERY_PIN_GUARD_ENABLED, false)
       .remove(LOCK_LOCAL_PIN_HASH)
       .remove(PIN)
       .remove(REGISTRATION_LOCK_ENABLED)

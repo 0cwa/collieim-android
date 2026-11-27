@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.net.Uri
 import android.os.Looper
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
@@ -19,7 +20,9 @@ import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocketDevice
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
@@ -52,6 +55,7 @@ import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.thoughtcrime.securesms.util.livedata.LiveDataRule
 import org.unifiedpush.android.connector.UnifiedPush
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
@@ -89,6 +93,38 @@ class UnifiedPushSettingsViewModelPersistenceTest {
   fun tearDown() {
     EnrollmentExporter.removeFiles(application)
     unmockkStatic(AppDependencies::class, UnifiedPush::class)
+  }
+
+  @Test
+  fun `choosing a replacement for a paired route stages the distributor until the next QR`() {
+    val previous = "org.example.old"
+    val replacement = "org.example.new"
+    val endpoint = "https://old.example.test/push"
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      "pairing-v1-old", previous, "old-vapid", null, "https://old.example.test",
+      "old-session", Long.MAX_VALUE, "account-aci", 1, "Old relay",
+    )
+    values.setPairingEndpointRegistration(endpoint, "old-key", "old-auth", binding)
+    every { UnifiedPush.getDistributors(application) } returns listOf(previous, replacement)
+    every { UnifiedPush.getSavedDistributor(application) } returns previous
+    every { UnifiedPush.getAckDistributor(application) } returns previous
+    mockkStatic(KeyCachingService::class)
+    try {
+      every { KeyCachingService.isLocked() } returns false
+      val viewModel = UnifiedPushSettingsViewModel(application)
+
+      viewModel.setUnifiedPushDistributor(replacement)
+
+      assertEquals(replacement, viewModel.pairingSelectedDistributor())
+      assertEquals(previous, viewModel.state.value?.distributors?.get(0)?.applicationId)
+      assertEquals(0, viewModel.state.value?.selected)
+      assertEquals(endpoint, values.endpoint)
+      assertEquals(binding, values.pairingEndpointBinding)
+      verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
+      verify(exactly = 0) { UnifiedPush.unregisterApp(any(), any()) }
+    } finally {
+      unmockkStatic(KeyCachingService::class)
+    }
   }
 
   @Test
@@ -213,6 +249,50 @@ class UnifiedPushSettingsViewModelPersistenceTest {
     } finally {
       reopenedSettings.exportState.removeObserver(observer)
       unmockkStatic(EnrollmentExporter::class)
+      unmockkStatic(KeyCachingService::class)
+    }
+  }
+
+  @Test
+  fun `the selected document receives enrollment bytes outside the lifecycle monitor`() {
+    seedDisclosureAccount()
+    mockkStatic(KeyCachingService::class)
+    mockkObject(EnrollmentExporter)
+    val destination = Uri.parse("content://example.test/enrollment")
+    val contents = """{"enrollment_version":3}"""
+    val stream = object : ByteArrayOutputStream() {
+      override fun write(bytes: ByteArray, offset: Int, length: Int) {
+        assertFalse(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+        super.write(bytes, offset, length)
+      }
+    }
+    shadowOf(application.contentResolver).registerOutputStream(destination, stream)
+    try {
+      every { KeyCachingService.isLocked() } returns false
+      every { EnrollmentExporter.prepareDocument(application, 1L, ExportMode.NEW_INTENT, null) } answers {
+        assertTrue(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+        EnrollmentExporter.DocumentExport(2L, 1L, contents)
+      }
+      val viewModel = UnifiedPushSettingsViewModel(application)
+      val disclosure = checkNotNull(viewModel.state.value?.relayDisclosure)
+      val messages = mutableListOf<String>()
+      val observer = Observer<UnifiedPushSettingsViewModel.ExportState?> { result -> result?.message?.let(messages::add) }
+      viewModel.exportState.observeForever(observer)
+      try {
+        viewModel.exportEnrollment(application, "1", ExportMode.NEW_INTENT, disclosure = disclosure, destination = destination)
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (messages.isEmpty() && System.nanoTime() < deadline) {
+          shadowOf(Looper.getMainLooper()).idle()
+          if (messages.isEmpty()) Thread.sleep(10)
+        }
+        assertEquals(listOf(application.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_saved)), messages)
+        assertEquals(contents, stream.toByteArray().decodeToString())
+        UnifiedPushSettingsViewModel.acknowledgeExportResult(checkNotNull(UnifiedPushSettingsViewModel.unreadExport()).id)
+      } finally {
+        viewModel.exportState.removeObserver(observer)
+      }
+    } finally {
+      unmockkObject(EnrollmentExporter)
       unmockkStatic(KeyCachingService::class)
     }
   }

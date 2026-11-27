@@ -25,6 +25,7 @@ import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PartProgressEvent
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.Job.Parameters
 import org.thoughtcrime.securesms.jobmanager.JobLogger.format
@@ -132,7 +133,8 @@ class AttachmentDownloadJob private constructor(
           downloadJob.id
         }
 
-        AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE -> {
+        AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE,
+        AttachmentTable.TRANSFER_REMOVED_LOCALLY -> {
           Log.d(TAG, "${databaseAttachment.attachmentId} is permanently failed, transferState: $transferState")
           null
         }
@@ -193,7 +195,7 @@ class AttachmentDownloadJob private constructor(
     Log.i(TAG, "onAdded() messageId: $messageId  attachmentId: $attachmentId  manual: $forceDownload")
 
     val attachment = SignalDatabase.attachments.getAttachment(attachmentId)
-    val pending = attachment != null && attachment.transferState != AttachmentTable.TRANSFER_PROGRESS_DONE && attachment.transferState != AttachmentTable.TRANSFER_PROGRESS_PERMANENT_FAILURE
+    val pending = attachment != null && attachment.transferState != AttachmentTable.TRANSFER_PROGRESS_DONE && !attachment.isPermanentlyFailed
 
     if (pending && (forceDownload || AttachmentUtil.isAutoDownloadPermitted(context, attachment))) {
       Log.i(TAG, "onAdded() Marking attachment progress as 'started'")
@@ -228,6 +230,14 @@ class AttachmentDownloadJob private constructor(
 
     if (!attachment.isInProgress) {
       Log.w(TAG, "Attachment was already downloaded.")
+      return
+    }
+
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      Log.i(TAG, "Not downloading media for a group awaiting local approval.")
+      SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_PENDING)
       return
     }
 
@@ -319,6 +329,13 @@ class AttachmentDownloadJob private constructor(
     attachmentId: AttachmentId,
     attachment: DatabaseAttachment
   ) {
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      SignalDatabase.attachments.setTransferState(messageId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_PENDING)
+      return
+    }
+
     val maxReceiveSize: Long = RemoteConfig.maxAttachmentReceiveSizeBytes
     val attachmentFile: File = SignalDatabase.attachments.getOrCreateTransferFile(attachmentId)
 
@@ -339,7 +356,7 @@ class AttachmentDownloadJob private constructor(
         }
 
         override fun shouldCancel(): Boolean {
-          return this@AttachmentDownloadJob.isCanceled
+          return this@AttachmentDownloadJob.isCanceled || (recipient != null && GroupAdmission.isHeld(recipient))
         }
       }
 

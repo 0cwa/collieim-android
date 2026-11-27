@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -28,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.widget.TextViewCompat;
 import com.google.android.material.color.MaterialColors;
 
 import com.bumptech.glide.RequestBuilder;
@@ -94,11 +96,13 @@ public class ThumbnailView extends FrameLayout {
   private final View               playOverlay;
   private final View               captionIcon;
   private final AppCompatImageView errorImage;
+  private final TextView           removedLabel;
 
   private OnClickListener parentClickListener;
 
   private boolean slideHasPlayOverlay;
   private boolean playOverlayForced;
+  private int     removedIconResource;
 
   private final int[] dimens        = new int[2];
   private final int[] bounds        = new int[4];
@@ -135,6 +139,7 @@ public class ThumbnailView extends FrameLayout {
     this.playOverlay             = findViewById(R.id.play_overlay);
     this.captionIcon             = findViewById(R.id.thumbnail_caption_icon);
     this.errorImage              = findViewById(R.id.thumbnail_error);
+    this.removedLabel            = findViewById(R.id.thumbnail_removed_label);
     this.cornerMask              = new CornerMask(this);
     this.transferControlViewStub = new Stub<>(findViewById(R.id.transfer_controls_stub));
 
@@ -199,6 +204,7 @@ public class ThumbnailView extends FrameLayout {
 
     captionIcon.setScaleX(captionIconScale);
     captionIcon.setScaleY(captionIconScale);
+    updateRemovalLabel();
   }
 
   @Override
@@ -377,6 +383,7 @@ public class ThumbnailView extends FrameLayout {
   }
 
   public void setImageDrawable(@NonNull RequestManager requestManager, @Nullable Drawable drawable) {
+    setRemovalIndicator(false);
     requestManager.clear(image);
     requestManager.clear(blurHash);
 
@@ -396,13 +403,17 @@ public class ThumbnailView extends FrameLayout {
                                                     boolean showControls, boolean isPreview,
                                                     int naturalWidth, int naturalHeight, @ColorInt int missingBackgroundColor)
   {
+    setRemovalIndicator(slide.asAttachment().isLocallyRemoved());
     if (slide.asAttachment().isPermanentlyFailed()) {
       this.slide = slide;
 
+      pendingControlsSlide = null;
       transferControlViewStub.setVisibility(View.GONE);
+      if (transferControlViewStub.resolved()) transferControlViewStub.get().clear();
       slideHasPlayOverlay = false;
       updatePlayOverlay();
       setBackgroundColor(Color.TRANSPARENT);
+      captionIcon.setVisibility(View.GONE);
 
       requestManager.clear(blurHash);
       blurHash.setImageDrawable(null);
@@ -420,7 +431,15 @@ public class ThumbnailView extends FrameLayout {
         errorImageResource = R.drawable.ic_error_outline_24;
       }
       errorImage.setImageResource(errorImageResource);
-      errorImage.setVisibility(View.VISIBLE);
+      errorImage.setVisibility(slide.asAttachment().isLocallyRemoved() ? View.GONE : View.VISIBLE);
+
+      if (slide.asAttachment().isLocallyRemoved()) {
+        removedIconResource = errorImageResource;
+        updateRemovalLabel();
+        dimens[WIDTH] = naturalWidth;
+        dimens[HEIGHT] = naturalHeight;
+        requestLayout();
+      }
 
       image.setBackgroundColor(missingBackgroundColor);
 
@@ -565,6 +584,7 @@ public class ThumbnailView extends FrameLayout {
   }
 
   public ListenableFuture<Boolean> setImageResource(@NonNull RequestManager requestManager, @NonNull Uri uri, int width, int height, boolean animate, @Nullable ThumbnailRequestListener listener) {
+    setRemovalIndicator(false);
     SettableFuture<Boolean> future = new SettableFuture<>();
 
     transferControlViewStub.setVisibility(View.GONE);
@@ -602,6 +622,7 @@ public class ThumbnailView extends FrameLayout {
   }
 
   public ListenableFuture<Boolean> setImageResource(@NonNull RequestManager requestManager, @NonNull StoryTextPostModel model, int width, int height) {
+    setRemovalIndicator(false);
     SettableFuture<Boolean> future = new SettableFuture<>();
 
     transferControlViewStub.setVisibility(View.GONE);
@@ -698,7 +719,8 @@ public class ThumbnailView extends FrameLayout {
   }
 
   private void updatePlayOverlay() {
-    playOverlay.setVisibility(slideHasPlayOverlay || playOverlayForced ? View.VISIBLE : View.GONE);
+    boolean removed = removedLabel.getVisibility() == View.VISIBLE;
+    playOverlay.setVisibility(!removed && (slideHasPlayOverlay || playOverlayForced) ? View.VISIBLE : View.GONE);
   }
 
   private static boolean hasSameContents(@Nullable Slide slide, @Nullable Slide other) {
@@ -743,6 +765,7 @@ public class ThumbnailView extends FrameLayout {
   }
 
   public void clear(RequestManager requestManager) {
+    setRemovalIndicator(false);
     requestManager.clear(image);
     image.setImageDrawable(null);
 
@@ -755,6 +778,26 @@ public class ThumbnailView extends FrameLayout {
     blurHash.setImageDrawable(null);
 
     slide = null;
+  }
+
+  private void setRemovalIndicator(boolean removed) {
+    removedLabel.setVisibility(removed ? View.VISIBLE : View.GONE);
+    updatePlayOverlay();
+    setContentDescription(removed ? getContext().getString(R.string.CollieAttachmentRemoval_removed_explanation) : null);
+    image.setImportantForAccessibility(removed ? View.IMPORTANT_FOR_ACCESSIBILITY_NO : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    blurHash.setImportantForAccessibility(removed ? View.IMPORTANT_FOR_ACCESSIBILITY_NO : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+  }
+
+  private void updateRemovalLabel() {
+    if (removedLabel.getVisibility() != View.VISIBLE) return;
+
+    float textSize = removedLabel.getTextSize();
+    boolean compact = getWidth() > 0 &&
+                      (getWidth() < textSize * 9 + removedLabel.getPaddingLeft() + removedLabel.getPaddingRight() ||
+                       getHeight() < textSize * 4 + removedLabel.getPaddingTop() + removedLabel.getPaddingBottom());
+    removedLabel.setText(compact ? R.string.CollieAttachmentRemoval_removed_short : R.string.CollieAttachmentRemoval_removed);
+    removedLabel.setCompoundDrawablesWithIntrinsicBounds(0, compact ? 0 : removedIconResource, 0, 0);
+    TextViewCompat.setCompoundDrawableTintList(removedLabel, ColorStateList.valueOf(removedLabel.getCurrentTextColor()));
   }
 
   public void showSecondaryText(boolean showSecondaryText) {

@@ -9,13 +9,14 @@ import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 
 /**
- * Receiver side of the frozen v1/v2 contracts and v3 import identity in
+ * Receiver side of the frozen v1/v2 contracts, v3 import identity, and v4 linked receiver contract in
  * https://github.com/0cwa/colliesocket. Each version has a separate source pin in test resources. Pure functions: the caller supplies the clock, the lock
  * state and the stored replay state, and persists the state this returns. Nothing here logs or echoes input.
  */
 object EncryptedPush {
 
   const val CONTRACT_COMMIT = "5a2f0cc2590efac50aa4238aeeb19de667e6d4eb"
+  const val V4_CONTRACT_COMMIT = "f8db2525d9ea25661efd4903037cc3f2ecdbe918"
 
   /** Padded plaintext size of the wire profile, and the largest event JSON before the padding. */
   const val MAX_INPUT_BYTES = 3993
@@ -40,6 +41,7 @@ object EncryptedPush {
     val expiresAt: Long,
     val keyId: String? = null,
     val importId: String? = null,
+    val receiverId: String? = null,
   )
 
   enum class Decision {
@@ -107,12 +109,14 @@ object EncryptedPush {
   private val COMMON_FIELDS = setOf("version", "event_id", "instance", "subscription_epoch", "kind", "issued_at", "expires_at")
   private val V1_V2_FIELDS = COMMON_FIELDS + "code"
   private val V3_FIELDS = V1_V2_FIELDS + setOf("key_id", "import_id")
+  private val V4_FIELDS = COMMON_FIELDS + setOf("code", "import_id", "receiver_id")
   private val REQUIRED = COMMON_FIELDS
   const val CODE_SUBSCRIPTION_UPDATED = "subscription_updated"
   const val CODE_ENROLLMENT_IMPORTED = "enrollment_imported"
   private val CODES = setOf("connection_conflict", "connection_unavailable")
   private val CODES_V2 = CODES + CODE_SUBSCRIPTION_UPDATED
   private val CODES_V3 = CODES_V2 + CODE_ENROLLMENT_IMPORTED
+  private val CODES_V4 = CODES_V3
   private val KEY_ID = Regex("[A-Za-z0-9_-]{43}")
 
   /**
@@ -151,11 +155,12 @@ object EncryptedPush {
       root[name].takeIf { it.isIntegralNumber && it.canConvertToLong() }?.asLong()?.takeIf { it in min..MAX_JSON_INT }
     fun string(name: String): String? = root[name].takeIf { it.isTextual }?.asText()
 
-    val version = integer("version", 1)?.takeIf { it in 1L..3L }?.toInt() ?: return null
+    val version = integer("version", 1)?.takeIf { it in 1L..4L }?.toInt() ?: return null
     if (version !in versions) return null
-    val fields = if (version == 3) V3_FIELDS else V1_V2_FIELDS
+    val fields = when (version) { 3 -> V3_FIELDS; 4 -> V4_FIELDS; else -> V1_V2_FIELDS }
     if (root.fieldNames().asSequence().any { it !in fields } || REQUIRED.any { !root.has(it) }) return null
     if (version == 3 && ("key_id" !in root.fieldNames().asSequence().toSet() || "import_id" !in root.fieldNames().asSequence().toSet())) return null
+    if (version == 4 && ("receiver_id" !in root.fieldNames().asSequence().toSet() || "import_id" !in root.fieldNames().asSequence().toSet())) return null
     val eventId = string("event_id")?.takeIf { EVENT_ID.matches(it) } ?: return null
     val instance = string("instance")?.takeIf { INSTANCE.matches(it) } ?: return null
     val epoch = integer("subscription_epoch", 1) ?: return null
@@ -167,15 +172,17 @@ object EncryptedPush {
     }
     val issuedAt = integer("issued_at", 0) ?: return null
     val expiresAt = integer("expires_at", 1) ?: return null
-    val code = if (root.has("code")) string("code")?.takeIf { it in when (version) { 1 -> CODES; 2 -> CODES_V2; else -> CODES_V3 } } ?: return null else null
+    val code = if (root.has("code")) string("code")?.takeIf { it in when (version) { 1 -> CODES; 2 -> CODES_V2; 3 -> CODES_V3; else -> CODES_V4 } } ?: return null else null
     if ((kind == Kind.STATUS) != (code != null)) return null
 
     val keyId = if (version == 3) string("key_id")?.takeIf { KEY_ID.matches(it) && ControlKeyId.isCanonical(it) } ?: return null else null
     val importId = if (version == 3) string("import_id")?.takeIf { EVENT_ID.matches(it) } ?: return null else null
+    val v4ImportId = if (version == 4) string("import_id")?.takeIf { EVENT_ID.matches(it) } ?: return null else importId
+    val receiverId = if (version == 4) string("receiver_id")?.takeIf { EVENT_ID.matches(it) } ?: return null else null
 
     if (expiresAt - issuedAt !in 1..MAX_LIFETIME_SECONDS) return null
     if (issuedAt > now + MAX_FUTURE_SECONDS || expiresAt <= now) return null
-    return Event(version, eventId, instance, epoch, kind, code, issuedAt, expiresAt, keyId, importId)
+    return Event(version, eventId, instance, epoch, kind, code, issuedAt, expiresAt, keyId, v4ImportId, receiverId)
   }
 
   /**
@@ -211,7 +218,7 @@ object EncryptedPush {
 
     if (locked()) return drop(Decision.DROP_LOCKED)
     if (!decrypted) return drop(Decision.DROP_NOT_DECRYPTED)
-    val event = parse(content, now, setOf(1, 2, 3)) ?: return drop(Decision.DROP_INVALID)
+    val event = parse(content, now, setOf(1, 2, 3, 4)) ?: return drop(Decision.DROP_INVALID)
     if (event.instance != activeInstance || event.epoch !in acceptedEpochs) return drop(Decision.DROP_ENROLLMENT_MISMATCH)
     // An old active generation and a same-epoch v3 adoption candidate can overlap at the same server epoch.
     val allowedVersions = versionsForEpoch?.invoke(event.epoch) ?: setOf(versionForEpoch(event.epoch))

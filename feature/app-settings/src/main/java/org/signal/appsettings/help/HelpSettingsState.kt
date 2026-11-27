@@ -16,6 +16,7 @@ data class HelpSettingsState(
   val versionName: String = "",
   /** COLLIE: Whether this build has in-app updates, so the app-update settings can be opened from here. */
   val showAppUpdates: Boolean = false,
+  val showProjectLog: Boolean = false,
   /** The snackbar to show, or [Snackbar.None]. */
   val snackbar: Snackbar = Snackbar.None
 ) {

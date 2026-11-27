@@ -1108,7 +1108,12 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
   }
 
   private boolean hasAudio(MessageRecord messageRecord) {
-    return MessageRecordUtil.hasAudio(messageRecord);
+    return MessageRecordUtil.hasAudio(messageRecord) && !hasRemovedAudio(messageRecord);
+  }
+
+  private boolean hasRemovedAudio(MessageRecord messageRecord) {
+    return MessageRecordUtil.hasAudio(messageRecord) &&
+           Objects.requireNonNull(((MmsMessageRecord) messageRecord).getSlideDeck().getAudioSlide()).asAttachment().isLocallyRemoved();
   }
 
   private boolean hasThumbnail(MessageRecord messageRecord) {
@@ -1132,7 +1137,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
   }
 
   private boolean hasDocument(MessageRecord messageRecord) {
-    return MessageRecordUtil.hasDocument(messageRecord);
+    return MessageRecordUtil.hasDocument(messageRecord) || hasRemovedAudio(messageRecord);
   }
 
   private boolean hasExtraText(MessageRecord messageRecord) {
@@ -1469,7 +1474,8 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
 
       //noinspection ConstantConditions
       documentViewStub.get().setDocument(
-          ((MmsMessageRecord) messageRecord).getSlideDeck().getDocumentSlide(),
+          hasRemovedAudio(messageRecord) ? ((MmsMessageRecord) messageRecord).getSlideDeck().getAudioSlide()
+                                         : ((MmsMessageRecord) messageRecord).getSlideDeck().getDocumentSlide(),
           showControls,
           displayMode != ConversationItemDisplayMode.Detailed.INSTANCE
       );
@@ -1504,8 +1510,9 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         stickerStub.get().setThumbnailClickListener(new StickerClickListener());
       } else {
         //noinspection ConstantConditions
-        stickerStub.get().setSlide(requestManager, ((MmsMessageRecord) messageRecord).getSlideDeck().getThumbnailSlide(), getDefaultBubbleColor(hasWallpaper));
-        stickerStub.get().setThumbnailClickListener((v, slide) -> performClick());
+        Slide borderlessSlide = Objects.requireNonNull(((MmsMessageRecord) messageRecord).getSlideDeck().getThumbnailSlide());
+        stickerStub.get().setSlide(requestManager, borderlessSlide, getDefaultBubbleColor(hasWallpaper));
+        stickerStub.get().setThumbnailClickListener(borderlessSlide.asAttachment().isLocallyRemoved() ? new ThumbnailClickListener() : (v, slide) -> performClick());
       }
 
       stickerStub.get().setDownloadClickListener(downloadClickListener);
@@ -2843,6 +2850,12 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
     public void onClick(final View v, final Slide slide) {
       if (shouldInterceptClicks(messageRecord) || !batchSelected.isEmpty() || (isSuppressedInteractionMode() && (!slide.hasDocument() || (slide.hasDocument() && !MessageRecordUtil.isScheduled(messageRecord))))) {
         performClick();
+      } else if (slide.asAttachment().isLocallyRemoved()) {
+        new MaterialAlertDialogBuilder(getContext())
+            .setTitle(R.string.CollieAttachmentRemoval_removed)
+            .setMessage(R.string.CollieAttachmentRemoval_removed_explanation)
+            .setPositiveButton(android.R.string.ok, null)
+            .show();
       } else if ((!canPlayContent || inlinePlaybackEnded) && mediaItem != null && eventListener != null) {
         eventListener.onPlayInlineContent(conversationMessage);
       } else if (MediaUtil.isImageOrVideoType(slide.getContentType()) && slide.getDisplayUri() != null) {

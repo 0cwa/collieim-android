@@ -20,10 +20,12 @@ import org.thoughtcrime.securesms.backup.v2.requireThumbnailMediaName
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobLogger.format
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
+import org.thoughtcrime.securesms.jobmanager.persistence.JobSpec
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
@@ -48,6 +50,17 @@ class RestoreAttachmentThumbnailJob private constructor(
 
     private const val KEY_MESSAGE_ID = "message_id"
     private const val KEY_ATTACHMENT_ID = "part_row_id"
+
+    /** Thumbnail restores share a queue; removal must cancel only its own jobs. */
+    fun jobSpecMatchesAttachmentId(jobSpec: JobSpec, attachmentId: AttachmentId): Boolean {
+      if (jobSpec.factoryKey != KEY) return false
+      return try {
+        val data = JsonJobData.deserializeOrNull(jobSpec.serializedData) ?: return false
+        data.hasLong(KEY_ATTACHMENT_ID) && data.getLong(KEY_ATTACHMENT_ID) == attachmentId.id
+      } catch (_: RuntimeException) {
+        false
+      }
+    }
 
     @JvmStatic
     fun constructQueueString(attachmentId: AttachmentId): String {
@@ -98,7 +111,7 @@ class RestoreAttachmentThumbnailJob private constructor(
 
     val attachment = SignalDatabase.attachments.getAttachment(attachmentId)
 
-    if (attachment == null) {
+    if (attachment == null || attachment.isLocallyRemoved) {
       Log.w(TAG, "attachment no longer exists.")
       return
     }
@@ -118,6 +131,14 @@ class RestoreAttachmentThumbnailJob private constructor(
       return
     }
 
+    val message = SignalDatabase.messages.getMessageRecordOrNull(messageId)
+    val recipient = message?.let { SignalDatabase.threads.getRecipientForThreadId(it.threadId) }
+    if (recipient != null && GroupAdmission.isHeld(recipient)) {
+      Log.i(TAG, "Not restoring a thumbnail for a group awaiting local approval.")
+      SignalDatabase.attachments.setThumbnailRestoreState(attachmentId, AttachmentTable.ThumbnailRestoreState.NEEDS_RESTORE)
+      return
+    }
+
     if (attachment.dataHash == null) {
       Log.w(TAG, "$attachmentId has no plaintext hash! Cannot proceed.")
       return
@@ -128,7 +149,7 @@ class RestoreAttachmentThumbnailJob private constructor(
 
     val progressListener = object : SignalServiceAttachment.ProgressListener {
       override fun onAttachmentProgress(progress: AttachmentTransferProgress) = Unit
-      override fun shouldCancel(): Boolean = this@RestoreAttachmentThumbnailJob.isCanceled
+      override fun shouldCancel(): Boolean = this@RestoreAttachmentThumbnailJob.isCanceled || (recipient != null && GroupAdmission.isHeld(recipient))
     }
 
     val cdnCredentials = runBlocking { SignalNetwork.archiveService.getCdnReadCredentials(ArchiveService.CredentialType.MEDIA, attachment.archiveCdn ?: RemoteConfig.backupFallbackArchiveCdn) }.successOrThrow().headers

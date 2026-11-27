@@ -10,12 +10,14 @@ import org.signal.core.util.groups.GroupChangeFailedException;
 import org.signal.core.util.groups.GroupInsufficientRightsException;
 import org.signal.core.util.groups.GroupNotAMemberException;
 import org.signal.core.util.logging.Log;
+import org.signal.network.exceptions.PushNetworkException;
 import org.signal.storageservice.storage.protos.groups.local.DecryptedMember;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.model.GroupRecord;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupManager;
+import org.thoughtcrime.securesms.groups.v2.admission.GroupAdmission;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.DecryptionsDrainedConstraint;
@@ -23,7 +25,6 @@ import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.whispersystems.signalservice.api.groupsv2.NoCredentialForRedemptionTimeException;
-import org.signal.network.exceptions.PushNetworkException;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -125,7 +126,7 @@ public final class GroupV2UpdateSelfProfileKeyJob extends BaseJob {
         }
 
         Recipient groupRecipient = Recipient.externalGroupExact(id);
-        if (groupRecipient.isBlocked() || !groupRecipient.isProfileSharing()) {
+        if (groupRecipient.isBlocked() || GroupAdmission.isHeld(groupRecipient) || !groupRecipient.isProfileSharing()) {
           continue;
         }
 
@@ -184,6 +185,11 @@ public final class GroupV2UpdateSelfProfileKeyJob extends BaseJob {
 
     Recipient groupRecipient = Recipient.externalGroupExact(groupId);
 
+    if (GroupAdmission.isHeld(groupRecipient)) {
+      Log.i(TAG, "Not updating a group awaiting local admission.");
+      return;
+    }
+
     if (groupRecipient.isBlocked()) {
       Log.i(TAG, "Not updating blocked group " + groupId);
       return;
@@ -205,6 +211,9 @@ public final class GroupV2UpdateSelfProfileKeyJob extends BaseJob {
     }
 
     Log.i(TAG, "Ensuring profile key up to date on group " + groupId);
+    if (GroupAdmission.isHeld(groupId)) {
+      return;
+    }
     GroupManager.updateSelfProfileKeyInGroup(context, groupId);
   }
 

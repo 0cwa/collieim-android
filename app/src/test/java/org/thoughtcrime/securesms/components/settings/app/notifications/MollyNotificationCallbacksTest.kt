@@ -25,8 +25,10 @@ import io.mockk.every
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertNotNull
@@ -60,8 +62,10 @@ class MollyNotificationCallbacksTest {
   private val pendingLaunch = MutableStateFlow<UnifiedPushDefaultDistributorLinkActivity.Setup?>(null)
   private var pendingSetup: UnifiedPushDefaultDistributorLinkActivity.Setup? = null
   private var lastSetupId = "unrecognized-setup"
+  private var firstPairingOffer: String? = null
   private val pendingResult = MutableStateFlow<NotificationsSettingsViewModel.PendingMollySocketResult?>(null)
   private val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org/relay")
+  private val socketLink = "mollysocket://link?type=webserver&vapid=${socket.vapid}&url=${android.net.Uri.encode(socket.url)}"
 
   @Before
   fun setUp() {
@@ -79,7 +83,13 @@ class MollyNotificationCallbacksTest {
     activity = controller.get()
     activity.setTheme(R.style.Theme_Molly_Material3_Light)
     controller.setup()
-    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results)
+    callbacks = DefaultNotificationsSettingsCallbacks(
+      activity, viewModel, router, results,
+      onFirstPairingScan = { offer ->
+        firstPairingOffer = offer
+        router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
+      },
+    )
   }
 
   @After
@@ -111,7 +121,7 @@ class MollyNotificationCallbacksTest {
   fun `cancelling QR setup clears its authorization`() {
     launchScan()
     results.qrResult.onActivityResult(null)
-    results.qrResult.onActivityResult(socket)
+    results.qrResult.onActivityResult(socketLink)
 
     verifyNoSelection()
   }
@@ -120,7 +130,7 @@ class MollyNotificationCallbacksTest {
   fun `scanned relay requires trust confirmation with the initiating screen authorization`() {
     allowSelection()
     launchScan()
-    results.qrResult.onActivityResult(socket)
+    results.qrResult.onActivityResult(socketLink)
 
     verifyNoSelection()
     val message = latestDialog().findViewById<TextView>(android.R.id.message)!!.text
@@ -128,7 +138,7 @@ class MollyNotificationCallbacksTest {
     assertFalse(message.contains(socket.url))
     pressButton(AlertDialog.BUTTON_POSITIVE)
 
-    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure)) }
+    verifyScannedSocketInitialized()
     verify(exactly = 0) { viewModel.setPreferredNotificationMethod(any()) }
     verify(exactly = 1) { results.distributorLauncher.launch(any()) }
   }
@@ -136,7 +146,7 @@ class MollyNotificationCallbacksTest {
   @Test
   fun `cancelling relay trust does not select a relay or link a distributor`() {
     launchScan()
-    results.qrResult.onActivityResult(socket)
+    results.qrResult.onActivityResult(socketLink)
     pressButton(AlertDialog.BUTTON_NEGATIVE)
 
     verifyNoSelection()
@@ -146,7 +156,7 @@ class MollyNotificationCallbacksTest {
   fun `rejected selection does not launch the distributor picker`() {
     confirmScannedRelay()
 
-    verify(exactly = 1) { viewModel.initializeMollySocket(socket, refEq(disclosure)) }
+    verifyScannedSocketInitialized()
     verify(exactly = 0) { results.distributorLauncher.launch(any()) }
   }
 
@@ -416,14 +426,34 @@ class MollyNotificationCallbacksTest {
 
   private fun confirmScannedRelay() {
     launchScan()
-    results.qrResult.onActivityResult(socket)
+    results.qrResult.onActivityResult(socketLink)
     pressButton(AlertDialog.BUTTON_POSITIVE)
+  }
+
+  private fun verifyScannedSocketInitialized() {
+    val scannedSocket = slot<MollySocket>()
+    verify(exactly = 1) { viewModel.initializeMollySocket(capture(scannedSocket), refEq(disclosure)) }
+    assertTrue(scannedSocket.captured is MollySocket.WebServer)
+    val webServer = scannedSocket.captured as MollySocket.WebServer
+    assertEquals(socket.vapid, webServer.vapid)
+    assertEquals(socket.url, webServer.url)
   }
 
   private fun allowSelection() {
     every { viewModel.initializeMollySocket(any(), any()) } answers {
       pendingLaunch.value = UnifiedPushDefaultDistributorLinkActivity.Setup(authorization)
     }
+  }
+
+  @Test
+  fun `first scan pairing offer routes to unified push setup without selecting credentials`() {
+    val offer = "{\"pairing_version\":1}"
+    launchScan()
+    results.qrResult.onActivityResult(offer)
+
+    assertEquals(offer, firstPairingOffer)
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+    verifyNoSelection()
   }
 
   private fun allowCompletion() {
@@ -444,7 +474,7 @@ class MollyNotificationCallbacksTest {
   }
 
   private class RecordingResults : DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer {
-    lateinit var qrResult: ActivityResultCallback<MollySocket?>
+    lateinit var qrResult: ActivityResultCallback<String?>
     lateinit var distributorResult: ActivityResultCallback<UnifiedPushDefaultDistributorLinkActivity.LinkResult?>
     val qrLauncher: ActivityResultLauncher<Unit> = mockk(relaxed = true)
     val distributorLauncher: ActivityResultLauncher<UnifiedPushDefaultDistributorLinkActivity.Setup> = mockk(relaxed = true)
@@ -456,7 +486,7 @@ class MollyNotificationCallbacksTest {
     ): ActivityResultLauncher<I> {
       return when (contract) {
         is MollySocketQrScannerActivity.Contract -> {
-          qrResult = callback as ActivityResultCallback<MollySocket?>
+          qrResult = callback as ActivityResultCallback<String?>
           qrLauncher as ActivityResultLauncher<I>
         }
         is UnifiedPushDefaultDistributorLinkActivity.Contract -> {

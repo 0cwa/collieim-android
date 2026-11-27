@@ -95,7 +95,11 @@ internal class AttachmentUploadSnapshot(private val directory: File, private val
   }
 
   fun valid(identity: Identity): Boolean = try {
-    identity.length in 1..(Long.MAX_VALUE - 32) && file(identity.id).let { it.isFile && !Files.isSymbolicLink(it.toPath()) && it.length() == identity.length + 32 && hash(it) == identity.digest }
+    // Local CTR encryption is unauthenticated: unchanged ciphertext is insufficient if the local secret changed.
+    identity.length in 1..(Long.MAX_VALUE - 32) && file(identity.id).let {
+      it.isFile && !Files.isSymbolicLink(it.toPath()) && it.length() == identity.length + 32 && hash(it) == identity.digest &&
+        open(identity).use { plaintext -> hash(plaintext) == identity.plaintextDigest }
+    }
   } catch (_: IOException) { false }
 
   fun open(identity: Identity): InputStream {
@@ -125,16 +129,16 @@ internal class AttachmentUploadSnapshot(private val directory: File, private val
 
   fun delete(identity: Identity?) { if (identity != null) try { file(identity.id).delete() } catch (_: IOException) {} }
 
-  private fun hash(file: File): String {
+  private fun hash(file: File): String = file.inputStream().use { hash(it) }
+
+  private fun hash(input: InputStream): String {
     val digest = MessageDigest.getInstance("SHA-256")
-    file.inputStream().use { input ->
-      val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-      while (true) {
-        val read = input.read(buffer)
-        if (read < 0) break
-        if (read == 0) throw IOException("Snapshot read made no progress")
-        digest.update(buffer, 0, read)
-      }
+    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+    while (true) {
+      val read = input.read(buffer)
+      if (read < 0) break
+      if (read == 0) throw IOException("Snapshot read made no progress")
+      digest.update(buffer, 0, read)
     }
     return Base64.encodeWithPadding(digest.digest())
   }

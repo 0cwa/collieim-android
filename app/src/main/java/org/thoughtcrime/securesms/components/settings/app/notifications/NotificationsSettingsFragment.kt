@@ -11,8 +11,13 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.launch
+import androidx.core.os.bundleOf
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,14 +26,21 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -50,10 +62,13 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
+import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment
 import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
 import im.molly.unifiedpush.enrollment.RelayDisclosure
+import im.molly.unifiedpush.model.MollySocket
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
 import org.signal.core.util.eventbus.ThreadMode
@@ -102,7 +117,16 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    callbacks = DefaultNotificationsSettingsCallbacks(requireActivity(), viewModel, appSettingsRouter, DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this), viewLifecycleOwner)
+    callbacks = DefaultNotificationsSettingsCallbacks(
+      requireActivity(), viewModel, appSettingsRouter,
+      DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this), viewLifecycleOwner,
+      onFirstPairingScan = { offer ->
+        findNavController().safeNavigate(
+          R.id.action_notificationsSettingsFragment_to_unifiedPushFragment,
+          bundleOf(UnifiedPushSettingsFragment.PAIRING_OFFER_ARGUMENT to offer),
+        )
+      },
+    )
 
     viewLifecycleOwner.lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -147,7 +171,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun FragmentContent() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NotificationsSettingsScreen(state = state, callbacks = callbacks)
+    NotificationsSettingsScreen(state = state, callbacks = callbacks, focusPushNotifications = args.focusPushNotifications)
   }
 }
 
@@ -161,6 +185,7 @@ open class DefaultNotificationsSettingsCallbacks(
   val appSettingsRouter: AppSettingsRouter,
   activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity),
   private val owner: LifecycleOwner = activity,
+  private val onFirstPairingScan: ((String) -> Unit)? = null,
 ) : NotificationsSettingsCallbacks {
 
   companion object {
@@ -221,15 +246,22 @@ open class DefaultNotificationsSettingsCallbacks(
 
   private val qrScanLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = MollySocketQrScannerActivity.Contract(),
-    callback = { mollySocket ->
+    callback = { data ->
       val disclosure = viewModel.scanDisclosure
       viewModel.scanDisclosure = null
-      if (mollySocket != null) {
+      if (data?.trimStart()?.startsWith("{") == true) {
+        onFirstPairingScan?.invoke(data) ?: appSettingsRouter.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
+      } else if (data != null) {
         if (disclosure == null) {
           RelayDisclosureDialogs.showStaleAction(activity)
         } else {
-          RelayDisclosureDialogs.showRelay(activity, mollySocket) {
-            viewModel.initializeMollySocket(mollySocket, disclosure)
+          val mollySocket = MollySocket.parseLink(Uri.parse(data))
+          if (mollySocket == null) {
+            Toast.makeText(activity, R.string.PairingV1__invalid_offer, Toast.LENGTH_LONG).show()
+          } else {
+            RelayDisclosureDialogs.showRelay(activity, mollySocket) {
+              viewModel.initializeMollySocket(mollySocket, disclosure)
+            }
           }
         }
       }
@@ -526,9 +558,11 @@ interface NotificationsSettingsCallbacks {
 fun NotificationsSettingsScreen(
   state: NotificationsSettingsState,
   callbacks: NotificationsSettingsCallbacks,
-  deviceState: DeviceState = remember { DeviceState() }
+  deviceState: DeviceState = remember { DeviceState() },
+  focusPushNotifications: Boolean = false
 ) {
   var showDialog by remember { mutableStateOf(false) }
+  var hasFocusedPushNotifications by rememberSaveable { mutableStateOf(false) }
 
   if (showDialog) {
     Dialogs.SimpleAlertDialog(
@@ -549,6 +583,7 @@ fun NotificationsSettingsScreen(
   ) {
     val errorCode = state.playServicesErrorCode
     val hasPlayServicesError = errorCode != null && errorCode != ConnectionResult.SUCCESS
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = if (hasPlayServicesError) 99 else 0)
 
     LaunchedEffect(errorCode) {
       if (hasPlayServicesError) {
@@ -556,8 +591,17 @@ fun NotificationsSettingsScreen(
       }
     }
 
+    LaunchedEffect(focusPushNotifications, state.isLinkedDevice) {
+      if (focusPushNotifications && !hasFocusedPushNotifications) {
+        val itemCount = snapshotFlow { listState.layoutInfo.totalItemsCount }.first { it > 0 }
+        hasFocusedPushNotifications = true
+        val itemsAfterHeader = if (state.isLinkedDevice) 3 else 4
+        listState.scrollToItem((itemCount - itemsAfterHeader).coerceAtLeast(0))
+      }
+    }
+
     LazyColumn(
-      state = rememberLazyListState(initialFirstVisibleItemIndex = if (hasPlayServicesError) 99 else 0),
+      state = listState,
       modifier = Modifier.padding(it)
     ) {
       if (!state.messageNotificationsState.canEnableNotifications) {
@@ -838,8 +882,40 @@ fun NotificationsSettingsScreen(
         Dividers.Default()
       }
 
-      item {
-        Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__push_notifications))
+      item(key = "push-notifications") {
+        if (focusPushNotifications) {
+          Surface(
+            color = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
+          ) {
+            Column {
+              Text(
+                text = stringResource(R.string.CollieSetup__delivery_title),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 4.dp)
+                  .semantics { liveRegion = LiveRegionMode.Polite }
+              )
+              Text(
+                text = stringResource(R.string.NotificationsSettingsFragment__push_notifications),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp).semantics { heading() }
+              )
+              Text(
+                text = stringResource(R.string.CollieSetup__delivery_settings_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
+              )
+            }
+          }
+        } else {
+          Texts.SectionHeader(
+            text = stringResource(R.string.NotificationsSettingsFragment__push_notifications),
+            modifier = Modifier.semantics { heading() }
+          )
+        }
       }
 
       item {
@@ -888,14 +964,12 @@ fun NotificationsSettingsScreen(
         )
       }
 
-      if (!state.isLinkedDevice) {
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.NotificationsSettingsFragment__configure_unifiedpush),
-            enabled = state.preferredNotificationMethod == NotificationDeliveryMethod.UNIFIEDPUSH,
-            onClick = callbacks::onNavigationUnifiedPushSettings
-          )
-        }
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.NotificationsSettingsFragment__configure_unifiedpush),
+          enabled = state.preferredNotificationMethod == NotificationDeliveryMethod.UNIFIEDPUSH,
+          onClick = callbacks::onNavigationUnifiedPushSettings
+        )
       }
     }
   }
@@ -906,7 +980,7 @@ internal fun availableNotificationMethods(isLinkedDevice: Boolean, isFcmSupporte
     when (method) {
       NotificationDeliveryMethod.FCM -> isFcmSupported
       NotificationDeliveryMethod.WEBSOCKET -> true
-      NotificationDeliveryMethod.UNIFIEDPUSH -> !isLinkedDevice
+      NotificationDeliveryMethod.UNIFIEDPUSH -> true
     }
   }
 

@@ -62,6 +62,8 @@ import org.signal.storage.database.DatabaseSecretProvider;
 import org.signal.storage.database.SqlCipherLibraryLoader;
 import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle;
+import im.molly.unifiedpush.control.ReceiverControlState;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.avatar.AvatarPickerStorage;
 import org.thoughtcrime.securesms.backup.v2.BackupRepository;
@@ -76,6 +78,8 @@ import org.thoughtcrime.securesms.crypto.UnrecoverableKeyException;
 import org.thoughtcrime.securesms.database.LogDatabase;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.events.PushServiceEvent;
+import org.signal.core.util.eventbus.EventBus;
 import org.thoughtcrime.securesms.dependencies.AppRemoteConfigDependencies;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider;
 import org.thoughtcrime.securesms.gcm.FcmFetchManager;
@@ -384,7 +388,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
       isAppInitialized = true;
     }
 
-    SignalExecutors.BOUNDED.execute(() -> UnifiedPushReceiver.applyPendingEndpoint(this));
+    SignalExecutors.BOUNDED.execute(() -> {
+      UnifiedPushReceiver.applyPendingEndpoint(this);
+      UnifiedPushReceiver.resumeScopedRegistration(this);
+    });
   }
 
   @MainThread
@@ -623,12 +630,27 @@ public class ApplicationContext extends Application implements AppForegroundObse
     updatePushNotificationServices(null);
   }
 
+  /** Activates the selected delivery service after pairing without starting a legacy relay refresh. */
+  public void activatePushNotificationServicesAfterPairing() {
+    updatePushNotificationServices(null, false);
+    restartPushDeliveryAfterPairing();
+  }
+
+  public void restartPushDeliveryAfterPairing() {
+    AppDependencies.resetNetwork(true);
+    EventBus.getDefault().post(PushServiceEvent.INSTANCE);
+  }
+
   private void updatePushNotificationServices(@Nullable UnifiedPushRefreshJob unifiedPushRefresh) {
+    updatePushNotificationServices(unifiedPushRefresh, true);
+  }
+
+  private void updatePushNotificationServices(@Nullable UnifiedPushRefreshJob unifiedPushRefresh, boolean scheduleRelayCleanup) {
     if (!SignalStore.account().isRegistered()) {
       return;
     }
 
-    if (SignalStore.unifiedpush().getPendingRelayCleanup() != null) {
+    if (scheduleRelayCleanup && SignalStore.unifiedpush().getPendingRelayCleanup() != null) {
       AppDependencies.getJobManager().add(new UnifiedPushRefreshJob());
     }
 
@@ -647,8 +669,15 @@ public class ApplicationContext extends Application implements AppForegroundObse
       }
       if (method == NotificationDeliveryMethod.UNIFIEDPUSH) {
         if (SignalStore.account().isLinkedDevice()) {
-          Log.i(TAG, "UnifiedPush not supported in linked devices.");
-          updateUnifiedPushStatus(false);
+          if (hasConfirmedLinkedV4Route()) {
+            if (!unifiedPushEnabled) {
+              Log.i(TAG, "Enabling the confirmed v4 receiver route on this linked device.");
+              updateUnifiedPushStatus(true, null);
+            }
+          } else {
+            Log.i(TAG, "UnifiedPush is unavailable without a confirmed v4 receiver route on a linked device.");
+            updateUnifiedPushStatus(false);
+          }
         } else if (!unifiedPushEnabled) {
           if (unifiedPushRefresh != null) {
             // Startup and preference changes can run before push lifecycle admission.
@@ -700,6 +729,20 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   private void updateUnifiedPushStatus(boolean enabled) {
     updateUnifiedPushStatus(enabled, new UnifiedPushRefreshJob());
+  }
+
+  private boolean hasConfirmedLinkedV4Route() {
+    synchronized (UnifiedPushLifecycle.monitor) {
+      var values = SignalStore.unifiedpush();
+      var receiver = ReceiverControlState.Companion.parse(values.getV4ReceiverState());
+      var binding = values.getPairingEndpointBinding();
+      String accountId = SignalStore.account().getAci() == null ? null : SignalStore.account().getAci().toString();
+      return receiver != null && receiver.getConfirmed() && binding != null && accountId != null &&
+          SignalStore.account().getDeviceId() >= 2 && receiver.getAccountId().equals(accountId) &&
+          receiver.getInstance().equals(values.getEndpointInstance()) && receiver.getInstance().equals(binding.getInstance()) &&
+          receiver.getImportId().equals(binding.getImportId()) && accountId.equals(binding.getAccountId()) &&
+          SignalStore.account().getDeviceId() == binding.getDeviceId() && values.getEndpoint() != null;
+    }
   }
 
   private void updateUnifiedPushStatus(boolean enabled, @Nullable UnifiedPushRefreshJob refresh) {

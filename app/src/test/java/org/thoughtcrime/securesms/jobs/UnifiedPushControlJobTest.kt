@@ -7,6 +7,8 @@ package org.thoughtcrime.securesms.jobs
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.ControlUpdate
+import im.molly.unifiedpush.control.ReceiverControlState
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocketDevice
 import io.mockk.every
@@ -60,6 +62,8 @@ class UnifiedPushControlJobTest {
     mockkStatic(AppDependencies::class)
     every { AppDependencies.jobManager } returns jobManager
     every { SignalStore.unifiedpush } returns unifiedPush
+    every { unifiedPush.pairingEndpointBinding } returns null
+    every { unifiedPush.v4ReceiverState } returns null
   }
 
   @After
@@ -203,6 +207,46 @@ class UnifiedPushControlJobTest {
 
     assertEquals(stale, state.get().update)
     verify(exactly = 0) { sender.sendControlMessage(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `v4 control only sends the persisted frame for its live pairing import`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val endpoint = "https://push.example.invalid/current"
+    val bridge = MollySocketDevice(4, "SYNTHETIC-REMOTE-DEVICE-PASSWORD")
+    configureRegisteredContext(accountId, bridge, endpoint)
+    every { SignalStore.account.deviceId } returns 3
+    every { unifiedPush.device } returns null
+    installControlState(ControlState())
+
+    val receiver = ReceiverControlState(
+      "11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222", accountId,
+      bridge.deviceId, "fixture-instance", "Fixture bridge", "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8", 1,
+      Target("https://push.example.invalid/previous", validP256dh, validAuth), confirmed = true,
+    )
+    val subscription = ControlFrame.Subscription(endpoint, validP256dh, validAuth)
+    val pending = checkNotNull(ReceiverControlState.reconcile(receiver, accountId, bridge.deviceId, subscription, 1))
+    val frame = checkNotNull(pending.pendingFrame)
+    var serialized = pending.serialize()
+    every { unifiedPush.v4ReceiverState } answers { serialized }
+    every { unifiedPush.commitV4ReceiverState(any()) } answers { serialized = firstArg() }
+
+    val binding = UnifiedPushValues.PairingEndpointBinding(
+      receiver.instance, "org.example.distributor", "fixture-vapid", null, "https://push.example.invalid",
+      "33333333-3333-4333-8333-333333333333", 0, accountId, 3, receiver.hostLabel, receiver.importId,
+    )
+    every { unifiedPush.pairingEndpointBinding } returns binding.copy(importId = "44444444-4444-4444-8444-444444444444")
+    val sender = mockk<SignalServiceMessageSender>()
+    every { AppDependencies.signalServiceMessageSender } returns sender
+    every { sender.sendControlMessage(accountId, 3, bridge.deviceId, any()) } returns mockk<SendMessageResult>()
+
+    newJob().onRun()
+
+    verify(exactly = 0) { sender.sendControlMessage(any(), any(), any(), any()) }
+    every { unifiedPush.pairingEndpointBinding } returns binding
+    assertTrue(runCatching { newJob().onRun() }.exceptionOrNull() is IOException)
+    verify(exactly = 1) { sender.sendControlMessage(accountId, 3, bridge.deviceId, match { it.contentEquals(frame) }) }
+    assertTrue(checkNotNull(ReceiverControlState.parse(serialized)).pendingSentAt > 0)
   }
 
   private fun configureRegisteredContext(accountId: String, device: MollySocketDevice, endpoint: String?) {

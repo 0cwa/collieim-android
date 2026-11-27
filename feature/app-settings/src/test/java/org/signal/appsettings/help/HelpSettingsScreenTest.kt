@@ -117,6 +117,23 @@ class HelpSettingsScreenTest {
   }
 
   @Test
+  fun `project log is hidden when disabled`() {
+    setContent(HelpSettingsState(versionName = "8.33.0"))
+
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_PROJECT_LOG).assertDoesNotExist()
+  }
+
+  @Test
+  fun `clicking enabled project log emits ProjectLogClicked`() {
+    setContent(HelpSettingsState(versionName = "8.33.0", showProjectLog = true))
+
+    scrollTo(HelpSettingsTestTags.ROW_PROJECT_LOG)
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_PROJECT_LOG).performClick()
+
+    assertThat(events).containsExactly(HelpSettingsEvent.ProjectLogClicked)
+  }
+
+  @Test
   fun `the version copied snackbar is shown and reports when it is dismissed`() {
     setContent(HelpSettingsState(versionName = "8.33.0", snackbar = HelpSettingsState.Snackbar.VersionCopied))
 
@@ -137,11 +154,22 @@ class HelpSettingsScreenTest {
     assertThat(events).containsExactly(expected)
   }
 
-  private fun setContent(state: HelpSettingsState) {
+  @Test
+  fun `moving the app updates row preserves the version shortcut`() {
+    setContent(HelpSettingsState(versionName = "8.33.0", showAppUpdates = true), showAppUpdatesRow = false)
+
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
+    scrollTo(HelpSettingsTestTags.ROW_VERSION)
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_VERSION).performClick()
+    assertThat(events).containsExactly(HelpSettingsEvent.VersionClicked)
+  }
+
+  private fun setContent(state: HelpSettingsState, showAppUpdatesRow: Boolean = true) {
     composeTestRule.setContent {
       HelpSettingsScreen(
         state = state,
-        onEvent = { events += it }
+        onEvent = { events += it },
+        showAppUpdatesRow = showAppUpdatesRow
       )
     }
   }

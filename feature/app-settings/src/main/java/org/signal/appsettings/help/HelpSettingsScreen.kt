@@ -33,7 +33,7 @@ import org.signal.core.ui.R as CoreUiR
 
 @VisibleForTesting
 object HelpSettingsTestTags {
-  const val SCROLLER = "scroller"
+  const val SCROLLER = "help-settings-scroller"
   const val ROW_WEBSITE = "row-website"
   const val ROW_SUPPORT_CENTER = "row-support-center"
   const val ROW_CONTACT_US = "row-contact-us"

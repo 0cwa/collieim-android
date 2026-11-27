@@ -250,7 +250,7 @@ class BuildInputGateTest(unittest.TestCase):
                 with self.subTest(event=event):
                     self.assertEqual(detect(event, ""), "build_changed=true\n")
 
-            git("init", "-q")
+            git("init", "-q", "-b", "main")
             git("commit", "--allow-empty", "-qm", "base")
             base = git("rev-parse", "HEAD")
             for path, build_changed in (
@@ -271,6 +271,18 @@ class BuildInputGateTest(unittest.TestCase):
                     git("add", "--", path)
                     git("commit", "-qm", "change build input")
                     self.assertEqual(detect("pull_request", base), f"build_changed={build_changed}\n")
+
+            git("reset", "--hard", "-q", base)
+            git("switch", "-qc", "pr")
+            (root / "README.md").touch()
+            git("add", "README.md")
+            git("commit", "-qm", "change documentation on PR")
+            git("switch", "-q", "main")
+            (root / "gradle.properties").touch()
+            git("add", "gradle.properties")
+            git("commit", "-qm", "change build input on main")
+            git("merge", "-q", "--no-ff", "-m", "synthetic PR merge", "pr")
+            self.assertEqual(detect("pull_request", base), "build_changed=false\n")
 
 
 if __name__ == "__main__":

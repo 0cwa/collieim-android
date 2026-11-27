@@ -2,4 +2,5 @@
 <!-- Keeps the CollieSocket enrollment export (it holds the linked-device password) out of backups. -->
 <full-backup-content>
     <exclude domain="external" path="." />
+    <exclude domain="device_sharedpref" path="collie_appearance.xml" />
 </full-backup-content>

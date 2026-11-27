@@ -52,6 +52,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationActivity
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
@@ -59,6 +60,7 @@ import org.thoughtcrime.securesms.testing.RawFlag
 import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
+import org.thoughtcrime.securesms.util.ThemePalettes
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -84,6 +86,7 @@ class AppearanceThemePropagationTest {
   private val context get() = harness.context
   private lateinit var previousTheme: SettingsValues.Theme
   private var previousDynamicColors = false
+  private var previousPalette: String? = null
   private var previousScreenSecurity = true
   private var previousBiometricLock = false
   private var previousAutoLock = false
@@ -94,6 +97,7 @@ class AppearanceThemePropagationTest {
   fun savePreferences() {
     previousTheme = SignalStore.settings.theme
     previousDynamicColors = SignalStore.settings.isDynamicColorsEnabled
+    if (CollieFlags.userTheming) previousPalette = ThemePalettes.storedId(context)
     previousScreenSecurity = SignalStore.settings.isScreenSecurityEnabled
     previousBiometricLock = PlainTextKeyValueStore.biometricScreenLockEnabled
     previousAutoLock = ScreenLockController.autoLock
@@ -112,6 +116,7 @@ class AppearanceThemePropagationTest {
     instrumentation.runOnMainSync {
       ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList().forEach(Activity::finish)
       SignalStore.settings.setTheme(previousTheme, previousDynamicColors)
+      if (CollieFlags.userTheming) ThemePalettes.setStoredId(context, previousPalette)
       SignalStore.settings.isScreenSecurityEnabled = previousScreenSecurity
       PlainTextKeyValueStore.biometricScreenLockEnabled = previousBiometricLock
       ScreenLockController.enableAutoLock(previousAutoLock)
@@ -194,6 +199,7 @@ class AppearanceThemePropagationTest {
   private fun setInitialTheme(theme: SettingsValues.Theme) {
     instrumentation.runOnMainSync {
       SignalStore.settings.setTheme(theme, false)
+      if (CollieFlags.userTheming) ThemePalettes.setStoredId(context, ThemePalettes.COLLIE)
       DynamicTheme.setDefaultDayNightMode(context)
     }
   }

@@ -14,6 +14,8 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Assume.assumeFalse
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,10 +26,12 @@ import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.testutil.DirectExecutor
 import org.thoughtcrime.securesms.testutil.MasterSecretRule
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
+import org.thoughtcrime.securesms.util.ThemePalettes
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -128,7 +132,7 @@ class SettingsValuesAppearanceTest {
     values.onConfigurationSettingChanged.observeForever { key ->
       events += key
       assertEquals("dark", PlainTextKeyValueStore.theme)
-      assertTrue(PlainTextKeyValueStore.isDynamicColorsEnabled)
+      assertTrue(values.isDynamicColorsEnabled)
     }
 
     values.setAppearance(SettingsValues.Theme.DARK, true)
@@ -136,16 +140,119 @@ class SettingsValuesAppearanceTest {
 
     assertEquals(listOf(SettingsValues.THEME), events)
     assertEquals("dark", store.getString(SettingsValues.THEME, null))
-    assertTrue(PlainTextKeyValueStore.isDynamicColorsEnabled)
+    assertTrue(values.isDynamicColorsEnabled)
+  }
+
+  @Test
+  fun `palette choices leave V1 preferences unchanged and notify once each`() {
+    assumeTrue(CollieFlags.userTheming)
+    val store = KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())
+    val values = SettingsValues(store, context)
+    val events = mutableListOf<String>()
+    values.onConfigurationSettingChanged.observeForever { events += it }
+
+    val backupBefore = PlainTextKeyValueStore.getBooleanValuesToBackup()
+    values.setColorPalette(PILOT)
+    shadowOf(Looper.getMainLooper()).idle()
+    assertEquals(PILOT, ThemePalettes.storedId(context))
+    assertFalse(values.isDynamicColorsEnabled)
+    assertEquals(PILOT, values.colorPalette)
+
+    values.setColorPalette(ThemePalettes.SYSTEM)
+    shadowOf(Looper.getMainLooper()).idle()
+    assertEquals(ThemePalettes.SYSTEM, ThemePalettes.storedId(context))
+    assertTrue(values.isDynamicColorsEnabled)
+    assertEquals(ThemePalettes.SYSTEM, values.colorPalette)
+
+    values.setColorPalette(PILOT)
+    shadowOf(Looper.getMainLooper()).idle()
+    values.setColorPalette(ThemePalettes.COLLIE)
+    shadowOf(Looper.getMainLooper()).idle()
+    assertEquals(ThemePalettes.COLLIE, ThemePalettes.storedId(context))
+    assertFalse(values.isDynamicColorsEnabled)
+    assertEquals(ThemePalettes.COLLIE, values.colorPalette)
+
+    assertEquals(backupBefore, PlainTextKeyValueStore.getBooleanValuesToBackup())
+    assertEquals(List(4) { SettingsValues.THEME }, events)
+  }
+
+  @Test
+  fun `unknown palettes cannot be selected`() {
+    val store = KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())
+    assumeTrue(CollieFlags.userTheming)
+    org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+      SettingsValues(store, context).setColorPalette("not_a_palette")
+    }
+  }
+
+  @Test
+  fun `brightness changes and legacy dynamic writers keep the stored palette`() {
+    assumeTrue(CollieFlags.userTheming)
+    val store = KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())
+    val values = SettingsValues(store, context)
+    values.setColorPalette(PILOT)
+
+    values.theme = SettingsValues.Theme.DARK
+    values.setAppearance(SettingsValues.Theme.LIGHT, false)
+    values.isDynamicColorsEnabled = false
+    assertEquals(PILOT, ThemePalettes.storedId(context))
+    assertEquals("light", PlainTextKeyValueStore.theme)
+
+    // Beta's Dynamic Colors control selects System without changing the legacy preference.
+    values.isDynamicColorsEnabled = true
+    assertEquals(ThemePalettes.SYSTEM, ThemePalettes.storedId(context))
+    assertFalse(PlainTextKeyValueStore.isDynamicColorsEnabled)
+    assertTrue(values.isDynamicColorsEnabled)
+  }
+
+  @Test
+  fun `post-restore theme synchronization keeps an unknown device-local palette ID`() {
+    legacyPreferences().edit()
+      .putString(PlainTextKeyValueStore.THEME, "light")
+      .putBoolean(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED, false)
+      .commit()
+    ThemePalettes.setStoredId(context, "from_a_newer_version")
+
+    val dataSet = KeyValueDataSet()
+    dataSet.putString(SettingsValues.THEME, "dark")
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(dataSet), DirectExecutor()), context)
+
+    values.onPostBackupRestore()
+
+    assertEquals("dark", PlainTextKeyValueStore.theme)
+    assertEquals("from_a_newer_version", ThemePalettes.storedId(context))
+    assertEquals(ThemePalettes.COLLIE, values.colorPalette)
+  }
+
+  @Test
+  fun `Stable ignores stored palettes and leaves them alone when toggling Dynamic Colors`() {
+    assumeFalse(CollieFlags.userTheming)
+    val store = KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())
+    val values = SettingsValues(store, context)
+    ThemePalettes.setStoredId(context, PILOT)
+
+    assertEquals(ThemePalettes.COLLIE, values.colorPalette)
+    values.setColorPalette(ThemePalettes.SYSTEM)
+    assertFalse(values.isDynamicColorsEnabled)
+    assertEquals(PILOT, ThemePalettes.storedId(context))
+
+    values.isDynamicColorsEnabled = true
+    assertEquals(ThemePalettes.SYSTEM, values.colorPalette)
+    assertEquals(PILOT, ThemePalettes.storedId(context))
   }
 
   private fun legacyPreferences() = SecurePreferenceManager.getSecurePreferences(context)
 
   private fun clearLegacyBootstrapValues() {
+    ThemePalettes.setStoredId(context, null)
     legacyPreferences().edit()
       .remove(PlainTextKeyValueStore.THEME)
       .remove(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)
       .remove(PlainTextKeyValueStore.SYSTEM_EMOJI_PREFERRED)
       .commit()
+  }
+
+  companion object {
+    private const val PILOT = "teal_vibrant"
   }
 }

@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="TextSecure.BaseLightTheme" parent="TextSecure.SharedLightTheme">
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="signal_inverse_primary">@color/signal_inverse_primary</item>
         <item name="quote_view_label_background_incoming_normal">@color/signal_color_on_surface_8</item>
         <item name="quote_view_label_background_incoming_wallpaper">@color/signal_color_on_surface_8</item>
     </style>
 
     <style name="TextSecure.BaseDarkTheme" parent="TextSecure.SharedDarkTheme">
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="signal_inverse_primary">@color/signal_inverse_primary</item>
+    </style>
+    <!-- Keep the host palette while laying out the sheet edge to edge. -->
+    <style name="Theme.Signal.Light.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="android:navigationBarColor">@color/signal_bottom_sheet_navigation_bar</item>
+        <item name="enableEdgeToEdge">true</item>
+    </style>
+
+    <style name="Theme.Signal.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="android:navigationBarColor">@color/signal_bottom_sheet_navigation_bar</item>
+        <item name="enableEdgeToEdge">true</item>
     </style>
 </resources>

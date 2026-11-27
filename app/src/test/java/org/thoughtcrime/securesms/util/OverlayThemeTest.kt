@@ -159,8 +159,8 @@ class OverlayThemeTest {
     try {
       PlainTextKeyValueStore.isDynamicColorsEnabled = true
 
-      assertEquals(R.style.TextSecure_MediaPreview, DynamicMediaPreviewTheme().getTheme())
-      assertEquals(R.style.Signal_DayNight_NoActionBar_MediaViewer, DynamicMediaViewerTheme().getTheme())
+      assertEquals(R.style.TextSecure_MediaPreview, DynamicMediaPreviewTheme().getTheme(context))
+      assertEquals(R.style.Signal_DayNight_NoActionBar_MediaViewer, DynamicMediaViewerTheme().getTheme(context))
     } finally {
       PlainTextKeyValueStore.isDynamicColorsEnabled = previous
     }

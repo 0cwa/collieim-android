@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.database.DatabaseObserver;
 import org.thoughtcrime.securesms.database.MediaTable;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.flags.CollieFlags;
 import org.thoughtcrime.securesms.util.CalendarDateOnly;
 
 import java.text.SimpleDateFormat;
@@ -72,14 +73,36 @@ public final class GroupedThreadMediaLoader extends AsyncTaskLoader<GroupedThrea
                                     ? new RoughSizeGroupingMethod(context)
                                     : new DateGroupingMethod(context, CalendarDateOnly.getInstance());
 
-    PopulatedGroupedThreadMedia mediaGrouping = new PopulatedGroupedThreadMedia(groupingMethod);
-
     AppDependencies.getDatabaseObserver().registerAttachmentUpdatedObserver(observer);
 
-    try (Cursor cursor = ThreadMediaLoader.createThreadMediaCursor(context, threadId, mediaType, sorting, limit)) {
-      while (cursor != null && cursor.moveToNext()) {
-        mediaGrouping.add(MediaTable.MediaRecord.from(cursor));
+    PopulatedGroupedThreadMedia mediaGrouping;
+    boolean includeBodyLinks = CollieFlags.INSTANCE.getPreviewIndependentSharedLinks();
+    int queryLimit = limit;
+    while (true) {
+      // A larger query starts at the first candidate again.
+      mediaGrouping = new PopulatedGroupedThreadMedia(groupingMethod);
+      int acceptedCount = 0;
+      int candidateCount;
+      try (Cursor cursor = ThreadMediaLoader.createThreadMediaCursor(context, threadId, mediaType, sorting, queryLimit)) {
+        candidateCount = cursor == null ? 0 : cursor.getCount();
+        while (cursor != null && cursor.moveToNext()) {
+          MediaTable.MediaRecord record = MediaTable.MediaRecord.from(cursor);
+          if (includeBodyLinks && record.getAttachment() == null && record.getLinkUrl() == null) {
+            continue;
+          }
+          mediaGrouping.add(record);
+          acceptedCount++;
+          if (includeBodyLinks && limit > 0 && acceptedCount >= limit) {
+            break;
+          }
+        }
       }
+
+      if (!includeBodyLinks || mediaType != MediaLoader.MediaType.ALL || limit <= 0 || acceptedCount >= limit || candidateCount < queryLimit || queryLimit == Integer.MAX_VALUE) {
+        break;
+      }
+
+      queryLimit = (int) Math.min(2L * queryLimit, Integer.MAX_VALUE);
     }
 
     if (sorting == MediaTable.Sorting.Oldest || sorting == MediaTable.Sorting.Largest) {

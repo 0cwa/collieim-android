@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import androidx.compose.runtime.Immutable
+import org.json.JSONArray
+import org.json.JSONException
 import org.signal.core.database.SqlUtil
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
@@ -13,6 +15,8 @@ import org.signal.core.util.readToSingleObject
 import org.signal.core.util.requireLong
 import org.signal.core.util.requireString
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
+import org.thoughtcrime.securesms.flags.CollieFlags
+import org.thoughtcrime.securesms.linkpreview.LinkPreviewUtil
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.MediaUtil.SlideType
 
@@ -71,6 +75,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
         ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID},
         ${MessageTable.TABLE_NAME}.${MessageTable.FROM_RECIPIENT_ID},
         ${ThreadTable.TABLE_NAME}.${ThreadTable.RECIPIENT_ID} as $THREAD_RECIPIENT_ID,
+        NULL AS ${MessageTable.BODY},
         NULL AS ${MessageTable.LINK_PREVIEWS},
         ${AttachmentTable.TABLE_NAME}.${AttachmentTable.MESSAGE_ID} as $MEDIA_MESSAGE_ID
       """
@@ -354,6 +359,28 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
 
   /** Returns all media for links (like, urls sent in chats). */
   private fun linkMediaQuery(threadId: Long): String {
+    val storedPreviewCondition = "${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS} IS NOT NULL"
+    val includeBodyLinks = CollieFlags.previewIndependentSharedLinks
+    val bodyProjection = if (includeBodyLinks) "${MessageTable.TABLE_NAME}.${MessageTable.BODY}" else "NULL"
+    val linkCondition = if (includeBodyLinks) {
+      """
+          (
+            $storedPreviewCondition OR
+            (
+              ${MessageTable.TABLE_NAME}.${MessageTable.BODY} LIKE '%https://%' AND
+              NOT EXISTS (
+                SELECT 1 FROM ${AttachmentTable.TABLE_NAME} AS body_link_attachment
+                WHERE body_link_attachment.${AttachmentTable.MESSAGE_ID} = ${MessageTable.TABLE_NAME}.${MessageTable.ID}
+                  AND body_link_attachment.${AttachmentTable.QUOTE} = 0
+                  AND body_link_attachment.${AttachmentTable.STICKER_PACK_ID} IS NULL
+              )
+            )
+          )
+      """.trimIndent()
+    } else {
+      storedPreviewCondition
+    }
+
     return """
         SELECT
           ${AttachmentTable.TABLE_NAME}.${AttachmentTable.ID} AS ${AttachmentTable.ID},
@@ -400,6 +427,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
           ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID},
           ${MessageTable.TABLE_NAME}.${MessageTable.FROM_RECIPIENT_ID},
           ${ThreadTable.TABLE_NAME}.${ThreadTable.RECIPIENT_ID} as $THREAD_RECIPIENT_ID,
+          $bodyProjection AS ${MessageTable.BODY},
           ${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS},
           ${MessageTable.TABLE_NAME}.${MessageTable.ID} as $MEDIA_MESSAGE_ID
         FROM
@@ -411,7 +439,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
           LEFT JOIN ${ThreadTable.TABLE_NAME} ON ${ThreadTable.TABLE_NAME}.${ThreadTable.ID} = ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID}
         WHERE
           ${threadFilter(threadId)} AND
-          ${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS} IS NOT NULL AND
+          $linkCondition AND
           ${MessageTable.TABLE_NAME}.${MessageTable.VIEW_ONCE} = 0 AND
           ${MessageTable.TABLE_NAME}.${MessageTable.STORY_TYPE} = 0 AND
           ${MessageTable.TABLE_NAME}.${MessageTable.LATEST_REVISION_ID} IS NULL AND
@@ -464,7 +492,9 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
     val isOutgoing: Boolean,
     /** Set only when this row is the message's link preview rather than one of its other attachments. */
     val linkPreviewJson: String? = null,
-    val dateReceived: Long = 0
+    val dateReceived: Long = 0,
+    val linkUrl: String? = null,
+    val linkTitle: String? = null
   ) {
 
     val contentType: String?
@@ -476,6 +506,8 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
         val linkPreviewIdx = cursor.getColumnIndex(MessageTable.LINK_PREVIEWS)
         val attachmentIdIdx = cursor.getColumnIndex(AttachmentTable.ID)
         val hasAttachment = attachmentIdIdx != -1 && !cursor.isNull(attachmentIdIdx)
+        val serializedPreviews = cursor.optionalString(MessageTable.LINK_PREVIEWS)
+        val storedPreview = getStoredPreview(serializedPreviews)
         return MediaRecord(
           attachment = if (hasAttachment) SignalDatabase.attachments.getAttachment(cursor) else null,
           recipientId = RecipientId.from(cursor.requireLong(MessageTable.FROM_RECIPIENT_ID)),
@@ -488,9 +520,33 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
             cursor.requireLong(MessageTable.DATE_RECEIVED)
           },
           isOutgoing = MessageTypes.isOutgoingMessageType(cursor.requireLong(MessageTable.TYPE)),
-          linkPreviewJson = if (linkPreviewIdx != -1) cursor.getString(linkPreviewIdx) else null,
-          dateReceived = cursor.requireLong(MessageTable.DATE_RECEIVED)
+          linkPreviewJson = if (linkPreviewIdx != -1) serializedPreviews else null,
+          dateReceived = cursor.requireLong(MessageTable.DATE_RECEIVED),
+          linkUrl = storedPreview?.optString("url")?.takeIf { it.isNotEmpty() }
+            ?: if (!hasAttachment) findLinkInBody(cursor.optionalString(MessageTable.BODY)) else null,
+          linkTitle = storedPreview?.optString("title")?.takeIf { it.isNotEmpty() }
         )
+      }
+
+      private fun getStoredPreview(serialized: String?): org.json.JSONObject? {
+        if (serialized.isNullOrEmpty()) return null
+        return try {
+          val previews = JSONArray(serialized)
+          if (previews.length() > 0) previews.getJSONObject(0) else null
+        } catch (e: JSONException) {
+          Log.w(TAG, "Unable to parse stored link previews.", e)
+          null
+        }
+      }
+
+      private fun findLinkInBody(body: String?): String? {
+        if (body.isNullOrEmpty()) return null
+        return LinkPreviewUtil.findValidPreviewUrls(body).findFirst().map { it.url }.orElse(null)
+      }
+
+      private fun Cursor.optionalString(column: String): String? {
+        val index = getColumnIndex(column)
+        return if (index == -1 || isNull(index)) null else getString(index)
       }
     }
   }

@@ -61,8 +61,6 @@ import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
 import org.signal.core.ui.util.ViewUtil;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -325,8 +323,8 @@ public final class MediaOverviewPageFragment extends LoggingFragment
       return;
     }
 
-    if (mediaRecord.getLinkPreviewJson() != null) {
-      String url = parseLinkUrl(mediaRecord.getLinkPreviewJson());
+    if (mediaRecord.getLinkPreviewJson() != null || mediaRecord.getLinkUrl() != null) {
+      String url = mediaRecord.getLinkUrl();
       if (url != null && !url.isEmpty()) {
         CommunicationActions.openBrowserLink(context, url);
       }
@@ -401,18 +399,6 @@ public final class MediaOverviewPageFragment extends LoggingFragment
         Toast.makeText(context, R.string.ConversationItem_unable_to_open_media, Toast.LENGTH_LONG).show();
       }
     }
-
-  private static @Nullable String parseLinkUrl(@NonNull String linkPreviewJson) {
-    try {
-      JSONArray json = new JSONArray(linkPreviewJson);
-      if (json.length() > 0) {
-        return json.getJSONObject(0).optString("url", "");
-      }
-    } catch (JSONException e) {
-      // ignore
-    }
-    return null;
-  }
 
   @Override
   public void onMediaLongClicked(@NonNull View view, MediaTable.MediaRecord mediaRecord) {

@@ -13,6 +13,9 @@ object CollieFlags {
   val userTheming: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
 
+  val previewIndependentSharedLinks: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
+
   val appUpdatesInCollieSettings: Boolean
     get() = true
 

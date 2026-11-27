@@ -1,0 +1,155 @@
+name: Gradle cache replay trial
+on:
+  push:
+    branches: [gradle-cache-replay-trial]
+permissions:
+  contents: read
+cache-mode: read
+
+env:
+  GRADLE_USER_HOME: /home/runner/.gradle
+  ARCHIVE_LIMIT: '2173121088'
+
+jobs:
+  seed:
+    if: github.event_name == 'push' && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/gradle-cache-replay-trial'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+      archive-sha: ${{ steps.archive.outputs.sha256 }}
+      runner-image: ${{ steps.archive.outputs.runner-image }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: ./.github/actions/gradle-cache-trial-reference
+        with:
+          workload: app-0
+      - name: Warm the candidate with the app-0 workload
+        run: bash .github/scripts/gradle-cache-trial.sh app-0 seed
+      - name: Measure and cap the candidate archive
+        id: archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/gradle-trial/gradle-cache.tar.zst"
+          tar --zstd --exclude='*.lock' --exclude=gc.properties -cf "$archive" \
+            -C "$GRADLE_USER_HOME" caches/modules-2 caches/9.6.0/transforms
+          size=$(stat -c %s "$archive")
+          printf 'Candidate archive: %s bytes (limit %s)\n' "$size" "$ARCHIVE_LIMIT" | tee -a "$GITHUB_STEP_SUMMARY"
+          if (( size > ARCHIVE_LIMIT )); then
+            echo '::error::Candidate exceeds the two-generation cache budget'
+            exit 1
+          fi
+          sha=$(sha256sum "$archive" | cut -d' ' -f1)
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          echo "runner-image=${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" >> "$GITHUB_OUTPUT"
+      - name: Upload the temporary candidate
+        id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gradle-cache-trial-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/gradle-trial/gradle-cache.tar.zst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+  replay:
+    name: Replay Gradle cache (${{ matrix.workload }})
+    needs: seed
+    if: github.event_name == 'push' && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/gradle-cache-replay-trial'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        workload: [app-0, app-1, modules, stable, beta]
+    env:
+      WORKLOAD: ${{ matrix.workload }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Compare runner, JDK and SDK with the seed
+        env:
+          SEED_IMAGE: ${{ needs.seed.outputs.runner-image }}
+        run: test "${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" = "$SEED_IMAGE"
+      - uses: ./.github/actions/gradle-cache-trial-reference
+        with:
+          workload: ${{ matrix.workload }}
+      - name: Bootstrap the checksum-pinned Gradle distribution
+        run: ./gradlew --version
+      - name: Replay the reference cache offline
+        id: baseline
+        continue-on-error: true
+        run: bash .github/scripts/gradle-cache-trial.sh "$WORKLOAD" baseline
+      - name: Start the candidate with fresh Gradle and project state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test "$(pwd -P)" = "$GITHUB_WORKSPACE"
+          git diff --quiet HEAD
+          if [[ -d build/host-tests ]]; then
+            mv build/host-tests "$RUNNER_TEMP/host-tests"
+          fi
+          # Drop the baseline's generated files on this disposable runner.
+          git clean -ffdx
+          if [[ -d "$RUNNER_TEMP/host-tests" ]]; then
+            mkdir -p build
+            mv "$RUNNER_TEMP/host-tests" build/host-tests
+          fi
+          mv "$GRADLE_USER_HOME" "$RUNNER_TEMP/baseline-gradle-home"
+          mkdir "$GRADLE_USER_HOME"
+          mv "$RUNNER_TEMP/baseline-gradle-home/wrapper" "$GRADLE_USER_HOME/wrapper"
+          # Free the disposable baseline files before extracting the candidate.
+          rm -rf -- "$RUNNER_TEMP/baseline-gradle-home" "$RUNNER_TEMP/reference-gradle-home"
+      - name: Download the exact candidate from the seed
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6ad063eaabf8333 # v8
+        with:
+          artifact-ids: ${{ needs.seed.outputs.artifact-id }}
+          path: ${{ runner.temp }}/gradle-trial
+      - name: Verify and extract the candidate
+        env:
+          ARCHIVE_SHA: ${{ needs.seed.outputs.archive-sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/gradle-trial/gradle-cache.tar.zst"
+          test "$(stat -c %s "$archive")" -le "$ARCHIVE_LIMIT"
+          printf '%s  %s\n' "$ARCHIVE_SHA" "$archive" | sha256sum --check
+          test ! -e "$GRADLE_USER_HOME/caches"
+          test -z "${GRADLE_RO_DEP_CACHE:-}"
+          tar --zstd -xf "$archive" -C "$GRADLE_USER_HOME" caches/modules-2 caches/9.6.0/transforms
+          printf 'Candidate SHA-256: %s\n' "$ARCHIVE_SHA" >> "$GITHUB_STEP_SUMMARY"
+      - name: Replay the candidate offline without another Gradle cache
+        run: bash .github/scripts/gradle-cache-trial.sh "$WORKLOAD" candidate
+      - name: Check for transform rebuilds added by the candidate
+        env:
+          BASELINE_OUTCOME: ${{ steps.baseline.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$BASELINE_OUTCOME" != success ]]; then
+            echo '::error::Reference replay failed; no valid transform baseline'
+            exit 1
+          fi
+          export LC_ALL=C
+          cd "$RUNNER_TEMP/gradle-trial"
+          comm -23 candidate-rebuilt.txt baseline-rebuilt.txt > candidate-extra-rebuilds.txt
+          if [[ -s candidate-extra-rebuilds.txt ]]; then
+            echo '::error::The candidate rebuilt additional transforms'
+            cat candidate-extra-rebuilds.txt
+            exit 1
+          fi

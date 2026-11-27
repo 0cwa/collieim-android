@@ -4,65 +4,68 @@ on:
     branches: [gradle-cache-replay-trial]
 permissions:
   contents: read
+  actions: read
 cache-mode: read
 
 env:
   GRADLE_USER_HOME: /home/runner/.gradle
   ARCHIVE_LIMIT: '2173121088'
+  SOURCE_SHA: 0d4b08c0de99d4281f768319d7a77793d193dfb5
+  SOURCE_RUN: '46072953396'
+  SOURCE_ARTIFACT: '15234369481'
 
 jobs:
-  seed:
+  verify:
     if: github.event_name == 'push' && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/gradle-cache-replay-trial'
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 15
     outputs:
-      artifact-id: ${{ steps.upload.outputs.artifact-id }}
       archive-sha: ${{ steps.archive.outputs.sha256 }}
-      runner-image: ${{ steps.archive.outputs.runner-image }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify the original seed and artifact identity
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo="repos/$GITHUB_REPOSITORY"
+          gh api "$repo/actions/jobs/140753970062" |
+            jq -e --argjson run "$SOURCE_RUN" --arg sha "$SOURCE_SHA" '
+              .run_id == $run and .head_sha == $sha and .name == "seed" and .conclusion == "success"
+            ' > /dev/null
+          gh api "$repo/actions/artifacts/$SOURCE_ARTIFACT" |
+            jq -e --argjson artifact "$SOURCE_ARTIFACT" --argjson run "$SOURCE_RUN" --arg sha "$SOURCE_SHA" '
+              .id == $artifact and .expired == false and .size_in_bytes == 1723218748 and
+              .digest == "sha256:7b805fd6578aba44352ee8de2b5db0ba287dbae6700f594a8f2d22c182b6ceb2" and
+              .workflow_run.id == $run and .workflow_run.head_sha == $sha and
+              .workflow_run.head_branch == "gradle-cache-replay-trial"
+            ' > /dev/null
+      - name: Download the original seed artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          persist-credentials: false
-      - uses: ./.github/actions/disk-cleanup
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
-        with:
-          distribution: temurin
-          java-version: 21
-      - uses: ./.github/actions/gradle-cache-trial-reference
-        with:
-          workload: app-0
-      - name: Warm the candidate with the app-0 workload
-        run: bash .github/scripts/gradle-cache-trial.sh app-0 seed
-      - name: Measure and cap the candidate archive
+          artifact-ids: ${{ env.SOURCE_ARTIFACT }}
+          run-id: ${{ env.SOURCE_RUN }}
+          repository: 0cwa/collieim-android
+          github-token: ${{ github.token }}
+          digest-mismatch: error
+          path: ${{ runner.temp }}/gradle-trial
+      - name: Pin the inner archive checksum and confirm its size
         id: archive
         shell: bash
         run: |
           set -euo pipefail
           archive="$RUNNER_TEMP/gradle-trial/gradle-cache.tar.zst"
-          tar --zstd --exclude='*.lock' --exclude=gc.properties -cf "$archive" \
-            -C "$GRADLE_USER_HOME" caches/modules-2 caches/9.6.0/transforms
           size=$(stat -c %s "$archive")
-          printf 'Candidate archive: %s bytes (limit %s)\n' "$size" "$ARCHIVE_LIMIT" | tee -a "$GITHUB_STEP_SUMMARY"
-          if (( size > ARCHIVE_LIMIT )); then
-            echo '::error::Candidate exceeds the two-generation cache budget'
-            exit 1
-          fi
+          test "$size" -eq 1723218594
+          test "$size" -le "$ARCHIVE_LIMIT"
           sha=$(sha256sum "$archive" | cut -d' ' -f1)
           echo "sha256=$sha" >> "$GITHUB_OUTPUT"
-          echo "runner-image=${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" >> "$GITHUB_OUTPUT"
-      - name: Upload the temporary candidate
-        id: upload
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: gradle-cache-trial-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/gradle-trial/gradle-cache.tar.zst
-          retention-days: 1
-          compression-level: 0
-          if-no-files-found: error
+          printf 'Source run %s, artifact %s, inner archive %s bytes, SHA-256 %s\n' \
+            "$SOURCE_RUN" "$SOURCE_ARTIFACT" "$size" "$sha" | tee -a "$GITHUB_STEP_SUMMARY"
 
   replay:
     name: Replay Gradle cache (${{ matrix.workload }})
-    needs: seed
+    needs: verify
     if: github.event_name == 'push' && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/gradle-cache-replay-trial'
     runs-on: ubuntu-24.04
     timeout-minutes: 150
@@ -76,20 +79,34 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 2
+      - name: Verify that the workload source matches the seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          git diff --exit-code "$SOURCE_SHA" HEAD -- . ':!.github/workflows/gradle-cache-replay-trial.yml'
       - uses: ./.github/actions/disk-cleanup
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: 21
-      - name: Compare runner, JDK and SDK with the seed
-        env:
-          SEED_IMAGE: ${{ needs.seed.outputs.runner-image }}
-        run: test "${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" = "$SEED_IMAGE"
+      - name: Match the seed runner image, JDK and SDK layout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${ImageOS:?}/${ImageVersion:?}" = ubuntu24/20261122.23.1
+          test "$JAVA_HOME" = /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+          test "$ANDROID_HOME" = /usr/local/lib/android/sdk
       - uses: ./.github/actions/gradle-cache-trial-reference
         with:
           workload: ${{ matrix.workload }}
       - name: Bootstrap the checksum-pinned Gradle distribution
-        run: ./gradlew --version
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --version | tee "$RUNNER_TEMP/gradle-version.txt"
+          grep -Fx 'Gradle 9.6.0' "$RUNNER_TEMP/gradle-version.txt"
       - name: Replay the reference cache offline
         id: baseline
         continue-on-error: true
@@ -116,13 +133,17 @@ jobs:
           # Free the disposable baseline files before extracting the candidate.
           rm -rf -- "$RUNNER_TEMP/baseline-gradle-home" "$RUNNER_TEMP/reference-gradle-home"
       - name: Download the exact candidate from the seed
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6ad063eaabf8333 # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          artifact-ids: ${{ needs.seed.outputs.artifact-id }}
+          artifact-ids: ${{ env.SOURCE_ARTIFACT }}
+          run-id: ${{ env.SOURCE_RUN }}
+          repository: 0cwa/collieim-android
+          github-token: ${{ github.token }}
+          digest-mismatch: error
           path: ${{ runner.temp }}/gradle-trial
       - name: Verify and extract the candidate
         env:
-          ARCHIVE_SHA: ${{ needs.seed.outputs.archive-sha }}
+          ARCHIVE_SHA: ${{ needs.verify.outputs.archive-sha }}
         shell: bash
         run: |
           set -euo pipefail

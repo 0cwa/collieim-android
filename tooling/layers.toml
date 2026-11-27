@@ -164,6 +164,10 @@ about = "Name collision warnings"
 kind = "feature"
 about = "Theme propagation across screens"
 
+[layers.reaction-overlay-accessibility]
+kind = "feature"
+about = "Accessible reaction overlay labels and activation"
+
 [layers.system-bars]
 kind = "feature"
 about = "System bar colors and insets"

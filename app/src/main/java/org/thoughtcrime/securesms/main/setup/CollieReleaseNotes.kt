@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.R
  */
 object CollieReleaseNotes {
   const val SETUP_AND_PUSH_HEALTH = "2026-11-setup-and-push-health"
+  const val STABLE_8_36_3_3 = "stable-8.36.3-3"
 
   data class Highlight(@StringRes val title: Int, @StringRes val body: Int, val titleIncludesSignalVersion: Boolean = false)
 
@@ -47,9 +48,27 @@ object CollieReleaseNotes {
     )
   )
 
+  private val stable83633 = Edition(
+    id = STABLE_8_36_3_3,
+    highlights = listOf(
+      Highlight(R.string.CollieWhatsNew__stable_setup_title, R.string.CollieWhatsNew__stable_setup_body),
+      Highlight(R.string.CollieWhatsNew__stable_updates_title, R.string.CollieWhatsNew__stable_updates_body),
+      Highlight(R.string.CollieWhatsNew__stable_controls_title, R.string.CollieWhatsNew__stable_controls_body),
+      Highlight(R.string.CollieWhatsNew__stable_unifiedpush_title, R.string.CollieWhatsNew__stable_unifiedpush_body),
+      Highlight(R.string.CollieWhatsNew__stable_signal_title, R.string.CollieWhatsNew__stable_signal_body, titleIncludesSignalVersion = true)
+    ),
+    action = Action(
+      R.string.CollieReleaseAction__stable_apk_title,
+      R.string.CollieReleaseAction__stable_apk_body,
+      R.string.CollieReleaseAction__stable_apk_button,
+      Destination.APP_UPDATES
+    )
+  )
+
   /** Missing or unknown editions never fall back to another release's highlights. */
   fun edition(id: String?): Edition? = when (id) {
     SETUP_AND_PUSH_HEALTH -> setupAndPushHealth
+    STABLE_8_36_3_3 -> stable83633
     else -> null
   }
 }

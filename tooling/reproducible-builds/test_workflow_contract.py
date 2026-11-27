@@ -5,17 +5,21 @@ import subprocess
 import unittest
 
 
-WORKFLOW = Path(__file__).parents[2] / ".github/workflows/build-release.yml"
+WORKFLOWS = Path(__file__).parents[2] / ".github/workflows"
 STRICT_PREP = "COLLIE_REQUIRE_RELEASE_PREP"
+
+
+def read_workflow(filename):
+    # The GitHub-hosted ubuntu-24.04 image ships yq v4.
+    return json.loads(subprocess.check_output(
+        ["yq", "-o=json", ".", str(WORKFLOWS / filename)], text=True,
+    ))
 
 
 class WorkflowContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # The GitHub-hosted ubuntu-24.04 image ships yq v4.
-        cls.workflow = json.loads(subprocess.check_output(
-            ["yq", "-o=json", ".", str(WORKFLOW)], text=True,
-        ))
+        cls.workflow = read_workflow("build-release.yml")
 
     def test_workflow_permissions_are_read_only(self):
         self.assertEqual(self.workflow["permissions"]["contents"], "read")
@@ -53,6 +57,21 @@ class WorkflowContractTests(unittest.TestCase):
 
     def test_reusable_release_build_defaults_to_stable(self):
         self.assertEqual(self.workflow["on"]["workflow_call"]["inputs"]["edition"]["default"], "stable")
+
+    def test_production_builds_use_the_same_recipe_with_full_history(self):
+        pr_workflow = read_workflow("pr.yml")
+        for job, output in [(pr_workflow["jobs"]["production-build"], "production-build"),
+                            (self.workflow["jobs"]["build"], "out")]:
+            with self.subTest(output=output):
+                steps = job["steps"]
+                checkout = next(step for step in steps if step.get("uses", "").startswith("actions/checkout@"))
+                self.assertEqual(checkout["with"]["fetch-depth"], 0)
+                command = f'tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/{output}"'
+                self.assertTrue(any(command in step.get("run", "").splitlines() for step in steps))
+
+        promotion = read_workflow("promote.yml")["jobs"]["build"]
+        self.assertEqual(promotion["uses"], "./.github/workflows/build-release.yml")
+        self.assertEqual(promotion["with"]["ref"], "${{ needs.check.outputs.source_commit }}")
 
 
 if __name__ == "__main__":

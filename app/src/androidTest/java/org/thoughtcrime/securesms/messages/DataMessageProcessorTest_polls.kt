@@ -68,6 +68,49 @@ class DataMessageProcessorTest_polls {
   }
 
   @Test
+  fun handlePollCreate_whenTextIsWithinGraphemeLimitsButLongerInUtf16_createPoll() {
+    val question = "e\u0301".repeat(150)
+    val option = "👍".repeat(60)
+
+    val insertResult = handlePollCreate(
+      pollCreate = DataMessage.PollCreate(question = question, options = listOf(option, "b"), allowMultiple = false),
+      senderRecipient = alice,
+      threadRecipient = Recipient.resolved(groupRecipientId),
+      groupId = groupId
+    )
+
+    assert(insertResult != null)
+    val poll = SignalDatabase.polls.getPoll(insertResult!!.messageId)
+    assert(poll != null)
+    assertThat(poll!!.question).isEqualTo(question)
+    assertThat(poll.pollOptions[0].text).isEqualTo(option)
+  }
+
+  @Test
+  fun handlePollCreate_whenQuestionExceedsGraphemeLimit_dropMessage() {
+    val insertResult = handlePollCreate(
+      pollCreate = DataMessage.PollCreate(question = "q".repeat(201), options = listOf("a", "b"), allowMultiple = false),
+      senderRecipient = alice,
+      threadRecipient = Recipient.resolved(groupRecipientId),
+      groupId = groupId
+    )
+
+    assert(insertResult == null)
+  }
+
+  @Test
+  fun handlePollCreate_whenOptionExceedsGraphemeLimit_dropMessage() {
+    val insertResult = handlePollCreate(
+      pollCreate = DataMessage.PollCreate(question = "question?", options = listOf("a".repeat(101), "b"), allowMultiple = false),
+      senderRecipient = alice,
+      threadRecipient = Recipient.resolved(groupRecipientId),
+      groupId = groupId
+    )
+
+    assert(insertResult == null)
+  }
+
+  @Test
   fun handlePollCreate_whenSenderIsNotInGroup_dropMessage() {
     val insertResult = handlePollCreate(
       pollCreate = DataMessage.PollCreate(question = "question?", options = listOf("a", "b", "c"), allowMultiple = false),

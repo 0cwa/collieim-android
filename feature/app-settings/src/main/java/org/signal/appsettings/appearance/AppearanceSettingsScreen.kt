@@ -31,11 +31,13 @@ import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
@@ -125,8 +127,8 @@ fun AppearanceSettingsScreen(
         item {
           Rows.ToggleRow(
             checked = state.pureBlack,
-            text = stringResource(R.string.preferences_appearance__pure_black),
-            label = stringResource(R.string.preferences_appearance__pure_black_summary),
+            text = stringResource(R.string.preferences_appearance__pure_black).asCollieSettingTitle(),
+            label = AnnotatedString(stringResource(R.string.preferences_appearance__pure_black_summary)),
             onCheckChanged = { onEvent(AppearanceSettingsEvent.PureBlackChanged(it)) },
             modifier = Modifier.testTag(AppearanceSettingsTestTags.ROW_PURE_BLACK)
           )

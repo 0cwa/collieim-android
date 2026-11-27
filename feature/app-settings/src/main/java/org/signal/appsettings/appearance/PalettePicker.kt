@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.theme.UserPalettes
 import org.signal.core.ui.compose.theme.paletteSwatch
@@ -68,7 +69,7 @@ fun PalettePicker(
       .padding(top = 16.dp, bottom = 8.dp)
   ) {
     Text(
-      text = stringResource(R.string.preferences_appearance__color),
+      text = stringResource(R.string.preferences_appearance__color).asCollieSettingTitle(),
       style = MaterialTheme.typography.bodyLarge,
       color = MaterialTheme.colorScheme.onSurface,
       modifier = Modifier.padding(horizontal = gutter)

@@ -192,6 +192,23 @@ class ReleasePreparationTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("development build", result.stdout)
 
+    def test_build_state_is_false_for_an_ordinary_stable_commit(self):
+        result = self.check("--edition", "stable", "--build-state")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "false")
+
+    def test_build_state_is_true_for_a_verified_stable_preparation(self):
+        self.prepare()
+        result = self.check("--edition", "stable", "--build-state")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "true")
+
+    def test_build_state_is_true_for_a_verified_beta_preparation(self):
+        self.prepare_beta()
+        result = self.check("--edition", "beta", "--build-state")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "true")
+
     def test_beta_uses_its_pair_and_listing_from_build_edition(self):
         self.prepare_beta()
         result = subprocess.run([sys.executable, str(SCRIPT)], cwd=self.root, text=True, capture_output=True,
@@ -312,13 +329,40 @@ class ReleasePreparationTests(unittest.TestCase):
     def test_shallow_release_history_fails_until_source_is_fetched(self):
         self.prepare()
         with tempfile.TemporaryDirectory() as destination:
-            checkout = Path(destination) / "clone"
+            destination = Path(destination)
+            checkout = destination / "clone"
             subprocess.run(["git", "clone", "-q", "--depth=1", self.root.as_uri(), str(checkout)], check=True)
             command = [sys.executable, str(SCRIPT)]
             self.assertNotEqual(subprocess.run(command, cwd=checkout, capture_output=True).returncode, 0)
+
+            output = destination / "out"
+            output.mkdir()
+            (output / "fixture.apk").write_bytes(b"fixture")
+            marker = destination / "engine-called"
+            engine = destination / "engine"
+            engine.write_text(
+                '#!/bin/sh\nset -eu\n'
+                'if [ "$1" = run ]; then\n'
+                '  for prepared; do :; done\n'
+                '  test "$prepared" = true\n'
+                'fi\n'
+                'touch "$ENGINE_MARKER"\n'
+            )
+            engine.chmod(0o755)
+            recipe = [str(checkout / "tooling/reproducible-builds/build-release.sh"), str(output)]
+            env = {**os.environ, "BUILD_MODE": "container", "COLLIE_BUILD_EDITION": "stable",
+                   "COLLIE_REQUIRE_RELEASE_PREP": "0", "CONTAINER": str(engine), "ENGINE_MARKER": str(marker)}
+            shallow = subprocess.run(recipe, cwd=checkout, capture_output=True, text=True, env=env)
+            self.assertNotEqual(shallow.returncode, 0)
+            self.assertIn("fetch full history", shallow.stderr)
+            self.assertFalse(marker.exists())
+
             subprocess.run(["git", "fetch", "-q", "--unshallow"], cwd=checkout, check=True)
             result = subprocess.run(command, cwd=checkout, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+            full = subprocess.run(recipe, cwd=checkout, capture_output=True, text=True, env=env)
+            self.assertEqual(full.returncode, 0, full.stderr)
+            self.assertTrue(marker.is_file())
 
     def test_hidden_tracked_file_is_rejected(self):
         self.prepare()
@@ -421,6 +465,16 @@ touch '{marker}'
                                     env={**os.environ, "CONTAINER": str(engine), "COLLIE_REQUIRE_RELEASE_PREP": "1"})
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue(marker.is_file())
+
+            marker.unlink()
+            (self.root / "untracked.txt").write_text("local file\n")
+            dirty = subprocess.run(
+                [str(self.root / "tooling/reproducible-builds/build-release.sh"), str(output)],
+                cwd=self.root, text=True, capture_output=True,
+                env={**os.environ, "CONTAINER": str(engine), "COLLIE_REQUIRE_RELEASE_PREP": "0"})
+            self.assertNotEqual(dirty.returncode, 0)
+            self.assertIn("release checkout is not clean", dirty.stderr)
+            self.assertFalse(marker.exists())
 
     def test_host_recipe_passes_verified_state_for_prepared_and_development_builds(self):
         dockerfile = self.root / 'tooling/reproducible-builds/Dockerfile'

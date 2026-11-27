@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Require all host navigation cases and the selected-route device case."""
+"""Require the navigation and release notes test cases and screenshots."""
 import os
 from pathlib import Path
 import re
@@ -20,6 +20,8 @@ HOST_METHODS = {
     'home selection follows a replaced section',
 }
 DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
+RELEASE_NOTES_CLASS = 'org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest'
+RELEASE_NOTES_METHODS = {'stableReleaseActionOpensWhatsNewHighlightsAndCapturesBothScreens'}
 DEVICE_METHODS = {
     'splitPaneHomeSelectionFollowsSectionChange',
     'settingsHomeOpensAppearanceAndBackMatchesLayout',
@@ -30,25 +32,28 @@ DEVICE_METHODS = {
 SCREENSHOTS = {
     'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png',
     'stable-collie-settings.png', 'stable-project-log.png', 'stable-media-menu.png',
+    'stable-release-action.png', 'stable-whats-new-highlights.png',
 }
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
-def require_cases(directory, classname, expected):
+def require_cases(directory, expected):
+    expected_cases = {(classname, method) for classname, methods in expected.items() for method in methods}
     cases = []
-    suites = []
     for path in directory.rglob('TEST-*.xml'):
         report = ET.parse(path).getroot()
         for suite in report.iter('testsuite'):
-            suites.append(suite)
+            suite_cases = suite.findall('testcase')
+            if int(suite.get('tests', '0')) != len(suite_cases):
+                raise ValueError(f'unexpected test count: {path}')
             if any(int(suite.get(key, '0')) for key in ('failures', 'errors', 'skipped')):
                 raise ValueError(f'failed or skipped suite: {path}')
-        for case in report.iter('testcase'):
-            if case.get('classname') != classname or any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
-                raise ValueError(f'wrong class or nonpassing case: {path}')
-            cases.append(case.get('name'))
-    if len(suites) != 1 or int(suites[0].get('tests', '0')) != len(expected) or len(cases) != len(expected) or set(cases) != expected:
-        raise ValueError(f'missing, duplicate, or unexpected test cases: {classname}: {cases}')
+            for case in suite_cases:
+                if any(case.find(tag) is not None for tag in ('failure', 'error', 'skipped')):
+                    raise ValueError(f'nonpassing case: {path}')
+                cases.append((case.get('classname'), case.get('name')))
+    if len(cases) != len(expected_cases) or set(cases) != expected_cases:
+        raise ValueError(f'missing, duplicate, or unexpected test cases: {cases}')
 
 
 def hashes(path):
@@ -87,8 +92,9 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
     test_apk = 'app/build/outputs/apk/androidTest/prodWebsite/debug/app-prod-website-debug-androidTest.apk'
     if set(hashes(evidence / 'apk-before.txt')) != {app_apk, test_apk}:
         raise ValueError('expected matching prodWebsite app and Android test APKs')
-    require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', HOST_CLASS, HOST_METHODS)
-    require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CLASS, DEVICE_METHODS)
+    require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', {HOST_CLASS: HOST_METHODS})
+    require_cases(evidence / 'results/navigation', {DEVICE_CLASS: DEVICE_METHODS})
+    require_cases(evidence / 'results/release-notes', {RELEASE_NOTES_CLASS: RELEASE_NOTES_METHODS})
     screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
         raise ValueError('missing, duplicate or unexpected Settings screenshots')
@@ -97,9 +103,11 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.verify()
         with Image.open(path, formats=['PNG']) as image:
             image.load()
-            if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
+            inset = image.height // 20
+            content = image.crop((0, inset, image.width, image.height - inset))
+            if min(image.size) < 50 or max(ImageStat.Stat(content.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases and five API 35 device cases with matching APKs and decoded Stable Settings, Project log, and media screenshots')
+    print('Passed eight host navigation cases, five API 35 navigation cases, and one Stable release-notes case with matching APKs and decoded screenshots')
 
 
 if __name__ == '__main__':

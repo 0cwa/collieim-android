@@ -1,3 +1,0 @@
-topic: privacy
-pr: 237
-Choose whose group additions Collie accepts automatically in Settings → Collie → Privacy.

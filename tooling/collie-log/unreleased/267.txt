@@ -1,0 +1,3 @@
+topic: setup
+pr: 267
+The setup checklist shows what needs attention before your first chat.

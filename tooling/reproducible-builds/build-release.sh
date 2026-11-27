@@ -27,24 +27,34 @@ out=$(realpath -m "${1:?usage: build-release.sh <output-dir>}")
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-  echo "build-release: tracked files have uncommitted changes; build a clean commit" >&2
+checkout_status=$(git status --porcelain=v1 --untracked-files=all)
+if [ -n "$checkout_status" ]; then
+  echo "build-release: release checkout is not clean; commit or move aside changed and untracked files" >&2
   exit 1
 fi
 commit=$(git rev-parse HEAD)
-prepared=false
 case "${COLLIE_REQUIRE_RELEASE_PREP:-0}" in
-  0) ;;
-  1)
-    prepared=$(python3 tooling/reproducible-builds/verify-release-prep.py --edition "$edition" --build-state)
-    case "$prepared" in
-      true) ;;
-      false) echo "build-release: required release preparation is not verified" >&2; exit 1 ;;
-      *) echo "build-release: invalid preparation result" >&2; exit 1 ;;
-    esac
-    ;;
+  0|1) require_prepared=${COLLIE_REQUIRE_RELEASE_PREP:-0} ;;
   *) echo "build-release: COLLIE_REQUIRE_RELEASE_PREP must be 0 or 1" >&2; exit 1 ;;
 esac
+# Derive the Gradle property for every build from this exact checkout and edition.
+if prepared=$(python3 tooling/reproducible-builds/verify-release-prep.py --edition "$edition" --build-state); then
+  case "$prepared" in
+    true|false) ;;
+    *) echo "build-release: invalid preparation result" >&2; exit 1 ;;
+  esac
+else
+  # A shallow boundary can hide the recorded source of a valid preparation.
+  if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+    echo "build-release: preparation state could not be verified in this shallow checkout; fetch full history" >&2
+    exit 1
+  fi
+  prepared=false
+fi
+if [ "$require_prepared" = 1 ] && [ "$prepared" != true ]; then
+  echo "build-release: required release preparation is not verified" >&2
+  exit 1
+fi
 dockerfile=tooling/reproducible-builds/Dockerfile
 mkdir -p "$out"
 

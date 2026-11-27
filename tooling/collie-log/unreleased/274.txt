@@ -1,0 +1,3 @@
+topic: security
+pr: 274
+Hardening controls can require phone authentication for backup recovery key access.

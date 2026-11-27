@@ -17,12 +17,13 @@ import unittest
 from unittest.mock import Mock, patch
 import zipfile
 
+import apk_evidence
 import publication as p
 
 ROOT = Path(__file__).resolve().parents[2]
-TAG = "v8.35.1-4-rc1"
+TAG = "v8.36.3-4-rc1"
 NAME = TAG[1:]
-CODE = 177706
+CODE = 178206
 RUN = "https://github.com/0cwa/collieim-android/actions/runs/123"
 
 
@@ -138,7 +139,7 @@ class PublicationTests(unittest.TestCase):
         self.helper = Harness(self.root / "scratch", self.github)
 
     def inspect(self, purpose="publish"):
-        return self.helper.inspect(TAG, purpose)
+        return self.helper.inspect(self.github.rows[20]["tag_name"], purpose)
 
     def publish(self, built_on="local"):
         return self.helper.publish(self.inspect(), built_on, "Human release notes")
@@ -181,23 +182,26 @@ class PublicationTests(unittest.TestCase):
         self.publish()
         self.assertTrue(self.github.rows[20]["prerelease"])
 
-    def test_incomplete_profile_upload_never_records_or_publishes(self):
+    def test_incomplete_metadata_upload_never_publishes(self):
         with patch.object(self.github, "upload"):
-            with self.assertRaisesRegex(p.Failure, "complete APK set"):
+            with self.assertRaisesRegex(p.Failure, "while recording publication identity"):
                 self.publish()
         self.assertTrue(self.github.rows[20]["draft"])
         self.assertEqual(self.github.writes, [])
 
-    def test_publish_adds_identical_aliases_and_record_without_changing_latest(self):
+    def test_publish_records_only_canonical_apk_without_changing_latest(self):
         result = self.publish()
         self.assertEqual(self.github.latest, 10)
         self.assertTrue(self.github.rows[20]["prerelease"])
         self.assertEqual({asset["name"] for asset in result["identity"]["assets"]},
-                         {*p.APK_NAMES, p.RECORD_NAME, p.MANIFEST_NAME})
+                         {"collie.apk", p.RECORD_NAME, p.MANIFEST_NAME})
+        self.assertEqual(self.github.writes, [("upload", [p.RECORD_NAME, p.MANIFEST_NAME]),
+                                               ("transition", 20, True)])
         record = result["identity"]["publication"]
         self.assertEqual(record["release_id"], 20)
         self.assertEqual(record["source_commit"], self.helper.tag["source_commit"])
-        self.assertEqual(len({asset["sha256"] for asset in record["apks"]}), 1)
+        canonical = p.asset_identity(self.github.assets(20)[0])
+        self.assertEqual(record["apks"], [canonical])
         self.assertEqual(record["built_on"], "local")
 
     def test_release_manifest_binds_signed_source_and_canonical_apk(self):
@@ -217,12 +221,46 @@ class PublicationTests(unittest.TestCase):
         })
 
     def test_legacy_prerelease_can_promote_without_adding_a_manifest(self):
+        self.legacy_prerelease(manifest=False)
+        writes = len(self.github.writes)
+        self.helper.promote(self.inspect("promote"), self.rebuilt(code=178205, name="8.36.3-3"), RUN)
+        self.assertEqual(self.github.writes[writes:], [("transition", 20, False)])
+
+    def test_canonical_prerelease_requires_its_manifest_for_promotion(self):
         self.publish()
         assets = self.github.rows[20]["assets"]
         assets[:] = [asset for asset in assets if asset["name"] != p.MANIFEST_NAME]
-        writes = len(self.github.writes)
+        with self.assertRaisesRegex(p.Failure, "missing release.json"):
+            self.inspect("promote")
+
+    def test_verify_only_binds_a_canonical_only_release_to_the_source_build(self):
+        self.publish()
         self.helper.promote(self.inspect("promote"), self.rebuilt(), RUN)
-        self.assertEqual(self.github.writes[writes:], [("transition", 20, False)])
+        writes = list(self.github.writes)
+        output = self.root / "github-output"
+        args = ["apk_evidence.py", "--tag", TAG, "--scratch", str(self.root / "verify"),
+                "--build-tools", str(self.helper.build_tools), "--github-output", str(output)]
+        verifier = Harness(self.root / "verify", self.github)
+
+        def source_properties(command):
+            self.assertEqual(command, ["git", "show", "b" * 40 + ":gradle.properties"])
+            return f"releaseVersionName={NAME}\nreleaseVersionCode={CODE}\n"
+
+        real_run = verifier.run
+        with (patch.object(apk_evidence, "GitHub", return_value=self.github),
+              patch.object(apk_evidence, "Publication", return_value=verifier),
+              patch.object(verifier, "signed_tag_identity", return_value=self.helper.tag),
+              patch.object(verifier, "run", side_effect=lambda cmd: source_properties(cmd)
+                           if cmd[0] == "git" else real_run(cmd)),
+              patch.object(apk_evidence, "build_artifact", return_value=(123, 456)) as build,
+              patch.object(apk_evidence.sys, "argv", args)):
+            self.assertEqual(apk_evidence.main(), 0)
+        build.assert_called_once_with(self.github, "b" * 40, None, legacy=False, source_branch="main")
+        proof = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(proof["source_commit"], "b" * 40)
+        self.assertEqual(proof["artifact_id"], "456")
+        self.assertEqual(Path(proof["published_apk"]).read_bytes(), apk())
+        self.assertEqual(self.github.writes, writes)
 
     def test_conflicting_manifest_blocks_publication(self):
         self.github.add_asset(20, p.MANIFEST_NAME, b'{"schema":1,"apk_sha256":"wrong"}')
@@ -261,7 +299,7 @@ class PublicationTests(unittest.TestCase):
         identities = self.github.assets(20)
         self.publish()
         self.assertEqual(self.github.assets(20), identities)
-        self.assertEqual(sum(write[0] == "upload" for write in self.github.writes), 2)
+        self.assertEqual(sum(write[0] == "upload" for write in self.github.writes), 1)
 
     def test_changed_draft_origin_cannot_overwrite_existing_record(self):
         self.github.fail_transition = True
@@ -295,11 +333,12 @@ class PublicationTests(unittest.TestCase):
             self.publish()
         self.assertFalse(self.github.writes)
 
-    def test_beta_asset_or_different_profile_copy_fails(self):
-        for name in ("trailblazer-beta.apk", "molly-minimal.apk", p.BETA_NAME):
+    def test_draft_rejects_even_identical_alias_copies_and_a_valid_beta_companion(self):
+        for name in ("collie-foss.apk", "molly-continued.apk", "molly-foss-continued.apk",
+                     "molly-minimal.apk", p.BETA_NAME):
             with self.subTest(name=name):
-                extra = self.github.add_asset(20, name, apk(payload=b"other"))
-                with self.assertRaises(p.Failure):
+                extra = self.github.add_asset(20, name, self.beta_apk() if name == p.BETA_NAME else apk())
+                with self.assertRaisesRegex(p.Failure, "Unexpected release asset set"):
                     self.publish()
                 self.github.rows[20]["assets"].remove(extra)
         self.assertFalse(self.github.writes)
@@ -308,25 +347,61 @@ class PublicationTests(unittest.TestCase):
         return apk(**{"package": p.BETA_PACKAGE, "certificate": p.BETA_CERTIFICATE,
                       "code": 178201, "name": "8.36.3-1-beta1", "payload": b"beta payload", **changes})
 
-    def test_wrong_beta_certificate_or_debuggable_beta_never_reach_writes(self):
+    def legacy_prerelease(self, *, beta=None, manifest=True):
+        data = apk(code=178205, name="8.36.3-3")
+        self.helper.tag.update(version_code=178205, version_name="8.36.3-3")
+        self.github.add(20, "v8.36.3-3", data, prerelease=True)
+        for alias in sorted(p.LEGACY_APK_NAMES - {p.APK_NAME}):
+            self.github.add_asset(20, alias, data)
+        if beta is not None:
+            self.github.add_asset(20, p.BETA_NAME, beta)
+        snapshot = {**self.helper.tag, "package": p.PACKAGE, "apk_certificate_sha256": p.CERTIFICATE,
+                    "release": p.release_state(self.github.rows[20]), "assets": self.helper.asset_list(20)}
+        self.github.add_asset(20, p.RECORD_NAME, json.dumps(p.record_for(snapshot, "local")).encode())
+        if manifest:
+            canonical = next(asset for asset in snapshot["assets"] if asset["name"] == p.APK_NAME)
+            self.github.add_asset(20, p.MANIFEST_NAME, json.dumps(p.release_manifest(snapshot, canonical)).encode())
+
+    def test_wrong_historical_beta_certificate_or_debuggable_beta_fails_inspection(self):
         for changes in ({"certificate": p.CERTIFICATE}, {"debuggable": True}):
             with self.subTest(changes=changes):
-                extra = self.github.add_asset(20, p.BETA_NAME, self.beta_apk(**changes))
-                with self.assertRaises(p.Failure):
-                    self.publish()
-                self.github.rows[20]["assets"].remove(extra)
+                self.legacy_prerelease(beta=self.beta_apk(**changes))
+                with self.assertRaisesRegex(p.Failure, "collie-beta.apk"):
+                    self.inspect("promote")
         self.assertFalse(self.github.writes)
 
-    def test_beta_apk_alongside_is_recorded_and_survives_promotion(self):
-        self.github.add_asset(20, p.BETA_NAME, self.beta_apk())
+    def test_historical_aliases_and_beta_companion_survive_retry_and_promotion(self):
+        self.legacy_prerelease(beta=self.beta_apk())
         result = self.publish()
-        names = {asset["name"] for asset in result["identity"]["assets"]}
-        self.assertEqual(names, {*p.APK_NAMES, p.RECORD_NAME, p.MANIFEST_NAME, p.BETA_NAME})
-        record = result["identity"]["publication"]
+        self.assertEqual(result["status"], "ALREADY_PRERELEASE")
+        self.assertEqual(self.github.writes, [])
+        expected = self.inspect("promote")
+        record = expected["publication"]
         self.assertEqual(record["beta_apk"]["name"], p.BETA_NAME)
-        self.assertNotIn(p.BETA_NAME, {asset["name"] for asset in record["apks"]})
-        result = self.helper.promote(self.inspect("promote"), self.rebuilt(), RUN)
+        self.assertEqual({asset["name"] for asset in record["apks"]}, p.LEGACY_APK_NAMES)
+        result = self.helper.promote(expected, self.rebuilt(code=178205, name="8.36.3-3"), RUN)
         self.assertEqual(result["status"], "FULL_RELEASE_PUBLISHED")
+        self.assertEqual(result["identity"]["assets"], expected["assets"])
+        self.assertEqual(result["identity"]["publication"], record)
+        self.assertEqual(self.github.writes, [("transition", 20, False)])
+
+    def test_historical_aliases_still_require_complete_matching_assets(self):
+        self.legacy_prerelease()
+        assets = self.github.rows[20]["assets"]
+        alias = next(asset for asset in assets if asset["name"] == "collie-foss.apk")
+        assets.remove(alias)
+        with self.assertRaisesRegex(p.Failure, "complete historical APK set"):
+            self.inspect("promote")
+        self.github.add_asset(20, "collie-foss.apk", apk(payload=b"other"))
+        with self.assertRaisesRegex(p.Failure, "Profile copy differs"):
+            self.inspect("promote")
+
+    def test_published_post_cutover_prerelease_cannot_have_alias_copies(self):
+        self.publish()
+        for alias in sorted(p.LEGACY_APK_NAMES - {p.APK_NAME}):
+            self.github.add_asset(20, alias, apk())
+        with self.assertRaisesRegex(p.Failure, "Unexpected release asset set"):
+            self.inspect("promote")
 
     def test_missing_digest_duplicate_name_and_wrong_download_fail(self):
         original = copy.deepcopy(self.github.rows[20]["assets"])
@@ -401,6 +476,7 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(self.github.writes, writes)
 
     def test_historical_record_keeps_main_route_without_rewriting_record(self):
+        self.legacy_prerelease()
         result = self.publish()
         record = result["identity"]["publication"]
         self.assertNotIn("source_branch", record)

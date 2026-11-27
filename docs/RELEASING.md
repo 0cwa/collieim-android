@@ -13,7 +13,7 @@ this publication path.
 
 1. **Prepare.** Merge a PR that sets `releaseVersionName` and `releaseVersionCode` in `gradle.properties` and adds `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (plain ASCII, at most 500 bytes) and `docs/release-notes/<version>.md` in this repository. The exact source commit must pass `tooling/ci/verify_release_readiness.py` on `main`, the only Stable source branch. Both publication workflows run on `main`.
 2. **Build, sign, upload.** On the maintainer machine run the release helper, `release/release.sh v<version> [--build-on local|github]`. It builds `origin/main` with `tooling/reproducible-builds/build-release.sh` (here, or on GitHub via `build-release.yml`), signs `collie.apk` with the APK key, tags with the publication key (`.github/release-signers`), uploads the APK to a draft release and starts `release.yml` on main.
-3. **Prerelease.** `release.yml` verifies the approved SSH-signed annotated tag, source version, production APK identity and certificate, exact-commit CI, and a byte-for-byte match between the draft APK and that approved CI build plus its signing records. It reads `docs/release-notes/<version>.md` from the exact commit the signed tag points to. It uploads the four profile copies (`collie-foss`, `molly-continued`, `molly-foss-continued`, `molly-minimal`), `publication.json` and the schema-1 `release.json` manifest while the release is still a draft. The four copies and `collie.apk` make up the five identical APK assets. The workflow then explicitly publishes a prerelease without changing Latest. It never replaces an existing asset or demotes a full release on retry.
+3. **Prerelease.** `release.yml` verifies the approved SSH-signed annotated tag, source version, production APK identity and certificate, exact-commit CI, and a byte-for-byte match between the draft APK and that approved CI build plus its signing records. It reads `docs/release-notes/<version>.md` from the exact commit the signed tag points to. The draft contains one APK asset, `collie.apk`. The workflow uploads `publication.json` and the schema-1 `release.json` manifest before publishing the prerelease without changing Latest. It never replaces an existing asset or demotes a full release on retry.
 4. **Full release.** An independent rebuild must match the published APK first:
    - built locally: `gh workflow run promote.yml --ref main -f tag=v<version>` verifies the publication record, rebuilds its exact source commit on GitHub, compares APK payloads with `apkdiff.py`, and rechecks the signed tag and every asset identity before explicitly making that same release full and Latest;
    - built on GitHub: use the maintainer's independent local verification procedure, `release/verify-local.sh v<version>`. `promote.yml` refuses this build origin because a second GitHub build is not independent. The public workflow does not enforce or attest to the private verifier's implementation. Local builds use the machine's pinned JDK, SDK and NDK (`BUILD_MODE=host` in `build-release.sh`).
@@ -30,9 +30,11 @@ build and Security readiness jobs for the same SHA and attempt.
 `publication.json` records schema version 1, the repository and release ID, tag
 name and signed tag object, source commit, package, version name and code, APK
 certificate, declared build origin (`local` or `github`), and the ID, name, size
-and SHA256 of each of the five identical APK assets. An optional `collie-beta.apk`
-companion is verified against the Beta package and signer and recorded separately
-as `beta_apk`; it does not enter the Stable feed. The build-origin declaration
+and SHA256 of `collie.apk`. Already-published releases through `v8.36.3-3`
+can have records of all five identical Stable APKs. Verification still checks
+those aliases for identical bytes and checks any `collie-beta.apk` companion
+recorded as `beta_apk` against the Beta package and signer. TrailBlazer Beta
+uses a separate release tag, package and feed. The build-origin declaration
 selects the independent verification route. Promotion binds the downloaded
 record's own asset identity as well. Release notes cannot override it.
 

@@ -311,13 +311,26 @@ jobs:
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
           timeout 120s adb install -r -t app/build/outputs/apk/prodWebsite/debug/*.apk
           timeout 120s adb install -r -t app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk
+          # Direct instrumentation can start soon after boot, while the lock screen owns focus.
+          timeout 10s adb shell svc power stayon true
+          timeout 10s adb shell input keyevent KEYCODE_WAKEUP
+          timeout 10s adb shell wm dismiss-keyguard
           run_case() {
-            local method=$1
+            local method=$1 result=0
+            while true; do
+              date -u +%FT%TZ
+              timeout 5s adb shell dumpsys window | awk '/mCurrentFocus=|mFocusedApp=|mShowingLockscreen=/' || true
+              sleep 2
+            done > "$evidence/$method-window-focus.txt" &
+            local focus_monitor=$!
             timeout 300s adb shell am instrument -w -r \
               -e class "im.molly.unifiedpush.enrollment.RelayDisclosureUiTest#$method" \
               -e clearPackageData false -e ep_screenshot relay \
               im.collie.app.test/org.thoughtcrime.securesms.testing.SignalTestRunner \
-              | tee "$evidence/$method.log"
+              | tee "$evidence/$method.log" || result=$?
+            kill "$focus_monitor" 2>/dev/null || true
+            wait "$focus_monitor" 2>/dev/null || true
+            return "$result"
           }
           run_case addReceiverConsentShowsFourRowsAndExactDeviceWording
           pull_screenshot relay-08-add-receiver-consent.png

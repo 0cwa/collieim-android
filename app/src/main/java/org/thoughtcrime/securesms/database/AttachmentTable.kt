@@ -120,6 +120,7 @@ import org.thoughtcrime.securesms.util.FileUtils
 import org.thoughtcrime.securesms.util.ImageCompressionUtil
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.video.EncryptedMediaDataSource
+import org.thoughtcrime.securesms.wallpaper.PhotoWallpaperColors
 import org.whispersystems.signalservice.api.crypto.AttachmentCipherStreamUtil
 import org.whispersystems.signalservice.internal.crypto.PaddingInputStream
 import java.io.ByteArrayInputStream
@@ -2020,6 +2021,10 @@ class AttachmentTable(
         }
     }
 
+    if (deletedMessageId == WALLPAPER_MESSAGE_ID) {
+      PhotoWallpaperColors.onAttachmentDeleted(id)
+    }
+
     deletedMessageId?.let {
       AppDependencies.databaseObserver.notifyMessageUpdateObservers(MessageId(it))
     }
@@ -2283,6 +2288,7 @@ class AttachmentTable(
 
     writableDatabase.deleteAll(TABLE_NAME)
     SignalDatabase.attachmentMetadata.cleanup()
+    PhotoWallpaperColors.onAllAttachmentsDeleted()
 
     FileUtils.deleteDirectoryContents(context.getDir(DIRECTORY, Context.MODE_PRIVATE))
 

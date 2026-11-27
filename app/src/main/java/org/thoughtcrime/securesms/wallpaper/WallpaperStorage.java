@@ -41,11 +41,18 @@ public final class WallpaperStorage {
     return ChatWallpaperFactory.create(PartAuthority.getAttachmentDataUri(attachmentId));
   }
 
+  /**
+   * Loads saved photo wallpapers for the picker, first backfilling missing derived Automatic colors for wallpapers
+   * still in use, so the picker, preview and conversations agree.
+   */
   @WorkerThread
   public static @NonNull List<ChatWallpaper> getAll() {
-    return SignalDatabase.attachments()
-                         .getAllWallpapers()
-                         .stream()
+    List<AttachmentId> wallpaperIds = SignalDatabase.attachments().getAllWallpapers();
+    PhotoWallpaperColors.backfill(wallpaperIds.stream()
+                                              .filter(id -> isWallpaperUriUsed(PartAuthority.getAttachmentDataUri(id)))
+                                              .collect(Collectors.toList()));
+
+    return wallpaperIds.stream()
                          .map(PartAuthority::getAttachmentDataUri)
                          .map(ChatWallpaperFactory::create)
                          .collect(Collectors.toList());

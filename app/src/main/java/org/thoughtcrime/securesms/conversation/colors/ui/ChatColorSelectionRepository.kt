@@ -9,6 +9,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
+import org.thoughtcrime.securesms.wallpaper.PhotoWallpaperColors
 
 sealed class ChatColorSelectionRepository(context: Context) {
 
@@ -40,7 +41,11 @@ sealed class ChatColorSelectionRepository(context: Context) {
 
   private class Global(context: Context) : ChatColorSelectionRepository(context) {
     override fun getWallpaper(consumer: (ChatWallpaper?) -> Unit) {
-      consumer(SignalStore.wallpaper.wallpaper)
+      SignalExecutors.BOUNDED.execute {
+        val wallpaper = SignalStore.wallpaper.wallpaper
+        PhotoWallpaperColors.backfill(wallpaper)
+        consumer(wallpaper)
+      }
     }
 
     override fun getChatColors(consumer: (ChatColors) -> Unit) {
@@ -71,13 +76,16 @@ sealed class ChatColorSelectionRepository(context: Context) {
     override fun getWallpaper(consumer: (ChatWallpaper?) -> Unit) {
       SignalExecutors.BOUNDED.execute {
         val recipient = Recipient.resolved(recipientId)
-        consumer(recipient.wallpaper)
+        val wallpaper = recipient.wallpaper
+        PhotoWallpaperColors.backfill(wallpaper)
+        consumer(wallpaper)
       }
     }
 
     override fun getChatColors(consumer: (ChatColors) -> Unit) {
       SignalExecutors.BOUNDED.execute {
         val recipient = Recipient.resolved(recipientId)
+        PhotoWallpaperColors.backfill(recipient.wallpaper)
         consumer(recipient.chatColors)
       }
     }

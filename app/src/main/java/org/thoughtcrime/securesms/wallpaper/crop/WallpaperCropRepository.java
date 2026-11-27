@@ -12,6 +12,7 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
+import org.thoughtcrime.securesms.wallpaper.PhotoWallpaperColors;
 import org.thoughtcrime.securesms.wallpaper.WallpaperStorage;
 
 import java.io.ByteArrayInputStream;
@@ -34,6 +35,8 @@ final class WallpaperCropRepository {
   @NonNull ChatWallpaper setWallPaper(byte[] bytes) throws IOException {
     try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
       ChatWallpaper wallpaper = WallpaperStorage.save(inputStream);
+
+      PhotoWallpaperColors.onWallpaperSaved(wallpaper, bytes);
 
       if (recipientId != null) {
         Log.i(TAG, "Setting image wallpaper for " + recipientId);

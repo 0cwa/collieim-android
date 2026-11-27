@@ -466,6 +466,16 @@ touch '{marker}'
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue(marker.is_file())
 
+            marker.unlink()
+            (self.root / "untracked.txt").write_text("local file\n")
+            dirty = subprocess.run(
+                [str(self.root / "tooling/reproducible-builds/build-release.sh"), str(output)],
+                cwd=self.root, text=True, capture_output=True,
+                env={**os.environ, "CONTAINER": str(engine), "COLLIE_REQUIRE_RELEASE_PREP": "0"})
+            self.assertNotEqual(dirty.returncode, 0)
+            self.assertIn("release checkout is not clean", dirty.stderr)
+            self.assertFalse(marker.exists())
+
     def test_host_recipe_passes_verified_state_for_prepared_and_development_builds(self):
         dockerfile = self.root / 'tooling/reproducible-builds/Dockerfile'
         dockerfile.write_text('ARG NDK_VERSION="ndk"\nARG BUILD_TOOLS_VERSION="tools"\nARG COMPILE_SDK="platform"\n')

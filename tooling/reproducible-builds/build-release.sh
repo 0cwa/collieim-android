@@ -27,8 +27,9 @@ out=$(realpath -m "${1:?usage: build-release.sh <output-dir>}")
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-  echo "build-release: tracked files have uncommitted changes; build a clean commit" >&2
+checkout_status=$(git status --porcelain=v1 --untracked-files=all)
+if [ -n "$checkout_status" ]; then
+  echo "build-release: release checkout is not clean; commit or move aside changed and untracked files" >&2
   exit 1
 fi
 commit=$(git rev-parse HEAD)

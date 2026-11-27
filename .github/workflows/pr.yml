@@ -1,19 +1,20 @@
 name: PR checks
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: pr-checks-${{ github.ref }}
+  # Metadata edits still run required checks, but must not cancel the full run.
+  group: pr-checks-${{ github.ref }}${{ github.event.action == 'edited' && !github.event.changes.base.ref.from && '-metadata' || '' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   changes:
     name: Detect build input changes
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
+    if: ${{ github.event_name != 'pull_request' || (!github.event.pull_request.draft && (github.event.action != 'edited' || github.event.changes.base.ref.from)) }}
     runs-on: ubuntu-24.04
     outputs:
       build_changed: ${{ steps.detect.outputs.build_changed }}
@@ -58,9 +59,9 @@ jobs:
           persist-credentials: false
       - name: Every non-merge commit names its feature layer
         env:
-          BASE: ${{ github.event.pull_request.base.sha }}
           COLLIE_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          BASE="refs/remotes/origin/$GITHUB_BASE_REF"
           git show "$BASE:tooling/git-hooks/collie_check_layer_trailers.py" > "$RUNNER_TEMP/collie_check_layer_trailers.py"
           python3 "$RUNNER_TEMP/collie_check_layer_trailers.py" range "$BASE" HEAD
       - name: Check commit and push hooks against real Git repositories
@@ -69,6 +70,7 @@ jobs:
 
   fastlane-metadata:
     name: Fastlane metadata
+    if: github.event_name != 'pull_request' || github.event.action != 'edited' || github.event.changes.base.ref.from
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -82,36 +84,41 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: true
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
       - name: Fail only on findings in changed files
         # The codebase carries 24 inherited findings (mostly Molly's core/gms shims); they are
         # reported here but do not block. New findings in files this change touches do.
         env:
-          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          BEFORE: ${{ github.event.before }}
         run: |
           ./gradlew --no-daemon :fast-lint:fastLint || true
           report=tooling/fast-lint/build/reports/fast-lint/findings.txt
           test -f "$report"
-          if [ -z "$BASE" ] || [ "$BASE" = 0000000000000000000000000000000000000000 ]; then
-            git fetch --depth=1 origin main; BASE=FETCH_HEAD
-          else
-            git fetch --depth=1 origin "$BASE"
+          BASE=HEAD^1
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            # Preserve the whole push range, including pushes with multiple commits.
+            git cat-file -e "$BEFORE^{commit}" 2>/dev/null || git fetch --depth=1 origin "$BEFORE"
+            BASE=$BEFORE
           fi
           grep -E '^  [^ ]+:[0-9]+: ' "$report" > "$RUNNER_TEMP/all.txt" || true
-          git diff --name-only "$BASE" HEAD | sed 's/^/  /; s/$/:/' > "$RUNNER_TEMP/changed.txt"
+          git diff --name-only "$BASE" HEAD > "$RUNNER_TEMP/changed-paths.txt"
+          sed 's/^/  /; s/$/:/' "$RUNNER_TEMP/changed-paths.txt" > "$RUNNER_TEMP/changed.txt"
           grep -F -f "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/all.txt" > "$RUNNER_TEMP/new.txt" || true
           echo "Findings: $(wc -l < "$RUNNER_TEMP/all.txt") total, $(wc -l < "$RUNNER_TEMP/new.txt") in changed files"
           if [ -s "$RUNNER_TEMP/new.txt" ]; then cat "$RUNNER_TEMP/new.txt"; exit 1; fi
 
   unit-test-shards:
     name: Unit tests (${{ matrix.shard }})
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
+    needs: changes
     strategy:
       fail-fast: false
       matrix:
@@ -161,64 +168,22 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: ${{ matrix.shard == 'app-1' || github.ref != 'refs/heads/main' }}
+          cache-cleanup: ${{ matrix.shard == 'app-1' && 'on-success' || 'always' }}
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-      # Robolectric downloads its android-all jars from Maven Central into ~/.m2 at
-      # test time, and Central rate-limits CI runners (HTTP 429). Keep them in the cache.
       - name: Restore Robolectric android-all jars
         id: robolectric-cache
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.m2/repository/org/robolectric
-          key: robolectric-jars-${{ runner.os }}-4.16-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            robolectric-jars-${{ runner.os }}-4.16-${{ matrix.shard }}-
-            robolectric-jars-${{ runner.os }}-4.16-
-      - name: Show Robolectric jar cache
-        run: |
-          echo "cache hit: ${{ steps.robolectric-cache.outputs.cache-matched-key || 'none' }}"
-          find "$HOME/.m2/repository/org/robolectric" -name '*.jar' 2>/dev/null | sort || true
-      # Robolectric downloads a missing android-all jar once with no retry, and Central keeps
-      # answering 429 for the large ones. Fetch missing jars here, Google's Central mirror first,
-      # with bounded retries (curl would otherwise wait out a long Retry-After), checked against
-      # the SHA-1 Central publishes, so the tests find them in ~/.m2.
+          key: robolectric-jars-Linux-${{ hashFiles('tooling/ci/robolectric-jars.txt') }}
       - name: Fetch missing Robolectric android-all jars
-        id: robolectric-prefetch
         timeout-minutes: 20
-        run: |
-          set -uo pipefail
-          central=https://repo1.maven.org/maven2
-          mirror=https://maven-central.storage-download.googleapis.com/maven2
-          dir=org/robolectric/android-all-instrumented
-          get() { timeout 600 curl -fsSL --connect-timeout 20 --max-time 300 --retry 3 --retry-all-errors \
-                    --retry-delay 5 --retry-max-time 120 -o "$2" "$1"; }
-          while IFS= read -r v; do
-            jar="$HOME/.m2/repository/$dir/$v/android-all-instrumented-$v.jar"
-            [ -s "$jar" ] && continue
-            mkdir -p "$(dirname "$jar")"
-            sha1=
-            for repo in "$central" "$mirror"; do
-              get "$repo/$dir/$v/android-all-instrumented-$v.jar.sha1" "$jar.sha1" && sha1=$(cut -d' ' -f1 "$jar.sha1") && break
-            done
-            ok=
-            for repo in "$mirror" "$central"; do
-              get "$repo/$dir/$v/android-all-instrumented-$v.jar" "$jar.part" || continue
-              if [ -n "$sha1" ] && [ "$(sha1sum "$jar.part" | cut -d' ' -f1)" = "$sha1" ]; then ok=1; break; fi
-              echo "checksum mismatch from $repo for $v" >&2
-            done
-            rm -f "$jar.sha1"
-            if [ -n "$ok" ]; then
-              mv "$jar.part" "$jar"
-              echo "fetched=true" >> "$GITHUB_OUTPUT"
-              echo "fetched $v"
-            else
-              rm -f "$jar.part"
-              echo "::warning::cannot fetch $v; Robolectric will try itself"
-            fi
-          done < tooling/ci/robolectric-jars.txt
+        run: bash tooling/ci/prefetch-robolectric-jars.sh
       - name: Run unit test shard
         env:
           SHARD: ${{ matrix.shard }}
-          # Any android-all jar the step above did not fetch comes from the mirror, not Central.
           JAVA_TOOL_OPTIONS: -Drobolectric.dependency.repo.url=https://maven-central.storage-download.googleapis.com/maven2
         run: |
           if [ "$SHARD" = modules ]; then
@@ -230,13 +195,11 @@ jobs:
               -PcollieAppTestShard="${SHARD#app-}" :app:testProdWebsiteDebugUnitTest
           fi
       - name: Save Robolectric android-all jars
-        # Save unless this shard's own cache matched: a fallback to another shard's cache lacks
-        # this shard's jars, and PR caches are not visible to other branches, so main needs its own.
-        if: ${{ always() && (!startsWith(steps.robolectric-cache.outputs.cache-matched-key, format('robolectric-jars-{0}-4.16-{1}-', runner.os, matrix.shard)) || steps.robolectric-prefetch.outputs.fetched == 'true' || job.status == 'failure') }}
+        if: ${{ github.ref == 'refs/heads/main' && matrix.shard == 'app-0' && steps.robolectric-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.m2/repository/org/robolectric
-          key: robolectric-jars-${{ runner.os }}-4.16-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ steps.robolectric-cache.outputs.cache-primary-key }}
       - name: Package shard results
         if: ${{ !cancelled() }}
         run: |
@@ -253,8 +216,8 @@ jobs:
 
   unit-tests:
     name: Unit tests
-    if: ${{ always() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
-    needs: [unit-test-shards]
+    if: ${{ !cancelled() && needs.changes.result != 'skipped' }}
+    needs: [changes, unit-test-shards]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -355,7 +318,7 @@ jobs:
 
   security-readiness:
     name: Security readiness
-    if: ${{ always() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
+    if: ${{ !cancelled() && needs.changes.result != 'skipped' }}
     needs: [changes, unit-tests, production-build]
     runs-on: ubuntu-24.04
     steps:

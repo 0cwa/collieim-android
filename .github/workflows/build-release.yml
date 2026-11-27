@@ -9,7 +9,9 @@ on:
       - tooling/reproducible-builds/**
       - tooling/collie-log/stamp.py
       - tooling/collie-log/test_*.py
+      - tooling/gradle.properties.docker
       - .github/workflows/build-release.yml
+      - .github/workflows/pr.yml
   workflow_dispatch:
     inputs:
       ref:

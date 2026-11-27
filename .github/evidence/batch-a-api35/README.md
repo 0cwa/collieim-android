@@ -10,10 +10,15 @@ The app and instrumentation APKs came from the same build in each edition. Both 
 | #289 | The 32-line fixture displayed 16 lines and Read More in the conversation. Read More opened the complete message. |
 | #290 | Sharing an image from Android Files opened an empty caption and restored the existing composer draft after Send. The synthetic device had app networking disabled. The focused test also passed and verified the stored draft and captionless outgoing message. |
 | #291 | The conversation-row instrumentation test passed. It checked the accessibility labels and invoked Select through the accessibility node. Screenshots show the same conversation row and selected state. |
-| #292 | The seeded message contains a URL with no stored preview. On Stable, the Links tab showed No media. |
-| #293 | The visible Collie settings entry and Web link preview images title used italics in Debug. Neighboring titles and the description remained in regular type. |
+| #292 | With preview generation off in both editions, sent the same eligible URL in the synthetic conversation. Beta listed it under Links and All media. Stable Links showed No media. |
+| #293 | The visible Collie settings entry and Web link preview images title used italics in Stable Debug and TrailBlazer Beta. Neighboring titles and the description remained in regular type. |
 
 Debug APK SHA-256 hashes
 
 - App `60aae683510849e237f123bfe35f9c330b5cddaae91f637e83a07719b03787dc`
 - Instrumentation `23bc851b900169ac3f62abf91674ba8ae93a63be3eb6fd1857ebaa89331661d3`
+
+The Beta test build enabled debuggability locally so Android would let MockK start the synthetic test fixture. The app code and TrailBlazer Beta edition flag were unchanged. The matching Beta APKs used for capture had these SHA-256 hashes.
+
+- App `3c81e58504e1d7da29f3faeee519e0f8274f05ca8af8c71c8af491bb2d191700`
+- Instrumentation `6807365453c255677568e78f6b791b2ab7acda0f006e490fe35e9603b99b7073`

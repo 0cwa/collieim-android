@@ -567,9 +567,13 @@ class ArchiveUploadProgressTest {
   }
 
   private fun awaitUploadProgress(timeoutMs: Long = 5000, predicate: (ArchiveUploadProgressState) -> Boolean): ArchiveUploadProgressState {
+    val lockField = ArchiveUploadProgress::class.java.getDeclaredField("stateLock")
+    lockField.isAccessible = true
+    val stateLock = lockField.get(ArchiveUploadProgress)
     val deadline = System.currentTimeMillis() + timeoutMs
     while (System.currentTimeMillis() < deadline) {
-      val current = uploadProgress()
+      // Completion publishes progress before its side effects, all under this lock.
+      val current = synchronized(stateLock) { uploadProgress() }
       if (predicate(current)) {
         return current
       }
@@ -577,7 +581,7 @@ class ArchiveUploadProgressTest {
       Thread.sleep(25)
     }
 
-    val current = uploadProgress()
+    val current = synchronized(stateLock) { uploadProgress() }
     if (predicate(current)) {
       return current
     }

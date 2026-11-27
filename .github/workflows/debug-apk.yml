@@ -75,16 +75,13 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
-      - name: Upload matching relay instrumentation inputs
+      - name: Upload the matching relay instrumentation APK
         id: upload-relay
         if: steps.relay.outputs.changed == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: relay-test-inputs-${{ github.sha }}
-          path: |
-            app/build/outputs/apk/prodWebsite/debug/output-metadata.json
-            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk
-            app/build/outputs/apk/androidTest/prodWebsite/debug/output-metadata.json
+          path: app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk
           retention-days: 7
           if-no-files-found: error
 
@@ -253,17 +250,16 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Download the Debug APK from this run
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           artifact-ids: ${{ needs.debug-apk.outputs.app_artifact_id }}
           path: app/build/outputs/apk/prodWebsite/debug
-      - name: Download matching instrumentation APK and metadata
+      - name: Download the matching instrumentation APK
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           artifact-ids: ${{ needs.debug-apk.outputs.relay_artifact_id }}
-          path: app/build/outputs/apk
+          path: app/build/outputs/apk/androidTest/prodWebsite/debug
       - name: Record matching app and test APKs
         id: build
         shell: bash
@@ -273,9 +269,6 @@ jobs:
           mkdir -p "$evidence"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git rev-parse HEAD HEAD^{tree} > "$evidence/source.txt"
-          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-          test -s app/build/outputs/apk/prodWebsite/debug/output-metadata.json
-          test -s app/build/outputs/apk/androidTest/prodWebsite/debug/output-metadata.json
           app_apks=(app/build/outputs/apk/prodWebsite/debug/*.apk)
           test_apks=(app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk)
           test "${#app_apks[@]}" = 1 && test -f "${app_apks[0]}"
@@ -316,21 +309,15 @@ jobs:
           timeout 10s adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/device-api.txt"
           test "$(cat "$evidence/device-api.txt")" = 35
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          timeout 120s adb install -r -t app/build/outputs/apk/prodWebsite/debug/*.apk
+          timeout 120s adb install -r -t app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk
           run_case() {
-            local method=$1 result=0
-            rm -rf app/build/outputs/androidTest-results
-            # Both APKs and their metadata already exist. Exclude packaging and its prerequisites.
-            ./gradlew --no-daemon --console=plain \
-              :app:connectedProdWebsiteDebugAndroidTest \
-              -x :app:packageProdWebsiteDebug -x :app:packageProdWebsiteDebugAndroidTest \
-              "-Pandroid.testInstrumentationRunnerArguments.class=im.molly.unifiedpush.enrollment.RelayDisclosureUiTest#$method" \
-              -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
-              -Pandroid.testInstrumentationRunnerArguments.ep_screenshot=relay || result=$?
-            mkdir -p "$evidence/results/$method"
-            if [ -d app/build/outputs/androidTest-results ]; then
-              cp -R app/build/outputs/androidTest-results/. "$evidence/results/$method/"
-            fi
-            return "$result"
+            local method=$1
+            timeout 300s adb shell am instrument -w -r \
+              -e class "im.molly.unifiedpush.enrollment.RelayDisclosureUiTest#$method" \
+              -e clearPackageData false -e ep_screenshot relay \
+              im.collie.app.test/org.thoughtcrime.securesms.testing.SignalTestRunner \
+              | tee "$evidence/$method.log"
           }
           run_case addReceiverConsentShowsFourRowsAndExactDeviceWording
           pull_screenshot relay-08-add-receiver-consent.png

@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,6 +22,7 @@ import org.robolectric.annotation.Config
 import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger.TriggerResult
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -30,10 +32,12 @@ class RoundSyncBackupTriggerTest {
   private var startFailure: RuntimeException? = null
   private var allowBinding = false
   private var boundConnection: ServiceConnection? = null
+  private var pendingBinding: CompletableFuture<ServiceConnection>? = null
+  @Volatile private var bindingReady = false
   private var unbindCount = 0
   private val context: Context = object : ContextWrapper(RuntimeEnvironment.getApplication()) {
     override fun startService(service: Intent): ComponentName {
-      if (boundConnection == null) {
+      if (!bindingReady) {
         startFailure?.let { throw it }
       }
       startedIntent = service
@@ -45,7 +49,12 @@ class RoundSyncBackupTriggerTest {
       assertEquals(Context.BIND_AUTO_CREATE, flags)
       if (allowBinding) {
         boundConnection = connection
-        connection.onNullBinding(component)
+        val pending = pendingBinding
+        if (pending == null) {
+          reportBindingReady(connection)
+        } else {
+          pending.complete(connection)
+        }
       }
       return allowBinding
     }
@@ -53,6 +62,7 @@ class RoundSyncBackupTriggerTest {
     override fun unbindService(connection: ServiceConnection) {
       assertTrue(boundConnection == null || boundConnection === connection)
       boundConnection = null
+      bindingReady = false
       unbindCount++
     }
   }
@@ -109,7 +119,30 @@ class RoundSyncBackupTriggerTest {
     startFailure = BackgroundServiceStartNotAllowedException("Background start denied")
     allowBinding = true
 
-    assertEquals(TriggerResult.TRIGGERED, startFromWorker())
+    assertEquals(TriggerResult.TRIGGERED, startFromWorker().get(10, TimeUnit.SECONDS))
+    assertEquals(24, startedIntent?.getIntExtra("task", -1))
+    assertEquals(1, unbindCount)
+    assertNull(boundConnection)
+  }
+
+  @Test
+  @Config(sdk = [35])
+  fun waitsForBindingReadinessBeforeRetrying() {
+    installRoundSync()
+    startFailure = BackgroundServiceStartNotAllowedException("Background start denied")
+    allowBinding = true
+    val binding = CompletableFuture<ServiceConnection>()
+    pendingBinding = binding
+
+    val result = startFromWorker()
+    val connection = binding.get(5, TimeUnit.SECONDS)
+    try {
+      assertThrows(TimeoutException::class.java) { result.get(200, TimeUnit.MILLISECONDS) }
+    } finally {
+      reportBindingReady(connection)
+    }
+
+    assertEquals(TriggerResult.TRIGGERED, result.get(10, TimeUnit.SECONDS))
     assertEquals(24, startedIntent?.getIntExtra("task", -1))
     assertEquals(1, unbindCount)
     assertNull(boundConnection)
@@ -121,7 +154,7 @@ class RoundSyncBackupTriggerTest {
     installRoundSync()
     startFailure = BackgroundServiceStartNotAllowedException("Background start denied")
 
-    assertEquals(TriggerResult.FAILED, startFromWorker())
+    assertEquals(TriggerResult.FAILED, startFromWorker().get(10, TimeUnit.SECONDS))
     assertEquals(1, unbindCount)
     assertNull(startedIntent)
   }
@@ -137,7 +170,12 @@ class RoundSyncBackupTriggerTest {
     shadowOf(context.packageManager).installPackage(PackageInfo().apply { packageName = component.packageName })
   }
 
-  private fun startFromWorker(): TriggerResult = CompletableFuture.supplyAsync {
+  private fun reportBindingReady(connection: ServiceConnection) {
+    bindingReady = true
+    connection.onNullBinding(component)
+  }
+
+  private fun startFromWorker(): CompletableFuture<TriggerResult> = CompletableFuture.supplyAsync {
     RoundSyncBackupTrigger.triggerTask(context, 24)
-  }.get(10, TimeUnit.SECONDS)
+  }
 }

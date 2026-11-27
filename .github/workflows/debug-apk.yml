@@ -24,22 +24,66 @@ jobs:
     name: Debug APK
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     runs-on: ubuntu-24.04
+    outputs:
+      relay_changed: ${{ steps.relay.outputs.changed }}
+      app_artifact_id: ${{ steps.upload-app.outputs.artifact-id }}
+      relay_artifact_id: ${{ steps.upload-relay.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           persist-credentials: false
+      - name: Detect UnifiedPush and relay changes
+        id: relay
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          changed=$(git diff --no-renames --name-only HEAD^1 HEAD -- \
+            ':(icase,glob)app/**/*unifiedpush*' ':(icase,glob)app/**/*unifiedpush*/**' \
+            ':(icase,glob)app/**/*relay*' ':(icase,glob)app/**/*colliesocket*/**' \
+            ':(glob)app/**/LinkedDevices*' app/src/main/AndroidManifest.xml \
+            ':(glob)app/src/main/res/values*/pairing_v1.xml' \
+            app/src/main/res/navigation/app_settings_with_change_number.xml \
+            .github/workflows/debug-apk.yml .github/scripts/check-relay-disclosure-results.py)
+          if [[ -n "$changed" ]]; then
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
       - uses: ./.github/actions/disk-cleanup
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-cleanup: always
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-      - run: ./gradlew --no-daemon :app:assembleProdWebsiteDebug
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - name: Assemble debug APKs
+        env:
+          RELAY_CHANGED: ${{ steps.relay.outputs.changed }}
+        run: |
+          tasks=(:app:assembleProdWebsiteDebug)
+          if [[ "$RELAY_CHANGED" == true ]]; then
+            tasks+=(:app:assembleProdWebsiteDebugAndroidTest)
+          fi
+          ./gradlew --no-daemon "${tasks[@]}"
+      - id: upload-app
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: collie-debug-${{ github.event.pull_request.head.sha || github.sha }}
           path: app/build/outputs/apk/prodWebsite/debug/*.apk
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload matching relay instrumentation inputs
+        id: upload-relay
+        if: steps.relay.outputs.changed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relay-test-inputs-${{ github.sha }}
+          path: |
+            app/build/outputs/apk/prodWebsite/debug/output-metadata.json
+            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk
+            app/build/outputs/apk/androidTest/prodWebsite/debug/output-metadata.json
           retention-days: 7
           if-no-files-found: error
 
@@ -187,7 +231,8 @@ jobs:
           retention-days: 14
           if-no-files-found: error
   relay-disclosure-api35:
-    if: github.event_name == 'pull_request' && !github.event.pull_request.draft
+    needs: debug-apk
+    if: needs.debug-apk.outputs.relay_changed == 'true'
     name: UnifiedPush linked-device UI on API 35
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -208,7 +253,17 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
-      - name: Build matching app and test APKs
+      - name: Download the Debug APK from this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.debug-apk.outputs.app_artifact_id }}
+          path: app/build/outputs/apk/prodWebsite/debug
+      - name: Download matching instrumentation APK and metadata
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.debug-apk.outputs.relay_artifact_id }}
+          path: app/build/outputs/apk
+      - name: Record matching app and test APKs
         id: build
         shell: bash
         run: |
@@ -218,7 +273,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git rev-parse HEAD HEAD^{tree} > "$evidence/source.txt"
           cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-          ./gradlew --no-daemon --console=plain :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest
+          test -s app/build/outputs/apk/prodWebsite/debug/output-metadata.json
+          test -s app/build/outputs/apk/androidTest/prodWebsite/debug/output-metadata.json
           app_apks=(app/build/outputs/apk/prodWebsite/debug/*.apk)
           test_apks=(app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk)
           test "${#app_apks[@]}" = 1 && test -f "${app_apks[0]}"

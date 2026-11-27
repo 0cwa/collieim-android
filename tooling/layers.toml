@@ -334,3 +334,7 @@ alias_of = "codeql-review"
 
 [layers.codeql-reviewed-findings]
 alias_of = "codeql-review"
+
+[layers.poll-voting]
+kind = "feature"
+about = "Poll voting and poll message validation"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Require all host navigation cases and the selected-route device case."""
+"""Require the navigation and release notes test cases and screenshots."""
 import os
 from pathlib import Path
 import re
@@ -26,8 +26,14 @@ DEVICE_METHODS = {
     'splitPaneHomeSelectionFollowsSectionChange',
     'settingsHomeOpensAppearanceAndBackMatchesLayout',
     'accountAndSupportRemainAvailableWithoutSignalCheckout',
+    'stableCollieSettingsAndProjectLogAreVisibleWithoutBetaFeatures',
+    'stableMediaMenuDoesNotOfferLocalAttachmentRemoval',
 }
-SCREENSHOTS = {'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png', 'stable-release-action.png', 'stable-whats-new-highlights.png'}
+SCREENSHOTS = {
+    'settings-home.png', 'appearance-settings.png', 'settings-support.png', 'account-settings.png',
+    'stable-collie-settings.png', 'stable-project-log.png', 'stable-media-menu.png',
+    'stable-release-action.png', 'stable-whats-new-highlights.png',
+}
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
@@ -101,7 +107,7 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
             image.load()
             if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
                 raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
-    print('Passed eight host navigation cases, three API 35 navigation cases, and one Stable release-notes case with matching APKs and decoded screenshots')
+    print('Passed eight host navigation cases, five API 35 navigation cases, and one Stable release-notes case with matching APKs and decoded screenshots')
 
 
 if __name__ == '__main__':

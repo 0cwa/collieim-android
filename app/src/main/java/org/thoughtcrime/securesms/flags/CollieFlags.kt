@@ -10,20 +10,20 @@ import org.thoughtcrime.securesms.BuildConfig
 /** Build-variant flags for Collie-only features. */
 object CollieFlags {
   val appUpdatesInCollieSettings: Boolean
-    get() = BuildConfig.TRAILBLAZER_BETA
+    get() = true
 
   val setupChecklist: Boolean
-    get() = BuildConfig.TRAILBLAZER_BETA
+    get() = true
 
   val projectLog: Boolean
-    get() = BuildConfig.TRAILBLAZER_BETA
+    get() = true
 
   /** Shows group admission controls in TrailBlazer Beta; saved restrictive policies remain enforced. */
   val groupAdmission: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
 
   val hardeningSettings: Boolean
-    get() = BuildConfig.TRAILBLAZER_BETA
+    get() = true
 
   val attachmentRemoval: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA

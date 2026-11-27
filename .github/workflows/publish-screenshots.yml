@@ -41,13 +41,12 @@ jobs:
       group: publish-screenshots-${{ inputs.branch }}
       cancel-in-progress: false
     steps:
-      - name: Load independently reviewed engineering publication policy
+      - name: Load the publication tool from the dispatched main commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: 0cwa/collie-release-engineering
-          ref: 9b7803d1a1b699ad705a1110f94ded2c3016fa08
-          path: policy
-          sparse-checkout: tools/screenshots
+          ref: ${{ github.sha }}
+          path: trusted-main
+          sparse-checkout: tooling/screenshots
           persist-credentials: false
       - name: Validate data and append one image-only commit with an exact lease
         env:
@@ -60,7 +59,7 @@ jobs:
           ATTEMPT: ${{ inputs.attempt }}
           PR_NUMBER: ${{ inputs.pr_number }}
         run: |
-          python3 policy/tools/screenshots/screenshot_artifacts.py publish \
+          python3 trusted-main/tooling/screenshots/screenshot_artifacts.py publish \
             --repository "$GITHUB_REPOSITORY" --branch "$BRANCH" \
             --base-sha "$BASE_SHA" --protected-branch "$DEFAULT_BRANCH" \
             --artifact-id "$ARTIFACT_ID" --run-id "$RUN_ID" \

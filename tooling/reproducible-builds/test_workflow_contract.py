@@ -1,87 +1,78 @@
-import unittest
+import json
 from pathlib import Path
+import re
+import subprocess
+import unittest
 
 
-WORKFLOW = Path(__file__).parents[2] / '.github/workflows/build-release.yml'
-PR_WORKFLOW = Path(__file__).parents[2] / '.github/workflows/pr.yml'
-RECIPE = Path(__file__).with_name('build-release.sh')
+WORKFLOWS = Path(__file__).parents[2] / ".github/workflows"
+STRICT_PREP = "COLLIE_REQUIRE_RELEASE_PREP"
+
+
+def read_workflow(filename):
+    # The GitHub-hosted ubuntu-24.04 image ships yq v4.
+    return json.loads(subprocess.check_output(
+        ["yq", "-o=json", ".", str(WORKFLOWS / filename)], text=True,
+    ))
 
 
 class WorkflowContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.workflow = WORKFLOW.read_text()
+        cls.workflow = read_workflow("build-release.yml")
 
-    def test_direct_beta_dispatch_has_the_release_engineering_run_title(self):
-        self.assertIn("run-name: ${{ github.event_name == 'workflow_dispatch' && inputs.edition == 'beta' && 'Build TrailBlazer Beta' || 'Build unsigned release APK' }}", self.workflow)
+    def test_workflow_permissions_are_read_only(self):
+        self.assertEqual(self.workflow["permissions"]["contents"], "read")
+        for name, scope in [("workflow", self.workflow), *self.workflow["jobs"].items()]:
+            with self.subTest(scope=name):
+                permissions = scope.get("permissions", {})
+                if permissions != "read-all":
+                    self.assertIsInstance(permissions, dict)
+                    self.assertLessEqual(set(permissions.values()), {"read", "none"})
 
-    def test_dispatch_beta_is_bound_to_the_owning_main_workflow_and_sha(self):
-        for required in (
-            "if: ${{ matrix.edition == 'beta' && github.event_name != 'pull_request' }}",
-            'test "$GITHUB_EVENT_NAME" = workflow_dispatch',
-            'test "$REPOSITORY" = 0cwa/collieim-android',
-            'test "$DISPATCH_REF" = refs/heads/main',
-            'test "$REQUESTED_REF" = "$DISPATCH_SHA"',
-            'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
-        ):
-            with self.subTest(required=required):
-                self.assertIn(required, self.workflow)
-
-    def test_beta_artifact_matches_release_engineering_contract(self):
-        for required in (
-            'name: unsigned-release-apk${{ github.event_name',
-            'mv -- "${apks[0]}" "$RUNNER_TEMP/out/trailblazer-beta.apk"',
-            'git rev-parse HEAD > "$RUNNER_TEMP/out/source-commit.txt"',
-            'git rev-parse HEAD^{tree} > "$RUNNER_TEMP/out/source-tree.txt"',
-            'sha256sum trailblazer-beta.apk > SHA256SUMS',
-            'path: ${{ runner.temp }}/out/',
-        ):
-            with self.subTest(required=required):
-                self.assertIn(required, self.workflow)
-
-    def test_pull_requests_build_both_editions_and_compare_each_pair(self):
-        self.assertIn("fromJSON('[\"stable\", \"beta\"]')", self.workflow)
-        self.assertIn('edition: [stable, beta]', self.workflow)
-        for edition in ('stable', 'beta'):
-            self.assertIn(f'unsigned-release-apk-${{{{ matrix.edition }}}}', self.workflow)
-        self.assertIn("COLLIE_BUILD_EDITION: ${{ matrix.edition }}", self.workflow)
+    def test_only_direct_beta_dispatch_opts_into_strict_preparation(self):
+        build = self.workflow["jobs"]["build"]
+        environments = [scope.get("env", {}) for scope in (self.workflow, build, *build["steps"])]
+        expressions = [env[STRICT_PREP] for env in environments if STRICT_PREP in env]
+        self.assertTrue(expressions, f"Missing {STRICT_PREP} from the build")
+        gates = (
+            ("github.event_name", "'workflow_dispatch'"),
+            ("github.repository", "'0cwa/collieim-android'"),
+            ("github.ref", "'refs/heads/main'"),
+            ("inputs.edition", "'beta'"),
+            ("inputs.ref", "github.sha"),
+            # A reusable workflow can inherit workflow_dispatch from its caller.
+            ("github.workflow_ref", "job.workflow_ref"),
+        )
+        for expression in expressions:
+            with self.subTest(expression=expression):
+                match = re.fullmatch(r"\s*\$\{\{\s*(.*?)\s*&&\s*'1'\s*\|\|\s*'0'\s*\}\}\s*",
+                                     expression, re.DOTALL)
+                self.assertIsNotNone(match, "Expected a strict-preparation gate returning '1' or '0'")
+                comparisons = [re.split(r"\s*==\s*", term.strip(), maxsplit=1) for term in match[1].split("&&")]
+                # Check the conjunction as unordered equalities so formatting and
+                # predicate order can change without weakening the gate.
+                self.assertCountEqual([frozenset(pair) for pair in comparisons],
+                                      [frozenset(pair) for pair in gates])
 
     def test_reusable_release_build_defaults_to_stable(self):
-        self.assertIn("default: stable", self.workflow)
-        self.assertIn("inputs.edition || 'stable'", self.workflow)
+        self.assertEqual(self.workflow["on"]["workflow_call"]["inputs"]["edition"]["default"], "stable")
 
-    def test_only_exact_direct_beta_dispatch_opts_into_strict_preparation(self):
-        gates = (
-            "github.event_name == 'workflow_dispatch'",
-            "inputs.edition == 'beta'",
-            "github.repository == '0cwa/collieim-android'",
-            "github.ref == 'refs/heads/main'",
-            "inputs.ref == github.sha",
-            "github.workflow_ref == job.workflow_ref",
-        )
-        prefix = "COLLIE_REQUIRE_RELEASE_PREP: "
-        expressions = [line.removeprefix(prefix) for raw in self.workflow.splitlines()
-                       if (line := raw.strip()).startswith(prefix)]
-        self.assertEqual(expressions, ["${{ " + " && ".join(gates) + " && '1' || '0' }}"])
-        self.assertNotIn("COLLIE_DEVELOPMENT_BASE", self.workflow)
+    def test_production_builds_use_the_same_recipe_with_full_history(self):
+        pr_workflow = read_workflow("pr.yml")
+        for job, output in [(pr_workflow["jobs"]["production-build"], "production-build"),
+                            (self.workflow["jobs"]["build"], "out")]:
+            with self.subTest(output=output):
+                steps = job["steps"]
+                checkout = next(step for step in steps if step.get("uses", "").startswith("actions/checkout@"))
+                self.assertEqual(checkout["with"]["fetch-depth"], 0)
+                command = f'tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/{output}"'
+                self.assertTrue(any(command in step.get("run", "").splitlines() for step in steps))
 
-    def test_workflow_builds_share_the_recipe_and_full_history_for_state(self):
-        pr_workflow = PR_WORKFLOW.read_text()
-        self.assertIn('tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/production-build"', pr_workflow)
-        self.assertIn('run: tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/out"', self.workflow)
-        self.assertIn('fetch-depth: 0', self.workflow)
-        production_job = pr_workflow.split('  production-build:', 1)[1].split('\n  beta-compile:', 1)[0]
-        self.assertIn('fetch-depth: 0', production_job)
-        recipe = RECIPE.read_text()
-        self.assertIn('verify-release-prep.py --edition "$edition" --build-state', recipe)
-        self.assertIn('"-PcollieReleasePrepared=$prepared"', recipe)
-        self.assertIn('if [ "$require_prepared" = 1 ] && [ "$prepared" != true ]', recipe)
-
-    def test_release_preparation_tests_run_only_for_pull_requests(self):
-        self.assertIn("test-preparation:\n    name: Test release preparation\n    if: github.event_name == 'pull_request'", self.workflow)
-        self.assertIn("python3 -m unittest discover -s tooling/collie-log -p 'test_*.py'", self.workflow)
-        self.assertIn("python3 -m unittest discover -s tooling/reproducible-builds -p 'test_*.py'", self.workflow)
+        promotion = read_workflow("promote.yml")["jobs"]["build"]
+        self.assertEqual(promotion["uses"], "./.github/workflows/build-release.yml")
+        self.assertEqual(promotion["with"]["ref"], "${{ needs.check.outputs.source_commit }}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

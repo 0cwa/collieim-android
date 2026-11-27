@@ -1,0 +1,32 @@
+version: 8.36.3-3
+date: 2026-11-26
+tag: v8.36.3-3
+highlights: stable-8.36.3-3
+
+topic: setup
+pr: 267
+The setup checklist shows what needs attention before your first chat.
+
+topic: push
+pr: 282
+Linked devices can receive push notifications.
+
+topic: push
+pr: 280
+Pair UnifiedPush with a single QR scan.
+
+topic: security
+pr: 274
+Hardening controls can require phone authentication for backup recovery key access.
+
+topic: security
+pr: 153
+You can require your current PIN before changing recovery PIN settings.
+
+topic: updates
+pr: 252
+What's new shows one current release, with clearer notes and separate Stable and Beta histories.
+
+topic: updates
+pr: 251
+App updates is now at the top of Settings → Collie instead of Help.

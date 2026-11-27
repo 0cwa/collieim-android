@@ -1,3 +1,0 @@
-topic: push
-pr: 280
-Pair UnifiedPush with a single QR scan.

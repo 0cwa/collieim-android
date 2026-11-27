@@ -379,10 +379,11 @@ class UnifiedPushRefreshJobTest {
     var endpointInstance = pending.instance
     var receiverState: String? = active.serialize()
     var pendingState: String? = pending.serialize()
+    val expiresAt = System.currentTimeMillis() / 1000 - 1
     var pairingBinding: UnifiedPushValues.PairingEndpointBinding? = UnifiedPushValues.PairingEndpointBinding(
       instance = pending.instance, distributorId = "org.example.distributor", vapidPublicKey = "vapid-key",
       providerOrigin = null, endpointOrigin = "https://push.example.invalid", sessionId = "expired-session",
-      expiresAt = System.currentTimeMillis() / 1000 - 1, accountId = pending.accountId, deviceId = 1, hostLabel = pending.hostLabel,
+      expiresAt = expiresAt, accountId = pending.accountId, deviceId = 1, hostLabel = pending.hostLabel,
       importId = pending.importId,
     )
     every { unifiedPush.endpoint } answers { endpoint }
@@ -419,7 +420,7 @@ class UnifiedPushRefreshJobTest {
     )
     val confirmation = LockedPushState.PairingConfirmation(
       sessionId = "expired-session", instance = pending.instance, distributor = "org.example.distributor",
-      vapid = "vapid-key", providerOrigin = null, expiresAt = System.currentTimeMillis() / 1000 - 1,
+      vapid = "vapid-key", providerOrigin = null, expiresAt = expiresAt,
       hostLabel = pending.hostLabel, importId = pending.importId, keyId = "", epoch = pending.epoch,
       scopeDigest = "expired-scope", receiverId = pending.receiverId,
     )

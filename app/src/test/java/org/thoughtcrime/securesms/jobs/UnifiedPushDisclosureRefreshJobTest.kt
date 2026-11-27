@@ -41,6 +41,7 @@ import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMe
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.service.KeyCachingService
+import org.thoughtcrime.securesms.testutil.DirectExecutor
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.io.IOException
@@ -51,7 +52,7 @@ class UnifiedPushDisclosureRefreshJobTest {
   @get:Rule val signalStore = MockSignalStoreRule()
 
   private val application: Application get() = ApplicationProvider.getApplicationContext()
-  private val values = UnifiedPushValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet())))
+  private val values = UnifiedPushValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor()))
   private var accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
   private val device = MollySocketDevice(2, "SYNTHETIC-RELAY-PASSWORD")
   private val relayUrl = "https://relay.example.invalid/"

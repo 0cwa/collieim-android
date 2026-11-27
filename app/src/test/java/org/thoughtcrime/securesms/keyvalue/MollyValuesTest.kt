@@ -147,8 +147,6 @@ class MollyValuesTest {
       MollyValues.BLOCK_UNKNOWN,
       MollyValues.BACKUP_INTERVAL,
       MollyValues.BACKUP_MAX_FILES,
-      MollyValues.ROUND_SYNC_ENABLED,
-      MollyValues.ROUND_SYNC_TASK_ID,
       MollyValues.PROXY_TYPE,
       MollyValues.PROXY_SOCKS_HOST,
       MollyValues.PROXY_SOCKS_PORT,

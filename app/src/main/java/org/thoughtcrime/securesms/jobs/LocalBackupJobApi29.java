@@ -20,7 +20,6 @@ import org.thoughtcrime.securesms.backup.BackupEvent;
 import org.thoughtcrime.securesms.backup.BackupFileIOError;
 import org.thoughtcrime.securesms.backup.BackupVerifier;
 import org.thoughtcrime.securesms.backup.FullBackupExporter;
-import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger;
 import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.jobmanager.Job;
@@ -127,7 +126,6 @@ public final class LocalBackupJobApi29 extends BaseJob {
         throw new IOException("Backup password is null");
       }
 
-      boolean backupSucceeded = false;
       try {
         Stopwatch   stopwatch     = new Stopwatch("backup-export");
         BackupEvent finishedEvent = FullBackupExporter.export(context,
@@ -145,7 +143,6 @@ public final class LocalBackupJobApi29 extends BaseJob {
 
         if (valid) {
           renameBackup(fileName, temporaryFile);
-          backupSucceeded = true;
         } else {
           BackupFileIOError.VERIFICATION_FAILED.postNotification(context);
         }
@@ -171,9 +168,6 @@ public final class LocalBackupJobApi29 extends BaseJob {
       }
 
       BackupUtil.deleteOldBackups();
-      if (backupSucceeded) {
-        RoundSyncBackupTrigger.triggerIfEnabled(context);
-      }
     } finally {
       if (notification != null) {
         notification.close();

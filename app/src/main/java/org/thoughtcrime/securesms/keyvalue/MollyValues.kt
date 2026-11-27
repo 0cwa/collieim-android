@@ -86,8 +86,6 @@ class MollyValues internal constructor(store: KeyValueStore, private val context
       BLOCK_UNKNOWN,
       BACKUP_INTERVAL,
       BACKUP_MAX_FILES,
-      ROUND_SYNC_ENABLED,
-      ROUND_SYNC_TASK_ID,
       PROXY_TYPE,
       PROXY_SOCKS_HOST,
       PROXY_SOCKS_PORT,

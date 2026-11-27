@@ -79,8 +79,6 @@ public class BackupsPreferenceFragment extends Fragment {
   private TextView    folderName;
   private View        schedule;
   private TextView    scheduleSummary;
-  private View        roundSync;
-  private TextView    roundSyncSummary;
   private View        maxFiles;
   private TextView    maxFilesSummary;
   private ProgressBar progress;
@@ -130,8 +128,6 @@ public class BackupsPreferenceFragment extends Fragment {
     folderName      = view.findViewById(R.id.fragment_backup_folder_name);
     schedule        = view.findViewById(R.id.fragment_backup_schedule);
     scheduleSummary = view.findViewById(R.id.fragment_backup_schedule_summary);
-    roundSync        = view.findViewById(R.id.fragment_backup_round_sync);
-    roundSyncSummary = view.findViewById(R.id.fragment_backup_round_sync_summary);
     maxFiles        = view.findViewById(R.id.fragment_backup_max_files);
     maxFilesSummary = view.findViewById(R.id.fragment_backup_max_files_summary);
     progress        = view.findViewById(R.id.fragment_backup_progress);
@@ -141,7 +137,6 @@ public class BackupsPreferenceFragment extends Fragment {
     toggle.setOnClickListener(unused -> onToggleClicked());
     create.setOnClickListener(unused -> onCreateClicked());
     schedule.setOnClickListener(unused -> onScheduleClicked());
-    roundSync.setOnClickListener(unused -> RoundSyncBackupSettings.show(requireContext(), this::setRoundSyncSummary));
     maxFiles.setOnClickListener(unused -> onMaxFilesClicked());
     verify.setOnClickListener(unused -> BackupDialog.showVerifyBackupPassphraseDialog(requireContext()));
     timer.setOnClickListener(unused -> pickTime());
@@ -172,7 +167,6 @@ public class BackupsPreferenceFragment extends Fragment {
     setInfo();
     setScheduleSummary();
     setMaxFilesSummary();
-    setRoundSyncSummary();
     setUpdateState();
   }
 
@@ -433,17 +427,11 @@ public class BackupsPreferenceFragment extends Fragment {
     toggle.setEnabled(legacyLocalBackupsEnabled || !clientDeprecated);
   }
 
-  private void setRoundSyncSummary() {
-    roundSyncSummary.setText(RoundSyncBackupSettings.summary(requireContext()));
-  }
-
   private void setBackupsEnabled() {
     toggle.setText(R.string.BackupsPreferenceFragment__turn_off);
     create.setVisibility(View.VISIBLE);
     schedule.setVisibility(View.VISIBLE);
     maxFiles.setVisibility(View.VISIBLE);
-    roundSync.setVisibility(View.VISIBLE);
-    setRoundSyncSummary();
     verify.setVisibility(View.VISIBLE);
     timer.setVisibility(View.VISIBLE);
     updateToggle();
@@ -457,7 +445,6 @@ public class BackupsPreferenceFragment extends Fragment {
     folder.setVisibility(View.GONE);
     schedule.setVisibility(View.GONE);
     maxFiles.setVisibility(View.GONE);
-    roundSync.setVisibility(View.GONE);
     verify.setVisibility(View.GONE);
     timer.setVisibility(View.GONE);
     updateToggle();

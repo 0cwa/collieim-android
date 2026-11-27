@@ -348,7 +348,8 @@ public class ConversationListFragment extends MainFragment implements Conversati
         },
         ContactSearchAdapter.EmptyCallButtonClickCallbacks.INSTANCE,
         getViewLifecycleOwner(),
-        Glide.with(this)
+        Glide.with(this),
+        (conversation, action) -> onConversationAccessibilityAction(conversation, action)
     );
 
     ContactSearchViewModelKt.bindAdapterToLifecycle(contactSearchViewModel, getViewLifecycleOwner(), searchAdapter, this::mapSearchStateToConfiguration);
@@ -1332,6 +1333,26 @@ public class ConversationListFragment extends MainFragment implements Conversati
   @Override
   public boolean onConversationLongClick(@NonNull Conversation conversation, @NonNull View view) {
     return showConversationContextMenu(conversation, view, false);
+  }
+
+  @Override
+  public void onConversationAccessibilityAction(@NonNull Conversation conversation, @NonNull ThreadAccessibilityAction action) {
+    Collection<Long> ids = Collections.singleton(conversation.getThreadRecord().getThreadId());
+    switch (action) {
+      case MARK_AS_READ -> handleMarkAsRead(ids);
+      case MARK_AS_UNREAD -> handleMarkAsUnread(ids);
+      case PIN -> handlePin(Collections.singleton(conversation));
+      case UNPIN -> handleUnpin(ids);
+      case MUTE -> handleMute(Collections.singleton(conversation));
+      case UNMUTE -> handleUnmute(Collections.singleton(conversation));
+      case SELECT -> {
+        viewModel.startSelection(conversation);
+        startActionMode();
+      }
+      case ARCHIVE -> handleArchive(ids);
+      case UNARCHIVE -> handleUnarchive(new HashSet<>(ids));
+      case DELETE -> handleDelete(ids, conversation.getThreadRecord().getRecipient().resolve().isActiveGroup());
+    }
   }
 
   private boolean showConversationContextMenu(@NonNull Conversation conversation, @NonNull View view, boolean isFromSearch) {

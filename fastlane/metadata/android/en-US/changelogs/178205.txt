@@ -1,0 +1,7 @@
+- Final Stable release with duplicate APK names. Use collie.apk starting with the next release.
+- App updates is now at the top of Settings > Collie.
+- The setup checklist shows what needs attention.
+- Pair UnifiedPush with one QR scan and get push on linked devices.
+- You can require phone authentication for backup key access.
+- Choose whether to require your current PIN to change recovery PIN settings.
+- What's New tracks the current release and separates Stable and Beta histories.

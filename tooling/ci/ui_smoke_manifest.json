@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "api_level": 35,
+  "editions": {
+    "stable": {
+      "variant": "prodWebsiteDebug",
+      "application_id": "im.collie.app",
+      "test_application_id": "im.collie.app.test",
+      "runner": "org.thoughtcrime.securesms.testing.SignalTestRunner",
+      "app_apk": "app/build/outputs/apk/prodWebsite/debug/app-prod-website-debug.apk",
+      "test_apk": "app/build/outputs/apk/androidTest/prodWebsite/debug/app-prod-website-debug-androidTest.apk",
+      "classes": [
+        "org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest",
+        "org.thoughtcrime.securesms.wallpaper.crop.PhotoWallpaperAutomaticColorTest",
+        "org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest",
+        "org.thoughtcrime.securesms.components.settings.app.StoriesSettingsNavigationTest",
+        "org.thoughtcrime.securesms.components.settings.app.DonationLinksTest",
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneGatingTest",
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneTest",
+        "org.thoughtcrime.securesms.backup.BackupDialogSecurityTest",
+        "org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest",
+        "org.thoughtcrime.securesms.lock.v2.GuardedPinRecreationTest",
+        "org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest",
+        "org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest"
+      ],
+      "methods": {
+        "org.thoughtcrime.securesms.main.setup.StableReleaseNotesScreenshotTest": ["stableReleaseActionOpensWhatsNewHighlightsAndCapturesBothScreens"],
+        "org.thoughtcrime.securesms.wallpaper.crop.PhotoWallpaperAutomaticColorTest": ["photoColorReachesThePickerPreviewAndReadableOutgoingBubbles"],
+        "org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest": ["androidVerifiesThePinnedRepositorySigner", "updateSettingsShowTheReleaseAndOpenOnlyTheOfficialPage"],
+        "org.thoughtcrime.securesms.components.settings.app.StoriesSettingsNavigationTest": ["storiesFollowsChatsAndOpensFromSettingsHome"],
+        "org.thoughtcrime.securesms.components.settings.app.DonationLinksTest": ["colliePrecedesMollyAndEachLinkOpensItsOwnRecipient"],
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneGatingTest": ["nonDonor_suppressesStandardDonateMegaphone", "signalDonorBadge_suppressesStandardDonateMegaphone", "youngInstallation_suppressesStandardDonateMegaphone"],
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneTest": ["localPromptOpensCollieAndCompletesOnlyOnSuccess", "dismissalKeepsTheExistingEventKey", "displayWindowEndsSevenDaysAfterFirstVisibility"],
+        "org.thoughtcrime.securesms.backup.BackupDialogSecurityTest": ["enabledSecurityProtectsPassphraseDialogWindow", "disabledSecurityAllowsPassphraseDialogCapture"],
+        "org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest": ["dynamicColorsRoundTripFromLegacySettingsInLightMode", "dynamicColorsRoundTripFromNavigationSettingsInDarkMode", "lightDarkAndSystemSelectionsReachTheOverviewWithoutRestarting"],
+        "org.thoughtcrime.securesms.lock.v2.GuardedPinRecreationTest": ["verificationReopensTheOriginalConfirmationAndRetainsItsSaveOwner", "cancelDuringRecreationFinishesWithoutStartingThePinFlow"],
+        "org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest": ["lightMessageOverlayUsesTheSelectedPalette", "darkMessageOverlayUsesTheSelectedPalette"],
+        "org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest": ["composeImageUpdatesItsLightPaletteWithoutRestarting", "composeVideoUpdatesItsDarkPaletteWithoutRestarting"]
+      },
+      "excluded_candidates": [
+        {
+          "class": "org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest",
+          "reason": "splitPaneHomeSelectionFollowsSectionChange timed out after 10 seconds at AppSettingsNavigationDeviceTest.kt:95 on the API 35 Pixel 7 Pro profile; the other 4 of 5 methods passed."
+        },
+        {
+          "class": "im.molly.unifiedpush.enrollment.RelayDisclosureUiTest",
+          "reason": "The class was flaky across API 35 runs (2/5 then 1/5 methods passed). Relay trust guidance and Server parameters rows were not bound within 5 seconds; two remaining tests lost window focus for 10 seconds."
+        },
+        {
+          "class": "org.thoughtcrime.securesms.PassphrasePromptActivityTest",
+          "reason": "promptContentClearsActionBarWithoutAccumulatingMargin failed at PassphrasePromptActivityTest.kt:60: expected 28 px clearance but observed 172 px."
+        }
+      ],
+      "instrumentation_args": {
+        "org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest": {"collieTestStopLauncher": "true"}
+      }
+    },
+    "beta": {
+      "variant": "prodWebsiteBeta",
+      "application_id": "im.collie.app.trailblazer",
+      "test_application_id": "im.collie.app.trailblazer.test",
+      "runner": "org.thoughtcrime.securesms.testing.SignalTestRunner",
+      "app_apk": "app/build/outputs/apk/prodWebsite/beta/app-prod-website-beta.apk",
+      "test_apk": "app/build/outputs/apk/androidTest/prodWebsite/beta/app-prod-website-beta-androidTest.apk",
+      "gradle_property": "-PcollieBetaInstrumentation=true",
+      "classes": [
+        "org.thoughtcrime.securesms.wallpaper.crop.PhotoWallpaperAutomaticColorTest",
+        "org.thoughtcrime.securesms.components.settings.app.StoriesSettingsNavigationTest",
+        "org.thoughtcrime.securesms.components.settings.app.DonationLinksTest",
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneGatingTest",
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneTest",
+        "org.thoughtcrime.securesms.backup.BackupDialogSecurityTest",
+        "org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest",
+        "org.thoughtcrime.securesms.lock.v2.GuardedPinRecreationTest",
+        "org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest",
+        "org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest"
+      ],
+      "methods": {
+        "org.thoughtcrime.securesms.wallpaper.crop.PhotoWallpaperAutomaticColorTest": ["photoColorReachesThePickerPreviewAndReadableOutgoingBubbles"],
+        "org.thoughtcrime.securesms.components.settings.app.StoriesSettingsNavigationTest": ["storiesFollowsChatsAndOpensFromSettingsHome"],
+        "org.thoughtcrime.securesms.components.settings.app.DonationLinksTest": ["colliePrecedesMollyAndEachLinkOpensItsOwnRecipient"],
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneGatingTest": ["nonDonor_suppressesStandardDonateMegaphone", "signalDonorBadge_suppressesStandardDonateMegaphone", "youngInstallation_suppressesStandardDonateMegaphone"],
+        "org.thoughtcrime.securesms.megaphone.DonationMegaphoneTest": ["localPromptOpensCollieAndCompletesOnlyOnSuccess", "dismissalKeepsTheExistingEventKey", "displayWindowEndsSevenDaysAfterFirstVisibility"],
+        "org.thoughtcrime.securesms.backup.BackupDialogSecurityTest": ["enabledSecurityProtectsPassphraseDialogWindow", "disabledSecurityAllowsPassphraseDialogCapture"],
+        "org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest": ["dynamicColorsRoundTripFromLegacySettingsInLightMode", "dynamicColorsRoundTripFromNavigationSettingsInDarkMode", "lightDarkAndSystemSelectionsReachTheOverviewWithoutRestarting"],
+        "org.thoughtcrime.securesms.lock.v2.GuardedPinRecreationTest": ["verificationReopensTheOriginalConfirmationAndRetainsItsSaveOwner", "cancelDuringRecreationFinishesWithoutStartingThePinFlow"],
+        "org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest": ["lightMessageOverlayUsesTheSelectedPalette", "darkMessageOverlayUsesTheSelectedPalette"],
+        "org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest": ["composeImageUpdatesItsLightPaletteWithoutRestarting", "composeVideoUpdatesItsDarkPaletteWithoutRestarting"]
+      },
+      "excluded_candidates": [
+        {
+          "class": "im.molly.unifiedpush.enrollment.RelayDisclosureUiTest",
+          "reason": "Only 2 of 5 methods passed on API 35. Relay trust guidance and Server parameters rows were not bound within 5 seconds; the remaining failed method lost window focus for 10 seconds."
+        },
+        {
+          "class": "org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest",
+          "reason": "updateSettingsShowTheReleaseAndOpenOnlyTheOfficialPage failed at CollieUpdateSettingsTest.kt:154: expected the Stable tag /v8.35.3 but Beta opened /trailblazer-v8.35.3; the signer verification method passed."
+        },
+        {
+          "class": "org.thoughtcrime.securesms.PassphrasePromptActivityTest",
+          "reason": "promptContentClearsActionBarWithoutAccumulatingMargin failed at PassphrasePromptActivityTest.kt:60: expected 28 px clearance but observed 172 px."
+        }
+      ],
+      "instrumentation_args": {}
+    }
+  }
+}

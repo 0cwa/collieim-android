@@ -92,6 +92,10 @@ about = "Backup progress reporting"
 kind = "feature"
 about = "Backup key handling and restore safety"
 
+[layers.backup-round-sync]
+kind = "feature"
+about = "Post-backup sync trigger for Round Sync"
+
 [layers.registration]
 kind = "feature"
 about = "Registration, re-registration and linking"

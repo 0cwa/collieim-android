@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.BackupFileIOError
 import org.thoughtcrime.securesms.backup.FullBackupExporter.BackupCanceledException
 import org.thoughtcrime.securesms.backup.LocalExportProgress
+import org.thoughtcrime.securesms.backup.RoundSyncBackupTrigger
 import org.thoughtcrime.securesms.backup.v2.local.ArchiveFileSystem
 import org.thoughtcrime.securesms.backup.v2.local.LocalArchiver
 import org.thoughtcrime.securesms.backup.v2.local.SnapshotFileSystem
@@ -152,6 +153,7 @@ class LocalArchiveJob internal constructor(parameters: Parameters) : Job(paramet
 
       setProgress(LocalBackupCreationProgress(idle = LocalBackupCreationProgress.Idle()), notification)
       SignalStore.backup.newLocalBackupsLastBackupTime = System.currentTimeMillis()
+      RoundSyncBackupTrigger.triggerIfEnabled(context)
     } finally {
       notification?.close()
     }

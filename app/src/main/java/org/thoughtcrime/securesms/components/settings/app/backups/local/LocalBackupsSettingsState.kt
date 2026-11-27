@@ -22,5 +22,6 @@ data class LocalBackupsSettingsState(
   val progress: LocalBackupCreationProgress = LocalBackupCreationProgress(idle = LocalBackupCreationProgress.Idle()),
   val isDeleting: Boolean = false,
   val deleteCompleted: Int = 0,
-  val deleteTotal: Int = 0
+  val deleteTotal: Int = 0,
+  val roundSyncSummary: String? = null
 )

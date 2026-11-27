@@ -173,6 +173,14 @@ internal fun LocalBackupsSettingsScreen(
           )
         }
 
+        item {
+          Rows.TextRow(
+            text = stringResource(id = R.string.RoundSyncBackup__title),
+            label = state.roundSyncSummary,
+            onClick = callback::onRoundSyncClick
+          )
+        }
+
         if (!state.folderDisplayName.isNullOrBlank()) {
           item {
             Rows.TextRow(

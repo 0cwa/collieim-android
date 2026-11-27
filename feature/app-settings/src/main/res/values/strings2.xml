@@ -18,6 +18,16 @@
     <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">Please set up your biometrics in Android settings first</string>
     <!-- Collie -->
     <string name="preferences_appearance__navigation_bar">Navigation bar</string>
+    <!-- Title of the app color palette picker in Settings > Appearance -->
+    <string name="preferences_appearance__color">Color</string>
+    <!-- Color picker option: Collie's own colors -->
+    <string name="preferences_appearance__color_collie">Collie</string>
+    <!-- Color picker option: the colors Android derives from the wallpaper -->
+    <string name="preferences_appearance__color_system">System</string>
+    <!-- Title of the switch that makes dark backgrounds pure black -->
+    <string name="preferences_appearance__pure_black">Pure black</string>
+    <!-- Summary of the Pure black switch -->
+    <string name="preferences_appearance__pure_black_summary">Use black backgrounds when the app is dark</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">For updates, please check your app store. This version does not include an in-app updater.</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Check for updates</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">Last checked: %s</string>

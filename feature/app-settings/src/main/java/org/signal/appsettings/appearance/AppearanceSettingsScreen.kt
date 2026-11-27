@@ -31,11 +31,13 @@ import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
+import org.signal.appsettings.asCollieSettingTitle
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
@@ -46,6 +48,7 @@ import org.signal.core.ui.compose.SignalPreviewWrapper
 import org.signal.core.ui.compose.Texts
 import org.signal.core.ui.compose.horizontalGutters
 import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.compose.theme.UserPalettes
 
 @VisibleForTesting
 object AppearanceSettingsTestTags {
@@ -53,6 +56,8 @@ object AppearanceSettingsTestTags {
   const val ROW_LANGUAGE = "row-language"
   const val ROW_THEME = "row-theme"
   const val ROW_DYNAMIC_COLORS = "row-dynamic-colors"
+  const val ROW_COLOR = "row-color"
+  const val ROW_PURE_BLACK = "row-pure-black"
   const val ROW_CHAT_COLOR_AND_WALLPAPER = "row-chat-color-and-wallpaper"
   const val ROW_APP_ICON = "row-app-icon"
   const val ROW_MESSAGE_FONT_SIZE = "row-message-font-size"
@@ -60,6 +65,9 @@ object AppearanceSettingsTestTags {
   const val BUTTON_NAVIGATION_BAR_NORMAL = "button-navigation-bar-normal"
   const val BUTTON_NAVIGATION_BAR_COMPACT = "button-navigation-bar-compact"
   const val BUTTON_NAVIGATION_BAR_CONFIRM = "button-navigation-bar-confirm"
+
+  /** Collie: one option of the color picker. */
+  fun paletteOption(id: String): String = "palette-option-$id"
 }
 
 /**
@@ -106,7 +114,26 @@ fun AppearanceSettingsScreen(
         )
       }
 
-      if (state.isDynamicColorsAvailable) {
+      if (state.userThemingEnabled) {
+        item {
+          PalettePicker(
+            paletteIds = state.availablePalettes,
+            selectedId = state.palette,
+            onSelected = { onEvent(AppearanceSettingsEvent.PaletteSelected(it)) },
+            modifier = Modifier.testTag(AppearanceSettingsTestTags.ROW_COLOR)
+          )
+        }
+
+        item {
+          Rows.ToggleRow(
+            checked = state.pureBlack,
+            text = stringResource(R.string.preferences_appearance__pure_black).asCollieSettingTitle(),
+            label = AnnotatedString(stringResource(R.string.preferences_appearance__pure_black_summary)),
+            onCheckChanged = { onEvent(AppearanceSettingsEvent.PureBlackChanged(it)) },
+            modifier = Modifier.testTag(AppearanceSettingsTestTags.ROW_PURE_BLACK)
+          )
+        }
+      } else if (state.isDynamicColorsAvailable) {
         item {
           Rows.ToggleRow(
             checked = state.dynamicColors,
@@ -272,7 +299,13 @@ private val AppearanceSettingsState.Theme.labelRes: Int
 @Composable
 private fun AppearanceSettingsScreenPreview() {
   AppearanceSettingsScreen(
-    state = AppearanceSettingsState(language = "en", dynamicColors = true, isDynamicColorsAvailable = true),
+    state = AppearanceSettingsState(
+      language = "en",
+      userThemingEnabled = true,
+      palette = "plum_expressive",
+      availablePalettes = listOf(UserPalettes.COLLIE_ID, UserPalettes.SYSTEM_ID) + UserPalettes.all.map { it.id },
+      pureBlack = true
+    ),
     onEvent = {}
   )
 }

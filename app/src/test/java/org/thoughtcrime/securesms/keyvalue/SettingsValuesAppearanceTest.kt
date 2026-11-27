@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.keyvalue
 
 import android.app.Application
+import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import org.junit.After
@@ -241,10 +242,88 @@ class SettingsValuesAppearanceTest {
     assertEquals(PILOT, ThemePalettes.storedId(context))
   }
 
+  @Test
+  fun `switching straight from one built-in palette to another keeps System off`() {
+    assumeTrue(CollieFlags.userTheming)
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor()), context)
+    val events = mutableListOf<String>()
+    values.onConfigurationSettingChanged.observeForever { events += it }
+
+    for (palette in listOf("blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral")) {
+      values.setColorPalette(palette)
+      shadowOf(Looper.getMainLooper()).idle()
+      assertEquals(palette, ThemePalettes.storedId(context))
+      assertEquals(palette, values.colorPalette)
+      assertFalse(PlainTextKeyValueStore.isDynamicColorsEnabled)
+    }
+    assertEquals(List(4) { SettingsValues.THEME }, events)
+  }
+
+  @Test
+  fun `pure black is independent of the theme mode and palette and notifies once per change`() {
+    assumeTrue(CollieFlags.userTheming)
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor()), context)
+    val events = mutableListOf<String>()
+    values.onConfigurationSettingChanged.observeForever { events += it }
+    assertFalse(values.isPureBlackEnabled)
+
+    values.isPureBlackEnabled = true
+    values.isPureBlackEnabled = true
+    shadowOf(Looper.getMainLooper()).idle()
+    assertTrue(ThemePalettes.isPureBlackEnabled(context))
+    assertEquals(listOf(SettingsValues.THEME), events)
+
+    values.setColorPalette("plum_expressive")
+    values.setColorPalette(ThemePalettes.SYSTEM)
+    values.setColorPalette(ThemePalettes.COLLIE)
+    values.setAppearance(SettingsValues.Theme.LIGHT, false)
+    values.theme = SettingsValues.Theme.DARK
+    assertTrue(values.isPureBlackEnabled)
+
+    values.isPureBlackEnabled = false
+    assertFalse(ThemePalettes.isPureBlackEnabled(context))
+    assertEquals("dark", PlainTextKeyValueStore.theme)
+  }
+
+  @Test
+  fun `post-restore theme synchronization keeps device-local Pure black`() {
+    assumeTrue(CollieFlags.userTheming)
+    ThemePalettes.setPureBlack(context, true)
+    legacyPreferences().edit()
+      .putString(PlainTextKeyValueStore.THEME, "light")
+      .commit()
+
+    val dataSet = KeyValueDataSet()
+    dataSet.putString(SettingsValues.THEME, "dark")
+    val values = SettingsValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(dataSet), DirectExecutor()), context)
+
+    values.onPostBackupRestore()
+
+    assertEquals("dark", PlainTextKeyValueStore.theme)
+    assertTrue(values.isPureBlackEnabled)
+  }
+
+  @Test
+  fun `Stable ignores stored Pure black and does not write it`() {
+    assumeFalse(CollieFlags.userTheming)
+    val local = context.createDeviceProtectedStorageContext().getSharedPreferences("collie_appearance", Context.MODE_PRIVATE)
+    local.edit().putBoolean("pref_pure_black", true).commit()
+    try {
+      val store = KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())
+      val values = SettingsValues(store, context)
+      assertFalse(values.isPureBlackEnabled)
+      values.isPureBlackEnabled = false
+      assertTrue(local.getBoolean("pref_pure_black", false))
+    } finally {
+      local.edit().remove("pref_pure_black").commit()
+    }
+  }
+
   private fun legacyPreferences() = SecurePreferenceManager.getSecurePreferences(context)
 
   private fun clearLegacyBootstrapValues() {
     ThemePalettes.setStoredId(context, null)
+    ThemePalettes.setPureBlack(context, false)
     legacyPreferences().edit()
       .remove(PlainTextKeyValueStore.THEME)
       .remove(PlainTextKeyValueStore.DYNAMIC_COLORS_ENABLED)

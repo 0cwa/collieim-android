@@ -21,6 +21,8 @@ import org.signal.appsettings.routes.navigateBack
 import org.signal.appsettings.routes.navigateTo
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.flags.CollieFlags
+import org.thoughtcrime.securesms.util.ThemePalettes
 
 /**
  * Drives [org.signal.appsettings.appearance.AppearanceSettingsScreen]. Navigation goes straight to [parentEventEmitter].
@@ -61,9 +63,24 @@ class AppearanceSettingsViewModel(
       }
 
       is AppearanceSettingsEvent.DynamicColorsChanged -> {
+        if (currentState.userThemingEnabled) return
         AppearanceSettingsRepository.setAppearance(currentState.theme, event.enabled)
         _state.update { it.copy(dynamicColors = event.enabled) }
         _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(currentState.theme, event.enabled))
+      }
+
+      is AppearanceSettingsEvent.PaletteSelected -> {
+        if (!currentState.userThemingEnabled || event.palette == currentState.palette || event.palette !in currentState.availablePalettes) return
+        val dynamicColors = event.palette == ThemePalettes.SYSTEM
+        AppearanceSettingsRepository.setPalette(event.palette)
+        _state.update { it.copy(palette = event.palette, dynamicColors = dynamicColors) }
+        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(currentState.theme, dynamicColors))
+      }
+
+      is AppearanceSettingsEvent.PureBlackChanged -> {
+        if (!currentState.userThemingEnabled || event.enabled == currentState.pureBlack) return
+        AppearanceSettingsRepository.setPureBlack(event.enabled)
+        _state.update { it.copy(pureBlack = event.enabled) }
       }
 
       AppearanceSettingsEvent.ChatColorAndWallpaperClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.AppearanceRoute.Wallpaper)
@@ -99,10 +116,14 @@ class AppearanceSettingsViewModel(
       language = AppearanceSettingsRepository.getLanguage(),
       theme = AppearanceSettingsRepository.getTheme(),
       dynamicColors = AppearanceSettingsRepository.isDynamicColorsEnabled(),
+      isDynamicColorsAvailable = AppearanceSettingsRepository.isDynamicColorsAvailable(),
+      userThemingEnabled = CollieFlags.userTheming,
+      palette = if (CollieFlags.userTheming) AppearanceSettingsRepository.getPalette() else ThemePalettes.COLLIE,
+      availablePalettes = if (CollieFlags.userTheming) AppearanceSettingsRepository.getAvailablePalettes() else emptyList(),
+      pureBlack = CollieFlags.userTheming && AppearanceSettingsRepository.isPureBlackEnabled(),
       messageFontSize = AppearanceSettingsRepository.getMessageFontSize(),
       isCompactNavigationBar = AppearanceSettingsRepository.isCompactNavigationBar(),
       isSystemThemeAvailable = AppearanceSettingsRepository.isSystemThemeAvailable(),
-      isDynamicColorsAvailable = AppearanceSettingsRepository.isDynamicColorsAvailable(),
       isAppIconSupported = AppearanceSettingsRepository.isAppIconSupported()
     )
   }

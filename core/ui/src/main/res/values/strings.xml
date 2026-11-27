@@ -112,4 +112,14 @@
     <!-- Chips -->
     <!-- Accessibility action on a chip for something the user picked, such as a contact, that removes it. %1$s is the chip\'s label, such as the contact\'s name -->
     <string name="Chips__remove_s">Remove %1$s</string>
+
+    <!-- Collie: built-in app color palettes, named after their main color. Shown under Settings > Appearance > Color. -->
+    <!-- Name of a blue app color palette -->
+    <string name="user_palette_name_blue_tonal_spot">Blue</string>
+    <!-- Name of a teal (blue-green) app color palette -->
+    <string name="user_palette_name_teal_vibrant">Teal</string>
+    <!-- Name of a plum (purple) app color palette with sage green and olive accents -->
+    <string name="user_palette_name_plum_expressive">Plum</string>
+    <!-- Name of a gray-blue app color palette with muted colors -->
+    <string name="user_palette_name_slate_neutral">Slate</string>
 </resources>

@@ -10,14 +10,17 @@ object GeneratedPaletteOverlays {
 
   /** Stable palette IDs, as stored in preferences and backups. */
   @JvmField
-  val IDS: List<String> = listOf("teal_vibrant")
+  val IDS: List<String> = listOf("blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral")
 
   /** The overlay for [id] at the given brightness, or 0 for an unknown ID. */
   @JvmStatic
   @StyleRes
   fun overlay(id: String?, dark: Boolean): Int {
     return when (id) {
+      "blue_tonal_spot" -> if (dark) R.style.ThemeOverlay_Collie_Palette_BlueTonalSpot_Dark else R.style.ThemeOverlay_Collie_Palette_BlueTonalSpot_Light
       "teal_vibrant" -> if (dark) R.style.ThemeOverlay_Collie_Palette_TealVibrant_Dark else R.style.ThemeOverlay_Collie_Palette_TealVibrant_Light
+      "plum_expressive" -> if (dark) R.style.ThemeOverlay_Collie_Palette_PlumExpressive_Dark else R.style.ThemeOverlay_Collie_Palette_PlumExpressive_Light
+      "slate_neutral" -> if (dark) R.style.ThemeOverlay_Collie_Palette_SlateNeutral_Dark else R.style.ThemeOverlay_Collie_Palette_SlateNeutral_Light
       else -> 0
     }
   }

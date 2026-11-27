@@ -46,6 +46,7 @@ import org.signal.core.ui.compose.theme.LocalSnackbarColors
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.compose.theme.SnackbarColors
 import org.signal.core.ui.compose.theme.UserPalettes
+import org.signal.core.ui.compose.theme.withPureBlack
 import org.signal.core.ui.permissions.RationaleDialog
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
@@ -80,6 +81,7 @@ class UserPaletteThemeTest {
     preferences.edit().clear().commit()
     PlainTextKeyValueStore.init(preferences, 0)
     ThemePalettes.setStoredId(context, null)
+    ThemePalettes.setPureBlack(context, false)
     assumeTrue(CollieFlags.userTheming)
   }
 
@@ -245,7 +247,7 @@ class UserPaletteThemeTest {
     val pilotActivity = createActivity<NoActionBarActivity>().get()
 
     assertNotEquals(collieKey, DynamicTheme.themeKey(pilotActivity))
-    assertTrue(DynamicTheme.themeKey(pilotActivity).endsWith(PILOT))
+    assertTrue(DynamicTheme.themeKey(pilotActivity).contains("|$PILOT|"))
   }
 
   @Test
@@ -294,6 +296,227 @@ class UserPaletteThemeTest {
     assertEquals(PILOT, paletteMarker(sheet.context))
     assertEquals(pilot.dark.primary.toArgb(), attrColor(sheet.context, MaterialR.attr.colorPrimary))
     assertEquals(pilot.dark.surface.toArgb(), attrColor(sheet.context, MaterialR.attr.colorSurface))
+  }
+
+  @Test
+  @Config(qualifiers = "notnight")
+  fun `every built-in palette applies matching light roles in Views and Compose`() {
+    assertEveryPalette(dark = false)
+  }
+
+  @Test
+  @Config(qualifiers = "night")
+  fun `every built-in palette applies matching dark roles in Views and Compose`() {
+    assertEveryPalette(dark = true)
+  }
+
+  @Test
+  @Config(qualifiers = "notnight")
+  fun `switching straight between built-in palettes recreates with the new roles`() {
+    val controller = createActivity<NoActionBarActivity>()
+    var previous: Activity = controller.get()
+
+    for (palette in UserPalettes.all + UserPalettes.all.first()) {
+      select(palette.id)
+      if (paletteMarker(previous) == palette.id) continue
+      val activity = returnTo(controller)
+      assertEquals(palette.id, paletteMarker(activity))
+      assertEquals(palette.light.primary.toArgb(), attrColor(activity, MaterialR.attr.colorPrimary))
+      assertEquals(palette.light.surface.toArgb(), statusBar(activity))
+      previous = activity
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "night")
+  fun `pure black darkens only base surfaces for Collie, System and every palette`() {
+    ThemePalettes.setPureBlack(context, true)
+    val choices = listOf(ThemePalettes.COLLIE, ThemePalettes.SYSTEM) + UserPalettes.all.map { it.id }
+    val activities = choices.associateWith { id ->
+      select(id)
+      val base = createActivity<NoActionBarActivity>().get()
+      ThemePalettes.setPureBlack(context, false)
+      val reference = createActivity<NoActionBarActivity>().get()
+      ThemePalettes.setPureBlack(context, true)
+      base to reference
+    }
+    val schemes = mutableMapOf<String, Pair<ColorScheme, ColorScheme>>()
+
+    for ((id, pair) in activities) {
+      val (activity, reference) = pair
+      assertTrue(id, pureBlackMarker(activity))
+      assertEquals(id, paletteMarker(reference), paletteMarker(activity))
+      for (attr in BLACK_ATTRS) {
+        assertEquals("$id attr $attr", BLACK, attrColor(activity, attr))
+      }
+      assertEquals(id, BLACK, statusBar(activity))
+      assertEquals(id, BLACK, windowBackground(activity))
+      for (attr in KEPT_ATTRS) {
+        assertEquals("$id attr $attr", attrColor(reference, attr), attrColor(activity, attr))
+      }
+      assertTrue(id, contrast(attrColor(activity, MaterialR.attr.colorOnSurface), BLACK) >= 4.5)
+      assertTrue(id, contrast(attrColor(activity, MaterialR.attr.colorOnSurfaceVariant), BLACK) >= 4.5)
+    }
+
+    compose.setContent {
+      for ((id, pair) in activities) {
+        CompositionLocalProvider(LocalContext provides pair.first) {
+          SignalTheme(isDarkMode = true, incognitoKeyboardEnabled = false) { val black = MaterialTheme.colorScheme
+            CompositionLocalProvider(LocalContext provides pair.second) {
+              SignalTheme(isDarkMode = true, incognitoKeyboardEnabled = false) { schemes[id] = black to MaterialTheme.colorScheme }
+            }
+          }
+        }
+      }
+    }
+    compose.waitForIdle()
+
+    for ((id, pair) in schemes) {
+      val (black, reference) = pair
+      val activity = activities.getValue(id).first
+      // Pure black changes exactly the base roles of the same choice's Compose scheme.
+      assertSchemeEquals(reference.withPureBlack(), black)
+      // View and Compose agree for Collie and the presets. System on API 34+ uses Android's own Compose scheme, whose
+      // parity with the View theme is the existing System behavior and outside this check.
+      if (id != ThemePalettes.SYSTEM || Build.VERSION.SDK_INT < 34) {
+        for ((attr, role) in ROLE_ATTRS) {
+          assertEquals("$id Compose role for attr $attr", attrColor(activity, attr), role(black).toArgb())
+        }
+      } else {
+        for (attr in BLACK_ATTRS) {
+          assertEquals("$id attr $attr", BLACK, attrColor(activity, attr))
+        }
+      }
+      assertEquals(id, androidx.compose.ui.graphics.Color.Black, black.surface)
+      assertEquals(id, reference.surfaceContainer, black.surfaceContainer)
+      assertEquals(id, reference.surfaceContainerHighest, black.surfaceContainerHighest)
+      assertEquals(id, reference.primary, black.primary)
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "notnight")
+  fun `pure black leaves light activities, forced-dark Compose and special windows alone`() {
+    select(PILOT)
+    ThemePalettes.setPureBlack(context, true)
+    val light = createActivity<NoActionBarActivity>().get()
+    val preview = createActivity<MediaPreviewActivity>().get()
+    var forcedDark: ColorScheme? = null
+
+    assertTrue(!pureBlackMarker(light))
+    assertEquals(pilot.light.surface.toArgb(), attrColor(light, MaterialR.attr.colorSurface))
+    assertTrue(!pureBlackMarker(preview))
+    assertEquals(pilot.dark.surface.toArgb(), attrColor(preview, MaterialR.attr.colorSurface))
+
+    compose.setContent {
+      CompositionLocalProvider(LocalContext provides light) {
+        SignalTheme(isDarkMode = true, incognitoKeyboardEnabled = false) { forcedDark = MaterialTheme.colorScheme }
+      }
+    }
+    compose.waitForIdle()
+    assertSchemeEquals(pilot.dark, forcedDark!!)
+  }
+
+  @Test
+  @Config(qualifiers = "night")
+  fun `pure black skips always-dark and opted-out windows in dark mode`() {
+    select(PILOT)
+    ThemePalettes.setPureBlack(context, true)
+    val preview = createActivity<MediaPreviewActivity>().get()
+    val optedOut = createActivity<OptedOutActivity>().get()
+
+    for (activity in listOf(preview, optedOut)) {
+      assertTrue(activity.javaClass.simpleName, !pureBlackMarker(activity))
+      assertNotEquals(activity.javaClass.simpleName, BLACK, attrColor(activity, MaterialR.attr.colorSurface))
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "night")
+  fun `turning pure black on and off recreates a retained dark activity on return`() {
+    select(PILOT)
+    val controller = createActivity<NoActionBarActivity>()
+    val key = DynamicTheme.themeKey(controller.get())
+
+    ThemePalettes.setPureBlack(context, true)
+    val black = returnTo(controller)
+    assertTrue(pureBlackMarker(black))
+    assertEquals(BLACK, attrColor(black, MaterialR.attr.colorSurface))
+    assertNotEquals(key, DynamicTheme.themeKey(black))
+
+    ThemePalettes.setPureBlack(context, false)
+    val restored = returnTo(controller)
+    assertTrue(!pureBlackMarker(restored))
+    assertEquals(pilot.dark.surface.toArgb(), attrColor(restored, MaterialR.attr.colorSurface))
+    assertEquals(key, DynamicTheme.themeKey(restored))
+  }
+
+  @Test
+  @Config(qualifiers = "notnight")
+  fun `pure black keeps a light activity when only light mode is effective`() {
+    val controller = createActivity<NoActionBarActivity>()
+    val original = controller.get()
+
+    ThemePalettes.setPureBlack(context, true)
+    controller.pause().stop()
+    resume(controller)
+
+    assertSame(original, controller.get())
+  }
+
+  @Test
+  @Config(qualifiers = "notnight")
+  fun `off-Activity lookups apply pure black only at an effective dark mode`() {
+    select(PILOT)
+    ThemePalettes.setPureBlack(context, true)
+    assertEquals(pilot.light.surface.toArgb(), DynamicTheme.resolveColor(context, MaterialR.attr.colorSurface))
+
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+    assertEquals(BLACK, DynamicTheme.resolveColor(context, MaterialR.attr.colorSurface))
+    assertEquals(pilot.dark.surfaceContainer.toArgb(), DynamicTheme.resolveColor(context, MaterialR.attr.colorSurfaceContainer))
+  }
+
+  private fun assertEveryPalette(dark: Boolean) {
+    val activities = UserPalettes.all.associate { palette ->
+      select(palette.id)
+      palette.id to createActivity<NoActionBarActivity>().get()
+    }
+    val schemes = mutableMapOf<String, ColorScheme>()
+
+    for (palette in UserPalettes.all) {
+      val activity = activities.getValue(palette.id)
+      val expected = palette.colorScheme(dark)
+      assertEquals(palette.id, paletteMarker(activity))
+      for ((attr, role) in ROLE_ATTRS) {
+        assertEquals("${palette.id} attr $attr", role(expected).toArgb(), attrColor(activity, attr))
+      }
+      assertEquals(expected.surface.toArgb(), statusBar(activity))
+      assertEquals(listOf(expected.primary, expected.secondaryContainer, expected.tertiary, expected.surface), palette.swatch(dark))
+    }
+
+    compose.setContent {
+      for ((id, activity) in activities) {
+        CompositionLocalProvider(LocalContext provides activity) {
+          SignalTheme(isDarkMode = dark, incognitoKeyboardEnabled = false) { schemes[id] = MaterialTheme.colorScheme }
+        }
+      }
+    }
+    compose.waitForIdle()
+
+    for (palette in UserPalettes.all) {
+      assertSchemeEquals(palette.colorScheme(dark), schemes.getValue(palette.id))
+    }
+  }
+
+  private fun pureBlackMarker(context: Context): Boolean {
+    val value = TypedValue()
+    return context.theme.resolveAttribute(CoreUiR.attr.collie_pure_black, value, true) && value.data != 0
+  }
+
+  private fun contrast(a: Int, b: Int): Double {
+    val la = androidx.core.graphics.ColorUtils.calculateLuminance(a)
+    val lb = androidx.core.graphics.ColorUtils.calculateLuminance(b)
+    return (maxOf(la, lb) + 0.05) / (minOf(la, lb) + 0.05)
   }
 
   private fun assertStoredPilot(dark: Boolean) {
@@ -450,6 +673,28 @@ class UserPaletteThemeTest {
 
   companion object {
     private const val PILOT = "teal_vibrant"
+    private const val BLACK = 0xFF000000.toInt()
+
+    /** Base surfaces that Pure black replaces. */
+    private val BLACK_ATTRS = listOf(
+      android.R.attr.colorBackground,
+      MaterialR.attr.colorSurface,
+      MaterialR.attr.colorSurfaceDim,
+      MaterialR.attr.colorSurfaceContainerLowest
+    )
+
+    /** Elevated containers, accents and foregrounds that Pure black keeps. */
+    private val KEPT_ATTRS = listOf(
+      MaterialR.attr.colorSurfaceContainerLow,
+      MaterialR.attr.colorSurfaceContainer,
+      MaterialR.attr.colorSurfaceContainerHigh,
+      MaterialR.attr.colorSurfaceContainerHighest,
+      MaterialR.attr.colorPrimary,
+      MaterialR.attr.colorOnSurface,
+      MaterialR.attr.colorOnSurfaceVariant,
+      R.attr.signal_background_dialog,
+      R.attr.navbar_container_color
+    )
 
     /** Every theme role the generator maps to a Compose role, with that role. */
     private val ROLE_ATTRS: List<Pair<Int, (ColorScheme) -> androidx.compose.ui.graphics.Color>> = listOf(

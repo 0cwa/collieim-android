@@ -250,5 +250,11 @@ public final class WallpaperCropActivity extends PassphraseRequiredActivity {
     protected @StyleRes int getDynamicTheme() {
       return getRegularTheme();
     }
+
+    /** Like System colors, built-in palettes leave the crop preview on Collie colors. */
+    @Override
+    protected @NonNull PalettePolicy getPalettePolicy() {
+      return PalettePolicy.NONE;
+    }
   }
 }

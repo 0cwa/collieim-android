@@ -175,6 +175,9 @@ about = "Theme propagation across screens"
 [layers.reaction-overlay-accessibility]
 kind = "feature"
 about = "Accessible reaction overlay labels and activation"
+[layers.user-theming]
+kind = "feature"
+about = "Built-in color palettes: selection, persistence, generation and theme application"
 
 [layers.system-bars]
 kind = "feature"

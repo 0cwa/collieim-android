@@ -25,9 +25,11 @@ import org.signal.storage.keyvalue.stringValue
 import org.signal.storage.protos.SignalStoreList
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.proto.SharedPreference
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference
 import org.thoughtcrime.securesms.util.DynamicTheme
+import org.thoughtcrime.securesms.util.ThemePalettes
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.SingleLiveEvent
 import java.util.Arrays
@@ -260,19 +262,36 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     }
 
   var isDynamicColorsEnabled: Boolean
-    get() = PlainTextKeyValueStore.isDynamicColorsEnabled
+    get() = colorPalette == ThemePalettes.SYSTEM
     set(value) {
       setAppearance(theme, value)
     }
 
   /**
-   * MOLLY: Also store theme in SignalStore so FullBackupExporter includes it in V1 full backups. Dynamic colors use their
-   * own preference-based backup record instead. Notify activities after both plaintext values have been updated.
+   * MOLLY: Keep backing up the theme mode and legacy Dynamic Colors flag for compatibility.
+   * TrailBlazer Beta writes the current color choice to device-local storage.
    */
   fun setAppearance(theme: Theme, dynamicColorsEnabled: Boolean) {
     putString(THEME, theme.serialize())
     PlainTextKeyValueStore.theme = theme.serialize()
-    PlainTextKeyValueStore.isDynamicColorsEnabled = dynamicColorsEnabled
+    if (!CollieFlags.userTheming) {
+      PlainTextKeyValueStore.isDynamicColorsEnabled = dynamicColorsEnabled
+    } else if (dynamicColorsEnabled != isDynamicColorsEnabled) {
+      ThemePalettes.setSelection(context, if (dynamicColorsEnabled) ThemePalettes.SYSTEM else ThemePalettes.COLLIE)
+    }
+    configurationSettingChanged.postValue(THEME)
+  }
+
+  /** Collie: [ThemePalettes.COLLIE], [ThemePalettes.SYSTEM] or a built-in palette ID. */
+  val colorPalette: String
+    get() = ThemePalettes.selectedId(context)
+
+  /**
+   * Collie: commits the device-local color choice before notifying activities once.
+   */
+  fun setColorPalette(paletteId: String) {
+    if (!CollieFlags.userTheming) return
+    ThemePalettes.setSelection(context, paletteId)
     configurationSettingChanged.postValue(THEME)
   }
 

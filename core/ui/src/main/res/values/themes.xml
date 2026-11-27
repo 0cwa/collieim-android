@@ -25,4 +25,17 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <!--
+      Collie: Pure black, applied after the color palette to effectively dark activities that follow the app's mode.
+      Only the base surface roles change; elevated containers, accents and foregrounds keep the palette's values, and
+      window, bar and translucency policy stays with each Activity's style. SignalTheme applies the same roles.
+    -->
+    <style name="ThemeOverlay.Collie.PureBlack" parent="">
+        <item name="collie_pure_black">true</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorSurface">@android:color/black</item>
+        <item name="colorSurfaceDim">@android:color/black</item>
+        <item name="colorSurfaceContainerLowest">@android:color/black</item>
+    </style>
+
 </resources>

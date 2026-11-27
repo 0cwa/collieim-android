@@ -33,9 +33,9 @@ public class DynamicTheme {
 
   /** How an Activity takes a built-in palette. Its own style keeps the window, inset and system bar policy. */
   public enum PalettePolicy {
-    /** Palette roles at the Activity's effective brightness. */
+    /** Palette roles at the Activity's effective brightness, and Pure black when that is dark. */
     FOLLOW_ACTIVITY,
-    /** Palette dark roles, for always-dark windows. */
+    /** Palette dark roles, for always-dark windows. These keep their usual surfaces under Pure black. */
     ALWAYS_DARK,
     /** Keeps the Collie roles. */
     NONE
@@ -72,9 +72,7 @@ public class DynamicTheme {
     globalIdentity                 = onCreateIdentity.withoutActivityStyle();
 
     activity.setTheme(onCreateIdentity.baseTheme);
-    if (onCreateIdentity.paletteOverlay != 0) {
-      activity.getTheme().applyStyle(onCreateIdentity.paletteOverlay, true);
-    }
+    onCreateIdentity.applyOverlays(activity.getTheme());
 
     if (previousGlobalConfiguration != globalNightModeConfiguration || !Objects.equals(previousGlobalIdentity, globalIdentity)) {
       Log.d(TAG, "Night mode or palette changed. Clearing cached layouts.");
@@ -123,8 +121,9 @@ public class DynamicTheme {
     String  paletteId = policy == PalettePolicy.NONE ? null : ThemePalettes.builtInPaletteId(selection);
     boolean dark      = policy == PalettePolicy.ALWAYS_DARK || effectiveDark;
     int     overlay   = paletteId != null ? GeneratedPaletteOverlays.overlay(paletteId, dark) : 0;
+    boolean pureBlack = policy == PalettePolicy.FOLLOW_ACTIVITY && effectiveDark && ThemePalettes.isPureBlackEnabled(context);
 
-    return new Identity(dynamic ? dynamicStyle : regularStyle, dynamic, paletteId, overlay);
+    return new Identity(dynamic ? dynamicStyle : regularStyle, dynamic, paletteId, overlay, pureBlack);
   }
 
   private static boolean usesSystemColors(@NonNull String selection) {
@@ -155,9 +154,7 @@ public class DynamicTheme {
 
     ContextThemeWrapper themeWrapper = new ContextThemeWrapper(configured, identity.baseTheme);
     Resources.Theme     theme        = themeWrapper.getTheme();
-    if (identity.paletteOverlay != 0) {
-      theme.applyStyle(identity.paletteOverlay, true);
-    }
+    identity.applyOverlays(theme);
     return ThemeUtil.getThemedColor(configured, colorRef, theme);
   }
 
@@ -174,8 +171,9 @@ public class DynamicTheme {
 
     boolean dynamic = theme.resolveAttribute(org.signal.core.ui.R.attr.dynamic_colors, value, true) && value.data != 0;
     CharSequence palette = theme.resolveAttribute(org.signal.core.ui.R.attr.collie_palette, value, true) ? value.string : null;
+    boolean pureBlack = theme.resolveAttribute(org.signal.core.ui.R.attr.collie_pure_black, value, true) && value.data != 0;
 
-    return ConfigurationUtil.getNightModeConfiguration(context) + "|" + dynamic + "|" + (palette != null ? palette : "");
+    return ConfigurationUtil.getNightModeConfiguration(context) + "|" + dynamic + "|" + (palette != null ? palette : "") + "|" + pureBlack;
   }
 
   private static boolean isEffectiveDark(@NonNull Context context) {
@@ -242,8 +240,8 @@ public class DynamicTheme {
 
   /**
    * The theme an Activity is created with: its base style, the System flag, the palette and its overlay, whose variant
-   * follows the Activity's effective brightness and palette policy. Activities recreate when it changes. Cached layouts
-   * are cleared when the night mode or the System and palette part changes.
+   * follows the Activity's effective brightness and palette policy, and whether Pure black applies. Activities recreate
+   * when it changes. Cached layouts are cleared when the night mode or the System, palette and Pure black part changes.
    */
   @VisibleForTesting
   static final class Identity {
@@ -251,16 +249,28 @@ public class DynamicTheme {
     final boolean           dynamicColors;
     final @Nullable String  paletteId;
     final @StyleRes int     paletteOverlay;
+    final boolean           pureBlack;
 
-    Identity(@StyleRes int baseTheme, boolean dynamicColors, @Nullable String paletteId, @StyleRes int paletteOverlay) {
+    Identity(@StyleRes int baseTheme, boolean dynamicColors, @Nullable String paletteId, @StyleRes int paletteOverlay, boolean pureBlack) {
       this.baseTheme      = baseTheme;
       this.dynamicColors  = dynamicColors;
       this.paletteId      = paletteId;
       this.paletteOverlay = paletteOverlay;
+      this.pureBlack      = pureBlack;
     }
 
     @NonNull Identity withoutActivityStyle() {
-      return new Identity(0, dynamicColors, paletteId, 0);
+      return new Identity(0, dynamicColors, paletteId, 0, pureBlack);
+    }
+
+    /** Applies the palette overlay, then Pure black, over the base style already set on [theme]. */
+    void applyOverlays(@NonNull Resources.Theme theme) {
+      if (paletteOverlay != 0) {
+        theme.applyStyle(paletteOverlay, true);
+      }
+      if (pureBlack) {
+        theme.applyStyle(org.signal.core.ui.R.style.ThemeOverlay_Collie_PureBlack, true);
+      }
     }
 
     @Override
@@ -271,12 +281,13 @@ public class DynamicTheme {
       return baseTheme == other.baseTheme &&
              dynamicColors == other.dynamicColors &&
              paletteOverlay == other.paletteOverlay &&
+             pureBlack == other.pureBlack &&
              Objects.equals(paletteId, other.paletteId);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(baseTheme, dynamicColors, paletteId, paletteOverlay);
+      return Objects.hash(baseTheme, dynamicColors, paletteId, paletteOverlay, pureBlack);
     }
   }
 }

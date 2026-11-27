@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.jobs.EmojiSearchIndexDownloadJob
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.DynamicTheme
+import org.thoughtcrime.securesms.util.ThemePalettes
 
 /**
  * All of the storage access behind [AppearanceSettingsViewModel].
@@ -36,6 +37,24 @@ object AppearanceSettingsRepository {
   }
 
   fun isDynamicColorsEnabled(): Boolean = SignalStore.settings.isDynamicColorsEnabled
+
+  /** Collie: the color choice to show. A System choice restored onto a device without Dynamic Colors shows as Collie. */
+  fun getPalette(): String {
+    val selected = SignalStore.settings.colorPalette
+    return if (selected == ThemePalettes.SYSTEM && !isDynamicColorsAvailable()) ThemePalettes.COLLIE else selected
+  }
+
+  fun getAvailablePalettes(): List<String> = ThemePalettes.selectableIds(systemAvailable = isDynamicColorsAvailable())
+
+  fun setPalette(palette: String) {
+    SignalStore.settings.setColorPalette(palette)
+  }
+
+  fun isPureBlackEnabled(): Boolean = SignalStore.settings.isPureBlackEnabled
+
+  fun setPureBlack(enabled: Boolean) {
+    SignalStore.settings.isPureBlackEnabled = enabled
+  }
 
   fun getMessageFontSize(): Int = SignalStore.settings.messageFontSize
 

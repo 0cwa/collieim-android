@@ -4,6 +4,8 @@
     <attr name="dynamic_colors" format="boolean"/>
     <!-- Built-in palette ID applied by a palette theme overlay; absent for Collie and System. -->
     <attr name="collie_palette" format="string"/>
+    <!-- True where the Pure black overlay applies: an effectively dark Activity that follows the app's mode. -->
+    <attr name="collie_pure_black" format="boolean"/>
     <attr name="signal_accent_primary" format="color"/>
     <attr name="extended_action_button_container_color" format="color"/>
     <attr name="extended_action_button_icon_color" format="color"/>

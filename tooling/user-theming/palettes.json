@@ -3,10 +3,35 @@
   "material": "com.google.android.material:material:1.12.0",
   "palettes": [
     {
+      "id": "blue_tonal_spot",
+      "style_name": "BlueTonalSpot",
+      "name": "Blue",
+      "seed": "#3D6FD8",
+      "scheme": "tonal_spot",
+      "contrast": 0.0
+    },
+    {
       "id": "teal_vibrant",
       "style_name": "TealVibrant",
+      "name": "Teal",
       "seed": "#00897B",
       "scheme": "vibrant",
+      "contrast": 0.0
+    },
+    {
+      "id": "plum_expressive",
+      "style_name": "PlumExpressive",
+      "name": "Plum",
+      "seed": "#B8860B",
+      "scheme": "expressive",
+      "contrast": 0.0
+    },
+    {
+      "id": "slate_neutral",
+      "style_name": "SlateNeutral",
+      "name": "Slate",
+      "seed": "#5B6B7A",
+      "scheme": "neutral",
       "contrast": 0.0
     }
   ]

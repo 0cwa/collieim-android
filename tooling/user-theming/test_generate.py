@@ -52,6 +52,28 @@ class GenerateTest(unittest.TestCase):
         self.assertEqual(2 * len(mapped), sum(compose.count(f"      {c} = ") for c in set(mapped)))
         self.assertIn(f'"{palette["id"]}" ->', generate.render_overlays(palettes))
 
+    def test_every_palette_has_a_matching_translatable_name(self):
+        palettes = generate.load_spec()["palettes"]
+        self.assertEqual(["blue_tonal_spot", "teal_vibrant", "plum_expressive", "slate_neutral"], [p["id"] for p in palettes])
+        self.assertEqual(generate.SCHEMES, tuple(p["scheme"] for p in palettes))
+        generate.check_names(palettes)
+        renamed = [dict(palettes[0], name="Something else")]
+        with self.assertRaises(SystemExit):
+            generate.check_names(renamed)
+        compose = generate.render_compose([(palettes[0], {"light": fake_roles(), "dark": fake_roles()})])
+        self.assertIn("nameRes = R.string.user_palette_name_blue_tonal_spot,", compose)
+
+    def test_pure_black_needs_readable_dark_foregrounds(self):
+        palette = generate.load_spec()["palettes"][0]
+        # Backgrounds black and foregrounds white, except the accents that are themselves backgrounds of a foreground.
+        roles = {role: "#FFFFFFFF" if role.startswith(("on", "inverseOn", "outline")) else "#FF000000" for role, _, _ in generate.ROLES}
+        roles.update({"primary": "#FFFFFFFF", "onPrimary": "#FF000000", "inversePrimary": "#FFFFFFFF"})
+        generate.check_contrast(palette, "dark", roles)
+        roles["outline"] = "#FF222222"
+        with self.assertRaises(SystemExit):
+            generate.check_contrast(palette, "dark", roles)
+        generate.check_contrast(palette, "light", roles)
+
     def test_contrast_ratio(self):
         self.assertAlmostEqual(21.0, generate.contrast_ratio("#FF000000", "#FFFFFFFF"), places=3)
         self.assertAlmostEqual(1.0, generate.contrast_ratio("#FF777777", "#FF777777"), places=3)

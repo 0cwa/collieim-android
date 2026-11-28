@@ -2,6 +2,7 @@
 """Build a ref-dynamic dossier of Collie's fork provenance and entanglement."""
 
 import argparse
+import base64
 from collections import Counter
 import fnmatch
 import hashlib
@@ -71,6 +72,19 @@ def paths_between(a, b):
     return sorted({path.decode("utf-8", errors="surrogateescape") for path in raw.split(b"\0") if path})
 
 
+def conflict_paths(section):
+    """Parse conflict-list entries, preserving spaces and removing status suffixes."""
+    result = set()
+    for line in section.splitlines():
+        match = re.match(r"^[-*]\s+(.+?)\s*$", line)
+        if not match:
+            continue
+        path = re.sub(r"\s+\([^()]*\)$", "", match.group(1)).strip()
+        if path:
+            result.add(path)
+    return result
+
+
 def diff_text(a, b, paths=None):
     if paths == []:
         return ""
@@ -100,15 +114,13 @@ def diff_numstat(a, b):
 def diff_hunk_metadata(a, b, paths):
     """Attribute hunks to exact tree paths, excluding descendants of replaced files."""
     counts, spans = Counter(), {}
-    # Diff trees, rather than blobs, so Git can apply the path's diff
-    # attributes. In this Git version, diff attributes come from the checkout;
-    # check-attr --source can inspect another tree but diff has no attr-source.
+    # Use the trusted source tree's attributes, independent of the checkout.
     # A literal pathspec can select descendants when this path is a directory
     # on one side, so accept only a matching file header.
     for path in paths:
         path_bytes = os.fsencode(path)
         patch = subprocess.run(
-            ["git", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
+            ["git", f"--attr-source={a}", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
              "--no-ext-diff", "--no-textconv", "--no-renames", "--default-prefix", "--unified=3",
              a, b, "--", path], cwd=REPO, check=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
@@ -320,14 +332,42 @@ def write_json_parts(out, stem, rows, limit):
         name = f"{stem}-{i:03}.json"
         rendered = json.dumps(json_safe(part), ensure_ascii=True, indent=2) + "\n"
         if len(rendered.encode("utf-8")) > limit:
-            # A single unusually large record is serialized compactly. Current
-            # producers cap extracted source lines, so this is a safe fallback.
-            rendered = json.dumps(json_safe(part), ensure_ascii=True, separators=(",", ":")) + "\n"
+            # Compact first, then bound oversized records without emitting
+            # invalid JSON or dropping records. ASCII escaping can expand CJK
+            # text sixfold, so byte size is measured after serialization.
+            compact_rows = [_fit_json_record(row, max(1, limit - 3)) for row in part]
+            rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
+        if len(rendered.encode("utf-8")) > limit:
+            raise ValueError(f"JSON record in {stem} cannot fit the {limit}-byte part limit")
         (out / name).write_text(rendered)
         names.append(name)
     pointer = f"{stem}.json"
     (out / pointer).write_text(json.dumps({"count": len(rows), "parts": names}, separators=(",", ":")) + "\n")
     return pointer, names
+
+
+def _fit_json_record(row, budget):
+    """Shorten string values as needed to fit one valid record in a JSON part."""
+    result = json_safe(row)
+    def encoded_size():
+        return len(json.dumps([result], ensure_ascii=True, separators=(",", ":")).encode("utf-8")) + 1
+    while encoded_size() > budget:
+        strings = []
+        def collect(value, parent, key=None):
+            if isinstance(value, dict):
+                for child_key, child in value.items(): collect(child, value, child_key)
+            elif isinstance(value, list):
+                for index, child in enumerate(value): collect(child, value, index)
+            elif isinstance(value, str) and len(value) > 0:
+                strings.append((len(value), parent, key, value))
+        collect(result, None)
+        if not strings:
+            return result
+        _, parent, key, value = max(strings, key=lambda item: item[0])
+        marker = "…"
+        reduced = value[: max(0, len(value) // 2)] + marker
+        parent[key] = reduced
+    return result
 
 
 def dossiers(head_ref, out, since_ref=None, max_kb=150):
@@ -378,7 +418,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
         section = re.search(r"Conflicts at merge time:\s*(.*?)(?:\n\n|\Z)", message, re.S)
         if section:
             merge_tree = tree_blobs(merge["commit"])
-            for conflict_path in re.findall(r"^[-*]\s+([^\s(]+)", section.group(1), re.M):
+            for conflict_path in conflict_paths(section.group(1)):
                 if merge_tree.get(conflict_path) is not None:
                     seam_paths.setdefault(conflict_path, set()).add(merge_tree[conflict_path])
     for path in sorted(candidate_paths):
@@ -489,10 +529,11 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
 
 
 def manifest_delta(head, merges):
-    paths = sorted({p for m in merges for p in paths_between(m["parent"], m["commit"])
+    changed_by_merge = {m["commit"]: paths_between(m["parent"], m["commit"]) for m in merges}
+    paths = sorted({p for changed in changed_by_merge.values() for p in changed
                     if p.endswith(("AndroidManifest.xml", "build.gradle", "build.gradle.kts", "gradle.properties", "libs.versions.toml"))})
     rows = ["# Manifest and build delta", "", f"Head: `{head}`", "", "| Path | Upstream merge |", "|---|---|"]
-    rows += [f"| {inline_code(p)} | `{m['commit'][:12]}` |" for m in merges for p in paths if p in paths_between(m["parent"], m["commit"])]
+    rows += [f"| {inline_code(p)} | `{m['commit'][:12]}` |" for m in merges for p in paths if p in changed_by_merge[m["commit"]]]
     return "\n".join(rows + (["", "No manifest or build files changed in discovered upgrades."] if not paths else ["", f"{len(paths)} distinct manifest/build paths."])) + "\n"
 
 
@@ -503,12 +544,15 @@ def security_leads(head, merges):
     # Candidate discovery is content driven and scoped to fork merge diffs; no claims of vulnerability are made.
     result = []
     for merge in merges:
+        additions = diff_numstat(merge["parent"], merge["commit"])
         for path in paths_between(merge["parent"], merge["commit"]):
             if not re.search(r"\.(java|kt|xml|gradle|pro|json)$", path, re.I):
                 continue
+            if additions.get(path, (0, 0))[0] == 0:
+                continue
             patch = diff_text(merge["parent"], merge["commit"], [path])
-            matches = [(line[1:].strip()[:180], SECURITY_RE.search(line).group(0).lower()) for line in patch.splitlines()
-                       if line.startswith("+") and not line.startswith("+++") and SECURITY_RE.search(line)]
+            matches = [(line.strip()[:180], SECURITY_RE.search(line).group(0).lower())
+                       for line in added_patch_lines(patch) if SECURITY_RE.search(line)]
             for evidence, rule in matches[:30]:
                 result.append({"kind": "upstream-added-code-match", "path": path, "merge": merge["commit"],
                                "upstream": merge["repository"], "rule": rule, "evidence": evidence,
@@ -544,6 +588,19 @@ def security_leads(head, merges):
             for number, line in enumerate(content.splitlines(), 1):
                 if re.search(r"contract.{0,20}(version|v[0-9])|version.{0,20}contract", line, re.I):
                     result.append({"source": path, "kind": "contract-version", "line": number, "text": line.strip()[:240]})
+    return result
+
+
+def added_patch_lines(patch):
+    """Return additions without treating unified-diff file headers as content."""
+    result, in_hunk = [], False
+    for line in patch.splitlines():
+        if line.startswith("diff --git "):
+            in_hunk = False
+        elif line.startswith("@@"):
+            in_hunk = True
+        elif in_hunk and line.startswith("+"):
+            result.append(line[1:])
     return result
 
 
@@ -614,10 +671,7 @@ def entanglement(base_ref, head_ref, history_ref=None):
     for merge in merges:
         message = git("show", "-s", "--format=%B", merge["commit"]).decode(errors="replace")
         section = re.search(r"Conflicts at merge time:\s*(.*?)(?:\n\n|\Z)", message, re.S)
-        paths = set()
-        if section:
-            paths = {re.match(r"^[-*]\s+([^\s(]+)", line).group(1)
-                     for line in section.group(1).splitlines() if re.match(r"^[-*]\s+([^\s(]+)", line)}
+        paths = conflict_paths(section.group(1)) if section else set()
         if not paths:
             continue
         conflicts.update(paths)
@@ -663,9 +717,7 @@ def pr_markdown(report):
     upstream_owned = set().union(*(set(tree_blobs(ref)) for ref in refs.values())) if refs else set()
     delta_base = report.get("delta_base") or base
     touched = sorted(upstream_owned & set(paths_between(delta_base, head)))
-    patch = diff_text(delta_base, head, touched)
-    injected_hunks = sum(line.startswith("@@") for line in patch.splitlines())
-    injected_lines = sum(line.startswith("+") and not line.startswith("+++") for line in patch.splitlines())
+    injected_hunks, injected_lines = upstream_delta_stats(delta_base, head, touched)
     repeated = {r["path"] for r in report["upgrade_conflict_recurrence"] if r["count"] > 1}
     hotspots = sorted(repeated & set(touched))
     domains = Counter(domain(p)[0] for p in touched if runtime_path(p))
@@ -683,6 +735,16 @@ def pr_markdown(report):
     return "\n".join(lines).rstrip() + "\n"
 
 
+def upstream_delta_stats(base, head, exact_paths):
+    """Count only exact upstream-owned files, using Git's path-aware metadata."""
+    if not exact_paths:
+        return 0, 0
+    hunks, _path_hunks, _spans = diff_hunk_metadata(base, head, exact_paths)
+    numstat = diff_numstat(base, head)
+    added_lines = sum(numstat.get(path, (0, 0))[0] for path in exact_paths)
+    return hunks, added_lines
+
+
 def inline_code(value, limit=240):
     """Render untrusted text as one bounded Markdown code span."""
     text = "".join(" " if ord(char) < 32 or ord(char) == 127 else char for char in display_text(value))
@@ -697,6 +759,8 @@ def bounded_comment(body):
     """Keep a comment below GitHub's body limit, including its sticky marker."""
     marker = "<!-- collie-fork-footprint -->\n"
     suffix = "\n_Report shortened to fit the GitHub comment size limit._\n"
+    if body.startswith(marker):
+        body = body[len(marker):]
     available = MAX_COMMENT_BYTES - len((marker + suffix).encode("utf-8"))
     kept, size = [], 0
     for line in body.splitlines(keepends=True):
@@ -759,7 +823,8 @@ def validate_workflow_run(event, meta, repository, token):
     for key in ("base_sha", "head_sha", "merge_sha"):
         if not isinstance(meta.get(key), str) or not re.fullmatch(r"[0-9a-f]{40,64}", meta[key]):
             return None
-    subprocess.run(["git", "fetch", "--no-tags", "origin", f"refs/pull/{number}/merge"],
+    subprocess.run(["git", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false",
+                    "fetch", "--no-tags", "--no-recurse-submodules", "origin", f"refs/pull/{number}/merge"],
                    cwd=REPO, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     merge_sha = subprocess.check_output(["git", "rev-parse", "FETCH_HEAD"], cwd=REPO, text=True).strip()
     merge_parents = subprocess.check_output(["git", "show", "-s", "--format=%P", merge_sha], cwd=REPO, text=True).split()
@@ -824,6 +889,35 @@ def sticky_comment(body, expected_base, expected_head):
         return json.load(response)
 
 
+def post_report(repository, number, base, head, report_b64):
+    """Validate a bounded trusted report before posting it to its live PR."""
+    actual_repository = os.environ.get("EXPECTED_REPOSITORY", os.environ.get("GITHUB_REPOSITORY", ""))
+    actual_number = os.environ.get("EXPECTED_PR_NUMBER", os.environ.get("PR_NUMBER", ""))
+    actual_base = os.environ.get("EXPECTED_BASE_SHA", base)
+    actual_head = os.environ.get("EXPECTED_HEAD_SHA", head)
+    if (not re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9_.-]+", repository) or
+            repository != actual_repository or not re.fullmatch(r"[1-9][0-9]*", number) or number != actual_number):
+        raise ValueError("report repository, pull request number, or head SHA is invalid")
+    if (not re.fullmatch(r"[0-9a-f]{40,64}", base) or base != actual_base or
+            not re.fullmatch(r"[0-9a-f]{40,64}", head) or head != actual_head):
+        raise ValueError("report base or head SHA is invalid")
+    if not isinstance(report_b64, str) or len(report_b64) > (MAX_COMMENT_BYTES * 4 // 3 + 8):
+        raise ValueError("encoded report exceeds the comment size limit")
+    try:
+        raw = base64.b64decode(report_b64, validate=True)
+        report = raw.decode("utf-8")
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ValueError("report is not valid base64-encoded UTF-8") from exc
+    marker = "<!-- collie-fork-footprint -->"
+    if len(raw) > MAX_COMMENT_BYTES or not report.startswith(marker):
+        raise ValueError("report is oversized or missing its marker")
+    if f"Base: `{base}`" not in report or f"Head: `{head}`" not in report:
+        raise ValueError("report base or head SHA does not match the validated pull request")
+    os.environ["GITHUB_REPOSITORY"] = repository
+    os.environ["PR_NUMBER"] = number
+    return sticky_comment(report, base, head)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -834,25 +928,42 @@ def main(argv=None):
     p = sub.add_parser("pr-report", help="write a PR report and optionally post a sticky comment")
     p.add_argument("--base", required=True); p.add_argument("--head", required=True); p.add_argument("--post-comment", action="store_true")
     p.add_argument("--markdown", action="store_true"); p.add_argument("--json", action="store_true")
+    p = sub.add_parser("post-report", help="validate and post a bounded report from the trusted validation job")
+    p.add_argument("--repository", required=True); p.add_argument("--pr", required=True)
+    p.add_argument("--base", required=True); p.add_argument("--head", required=True); p.add_argument("--report-b64", required=True)
     p = sub.add_parser("validate-run", help="validate a workflow_run artifact against its live pull request")
     p.add_argument("--event", type=Path, required=True); p.add_argument("--meta", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        if args.command == "validate-run":
+        if args.command == "post-report":
+            post_report(args.repository, args.pr, args.base, args.head, args.report_b64)
+        elif args.command == "validate-run":
             with args.event.open(encoding="utf-8") as f:
                 event = json.load(f)
             with args.meta.open(encoding="utf-8") as f:
                 meta = json.load(f)
             result = validate_workflow_run(event, meta, os.environ.get("GITHUB_REPOSITORY", ""),
                                            os.environ.get("GITHUB_TOKEN", ""))
-            with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
-                if result is None:
+            if result is None:
+                with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
                     f.write("should_comment=false\n")
-                    print("Comment skipped: workflow run did not map to one current validated pull request.")
-                else:
+                print("Comment skipped: workflow run did not map to one current validated pull request.")
+            else:
+                report = bounded_comment(pr_markdown(entanglement(result["base_sha"], result["head_sha"],
+                                                                  history_ref=result["base_sha"])))
+                raw_report = report.encode("utf-8")
+                if len(raw_report) > MAX_COMMENT_BYTES or not report.startswith("<!-- collie-fork-footprint -->"):
+                    raise ValueError("generated report is oversized or missing its marker")
+                with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
                     f.write("should_comment=true\n")
+                    f.write(f"repository={os.environ['GITHUB_REPOSITORY']}\n")
                     for key, value in result.items():
                         f.write(f"{key}={value}\n")
+                    f.write(f"report_b64={base64.b64encode(raw_report).decode('ascii')}\n")
+                summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+                if summary_path:
+                    with open(summary_path, "a", encoding="utf-8") as summary:
+                        summary.write(report)
         elif args.command == "dossiers":
             if args.max_kb < 1:
                 raise ValueError("--max-kb must be positive")

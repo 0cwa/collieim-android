@@ -107,53 +107,100 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertLessEqual(len(content.encode("utf-8")), fp.MAX_COMMENT_BYTES)
         self.assertIn("shortened to fit", content)
 
-    def test_workflows_generate_trusted_advisory_and_privileged_job_validates_artifact(self):
-        workflow = (SCRIPT.parent.parent.parent / ".github/workflows/fork-footprint.yml").read_text()
-        privileged = (SCRIPT.parent.parent.parent / ".github/workflows/fork-footprint-comment.yml").read_text()
+    def test_workflows_keep_read_only_producer_and_separate_privileged_commenter(self):
+        root = SCRIPT.parent.parent.parent
+        workflow = (root / ".github/workflows/fork-footprint.yml").read_text()
+        consumer = (root / ".github/workflows/fork-footprint-comment.yml").read_text()
         self.assertIn("name: Fork footprint (advisory)", workflow)
+        self.assertIn("  pull_request:", workflow)
+        self.assertNotIn("pull_request_target", workflow + consumer)
+        self.assertIn("permissions:\n  contents: read", workflow)
+        self.assertNotIn("pull-requests: write", workflow)
         self.assertIn("repository: ${{ github.event.pull_request.base.repo.full_name }}", workflow)
         self.assertIn("ref: ${{ github.event.pull_request.base.sha }}", workflow)
         self.assertIn("persist-credentials: false", workflow)
         self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
         self.assertIn("actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1", workflow)
-        self.assertIn("git fetch --no-tags origin \"refs/pull/$PR_NUMBER/head\"", workflow)
+        self.assertIn("git -c core.hooksPath=/dev/null -c core.fsmonitor=false fetch --no-tags --no-recurse-submodules", workflow)
+        self.assertIn("refs/pull/$PR_NUMBER/head", workflow)
+        self.assertIn("types: [opened, synchronize, reopened, ready_for_review, edited]", workflow)
+        self.assertIn("github.event.changes.base != null", workflow)
         self.assertIn("tooling/ci/fork_footprint.py pr-report --base", workflow)
-        self.assertIn("GITHUB_STEP_SUMMARY", workflow)
-        self.assertIn("does not contain the advisory generator yet", workflow)
-        self.assertNotIn("GITHUB_TOKEN", workflow)
         self.assertIn("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", workflow)
-        self.assertIn("name: Fork footprint comment", privileged)
-        self.assertIn("workflows: [Fork footprint (advisory)]", privileged)
-        self.assertIn("persist-credentials: false", privileged)
-        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", privileged)
-        self.assertIn("  pull_request:", workflow)
-        self.assertIn("  contents: read", workflow)
-        self.assertNotIn("pull-requests: write", workflow)
+        self.assertIn("name: Fork footprint comment", consumer)
+        self.assertIn("workflow_run:", consumer)
+        self.assertIn("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333", consumer)
+        self.assertIn("validate-run --event", consumer)
+        self.assertIn("report_b64", consumer)
+        self.assertIn("tooling/ci/fork_footprint.py post-report", consumer)
+        self.assertIn("pull-requests: read", consumer)
+        self.assertIn("pull-requests: write", consumer)
+        self.assertEqual(consumer.count("persist-credentials: false"), 2)
+        self.assertEqual(consumer.count("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"), 2)
+        privileged = consumer.split("  comment:", 1)[1]
+        self.assertNotIn("download-artifact", privileged)
+        self.assertNotIn("git fetch", privileged)
+        self.assertNotIn("refs/pull/", privileged)
+        self.assertIn("ref: ${{ github.event.repository.default_branch }}", privileged)
         self.assertIn("group: fork-footprint-pr-${{ github.event.pull_request.number }}", workflow)
+        self.assertIn("group: fork-footprint-comment-pr-${{ needs.validate.outputs.pr_number }}", consumer)
+        self.assertIn("group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository_id }}-${{ github.event.workflow_run.head_branch }}", consumer)
+        self.assertIn("cancel-in-progress: false", consumer.split("jobs:", 1)[0])
+        self.assertNotEqual(
+            consumer.split("group: ", 1)[1].splitlines()[0],
+            consumer.split("  comment:", 1)[1].split("group: ", 1)[1].splitlines()[0],
+        )
         self.assertIn("cancel-in-progress: false", workflow)
-        self.assertIn("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", workflow)
-        self.assertIn("RUN_HEAD_SHA: ${{ github.event.pull_request.head.sha }}", workflow)
-        self.assertIn("MERGE_SHA: ${{ github.sha }}", workflow)
-        self.assertIn("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333", privileged)
-        self.assertIn("workflow_run:", privileged)
-        self.assertIn("pull-requests: write", privileged)
-        self.assertNotIn("pull_request_target", privileged)
-        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
-        self.assertIn("validate-run --event", privileged)
-        self.assertIn("head_branch", (SCRIPT.parent / "fork_footprint.py").read_text())
-        self.assertIn("needs: validate", privileged)
-        self.assertIn("should_comment == 'true'", privileged)
-        self.assertIn("pull-requests: read", privileged)
-        self.assertIn("actions: read", privileged)
-        self.assertNotIn("pull-requests: write", privileged.split("  comment:", 1)[0])
-        self.assertIn("pull-requests: write", privileged.split("  comment:", 1)[1])
-        advisory_group = next(line.strip() for line in workflow.splitlines() if line.strip().startswith("group:"))
-        comment_group = next(line.strip() for line in privileged.splitlines() if line.strip().startswith("group:"))
-        self.assertEqual(advisory_group, "group: fork-footprint-pr-${{ github.event.pull_request.number }}")
-        self.assertEqual(comment_group, "group: fork-footprint-comment-pr-${{ needs.validate.outputs.pr_number }}")
-        self.assertNotEqual(advisory_group.partition(":")[2].strip(), comment_group.partition(":")[2].strip())
-        self.assertIn('git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"', privileged)
-        self.assertIn("git cat-file -e", privileged)
+        self.assertIn("cancel-in-progress: false", consumer)
+
+    def test_conflict_paths_preserve_spaces_and_remove_status_suffix(self):
+        section = "- app/src/main/java/My Lock Manager.kt (both modified)\n- app/src/main/java/Name (legacy).kt\n"
+        self.assertEqual(fp.conflict_paths(section), {
+            "app/src/main/java/My Lock Manager.kt", "app/src/main/java/Name (legacy).kt"})
+
+    def test_added_patch_lines_keep_content_starting_with_double_plus(self):
+        patch = "diff --git a/file.kt b/file.kt\n--- a/file.kt\n+++ b/file.kt\n@@ -1 +1,3 @@\n+token\n++cryptoToken\n+++keyMaterial\n"
+        self.assertEqual(fp.added_patch_lines(patch), ["token", "+cryptoToken", "++keyMaterial"])
+
+    def test_json_parts_bound_ascii_expanded_record_without_dropping_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            pointer, parts = fp.write_json_parts(out, "rows", [{"path": "雪" * 200, "label": "雲" * 200,
+                                                                  "count": 1}], 80)
+            self.assertTrue((out / pointer).exists())
+            for name in parts:
+                data = (out / name).read_bytes()
+                self.assertLessEqual(len(data), 80)
+                json.loads(data)
+            rows = [row for name in parts for row in json.loads((out / name).read_text())]
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["count"], 1)
+            self.assertIn("…", rows[0]["path"])
+            self.assertIn("…", rows[0]["label"])
+
+    def test_post_report_validates_identity_marker_head_and_bound(self):
+        base = "b" * 40
+        head = "a" * 40
+        report = f"<!-- collie-fork-footprint -->\nBase: `{base}` · Head: `{head}`\n"
+        encoded = fp.base64.b64encode(report.encode()).decode()
+        with patch.dict("os.environ", {"GITHUB_REPOSITORY": "owner/repo", "PR_NUMBER": "7",
+                                        "EXPECTED_REPOSITORY": "owner/repo", "EXPECTED_PR_NUMBER": "7",
+                                        "EXPECTED_BASE_SHA": base, "EXPECTED_HEAD_SHA": head}), \
+                patch.object(fp, "sticky_comment", return_value={"id": 1}) as post:
+            self.assertEqual(fp.post_report("owner/repo", "7", base, head, encoded), {"id": 1})
+            post.assert_called_once_with(report, base, head)
+            with self.assertRaisesRegex(ValueError, "repository, pull request number"):
+                fp.post_report("other/repo", "7", base, head, encoded)
+            with self.assertRaisesRegex(ValueError, "repository, pull request number"):
+                fp.post_report("owner/repo", "8", base, head, encoded)
+            with self.assertRaisesRegex(ValueError, "base or head SHA"):
+                fp.post_report("owner/repo", "7", base, "c" * 40, encoded)
+            with self.assertRaisesRegex(ValueError, "marker"):
+                unmarked = f"Base: `{base}` · Head: `{head}`\n"
+                fp.post_report("owner/repo", "7", base, head, fp.base64.b64encode(unmarked.encode()).decode())
+            with patch.object(fp, "MAX_COMMENT_BYTES", 12):
+                with self.assertRaisesRegex(ValueError, "size limit"):
+                    fp.post_report("owner/repo", "7", base, head, encoded)
 
     def test_workflow_run_fork_fallback_uses_encoded_head_and_validates_live_pr(self):
         sha = "a" * 40; base = "b" * 40; merge = "c" * 40
@@ -176,6 +223,29 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertIn("head=fork-owner%3Afeature%2Fa+b", requests[0].full_url)
         self.assertEqual(len(requests), 2)
         fetch.assert_called_once()
+
+    def test_workflow_run_outputs_bounded_base64_report_after_validation(self):
+        base, head = "b" * 40, "a" * 40
+        report = f"<!-- collie-fork-footprint -->\nBase: `{base}` · Head: `{head}`\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            event, meta, output, summary = (root / name for name in ("event.json", "meta.json", "output", "summary"))
+            event.write_text("{}")
+            meta.write_text("{}")
+            env = {"GITHUB_OUTPUT": str(output), "GITHUB_REPOSITORY": "owner/repo",
+                   "GITHUB_STEP_SUMMARY": str(summary)}
+            with patch.dict("os.environ", env), \
+                    patch.object(fp, "validate_workflow_run", return_value={"pr_number": 7, "base_sha": base,
+                                                                              "head_sha": head}), \
+                    patch.object(fp, "entanglement", return_value={}), \
+                    patch.object(fp, "pr_markdown", return_value=report):
+                self.assertEqual(fp.main(["validate-run", "--event", str(event), "--meta", str(meta)]), 0)
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+            self.assertEqual(values["should_comment"], "true")
+            self.assertEqual(values["repository"], "owner/repo")
+            self.assertEqual(values["pr_number"], "7")
+            self.assertEqual(fp.base64.b64decode(values["report_b64"]).decode(), report)
+            self.assertEqual(summary.read_text(), report)
 
     def test_workflow_run_validation_skips_ambiguous_or_mismatched_pr(self):
         sha = "a" * 40
@@ -219,6 +289,12 @@ class ForkFootprintTests(unittest.TestCase):
         with patch.object(fp, "upstream_merges", return_value=[]), patch.object(fp, "paths_between", return_value=[]):
             body = fp.pr_markdown(report)
         self.assertIn("Base: `base-full-sha` · Head: `head-full-sha`", body)
+
+    def test_pr_upstream_counts_only_exact_paths_from_numstat_and_hunk_metadata(self):
+        with patch.object(fp, "diff_numstat", return_value={"node": (2, 1), "node/child.kt": (90, 0)}), \
+                patch.object(fp, "diff_hunk_metadata", return_value=(3, {"node": 3}, {})) as hunks:
+            self.assertEqual(fp.upstream_delta_stats("base", "head", ["node"]), (3, 2))
+        hunks.assert_called_once_with("base", "head", ["node"])
 
     def test_domain_assignment_is_stable_and_covers_unknown_paths(self):
         self.assertEqual(fp.domain("app/src/main/java/AuthManager.kt")[0], "D2")
@@ -364,7 +440,9 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(attr(head), [b"sample.txt", b"diff", b"unset", b""])
             self.assertEqual(attr(), [b"sample.txt", b"diff", b"unset", b""])
             count, path_counts, spans = fp.diff_hunk_metadata(base, head, ["sample.txt"])
-            self.assertEqual((count, path_counts, spans), (0, {}, {}))
+            self.assertEqual(count, 1)
+            self.assertEqual(path_counts, {"sample.txt": 1})
+            self.assertEqual(spans["sample.txt"][0]["old_count"], 1)
 
     def test_hunks_for_file_replaced_by_directory_count_exact_paths(self):
         import subprocess

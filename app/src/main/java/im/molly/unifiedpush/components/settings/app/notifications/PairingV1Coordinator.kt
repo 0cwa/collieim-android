@@ -5,6 +5,7 @@ import androidx.core.app.ShareCompat
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.Target
@@ -1086,18 +1087,22 @@ internal class PairingV1Coordinator(private val context: Context) {
   }
 
   private fun discardUndispatchedBridgeIntent(session: Session) {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     if (session.receiverStateJson != null) return
-    RelayDisclosure.runIfCurrent(session.disclosure) {
-      SignalStore.unifiedpush.mutateControl { state ->
-        val intent = state.intents.singleOrNull()
-        if (intent?.requestId == session.importRequestId && intent.sequence == state.importSequence &&
-          state.highestEpoch == intent.epoch && state.activeEpoch + 1 == intent.epoch) {
-          // Only this in-memory session can establish that the bytes were never offered to a relay.
-          // Preserve the sequence and replay state even though the reserved epoch can be used again.
-          state.copy(intents = emptyList(), highestEpoch = state.activeEpoch)
-        } else {
-          state
-        }
+    val values = SignalStore.unifiedpush
+    if (values.controlStateRead !is ControlStateRead.Current) return
+    values.mutateControl { state ->
+      val intent = state.intents.singleOrNull()
+      if (intent?.requestId == session.importRequestId && intent.keyId == session.importKeyId &&
+        intent.accountId == session.accountId && intent.deviceId == session.importDeviceId &&
+        intent.instance == session.instance && intent.target == session.importTarget &&
+        intent.epoch == session.importEpoch && intent.sequence == state.importSequence &&
+        state.highestEpoch == intent.epoch && state.activeEpoch + 1 == intent.epoch) {
+        // The in-memory session proves the request never left the phone, even if consent has since expired.
+        // Preserve the sequence and replay state even though the reserved epoch can be used again.
+        state.copy(intents = emptyList(), highestEpoch = state.activeEpoch)
+      } else {
+        state
       }
     }
   }

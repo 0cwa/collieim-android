@@ -1130,6 +1130,19 @@ class UnifiedPushReceiverTest {
       val offCurve = ByteArray(65).also { it[0] = 4 }
       values.setEndpointRegistration(endpoint, java.util.Base64.getUrlEncoder().encodeToString(offCurve), fixtureAuth, "default")
       assertNull(coordinator.consentDetails(offer))
+
+      coordinator.clear()
+      assertEquals(ControlState(importSequence = 1), values.controlState)
+
+      values.setEndpointRegistration(endpoint, "$fixtureP256dh=", "$fixtureAuth==", "default")
+      val retryOffer = offer.copy(sessionId = "88888888-8888-4888-8888-888888888888")
+      every { PairingV1.seal(retryOffer, any(), endpoint, any()) } returns
+        PairingV1.SealedRequest("{}", ByteArray(32), byteArrayOf(), byteArrayOf(), byteArrayOf())
+      val retryConsent = checkNotNull(coordinator.consentDetails(retryOffer))
+      val retry = coordinator.sealAfterConsent(retryOffer, RelayDisclosure.capture(context), retryConsent, replaceApproved = false)
+      assertTrue("a fresh scan after cancellation should seal, got $retry", retry is PairingV1Coordinator.SealResult.Ready)
+      assertEquals(1L, values.controlState.intents.single().epoch)
+      assertEquals(2L, values.controlState.importSequence)
     } finally {
       coordinator.clear()
       unmockkObject(PairingV1)
@@ -1168,7 +1181,8 @@ class UnifiedPushReceiverTest {
       ),
     )
     values.mutateControl { confirmed }
-    values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    val replayBefore = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    values.replayState = replayBefore
     mockPendingEndpointStorage()
     mockkStatic(UnifiedPush::class)
     val coordinator = PairingV1Coordinator(context)
@@ -1232,9 +1246,12 @@ class UnifiedPushReceiverTest {
       assertEquals(PairingTransport.Result.Offline, coordinator.submit(session, null))
       assertEquals(result, coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true))
 
+      every { KeyCachingService.isLocked() } returns true
+      assertFalse(RelayDisclosure.runIfCurrent(scope) {})
       coordinator.closeOfflinePairing(session.id)
       assertEquals(confirmed.copy(importSequence = 10), values.controlState)
       assertEquals(oldTarget.endpoint, values.endpoint)
+      assertEquals(replayBefore, values.replayState)
     } finally {
       coordinator.clear()
       unmockkStatic(UnifiedPush::class)

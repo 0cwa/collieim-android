@@ -73,12 +73,12 @@ class CollieUpdateIndexTest {
   }
 
   @Test
-  fun `each profile rejects the other repository package signer and APK identity`() {
+  fun `each profile rejects a different repository address and the other package identity`() {
     for ((profile, other) in listOf(stable to beta, beta to stable)) {
       val json = metadata(profile)
       for (modified in listOf(
         metadata(other),
-        json.replace("\"address\":\"${profile.repositoryUrl}\"", "\"address\":\"${other.repositoryUrl}\""),
+        json.replace("\"address\":\"${profile.repositoryUrl}\"", "\"address\":\"https://repo.collie.im/fdroid/beta/repo\""),
         json.replace("\"packages\":{\"${profile.packageName}\"", "\"packages\":{\"${other.packageName}\""),
         json.replace("\"preferredSigner\":\"${profile.apkCertificate}\"", "\"preferredSigner\":\"${other.apkCertificate}\""),
         json.replace("\"sha256\":[\"${profile.apkCertificate}\"]", "\"sha256\":[\"${other.apkCertificate}\"]"),
@@ -91,7 +91,23 @@ class CollieUpdateIndexTest {
   }
 
   @Test
-  fun `both products follow only the default channel in their own repository`() {
+  fun `each profile selects only its package in the shared index`() {
+    val mapper = JsonUtils.getMapper()
+    val index = mapper.readTree(metadata(stable, versionCode = 177705))
+    val packages = index.path("packages") as ObjectNode
+    val betaPackage = mapper.readTree(metadata(beta, versionCode = 178601, versionName = "8.37.3-1-beta1"))
+      .path("packages").path(beta.packageName)
+    packages.set<JsonNode>(beta.packageName, betaPackage)
+
+    assertEquals(177705L, parse(index.toString(), current = 177704, profile = stable).update!!.versionCode)
+    assertNull(parse(index.toString(), current = 177705, profile = stable).update)
+    val update = parse(index.toString(), current = 178600, profile = beta).update!!
+    assertEquals(178601L, update.versionCode)
+    assertEquals("https://github.com/0cwa/collieim-android/releases/tag/trailblazer-v8.37.3-1-beta1", update.releasePage)
+  }
+
+  @Test
+  fun `both products follow only the default channel for their package`() {
     for (profile in CollieUpdateProfile.entries) {
       assertEquals(profile, parse(metadata(profile), profile = profile).update!!.profile)
       assertNull(parse(metadata(profile).replace("\"manifest\":", "\"releaseChannels\":[\"Beta\"],\"manifest\":"), profile = profile).update)

@@ -299,7 +299,7 @@ android {
       resValue("string", "app_name", "Collie TrailBlazer")
       resValue("string", "package_name", "$basePackageId.trailblazer")
       buildConfigField("String", "BACKUP_BASE_NAME", "\"Collie-TrailBlazer\"")
-      buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/beta/repo\"")
+      buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/repo\"")
       buildConfigField("boolean", "MANAGE_COLLIE_UPDATES", "true")
       buildConfigField("boolean", "TRAILBLAZER_BETA", "true")
     }

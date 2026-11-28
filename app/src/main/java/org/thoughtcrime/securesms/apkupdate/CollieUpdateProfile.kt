@@ -1,10 +1,10 @@
 package org.thoughtcrime.securesms.apkupdate
 
 /**
- * Fixed update identities, reviewed against collie-release-engineering at ee8dd193a430402aa6f964ff8a496958ec58fa73:
+ * Fixed update identities, reviewed against collie-release-engineering at 68bbd51573f061b0a8d0d41d25d7c6f7f4558327:
  * distribution/channel_profile.py and tools/patches/release_artifacts.py. See docs/APP-UPDATES.md.
  *
- * Each installed package follows its own repository's default channel. These identities are
+ * Each installed package follows its own listing in the shared repository. These identities are
  * compiled into the app; neither remote metadata nor a user preference can select another one.
  */
 internal enum class CollieUpdateProfile(
@@ -26,7 +26,7 @@ internal enum class CollieUpdateProfile(
   TRAILBLAZER_BETA(
     channelName = "trailblazer-beta",
     packageName = "im.collie.app.trailblazer",
-    repositoryUrl = "https://repo.collie.im/fdroid/beta/repo",
+    repositoryUrl = "https://repo.collie.im/fdroid/repo",
     repositoryCertificate = "b0c5dcbac2b65ada4e8f641910097fb0bf86a5f7255319584d453c2932f5233c",
     apkCertificate = "a515c03498bce8852b835544910b09ccc11a3abbed23e826e9c62c002680fe98",
     tagPrefix = "trailblazer-v"

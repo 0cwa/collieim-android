@@ -14,7 +14,7 @@ class CollieUpdateProfileTest {
     val snapshot = requireNotNull(javaClass.getResourceAsStream("/apkupdate/update-profiles.json")).use {
       JsonUtils.getMapper().readTree(it)
     }
-    assertEquals("ee8dd193a430402aa6f964ff8a496958ec58fa73", snapshot.path("engineering_revision").asText())
+    assertEquals("68bbd51573f061b0a8d0d41d25d7c6f7f4558327", snapshot.path("engineering_revision").asText())
     val profiles = snapshot.path("profiles")
     assertEquals(profiles.fieldNames().asSequence().toSet(), CollieUpdateProfile.entries.map { it.channelName }.toSet())
     for (profile in CollieUpdateProfile.entries) {

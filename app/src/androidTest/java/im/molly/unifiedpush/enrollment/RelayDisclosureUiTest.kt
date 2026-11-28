@@ -296,6 +296,7 @@ class RelayDisclosureUiTest {
         screenshot("fresh-pairing")
         cancelDialog()
         assertFourRows()
+        onView(withText(R.string.UnifiedPushSettingsFragment__test_push)).check(matches(not(isEnabled())))
         screenshot("four-rows")
         assertEquals(fresh, values.controlState)
         assertEquals(NotificationDeliveryMethod.WEBSOCKET, SignalStore.settings.preferredNotificationMethod)
@@ -323,6 +324,8 @@ class RelayDisclosureUiTest {
     withSettings {
       assertFourRows()
       onView(withText(R.string.PairingV1__status_connected)).check(matches(isDisplayed()))
+      onView(withText(R.string.UnifiedPushSettingsFragment__test_push)).check(matches(isEnabled()))
+      screenshot("four-rows-connected")
       returnQrResult(offer) { clickSetting(R.string.PairingV1__notification_relay) }
       onView(withText("Replace push setup with “Collie Lab”?")).check(matches(isDisplayed()))
       onView(withText(R.string.PairingV1__replace_setup_confirm)).check(matches(isDisplayed()))

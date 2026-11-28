@@ -760,22 +760,28 @@ internal class PairingV1Coordinator(private val context: Context) {
             throw e
           }
           }
-          PairingRegistrationGate.current()?.takeIf { it.binding.instance == consented.instance }?.let { pending ->
-            val bound = PairingRegistrationGate.bindImport(
-              pending.binding.instance,
-              PairingRegistrationGate.ImportBinding(
-                importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
-                importedIntent.target.endpoint, importedIntent.target.p256dh, importedIntent.target.auth,
-                importedIntent.accountId, importedIntent.deviceId, importedIntent.instance,
-              ),
-            )
-            if (!bound) throw EnrollmentFile.Invalid("disclosure_changed")
+          try {
+            PairingRegistrationGate.current()?.takeIf { it.binding.instance == consented.instance }?.let { pending ->
+              val bound = PairingRegistrationGate.bindImport(
+                pending.binding.instance,
+                PairingRegistrationGate.ImportBinding(
+                  importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
+                  importedIntent.target.endpoint, importedIntent.target.p256dh, importedIntent.target.auth,
+                  importedIntent.accountId, importedIntent.deviceId, importedIntent.instance,
+                ),
+              )
+              if (!bound) throw EnrollmentFile.Invalid("disclosure_changed")
+            }
+            if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
+                offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
+                offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
+                RelayDisclosure.pairingScopeDigest(snapshot),
+              ))) throw EnrollmentFile.Invalid("state_unavailable")
+          } catch (e: Exception) {
+            // The intent has been committed, but the request has not been published as a session.
+            discardUndispatchedBridgeIntent(checkNotNull(created))
+            throw e
           }
-          if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
-              offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
-              offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
-              RelayDisclosure.pairingScopeDigest(snapshot),
-            ))) throw EnrollmentFile.Invalid("state_unavailable")
         }
       }
       val session = checkNotNull(created)

@@ -52,6 +52,6 @@
   <string name="PairingV1__replace_setup_confirm">Replace push setup</string>
   <string name="PairingV1__share_failed">Could not share the pairing request. Scan a fresh QR code and try again.</string>
   <string name="PairingV1__close_request">Close</string>
-  <string name="PairingV1__recovery_blocked">Collie could not verify the current push setup. Keep your existing relay connected and check its pairing status on your computer.</string>
-  <string name="PairingV1__relay_conflict">The relay did not accept this replacement. Check that you are pairing with your existing relay on your computer.</string>
+  <string name="PairingV1__recovery_blocked">Collie could not verify the current push setup. Check pairing on your computer. To switch relays, use Remove relay access in Advanced first.</string>
+  <string name="PairingV1__relay_conflict">The relay did not accept this setup. Check its pairing on your computer before trying again.</string>
 </resources>

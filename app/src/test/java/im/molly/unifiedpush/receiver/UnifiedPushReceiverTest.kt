@@ -1201,12 +1201,30 @@ class UnifiedPushReceiverTest {
       assertEquals(unknown, values.controlState)
       values.mutateControl { confirmed }
 
+      mockkObject(PairingRegistrationGate) {
+        every { PairingRegistrationGate.bindImport(registration.instance, any()) } returns false
+        assertEquals(
+          PairingV1Coordinator.SealResult.Failed(context.getString(R.string.UnifiedPushSettingsFragment__disclosure_stale)),
+          coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true),
+        )
+      }
+      assertEquals(confirmed.copy(importSequence = 8), values.controlState)
+
+      every { LockedPushState.savePairingConfirmation(context, any()) } returns false
+      assertEquals(
+        PairingV1Coordinator.SealResult.Failed(context.getString(R.string.PairingV1__recovery_blocked)),
+        coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true),
+      )
+      assertEquals(confirmed.copy(importSequence = 9), values.controlState)
+      assertEquals(oldTarget.endpoint, values.endpoint)
+
+      every { LockedPushState.savePairingConfirmation(context, any()) } returns true
       val result = coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true)
       assertTrue("the confirmed route should allow replacement: $result", result is PairingV1Coordinator.SealResult.Ready)
       val session = (result as PairingV1Coordinator.SealResult.Ready).session
       val candidate = values.controlState.intents.single()
       assertEquals(4L, candidate.epoch)
-      assertEquals(8L, candidate.sequence)
+      assertEquals(10L, candidate.sequence)
       assertTrue(candidate.controlKey != fixtureKey)
       assertFalse(candidate.recovery)
       assertEquals(oldImport, values.controlState.activeImportId)
@@ -1215,7 +1233,7 @@ class UnifiedPushReceiverTest {
       assertEquals(result, coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true))
 
       coordinator.closeOfflinePairing(session.id)
-      assertEquals(confirmed.copy(importSequence = 8), values.controlState)
+      assertEquals(confirmed.copy(importSequence = 10), values.controlState)
       assertEquals(oldTarget.endpoint, values.endpoint)
     } finally {
       coordinator.clear()

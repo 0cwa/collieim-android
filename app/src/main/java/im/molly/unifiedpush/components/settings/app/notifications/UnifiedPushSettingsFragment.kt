@@ -325,7 +325,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
       else -> state.mollySocketUrl ?: getString(R.string.PairingV1__scan_to_pair)
     }
     clickPref(
-      title = DSLSettingsText.from(R.string.PairingV1__notification_relay, DSLSettingsText.ItalicModifier),
+      title = DSLSettingsText.from(R.string.PairingV1__notification_relay),
       summary = DSLSettingsText.from(relaySummary),
       isEnabled = !viewModel.pairingBusy,
       onClick = {
@@ -372,7 +372,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(
       )
     } else {
       clickPref(
-        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_push, DSLSettingsText.ItalicModifier),
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_push),
         summary = DSLSettingsText.from(getPushTestSummary(state)),
         isEnabled = state.encryptedEnrollment && !state.awaitingPushConfirmation && !state.pushTestRunning && !viewModel.pairingBusy,
         onClick = { viewModel.testPush() },

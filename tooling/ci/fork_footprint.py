@@ -98,10 +98,20 @@ def diff_numstat(a, b):
 
 
 def diff_hunk_metadata(a, b, paths):
-    """Attribute hunk ranges by asking Git for each literal path separately."""
+    """Attribute hunks to exact blob paths, excluding descendants of replaced files."""
     counts, spans = Counter(), {}
+    blobs_a, blobs_b = tree_blobs(a), tree_blobs(b)
+    # Obtain the repository's empty blob dynamically. It is needed to diff
+    # additions and removals by object ID instead of a directory-matching pathspec.
+    empty = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=REPO,
+                           input=b"", check=True, stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE).stdout.decode().strip()
     for path in paths:
-        patch = diff_text(a, b, [path])
+        old, new = blobs_a.get(path), blobs_b.get(path)
+        if old == new:
+            continue
+        patch = git("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3",
+                    old or empty, new or empty).decode(errors="replace")
         for line in patch.splitlines():
             if not line.startswith("@@"):
                 continue
@@ -115,8 +125,8 @@ def diff_hunk_metadata(a, b, paths):
 
 def display_text(value):
     """Make arbitrary Git path bytes safe for UTF-8 JSON and Markdown output."""
-    return "".join(f"\\x{ord(char) - 0xdc00:02x}" if 0xdc80 <= ord(char) <= 0xdcff else char
-                   for char in str(value))
+    return "".join(f"\\x{ord(char) - 0xdc00:02x}" if 0xdc80 <= ord(char) <= 0xdcff else
+                   "\\\\" if char == "\\" else char for char in str(value))
 
 
 def json_safe(value):
@@ -158,7 +168,7 @@ def tree_blobs(commit):
         metadata, path = record.split(b"\t", 1)
         fields = metadata.split()
         if len(fields) == 3 and fields[1] == b"blob":
-            result[path.decode("utf-8", errors="surrogateescape")] = fields[2]
+            result[path.decode("utf-8", errors="surrogateescape")] = fields[2].decode("ascii")
     return result
 
 

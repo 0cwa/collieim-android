@@ -147,7 +147,11 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertIn("actions: read", privileged)
         self.assertNotIn("pull-requests: write", privileged.split("  comment:", 1)[0])
         self.assertIn("pull-requests: write", privileged.split("  comment:", 1)[1])
-        self.assertIn("group: fork-footprint-pr-${{ needs.validate.outputs.pr_number }}", privileged)
+        advisory_group = next(line.strip() for line in workflow.splitlines() if line.strip().startswith("group:"))
+        comment_group = next(line.strip() for line in privileged.splitlines() if line.strip().startswith("group:"))
+        self.assertEqual(advisory_group, "group: fork-footprint-pr-${{ github.event.pull_request.number }}")
+        self.assertEqual(comment_group, "group: fork-footprint-comment-pr-${{ needs.validate.outputs.pr_number }}")
+        self.assertNotEqual(advisory_group.partition(":")[2].strip(), comment_group.partition(":")[2].strip())
         self.assertIn('git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"', privileged)
         self.assertIn("git cat-file -e", privileged)
 
@@ -319,8 +323,34 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(count, 2)
             self.assertEqual(path_counts, {name: 1 for name in names})
             self.assertEqual(set(spans), set(names))
-            self.assertEqual(fp.json_safe({names[1]: names[1]}), {r"invalid-\xff.kt": r"invalid-\xff.kt"})
+            literal = "literal-\\xff.kt"
+            raw_byte = os.fsdecode(b"raw-\xff.kt")
+            safe = fp.json_safe({literal: literal, raw_byte: raw_byte})
+            self.assertEqual(len(safe), 2)
+            self.assertEqual(safe["literal-\\\\xff.kt"], "literal-\\\\xff.kt")
+            self.assertEqual(safe[r"raw-\xff.kt"], r"raw-\xff.kt")
             self.assertIn(r"invalid-\xff.kt", fp.inline_code(names[1]))
+
+    def test_hunks_for_file_replaced_by_directory_count_exact_paths(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fp.REPO = root
+            def run(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).stdout.decode().strip()
+            run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
+            run("config", "commit.gpgsign", "false")
+            (root / "node").write_text("old file\n")
+            run("add", "."); run("commit", "-qm", "base"); base = run("rev-parse", "HEAD")
+            (root / "node").unlink()
+            (root / "node").mkdir()
+            (root / "node/child.kt").write_text("new child\n")
+            run("add", "-A"); run("commit", "-qm", "head"); head = run("rev-parse", "HEAD")
+            count, path_counts, spans = fp.diff_hunk_metadata(base, head, ["node", "node/child.kt"])
+            self.assertEqual(count, 2)
+            self.assertEqual(path_counts, {"node": 1, "node/child.kt": 1})
+            self.assertEqual(spans["node"][0]["old_count"], 1)
+            self.assertEqual(spans["node"][0]["new_count"], 0)
 
     def test_provenance_uses_upstream_contents_and_merge_evidence(self):
         head = {"local.kt": b"local", "signal.kt": b"signal", "molly.kt": b"molly", "common.kt": b"common",

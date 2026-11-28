@@ -1,40 +1,40 @@
 {
   "schema": 1,
   "source_provenance": {
-    "libsignal": "0abcfd4044a5827d73b657c1170ab3638d660330",
-    "ringrtc": "bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f",
-    "webrtc": "d7dbd6fdddac949e89501e6ea947a344e9ffde72"
+    "libsignal": "8be00c282001caa3585d18de0f044c6d500348ab",
+    "ringrtc": "1c386d798525564b273bc300d84088de567b8b3f",
+    "webrtc": "f29962d30574cb19d4076f6e2a7d3dc5674061a5"
   },
   "input_group": "org.signal",
   "output_group": "im.collie.native",
   "modules": [
     {
       "name": "libsignal-android",
-      "input_version": "0.107.0",
-      "output_version": "0.107.0-collie.1",
+      "input_version": "0.108.0",
+      "output_version": "0.108.0-collie.1",
       "extension": "aar",
-      "binary_sha256": "6d6c59ff67b6a0a328b66b737f92f679000eebdd92681aaa802ee7c9f2a9e897",
-      "pom_sha256": "c20f82196c8e9e08e926b41ccda29df5568424a4bc05d05ec83a8cc6f4c739bf",
+      "binary_sha256": "3d6c982d08e477babfb07222db6f1a25f6f674ecaffa97046610bb020c97a25c",
+      "pom_sha256": "c04fef54bff06b3673240ccd9b6e6fec997492e7fd96aa62efa9d12b093e2e4e",
       "native_libraries": [
         "libsignal_jni.so"
       ]
     },
     {
       "name": "libsignal-client",
-      "input_version": "0.107.0",
-      "output_version": "0.107.0-collie.1",
+      "input_version": "0.108.0",
+      "output_version": "0.108.0-collie.1",
       "extension": "jar",
-      "binary_sha256": "76b20e6893ee3da7d63f34992f7960cef0694322ddef8c2d7dbf6214d3dcfa5d",
-      "pom_sha256": "e0681bfe941d5d4de6df6726077fb06b7f865cf0873698ecf8c115071850bcc8",
+      "binary_sha256": "8a5dd2b19863e107c0829ab4166c9244c48de35d486e4c755e8ac0bf75573a12",
+      "pom_sha256": "374f5b9a5933d78ef23510eb39408c19e1e6180c2dea8305d773403912fe4090",
       "native_libraries": []
     },
     {
       "name": "ringrtc-android",
-      "input_version": "2.74.0",
-      "output_version": "2.74.0-collie.1",
+      "input_version": "2.75.0",
+      "output_version": "2.75.0-collie.1",
       "extension": "aar",
-      "binary_sha256": "51f1f9b1f2335ba1b6557b5f0810227ac66a54ec8cbf0f2c789091b0ab5d245b",
-      "pom_sha256": "81b7212da6206aa0159c19befe3cd8732d788df11a99edc9a2e03eb4286f5b92",
+      "binary_sha256": "005cff2fb86d4392e82410e88510556ac7b8d282dc5b7cd31b28e479d92c1a05",
+      "pom_sha256": "52a64c80cc4e21289d731fca4eba6b491c1782a1ac664d7bf8ab36db168bcce9",
       "native_libraries": [
         "libringrtc.so",
         "libringrtc_rffi.so"
@@ -49,7 +49,7 @@
   ],
   "source_patches": [
     {
-      "path": "patches/libsignal-0.107.0-attributed.mbox",
+      "path": "patches/libsignal-0.108.0-attributed.mbox",
       "sha256": "56db63aafe770da39e249fcce6f9bac47cdffafa3734dab980ac85e0715e555e"
     },
     {
@@ -70,7 +70,7 @@
     }
   ],
   "toolchain_reference": {
-    "webrtc_deps_sha256": "3091dc4f260c6eedbfd5058dc3f53b8f9511c890d51bf7c056a2c78852245bcd",
+    "webrtc_deps_sha256": "bf08d4265039d1439dce943b9e02129968f21320a25ee0f8949412960a44acf8",
     "webrtc_depot_tools_revision": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
     "webrtc_linux_jdk_cipd_instance": "Ac1SdNGLeE0dSBE6mDm4oq8NvcHCLDgYMWYZki0QkVAC",
     "webrtc_siso_revision": "bc45e8f67ae0f37d337190ad64aa8bb440c791eb",
@@ -78,6 +78,6 @@
     "ringrtc_aar_android_ndk_revision": "28.0.13004108",
     "rust_version": "1.98.1",
     "opus_model": "a5177ec6fb7d15058e99e57029746100121f68e4890b1467d4094aa336b6013e",
-    "verification_status": "reference only; bootstrap depot_tools, complete dependency closure, role of both NDK versions and reproducibility remain unverified"
+    "verification_status": "trusted-local build closure for the published v3 inputs; no independent reproduction"
   }
 }

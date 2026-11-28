@@ -43,6 +43,7 @@ import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.core.models.badges.Badge
 import org.signal.core.models.media.Media
+import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.profiles.manage.UsernameRepository.UsernameDeleteResult
 import org.thoughtcrime.securesms.recipients.Recipient

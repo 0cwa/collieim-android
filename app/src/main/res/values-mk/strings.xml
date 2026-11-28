@@ -1217,6 +1217,7 @@
         <item quantity="other">Не може да се додадат членови.</item>
     </plurals>
 
+
     <!-- LeaveGroupDialog -->
     <string name="LeaveGroupDialog_leave_group">Напушти група?</string>
     <string name="LeaveGroupDialog_you_will_no_longer_be_able_to_send_or_receive_messages_in_this_group">Повеќе нема да можете да испраќате и примате пораки во оваа група.</string>
@@ -4223,6 +4224,12 @@
     <string name="CallNotificationBuilder__ongoing_signal_group_call">Тековен Collie групен повик</string>
 
     <string name="CallNotificationBuilder_connecting">Поврзува…</string>
+    <!-- Notification title shown when Signal needs to be opened to use the microphone during a call -->
+    <string name="CallNotificationBuilder__open_signal">Отворете го Signal</string>
+    <!-- Notification body shown when a call was answered from a watch or other device but Signal needs microphone permission before it can connect -->
+    <string name="CallNotificationBuilder__to_answer_this_call_allow_signal_access_to_your_microphone">За да одговорите на овој повик, дозволете Signal да има пристап до вашиот микрофон.</string>
+    <!-- Notification body shown during a call when Android blocked microphone access because Signal was in the background -->
+    <string name="CallNotificationBuilder__the_other_person_cant_hear_you_until_you_open_signal">Другата личност не може да ве слушне додека не отворите Signal.</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Лозинка за резервната копија</string>
     <string name="backup_enable_dialog__backups_will_be_saved_to_external_storage_and_encrypted_with_the_passphrase_below_you_must_have_this_passphrase_in_order_to_restore_a_backup">Резервните копии ќе бидат зачувани на надворешен склад и шифрирани со лозинката подолу. Морате да ја имате оваа лозинка за да ја вратите резервната копија.</string>
     <string name="backup_enable_dialog__you_must_have_this_passphrase">Мора да ја имате оваа лозинка за да ја вратите резервната копија.</string>
@@ -5130,6 +5137,8 @@
     <string name="NewConversationActivity__video_call">Видео повик</string>
     <!-- Context menu item remove -->
     <string name="NewConversationActivity__remove">Отстрани</string>
+    <!-- Context menu item that hides a contact -->
+    <string name="NewConversationActivity__hide">Сокриј</string>
     <!-- Context menu item block -->
     <string name="NewConversationActivity__block">Блокирај</string>
     <!-- Dialog title when removing a contact -->
@@ -5138,6 +5147,12 @@
     <string name="NewConversationActivity__you_wont_see_this_person">Нема да ја видите оваа личност кога ќе пребарувате. Ќе добиете барање за разговор доколку ви пишат во иднина.</string>
     <!-- Snackbar message after removing a contact -->
     <string name="NewConversationActivity__s_has_been_removed">%1$s беше отстранет</string>
+    <!-- Dialog title when hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__hide_s">Да се скрие %1$s?</string>
+    <!-- Dialog body when hiding a contact -->
+    <string name="NewConversationActivity__this_person_wont_appear">Оваа личност нема да се појавува во вашата листа со контакти и пребарувања. Ќе добиете барање за разговор ако ви испрати порака во иднина. Во поставувањата можете да ги менувате опциите за луѓето што ги имате скриено.</string>
+    <!-- Snackbar message after hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__s_has_been_hidden">%1$s е скриен контакт</string>
     <!-- Snackbar message after blocking a contact -->
     <string name="NewConversationActivity__s_has_been_blocked">Корисникот %1$s е блокиран</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->

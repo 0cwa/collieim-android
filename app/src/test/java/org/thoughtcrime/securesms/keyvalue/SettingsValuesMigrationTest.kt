@@ -48,6 +48,15 @@ class SettingsValuesMigrationTest {
   }
 
   @Test
+  fun `saved websocket preference still falls back when push becomes unavailable`() {
+    val mode = SettingsValues.ForceWebsocketMode.deserialize(3)
+
+    assertFalse(mode.shouldStayConnected(pushAvailable = true))
+    assertTrue(mode.shouldStayConnected(pushAvailable = false))
+    assertFalse(mode.shouldStayConnected(pushAvailable = true))
+  }
+
+  @Test
   fun `absent privacy preferences retain Molly defaults during migration`() {
     val values = createValues()
 

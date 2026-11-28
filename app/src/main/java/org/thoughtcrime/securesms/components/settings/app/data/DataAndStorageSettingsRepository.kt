@@ -65,10 +65,12 @@ object DataAndStorageSettingsRepository {
     AppDependencies.signalCallManager.dataModeUpdate()
   }
 
-  fun isForceWebsocketModeEnabled(): Boolean = SignalStore.settings.forceWebsocketMode.isEnabled
+  fun isStayConnectedInBackgroundEnabled(): Boolean = SignalStore.settings.shouldStayConnectedInBackground()
+
+  fun isPushAvailable(): Boolean = SignalStore.account.pushAvailable
 
   /** Stores the new mode and restarts the network so it takes effect. */
-  suspend fun setForceWebsocketModeEnabled(enabled: Boolean) {
+  suspend fun setStayConnectedInBackgroundEnabled(enabled: Boolean) {
     withContext(Dispatchers.Default) {
       SignalStore.settings.forceWebsocketMode = if (enabled) ForceWebsocketMode.ENABLED_BY_USER else ForceWebsocketMode.DISABLED_BY_USER
       if (!enabled) {
@@ -78,8 +80,6 @@ object DataAndStorageSettingsRepository {
       AppDependencies.startNetwork()
     }
   }
-
-  fun isPushAvailable(): Boolean = SignalStore.account.pushAvailable
 
   fun isProxyEnabled(): Boolean = AppDependencies.networkManager.isProxyEnabled
 

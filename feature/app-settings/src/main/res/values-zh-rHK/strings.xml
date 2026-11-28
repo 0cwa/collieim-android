@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">開啟註冊鎖定?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">關閉註冊鎖定?</string>
@@ -438,8 +439,15 @@
     <string name="preferences_normal">正常</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">簡潔</string>
+
+    <!-- AppearanceSettingsScreen -->
     <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
     <string name="preferences_language_change_confirmation_message">應用程式會重新啟動以套用新的語言設定。</string>
+    <!-- Dialog message body shown when selecting a language that hasn\'t been downloaded yet, notifying the user that a download will happen and then restart. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the Google Play Store or Google Play services app is missing, or Google Play didn\'t install this copy of Signal. Directs the user to download a universal build with full language support from signal.org. "Google Play" is a product name and "signal.org" is a web address; do not translate either. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play Store app in system settings. "Google Play" is a product name; do not translate it. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play services app in system settings. "Google Play" is a product name; do not translate it. -->
+
     <!-- Phone number heading displayed as a screen title -->
     <string name="preferences_app_protection__phone_number">電話號碼</string>
     <!-- Section title above two radio buttons for enabling and disabling phone number display -->
@@ -499,6 +507,10 @@
     <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">在背景中保持連線可能會導致電池消耗增加。對於大部份裝置來說，這並非必要。請只在你遇到通知問題時才啟用此功能。</string>
     <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
     <string name="DataAndStorageSettingsFragment__enable">啟用</string>
+    <!-- Body of a confirmation dialog shown when a user without Google Play Services tries to disable the "Stay connected in background" setting -->
+    <string name="DataAndStorageSettingsFragment__play_services_are_not_available_on_this_device">Play Services are not available on this device. If this setting is disabled, you will no longer be able to receive messages while the app is in the background.</string>
+    <!-- Button label that disables the "Stay connected in background" setting from a confirmation dialog -->
+    <string name="DataAndStorageSettingsFragment__continue">繼續</string>
   <!-- Setting option that can be selected to default media to be sent as high quality by default -->
   <string name="SentMediaQuality__high">高品質</string>
   <!-- Setting option that can be selected to default media to be sent as standard quality by default -->
@@ -659,6 +671,30 @@
     <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">了解更多</string>
+    <!-- Section header in privacy settings above the rows for hidden and blocked contacts -->
+    <string name="PrivacySettingsScreen__hidden_and_blocked">Hidden and blocked</string>
+    <!-- Row label in privacy settings shown when the user has no hidden contacts or no blocked contacts -->
+    <string name="PrivacySettingsScreen__none">無</string>
+    <!-- Row title in privacy settings that opens the list of contacts the user has hidden -->
+    <string name="PrivacySettingsScreen__hidden">Hidden</string>
+    <!-- Row label in privacy settings showing how many contacts the user has hidden. Placeholder is the count. -->
+    <plurals name="PrivacySettingsScreen__d_hidden_contacts">
+        <item quantity="other">%1$d 位聯絡人</item>
+    </plurals>
+
+    <!-- HiddenContactsScreen -->
+    <!-- Title of the screen listing the contacts the user has hidden -->
+    <string name="HiddenContactsScreen__hidden_contacts">Hidden contacts</string>
+    <!-- Explanation at the top of the hidden contacts screen -->
+    <string name="HiddenContactsScreen__hidden_contacts_description">Hidden contacts don\'t show up when searching. You\'ll get a message request if they message you. Tap a contact to unhide them.</string>
+    <!-- Shown on the hidden contacts screen when the user hasn\'t hidden anyone -->
+    <string name="HiddenContactsScreen__no_hidden_contacts">No hidden contacts</string>
+    <!-- Dialog title asking whether to unhide a contact. Placeholder is the contact\'s name. -->
+    <string name="HiddenContactsScreen__unhide_s">Unhide %1$s?</string>
+    <!-- Dialog body explaining what unhiding a contact does -->
+    <string name="HiddenContactsScreen__unhide_body">This person will show up when searching again, and will be able to see your profile.</string>
+    <!-- Dialog button that unhides a contact -->
+    <string name="HiddenContactsScreen__unhide">取消隱藏</string>
 
     <!-- AppSettingsScreen -->
     <!-- String alerting user that backup storage limit has been reached -->
@@ -1239,4 +1275,11 @@
     <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">建立金鑰</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN 碼已建立。</string>
     <string name="ApplicationPreferencesActivity_pin_disabled">PIN 碼已停用。</string>
+
+    <!-- Title of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard_changes">要捨棄變更嗎？</string>
+    <!-- Body of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__you_will_lose_changes">You\'ll lose the changes you\'ve made.</string>
+    <!-- Button in a dialog that throws away unsaved edits and leaves the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard">捨棄</string>
 </resources>

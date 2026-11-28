@@ -38,6 +38,8 @@ sealed interface PrivacySettingsEvent {
 
   /** The user flipped the block-unknown-contacts switch. */
   data class BlockUnknownToggled(val enabled: Boolean) : PrivacySettingsEvent
+  /** The user tapped the hidden contacts row. */
+  data object HiddenContactsClicked : PrivacySettingsEvent
 
   /** The user flipped the read receipts switch. */
   data class ReadReceiptsToggled(val enabled: Boolean) : PrivacySettingsEvent

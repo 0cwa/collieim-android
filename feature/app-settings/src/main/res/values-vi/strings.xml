@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Bật Khóa đăng kí?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Tắt Khóa đăng kí?</string>
@@ -438,8 +439,15 @@
     <string name="preferences_normal">Bình thường</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">Gọn</string>
+
+    <!-- AppearanceSettingsScreen -->
     <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
     <string name="preferences_language_change_confirmation_message">Ứng dụng sẽ khởi động lại để áp dụng cài đặt ngôn ngữ mới.</string>
+    <!-- Dialog message body shown when selecting a language that hasn\'t been downloaded yet, notifying the user that a download will happen and then restart. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the Google Play Store or Google Play services app is missing, or Google Play didn\'t install this copy of Signal. Directs the user to download a universal build with full language support from signal.org. "Google Play" is a product name and "signal.org" is a web address; do not translate either. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play Store app in system settings. "Google Play" is a product name; do not translate it. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play services app in system settings. "Google Play" is a product name; do not translate it. -->
+
     <!-- Phone number heading displayed as a screen title -->
     <string name="preferences_app_protection__phone_number">Số điện thoại</string>
     <!-- Section title above two radio buttons for enabling and disabling phone number display -->
@@ -499,6 +507,10 @@
     <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Việc duy trì kết nối khi ứng dụng chạy ngầm có thể dẫn đến việc tiêu hao pin nhiều hơn. Điều này không cần thiết đối với hầu hết thiết bị. Chỉ bật tùy chọn này nếu bạn đang gặp vấn đề về thông báo.</string>
     <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
     <string name="DataAndStorageSettingsFragment__enable">Bật</string>
+    <!-- Body of a confirmation dialog shown when a user without Google Play Services tries to disable the "Stay connected in background" setting -->
+    <string name="DataAndStorageSettingsFragment__play_services_are_not_available_on_this_device">Dịch vụ Play không khả dụng trên thiết bị này. Nếu tắt cài đặt này, bạn sẽ không thể nhận tin nhắn khi ứng dụng chạy ở chế độ nền nữa.</string>
+    <!-- Button label that disables the "Stay connected in background" setting from a confirmation dialog -->
+    <string name="DataAndStorageSettingsFragment__continue">Tiếp tục</string>
   <!-- Setting option that can be selected to default media to be sent as high quality by default -->
   <string name="SentMediaQuality__high">Cao</string>
   <!-- Setting option that can be selected to default media to be sent as standard quality by default -->
@@ -659,6 +671,30 @@
     <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Tìm hiểu thêm</string>
+    <!-- Section header in privacy settings above the rows for hidden and blocked contacts -->
+    <string name="PrivacySettingsScreen__hidden_and_blocked">Đã ẩn và chặn</string>
+    <!-- Row label in privacy settings shown when the user has no hidden contacts or no blocked contacts -->
+    <string name="PrivacySettingsScreen__none">Không</string>
+    <!-- Row title in privacy settings that opens the list of contacts the user has hidden -->
+    <string name="PrivacySettingsScreen__hidden">Đã ẩn</string>
+    <!-- Row label in privacy settings showing how many contacts the user has hidden. Placeholder is the count. -->
+    <plurals name="PrivacySettingsScreen__d_hidden_contacts">
+        <item quantity="other">%1$d liên hệ</item>
+    </plurals>
+
+    <!-- HiddenContactsScreen -->
+    <!-- Title of the screen listing the contacts the user has hidden -->
+    <string name="HiddenContactsScreen__hidden_contacts">Liên hệ đã ẩn</string>
+    <!-- Explanation at the top of the hidden contacts screen -->
+    <string name="HiddenContactsScreen__hidden_contacts_description">Liên hệ đã ẩn sẽ không xuất hiện khi tìm kiếm. Bạn sẽ nhận được một yêu cầu gửi tin nhắn nếu người này nhắn tin cho bạn. Nhấn vào một liên hệ để bỏ ẩn.</string>
+    <!-- Shown on the hidden contacts screen when the user hasn\'t hidden anyone -->
+    <string name="HiddenContactsScreen__no_hidden_contacts">Không có liên hệ đã ẩn</string>
+    <!-- Dialog title asking whether to unhide a contact. Placeholder is the contact\'s name. -->
+    <string name="HiddenContactsScreen__unhide_s">Bỏ ẩn %1$s?</string>
+    <!-- Dialog body explaining what unhiding a contact does -->
+    <string name="HiddenContactsScreen__unhide_body">Người này sẽ lại xuất hiện khi tìm kiếm và có thể xem hồ sơ của bạn.</string>
+    <!-- Dialog button that unhides a contact -->
+    <string name="HiddenContactsScreen__unhide">Bỏ ẩn</string>
 
     <!-- AppSettingsScreen -->
     <!-- String alerting user that backup storage limit has been reached -->
@@ -1239,4 +1275,11 @@
     <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Tạo mã khóa</string>
     <string name="ApplicationPreferencesActivity_pin_created">Mã PIN đã được tạo.</string>
     <string name="ApplicationPreferencesActivity_pin_disabled">Đã tắt PIN.</string>
+
+    <!-- Title of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard_changes">Bạn có muốn hủy bỏ các thay đổi không?</string>
+    <!-- Body of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__you_will_lose_changes">Bạn sẽ mất những thay đổi đã thực hiện.</string>
+    <!-- Button in a dialog that throws away unsaved edits and leaves the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard">Bỏ</string>
 </resources>

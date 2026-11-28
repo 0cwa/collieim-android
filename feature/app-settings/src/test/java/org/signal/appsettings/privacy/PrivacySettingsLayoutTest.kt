@@ -20,6 +20,8 @@ class PrivacySettingsLayoutTest : SignalLayoutStressTest() {
   private val populated = PrivacySettingsState(
     blockedCount = 1234,
     blockUnknown = true,
+    showHiddenContacts = true,
+    hiddenCount = 1234,
     readReceipts = true,
     typingIndicators = true,
     universalExpireTimer = 4.days,

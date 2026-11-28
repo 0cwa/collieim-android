@@ -954,7 +954,7 @@ class ConversationFragment :
         onCustomReactionSelected(messageRecord, hasAddedCustomEmoji)
       },
       onActionSelected = { action -> reactionActionListener?.onActionSelected(action) },
-      onStartHide = { focusedView -> reactionHideListener?.startHide(focusedView) },
+      onStartHide = { focusedView -> reactionHideListener?.startHide(focusedView) ?: false },
       onHidden = { reactionHideListener?.onHide() }
     )
   }
@@ -1124,7 +1124,7 @@ class ConversationFragment :
       FullscreenHelper(requireActivity()).showSystemUI()
     }
 
-    markReadHelper = MarkReadHelper(ConversationId.forConversation(args.threadId), requireContext(), viewLifecycleOwner, args.isIncognito)
+    markReadHelper = MarkReadHelper(ConversationId.forConversation(args.threadId), requireContext(), viewLifecycleOwner, args.isIncognito, ::isDisplayedByHost)
     markReadHelper.ignoreViewReveals()
 
     attachmentManager = AttachmentManager(requireContext(), conversationContent, AttachmentManagerListener())
@@ -1737,6 +1737,15 @@ class ConversationFragment :
 
     collectFlowOnViewLifecycle(mainNavigationViewModel.conversationJumps.filter { it.threadId == args.threadId }) {
       moveToPosition(it.position)
+    }
+
+    if (activity is MainActivity) {
+      collectFlowOnViewLifecycle(
+        mainNavigationViewModel.displayedConversationThreadId.filter { it == args.threadId },
+        Lifecycle.State.RESUMED
+      ) {
+        MarkReadHelper.getLatestTimestamp(adapter, layoutManager).ifPresent(markReadHelper::onViewsRevealed)
+      }
     }
 
     disposables += viewModel.titleViewParticipants
@@ -3945,6 +3954,11 @@ class ConversationFragment :
     }
   }
 
+  /** Whether the host is displaying this chat. Only [MainActivity] can resume a chat it isn't about to show. */
+  private fun isDisplayedByHost(): Boolean {
+    return activity !is MainActivity || mainNavigationViewModel.isDisplayingConversation(args.threadId)
+  }
+
   private inner class ScrollListener : RecyclerView.OnScrollListener() {
 
     private var wasAtBottom = true
@@ -4676,20 +4690,24 @@ class ConversationFragment :
 
       reactionActionListener = ReactionsToolbarListener(item.conversationMessage)
       reactionHideListener = object : ReactionOverlayHideListener {
-        override fun startHide(focusedView: View?) {
+        override fun startHide(focusedView: View?): Boolean {
           // Ahead of the started check: a dismiss while stopped would leave the chat dimmed.
           multiselectItemDecoration.hideShade(recycler)
 
           if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) || activity == null || activity?.isFinishing == true) {
-            return
+            return false
           }
 
           val searchField = expandedSearchField()
-          if (searchField != null && focusedView == searchField) {
+          return if (searchField != null && focusedView == searchField) {
             // The input panel is gone while search is open, so composeText cannot take the keyboard back.
             container.showSoftkey(searchField)
+            true
           } else if (focusedView == composeText) {
             container.showSoftkey(composeText)
+            true
+          } else {
+            false
           }
         }
 

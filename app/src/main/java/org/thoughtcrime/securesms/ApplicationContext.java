@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 
+
 import net.zetetic.database.Logger;
 
 import org.conscrypt.ConscryptSignal;
@@ -243,7 +244,11 @@ public class ApplicationContext extends Application implements AppForegroundObse
               .addBlocking("app-migrations", this::initializeApplicationMigrations)
               .addBlocking("lifecycle-observer", () -> AppForegroundObserver.addListener(this))
               .addBlocking("push", this::updatePushNotificationServices)
-              .addBlocking("assistant-screen-security", () -> registerOnProvideAssistDataListener(new AssistantScreenSecurityObserver()))
+              .addBlocking("assistant-screen-security", () -> {
+                AssistantScreenSecurityObserver observer = new AssistantScreenSecurityObserver();
+                registerOnProvideAssistDataListener(observer);
+                registerActivityLifecycleCallbacks(observer);
+              })
               .addBlocking("message-retriever", this::initializeMessageRetrieval)
               .addBlocking("blob-provider", this::initializeBlobProvider)
               .addBlocking("remote-config", RemoteConfig::init)
@@ -804,6 +809,10 @@ public class ApplicationContext extends Application implements AppForegroundObse
       Map<String, String> fieldTrials = new HashMap<>();
       if (RemoteConfig.callingFieldTrialAnyAddressPortsKillSwitch()) {
         fieldTrials.put("RingRTC-AnyAddressPortsKillSwitch", "Enabled");
+      }
+      String smartFlushing = RemoteConfig.callingFieldTrialSmartFlushing();
+      if (!smartFlushing.isEmpty()) {
+        fieldTrials.put("WebRTC-Audio-NetEqSmartFlushing", smartFlushing);
       }
       CallManager.initialize(this, new RingRtcLogger(), fieldTrials);
     } catch (UnsatisfiedLinkError e) {

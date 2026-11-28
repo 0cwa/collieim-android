@@ -58,6 +58,7 @@ object PrivacySettingsTestTags {
   const val ROW_PHONE_NUMBER = "row-phone-number"
   const val ROW_BLOCKED = "row-blocked"
   const val ROW_BLOCK_UNKNOWN = "row-block-unknown"
+  const val ROW_HIDDEN = "row-hidden"
   const val ROW_READ_RECEIPTS = "row-read-receipts"
   const val ROW_TYPING_INDICATORS = "row-typing-indicators"
   const val ROW_DEFAULT_TIMER = "row-default-timer"
@@ -123,10 +124,35 @@ fun PrivacySettingsScreen(
         }
       }
 
+      if (state.showHiddenContacts) {
+        item {
+          Texts.SectionHeader(text = stringResource(R.string.PrivacySettingsScreen__hidden_and_blocked))
+        }
+
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.PrivacySettingsScreen__hidden),
+            label = if (state.hiddenCount == 0) {
+              stringResource(R.string.PrivacySettingsScreen__none)
+            } else {
+              pluralStringResource(R.plurals.PrivacySettingsScreen__d_hidden_contacts, state.hiddenCount, state.hiddenCount)
+            },
+            icon = SignalIcons.VisibleSlash.painter,
+            onClick = { onEvent(PrivacySettingsEvent.HiddenContactsClicked) },
+            modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_HIDDEN)
+          )
+        }
+      }
+
       item {
         Rows.TextRow(
           text = stringResource(R.string.PrivacySettingsFragment__blocked),
-          label = pluralStringResource(R.plurals.PrivacySettingsFragment__d_contacts, state.blockedCount, state.blockedCount),
+          label = if (state.showHiddenContacts && state.blockedCount == 0) {
+            stringResource(R.string.PrivacySettingsScreen__none)
+          } else {
+            pluralStringResource(R.plurals.PrivacySettingsFragment__d_contacts, state.blockedCount, state.blockedCount)
+          },
+          icon = if (state.showHiddenContacts) SignalIcons.Block.painter else null,
           onClick = { onEvent(PrivacySettingsEvent.BlockedClicked) },
           modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_BLOCKED)
         )
@@ -135,8 +161,8 @@ fun PrivacySettingsScreen(
       item {
         Rows.ToggleRow(
           checked = state.blockUnknown,
-          text = stringResource(R.string.preferences__block_unknown),
-          label = stringResource(R.string.preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts),
+          text = stringResource(R.string.preferences__block_unknown).asCollieSettingTitle(),
+          label = AnnotatedString(stringResource(R.string.preferences__block_users_youve_never_been_in_contact_with_and_who_are_not_saved_in_your_contacts)),
           onCheckChanged = { onEvent(PrivacySettingsEvent.BlockUnknownToggled(it)) },
           modifier = Modifier.testTag(PrivacySettingsTestTags.ROW_BLOCK_UNKNOWN)
         )

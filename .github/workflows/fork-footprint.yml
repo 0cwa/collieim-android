@@ -1,0 +1,76 @@
+name: Fork footprint (advisory)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+permissions:
+  contents: read
+concurrency:
+  group: fork-footprint-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  metadata:
+    name: Generate trusted advisory and record pull request revision
+    if: ${{ github.event.action != 'edited' || github.event.changes.base != null }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Check out trusted base revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name }}
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Fetch pull request revision as data
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if test -f tooling/ci/fork_footprint.py; then
+            if git -c core.hooksPath=/dev/null -c core.fsmonitor=false fetch --no-tags --no-recurse-submodules origin "refs/pull/$PR_NUMBER/head" && git cat-file -e "$PR_HEAD_SHA^{commit}"; then
+              python3 tooling/ci/fork_footprint.py pr-report --base "$PR_BASE_SHA" --head "$PR_HEAD_SHA" || {
+                printf '%s\n' '## Fork footprint report unavailable' '' 'The trusted advisory generator could not complete. See the Actions log for details.' >> "$GITHUB_STEP_SUMMARY"
+              }
+            else
+              printf '%s\n' '## Fork footprint report unavailable' '' 'The pull request revision could not be fetched. The advisory report was not generated.' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            printf '%s\n' '## Fork footprint report unavailable' '' 'The trusted base revision does not contain the advisory generator yet. The workflow did not execute pull request code.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Record event metadata
+        env:
+          EVENT_PATH: ${{ github.event_path }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          with open(os.environ['EVENT_PATH'], encoding='utf-8') as f:
+              event = json.load(f)
+          pr = event['pull_request']
+          metadata = {
+              'run_id': int(os.environ['RUN_ID']),
+              'run_head_sha': os.environ['RUN_HEAD_SHA'],
+              'merge_sha': os.environ['MERGE_SHA'],
+              'pr_number': int(os.environ['PR_NUMBER']),
+              'base_sha': pr['base']['sha'],
+              'head_sha': pr['head']['sha'],
+          }
+          with open('pr-meta.json', 'w', encoding='utf-8') as f:
+              json.dump(metadata, f, separators=(',', ':'))
+              f.write('\n')
+          PY
+      - name: Upload pull request metadata
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: pr-meta
+          path: pr-meta.json
+          if-no-files-found: error
+          retention-days: 1

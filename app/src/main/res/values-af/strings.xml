@@ -1217,6 +1217,7 @@
         <item quantity="other">Kan nie lede toevoeg nie.</item>
     </plurals>
 
+
     <!-- LeaveGroupDialog -->
     <string name="LeaveGroupDialog_leave_group">Verlaat groep?</string>
     <string name="LeaveGroupDialog_you_will_no_longer_be_able_to_send_or_receive_messages_in_this_group">Jy sal nie meer boodskappe in hierdie groep kan stuur of ontvang nie.</string>
@@ -4223,6 +4224,12 @@
     <string name="CallNotificationBuilder__ongoing_signal_group_call">Besig met Collie-groepoproep</string>
 
     <string name="CallNotificationBuilder_connecting">Verbind…</string>
+    <!-- Notification title shown when Signal needs to be opened to use the microphone during a call -->
+    <string name="CallNotificationBuilder__open_signal">Maak Signal oop</string>
+    <!-- Notification body shown when a call was answered from a watch or other device but Signal needs microphone permission before it can connect -->
+    <string name="CallNotificationBuilder__to_answer_this_call_allow_signal_access_to_your_microphone">Om hierdie oproep te beantwoord, verleen aan Signal toegang tot jou mikrofoon.</string>
+    <!-- Notification body shown during a call when Android blocked microphone access because Signal was in the background -->
+    <string name="CallNotificationBuilder__the_other_person_cant_hear_you_until_you_open_signal">Die ander persoon kan jou nie hoor totdat jy Signal oopgemaak het nie.</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Rugsteun-wagwoordfrase</string>
     <string name="backup_enable_dialog__backups_will_be_saved_to_external_storage_and_encrypted_with_the_passphrase_below_you_must_have_this_passphrase_in_order_to_restore_a_backup">Rugsteunkopiëe sal in eksterne stoorruimte gestoor word en met die wagwoordfrase hier onder geënkripteer word. Jy moet hierdie wagwoordfrase hê om \'n rugsteun te herwin.</string>
     <string name="backup_enable_dialog__you_must_have_this_passphrase">Jy moet hierdie wagwoordfrase hê om \'n rugsteun te herwin.</string>
@@ -5130,6 +5137,8 @@
     <string name="NewConversationActivity__video_call">Video-oproep</string>
     <!-- Context menu item remove -->
     <string name="NewConversationActivity__remove">Verwyder</string>
+    <!-- Context menu item that hides a contact -->
+    <string name="NewConversationActivity__hide">Versteek</string>
     <!-- Context menu item block -->
     <string name="NewConversationActivity__block">Versper</string>
     <!-- Dialog title when removing a contact -->
@@ -5138,6 +5147,12 @@
     <string name="NewConversationActivity__you_wont_see_this_person">Jy sal nie hierdie persoon sien wanneer jy soek nie. Jy sal \'n boodskapversoek kry as hulle in die toekoms vir jou \'n boodskap stuur.</string>
     <!-- Snackbar message after removing a contact -->
     <string name="NewConversationActivity__s_has_been_removed">%1$s is verwyder</string>
+    <!-- Dialog title when hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__hide_s">Versteek %1$s?</string>
+    <!-- Dialog body when hiding a contact -->
+    <string name="NewConversationActivity__this_person_wont_appear">Hierdie persoon sal nie in jou kontaklys en soekfunksie verskyn nie.. Indien hulle in die toekoms aan jou \'n boodskap stuur, sal jy \'n boodskapversoek ontvang. Jy kan mense wat jy versteek het in instellings bestuur.</string>
+    <!-- Snackbar message after hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__s_has_been_hidden">%1$s is versteek</string>
     <!-- Snackbar message after blocking a contact -->
     <string name="NewConversationActivity__s_has_been_blocked">%1$s is versper</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "origin": "https://github.com/0cwa/collie-release-engineering.git",
-  "recipe_revision": "aac84c7a092d44d5cbe9aaa1d5aac6990e976c85",
+  "recipe_revision": "013813cf019570f1f862d3a8c465005e796d4e9e",
   "native_recipe_path": "tools/native",
   "trust": "trusted-local native outputs; independent reproduction not established"
 }

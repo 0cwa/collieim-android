@@ -13,7 +13,7 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 val nativeAcceptanceFile = rootProject.file("build-inputs/native-publication.json")
 val nativeAcceptanceText = if (nativeAcceptanceFile.isFile) nativeAcceptanceFile.readText() else ""
 val nativeInputsAccepted = nativeAcceptanceText.contains("\"status\": \"ACCEPTED\"") &&
-  nativeAcceptanceText.contains("\"evidence_sha256\": \"20b21855db0175409618156f0247aa25503fcb256f1c3075959d33c87244f3c4\"")
+  nativeAcceptanceText.contains("\"evidence_sha256\": \"eb53b26fd01c271d68d56611d5b15a23b379825fcf18ac06269a7a8097e841d7\"")
 if (!nativeInputsAccepted) {
   throw GradleException("Direct Android builds BLOCKED: accepted native publication evidence is absent or differs; see docs/BUILD.md")
 }

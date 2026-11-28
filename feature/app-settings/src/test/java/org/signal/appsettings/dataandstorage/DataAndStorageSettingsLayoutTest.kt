@@ -18,7 +18,7 @@ class DataAndStorageSettingsLayoutTest : SignalLayoutStressTest() {
     alwaysAutoDownloadedBytes = 102_400,
     sentMediaQuality = SentMediaQuality.HIGH,
     callDataMode = CallDataMode.LOW_ALWAYS,
-    forceWebsocketMode = true,
+    stayConnectedInBackground = true,
     isProxyEnabled = true
   )
 
@@ -30,11 +30,6 @@ class DataAndStorageSettingsLayoutTest : SignalLayoutStressTest() {
   @Test
   fun `populated`() = assertPassesLayoutChecks {
     DataAndStorageSettingsScreen(state = populated, onEvent = {})
-  }
-
-  @Test
-  fun `without effective selected push`() = assertPassesLayoutChecks {
-    DataAndStorageSettingsScreen(state = populated.copy(forceWebsocketMode = false, pushAvailable = false), onEvent = {})
   }
 
   @Test

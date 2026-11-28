@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.signal.core.util.logging.Log;
 import org.signal.libsignal.protocol.InvalidKeyException;
 import org.signal.libsignal.protocol.ecc.ECPublicKey;
 import org.signal.ringrtc.CallManager;
@@ -30,6 +31,10 @@ import java.net.Proxy;
  */
 public final class WebRtcUtil {
 
+  private static final String TAG = Log.tag(WebRtcUtil.class);
+
+  private static LockManager.PhoneState lastLoggedPhoneState;
+
   private WebRtcUtil() {}
 
   public static @NonNull byte[] getPublicKeyBytes(@NonNull byte[] identityKey) throws InvalidKeyException {
@@ -39,11 +44,13 @@ public final class WebRtcUtil {
 
   public static @NonNull LockManager.PhoneState getInCallPhoneState(@NonNull Context context) {
     AudioManagerCompat audioManager = AppDependencies.getAndroidCallAudioManager();
-    if (audioManager.isSpeakerphoneOn() || audioManager.isBluetoothConnected() || audioManager.isWiredHeadsetOn()) {
-      return LockManager.PhoneState.IN_HANDS_FREE_CALL;
-    } else {
-      return LockManager.PhoneState.IN_CALL;
-    }
+    boolean            speakerphone = audioManager.isSpeakerphoneOn();
+    boolean            bluetooth    = audioManager.isBluetoothConnected();
+    boolean            wired        = audioManager.isWiredHeadsetOn();
+
+    LockManager.PhoneState state = speakerphone || bluetooth || wired ? LockManager.PhoneState.IN_HANDS_FREE_CALL : LockManager.PhoneState.IN_CALL;
+    logPhoneStateIfChanged(state, "speakerphone: " + speakerphone + " bluetooth: " + bluetooth + " wired: " + wired);
+    return state;
   }
 
   /**
@@ -53,9 +60,21 @@ public final class WebRtcUtil {
    */
   public static @NonNull LockManager.PhoneState getInCallPhoneState(@NonNull Context context, boolean localVideoEnabled, boolean remoteVideoEnabled) {
     if (localVideoEnabled || remoteVideoEnabled) {
+      logPhoneStateIfChanged(LockManager.PhoneState.IN_VIDEO, "localVideo: " + localVideoEnabled + " remoteVideo: " + remoteVideoEnabled);
       return LockManager.PhoneState.IN_VIDEO;
     }
     return getInCallPhoneState(context);
+  }
+
+  public static synchronized void resetLoggedPhoneState() {
+    lastLoggedPhoneState = null;
+  }
+
+  private static synchronized void logPhoneStateIfChanged(@NonNull LockManager.PhoneState state, @NonNull String inputs) {
+    if (state != lastLoggedPhoneState) {
+      lastLoggedPhoneState = state;
+      Log.i(TAG, "getInCallPhoneState(): " + state + " " + inputs);
+    }
   }
 
   public static @NonNull CallManager.CallMediaType getCallMediaTypeFromOfferType(@NonNull OfferMessage.Type offerType) {

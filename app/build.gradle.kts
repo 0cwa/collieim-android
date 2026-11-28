@@ -14,8 +14,9 @@ plugins {
   id("collie-app")
 }
 
-val canonicalVersionCode = 1782
-val canonicalVersionName = "8.36.3"
+val canonicalVersionCode = 1786
+val canonicalVersionName = "8.37.3"
+
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 val mollyRevision = 1
@@ -224,6 +225,7 @@ android {
     buildConfigField("String", "GENERIC_SERVER_PUBLIC_PARAMS", "\"AeCO67P9mIv1yUHkdeZ9JF789GDbox61GvTqq3S4kYc1ADUWxWHQygU390tv1oRWt9WjkdZlU7mKkifF59ftjE+2ZlMmxns6I+ySiLpR8FEmfu+TGpVp3zYTjNV93obJJTyBCCsSHVETCyQRbKdCyb5TMa6LGrvcZaX0Q/VAavhuNA/m4kSiRMgSnYrUjGhVekdDnF+7xioo4wvFnxjIDh7uJQrYOWD6MloNGX7St5gbysTuQQ7i/HI38b9V8x8mKazuDSXxB//BKGZx/XHkK8cHX+QK1MPxYUVM1/CBI5oW\"")
     buildConfigField("String", "BACKUP_SERVER_PUBLIC_PARAMS", "\"AZwNSU55fsFCbgaxGRD11wO1juAs8Yr5GF8FPlGzzvdJJIKH5/4CC7ZJSOe3yL2vturVaRU2Cx0n751Vt8wkj1Y4pyiScu0/S10n647ipo+iq97JZQv+UOlwH8ThyNlGT5DfxXCwTqivxHuXvZpuezPgHk5Gxl5aC6xuNxOnwmFlmu4CeSgdhW8+Pp0vAJOQ1MsU2D0+/kzI+tU94nB3tybY/Ao1AcGW2q41uKQbnOJUWwmQaFT6s+xTISgzsg7CPox6oORGX8rnyk/9lic3DbGsUHctIVpMAl/ogJBb4aYC\"")
     buildConfigField("String[]", "LANGUAGES", "new String[]{ ${languagesForBuildConfigProvider.get()} }")
+    buildConfigField("int", "CANONICAL_VERSION_CODE", "$canonicalVersionCode")
     buildConfigField("int", "SIGNAL_CANONICAL_VERSION_CODE", "$canonicalVersionCode")
     buildConfigField("String", "DEFAULT_CURRENCIES", "\"EUR,AUD,GBP,CAD,CNY\"")
     buildConfigField("String", "GIPHY_API_KEY", "\"3o6ZsYH6U6Eri53TXy\"")

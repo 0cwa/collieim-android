@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Уключыць блакіроўку рэгістрацыі?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Адключыць блакіроўку рэгістрацыі?</string>
@@ -130,7 +131,7 @@
     <!-- Toast shown when an authenticator app couldn\'t be removed -->
     <string name="AccountSettingsFragment__couldnt_remove_authenticator_app">Не атрымалася выдаліць праграму аўтэнтыфікацыі. Праверце падключэнне і паўтарыце спробу.</string>
     <!-- Description of two-factor authentication, shown below the two-factor authentication list -->
-    <string name="AccountSettingsFragment__use_a_second_form_of_authentication">Выкарыстоўвайце другую форму аўтэнтыфікацыі, каб абараніць свой уліковы запіс пры выкарыстанні Signal Login на новай прыладзе.</string>
+    <string name="AccountSettingsFragment__use_a_second_form_of_authentication">Выкарыстоўвайце дадатковую форму аўтэнтыфікацыі, каб абараніць свой уліковы запіс пры выкарыстанні Signal Login на новай прыладзе.</string>
     <!-- Clickable text that takes the user to a support article -->
     <string name="AccountSettingsFragment__learn_more">Даведацца больш</string>
 
@@ -441,8 +442,15 @@
     <string name="preferences_normal">Звычайны</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">Кампактны</string>
+
+    <!-- AppearanceSettingsScreen -->
     <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
     <string name="preferences_language_change_confirmation_message">Каб пераключыцца на новую мову, неабходна перазапусціць праграму.</string>
+    <!-- Dialog message body shown when selecting a language that hasn\'t been downloaded yet, notifying the user that a download will happen and then restart. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the Google Play Store or Google Play services app is missing, or Google Play didn\'t install this copy of Signal. Directs the user to download a universal build with full language support from signal.org. "Google Play" is a product name and "signal.org" is a web address; do not translate either. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play Store app in system settings. "Google Play" is a product name; do not translate it. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play services app in system settings. "Google Play" is a product name; do not translate it. -->
+
     <!-- Phone number heading displayed as a screen title -->
     <string name="preferences_app_protection__phone_number">Нумар тэлефона</string>
     <!-- Section title above two radio buttons for enabling and disabling phone number display -->
@@ -502,6 +510,10 @@
     <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Падключэнне ў фонавым рэжыме, часцей за ўсё, прыводзіць да павелічэння выкарыстання батарэі. Для большасці прылад гэта рабіць неабавязкова. Уключайце гэту наладу толькі тады, калі ў вас узніклі праблемы з апавяшчэннямі.</string>
     <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
     <string name="DataAndStorageSettingsFragment__enable">Уключыць</string>
+    <!-- Body of a confirmation dialog shown when a user without Google Play Services tries to disable the "Stay connected in background" setting -->
+    <string name="DataAndStorageSettingsFragment__play_services_are_not_available_on_this_device">Сэрвісы Google Play недаступныя на гэтай прыладзе. Калі гэтая налада адключана, вы больш не зможаце атрымліваць паведамленні, пакуль праграма знаходзіцца ў фонавым рэжыме.</string>
+    <!-- Button label that disables the "Stay connected in background" setting from a confirmation dialog -->
+    <string name="DataAndStorageSettingsFragment__continue">Працягнуць</string>
   <!-- Setting option that can be selected to default media to be sent as high quality by default -->
   <string name="SentMediaQuality__high">Высокі</string>
   <!-- Setting option that can be selected to default media to be sent as standard quality by default -->
@@ -602,7 +614,7 @@
     <string name="PrivacySettingsFragment__app_security">Бяспека праграмы</string>
     <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
     <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Блакіраваць скрыншоты ў спісе нядаўніх праграм i ўнутры праграмы</string>
-    <string name="PrivacySettingsFragment__blocked">Заблакаваны</string>
+    <string name="PrivacySettingsFragment__blocked">Заблакаваныя</string>
     <!-- Alert dialog description to setup screen lock or fingerprint in phone settings -->
     <string name="PrivacySettingsFragment__cant_enable_description">Каб выкарыстоўваць блакіроўку плацяжоў, вам трэба спачатку ўключыць блакіроўку экрана або ідэнтыфікатар адбітка пальца ў наладах вашага тэлефона.</string>
     <!-- Alert dialog title when payment lock cannot be enabled -->
@@ -665,6 +677,33 @@
     <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Даведацца больш</string>
+    <!-- Section header in privacy settings above the rows for hidden and blocked contacts -->
+    <string name="PrivacySettingsScreen__hidden_and_blocked">Схаваныя і заблакаваныя</string>
+    <!-- Row label in privacy settings shown when the user has no hidden contacts or no blocked contacts -->
+    <string name="PrivacySettingsScreen__none">Няма</string>
+    <!-- Row title in privacy settings that opens the list of contacts the user has hidden -->
+    <string name="PrivacySettingsScreen__hidden">Схаваныя</string>
+    <!-- Row label in privacy settings showing how many contacts the user has hidden. Placeholder is the count. -->
+    <plurals name="PrivacySettingsScreen__d_hidden_contacts">
+        <item quantity="one">%1$d кантакт</item>
+        <item quantity="few">%1$d кантакты</item>
+        <item quantity="many">%1$d кантактаў</item>
+        <item quantity="other">%1$d кантактаў</item>
+    </plurals>
+
+    <!-- HiddenContactsScreen -->
+    <!-- Title of the screen listing the contacts the user has hidden -->
+    <string name="HiddenContactsScreen__hidden_contacts">Схаваныя кантакты</string>
+    <!-- Explanation at the top of the hidden contacts screen -->
+    <string name="HiddenContactsScreen__hidden_contacts_description">Схаваныя кантакты не бачныя падчас пошуку. Вы атрымаеце запыт на перапіску, калі яны дашлюць вам паведамленне. Націсніце на кантакт, каб паказаць яго.</string>
+    <!-- Shown on the hidden contacts screen when the user hasn\'t hidden anyone -->
+    <string name="HiddenContactsScreen__no_hidden_contacts">Няма схаваных кантактаў</string>
+    <!-- Dialog title asking whether to unhide a contact. Placeholder is the contact\'s name. -->
+    <string name="HiddenContactsScreen__unhide_s">Паказаць %1$s?</string>
+    <!-- Dialog body explaining what unhiding a contact does -->
+    <string name="HiddenContactsScreen__unhide_body">Гэтая асоба з\'явіцца пры паўторным пошуку і зможа ўбачыць ваш профіль.</string>
+    <!-- Dialog button that unhides a contact -->
+    <string name="HiddenContactsScreen__unhide">Паказаць</string>
 
     <!-- AppSettingsScreen -->
     <!-- String alerting user that backup storage limit has been reached -->
@@ -1251,4 +1290,11 @@
     <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Стварыць новы код</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN-код створаны.</string>
     <string name="ApplicationPreferencesActivity_pin_disabled">PIN-код адключаны.</string>
+
+    <!-- Title of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard_changes">Скінуць змяненні?</string>
+    <!-- Body of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__you_will_lose_changes">Вы страціце ўсе змяненні, што вы зрабілі.</string>
+    <!-- Button in a dialog that throws away unsaved edits and leaves the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard">Скінуць</string>
 </resources>

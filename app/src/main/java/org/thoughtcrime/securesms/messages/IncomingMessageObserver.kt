@@ -198,8 +198,12 @@ class IncomingMessageObserver(
     MessageRetrievalThread().start()
 
     val registered = SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived
-    if (registered && (!SignalStore.account.pushAvailable || SignalStore.settings.forceWebsocketMode.isEnabled)) {
-      ForegroundService.startIfNotRunning(context)
+    if (registered && SignalStore.settings.shouldStayConnectedInBackground()) {
+      SignalExecutors.UNBOUNDED.execute {
+        if (!SafeForegroundService.start(context, ForegroundService::class.java)) {
+          Log.w(TAG, "Unable to start foreground service for websocket!")
+        }
+      }
     }
 
     AppForegroundObserver.addListener(appForegroundListener)
@@ -277,7 +281,7 @@ class IncomingMessageObserver(
     val pushAvailable = SignalStore.account.pushAvailable
     val hasNetwork = internetConnection.isAssumedOnline
     val hasProxy = AppDependencies.networkManager.isProxyEnabled
-    val forceWebsocket = SignalStore.settings.forceWebsocketMode.isEnabled
+    val stayConnected = SignalStore.settings.shouldStayConnectedInBackground()
     val websocketAlreadyOpen = isConnectionAvailable()
     val clockSkewDetected = ClockSkewDetector.isDetected
     val clockSkew = ClockSkewDetector.skew
@@ -286,14 +290,14 @@ class IncomingMessageObserver(
     val conclusion = registered &&
       !unauthorizedReceived &&
       !clockSkewDetected &&
-      (isForeground || timeIdle < maxBackgroundTime || !pushAvailable || forceWebsocket) &&
+      (isForeground || timeIdle < maxBackgroundTime || stayConnected) &&
       hasNetwork
 
     val needsConnectionString = if (conclusion) "Needs Connection" else "Does Not Need Connection"
 
     Log.d(
       TAG,
-      "[$needsConnectionString] Network: $hasNetwork, Foreground: $isForeground, Time Since Last Interaction: $lastInteractionString, PushAvailable: $pushAvailable, WS Open or Keep-alives: $websocketAlreadyOpen, Registered: $registered, Unauthorized: $unauthorizedReceived, Proxy: $hasProxy, Force websocket: $forceWebsocket, Clock skew: $clockSkewDetected ($clockSkew)"
+      "[$needsConnectionString] Network: $hasNetwork, Foreground: $isForeground, Time Since Last Interaction: $lastInteractionString, PushAvailable: $pushAvailable, WS Open or Keep-alives: $websocketAlreadyOpen, Registered: $registered, Unauthorized: $unauthorizedReceived, Proxy: $hasProxy, Stay connected: $stayConnected, Clock skew: $clockSkewDetected ($clockSkew)"
     )
     return conclusion
   }
@@ -544,7 +548,7 @@ class IncomingMessageObserver(
       Log.i(TAG, "Initializing! (${this.hashCode()})")
       uncaughtExceptionHandler = this
 
-      sleepTimer = if (!SignalStore.account.pushAvailable || SignalStore.settings.forceWebsocketMode.isEnabled) AlarmSleepTimer(context) else UptimeSleepTimer()
+      sleepTimer = if (SignalStore.settings.shouldStayConnectedInBackground()) AlarmSleepTimer(context) else UptimeSleepTimer()
 
       canProcessMessages = !SignalStore.registration.restoreDecisionState.isDecisionPending
     }

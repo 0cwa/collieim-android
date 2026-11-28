@@ -20,6 +20,8 @@ data class PrivacySettingsState(
   val hasPhoneNumber: Boolean = true,
   val blockedCount: Int = 0,
   val blockUnknown: Boolean = false,
+  val showHiddenContacts: Boolean = false,
+  val hiddenCount: Int = 0,
   val readReceipts: Boolean = false,
   val typingIndicators: Boolean = false,
   val universalExpireTimer: Duration = Duration.ZERO,

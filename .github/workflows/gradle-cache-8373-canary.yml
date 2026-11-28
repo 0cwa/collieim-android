@@ -1,4 +1,4 @@
-name: Gradle cache replay trial
+name: Gradle cache 8.37.3 canary
 on:
   push:
     branches: [gradle-cache-replay-trial]
@@ -9,10 +9,13 @@ cache-mode: read
 
 env:
   GRADLE_USER_HOME: /home/runner/.gradle
-  ARCHIVE_LIMIT: '2173121088'
-  SOURCE_SHA: 0d4b08c0de99d4281f768319d7a77793d193dfb5
-  SOURCE_RUN: '46072953396'
-  SOURCE_ARTIFACT: '15234369481'
+  # Two generations within 6 GB, with room for independent stores and transport.
+  ARCHIVE_LIMIT: '2145000000'
+  SOURCE_SHA: fc61a3799aecae5e435e98e9f0716b1703cdf131
+  SOURCE_TREE: 9eba91f267cd4b653280cd4410c6baf8a89b486e
+  SOURCE_RUN: '46086454259'
+  SOURCE_ARTIFACT: '15240592353'
+  BOOTSTRAP_SHA: 1860f2ddbfa2ba19ec0d5fe89bccffba3a5663ce
 
 jobs:
   seed:
@@ -22,34 +25,34 @@ jobs:
     outputs:
       artifact-id: ${{ steps.upload.outputs.artifact-id }}
       archive-sha: ${{ steps.archive.outputs.sha256 }}
+      runner-identity: ${{ steps.archive.outputs.runner-identity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          fetch-depth: 4
+          fetch-depth: 2
       - name: Verify that the workload source matches the seed
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD^2)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
           git diff --exit-code "$SOURCE_SHA" HEAD -- . \
-            ':!.github/workflows/gradle-cache-replay-trial.yml' \
-            ':!.github/actions/gradle-cache-trial-reference/action.yml' \
-            ':!.github/scripts/gradle-cache-trial.sh'
-          printf 'Workload source matches %s at trial head %s\n' "$SOURCE_SHA" "$GITHUB_SHA"
+            ':!.github/workflows/gradle-cache-8373-canary.yml' \
+            ':!.github/actions/gradle-cache-canary-fixtures/action.yml' \
+            ':!.github/scripts/gradle-cache-canary.sh'
+          {
+            printf 'Workload source %s, source tree %s, canary head %s\n' "$SOURCE_SHA" "$SOURCE_TREE" "$GITHUB_SHA"
+            sha256sum gradle.properties gradle/wrapper/gradle-wrapper.properties build-inputs/native-lock.json \
+              build-inputs/engineering.json build-inputs/host-test-inputs.json
+          } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: ./.github/actions/disk-cleanup
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: 21
-      - name: Match the seed runner image, JDK and SDK layout
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "${ImageOS:?}/${ImageVersion:?}" = ubuntu24/20261122.23.1
-          test "$JAVA_HOME" = /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
-          test "$ANDROID_HOME" = /usr/local/lib/android/sdk
       - name: Verify the original seed and artifact identity
         shell: bash
         env:
@@ -57,14 +60,14 @@ jobs:
         run: |
           set -euo pipefail
           repo="repos/$GITHUB_REPOSITORY"
-          gh api "$repo/actions/jobs/140753970062" |
-            jq -e --argjson run "$SOURCE_RUN" --arg sha "$SOURCE_SHA" '
+          gh api "$repo/actions/jobs/140797037805" |
+            jq -e --argjson run "$SOURCE_RUN" --arg sha "$BOOTSTRAP_SHA" '
               .run_id == $run and .head_sha == $sha and .name == "seed" and .conclusion == "success"
             ' > /dev/null
           gh api "$repo/actions/artifacts/$SOURCE_ARTIFACT" |
-            jq -e --argjson artifact "$SOURCE_ARTIFACT" --argjson run "$SOURCE_RUN" --arg sha "$SOURCE_SHA" '
-              .id == $artifact and .expired == false and .size_in_bytes == 1723218748 and
-              .digest == "sha256:7b805fd6578aba44352ee8de2b5db0ba287dbae6700f594a8f2d22c182b6ceb2" and
+            jq -e --argjson artifact "$SOURCE_ARTIFACT" --argjson run "$SOURCE_RUN" --arg sha "$BOOTSTRAP_SHA" '
+              .id == $artifact and .expired == false and .size_in_bytes == 1892531491 and
+              .digest == "sha256:5867894e1f7bd1b31e03c1f9447a679e0744ce4acb231a5b128780f9f1e889d4" and
               .workflow_run.id == $run and .workflow_run.head_sha == $sha and
               .workflow_run.head_branch == "gradle-cache-replay-trial"
             ' > /dev/null
@@ -77,56 +80,68 @@ jobs:
           github-token: ${{ github.token }}
           digest-mismatch: error
           path: ${{ runner.temp }}/gradle-trial
-      - name: Verify and unpack the known app-0 seed
+      - name: Verify and unpack the old-source seed as bootstrap data
         shell: bash
         run: |
           set -euo pipefail
           test "$RUNNER_ENVIRONMENT" = github-hosted
           archive="$RUNNER_TEMP/gradle-trial/gradle-cache.tar.zst"
-          test "$(stat -c %s "$archive")" -eq 1723218594
-          printf '%s  %s\n' 'e3675140183589998791096742d6af4ba6c90c5c4c408faaca2ba54f36e90f84' "$archive" |
+          test "$(stat -c %s "$archive")" -eq 1892531337
+          printf '%s  %s\n' '4434ff1da2c41c911c05471a19800f30da411a716bc428af89143c5731bd83e1' "$archive" |
             sha256sum --check
           test -z "${GRADLE_RO_DEP_CACHE:-}"
           if [[ -e "$GRADLE_USER_HOME" ]]; then
             mv "$GRADLE_USER_HOME" "$RUNNER_TEMP/image-gradle-home"
           fi
           mkdir "$GRADLE_USER_HOME"
-          tar --zstd -xf "$archive" -C "$GRADLE_USER_HOME" caches/modules-2 caches/9.6.0/transforms
-          printf 'Reused source run %s artifact %s\n' "$SOURCE_RUN" "$SOURCE_ARTIFACT" >> "$GITHUB_STEP_SUMMARY"
-      - uses: ./.github/actions/gradle-cache-trial-reference
+          grep -Fx 'distributionSha256Sum=87a2216cc1f9122192d4e0fe905ffdf1b4c72cff797e9f733b174e157cadd396' \
+            gradle/wrapper/gradle-wrapper.properties
+          paths=(caches/modules-2)
+          if [[ "${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" == 'ubuntu24/20261122.23.1//opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64//usr/local/lib/android/sdk' ]]; then
+            paths+=(caches/9.6.0/transforms)
+          fi
+          tar --zstd -xf "$archive" -C "$GRADLE_USER_HOME" "${paths[@]}"
+          printf 'Reused old-source bootstrap run %s artifact %s paths %s\n' "$SOURCE_RUN" "$SOURCE_ARTIFACT" "${paths[*]}" |
+            tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: ./.github/actions/gradle-cache-canary-fixtures
         with:
-          workload: modules
-          fixtures-only: 'true'
+          workload: app-0
+          fixtures-only: true
       - name: Bootstrap the checksum-pinned Gradle distribution
         shell: bash
         run: |
           set -euo pipefail
           ./gradlew --version | tee "$RUNNER_TEMP/gradle-version.txt"
           grep -Fx 'Gradle 9.6.0' "$RUNNER_TEMP/gradle-version.txt"
+      - name: Warm app-0 in the updated Gradle home
+        id: app-0
+        continue-on-error: true
+        run: bash .github/scripts/gradle-cache-canary.sh app-0 seed
       - name: Warm modules in the shared Gradle home
         id: modules
         continue-on-error: true
-        run: bash .github/scripts/gradle-cache-trial.sh modules seed
+        run: bash .github/scripts/gradle-cache-canary.sh modules seed
       - name: Warm Stable APKs in the shared Gradle home
         id: stable
         continue-on-error: true
-        run: bash .github/scripts/gradle-cache-trial.sh stable seed
+        run: bash .github/scripts/gradle-cache-canary.sh stable seed
       - name: Warm Beta APKs in the shared Gradle home
         id: beta
         continue-on-error: true
-        run: bash .github/scripts/gradle-cache-trial.sh beta seed
+        run: bash .github/scripts/gradle-cache-canary.sh beta seed
       - name: Measure the complete expanded archive
         id: archive
         shell: bash
         env:
+          APP_OUTCOME: ${{ steps.app-0.outcome }}
           MODULES_OUTCOME: ${{ steps.modules.outcome }}
           STABLE_OUTCOME: ${{ steps.stable.outcome }}
           BETA_OUTCOME: ${{ steps.beta.outcome }}
         run: |
           set -euo pipefail
-          printf 'Seed phases: modules=%s Stable=%s Beta=%s\n' "$MODULES_OUTCOME" "$STABLE_OUTCOME" "$BETA_OUTCOME" |
+          printf 'Seed phases: app-0=%s modules=%s Stable=%s Beta=%s\n' "$APP_OUTCOME" "$MODULES_OUTCOME" "$STABLE_OUTCOME" "$BETA_OUTCOME" |
             tee -a "$GITHUB_STEP_SUMMARY"
-          test "$MODULES_OUTCOME/$STABLE_OUTCOME/$BETA_OUTCOME" = 'success/success/success'
+          test "$APP_OUTCOME/$MODULES_OUTCOME/$STABLE_OUTCOME/$BETA_OUTCOME" = 'success/success/success/success'
           mkdir -p "$RUNNER_TEMP/expanded-trial"
           archive="$RUNNER_TEMP/expanded-trial/gradle-cache.tar.zst"
           tar --zstd --exclude='*.lock' --exclude=gc.properties -cf "$archive" \
@@ -139,6 +154,7 @@ jobs:
           fi
           sha=$(sha256sum "$archive" | cut -d' ' -f1)
           echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          echo "runner-identity=${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" >> "$GITHUB_OUTPUT"
           printf 'Expanded archive SHA-256: %s\n' "$sha" >> "$GITHUB_STEP_SUMMARY"
       - name: Upload the expanded candidate
         id: upload
@@ -155,7 +171,7 @@ jobs:
     needs: seed
     if: github.event_name == 'push' && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/gradle-cache-replay-trial'
     runs-on: ubuntu-24.04
-    timeout-minutes: 150
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
@@ -166,31 +182,35 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          fetch-depth: 4
+          fetch-depth: 2
       - name: Verify that the workload source matches the seed
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD^2)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
           git diff --exit-code "$SOURCE_SHA" HEAD -- . \
-            ':!.github/workflows/gradle-cache-replay-trial.yml' \
-            ':!.github/actions/gradle-cache-trial-reference/action.yml' \
-            ':!.github/scripts/gradle-cache-trial.sh'
-          printf 'Workload source matches %s at trial head %s\n' "$SOURCE_SHA" "$GITHUB_SHA"
+            ':!.github/workflows/gradle-cache-8373-canary.yml' \
+            ':!.github/actions/gradle-cache-canary-fixtures/action.yml' \
+            ':!.github/scripts/gradle-cache-canary.sh'
+          {
+            printf 'Workload source %s, source tree %s, canary head %s\n' "$SOURCE_SHA" "$SOURCE_TREE" "$GITHUB_SHA"
+            sha256sum gradle.properties gradle/wrapper/gradle-wrapper.properties build-inputs/native-lock.json \
+              build-inputs/engineering.json build-inputs/host-test-inputs.json
+          } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: ./.github/actions/disk-cleanup
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: 21
-      - name: Match the seed runner image, JDK and SDK layout
+      - name: Require the expanded seed runner identity
         shell: bash
-        run: |
-          set -euo pipefail
-          test "${ImageOS:?}/${ImageVersion:?}" = ubuntu24/20261122.23.1
-          test "$JAVA_HOME" = /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
-          test "$ANDROID_HOME" = /usr/local/lib/android/sdk
-      - uses: ./.github/actions/gradle-cache-trial-reference
+        env:
+          SEED_IDENTITY: ${{ needs.seed.outputs.runner-identity }}
+        run: test "${ImageOS:?}/${ImageVersion:?}/$JAVA_HOME/$ANDROID_HOME" = "$SEED_IDENTITY"
+      - uses: ./.github/actions/gradle-cache-canary-fixtures
         with:
           workload: ${{ matrix.workload }}
       - name: Bootstrap the checksum-pinned Gradle distribution
@@ -199,10 +219,10 @@ jobs:
           set -euo pipefail
           ./gradlew --version | tee "$RUNNER_TEMP/gradle-version.txt"
           grep -Fx 'Gradle 9.6.0' "$RUNNER_TEMP/gradle-version.txt"
-      - name: Run the warm reference in normal CI mode
+      - name: Run the recorded reference in normal CI mode
         id: baseline
         continue-on-error: true
-        run: bash .github/scripts/gradle-cache-trial.sh "$WORKLOAD" baseline
+        run: bash .github/scripts/gradle-cache-canary.sh "$WORKLOAD" baseline
       - name: Start the candidate with fresh Gradle and project state
         shell: bash
         run: |
@@ -219,11 +239,11 @@ jobs:
             mkdir -p build
             mv "$RUNNER_TEMP/host-tests" build/host-tests
           fi
-          mv "$GRADLE_USER_HOME" "$RUNNER_TEMP/baseline-gradle-home"
+          test "$GRADLE_USER_HOME" = /home/runner/.gradle
+          mv "$GRADLE_USER_HOME/wrapper" "$RUNNER_TEMP/trial-wrapper"
+          rm -rf -- "$GRADLE_USER_HOME"
           mkdir "$GRADLE_USER_HOME"
-          mv "$RUNNER_TEMP/baseline-gradle-home/wrapper" "$GRADLE_USER_HOME/wrapper"
-          # Free the disposable baseline files before extracting the candidate.
-          rm -rf -- "$RUNNER_TEMP/baseline-gradle-home"
+          mv "$RUNNER_TEMP/trial-wrapper" "$GRADLE_USER_HOME/wrapper"
       - name: Download the exact expanded candidate
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -244,7 +264,7 @@ jobs:
           tar --zstd -xf "$archive" -C "$GRADLE_USER_HOME" caches/modules-2 caches/9.6.0/transforms
           printf 'Candidate SHA-256: %s\n' "$ARCHIVE_SHA" >> "$GITHUB_STEP_SUMMARY"
       - name: Replay the candidate offline without another Gradle cache
-        run: bash .github/scripts/gradle-cache-trial.sh "$WORKLOAD" candidate
+        run: bash .github/scripts/gradle-cache-canary.sh "$WORKLOAD" candidate
       - name: Check for transform rebuilds added by the candidate
         env:
           BASELINE_OUTCOME: ${{ steps.baseline.outcome }}
@@ -263,3 +283,33 @@ jobs:
             cat candidate-extra-rebuilds.txt
             exit 1
           fi
+
+      - name: Verify a run-specific shared-cache miss
+        if: matrix.workload == 'stable'
+        id: missing
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ runner.temp }}/gradle-trial
+          key: collie-gradle-canary-miss-${{ github.run_id }}-${{ github.run_attempt }}
+          lookup-only: true
+      - name: Use a fresh Gradle home with no legacy restore
+        if: matrix.workload == 'stable'
+        shell: bash
+        env:
+          MATCHED_KEY: ${{ steps.missing.outputs.cache-matched-key }}
+        run: |
+          set -euo pipefail
+          test "$GRADLE_USER_HOME" = /home/runner/.gradle
+          test -z "$MATCHED_KEY"
+          test -z "${GRADLE_RO_DEP_CACHE:-}"
+          # Keep the pinned Gradle distribution, and reset dependency, transform and project state.
+          git diff --quiet HEAD
+          git clean -ffdx
+          mv "$GRADLE_USER_HOME/wrapper" "$RUNNER_TEMP/trial-wrapper"
+          rm -rf -- "$GRADLE_USER_HOME"
+          mkdir "$GRADLE_USER_HOME"
+          mv "$RUNNER_TEMP/trial-wrapper" "$GRADLE_USER_HOME/wrapper"
+          printf 'Intentional shared-cache lookup missed; no legacy Gradle cache loaded\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Build both APKs with ordinary online Gradle
+        if: matrix.workload == 'stable'
+        run: bash .github/scripts/gradle-cache-canary.sh stable online-miss

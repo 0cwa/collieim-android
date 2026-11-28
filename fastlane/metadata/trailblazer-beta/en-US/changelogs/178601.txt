@@ -1,0 +1,1 @@
+- TrailBlazer includes Signal Android 8.37.3 improvements to device linking, media indexing, and calls.

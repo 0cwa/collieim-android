@@ -302,6 +302,7 @@ class AttachmentTable(
     private const val DATA_FILE_INDEX = "attachment_data_index"
     private const val DATA_HASH_REMOTE_KEY_INDEX = "attachment_media_name_index"
     private const val ARCHIVE_TRANSFER_STATE_INDEX = "attachment_archive_transfer_state"
+    const val MEDIA_OVERVIEW_SIZE_INDEX = "attachment_media_overview_size_index"
 
     /** How many media names fit in one statement. Each binds two args, so this has to stay under half of [SqlUtil.MAX_QUERY_ARGS]. */
     const val ARCHIVE_MEDIA_KEY_BATCH_SIZE = 400
@@ -322,7 +323,7 @@ class AttachmentTable(
       "CREATE INDEX IF NOT EXISTS $ARCHIVE_TRANSFER_STATE_INDEX ON $TABLE_NAME ($ARCHIVE_TRANSFER_STATE);",
       "CREATE INDEX IF NOT EXISTS attachment_remote_digest_index ON $TABLE_NAME ($REMOTE_DIGEST);",
       "CREATE INDEX IF NOT EXISTS attachment_metadata_id ON $TABLE_NAME ($METADATA_ID);",
-      "CREATE INDEX IF NOT EXISTS attachment_media_overview_size ON $TABLE_NAME ($DATA_SIZE DESC, $DISPLAY_ORDER DESC) WHERE $QUOTE = 0 AND $STICKER_PACK_ID IS NULL AND $DATA_FILE IS NOT NULL",
+      "CREATE INDEX IF NOT EXISTS $MEDIA_OVERVIEW_SIZE_INDEX ON $TABLE_NAME ($DATA_SIZE, $DISPLAY_ORDER, $ID, $CONTENT_TYPE) WHERE $QUOTE = 0 AND $STICKER_PACK_ID IS NULL",
       "CREATE INDEX IF NOT EXISTS attachment_archive_thumbnail_transfer_state ON $TABLE_NAME ($ARCHIVE_THUMBNAIL_TRANSFER_STATE)",
       "CREATE INDEX IF NOT EXISTS attachment_thumbnail_file_index ON $TABLE_NAME ($THUMBNAIL_FILE) WHERE $THUMBNAIL_FILE IS NOT NULL",
       "CREATE INDEX IF NOT EXISTS attachment_uuid_index ON $TABLE_NAME ($ATTACHMENT_UUID) WHERE $ATTACHMENT_UUID IS NOT NULL"
@@ -2649,13 +2650,29 @@ class AttachmentTable(
             .where("($ID = ? OR ($REMOTE_KEY = ? AND $DATA_HASH_END = ?)) AND $TRANSFER_STATE != $TRANSFER_REMOVED_LOCALLY", attachmentId.id, existingPlaceholder.remoteKey, existingPlaceholder.dataHash!!)
             .run()
         } else {
-          // Update the current attachment, any attachments with the same data file (deduplication), and any attachments with the
-          // same UUID (e.g. edited messages)
+          // Update the current attachment, any attachments with the same data file (deduplication), and any other revisions of
+          // this message that share the attachment (e.g. edited messages)
           val whereClause: String
           val whereArgs: Array<String>
           if (existingPlaceholder.uuid != null) {
-            whereClause = "$ID = ? OR $DATA_FILE = ? OR ($ATTACHMENT_UUID = ? AND $REMOTE_LOCATION = ?)"
-            whereArgs = SqlUtil.buildArgs(attachmentId.id, dataFilePath, existingPlaceholder.uuid.toString(), existingPlaceholder.remoteLocation)
+            val originalMessageId = db
+              .select(MessageTable.ORIGINAL_MESSAGE_ID)
+              .from(MessageTable.TABLE_NAME)
+              .where("${MessageTable.ID} = ?", existingPlaceholder.mmsId)
+              .run()
+              .readToSingleLong(existingPlaceholder.mmsId)
+
+            whereClause = """
+              $ID = ? OR
+              $DATA_FILE = ? OR
+              (
+                $ATTACHMENT_UUID = ? AND
+                $REMOTE_LOCATION = ? AND
+                $DATA_FILE IS NULL AND
+                $MESSAGE_ID IN (SELECT ${MessageTable.ID} FROM ${MessageTable.TABLE_NAME} WHERE ${MessageTable.ID} = ? OR ${MessageTable.ORIGINAL_MESSAGE_ID} = ?)
+              )
+            """
+            whereArgs = SqlUtil.buildArgs(attachmentId.id, dataFilePath, existingPlaceholder.uuid.toString(), existingPlaceholder.remoteLocation, originalMessageId, originalMessageId)
           } else {
             whereClause = "$ID = ? OR $DATA_FILE = ?"
             whereArgs = SqlUtil.buildArgs(attachmentId.id, dataFilePath)

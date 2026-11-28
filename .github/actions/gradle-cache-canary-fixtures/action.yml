@@ -1,5 +1,5 @@
-name: Restore Gradle trial reference
-description: Restore the exact dependency and transform archives observed on main for one workload
+name: Restore Gradle canary reference
+description: Restore the Gradle reference observed in the 8.37.3 integration checks and the exact test fixtures
 inputs:
   workload:
     description: Workload to restore
@@ -26,27 +26,38 @@ runs:
           mv "$GRADLE_USER_HOME" "$RUNNER_TEMP/image-gradle-home"
         fi
 
-        # These are the exact restored keys from the 29dbf8625 main baseline.
+        # PR #316 built the same tree as its main merge, before the Beta output-only stamp.
+        revision=29dbf8625d0fe7da425ab3431643cd02fde05632
         case "$WORKLOAD" in
           app-0|app-1)
             job='unit-test-shards[8f23a602194aaba68967845d9880d5f0]'
-            dependencies=a19e94012b651902f05f220a30b1f754
+            dependencies=3d46563386e93de95aafddd37ab5da9b
             transforms=97b6e9cabbc775c6f119600256bcb8ce
+            source_url=https://github.com/0cwa/collieim-android/actions/runs/46099219282/job/140837690053
+            if [[ "$WORKLOAD" == app-1 ]]; then
+              source_url=https://github.com/0cwa/collieim-android/actions/runs/46099219282/job/140837690034
+            fi
             ;;
           modules)
             job='unit-test-shards[ab38c319a7e58a1e91567bf121188d57]'
-            dependencies=5d87640f14f62d48c3ae3d1b92377e4a
+            # The integration job reported a dependency-cache miss and resolved online.
+            dependencies=
             transforms=891132e9f2b4dad9c6ca19519790c72f
+            source_url=https://github.com/0cwa/collieim-android/actions/runs/46099219282/job/140837690037
+            echo 'Observed Modules reference miss: gradle-dependencies-v2-a4b9cb2637045960fcef9150adfd3999'
             ;;
           stable)
             job='debug-apk[2ec780e8be668da8966dd415f3c12be6]'
-            dependencies=36bf0e124de708139a0f21856cf9764b
+            dependencies=3d77b7b0080a591ebd4aed6ff15cbb13
             transforms=dc8e416f5ae0b33f434b35f1c8f44dd4
+            source_url=https://github.com/0cwa/collieim-android/actions/runs/46099219121/job/140837602530
             ;;
           beta)
             job='ui-smoke-beta-build[2ec780e8be668da8966dd415f3c12be6]'
+            revision=7b9e0f9a267e81053f751fc94ff38acfec3d8934
             dependencies=da4115a068108404c34fe9baac90e90c
             transforms=489ea8015fda10e95cda37ebf6c0ca16
+            source_url=https://github.com/0cwa/collieim-android/actions/runs/46099219121/job/140842305326
             ;;
           *)
             echo "::error::Unknown reference workload: $WORKLOAD"
@@ -54,11 +65,11 @@ runs:
             ;;
         esac
         {
-          echo "home=gradle-home-v2|Linux-X64|${job}-7b9e0f9a267e81053f751fc94ff38acfec3d8934"
-          echo "dependencies=gradle-dependencies-v2-$dependencies"
-          echo "transforms=gradle-transforms-v2-$transforms"
-        } | tee "$RUNNER_TEMP/reference-keys.txt" >> "$GITHUB_OUTPUT"
-        cat "$RUNNER_TEMP/reference-keys.txt"
+          printf 'home=gradle-home-v2|Linux-X64|%s-%s\n' "$job" "$revision"
+          printf 'dependencies=%s\n' "${dependencies:+gradle-dependencies-v2-$dependencies}"
+          printf 'transforms=gradle-transforms-v2-%s\n' "$transforms"
+        } | tee -a "$GITHUB_OUTPUT" "$RUNNER_TEMP/reference-keys.txt"
+        printf 'Observed reference for %s: %s\n' "$WORKLOAD" "$source_url" | tee -a "$GITHUB_STEP_SUMMARY"
     # The path strings and their order match the archive versions produced by setup-gradle v6.4.0.
     - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       id: home
@@ -72,7 +83,7 @@ runs:
         fail-on-cache-miss: true
     - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       id: dependencies
-      if: inputs.fixtures-only != 'true'
+      if: inputs.fixtures-only != 'true' && steps.reference.outputs.dependencies != ''
       with:
         path: /home/runner/.gradle/caches/modules-*/files-*/*/*/*/*/
         key: ${{ steps.reference.outputs.dependencies }}
@@ -133,6 +144,7 @@ runs:
       shell: bash
       env:
         HOME_HIT: ${{ steps.home.outputs.cache-hit }}
+        DEPENDENCIES_KEY: ${{ steps.reference.outputs.dependencies }}
         DEPENDENCIES_HIT: ${{ steps.dependencies.outputs.cache-hit }}
         TRANSFORMS_HIT: ${{ steps.transforms.outputs.cache-hit }}
         INSTRUMENTED_HIT: ${{ steps.instrumented.outputs.cache-hit }}
@@ -142,13 +154,18 @@ runs:
         WRAPPER_HIT: ${{ steps.wrapper.outputs.cache-hit }}
       run: |
         set -euo pipefail
-        for hit in HOME DEPENDENCIES TRANSFORMS INSTRUMENTED KOTLIN GROOVY API WRAPPER; do
+        for hit in HOME TRANSFORMS INSTRUMENTED KOTLIN GROOVY API WRAPPER; do
           var="${hit}_HIT"
           if [[ "${!var}" != true ]]; then
             echo "::error::Expected exact reference hit for $hit"
             exit 1
           fi
         done
+        if [[ -n "$DEPENDENCIES_KEY" ]]; then
+          test "$DEPENDENCIES_HIT" = true
+        else
+          echo 'Modules reference dependency archive was absent in its original #316 job' >> "$GITHUB_STEP_SUMMARY"
+        fi
         cat "$RUNNER_TEMP/reference-keys.txt" >> "$GITHUB_STEP_SUMMARY"
         find "$GRADLE_USER_HOME/caches" -type f \( -name '*.lock' -o -name gc.properties \) -delete
     - name: Restore test-only JNI
@@ -169,6 +186,16 @@ runs:
         path: ~/.m2/repository/org/robolectric
         key: robolectric-jars-Linux-${{ hashFiles('tooling/ci/robolectric-jars.txt') }}
         fail-on-cache-miss: true
+    - name: Set up the pinned test Python
+      if: inputs.workload == 'app-0' || inputs.workload == 'app-1' || inputs.workload == 'modules'
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      with:
+        python-version: '3.12.14'
+    - name: Install pinned screenshot decoder
+      if: inputs.workload == 'app-0' || inputs.workload == 'app-1' || inputs.workload == 'modules'
+      shell: bash
+      run: |
+        python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r tooling/ci/png-requirements.txt
     - name: Verify unit test fixtures
       if: inputs.workload == 'app-0' || inputs.workload == 'app-1' || inputs.workload == 'modules'
       shell: bash

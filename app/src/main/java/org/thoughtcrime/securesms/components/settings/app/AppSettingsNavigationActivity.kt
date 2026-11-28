@@ -42,6 +42,7 @@ import org.thoughtcrime.securesms.components.settings.app.labs.registerLabsRoute
 import org.thoughtcrime.securesms.components.settings.app.notifications.registerNotificationsRoutes
 import org.thoughtcrime.securesms.components.settings.app.privacy.registerPrivacyRoutes
 import org.thoughtcrime.securesms.components.settings.app.storage.registerDataAndStorageRoutes
+
 import org.thoughtcrime.securesms.components.settings.app.updates.registerAppUpdatesRoutes
 import org.thoughtcrime.securesms.components.settings.app.usernamelinks.registerUsernameLinkScreens
 import org.thoughtcrime.securesms.devicetransfer.olddevice.OldDeviceTransferActivity

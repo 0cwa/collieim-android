@@ -271,6 +271,11 @@ object Scrubber {
     }
   }
 
+  @JvmStatic
+  fun hashForLog(value: CharSequence): String {
+    return hash(value.toString())
+  }
+
   private fun hash(value: String): String {
     if (identifierHmacKey == null) {
       identifierHmacKey = identifierHmacKeyProvider()

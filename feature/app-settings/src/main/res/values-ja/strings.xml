@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">登録ロックを有効にしますか？</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">登録ロックを無効にしますか？</string>
@@ -438,8 +439,15 @@
     <string name="preferences_normal">普通</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">小</string>
+
+    <!-- AppearanceSettingsScreen -->
     <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
     <string name="preferences_language_change_confirmation_message">新しい言語設定を適用するために、アプリが再起動します。</string>
+    <!-- Dialog message body shown when selecting a language that hasn\'t been downloaded yet, notifying the user that a download will happen and then restart. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the Google Play Store or Google Play services app is missing, or Google Play didn\'t install this copy of Signal. Directs the user to download a universal build with full language support from signal.org. "Google Play" is a product name and "signal.org" is a web address; do not translate either. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play Store app in system settings. "Google Play" is a product name; do not translate it. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play services app in system settings. "Google Play" is a product name; do not translate it. -->
+
     <!-- Phone number heading displayed as a screen title -->
     <string name="preferences_app_protection__phone_number">電話番号</string>
     <!-- Section title above two radio buttons for enabling and disabling phone number display -->
@@ -499,6 +507,10 @@
     <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">バックグラウンドで接続したままにすると、バッテリーの消費量が増える可能性があります。ほとんどの端末ではこの設定は必要ではありません。通知が届かないなどの問題がある時のみ有効にしてください。</string>
     <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
     <string name="DataAndStorageSettingsFragment__enable">有効にする</string>
+    <!-- Body of a confirmation dialog shown when a user without Google Play Services tries to disable the "Stay connected in background" setting -->
+    <string name="DataAndStorageSettingsFragment__play_services_are_not_available_on_this_device">Google Playサービスはこの端末ではご利用になれません。この設定が無効になっていると、アプリがバックグランドで動作している間メッセージを受け取れなくなります。</string>
+    <!-- Button label that disables the "Stay connected in background" setting from a confirmation dialog -->
+    <string name="DataAndStorageSettingsFragment__continue">続行</string>
   <!-- Setting option that can be selected to default media to be sent as high quality by default -->
   <string name="SentMediaQuality__high">高画質</string>
   <!-- Setting option that can be selected to default media to be sent as standard quality by default -->
@@ -659,6 +671,30 @@
     <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">詳しく見る</string>
+    <!-- Section header in privacy settings above the rows for hidden and blocked contacts -->
+    <string name="PrivacySettingsScreen__hidden_and_blocked">非表示とブロック</string>
+    <!-- Row label in privacy settings shown when the user has no hidden contacts or no blocked contacts -->
+    <string name="PrivacySettingsScreen__none">なし</string>
+    <!-- Row title in privacy settings that opens the list of contacts the user has hidden -->
+    <string name="PrivacySettingsScreen__hidden">非表示</string>
+    <!-- Row label in privacy settings showing how many contacts the user has hidden. Placeholder is the count. -->
+    <plurals name="PrivacySettingsScreen__d_hidden_contacts">
+        <item quantity="other">%1$d人</item>
+    </plurals>
+
+    <!-- HiddenContactsScreen -->
+    <!-- Title of the screen listing the contacts the user has hidden -->
+    <string name="HiddenContactsScreen__hidden_contacts">非表示にした連絡先</string>
+    <!-- Explanation at the top of the hidden contacts screen -->
+    <string name="HiddenContactsScreen__hidden_contacts_description">非表示にした連絡先は検索しても表示されません。相手があなたにメッセージを送信すると、メッセージリクエストを受け取ることになります。連絡先をタップすると、非表示が解除されます。</string>
+    <!-- Shown on the hidden contacts screen when the user hasn\'t hidden anyone -->
+    <string name="HiddenContactsScreen__no_hidden_contacts">非表示にした連絡先はいません</string>
+    <!-- Dialog title asking whether to unhide a contact. Placeholder is the contact\'s name. -->
+    <string name="HiddenContactsScreen__unhide_s">%1$sの非表示を解除しますか？</string>
+    <!-- Dialog body explaining what unhiding a contact does -->
+    <string name="HiddenContactsScreen__unhide_body">解除すると、相手は検索結果に表示されるようになり、また、あなたのプロフィールを閲覧できるようになります。</string>
+    <!-- Dialog button that unhides a contact -->
+    <string name="HiddenContactsScreen__unhide">再表示</string>
 
     <!-- AppSettingsScreen -->
     <!-- String alerting user that backup storage limit has been reached -->
@@ -1239,4 +1275,11 @@
     <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">キーを作成</string>
     <string name="ApplicationPreferencesActivity_pin_created">PINを作成しました。</string>
     <string name="ApplicationPreferencesActivity_pin_disabled">PINを無効にしました。</string>
+
+    <!-- Title of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard_changes">変更を破棄しますか？</string>
+    <!-- Body of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__you_will_lose_changes">おこなった変更が破棄されます。</string>
+    <!-- Button in a dialog that throws away unsaved edits and leaves the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard">破棄する</string>
 </resources>

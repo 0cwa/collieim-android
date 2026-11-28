@@ -13,6 +13,7 @@ import org.signal.remoteconfig.RemoteConfig;
 import org.signal.ringrtc.CallException;
 import org.signal.ringrtc.GroupCall;
 import org.signal.ringrtc.PeekInfo;
+import org.signal.core.models.recipients.RecipientId;
 import org.thoughtcrime.securesms.components.webrtc.BroadcastVideoSink;
 import org.thoughtcrime.securesms.components.webrtc.CallParticipantsState;
 import org.thoughtcrime.securesms.components.webrtc.EglBaseWrapper;
@@ -193,6 +194,12 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
   {
     Log.i(tag, "handleOutgoingCall():");
 
+    RecipientId lobbyRecipientId = currentState.getCallInfoState().getCallRecipient().getId();
+    if (!remotePeer.getId().equals(lobbyRecipientId)) {
+      Log.w(tag, "handleOutgoingCall(): Ignoring request to call " + remotePeer.getId() + " while in the lobby for " + lobbyRecipientId);
+      return currentState;
+    }
+
     if (GroupAdmission.isHeld(remotePeer.getRecipient())) {
       return groupCallFailure(currentState, "Group requires local approval before calling.", null);
     }
@@ -203,7 +210,7 @@ public class GroupPreJoinActionProcessor extends GroupActionProcessor {
 
     webRtcInteractor.setCallInProgressNotification(TYPE_OUTGOING_RINGING, currentState.getCallInfoState().getCallRecipient(), true);
     webRtcInteractor.updatePhoneState(WebRtcUtil.getInCallPhoneState(context));
-    webRtcInteractor.initializeAudioForCall(true);
+    webRtcInteractor.initializeAudioForCall(false);
 
     try {
       groupCall.setOutgoingVideoSource(currentState.getVideoState().requireLocalSink(), currentState.getVideoState().requireRouter());

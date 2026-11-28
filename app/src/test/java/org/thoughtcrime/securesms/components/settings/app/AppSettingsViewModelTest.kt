@@ -116,12 +116,12 @@ class AppSettingsViewModelTest {
   }
 
   @Test
-  fun `NavigateBackClicked navigates back`() = runTest(testDispatcher) {
+  fun `NavigateBackClicked closes settings`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
 
     viewModel.onEvent(AppSettingsEvent.NavigateBackClicked)
 
-    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateBack())
+    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.Close)
   }
 
   @Test

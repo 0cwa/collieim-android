@@ -65,6 +65,7 @@ class IncomingMessageObserverConnectivityTest {
     every { unifiedPushValues.endpointAuth } returns "SYNTHETIC-AUTH"
     every { unifiedPushValues.endpointInstance } returns "fixture-instance"
     every { store.settings.forceWebsocketMode } returns SettingsValues.ForceWebsocketMode.DISABLED_BY_USER
+    every { store.settings.shouldStayConnectedInBackground() } answers { callOriginal() }
     every { store.registration.restoreDecisionState } returns RestoreDecisionState(RestoreDecisionState.State.COMPLETED)
     every { auth.state } returns Observable.never()
     every { auth.stateSnapshot } returns WebSocketConnectionState.DISCONNECTED

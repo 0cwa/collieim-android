@@ -212,7 +212,6 @@ fun AppearanceSettingsScreen(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NavigationBarSizeDialog(
   dialog: AppearanceSettingsState.Dialog.NavigationBarSize,

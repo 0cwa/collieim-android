@@ -47,6 +47,7 @@ import org.thoughtcrime.securesms.database.MediaTable.MediaRecord;
 import org.thoughtcrime.securesms.database.loaders.GroupedThreadMediaLoader.GroupedThreadMedia;
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.mediapreview.MediaPreviewCache;
 import org.thoughtcrime.securesms.mms.AudioSlide;
 import org.thoughtcrime.securesms.mms.Slide;

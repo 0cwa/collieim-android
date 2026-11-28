@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Aktiver registreringslås?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Deaktiver registreringslås?</string>
@@ -439,8 +440,15 @@
     <string name="preferences_normal">Normal</string>
     <!-- Preference summary for compact navigation bar size -->
     <string name="preferences_compact">Kompakt</string>
+
+    <!-- AppearanceSettingsScreen -->
     <!-- Dialog message body explaining that we have to restart the app in order to apply the user\'s new language setting.  -->
     <string name="preferences_language_change_confirmation_message">Appen genstarter for at anvende det nye sprog.</string>
+    <!-- Dialog message body shown when selecting a language that hasn\'t been downloaded yet, notifying the user that a download will happen and then restart. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the Google Play Store or Google Play services app is missing, or Google Play didn\'t install this copy of Signal. Directs the user to download a universal build with full language support from signal.org. "Google Play" is a product name and "signal.org" is a web address; do not translate either. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play Store app in system settings. "Google Play" is a product name; do not translate it. -->
+    <!-- Dialog message shown when a language pack can\'t be downloaded because the user turned off the Google Play services app in system settings. "Google Play" is a product name; do not translate it. -->
+
     <!-- Phone number heading displayed as a screen title -->
     <string name="preferences_app_protection__phone_number">Telefonnummer</string>
     <!-- Section title above two radio buttons for enabling and disabling phone number display -->
@@ -500,6 +508,10 @@
     <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Hvis du forbliver forbundet i baggrunden, vil det sandsynligvis øge batteriforbruget. For de fleste enheder er dette ikke nødvendigt. Aktivér kun dette, hvis du har oplevet problemer med notifikationer.</string>
     <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
     <string name="DataAndStorageSettingsFragment__enable">Aktivér</string>
+    <!-- Body of a confirmation dialog shown when a user without Google Play Services tries to disable the "Stay connected in background" setting -->
+    <string name="DataAndStorageSettingsFragment__play_services_are_not_available_on_this_device">Denne enhed understøtter ikke Google Play-tjenester. Hvis du slår denne indstilling fra, modtager du ikke længere beskeder, når appen kører i baggrunden.</string>
+    <!-- Button label that disables the "Stay connected in background" setting from a confirmation dialog -->
+    <string name="DataAndStorageSettingsFragment__continue">Fortsæt</string>
   <!-- Setting option that can be selected to default media to be sent as high quality by default -->
   <string name="SentMediaQuality__high">Høj</string>
   <!-- Setting option that can be selected to default media to be sent as standard quality by default -->
@@ -661,6 +673,31 @@
     <string name="PrivacySettingsScreen__signal">Collie</string>
     <!-- Link after the incognito keyboard disclaimer that opens a support article -->
     <string name="PrivacySettingsScreen__learn_more">Få mere at vide</string>
+    <!-- Section header in privacy settings above the rows for hidden and blocked contacts -->
+    <string name="PrivacySettingsScreen__hidden_and_blocked">Skjulte og blokerede</string>
+    <!-- Row label in privacy settings shown when the user has no hidden contacts or no blocked contacts -->
+    <string name="PrivacySettingsScreen__none">Ingen</string>
+    <!-- Row title in privacy settings that opens the list of contacts the user has hidden -->
+    <string name="PrivacySettingsScreen__hidden">Skjulte</string>
+    <!-- Row label in privacy settings showing how many contacts the user has hidden. Placeholder is the count. -->
+    <plurals name="PrivacySettingsScreen__d_hidden_contacts">
+        <item quantity="one">%1$d kontakt</item>
+        <item quantity="other">%1$d kontakter</item>
+    </plurals>
+
+    <!-- HiddenContactsScreen -->
+    <!-- Title of the screen listing the contacts the user has hidden -->
+    <string name="HiddenContactsScreen__hidden_contacts">Skjulte kontakter</string>
+    <!-- Explanation at the top of the hidden contacts screen -->
+    <string name="HiddenContactsScreen__hidden_contacts_description">Skjulte kontakter vises ikke i søgeresultaterne. Du modtager en beskedanmodning, hvis vedkommende skriver til dig. Tryk på en kontakt for at gøre vedkommende synlig igen.</string>
+    <!-- Shown on the hidden contacts screen when the user hasn\'t hidden anyone -->
+    <string name="HiddenContactsScreen__no_hidden_contacts">Ingen skjulte kontakter</string>
+    <!-- Dialog title asking whether to unhide a contact. Placeholder is the contact\'s name. -->
+    <string name="HiddenContactsScreen__unhide_s">Vis %1$s igen?</string>
+    <!-- Dialog body explaining what unhiding a contact does -->
+    <string name="HiddenContactsScreen__unhide_body">Personen vises igen i søgeresultaterne og kan se din profil.</string>
+    <!-- Dialog button that unhides a contact -->
+    <string name="HiddenContactsScreen__unhide">Vis</string>
 
     <!-- AppSettingsScreen -->
     <!-- String alerting user that backup storage limit has been reached -->
@@ -1243,4 +1280,11 @@
     <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Opret nøgle</string>
     <string name="ApplicationPreferencesActivity_pin_created">Pinkode oprettet.</string>
     <string name="ApplicationPreferencesActivity_pin_disabled">Pinkode deaktiveret.</string>
+
+    <!-- Title of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard_changes">Kassér ændringer?</string>
+    <!-- Body of a dialog asking whether to throw away unsaved edits before leaving the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__you_will_lose_changes">Du mister de ændringer, du har lavet.</string>
+    <!-- Button in a dialog that throws away unsaved edits and leaves the screen they were made on in settings -->
+    <string name="AppSettingsNavigation__discard">Kassér</string>
 </resources>

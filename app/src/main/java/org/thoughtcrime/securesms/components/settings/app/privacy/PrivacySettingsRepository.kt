@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.components.settings.app.privacy
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.signal.appsettings.privacy.PassphraseLockTriggerOption
 import org.signal.appsettings.privacy.PrivacySettingsState.ProxySummary
@@ -7,6 +8,7 @@ import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
+import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.MultiDeviceConfigurationUpdateJob
@@ -26,6 +28,14 @@ object PrivacySettingsRepository {
   suspend fun getBlockedCount(): Int {
     return withContext(SignalDispatchers.Default) {
       SignalDatabase.recipients.getBlocked().size
+    }
+  }
+
+  fun isHiddenContactsAvailable(): Boolean = RemoteConfig.contactDelete
+
+  suspend fun getHiddenCount(): Int {
+    return withContext(SignalDispatchers.Default) {
+      SignalDatabase.recipients.getHiddenCount()
     }
   }
 
@@ -95,6 +105,9 @@ object PrivacySettingsRepository {
   fun isScreenSecurityForced(): Boolean = ScreenLockController.alwaysSetSecureFlagOnResume
 
   fun isScreenSecurityEnabled(): Boolean = SignalStore.settings.isScreenSecurityEnabled
+
+  /** Emits whenever screen security changes, including when it is changed from outside of the privacy settings screen. */
+  fun screenSecurityEnabledFlow(): Flow<Boolean> = SignalStore.settings.isScreenSecurityEnabledFlow
 
   fun setScreenSecurityEnabled(enabled: Boolean) {
     SignalStore.settings.isScreenSecurityEnabled = enabled

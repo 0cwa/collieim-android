@@ -4,7 +4,7 @@ set -euo pipefail
 workload=$1
 mode=$2
 case "$mode" in
-  seed|baseline) resolution=(--info) ;;
+  seed|baseline|online-miss) resolution=(--info) ;;
   candidate) resolution=(--offline) ;;
   *) echo "Unknown trial phase: $mode" >&2; exit 1 ;;
 esac
@@ -31,10 +31,23 @@ case "$workload" in
 esac
 
 test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+test "$(git rev-parse HEAD^2)" = "$SOURCE_SHA"
 test "$GRADLE_USER_HOME" = /home/runner/.gradle
 test -z "${GRADLE_RO_DEP_CACHE:-}"
 export LC_ALL=C
-export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+$JAVA_TOOL_OPTIONS }-Drobolectric.dependency.repo.url=https://maven-central.storage-download.googleapis.com/maven2"
+robolectric_option=-Drobolectric.dependency.repo.url=https://maven-central.storage-download.googleapis.com/maven2
+if [[ "$mode" == candidate && "$workload" =~ ^(app-[01]|modules)$ ]]; then
+    fixture_dir="$RUNNER_TEMP/robolectric-local"
+    mkdir "$fixture_dir"
+    while IFS= read -r version; do
+        jar="android-all-instrumented-$version.jar"
+        source="$HOME/.m2/repository/org/robolectric/android-all-instrumented/$version/$jar"
+        test -s "$source"
+        ln -s "$source" "$fixture_dir/$jar"
+    done < tooling/ci/robolectric-jars.txt
+    robolectric_option="-Drobolectric.dependency.dir=$fixture_dir"
+fi
+export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+$JAVA_TOOL_OPTIONS }$robolectric_option"
 cp tooling/gradle.properties.docker "$GRADLE_USER_HOME/gradle.properties"
 
 evidence="$RUNNER_TEMP/gradle-trial"
@@ -72,6 +85,10 @@ printf '%s %s: Gradle exit %d, %ds, %d new or replaced transform results\n' \
 cat "$phase-rebuilt.txt"
 if [[ "$status" != 0 ]]; then
     exit "$status"
+fi
+if [[ "$mode" == online-miss && "$downloads" == 0 ]]; then
+    echo '::error::The intentional cache miss did not observe an online Gradle download'
+    exit 1
 fi
 
 case "$workload" in

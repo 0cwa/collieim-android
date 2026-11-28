@@ -24,6 +24,7 @@ import org.signal.appsettings.routes.navigateTo
 import org.signal.core.models.media.Media
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
+import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.profiles.manage.UsernameRepository.UsernameDeleteResult
 
 /**

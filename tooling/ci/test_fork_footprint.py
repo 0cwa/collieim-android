@@ -144,25 +144,21 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertIn("ref: ${{ github.event.repository.default_branch }}", privileged)
         self.assertIn("group: fork-footprint-pr-${{ github.event.pull_request.number }}", workflow)
         self.assertIn("group: fork-footprint-comment-pr-${{ needs.validate.outputs.pr_number }}", consumer)
-        self.assertIn("group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository.id || github.repository_id }}-${{ github.event.workflow_run.head_branch || github.event.workflow_run.id }}", consumer)
+        self.assertNotIn("concurrency:", consumer.split("jobs:", 1)[0])
         self.assertIn('post-report --repository "$REPORTED_REPOSITORY" --pr "$PR_NUMBER" --base "$BASE_SHA" --head "$HEAD_SHA"', consumer)
         self.assertNotIn('--report-b64', consumer)
-        self.assertIn("cancel-in-progress: false", consumer.split("jobs:", 1)[0])
-        self.assertNotEqual(
-            consumer.split("group: ", 1)[1].splitlines()[0],
-            consumer.split("  comment:", 1)[1].split("group: ", 1)[1].splitlines()[0],
-        )
+        self.assertEqual(consumer.count("group: fork-footprint-comment-pr-"), 1)
         self.assertIn("cancel-in-progress: false", workflow)
         self.assertIn("cancel-in-progress: false", consumer)
 
     def test_conflict_paths_preserve_spaces_and_remove_status_suffix(self):
-        section = "- app/src/main/java/My Lock Manager.kt (both modified)\n- app/src/main/java/Name (legacy).kt\n"
+        section = "- app/src/main/java/My Lock Manager.kt (both modified)\n- app/src/main/java/Name (legacy).kt\n- file  (both modified)\n"
         self.assertEqual(fp.conflict_paths(section), {
-            "app/src/main/java/My Lock Manager.kt", "app/src/main/java/Name (legacy).kt"})
+            "app/src/main/java/My Lock Manager.kt", "app/src/main/java/Name (legacy).kt", "file "})
 
     def test_added_patch_lines_keep_content_starting_with_double_plus(self):
-        patch = "diff --git a/file.kt b/file.kt\n--- a/file.kt\n+++ b/file.kt\n@@ -1 +1,3 @@\n+token\n++cryptoToken\n+++keyMaterial\n"
-        self.assertEqual(fp.added_patch_lines(patch), ["token", "+cryptoToken", "++keyMaterial"])
+        patch = "diff --git a/file.kt b/file.kt\n--- a/file.kt\n+++ b/file.kt\n@@ -1 +1,4 @@\n+token\n++cryptoToken\n+++keyMaterial\n+value\u2028diff --git embedded\n"
+        self.assertEqual(fp.added_patch_lines(patch), ["token", "+cryptoToken", "++keyMaterial", "value\u2028diff --git embedded"])
 
     def test_json_parts_bound_ascii_expanded_record_without_dropping_it(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -183,6 +179,21 @@ class ForkFootprintTests(unittest.TestCase):
     def test_json_record_fitting_terminates_when_ellipsis_cannot_shrink(self):
         with self.assertRaisesRegex(ValueError, "cannot be shortened"):
             fp._fit_json_record({"path": "…"}, 1)
+
+    def test_json_parts_try_compact_json_before_fitting_ascii_expansion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            row = {"path": "ascii-" + "x" * 12 + "雪" * 8, "count": 1}
+            pointer, parts = fp.write_json_parts(out, "compact", [row], 90)
+            written = (out / parts[0]).read_bytes()
+            self.assertLessEqual(len(written), 90)
+            self.assertEqual(json.loads(written), [row])
+
+    def test_json_fitting_reduces_serialized_ascii_bytes_until_tiny_budget_fails(self):
+        fitted = fp._fit_json_record({"a": "雪" * 10, "b": "x" * 10}, 40)
+        self.assertLessEqual(len(json.dumps([fitted], ensure_ascii=True, separators=(",", ":")).encode("ascii")) + 1, 40)
+        with self.assertRaisesRegex(ValueError, "cannot be shortened"):
+            fp._fit_json_record({"path": "雪" * 100}, 12)
 
     def test_post_report_validates_identity_marker_head_and_bound(self):
         base = "b" * 40
@@ -251,12 +262,13 @@ class ForkFootprintTests(unittest.TestCase):
             event.write_text("{}")
             meta.write_text("{}")
             env = {"GITHUB_OUTPUT": str(output), "GITHUB_REPOSITORY": "owner/repo",
-                   "GITHUB_STEP_SUMMARY": str(summary)}
+                   "GITHUB_STEP_SUMMARY": str(summary), "GITHUB_TOKEN": "test"}
             with patch.dict("os.environ", env), \
                     patch.object(fp, "validate_workflow_run", return_value={"pr_number": 7, "base_sha": base,
                                                                               "head_sha": head}), \
                     patch.object(fp, "entanglement", return_value={}), \
-                    patch.object(fp, "pr_markdown", return_value=report):
+                    patch.object(fp, "pr_markdown", return_value=report), \
+                    patch.object(fp, "live_pr_revisions_match", return_value=True):
                 self.assertEqual(fp.main(["validate-run", "--event", str(event), "--meta", str(meta)]), 0)
             values = dict(line.split("=", 1) for line in output.read_text().splitlines())
             self.assertEqual(values["should_comment"], "true")
@@ -264,6 +276,25 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(values["pr_number"], "7")
             self.assertEqual(fp.base64.b64decode(values["report_b64"]).decode(), report)
             self.assertEqual(summary.read_text(), report)
+
+    def test_workflow_run_skips_comment_if_pr_moves_during_report_generation(self):
+        base, head = "b" * 40, "a" * 40
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            event, meta, output, summary = (root / name for name in ("event.json", "meta.json", "output", "summary"))
+            event.write_text("{}")
+            meta.write_text("{}")
+            env = {"GITHUB_OUTPUT": str(output), "GITHUB_REPOSITORY": "owner/repo", "GITHUB_TOKEN": "test",
+                   "GITHUB_STEP_SUMMARY": str(summary)}
+            with patch.dict("os.environ", env), \
+                    patch.object(fp, "validate_workflow_run", return_value={"pr_number": 7, "base_sha": base,
+                                                                              "head_sha": head}), \
+                    patch.object(fp, "entanglement", return_value={}), \
+                    patch.object(fp, "pr_markdown", return_value=f"<!-- collie-fork-footprint -->\nBase: `{base}` · Head: `{head}`\n"), \
+                    patch.object(fp, "live_pr_revisions_match", return_value=False):
+                self.assertEqual(fp.main(["validate-run", "--event", str(event), "--meta", str(meta)]), 0)
+            self.assertEqual(output.read_text(), "should_comment=false\n")
+            self.assertFalse(summary.exists())
 
     def test_workflow_run_validation_skips_ambiguous_or_mismatched_pr(self):
         sha = "a" * 40
@@ -463,6 +494,9 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(spans["sample.txt"][0]["old_count"], 1)
             self.assertEqual(fp.diff_numstat(base, head, attr_source=base)["sample.txt"], (1, 1))
             self.assertIn("-before", fp.diff_text(base, head, ["sample.txt"], attr_source=base))
+            # Without an explicit source, Git uses the checkout's (head) attributes.
+            default_count, _, _ = fp.diff_hunk_metadata(base, head, ["sample.txt"])
+            self.assertEqual(default_count, 0)
 
     def test_hunks_for_file_replaced_by_directory_count_exact_paths(self):
         import subprocess
@@ -498,7 +532,7 @@ class ForkFootprintTests(unittest.TestCase):
             source.write_text("".join(f"line {number}\n" for number in range(1, 21)))
             run("add", "."); run("commit", "-qm", "base"); base = run("rev-parse", "HEAD")
             lines = source.read_text().splitlines()
-            lines[1] = "changed 2"
+            lines[1] = "changed 2\u2028diff --git embedded"
             lines[17] = "changed 18"
             source.write_text("\n".join(lines) + "\n")
             run("add", "."); run("commit", "-qm", "head"); head = run("rev-parse", "HEAD")

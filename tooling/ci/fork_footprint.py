@@ -3,6 +3,7 @@
 
 import argparse
 import base64
+import copy
 from collections import Counter
 import fnmatch
 import hashlib
@@ -75,11 +76,19 @@ def paths_between(a, b):
 def conflict_paths(section):
     """Parse conflict-list entries, preserving spaces and removing status suffixes."""
     result = set()
-    for line in section.splitlines():
-        match = re.match(r"^[-*]\s+(.+?)\s*$", line)
-        if not match:
+    statuses = ("both added", "both modified", "both deleted", "both renamed",
+                "added by us", "added by them", "deleted by us", "deleted by them",
+                "modified by us", "modified by them")
+    for line in section.split("\n"):
+        if line.startswith(("- ", "* ")):
+            path = line[2:]
+        else:
             continue
-        path = re.sub(r"\s+\([^()]*\)$", "", match.group(1)).strip()
+        for status in statuses:
+            suffix = f" ({status})"
+            if path.endswith(suffix):
+                path = path[:-len(suffix)]
+                break
         if path:
             result.add(path)
     return result
@@ -116,22 +125,23 @@ def diff_numstat(a, b, attr_source=None):
 def diff_hunk_metadata(a, b, paths, attr_source=None):
     """Attribute hunks to exact tree paths, excluding descendants of replaced files."""
     counts, spans = Counter(), {}
-    # Use the trusted source tree's attributes, independent of the checkout.
+    # Git uses checkout attributes by default; callers can pin another source.
     # A literal pathspec can select descendants when this path is a directory
     # on one side, so accept only a matching file header.
     for path in paths:
         path_bytes = os.fsencode(path)
+        args = ([f"--attr-source={attr_source}"] if attr_source else [])
+        args.extend(["-c", "core.quotePath=true", "--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv",
+                     "--no-renames", "--default-prefix", "--unified=3", a, b, "--", path])
         patch = subprocess.run(
-            ["git", f"--attr-source={attr_source or a}", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
-             "--no-ext-diff", "--no-textconv", "--no-renames", "--default-prefix", "--unified=3",
-             a, b, "--", path], cwd=REPO, check=True,
+            ["git", *args], cwd=REPO, check=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
         raw_header = b"diff --git a/" + path_bytes + b" b/" + path_bytes
         quoted_old = _git_quote_path(b"a/" + path_bytes)
         quoted_new = _git_quote_path(b"b/" + path_bytes)
         quoted_header = b"diff --git " + quoted_old + b" " + quoted_new
         section_path = None
-        for line in patch.splitlines():
+        for line in patch.split(b"\n"):
             if line.startswith(b"diff --git "):
                 section_path = path if line in (raw_header, quoted_header) else None
             elif section_path == path and line.startswith(b"@@"):
@@ -333,10 +343,17 @@ def write_json_parts(out, stem, rows, limit):
     for i, part in enumerate(parts, 1):
         name = f"{stem}-{i:03}.json"
         rendered = json.dumps(json_safe(part), ensure_ascii=True, indent=2) + "\n"
-        if len(rendered.encode("utf-8")) > limit:
-            # Compact first, then bound oversized records without emitting
-            # invalid JSON or dropping records. ASCII escaping can expand CJK
-            # text sixfold, so byte size is measured after serialization.
+        # Compact before shortening: pretty-printing can be the only reason a
+        # complete record exceeds the byte limit.
+        compact = json.dumps(json_safe(part), ensure_ascii=True, separators=(",", ":")) + "\n"
+        if len(compact.encode("ascii")) <= limit:
+            rendered = compact
+        elif len(part) == 1:
+            # ASCII escaping can expand CJK text sixfold, so measure the
+            # serialized representation after every shortening step.
+            compact_rows = [_fit_json_record(part[0], max(1, limit - 3))]
+            rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
+        else:
             compact_rows = [_fit_json_record(row, max(1, limit - 3)) for row in part]
             rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
         if len(rendered.encode("utf-8")) > limit:
@@ -354,22 +371,42 @@ def _fit_json_record(row, budget):
     def encoded_size():
         return len(json.dumps([result], ensure_ascii=True, separators=(",", ":")).encode("utf-8")) + 1
     while encoded_size() > budget:
-        strings = []
-        def collect(value, parent, key=None):
+        candidates = []
+        def collect(value, path):
             if isinstance(value, dict):
-                for child_key, child in value.items(): collect(child, value, child_key)
+                for child_key, child in value.items(): collect(child, path + [child_key])
             elif isinstance(value, list):
-                for index, child in enumerate(value): collect(child, value, index)
+                for index, child in enumerate(value): collect(child, path + [index])
             elif isinstance(value, str) and len(value) > 0:
-                strings.append((len(value), parent, key, value))
-        collect(result, None)
-        if not strings:
-            return result
-        _, parent, key, value = max(strings, key=lambda item: item[0])
-        marker = "…"
-        reduced = value[: max(0, len(value) // 2)] + marker
+                marker = "…"
+                reduced = value[: max(0, len(value) // 2)] + marker
+                if reduced != value:
+                    # Evaluate candidate byte reductions using an isolated copy.
+                    candidate_result = copy.deepcopy(result)
+                    if path:
+                        candidate_parent = candidate_result
+                        for item in path[:-1]:
+                            candidate_parent = candidate_parent[item]
+                        candidate_parent[path[-1]] = reduced
+                    else:
+                        candidate_result = reduced
+                    candidate_size = len(json.dumps([candidate_result], ensure_ascii=True,
+                                                    separators=(",", ":")).encode("ascii")) + 1
+                    reduction = encoded_size() - candidate_size
+                    if reduction > 0:
+                        candidates.append((reduction, path, reduced))
+        collect(result, [])
+        if not candidates:
+            raise ValueError("JSON record cannot be shortened enough to fit the byte limit")
+        _, path, reduced = max(candidates, key=lambda item: item[0])
         previous_size = encoded_size()
-        parent[key] = reduced
+        if path:
+            parent = result
+            for item in path[:-1]:
+                parent = parent[item]
+            parent[path[-1]] = reduced
+        else:
+            result = reduced
         if encoded_size() >= previous_size:
             raise ValueError("JSON record cannot be shortened enough to fit the byte limit")
     return result
@@ -599,7 +636,7 @@ def security_leads(head, merges):
 def added_patch_lines(patch):
     """Return additions without treating unified-diff file headers as content."""
     result, in_hunk = [], False
-    for line in patch.splitlines():
+    for line in patch.split("\n"):
         if line.startswith("diff --git "):
             in_hunk = False
         elif line.startswith("@@"):
@@ -847,6 +884,16 @@ def validate_workflow_run(event, meta, repository, token):
     return {"pr_number": number, "base_sha": meta["base_sha"], "head_sha": meta["head_sha"]}
 
 
+def live_pr_revisions_match(repository, number, base, head, token):
+    """Check that a PR still has the revisions used to generate its report."""
+    url = f"https://api.github.com/repos/{repository}/pulls/{number}"
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+               "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "collie-fork-footprint"}
+    with urlopen(Request(url, headers=headers), timeout=20) as response:
+        pr = json.load(response)
+    return pr.get("base", {}).get("sha") == base and pr.get("head", {}).get("sha") == head
+
+
 def sticky_comment(body, expected_base, expected_head):
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     repo = os.environ.get("GITHUB_REPOSITORY")
@@ -960,9 +1007,16 @@ def main(argv=None):
                 raw_report = report.encode("utf-8")
                 if len(raw_report) > MAX_COMMENT_BYTES or not report.startswith("<!-- collie-fork-footprint -->"):
                     raise ValueError("generated report is oversized or missing its marker")
+                repository = os.environ.get("GITHUB_REPOSITORY", "")
+                if not live_pr_revisions_match(repository, result["pr_number"], result["base_sha"],
+                                               result["head_sha"], os.environ.get("GITHUB_TOKEN", "")):
+                    with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+                        f.write("should_comment=false\n")
+                    print("Comment skipped: the pull request head or base moved while the report was generated.")
+                    return 0
                 with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
                     f.write("should_comment=true\n")
-                    f.write(f"repository={os.environ['GITHUB_REPOSITORY']}\n")
+                    f.write(f"repository={repository}\n")
                     for key, value in result.items():
                         f.write(f"{key}={value}\n")
                     f.write(f"report_b64={base64.b64encode(raw_report).decode('ascii')}\n")

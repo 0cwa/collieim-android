@@ -387,6 +387,33 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(spans["node"][0]["old_count"], 1)
             self.assertEqual(spans["node"][0]["new_count"], 0)
 
+    def test_hunk_metadata_overrides_diff_noprefix_and_keeps_spans(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fp.REPO = root
+            def run(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).stdout.decode().strip()
+            run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
+            run("config", "commit.gpgsign", "false"); run("config", "diff.noprefix", "true")
+            source = root / "sample.kt"
+            source.write_text("".join(f"line {number}\n" for number in range(1, 21)))
+            run("add", "."); run("commit", "-qm", "base"); base = run("rev-parse", "HEAD")
+            lines = source.read_text().splitlines()
+            lines[1] = "changed 2"
+            lines[17] = "changed 18"
+            source.write_text("\n".join(lines) + "\n")
+            run("add", "."); run("commit", "-qm", "head"); head = run("rev-parse", "HEAD")
+
+            count, path_counts, spans = fp.diff_hunk_metadata(base, head, ["sample.kt"])
+
+            self.assertEqual(count, 2)
+            self.assertEqual(path_counts, {"sample.kt": 2})
+            self.assertEqual(spans, {"sample.kt": [
+                {"old_start": 1, "old_count": 5, "new_start": 1, "new_count": 5},
+                {"old_start": 15, "old_count": 6, "new_start": 15, "new_count": 6},
+            ]})
+
     def test_provenance_uses_upstream_contents_and_merge_evidence(self):
         head = {"local.kt": b"local", "signal.kt": b"signal", "molly.kt": b"molly", "common.kt": b"common",
                 "edited.kt": b"collie", "seam.kt": b"resolution"}

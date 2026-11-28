@@ -109,7 +109,7 @@ def diff_hunk_metadata(a, b, paths):
         path_bytes = os.fsencode(path)
         patch = subprocess.run(
             ["git", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
-             "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3",
+             "--no-ext-diff", "--no-textconv", "--no-renames", "--default-prefix", "--unified=3",
              a, b, "--", path], cwd=REPO, check=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
         raw_header = b"diff --git a/" + path_bytes + b" b/" + path_bytes

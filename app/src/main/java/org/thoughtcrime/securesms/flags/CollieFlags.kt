@@ -34,4 +34,7 @@ object CollieFlags {
 
   val attachmentRemoval: Boolean
     get() = BuildConfig.TRAILBLAZER_BETA
+
+  val barkupRemoteBackup: Boolean
+    get() = BuildConfig.TRAILBLAZER_BETA
 }

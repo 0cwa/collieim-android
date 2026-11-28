@@ -216,6 +216,7 @@ public final class JobManagerFactories {
       put(LeaveGroupV2WorkerJob.KEY,                   new LeaveGroupV2WorkerJob.Factory());
       put(LinkedDeviceInactiveCheckJob.KEY,            new LinkedDeviceInactiveCheckJob.Factory());
       put(LocalArchiveJob.KEY,                         new LocalArchiveJob.Factory());
+      put(CollieRemoteArchiveJob.KEY,                  new CollieRemoteArchiveJob.Factory());
       put(LocalBackupJob.KEY,                          new LocalBackupJob.Factory());
       put(LocalPlaintextArchiveJob.KEY,                new LocalPlaintextArchiveJob.Factory());
       put(LocalBackupJobApi29.KEY,                     new LocalBackupJobApi29.Factory());

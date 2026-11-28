@@ -448,6 +448,6 @@ public class BackupsPreferenceFragment extends Fragment {
     verify.setVisibility(View.GONE);
     timer.setVisibility(View.GONE);
     updateToggle();
-    AppDependencies.getJobManager().cancelAllInQueue(LocalBackupJob.QUEUE);
+    LocalBackupJob.cancelOnDeviceBackups();
   }
 }

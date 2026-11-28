@@ -57,7 +57,7 @@ public final class LocalBackupJob extends BaseJob {
                                                   .setMaxInstancesForFactory(1)
                                                   .setMaxAttempts(3);
     if (force) {
-      jobManager.cancelAllInQueue(QUEUE);
+      cancelOnDeviceBackups();
     }
 
     if (BackupUtil.isUserSelectionRequired(AppDependencies.getApplication())) {
@@ -76,6 +76,10 @@ public final class LocalBackupJob extends BaseJob {
                                                   .setMaxAttempts(3);
 
     jobManager.add(new LocalArchiveJob(parameters.build()));
+  }
+
+  public static void cancelOnDeviceBackups() {
+    AppDependencies.getJobManager().cancelInQueue(QUEUE, KEY, LocalBackupJobApi29.KEY, LocalArchiveJob.KEY);
   }
 
   public static void enqueuePlaintextArchive(String destinationUri, boolean includeMedia) {

@@ -248,4 +248,23 @@
     <string name="RoundSyncBackup__test">Test sync</string>
     <string name="RoundSyncBackup__requested">Sync request sent to Round Sync. Check Round Sync to confirm it ran.</string>
     <string name="RoundSyncBackup__failed">Could not start the Round Sync task.</string>
+    <string name="BarkupSettings__title">Barkup remote backup</string>
+    <string name="BarkupSettings__not_connected">Not connected</string>
+    <string name="BarkupSettings__instructions">Paste a one-time pairing offer from your Barkup server. Collie will send encrypted backups to that server on your backup schedule.</string>
+    <string name="BarkupSettings__pairing_offer">Pairing offer</string>
+    <string name="BarkupSettings__invalid_offer">Enter a valid, unexpired Barkup offer with an HTTPS address.</string>
+    <string name="BarkupSettings__connect_to">Pair with %1$s?</string>
+    <string name="BarkupSettings__pair_and_enable">Pair and enable</string>
+    <string name="BarkupSettings__connecting">Pairing…</string>
+    <string name="BarkupSettings__pairing_failed">Could not confirm pairing. Check the server connection and get a fresh offer.</string>
+    <string name="BarkupSettings__offer_unavailable">This offer has expired or was already used. Get a fresh offer from your Barkup server.</string>
+    <string name="BarkupSettings__connected_to">Connected to %1$s</string>
+    <string name="BarkupSettings__backup_pending">Backup in progress</string>
+    <string name="BarkupSettings__backup_failed">The backup did not finish. Try again when the server is available.</string>
+    <string name="BarkupSettings__backup_saved">Backup saved. Keep your recovery key to restore it.</string>
+    <string name="BarkupSettings__no_backup">No completed Barkup backup yet.</string>
+    <string name="BarkupSettings__backup_now">Back up now</string>
+    <string name="BarkupSettings__disconnect">Disconnect</string>
+    <string name="BarkupSettings__disconnect_info">Disconnecting stops uploads from this device. Backups on the server stay there.</string>
+    <string name="BarkupSettings__disconnect_failed">Could not disconnect Barkup on this device. Try again.</string>
 </resources>

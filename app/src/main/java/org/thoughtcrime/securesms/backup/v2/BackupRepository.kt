@@ -133,6 +133,7 @@ import org.thoughtcrime.securesms.jobs.BackupMessagesJob
 import org.thoughtcrime.securesms.jobs.BackupRestoreMediaJob
 import org.thoughtcrime.securesms.jobs.CancelRestoreMediaJob
 import org.thoughtcrime.securesms.jobs.CreateReleaseChannelJob
+import org.thoughtcrime.securesms.jobs.CollieRemoteArchiveJob
 import org.thoughtcrime.securesms.jobs.LocalBackupJob
 import org.thoughtcrime.securesms.jobs.MultiDeviceKeysUpdateJob
 import org.thoughtcrime.securesms.jobs.RefreshGroupsAfterRestoreJob
@@ -289,10 +290,11 @@ object BackupRepository {
 
   private suspend fun haltAllJobs() {
     ArchiveUploadProgress.cancelAndBlock()
-    AppDependencies.jobManager.cancelAllInQueue(LocalBackupJob.QUEUE)
+    val queues = setOf(LocalBackupJob.QUEUE, CollieRemoteArchiveJob.TRANSFER_QUEUE)
+    AppDependencies.jobManager.cancelAllInQueues(queues)
 
     Log.d(TAG, "Waiting for local backup job cancelations to occur...")
-    while (!AppDependencies.jobManager.areQueuesEmpty(setOf(LocalBackupJob.QUEUE))) {
+    while (!AppDependencies.jobManager.areQueuesEmpty(queues)) {
       delay(1.seconds)
     }
   }
@@ -725,8 +727,9 @@ object BackupRepository {
   @WorkerThread
   fun exportForLocalBackup(
     main: OutputStream,
-    localBackupProgressEmitter: ExportProgressListener,
+    localBackupProgressEmitter: ExportProgressListener?,
     cancellationSignal: () -> Boolean = { false },
+    recordSizeEstimate: Boolean = true,
     archiveAttachment: (AttachmentTable.LocalArchivableAttachment, () -> InputStream?) -> Unit
   ) {
     val writer = EncryptedBackupWriter.createForLocalOrLinking(
@@ -752,7 +755,7 @@ object BackupRepository {
         .getLocalArchivableAttachments()
         .associateBy { MediaName.forLocalBackupFilename(it.plaintextHash, it.localBackupKey.key) }
 
-      localBackupProgressEmitter.onAttachment(0, localArchivableAttachments.size.toLong())
+      localBackupProgressEmitter?.onAttachment(0, localArchivableAttachments.size.toLong())
 
       val progress = AtomicLong(0)
 
@@ -764,11 +767,11 @@ object BackupRepository {
         }
 
         val currentProgress = progress.incrementAndGet()
-        localBackupProgressEmitter.onAttachment(currentProgress, localArchivableAttachments.size.toLong())
+        localBackupProgressEmitter?.onAttachment(currentProgress, localArchivableAttachments.size.toLong())
       }
     }
 
-    if (!cancellationSignal()) {
+    if (recordSizeEstimate && !cancellationSignal()) {
       SignalStore.backup.lastLocalBackupUncompressedSize = writer.uncompressedBytes
     }
   }
@@ -932,8 +935,16 @@ object BackupRepository {
     endingExportOperation: ((SignalDatabase) -> Unit)?
   ) {
     val eventTimer = EventTimer()
-    val mainDbName = if (isLocal) LOCAL_MAIN_DB_SNAPSHOT_NAME else REMOTE_MAIN_DB_SNAPSHOT_NAME
-    val keyValueDbName = if (isLocal) LOCAL_KEYVALUE_DB_SNAPSHOT_NAME else REMOTE_KEYVALUE_DB_SNAPSHOT_NAME
+    val mainDbName = when {
+      backupMode == BackupMode.PLAINTEXT_EXPORT -> "plaintext-signal-snapshot"
+      isLocal -> LOCAL_MAIN_DB_SNAPSHOT_NAME
+      else -> REMOTE_MAIN_DB_SNAPSHOT_NAME
+    }
+    val keyValueDbName = when {
+      backupMode == BackupMode.PLAINTEXT_EXPORT -> "plaintext-signal-key-value-snapshot"
+      isLocal -> LOCAL_KEYVALUE_DB_SNAPSHOT_NAME
+      else -> REMOTE_KEYVALUE_DB_SNAPSHOT_NAME
+    }
 
     try {
       val dbSnapshot: SignalDatabase = createSignalDatabaseSnapshot(mainDbName)

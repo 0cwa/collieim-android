@@ -6,6 +6,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.signal.core.util.JavaTimeExtensionsKt;
+import org.thoughtcrime.securesms.jobs.CollieRemoteArchiveJob;
 import org.thoughtcrime.securesms.jobs.LocalBackupJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 
@@ -39,11 +40,15 @@ public class LocalBackupListener extends PersistentAlarmManagerListener {
       LocalBackupJob.enqueueArchive(SignalStore.settings().isBackupEnabled());
     }
 
+    if (CollieRemoteArchiveJob.isEnabled()) {
+      CollieRemoteArchiveJob.enqueue();
+    }
+
     return setNextBackupTimeToIntervalFromNow(context);
   }
 
   public static void schedule(Context context) {
-    if (SignalStore.settings().isBackupEnabled() || SignalStore.backup().getNewLocalBackupsEnabled()) {
+    if (SignalStore.settings().isBackupEnabled() || SignalStore.backup().getNewLocalBackupsEnabled() || CollieRemoteArchiveJob.isEnabled()) {
       new LocalBackupListener().onReceive(context, getScheduleIntent());
     }
   }

@@ -111,10 +111,10 @@ class LocalBackupsViewModel : ViewModel(), BackupKeyCredentialManagerHandler {
       if (!BackupUtil.canUserAccessUnifiedBackupDirectory(context)) {
         Log.w(TAG, "Lost access to backup directory, disabling backups")
         SignalStore.backup.newLocalBackupsEnabled = false
-        AppDependencies.jobManager.cancelAllInQueue(LocalBackupJob.QUEUE)
+        LocalBackupJob.cancelOnDeviceBackups()
       }
     } else {
-      AppDependencies.jobManager.cancelAllInQueue(LocalBackupJob.QUEUE)
+      LocalBackupJob.cancelOnDeviceBackups()
     }
 
     internalSettingsState.update {
@@ -144,7 +144,7 @@ class LocalBackupsViewModel : ViewModel(), BackupKeyCredentialManagerHandler {
         SignalStore.backup.newLocalBackupsEnabled = false
         val path = SignalStore.backup.newLocalBackupsDirectory
         SignalStore.backup.newLocalBackupsDirectory = null
-        AppDependencies.jobManager.cancelAllInQueue(LocalBackupJob.QUEUE)
+        LocalBackupJob.cancelOnDeviceBackups()
         BackupUtil.deleteUnifiedBackups(context, path) { completed, total ->
           internalSettingsState.update { it.copy(deleteCompleted = completed, deleteTotal = total) }
         }
@@ -161,7 +161,7 @@ class LocalBackupsViewModel : ViewModel(), BackupKeyCredentialManagerHandler {
   suspend fun handleUpgrade(context: Context) {
     if (SignalStore.settings.isBackupEnabled) {
       withContext(Dispatchers.IO) {
-        AppDependencies.jobManager.cancelAllInQueue(LocalBackupJob.QUEUE)
+        LocalBackupJob.cancelOnDeviceBackups()
         AppDependencies.jobManager.flush()
 
         SignalStore.backup.newLocalBackupsDirectory = SignalStore.settings.signalBackupDirectory?.toString()

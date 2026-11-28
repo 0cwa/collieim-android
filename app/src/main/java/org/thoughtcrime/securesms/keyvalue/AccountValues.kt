@@ -25,6 +25,7 @@ import org.signal.storage.keyvalue.longValue
 import org.signal.storage.keyvalue.nullableBlobValue
 import org.signal.storage.keyvalue.stringValue
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
+import org.thoughtcrime.securesms.jobs.CollieRemoteArchiveJob
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
 import org.thoughtcrime.securesms.crypto.storage.PreKeyMetadataStore
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -542,6 +543,7 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
     }
 
     if ((previous && !registered) || isAciChanged) {
+      CollieRemoteArchiveJob.disconnect()
       AppDependencies.donationPermitsRepository.clearPermits()
     }
 

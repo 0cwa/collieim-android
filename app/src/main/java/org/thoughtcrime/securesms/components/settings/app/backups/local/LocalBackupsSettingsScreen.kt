@@ -40,6 +40,7 @@ import org.signal.core.ui.compose.Snackbars
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.isIdle
 import org.thoughtcrime.securesms.backup.toBackupCreationProgress
+import org.thoughtcrime.securesms.flags.CollieFlags
 import org.thoughtcrime.securesms.keyvalue.protos.LocalBackupCreationProgress
 import org.thoughtcrime.securesms.util.BackupUtil
 import org.signal.core.ui.R as CoreUiR
@@ -205,6 +206,14 @@ internal fun LocalBackupsSettingsScreen(
             foregroundTint = MaterialTheme.colorScheme.error,
             onClick = { showTurnOffAndDeleteDialog = true }
           )
+        }
+      }
+
+      if (CollieFlags.barkupRemoteBackup) {
+        item {
+          BarkupSettingsRow(state.canTurnOn) {
+            biometrics.withBiometricsAuthentication { callback.onViewBackupKeyClick() }
+          }
         }
       }
 

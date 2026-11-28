@@ -340,13 +340,15 @@ class JobController {
   }
 
   @WorkerThread
-  void cancelAllInQueue(@NonNull String queue) {
+  void cancelAllInQueue(@NonNull String queue, @NonNull String... factoryKeys) {
     List<JobSpec> jobsInQueue;
     synchronized (this) {
       jobsInQueue = jobStorage.getJobsInQueue(queue);
     }
 
+    List<String> selectedFactories = java.util.Arrays.asList(factoryKeys);
     jobsInQueue.stream()
+          .filter(spec -> selectedFactories.isEmpty() || selectedFactories.contains(spec.getFactoryKey()))
           .map(JobSpec::getId)
           .forEach(this::cancelJob);
   }

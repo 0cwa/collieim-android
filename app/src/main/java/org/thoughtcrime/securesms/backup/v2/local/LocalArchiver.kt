@@ -69,7 +69,7 @@ object LocalArchiver {
 
     try {
       metadataStream = snapshotFileSystem.metadataOutputStream() ?: return ArchiveResult.failure(ArchiveFailure.MetadataStream)
-      metadataStream.use { it.write(Metadata(version = VERSION, backupId = getEncryptedBackupId()).encode()) }
+      metadataStream.use { it.write(encodeMetadata()) }
       stopwatch.split("metadata")
 
       mainStream = snapshotFileSystem.mainOutputStream() ?: return ArchiveResult.failure(ArchiveFailure.MainStream)
@@ -230,6 +230,8 @@ object LocalArchiver {
     return ArchiveResult.success(ArchiveSuccess.FullSuccess)
   }
 
+  internal fun encodeMetadata(): ByteArray = Metadata(version = VERSION, backupId = getEncryptedBackupId()).encode()
+
   private fun getEncryptedBackupId(): Metadata.EncryptedBackupId {
     val metadataKey = SignalStore.backup.messageBackupKey.deriveLocalBackupMetadataKey()
     val iv = Util.getSecretBytes(12)
@@ -339,7 +341,7 @@ object LocalArchiver {
     return BackupId(plaintext)
   }
 
-  private val AttachmentTable.LocalArchivableAttachment.cipherLength: Long
+  internal val AttachmentTable.LocalArchivableAttachment.cipherLength: Long
     get() = AttachmentCipherStreamUtil.getCiphertextLength(PaddingInputStream.getPaddedSize(size))
 
   sealed interface ArchiveSuccess {

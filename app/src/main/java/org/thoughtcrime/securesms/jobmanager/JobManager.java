@@ -271,6 +271,11 @@ public class JobManager implements ConstraintObserver.Notifier {
     runOnExecutor(() -> jobController.cancelAllInQueue(queue));
   }
 
+  /** Cancels only the specified job types in a shared queue. */
+  public void cancelInQueue(@NonNull String queue, @NonNull String... factoryKeys) {
+    runOnExecutor(() -> jobController.cancelAllInQueue(queue, factoryKeys));
+  }
+
   /**
    * Cancels all jobs in the specified queues. See {@link #cancel(String)} for details.
    */

@@ -62,6 +62,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val storyValues = StoryValues(store)
   val apkUpdateValues = ApkUpdateValues(store, context)
   val backupValues = BackupValues(store, context)
+  val collieBarkupValues = CollieBarkupValues(store)
   val unifiedPushValues = UnifiedPushValues(store)
   val collieSetupValues = CollieSetupValues(store)
   val groupAdmissionValues = GroupAdmissionValues(store)
@@ -123,6 +124,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
       story.onFirstEverAppLaunch()
       apkUpdate.onFirstEverAppLaunch()
       backup.onFirstEverAppLaunch()
+      collieBarkup.onFirstEverAppLaunch()
       unifiedpush.onFirstEverAppLaunch()
       collieSetup.onFirstEverAppLaunch()
       groupAdmission.onFirstEverAppLaunch()
@@ -160,6 +162,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
           story.keysToIncludeInBackup +
           apkUpdate.keysToIncludeInBackup +
           backup.keysToIncludeInBackup +
+          collieBarkup.keysToIncludeInBackup +
           unifiedpush.keysToIncludeInBackup +
           collieSetup.keysToIncludeInBackup +
           groupAdmission.keysToIncludeInBackup +
@@ -326,6 +329,9 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     @get:JvmName("backup")
     val backup: BackupValues
       get() = instance!!.backupValues
+
+    val collieBarkup: CollieBarkupValues
+      get() = instance!!.collieBarkupValues
 
     @JvmStatic
     @get:JvmName("unifiedpush")

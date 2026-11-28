@@ -11,6 +11,8 @@ import android.content.SyncResult
 import android.os.Bundle
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -24,6 +26,7 @@ import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.contacts.sync.FakeCdsServer
 import org.thoughtcrime.securesms.contacts.sync.FakeCdsStoreState
 import org.thoughtcrime.securesms.contacts.sync.FakeSystemContacts
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 
 @RunWith(RobolectricTestRunner::class)
@@ -41,6 +44,8 @@ class ContactsSyncAdapterTest {
   @Before
   fun setUp() {
     shadowOf(context).grantPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+    mockkStatic(KeyCachingService::class)
+    every { KeyCachingService.isLocked() } returns false
 
     FakeCdsStoreState(recipients.signalStore.misc).install()
     cds.install()
@@ -53,6 +58,7 @@ class ContactsSyncAdapterTest {
   fun tearDown() {
     cds.uninstall()
     systemContacts.uninstall()
+    unmockkStatic(KeyCachingService::class)
   }
 
   @Test

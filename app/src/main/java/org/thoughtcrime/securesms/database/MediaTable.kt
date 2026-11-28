@@ -80,6 +80,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
         ${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID},
         ${MessageTable.TABLE_NAME}.${MessageTable.FROM_RECIPIENT_ID},
         ${ThreadTable.TABLE_NAME}.${ThreadTable.RECIPIENT_ID} as $THREAD_RECIPIENT_ID,
+        NULL AS ${MessageTable.BODY},
         NULL AS ${MessageTable.LINK_PREVIEWS},
         ${AttachmentTable.TABLE_NAME}.${AttachmentTable.MESSAGE_ID} as $MEDIA_MESSAGE_ID
       """
@@ -415,10 +416,11 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
     return "$allMediaSubquery UNION ALL ${threadLinkMediaQuery(threadId)}"
   }
 
-  /** Links in [threadId], in received order. Across all threads, only links whose preview image is stored locally. */
+  /** Links in [threadId], in received order. The global view requires stored preview images for the preview branch. */
   private fun threadLinkMediaQuery(threadId: Long): String {
-    val filter = if (threadId == ALL_THREADS.toLong()) {
-      "${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID} != $threadId AND $STORED_LOCALLY_CONDITION"
+    val allThreads = threadId == ALL_THREADS.toLong()
+    val filter = if (allThreads) {
+      "${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID} != $threadId"
     } else {
       "${MessageTable.TABLE_NAME}.${MessageTable.THREAD_ID} = $threadId"
     }
@@ -429,7 +431,7 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
       "${MessageTable.TABLE_NAME} INDEXED BY ${MessageTable.INDEX_LINK_PREVIEW_DATE}"
     }
 
-    return linkMediaQuery(filter = filter, messages = messages)
+    return linkMediaQuery(filter = filter, messages = messages, requireStoredPreviewImage = allThreads)
   }
 
   /** What makes a non-gallery attachment listable in [threadId]. */
@@ -489,8 +491,13 @@ class MediaTable internal constructor(context: Context?, databaseHelper: SignalD
   }
 
   /** Returns all media for links (like, urls sent in chats), restricted by [filter]. */
-  private fun linkMediaQuery(filter: String, messages: String = MessageTable.TABLE_NAME): String {
-    val storedPreviewCondition = "${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS} IS NOT NULL"
+  private fun linkMediaQuery(filter: String, messages: String = MessageTable.TABLE_NAME, requireStoredPreviewImage: Boolean = false): String {
+    val previewCondition = "${MessageTable.TABLE_NAME}.${MessageTable.LINK_PREVIEWS} IS NOT NULL"
+    val storedPreviewCondition = if (requireStoredPreviewImage) {
+      "($previewCondition AND $STORED_LOCALLY_CONDITION)"
+    } else {
+      previewCondition
+    }
     val includeBodyLinks = CollieFlags.previewIndependentSharedLinks
     val bodyProjection = if (includeBodyLinks) "${MessageTable.TABLE_NAME}.${MessageTable.BODY}" else "NULL"
     val linkCondition = if (includeBodyLinks) {

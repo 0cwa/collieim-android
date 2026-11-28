@@ -9,6 +9,8 @@ This file is for autonomous agents. Human contributors should follow [CONTRIBUTI
 - Before pushing, run `python3 tooling/git-hooks/install.py` or `python3 tooling/ci/preflight.py` to catch unregistered `Layer:` trailers, unsigned commits, and Fastlane metadata errors locally.
 - For feature lanes, verify focused unit tests and debug instrumentation APKs locally; leave full dual unsigned release APK builds to CI unless directly verifying release or packaging changes.
 - Signal and Molly upgrades: merge them with `python3 tooling/upstream/merge-upstream.py signal <tag>` or `molly <branch>` (see `docs/SIGNAL-DONATION-REMOVAL.md`). Upstream commits stay unsigned and without trailers; the signed merge commit carries `Layer: upgrade` and `Upstream:`, which CI checks against the upstream repository.
+- Keep upstream changes mergeable: use small hooks and isolated resources, and track deliberate removals; see `docs/SOFT-FORK-ARCHITECTURE.md`.
+- Security reviews should record provenance, trust domains, seams, and falsification evidence; see `docs/security/REVIEW-METHODOLOGY.md`.
 - Add nothing to the repo root; put new files under `docs/`, `tooling/` or `.github/`.
 - Backups: `docs/agents/backups.md` (V2-only rule for Collie features; keep legacy V1 `.backup` code upstream-intact for Molly restore compatibility).
 - Releases: `docs/RELEASING.md`. Build and publish the APK first. Tooling changes go in separate PRs and never delay a release.

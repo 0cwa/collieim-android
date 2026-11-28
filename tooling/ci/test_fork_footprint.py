@@ -302,9 +302,11 @@ class ForkFootprintTests(unittest.TestCase):
                                       stderr=subprocess.PIPE).stdout.decode().strip()
             run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
             run("config", "commit.gpgsign", "false")
-            names = ['quote " and 雪.kt', os.fsdecode(b"invalid-\xff.kt")]
+            names = ['quote " and 雪.kt', os.fsdecode(b"invalid-\xff.kt"),
+                     "space b/ inside b/name.kt", "control-\x07-and-\x08.kt"]
             for i, name in enumerate(names):
-                path = root / name; path.write_text(f"before-{i}\n")
+                path = root / name; path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"before-{i}\n")
             localized = root / "app/src/main/res/values-fr/strings.xml"
             localized.parent.mkdir(parents=True); localized.write_text("<resources/>\n")
             binary = root / "binary.dat"; binary.write_bytes(b"\x00\xffbefore")
@@ -317,10 +319,12 @@ class ForkFootprintTests(unittest.TestCase):
             stat = fp.diff_numstat(base, head)
             self.assertEqual(stat[names[0]], (1, 1))
             self.assertEqual(stat[names[1]], (1, 1))
+            self.assertEqual(stat[names[2]], (1, 1))
+            self.assertEqual(stat[names[3]], (1, 1))
             self.assertEqual(stat["app/src/main/res/values-fr/strings.xml"], (1, 1))
             self.assertEqual(stat["binary.dat"], (0, 0))
             count, path_counts, spans = fp.diff_hunk_metadata(base, head, names)
-            self.assertEqual(count, 2)
+            self.assertEqual(count, 4)
             self.assertEqual(path_counts, {name: 1 for name in names})
             self.assertEqual(set(spans), set(names))
             literal = "literal-\\xff.kt"
@@ -330,6 +334,37 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(safe["literal-\\\\xff.kt"], "literal-\\\\xff.kt")
             self.assertEqual(safe[r"raw-\xff.kt"], r"raw-\xff.kt")
             self.assertIn(r"invalid-\xff.kt", fp.inline_code(names[1]))
+
+    def test_tree_diff_respects_diff_attributes_and_attr_source_refs(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fp.REPO = root
+            def run(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).stdout
+            run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
+            run("config", "commit.gpgsign", "false")
+            (root / ".gitattributes").write_text("sample.txt diff\n")
+            (root / "sample.txt").write_text("before\n")
+            run("add", "."); run("commit", "-qm", "text diff enabled")
+            base = run("rev-parse", "HEAD").decode().strip()
+            (root / ".gitattributes").write_text("sample.txt -diff\n")
+            (root / "sample.txt").write_text("after\n")
+            run("add", "."); run("commit", "-qm", "text diff disabled")
+            head = run("rev-parse", "HEAD").decode().strip()
+
+            def attr(source=None):
+                args = ["check-attr", "-z"]
+                if source:
+                    args.extend(["--source", source])
+                args.extend(["diff", "--", "sample.txt"])
+                return run(*args).split(b"\0")
+
+            self.assertEqual(attr(base), [b"sample.txt", b"diff", b"set", b""])
+            self.assertEqual(attr(head), [b"sample.txt", b"diff", b"unset", b""])
+            self.assertEqual(attr(), [b"sample.txt", b"diff", b"unset", b""])
+            count, path_counts, spans = fp.diff_hunk_metadata(base, head, ["sample.txt"])
+            self.assertEqual((count, path_counts, spans), (0, {}, {}))
 
     def test_hunks_for_file_replaced_by_directory_count_exact_paths(self):
         import subprocess

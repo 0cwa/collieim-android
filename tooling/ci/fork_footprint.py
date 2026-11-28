@@ -98,29 +98,53 @@ def diff_numstat(a, b):
 
 
 def diff_hunk_metadata(a, b, paths):
-    """Attribute hunks to exact blob paths, excluding descendants of replaced files."""
+    """Attribute hunks to exact tree paths, excluding descendants of replaced files."""
     counts, spans = Counter(), {}
-    blobs_a, blobs_b = tree_blobs(a), tree_blobs(b)
-    # Obtain the repository's empty blob dynamically. It is needed to diff
-    # additions and removals by object ID instead of a directory-matching pathspec.
-    empty = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=REPO,
-                           input=b"", check=True, stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE).stdout.decode().strip()
+    # Diff trees, rather than blobs, so Git can apply the path's diff
+    # attributes. In this Git version, diff attributes come from the checkout;
+    # check-attr --source can inspect another tree but diff has no attr-source.
+    # A literal pathspec can select descendants when this path is a directory
+    # on one side, so accept only a matching file header.
     for path in paths:
-        old, new = blobs_a.get(path), blobs_b.get(path)
-        if old == new:
-            continue
-        patch = git("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3",
-                    old or empty, new or empty).decode(errors="replace")
+        path_bytes = os.fsencode(path)
+        patch = subprocess.run(
+            ["git", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
+             "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3",
+             a, b, "--", path], cwd=REPO, check=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
+        raw_header = b"diff --git a/" + path_bytes + b" b/" + path_bytes
+        quoted_old = _git_quote_path(b"a/" + path_bytes)
+        quoted_new = _git_quote_path(b"b/" + path_bytes)
+        quoted_header = b"diff --git " + quoted_old + b" " + quoted_new
+        section_path = None
         for line in patch.splitlines():
-            if not line.startswith("@@"):
-                continue
-            counts[path] += 1
-            match = re.match(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", line)
-            if match:
-                spans.setdefault(path, []).append({"old_start": int(match[1]), "old_count": int(match[2] or 1),
-                                                   "new_start": int(match[3]), "new_count": int(match[4] or 1)})
+            if line.startswith(b"diff --git "):
+                section_path = path if line in (raw_header, quoted_header) else None
+            elif section_path == path and line.startswith(b"@@"):
+                counts[path] += 1
+                match = re.match(rb"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", line)
+                if match:
+                    spans.setdefault(path, []).append({"old_start": int(match[1]), "old_count": int(match[2] or 1),
+                                                       "new_start": int(match[3]), "new_count": int(match[4] or 1)})
     return sum(counts.values()), counts, spans
+
+
+def _git_quote_path(path):
+    """Return Git's core.quotePath=true C-style spelling for a path."""
+    escapes = {7: b"\\a", 8: b"\\b", 9: b"\\t", 10: b"\\n", 11: b"\\v", 12: b"\\f", 13: b"\\r",
+               34: b'\\"', 92: b"\\\\"}
+    if not any(byte < 32 or byte >= 127 or byte in (34, 92) for byte in path):
+        return path
+    quoted = bytearray(b'"')
+    for byte in path:
+        if byte in escapes:
+            quoted.extend(escapes[byte])
+        elif byte < 32 or byte >= 127:
+            quoted.extend(f"\\{byte:03o}".encode("ascii"))
+        else:
+            quoted.append(byte)
+    quoted.append(34)
+    return bytes(quoted)
 
 
 def display_text(value):

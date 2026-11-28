@@ -4,8 +4,8 @@ set -euo pipefail
 workload=$1
 mode=$2
 case "$mode" in
-  seed) offline=() ;;
-  baseline|candidate) offline=(--offline) ;;
+  seed|baseline) resolution=(--info) ;;
+  candidate) resolution=(--offline) ;;
   *) echo "Unknown trial phase: $mode" >&2; exit 1 ;;
 esac
 
@@ -45,20 +45,31 @@ snapshot() {
         -printf '%P\t%i\t%s\t%T@\n' | sort
 }
 
-snapshot > "$evidence/$mode-before.tsv"
+phase="$evidence/$workload-$mode"
+snapshot > "$phase-before.tsv"
 start=$SECONDS
-status=0
+set +e
 # Gradle test reports use Unicode test names in filesystem paths.
 LC_ALL=C.UTF-8 ./gradlew --no-daemon --no-build-cache --no-configuration-cache --console=plain \
-    "${offline[@]}" "${args[@]}" "${tasks[@]}" || status=$?
+    "${resolution[@]}" "${args[@]}" "${tasks[@]}" 2>&1 | tee "$phase-gradle.log"
+phase_status=("${PIPESTATUS[@]}")
+set -e
+status=${phase_status[0]}
+test "${phase_status[1]}" -eq 0
+if [[ "$mode" != candidate ]]; then
+    downloads=$(grep -Ec '^[[:space:]]*Downloading ' "$phase-gradle.log" || true)
+    misses=$(grep -c 'Resource missing\. \[HTTP' "$phase-gradle.log" || true)
+    printf '%s %s: %s Gradle download lines, %s missing HTTP resources\n' \
+        "$workload" "$mode" "$downloads" "$misses" | tee -a "$GITHUB_STEP_SUMMARY"
+fi
 elapsed=$((SECONDS - start))
-snapshot > "$evidence/$mode-after.tsv"
-comm -13 "$evidence/$mode-before.tsv" "$evidence/$mode-after.tsv" \
-    | cut -f1 | sort -u > "$evidence/$mode-rebuilt.txt"
-count=$(wc -l < "$evidence/$mode-rebuilt.txt")
+snapshot > "$phase-after.tsv"
+comm -13 "$phase-before.tsv" "$phase-after.tsv" \
+    | cut -f1 | sort -u > "$phase-rebuilt.txt"
+count=$(wc -l < "$phase-rebuilt.txt")
 printf '%s %s: Gradle exit %d, %ds, %d new or replaced transform results\n' \
     "$workload" "$mode" "$status" "$elapsed" "$count" | tee -a "$GITHUB_STEP_SUMMARY"
-cat "$evidence/$mode-rebuilt.txt"
+cat "$phase-rebuilt.txt"
 if [[ "$status" != 0 ]]; then
     exit "$status"
 fi

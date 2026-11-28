@@ -4,11 +4,16 @@ inputs:
   workload:
     description: Workload to restore
     required: true
+  fixtures-only:
+    description: Restore JNI and Robolectric without restoring Gradle state
+    required: false
+    default: 'false'
 runs:
   using: composite
   steps:
     - name: Select and record reference archive keys
       id: reference
+      if: inputs.fixtures-only != 'true'
       shell: bash
       env:
         WORKLOAD: ${{ inputs.workload }}
@@ -57,6 +62,7 @@ runs:
     # The path strings and their order match the archive versions produced by setup-gradle v6.4.0.
     - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       id: home
+      if: inputs.fixtures-only != 'true'
       with:
         path: |
           /home/runner/.gradle/caches
@@ -66,35 +72,84 @@ runs:
         fail-on-cache-miss: true
     - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       id: dependencies
+      if: inputs.fixtures-only != 'true'
       with:
         path: /home/runner/.gradle/caches/modules-*/files-*/*/*/*/*/
         key: ${{ steps.reference.outputs.dependencies }}
         fail-on-cache-miss: true
     - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       id: transforms
+      if: inputs.fixtures-only != 'true'
       with:
         path: |
           /home/runner/.gradle/caches/transforms-4/*/
           /home/runner/.gradle/caches/*/transforms/*/
         key: ${{ steps.reference.outputs.transforms }}
         fail-on-cache-miss: true
-    - name: Isolate the baseline Gradle paths
+    - name: Restore instrumented jar bootstrap
+      id: instrumented
+      if: inputs.fixtures-only != 'true'
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: /home/runner/.gradle/caches/jars-*/*/
+        key: gradle-instrumented-jars-v2-81e4fe3dc35ce07fe8bcb9b411c46de8
+        fail-on-cache-miss: true
+    - name: Restore Kotlin DSL bootstrap
+      id: kotlin-dsl
+      if: inputs.fixtures-only != 'true'
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: |
+          /home/runner/.gradle/caches/*/kotlin-dsl/accessors/*/
+          /home/runner/.gradle/caches/*/kotlin-dsl/scripts/*/
+        key: gradle-kotlin-dsl-v2-3daa9d86e659cfe937ee0863f2cd95e9
+        fail-on-cache-miss: true
+    - name: Restore Groovy DSL bootstrap
+      id: groovy-dsl
+      if: inputs.fixtures-only != 'true'
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: /home/runner/.gradle/caches/*/groovy-dsl/*/
+        key: gradle-groovy-dsl-v2-c8febbf6660fcbdaf6c9d3942dfd9cb3
+        fail-on-cache-miss: true
+    - name: Restore generated Gradle API jar
+      id: gradle-api
+      if: inputs.fixtures-only != 'true'
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: /home/runner/.gradle/caches/9.6.0/generated-gradle-jars/gradle-api-9.6.0.jar
+        key: gradle-generated-gradle-jars-v2-17a19f2c81c308e6469d4947d2674735
+        fail-on-cache-miss: true
+    - name: Restore the Gradle wrapper distribution
+      id: wrapper
+      if: inputs.fixtures-only != 'true'
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: /home/runner/.gradle/wrapper/dists/gradle-9.6.0-all/dixtgvkfpkd48f03qv19we908
+        key: gradle-wrapper-zips-v2-a8e38956561f03e806eea4b85c3fb972
+        fail-on-cache-miss: true
+    - name: Require exact references and retain the warm Gradle home
+      if: inputs.fixtures-only != 'true'
       shell: bash
       env:
         HOME_HIT: ${{ steps.home.outputs.cache-hit }}
         DEPENDENCIES_HIT: ${{ steps.dependencies.outputs.cache-hit }}
         TRANSFORMS_HIT: ${{ steps.transforms.outputs.cache-hit }}
+        INSTRUMENTED_HIT: ${{ steps.instrumented.outputs.cache-hit }}
+        KOTLIN_HIT: ${{ steps.kotlin-dsl.outputs.cache-hit }}
+        GROOVY_HIT: ${{ steps.groovy-dsl.outputs.cache-hit }}
+        API_HIT: ${{ steps.gradle-api.outputs.cache-hit }}
+        WRAPPER_HIT: ${{ steps.wrapper.outputs.cache-hit }}
       run: |
         set -euo pipefail
-        if [[ "$HOME_HIT/$DEPENDENCIES_HIT/$TRANSFORMS_HIT" != 'true/true/true' ]]; then
-          echo '::error::Expected exact hits for all three reference keys'
-          exit 1
-        fi
+        for hit in HOME DEPENDENCIES TRANSFORMS INSTRUMENTED KOTLIN GROOVY API WRAPPER; do
+          var="${hit}_HIT"
+          if [[ "${!var}" != true ]]; then
+            echo "::error::Expected exact reference hit for $hit"
+            exit 1
+          fi
+        done
         cat "$RUNNER_TEMP/reference-keys.txt" >> "$GITHUB_STEP_SUMMARY"
-        mv "$GRADLE_USER_HOME" "$RUNNER_TEMP/reference-gradle-home"
-        mkdir -p "$GRADLE_USER_HOME/caches/9.6.0"
-        mv "$RUNNER_TEMP/reference-gradle-home/caches/modules-2" "$GRADLE_USER_HOME/caches/"
-        mv "$RUNNER_TEMP/reference-gradle-home/caches/9.6.0/transforms" "$GRADLE_USER_HOME/caches/9.6.0/"
         find "$GRADLE_USER_HOME/caches" -type f \( -name '*.lock' -o -name gc.properties \) -delete
     - name: Restore test-only JNI
       if: inputs.workload == 'app-0' || inputs.workload == 'app-1' || inputs.workload == 'modules'

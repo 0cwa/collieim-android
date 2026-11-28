@@ -1,10 +1,11 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
 import android.content.Context
-import android.net.Uri
 import androidx.core.app.ShareCompat
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlFrame
+import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.Target
@@ -31,7 +32,6 @@ import org.signal.core.util.concurrent.SignalExecutors
 import kotlinx.coroutines.runBlocking
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 
 internal enum class PairingReceiptV4State { PENDING, CONFIRMED }
 
@@ -453,8 +453,7 @@ internal class PairingV1Coordinator(private val context: Context) {
     offer: PairingV1.Offer,
     disclosure: RelayDisclosure.Snapshot?,
     consented: ConsentDetails,
-    serverEpoch: Long?,
-    allowRecovery: Boolean,
+    replaceApproved: Boolean,
     bridgeDeviceId: Int? = null,
   ): SealResult {
     if (offer.intent != "add_receiver" && synchronized(UnifiedPushLifecycle.monitor) { SignalStore.account.isLinkedDevice }) {
@@ -493,7 +492,41 @@ internal class PairingV1Coordinator(private val context: Context) {
     // runIfCurrent's monitor section to preserve the enrollment exporter's global lock order.
     return if (!maySeal) outcome else if (offer.intent == "add_receiver") {
       createReceiverRequest(offer, disclosure, consented, bridgeDeviceId)
-    } else createSealedRequest(offer, disclosure, consented, serverEpoch, allowRecovery)
+    } else createSealedRequest(offer, disclosure, consented, replaceApproved)
+  }
+
+  fun hasExistingBridgeSetup(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    val values = SignalStore.unifiedpush
+    val state = values.controlStateRead.stateOrNull
+    values.mollySocketUrl != null || values.airGapped || values.pairingEndpointBinding != null ||
+      values.v4ReceiverState != null || values.v4PendingReceiverState != null || values.hasCorruptControlState ||
+      state?.let { it.highestEpoch > 0 || it.pendingIntentCount > 0 } == true
+  }
+
+  private fun selectBridgeEpoch(old: ControlState, offer: PairingV1.Offer, replaceApproved: Boolean): Long {
+    val values = SignalStore.unifiedpush
+    val binding = values.pairingEndpointBinding
+    if (!replaceApproved && hasExistingBridgeSetup()) throw EnrollmentFile.Invalid("disclosure_changed")
+    if (values.v4ReceiverState != null || values.v4PendingReceiverState != null ||
+      old.pendingIntentCount != 0 || old.update != null || old.highestEpoch != old.activeEpoch) {
+      throw EnrollmentFile.Invalid("recovery_blocked")
+    }
+    if (old.activeEpoch == 0L && old.key == null && binding == null) return 1L
+
+    // Use only an authenticated, promoted import for this relay. An offer's label and an unconfirmed
+    // import carry no proof that the relay is at a given epoch.
+    if (old.key == null || old.activeImportId == null || binding == null || binding.importId != old.activeImportId ||
+      binding.accountId != SignalStore.account.aci?.toString() || binding.accountId != old.activeAccountId ||
+      binding.deviceId != SignalStore.account.deviceId || values.device?.deviceId != old.activeDeviceId ||
+      binding.instance != old.activeInstance || binding.instance != values.endpointInstance ||
+      binding.vapidPublicKey != offer.vapidPublicKey || binding.providerOrigin != offer.providerOrigin ||
+      values.endpoint?.let { endpoint ->
+        binding.endpointOrigin == PairingV1.canonicalOrigin(endpoint) &&
+          old.serverTarget == canonicalTarget(endpoint, values.endpointP256dh, values.endpointAuth)
+      } != true) {
+      throw EnrollmentFile.Invalid("recovery_blocked")
+    }
+    return EnrollmentFile.nextEpoch(old.activeEpoch)
   }
 
   private fun createReceiverRequest(
@@ -637,8 +670,7 @@ internal class PairingV1Coordinator(private val context: Context) {
     offer: PairingV1.Offer,
     disclosure: RelayDisclosure.Snapshot?,
     consented: ConsentDetails,
-    serverEpoch: Long?,
-    allowRecovery: Boolean,
+    replaceApproved: Boolean,
   ): SealResult {
     var sealedCandidate: PairingV1.SealedRequest? = null
     return try {
@@ -666,8 +698,7 @@ internal class PairingV1Coordinator(private val context: Context) {
           isDistributorActive = { activeBindingStillMatches(consented) },
           target = target,
           instance = consented.instance,
-          serverEpoch = serverEpoch,
-          allowRecovery = allowRecovery,
+          selectEpoch = { state -> selectBridgeEpoch(state, offer, replaceApproved) },
           validateBeforeCommit = { intent ->
             if (System.currentTimeMillis() / 1000 >= offer.expiresAt) throw EnrollmentFile.Invalid("offer_expired")
             val disclosureStillCurrent = RelayDisclosure.runIfCurrent(snapshot) {}
@@ -730,22 +761,28 @@ internal class PairingV1Coordinator(private val context: Context) {
             throw e
           }
           }
-          PairingRegistrationGate.current()?.takeIf { it.binding.instance == consented.instance }?.let { pending ->
-            val bound = PairingRegistrationGate.bindImport(
-              pending.binding.instance,
-              PairingRegistrationGate.ImportBinding(
-                importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
-                importedIntent.target.endpoint, importedIntent.target.p256dh, importedIntent.target.auth,
-                importedIntent.accountId, importedIntent.deviceId, importedIntent.instance,
-              ),
-            )
-            if (!bound) throw EnrollmentFile.Invalid("disclosure_changed")
+          try {
+            PairingRegistrationGate.current()?.takeIf { it.binding.instance == consented.instance }?.let { pending ->
+              val bound = PairingRegistrationGate.bindImport(
+                pending.binding.instance,
+                PairingRegistrationGate.ImportBinding(
+                  importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
+                  importedIntent.target.endpoint, importedIntent.target.p256dh, importedIntent.target.auth,
+                  importedIntent.accountId, importedIntent.deviceId, importedIntent.instance,
+                ),
+              )
+              if (!bound) throw EnrollmentFile.Invalid("disclosure_changed")
+            }
+            if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
+                offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
+                offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
+                RelayDisclosure.pairingScopeDigest(snapshot),
+              ))) throw EnrollmentFile.Invalid("state_unavailable")
+          } catch (e: Exception) {
+            // The intent has been committed, but the request has not been published as a session.
+            discardUndispatchedBridgeIntent(checkNotNull(created))
+            throw e
           }
-          if (!LockedPushState.savePairingConfirmation(context, LockedPushState.PairingConfirmation(
-              offer.sessionId, consented.instance, consented.distributorId, offer.vapidPublicKey, offer.providerOrigin,
-              offer.expiresAt, offer.hostLabel, importedIntent.requestId, importedIntent.keyId, importedIntent.epoch,
-              RelayDisclosure.pairingScopeDigest(snapshot),
-            ))) throw EnrollmentFile.Invalid("state_unavailable")
         }
       }
       val session = checkNotNull(created)
@@ -760,8 +797,7 @@ internal class PairingV1Coordinator(private val context: Context) {
         "disclosure_changed" -> R.string.UnifiedPushSettingsFragment__disclosure_stale
         "not_ready" -> R.string.PairingV1__endpoint_unavailable
         "offer_expired" -> R.string.PairingV1__offer_expired
-        "recovery_ack_required" -> R.string.UnifiedPushSettingsFragment__export_enrollment_recovery_ack_required
-        "pending_limit" -> R.string.UnifiedPushSettingsFragment__export_enrollment_pending_limit
+        "recovery_blocked", "pending_limit", "state_unavailable", "sequence_exhausted" -> R.string.PairingV1__recovery_blocked
         else -> R.string.PairingV1__request_failed
       }))
     } catch (_: IOException) {
@@ -981,33 +1017,11 @@ internal class PairingV1Coordinator(private val context: Context) {
     val session = activeSession?.takeIf { it.id == sessionId } ?: return false
     return runIfCurrentSession(session) {
       ShareCompat.IntentBuilder(context)
-        .setType("application/json")
+        .setType("text/plain")
         .setText(session.requestJson)
         .setChooserTitle(R.string.PairingV1__share_request)
         .startChooser()
       requestDispatched = true
-    }
-  }
-
-  fun writeRequest(context: Context, sessionId: String, uri: Uri): Boolean {
-    val session = synchronized(this) {
-      activeSession?.takeIf {
-        it.id == sessionId && runIfCurrentSession(it) {
-          // A provider may publish bytes before the write or close reports success.
-          requestDispatched = true
-        }
-      }
-    } ?: return false
-    // The provider receives only the immutable sealed envelope. Provider I/O must not hold the
-    // account monitor, since an external DocumentsProvider may block even while closing a file.
-    try {
-      val stream = context.contentResolver.openOutputStream(uri, "wt") ?: return false
-      stream.bufferedWriter(StandardCharsets.UTF_8).use { it.write(session.requestJson) }
-      return true
-    } catch (_: IOException) {
-      return false
-    } catch (_: SecurityException) {
-      return false
     }
   }
 
@@ -1038,6 +1052,7 @@ internal class PairingV1Coordinator(private val context: Context) {
         discardCandidate(attempt.binding)
       }
       if (!requestDispatched && session != null) {
+        discardUndispatchedBridgeIntent(session)
         clearUnconfirmedReceiverAttemptLocked(session.id, session.receiverStateJson)
         LockedPushState.clearPairingConfirmation(context, session.id)
       }
@@ -1047,10 +1062,16 @@ internal class PairingV1Coordinator(private val context: Context) {
   }
 
   @Synchronized
+  fun closeOfflinePairing(sessionId: String) {
+    if (activeSession?.id == sessionId && !requestDispatched) cancelOfferAttempt(sessionId)
+  }
+
+  @Synchronized
   fun cancelOfferAttempt(sessionId: String) {
     synchronized(UnifiedPushLifecycle.monitor) {
       if (registeringSessionId == sessionId) registeringSessionId = null
       val session = activeSession?.takeIf { it.id == sessionId }
+      if (session != null && !requestDispatched) discardUndispatchedBridgeIntent(session)
       clearUnconfirmedReceiverAttemptLocked(sessionId, session?.receiverStateJson)
       LockedPushState.clearPairingConfirmation(context, sessionId)
       PairingRegistrationGate.current()?.takeIf { it.binding.sessionId == sessionId }?.let { attempt ->
@@ -1062,6 +1083,27 @@ internal class PairingV1Coordinator(private val context: Context) {
       activeSession?.sealed?.receiptKey?.fill(0)
       activeSession = null
       requestDispatched = false
+    }
+  }
+
+  private fun discardUndispatchedBridgeIntent(session: Session) {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    if (session.receiverStateJson != null) return
+    val values = SignalStore.unifiedpush
+    if (values.controlStateRead !is ControlStateRead.Current) return
+    values.mutateControl { state ->
+      val intent = state.intents.singleOrNull()
+      if (intent?.requestId == session.importRequestId && intent.keyId == session.importKeyId &&
+        intent.accountId == session.accountId && intent.deviceId == session.importDeviceId &&
+        intent.instance == session.instance && intent.target == session.importTarget &&
+        intent.epoch == session.importEpoch && intent.sequence == state.importSequence &&
+        state.highestEpoch == intent.epoch && state.activeEpoch + 1 == intent.epoch) {
+        // The in-memory session proves the request never left the phone, even if consent has since expired.
+        // Preserve the sequence and replay state even though the reserved epoch can be used again.
+        state.copy(intents = emptyList(), highestEpoch = state.activeEpoch)
+      } else {
+        state
+      }
     }
   }
 

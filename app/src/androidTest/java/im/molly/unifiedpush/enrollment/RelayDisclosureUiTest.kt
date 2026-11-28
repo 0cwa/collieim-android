@@ -2,20 +2,29 @@ package im.molly.unifiedpush.enrollment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import android.content.BroadcastReceiver
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.app.Activity
+import android.app.Instrumentation
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.WindowManager
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.fragment.NavHostFragment
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -23,6 +32,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
+import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
+import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScanRepository
+import im.molly.unifiedpush.components.settings.app.notifications.QrScanResult
 import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
 import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsFragment
 import im.molly.unifiedpush.control.ControlState
@@ -43,7 +55,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
+import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues.PairingEndpointBinding
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.testing.actions.scrollToDescendant
@@ -55,6 +69,7 @@ import java.io.File
 class RelayDisclosureUiTest {
   @get:Rule val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
   @get:Rule val animations = DisableAnimationsRule()
+  @get:Rule val compose = createEmptyComposeRule()
 
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
   private val context: Context = instrumentation.targetContext
@@ -154,7 +169,7 @@ class RelayDisclosureUiTest {
           (host.childFragmentManager.primaryNavigationFragment as UnifiedPushSettingsFragment).showPairingConsentFixtureForTest(wrapper)
         }
         val expectedTitle = "Add this device to “Collie Lab”?"
-        val expectedMessage = "Push server: https://push.example.test\nDistributor: Collie Pack\nEncrypted request will be sent to: $url\n\nAdds this device to your existing notification relay without linking another Signal device."
+        val expectedMessage = "Push server: https://push.example.test\nDistributor: Test distributor\nSend to https://push.example.test\n\nAdds this device to your existing notification relay without linking another Signal device."
         onView(withText(expectedTitle)).check(matches(isDisplayed()))
         onView(withId(android.R.id.message)).check(matches(withText(expectedMessage)))
         onView(withText(android.R.string.cancel)).check(matches(isDisplayed()))
@@ -251,78 +266,212 @@ class RelayDisclosureUiTest {
   }
 
   @Test
-  fun actualCopyAndAllExportModesRequireConfirmation() = withSettings { scenario ->
-    val clipboard = checkNotNull(context.getSystemService(ClipboardManager::class.java))
-    var originalClip: ClipData? = null
-    scenario.onActivity {
-      originalClip = clipboard.primaryClip
-      clipboard.setPrimaryClip(ClipData.newPlainText("fixture", "clipboard unchanged"))
-    }
-    try {
-      clickSetting(R.string.UnifiedPushSettingsFragment__server_parameters)
-      assertTrustVisible()
-      screenshot("04-clipboard-trust")
-      cancelDialog()
-      scenario.onActivity { assertEquals("clipboard unchanged", clipboard.primaryClip!!.getItemAt(0).text.toString()) }
-      assertAuthorizationUnchanged()
+  fun firstTimeDeliveryUsesTheScannerAndShowsFreshPairingConsent() {
+    SignalStore.settings.preferredNotificationMethod = NotificationDeliveryMethod.WEBSOCKET
+    values.airGapped = false
+    values.mutateControl { ControlState() }
+    val fresh = values.controlState
+    withFixtureDistributor {
+      withSettings(AppSettingsActivity.pushNotifications(context), openRelay = false) {
+        val delivery = context.getString(R.string.NotificationsSettingsFragment__delivery_service)
+        compose.onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasText(delivery))
+        compose.onNodeWithText(delivery).performClick()
+        compose.onNodeWithText(context.getString(R.string.NotificationDeliveryMethod__unifiedpush), useUnmergedTree = true)
+          .performClick()
+        compose.waitForIdle()
+        instrumentation.waitForIdleSync()
 
-      for (mode in ExportMode.entries) {
-        clickSetting(R.string.UnifiedPushSettingsFragment__export_enrollment)
-        val choice = when (mode) {
-          ExportMode.NEW_INTENT -> R.string.UnifiedPushSettingsFragment__export_new_intent
-          ExportMode.RECOVERY -> R.string.UnifiedPushSettingsFragment__export_recovery_intent
-          ExportMode.RERENDER -> R.string.UnifiedPushSettingsFragment__export_rerender_intent
+        onView(withText(R.string.NotificationsSettingsFragment__qr_setup_title)).inRoot(isDialog()).check(matches(isDisplayed()))
+        onView(withId(android.R.id.message)).check(matches(withText(containsString("unencrypted wake-ups"))))
+        screenshot("first-time-entry")
+        returnQrResult(wrappedBridgeOffer()) {
+          onView(withText(R.string.AddLinkDeviceFragment__scan_qr_code)).perform(click())
         }
-        onView(withText(choice)).perform(click())
-        if (mode == ExportMode.RECOVERY) onView(withText(R.string.UnifiedPushSettingsFragment__export_continue)).perform(click())
-        if (mode == ExportMode.RERENDER) {
-          onView(withText(context.getString(R.string.UnifiedPushSettingsFragment__saved_export_label, 1, 1L))).perform(click())
-        } else {
-          onView(withText(R.string.UnifiedPushSettingsFragment__export_enrollment_export)).perform(click())
-        }
-        assertTrustVisible()
-        onView(withId(android.R.id.message)).check(matches(withText(containsString(context.getString(R.string.RelayDisclosureDialog__export_message)))))
-        screenshot("05-export-trust-${mode.name.lowercase()}")
+        onView(withText("Pair with “Collie Lab”?")).check(matches(isDisplayed()))
+        onView(withId(android.R.id.message))
+          .check(matches(withText(containsString("Send to https://relay.example.invalid:9443"))))
+          .check(matches(withText(not(containsString("/pairing/v1/submit")))))
+        onView(withText(R.string.PairingV1__consent_confirm)).check(matches(isDisplayed()))
+        onView(withText(R.string.PairingV1__replace_setup_confirm)).check(doesNotExist())
+        screenshot("fresh-pairing")
         cancelDialog()
-        assertAuthorizationUnchanged()
-      }
-
-      // A configuration change after opening confirmation cannot authorize a different clipboard payload.
-      clickSetting(R.string.UnifiedPushSettingsFragment__server_parameters)
-      values.endpoint = "https://push.example.invalid/replaced-endpoint"
-      onView(withText(R.string.RelayDisclosureDialog__copy_confirm)).perform(click())
-      scenario.onActivity { assertEquals("clipboard unchanged", clipboard.primaryClip!!.getItemAt(0).text.toString()) }
-      assertAuthorizationUnchanged()
-    } finally {
-      scenario.onActivity {
-        originalClip?.let(clipboard::setPrimaryClip) ?: clipboard.clearPrimaryClip()
+        assertFourRows()
+        onView(withText(R.string.UnifiedPushSettingsFragment__test_push)).check(matches(not(isEnabled())))
+        screenshot("four-rows")
+        assertEquals(fresh, values.controlState)
+        assertEquals(NotificationDeliveryMethod.WEBSOCKET, SignalStore.settings.preferredNotificationMethod)
       }
     }
   }
 
   @Test
-  fun guidanceDistinguishesLocalCleanupFromSignalUnlink() = withSettings {
-    scrollToDescendant(R.id.recycler, withText(R.string.UnifiedPushSettingsFragment__relay_trust_summary))
-    onView(withText(R.string.UnifiedPushSettingsFragment__relay_trust_summary)).check(matches(isDisplayed()))
-    screenshot("06-settings-guidance")
-    clickSetting(R.string.UnifiedPushSettingsFragment__remove_relay_access_title)
-    onView(withText(R.string.UnifiedPushSettingsFragment__remove_relay_access_message)).check(matches(isDisplayed()))
-    screenshot("07-remove-relay-access")
-    onView(withText(android.R.string.ok)).perform(click())
+  fun priorPendingSetupShowsReplacementConsentWithoutChangingSavedData() = withFixtureDistributor {
+    withSettings {
+      assertFourRows()
+      returnQrResult(wrappedBridgeOffer()) { clickSetting(R.string.PairingV1__notification_relay) }
+      onView(withText("Replace push setup with “Collie Lab”?")).check(matches(isDisplayed()))
+      onView(withText(R.string.PairingV1__replace_setup_confirm)).check(matches(isDisplayed()))
+      onView(withText(R.string.PairingV1__consent_confirm)).check(doesNotExist())
+      cancelDialog()
+      assertAuthorizationUnchanged()
+    }
+  }
+
+  @Test
+  fun confirmedSetupShowsReplacementConsentAndOperationalActions() = withFixtureDistributor {
+    val offer = wrappedBridgeOffer()
+    val confirmed = seedConfirmedRelay(offer)
+    withSettings {
+      assertFourRows()
+      onView(withText(R.string.PairingV1__status_connected)).check(matches(isDisplayed()))
+      onView(withText(R.string.UnifiedPushSettingsFragment__test_push)).check(matches(isEnabled()))
+      screenshot("four-rows-connected")
+      returnQrResult(offer) { clickSetting(R.string.PairingV1__notification_relay) }
+      onView(withText("Replace push setup with “Collie Lab”?")).check(matches(isDisplayed()))
+      onView(withText(R.string.PairingV1__replace_setup_confirm)).check(matches(isDisplayed()))
+      screenshot("replace-pairing")
+      cancelDialog()
+      openActionBarOverflowOrOptionsMenu(context)
+      onView(withText(R.string.PairingV1__advanced)).perform(click())
+      onView(withText(R.string.PairingV1__copy_account)).check(matches(isDisplayed()))
+      onView(withText(R.string.UnifiedPushSettingsFragment__remove_relay_access_title)).check(matches(isDisplayed()))
+      onView(withText("Export enrollment file")).check(doesNotExist())
+      onView(withText("Pending enrollment exports")).check(doesNotExist())
+      screenshot("advanced")
+      onView(withText(R.string.UnifiedPushSettingsFragment__remove_relay_access_title)).perform(click())
+      onView(withText(R.string.UnifiedPushSettingsFragment__remove_relay_access_message)).check(matches(isDisplayed()))
+      screenshot("remove-relay-access")
+      onView(withText(android.R.string.ok)).perform(click())
+      assertEquals(device, values.device)
+      assertEquals(confirmed, values.controlState)
+      assertArrayEquals(exportedBytes, export.readBytes())
+    }
+  }
+
+  private fun seedConfirmedRelay(wrapper: String): ControlState {
+    val offer = PairingTransport.parse(wrapper, System.currentTimeMillis() / 1000).offer
+    val account = checkNotNull(SignalStore.account.aci).toString()
+    val instance = "pairing-v1-confirmed-fixture"
+    val importId = "00000000-0000-4000-8000-000000000001"
+    val key = EnrollmentFile.newControlKey()
+    val target = Target(checkNotNull(values.endpoint), checkNotNull(values.endpointP256dh), checkNotNull(values.endpointAuth))
+    val confirmed = ControlState(
+      key = key,
+      activeKeyId = ControlKeyId.derive(key, account, device.deviceId, instance),
+      activeImportId = importId,
+      activeImportSeq = 3,
+      activeAccountId = account,
+      activeDeviceId = device.deviceId,
+      activeInstance = instance,
+      activeEpoch = 2,
+      highestEpoch = 2,
+      importSequence = 3,
+      serverTarget = target,
+    )
+    values.airGapped = false
+    values.setPairingEndpointRegistration(
+      target.endpoint, target.p256dh, target.auth,
+      PairingEndpointBinding(
+        instance, instrumentation.context.packageName, offer.vapidPublicKey, offer.providerOrigin,
+        checkNotNull(PairingV1.canonicalOrigin(target.endpoint)), "00000000-0000-4000-8000-000000000002",
+        offer.expiresAt, account, SignalStore.account.deviceId, offer.hostLabel, importId,
+      ),
+    )
+    values.mutateControl { confirmed }
+    return confirmed
+  }
+
+  @Test
+  fun legacyQrStillOpensRelayConsent() = withSettings {
+    onView(withText(R.string.PairingV1__configured_manually)).check(matches(isDisplayed()))
+    onView(withText(R.string.UnifiedPushSettingsFragment__test_push_legacy_manual)).check(matches(isDisplayed()))
+    onView(withText(R.string.UnifiedPushSettingsFragment__test_push_unavailable)).check(doesNotExist())
+    val vapid = "v".repeat(87)
+    val qr = "mollysocket://link?type=airgapped&vapid=$vapid"
+    val result = MollySocketQrScanRepository.lookupQrLink(qr).blockingGet() as QrScanResult.Success
+    returnQrResult(result.data) {
+      clickSetting(R.string.PairingV1__notification_relay)
+    }
+    onView(withText(R.string.RelayDisclosureDialog__select_title)).check(matches(isDisplayed()))
+    assertTrustVisible()
+    cancelDialog()
     assertAuthorizationUnchanged()
   }
 
-  private fun withSettings(block: (ActivityScenario<AppSettingsActivity>) -> Unit) {
+  private fun assertFourRows() {
+    for (title in listOf(
+      R.string.UnifiedPushSettingsFragment__status,
+      R.string.PairingV1__notification_relay,
+      R.string.UnifiedPushSettingsFragment__distributor_app,
+      R.string.UnifiedPushSettingsFragment__test_push,
+    )) {
+      onView(withText(title)).check(matches(isDisplayed()))
+    }
+    onView(withText("Export enrollment file")).check(doesNotExist())
+    onView(withText("Server parameters")).check(doesNotExist())
+  }
+
+  private fun wrappedBridgeOffer(): String {
+    val offer = ObjectMapper().readTree(fixture("colliesocket-pairing-v1/fixtures/sealed-vectors.json"))[0]["offer"]
+      .deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+      .put("intent", "pair_bridge")
+      .put("expires_at", System.currentTimeMillis() / 1000 + 600)
+      .put("provider_origin", "https://push.example.invalid")
+    return """{"collie_pairing_transport":1,"submit_url":"https://relay.example.invalid:9443/pairing/v1/submit","offer":$offer}"""
+  }
+
+  /** Substitute camera output at the activity boundary and let the real launcher parse the result. */
+  private fun returnQrResult(data: String, launch: () -> Unit) {
+    val result = Intent().putExtra(MollySocketQrScannerActivity.Contract.EXTRA_DATA, data)
+    val monitor = instrumentation.addMonitor(
+      MollySocketQrScannerActivity::class.java.name,
+      Instrumentation.ActivityResult(Activity.RESULT_OK, result),
+      true,
+    )
+    try {
+      launch()
+      instrumentation.waitForIdleSync()
+      assertEquals(1, monitor.hits)
+    } finally {
+      instrumentation.removeMonitor(monitor)
+    }
+  }
+
+  private fun withFixtureDistributor(block: () -> Unit) {
+    val distributor = instrumentation.context.packageName
+    val connector = context.getSharedPreferences("unifiedpush.connector", Context.MODE_PRIVATE)
+    val savedKey = "unifiedpush.distributor"
+    val ackKey = "unifiedpush.distributor_ack"
+    val previousDistributor = connector.getString(savedKey, null)
+    val previousAck = connector.getBoolean(ackKey, false).takeIf { connector.contains(ackKey) }
+    check(distributor in org.unifiedpush.android.connector.UnifiedPush.getDistributors(context))
+    check(connector.edit().putString(savedKey, distributor).putBoolean(ackKey, true).commit())
+    try {
+      block()
+    } finally {
+      check(connector.edit().putString(savedKey, previousDistributor).apply {
+        if (previousAck == null) remove(ackKey) else putBoolean(ackKey, previousAck)
+      }.commit())
+    }
+  }
+
+  private fun withSettings(
+    intent: Intent = AppSettingsActivity.notifications(context),
+    openRelay: Boolean = true,
+    block: (ActivityScenario<AppSettingsActivity>) -> Unit,
+  ) {
     val secureBefore = SignalStore.settings.isScreenSecurityEnabled
     SignalStore.settings.isScreenSecurityEnabled = false
     try {
-      ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.notifications(context)).use { scenario ->
+      ActivityScenario.launch<AppSettingsActivity>(intent).use { scenario ->
         var windowWasSecure = false
         scenario.onActivity { activity ->
           windowWasSecure = activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE != 0
           activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-          (activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment)
-            .navController.navigate(R.id.notificationUnifiedPushFragment)
+          if (openRelay) {
+            (activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment)
+              .navController.navigate(R.id.notificationUnifiedPushFragment)
+          }
         }
         try {
           instrumentation.waitForIdleSync()

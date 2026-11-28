@@ -34,22 +34,6 @@ object RelayDisclosureDialogs {
     return show(context, R.string.RelayDisclosureDialog__select_title, destination, R.string.RelayDisclosureDialog__select_confirm, onConfirm)
   }
 
-  fun showCopy(context: Context, onConfirm: () -> Unit): AlertDialog = show(
-    context,
-    R.string.RelayDisclosureDialog__copy_title,
-    context.getString(R.string.RelayDisclosureDialog__copy_message),
-    R.string.RelayDisclosureDialog__copy_confirm,
-    onConfirm,
-  )
-
-  fun showExport(context: Context, onConfirm: () -> Unit): AlertDialog = show(
-    context,
-    R.string.RelayDisclosureDialog__export_title,
-    context.getString(R.string.RelayDisclosureDialog__export_message),
-    R.string.RelayDisclosureDialog__export_confirm,
-    onConfirm,
-  )
-
   fun showStaleAction(context: Context) {
     Toast.makeText(context, R.string.UnifiedPushSettingsFragment__disclosure_stale, Toast.LENGTH_LONG).show()
   }

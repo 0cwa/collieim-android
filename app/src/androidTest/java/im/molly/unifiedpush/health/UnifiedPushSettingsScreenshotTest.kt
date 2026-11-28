@@ -8,7 +8,6 @@ package im.molly.unifiedpush.health
 import android.content.Context
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -40,7 +39,7 @@ class UnifiedPushSettingsScreenshotTest {
   private val args = InstrumentationRegistry.getArguments()
 
   @Test
-  fun settingsOffersExplicitImportAndRecoveryModes() {
+  fun settingsShowsWebSocketFallback() {
     val screenshotName = args.getString("ep_screenshot")
     assumeTrue(screenshotName != null)
     val before = SignalStore.settings.isScreenSecurityEnabled
@@ -58,11 +57,7 @@ class UnifiedPushSettingsScreenshotTest {
             .navController.navigate(R.id.notificationUnifiedPushFragment)
         }
         instrumentation.waitForIdleSync()
-        onView(withText(R.string.UnifiedPushSettingsFragment__export_enrollment))
-          .check(matches(isDisplayed()))
-          .perform(click())
-        onView(withText(R.string.UnifiedPushSettingsFragment__export_new_intent)).check(matches(isDisplayed()))
-        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_intent)).check(matches(isDisplayed()))
+        onView(withText(R.string.PairingV1__status_websocket)).check(matches(isDisplayed()))
 
         val bitmap = instrumentation.uiAutomation.takeScreenshot()
         try {
@@ -73,9 +68,6 @@ class UnifiedPushSettingsScreenshotTest {
           bitmap.recycle()
         }
 
-        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_intent)).perform(click())
-        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_title)).check(matches(isDisplayed()))
-        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_message)).check(matches(isDisplayed()))
       }
     } finally {
       SignalStore.settings.isScreenSecurityEnabled = before

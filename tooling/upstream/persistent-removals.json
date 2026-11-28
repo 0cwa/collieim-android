@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "removed": [
+    {
+      "path": "app/proguard/proguard-mobilecoin.pro",
+      "reason": "Removed unused MobileCoin configuration in 06adb38dd0c3c195758fad154f93c1fe391b26f6."
+    },
+    {
+      "path": "app/src/canary/AndroidManifest.xml",
+      "reason": "Removed the Signal canary build flavor in 39cae68717ef534025387815762c0e45c7fb8dcd."
+    },
+    {
+      "path": "app/src/canary/java/org/thoughtcrime/securesms/CanaryApplicationContext.kt",
+      "reason": "Removed the Signal canary build flavor in 39cae68717ef534025387815762c0e45c7fb8dcd."
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_mobilecoin_24.xml",
+      "reason": "Removed unused MobileCoin resources in 06adb38dd0c3c195758fad154f93c1fe391b26f6."
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_mobilecoin_avatar_24.xml",
+      "reason": "Removed unused MobileCoin resources in 06adb38dd0c3c195758fad154f93c1fe391b26f6."
+    },
+    {
+      "path": "app/src/main/res/raw/signal_mobilecoin_authority.der",
+      "reason": "Removed unused MobileCoin resources in 06adb38dd0c3c195758fad154f93c1fe391b26f6."
+    }
+  ]
+}

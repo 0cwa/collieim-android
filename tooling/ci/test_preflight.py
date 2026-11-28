@@ -20,6 +20,8 @@ SPEC.loader.exec_module(preflight)
 class PreflightTests(unittest.TestCase):
     def invoke(self, outcomes, argv=None, expected_base="origin/main"):
         def run(command, **kwargs):
+            if command[:3] == ["git", "diff", "--no-ext-diff"]:
+                return subprocess.CompletedProcess(command, 0, outcomes.get("diff", ""), "")
             if command[:3] == ["git", "remote", "-v"]:
                 return subprocess.CompletedProcess(command, 0, outcomes.get("remotes", ""), "")
             if command[:2] == ["git", "for-each-ref"]:
@@ -42,6 +44,20 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(result, 0)
         registered = sum(line.startswith(("PASS: ", "FAIL: ")) for line in output.splitlines())
         self.assertGreater(registered, 0)
+        self.assertIn(f"Preflight PASSED ({registered}/{registered} checks)", output)
+
+    def test_soft_fork_advisories_warn_without_changing_check_count_or_exit(self):
+        diff = (
+            "diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml\n"
+            "+++ b/app/src/main/res/values/strings.xml\n@@ -10,0 +11 @@\n+  <string name=\"example\">Inline</string>\n"
+            "diff --git a/app/src/main/java/ApplicationContext.java b/app/src/main/java/ApplicationContext.java\n"
+            "+++ b/app/src/main/java/ApplicationContext.java\n@@ -10 +10 @@\n-a\n+b\n@@ -30 +30 @@\n-c\n+d\n"
+        )
+        result, output = self.invoke({"diff": diff})
+        self.assertEqual(result, 0)
+        self.assertIn("WARN: inline addition in upstream strings file", output)
+        self.assertIn("ApplicationContext.java has 2 diff hunks", output)
+        registered = sum(line.startswith(("PASS: ", "FAIL: ")) for line in output.splitlines())
         self.assertIn(f"Preflight PASSED ({registered}/{registered} checks)", output)
 
     def test_canonical_remote_wins_over_upstream_and_fork_origin(self):

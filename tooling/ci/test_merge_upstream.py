@@ -97,7 +97,7 @@ class MergeUpstreamTest(unittest.TestCase):
         self.assertEqual(self.git("rev-parse", "refs/tags/signal-v2.0^{commit}").strip(), target)
         self.assertTrue(self.message().endswith(
             "Layer: upgrade\nUpstream: signalapp/Signal-Android v2.0\n"))
-        self.assertIn("Kept 1 files deleted", self.message())
+        self.assertIn("Kept 1 reviewed removal-list files deleted", self.message())
         self.git("commit", "--no-gpg-sign", "--no-edit")
         self.assertEqual(self.git("show", "-s", "--format=%P").split()[1], target)
         self.assertIn("Upstream: signalapp/Signal-Android v2.0", self.git("show", "-s", "--format=%B"))
@@ -140,6 +140,45 @@ class MergeUpstreamTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(f"Review: upstream adds {REMOVED}", result.stdout)
         self.assertIn(f"- {REMOVED}", self.message())
+
+    def test_persistent_removal_companion_keeps_deletions_and_deduplicates(self):
+        persistent = "app/persistent.kt"
+        self.put(persistent, "checkout\n")
+        self.old = self.commit("add persistent fixture")
+        self.git("checkout", "-q", "-b", "signal")
+        self.put(REMOVED, "updated donation checkout\n")
+        self.put(persistent, "upstream edit\n")
+        self.commit("upstream edits removals")
+        self.publish(tag="v2.0")
+        self.fork()
+        (self.root / persistent).unlink()
+        self.put("tooling/upstream/persistent-removals.json", json.dumps({
+            "schema": 1,
+            "removed": [
+                {"path": REMOVED, "reason": "Overlaps donation manifest."},
+                {"path": persistent, "reason": "Intentional project removal."},
+            ],
+        }))
+        self.commit("persistent removal")
+        result = self.merge("signal", "v2.0")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse((self.root / REMOVED).exists())
+        self.assertFalse((self.root / persistent).exists())
+        self.assertIn("Kept 2 reviewed removal-list files deleted", self.message())
+
+    def test_persistent_removal_manifest_rejects_unsafe_or_duplicate_entries(self):
+        self.publish(tag="v2.0")
+        self.fork()
+        for entries in (
+            [{"path": "../unsafe", "reason": "no"}],
+            [{"path": REMOVED, "reason": "one"}, {"path": REMOVED, "reason": "two"}],
+        ):
+            with self.subTest(entries=entries):
+                self.put("tooling/upstream/persistent-removals.json", json.dumps({"schema": 1, "removed": entries}))
+                self.commit("invalid persistent manifest")
+                result = self.merge("signal", "v2.0")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("invalid or duplicate removal path", result.stderr)
 
     def test_refuses_dirty_tree_and_unknown_names(self):
         self.publish(tag="v2.0")

@@ -1,0 +1,88 @@
+name: Fork footprint comment
+on:
+  workflow_run:
+    workflows: [Fork footprint (advisory)]
+    types: [completed]
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+concurrency:
+  group: fork-footprint-run-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+jobs:
+  report:
+    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out trusted default branch code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download metadata from the triggering run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: pr-meta
+          path: pr-meta
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate metadata against run, merge commit, and live pull request
+        env:
+          EVENT_PATH: ${{ github.event_path }}
+          META_PATH: pr-meta/pr-meta.json
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess, urllib.request
+          with open(os.environ['EVENT_PATH'], encoding='utf-8') as f:
+              event = json.load(f)['workflow_run']
+          pulls = event.get('pull_requests') or []
+          if event.get('event') != 'pull_request' or len(pulls) != 1:
+              raise SystemExit('Expected one pull request in the triggering workflow run')
+          number = pulls[0].get('number')
+          if not isinstance(number, int) or number < 1:
+              raise SystemExit('Workflow run has an invalid pull request number')
+          with open(os.environ['META_PATH'], encoding='utf-8') as f:
+              meta = json.load(f)
+          if (meta.get('run_id') != event.get('id') or meta.get('pr_number') != number or
+                  meta.get('run_head_sha') != event.get('head_sha')):
+              raise SystemExit('Artifact metadata does not match the triggering workflow run')
+          for key in ('run_head_sha', 'merge_sha', 'base_sha', 'head_sha'):
+              if not isinstance(meta.get(key), str) or not re.fullmatch(r'[0-9a-f]{40,64}', meta[key]):
+                  raise SystemExit(f'Artifact has an invalid {key}')
+          subprocess.run(['git', 'fetch', '--no-tags', 'origin', f'refs/pull/{number}/merge'], check=True)
+          merge_sha = subprocess.check_output(['git', 'rev-parse', 'FETCH_HEAD'], text=True).strip()
+          parents = subprocess.check_output(['git', 'show', '-s', '--format=%P', merge_sha], text=True).split()
+          if merge_sha != meta['merge_sha'] or len(parents) != 2:
+              raise SystemExit('Artifact merge SHA is not the current pull request merge commit')
+          if parents != [meta['base_sha'], meta['head_sha']]:
+              raise SystemExit('Artifact base/head SHAs do not match the authenticated merge commit parents')
+          repo = os.environ['GITHUB_REPOSITORY']
+          if not re.fullmatch(r'[A-Za-z0-9-]+/[A-Za-z0-9_.-]+', repo):
+              raise SystemExit('Invalid repository name')
+          request = urllib.request.Request(
+              f'https://api.github.com/repos/{repo}/pulls/{number}',
+              headers={'Authorization': f"Bearer {os.environ['GITHUB_TOKEN']}",
+                       'Accept': 'application/vnd.github+json',
+                       'X-GitHub-Api-Version': '2022-11-28'})
+          with urllib.request.urlopen(request, timeout=20) as response:
+              pr = json.load(response)
+          if (pr.get('number') != number or pr.get('base', {}).get('repo', {}).get('full_name') != repo or
+                  pr.get('base', {}).get('sha') != meta['base_sha'] or
+                  pr.get('head', {}).get('sha') != meta['head_sha']):
+              raise SystemExit('Pull request changed or does not match the validated artifact')
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+              f.write(f'PR_NUMBER={number}\nBASE_SHA={meta["base_sha"]}\nHEAD_SHA={meta["head_sha"]}\n')
+          PY
+      - name: Fetch pull request commit objects only
+        run: |
+          git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"
+          git cat-file -e "$HEAD_SHA^{commit}"
+      - name: Generate report using trusted code and post comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 tooling/ci/fork_footprint.py pr-report --base "$BASE_SHA" --head "$HEAD_SHA" --post-comment

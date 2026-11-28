@@ -42,6 +42,7 @@ import org.signal.core.ui.compose.Fragments
 import org.signal.core.ui.R as CoreUiR
 import org.signal.core.util.DimensionUnit
 import org.signal.core.util.orNull
+import org.signal.remoteconfig.RemoteConfig
 import org.signal.remoteconfig.SelectionLimits
 import org.thoughtcrime.securesms.ContactSelectionListFragment
 import org.thoughtcrime.securesms.R
@@ -350,9 +351,9 @@ private suspend fun showItemContextMenu(
 
     if (!recipient.isSelf && !recipient.isGroup) {
       val removeItem = ActionItem(
-        iconRes = R.drawable.ic_minus_circle_20,
-        title = context.getString(R.string.NewConversationActivity__remove),
-        tintRes = com.google.android.material.R.attr.colorOnSurface,
+        iconRes = if (RemoteConfig.contactDelete) CoreUiR.drawable.symbol_visible_slash_24 else R.drawable.ic_minus_circle_20,
+        title = context.getString(if (RemoteConfig.contactDelete) R.string.NewConversationActivity__hide else R.string.NewConversationActivity__remove),
+        tintRes = CoreUiR.color.signal_colorOnSurface,
         action = { callbacks.onRemove(recipient) }
       )
       add(removeItem)

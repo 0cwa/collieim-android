@@ -61,6 +61,8 @@ private class AppSettingsRouterDelegate(
             when (event) {
               is AppSettingsNavigationEvent.NavigateBack -> onNavigateBack(event.popUpTo)
               is AppSettingsNavigationEvent.NavigateToScreen -> onNavigateToScreen(event.route)
+              AppSettingsNavigationEvent.Close -> fragment.requireActivity().finishAfterTransition()
+              AppSettingsNavigationEvent.BeginEditSession, AppSettingsNavigationEvent.EndEditSession -> Unit
             }
           }
         }

@@ -18,15 +18,15 @@ data class DataAndStorageSettingsState(
   val sentMediaQuality: SentMediaQuality = SentMediaQuality.STANDARD,
   val callDataMode: CallDataMode = CallDataMode.HIGH_ALWAYS,
   val showNetworkSettings: Boolean = true,
-  val forceWebsocketMode: Boolean = false,
   val pushAvailable: Boolean = true,
+  val stayConnectedInBackground: Boolean = false,
   val isProxyEnabled: Boolean = false,
   val dialog: Dialog = Dialog.None
 ) {
 
   /** Without an available selected push method, the websocket must stay connected. */
   val isStayConnectedInBackgroundChecked: Boolean
-    get() = forceWebsocketMode || !pushAvailable
+    get() = stayConnectedInBackground || !pushAvailable
 
   fun autoDownloadFor(network: AutoDownloadNetwork): Set<AutoDownloadMediaType> = autoDownload[network].orEmpty()
 

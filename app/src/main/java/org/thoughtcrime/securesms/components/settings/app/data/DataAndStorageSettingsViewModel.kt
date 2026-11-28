@@ -79,7 +79,7 @@ class DataAndStorageSettingsViewModel(
         if (event.enabled) {
           _state.update { it.copy(dialog = DataAndStorageSettingsState.Dialog.ConfirmStayConnectedInBackground) }
         } else {
-          DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(false)
+          DataAndStorageSettingsRepository.setStayConnectedInBackgroundEnabled(false)
           refresh()
         }
       }
@@ -91,7 +91,7 @@ class DataAndStorageSettingsViewModel(
           refresh()
           return
         }
-        DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(true)
+        DataAndStorageSettingsRepository.setStayConnectedInBackgroundEnabled(true)
         refresh()
       }
 
@@ -108,8 +108,8 @@ class DataAndStorageSettingsViewModel(
         alwaysAutoDownloadedBytes = DataAndStorageSettingsRepository.getAlwaysAutoDownloadedBytes(),
         sentMediaQuality = DataAndStorageSettingsRepository.getSentMediaQuality(),
         callDataMode = DataAndStorageSettingsRepository.getCallDataMode(),
-        forceWebsocketMode = DataAndStorageSettingsRepository.isForceWebsocketModeEnabled(),
         pushAvailable = DataAndStorageSettingsRepository.isPushAvailable(),
+        stayConnectedInBackground = DataAndStorageSettingsRepository.isStayConnectedInBackgroundEnabled(),
         isProxyEnabled = DataAndStorageSettingsRepository.isProxyEnabled()
       )
     }

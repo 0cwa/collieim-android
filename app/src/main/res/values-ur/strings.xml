@@ -1217,6 +1217,7 @@
         <item quantity="other">ممبروں کو شامل نہیں کیا جاسکتا۔</item>
     </plurals>
 
+
     <!-- LeaveGroupDialog -->
     <string name="LeaveGroupDialog_leave_group">گروپ چھوڑنا ہے؟</string>
     <string name="LeaveGroupDialog_you_will_no_longer_be_able_to_send_or_receive_messages_in_this_group">آگے سے آپ اس گروپ میں پیغام بھیجنے یا وصول کرنے کے اہل نہیں ہونگے۔</string>
@@ -4223,6 +4224,12 @@
     <string name="CallNotificationBuilder__ongoing_signal_group_call">Collie کی جاری گروپ کال</string>
 
     <string name="CallNotificationBuilder_connecting">منسلک ہورہا ہے۔۔۔۔۔</string>
+    <!-- Notification title shown when Signal needs to be opened to use the microphone during a call -->
+    <string name="CallNotificationBuilder__open_signal">Signal کھولیں</string>
+    <!-- Notification body shown when a call was answered from a watch or other device but Signal needs microphone permission before it can connect -->
+    <string name="CallNotificationBuilder__to_answer_this_call_allow_signal_access_to_your_microphone">اس کال کا جواب دینے کے لیے، اپنے مائیکروفون تک Signal کو رسائی کی اجازت دیں۔</string>
+    <!-- Notification body shown during a call when Android blocked microphone access because Signal was in the background -->
+    <string name="CallNotificationBuilder__the_other_person_cant_hear_you_until_you_open_signal">جب تک آپ Signal نہیں کھولیں گے دوسرا شخص آپ کی آواز نہیں سن سکے گا۔</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">فاسفریز بیک اپ کریں</string>
     <string name="backup_enable_dialog__backups_will_be_saved_to_external_storage_and_encrypted_with_the_passphrase_below_you_must_have_this_passphrase_in_order_to_restore_a_backup">بیک اپ کو بیرونی اسٹوریج میں محفوظ کیا جائے گا اور نیچے پاسفریز کے ساتھ خفیہ کاری ہوگی۔ بیک اپ بحال کرنے کے لئے آپ کے پاس یہ پاس فریز ہونا ضروری ہے۔</string>
     <string name="backup_enable_dialog__you_must_have_this_passphrase">بیک اپ بحال کرنے کے لیئے آپ کے پاس یہ پاس فریز ہونا ضروری ہے۔</string>
@@ -5130,6 +5137,8 @@
     <string name="NewConversationActivity__video_call">ویڈیو کال</string>
     <!-- Context menu item remove -->
     <string name="NewConversationActivity__remove">ہٹا دیں</string>
+    <!-- Context menu item that hides a contact -->
+    <string name="NewConversationActivity__hide">پوشیدہ کریں</string>
     <!-- Context menu item block -->
     <string name="NewConversationActivity__block">بلاک کریں</string>
     <!-- Dialog title when removing a contact -->
@@ -5138,6 +5147,12 @@
     <string name="NewConversationActivity__you_wont_see_this_person">آپ سرچ کرتے ہوئے اس فرد کو نہیں دیکھیں گے۔ اگر وہ مستقبل میں آپ کو میسج کریں گے تو آپ میسج کی درخواست حاصل کریں گے۔</string>
     <!-- Snackbar message after removing a contact -->
     <string name="NewConversationActivity__s_has_been_removed">%1$s کو ہٹا دیا گیا ہے</string>
+    <!-- Dialog title when hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__hide_s">کیا %1$s کو چھپانا ہے؟</string>
+    <!-- Dialog body when hiding a contact -->
+    <string name="NewConversationActivity__this_person_wont_appear">یہ شخص آپ کے رابطوں کی فہرست اور تلاش میں ظاہر نہیں ہو گا۔ اگر مستقبل میں وہ آپ کو میسج بھیجتے ہیں، تو آپ کو پیغام کی درخواست موصول ہو گی۔ آپ سیٹنگز میں ان افراد کا نظم کر سکتے ہیں جنہیں آپ نے مخفی کیا ہو۔</string>
+    <!-- Snackbar message after hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__s_has_been_hidden">%1$s کو مخفی کر دیا گیا ہے</string>
     <!-- Snackbar message after blocking a contact -->
     <string name="NewConversationActivity__s_has_been_blocked">%1$s کو بلاک کر دیا گیا ہے</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->

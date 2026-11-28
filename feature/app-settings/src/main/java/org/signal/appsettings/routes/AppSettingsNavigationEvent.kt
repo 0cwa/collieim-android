@@ -33,6 +33,21 @@ sealed interface AppSettingsNavigationEvent {
    *   open above it. Nothing is closed when no such screen is open.
    */
   data class NavigateBack @JvmOverloads constructor(val popUpTo: PopUpTo? = null) : AppSettingsNavigationEvent
+
+  /**
+   * Leave app settings altogether, whatever screens are open.
+   */
+  data object Close : AppSettingsNavigationEvent
+
+  /**
+   * The screen on top has unsaved edits. Until [EndEditSession], or until that screen is closed, picking another
+   * section or leaving settings from the list asks to discard them first. Going back from the screen itself is left to
+   * the screen.
+   */
+  data object BeginEditSession : AppSettingsNavigationEvent
+
+  /** The edits from [BeginEditSession] were saved or thrown away. */
+  data object EndEditSession : AppSettingsNavigationEvent
 }
 
 /**
@@ -53,6 +68,27 @@ fun ((AppSettingsNavigationEvent) -> Unit).navigateTo(route: AppSettingsRoute, p
  */
 fun ((AppSettingsNavigationEvent) -> Unit).openSection(route: AppSettingsRoute) {
   this(AppSettingsNavigationEvent.NavigateToScreen(route, replacesDetail = true))
+}
+
+/**
+ * Convenience function to emit an event marking the screen on top as having unsaved edits.
+ */
+fun ((AppSettingsNavigationEvent) -> Unit).beginEditSession() {
+  this(AppSettingsNavigationEvent.BeginEditSession)
+}
+
+/**
+ * Convenience function to emit an event marking the edits from [beginEditSession] as saved or thrown away.
+ */
+fun ((AppSettingsNavigationEvent) -> Unit).endEditSession() {
+  this(AppSettingsNavigationEvent.EndEditSession)
+}
+
+/**
+ * Convenience function to emit an event that leaves app settings altogether.
+ */
+fun ((AppSettingsNavigationEvent) -> Unit).close() {
+  this(AppSettingsNavigationEvent.Close)
 }
 
 /**

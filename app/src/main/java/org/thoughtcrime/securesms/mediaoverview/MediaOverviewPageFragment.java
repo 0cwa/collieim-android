@@ -31,11 +31,13 @@ import com.bumptech.glide.Glide;
 import com.codewaves.stickyheadergrid.StickyHeaderGridLayoutManager;
 
 import org.signal.core.ui.compose.SignalIcons;
+import org.signal.core.ui.logging.LoggingFragment;
+import org.signal.core.ui.permissions.Permissions;
+import org.signal.core.ui.util.ViewUtil;
 import org.signal.core.util.ByteSize;
 import org.signal.core.util.DimensionUnit;
 import org.signal.core.util.concurrent.LifecycleDisposable;
 import org.signal.core.util.logging.Log;
-import org.signal.core.ui.logging.LoggingFragment;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
 import org.thoughtcrime.securesms.components.SignalProgressDialog;
@@ -49,18 +51,16 @@ import org.thoughtcrime.securesms.database.MediaTable;
 import org.thoughtcrime.securesms.database.loaders.GroupedThreadMediaLoader;
 import org.thoughtcrime.securesms.database.loaders.MediaLoader;
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob;
+import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
 import org.thoughtcrime.securesms.mediaviewer.MediaViewerActivity;
 import org.thoughtcrime.securesms.mms.PartAuthority;
-import org.signal.core.ui.permissions.Permissions;
-import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.util.BottomOffsetDecoration;
 import org.thoughtcrime.securesms.util.CommunicationActions;
-import org.thoughtcrime.securesms.util.OffloadedMediaDialogUtil;
 import org.thoughtcrime.securesms.util.MediaUtil;
+import org.thoughtcrime.securesms.util.OffloadedMediaDialogUtil;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
-import org.signal.core.ui.util.ViewUtil;
-
 
 import java.util.Arrays;
 import java.util.ArrayList;

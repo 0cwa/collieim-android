@@ -1,25 +1,58 @@
 {
   "schema": 1,
   "status": "ACCEPTED",
-  "repository": "https://repo.collie.im/native-inputs/v2/maven/",
-  "reason": "The operator approved the pinned files after the live phase 1 deployment and HTTPS checks matched the approved snapshot. The identical phase 2 failed before deployment in Pages run 44401523018.",
+  "repository": "https://repo.collie.im/native-inputs/v3/maven/",
+  "reason": "Pages run 46087307362 (attempt 1) at signed policy 2f3ef2b7a2316dd7ead212007822cd49b1f96f22 deployed both guarded phases from the approved input asset, and both canonical readbacks matched the plan. Binaries are trusted-local inputs; independent reproduction is not established.",
   "lock": "native-lock.json",
   "production_version_floor": 177702,
   "publication_status": "PUBLISHED_AND_READ_BACK",
   "acceptance": {
-    "artifact_id": 14472751757,
-    "dispatch_binding_sha256": "4b3da4d04b754e6cfb8c760596200684aca82d4270e2b1ea56afc9fd33f218fb",
-    "evidence_sha256": "20b21855db0175409618156f0247aa25503fcb256f1c3075959d33c87244f3c4",
-    "input_approval_sha256": "bfc0a60d5563a3a2a98c6ed5bbd9544f17dd6a8152a040a6c865d4f9a6f8fa17",
-    "input_asset_id": 765056449,
-    "input_bundle_sha256": "bd26cdd3d56adf9753a7ed9320d2b0b0a940ca26f3fa599a4e7c666761631f9b",
-    "journal_sha256": "9b309abd7c2b65b2c06bb5817da95bf6dd372f54bb7dab272b0217381ddbae2a",
-    "native_manifest_sha256": "d02a3ddfedf2eed7f8152e57187b2829b2050b43406e4c0f64cb879c917c2e7d",
-    "operation_inventory_sha256": "42047bb235b1975c43454906a7ce5bc4d64d72bcb17042aa1576366ad52b94dc",
-    "plan_sha256": "683479d6ae873586c0bd16cd793c90223ab671b787b003d8f31421df6d53b313",
-    "policy_revision": "bb034abb9b00330d3c08ac54e883e4033117c1c6",
+    "artifact_id": 15239563738,
+    "artifact_name": "collie-pages-completed-receipt",
+    "artifact_digest": "sha256:222a744e6903bed4bc47c3586dc2764443106eeccbec8abb7020c12e646dfa23",
+    "evidence_sha256": "eb53b26fd01c271d68d56611d5b15a23b379825fcf18ac06269a7a8097e841d7",
+    "input_approval_sha256": "a452b07a568184e8fb42a8e2ef8a0fdc31124b0978e16bc5109e14bf241aa8c5",
+    "input_asset_id": 802555124,
+    "input_bundle_sha256": "867915ff00c851aa5070c01857f462af1e084537f14f4c743f9cd4c90da0cbcd",
+    "journal_sha256": "1d8d2b55fafbb70dbf99962a0cc8ad560e0c415b93b5f837d1d5fe21533b41a0",
+    "phase1_journal_sha256": "f9e2ff7c727e97b5c1c874f90d0e45dedf5eda822e0d47cc313c9b732759d31b",
+    "native_manifest_sha256": "955a6a24ed8719c18926e8934a3b8e7149a4178fd1aa70abd981a38724cd802c",
+    "plan_sha256": "b11addf2e930f04ae67bb55f84b9d64535a126ae1b71dd7b32c80b221e7dc787",
+    "policy_revision": "2f3ef2b7a2316dd7ead212007822cd49b1f96f22",
+    "signed_pr_head": "ef70a529f8577d0e18071475912356d1b0edd922",
+    "registry_pr": 107,
+    "github_release_id": 461175340,
     "run_attempt": 1,
-    "run_id": 44401523018,
-    "workflow_metadata_sha256": "ad26e3e91778f752097755e5e5907f07a378d3ef94bde91dbffa846756a740c6"
+    "run_id": 46087307362,
+    "pages_url": "https://github.com/0cwa/collie-release-engineering/actions/runs/46087307362",
+    "previous_deployment_guard_id": 8121275188,
+    "previous_site_manifest_sha256": "be7e524fb7cbb66d94cdfbc25b229c9be2f6df31d3abdfb6e2b5e3d34baaa71c",
+    "final_site_manifest_sha256": "9b02070532575824e21e3d7bbd077bbf543b882f87fa27e49b6d93ce1a6a7093",
+    "phases": {
+      "phase1": {
+        "guard_id": 8121883920,
+        "github_pages_environment_deployment_id": 8121877237,
+        "github_pages_build_identity": "2f3ef2b7a2316dd7ead212007822cd49b1f96f22",
+        "github_pages_artifact_id": 15239348473,
+        "job_url": "https://github.com/0cwa/collie-release-engineering/actions/runs/46087307362/job/140800529328",
+        "canonical_readback": {
+          "paths": 65,
+          "bytes": 919086414,
+          "inventory_sha256": "7d6bbe414db265d805f112456f80983396211b06c4ab8d8f91d59e73a4615739"
+        }
+      },
+      "phase2": {
+        "guard_id": 8121907424,
+        "github_pages_environment_deployment_id": 8121894532,
+        "github_pages_build_identity": "2f3ef2b7a2316dd7ead212007822cd49b1f96f22",
+        "github_pages_artifact_id": 15239149136,
+        "job_url": "https://github.com/0cwa/collie-release-engineering/actions/runs/46087307362/job/140801001370",
+        "canonical_readback": {
+          "paths": 65,
+          "bytes": 919086414,
+          "inventory_sha256": "7d6bbe414db265d805f112456f80983396211b06c4ab8d8f91d59e73a4615739"
+        }
+      }
+    }
   }
 }

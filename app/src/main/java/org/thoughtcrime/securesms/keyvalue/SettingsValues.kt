@@ -7,6 +7,7 @@ import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import org.signal.core.models.calls.CallDataMode
 import org.signal.core.models.media.SentMediaQuality
 import org.signal.core.models.storage.KeepMessagesDuration
@@ -92,6 +93,10 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     private const val KEEP_MUTED_CHATS_ARCHIVED = "settings.keepMutedChatsArchived"
     private const val USE_COMPACT_NAVIGATION_BAR = "settings.useCompactNavigationBar"
     private const val THREAD_TRIM_SYNC_TO_LINKED_DEVICES = "settings.storage.syncThreadTrimDeletes"
+    private const val PASSPHRASE_TIMEOUT_ENABLED = "settings.passphrase.timeout.enabled"
+    private const val PASSPHRASE_TIMEOUT = "settings.passphrase.timeout"
+    private const val SCREEN_LOCK_ENABLED = "settings.screen.lock.enabled"
+    private const val SCREEN_LOCK_TIMEOUT = "settings.screen.lock.timeout"
     private const val SCREEN_LOCK_TIMEOUT_MINUTES_SYNCED = "settings.screen.lock.timeout.minutes.synced"
     private const val AUTOMATIC_VERIFICATION_ENABLED = "settings.automatic.verification.enabled"
     private const val FORCE_WEBSOCKET_MODE = "settings.force.websocket.mode.2"
@@ -493,7 +498,14 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
   /** MOLLY: For Signal compatibility only. */
   var syncedScreenLockTimeoutMinutes: Long? by nullableLongValue(SCREEN_LOCK_TIMEOUT_MINUTES_SYNCED, null)
 
-  var isScreenSecurityEnabled: Boolean by booleanValue(SCREEN_SECURITY_ENABLED, true)
+  var passphraseTimeoutEnabled: Boolean by booleanValue(PASSPHRASE_TIMEOUT_ENABLED, false)
+
+  var passphraseTimeout: Int by integerValue(PASSPHRASE_TIMEOUT, 0)
+  var screenLockEnabled: Boolean by booleanValue(SCREEN_LOCK_ENABLED, false)
+  var screenLockTimeout: Long by longValue(SCREEN_LOCK_TIMEOUT, 0)
+  private val isScreenSecurityEnabledValue = booleanValue(SCREEN_SECURITY_ENABLED, true)
+  var isScreenSecurityEnabled: Boolean by isScreenSecurityEnabledValue
+  val isScreenSecurityEnabledFlow: Flow<Boolean> by lazy { isScreenSecurityEnabledValue.toFlow() }
 
   /** When the user last turned screen security back off after it was automatically enabled due to an assistant app, or 0 if never. */
   var assistantScreenSecurityDeclinedAt: Long by longValue(ASSISTANT_SCREEN_SECURITY_DECLINED_AT, 0)
@@ -558,6 +570,9 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     set(value) {
       putString(MOLLY_NOTIFICATION_METHOD, value.serialize())
     }
+
+  /** Whether the websocket should be kept open while the app is in the background. */
+  fun shouldStayConnectedInBackground(): Boolean = forceWebsocketMode.shouldStayConnected(SignalStore.account.pushAvailable)
 
   var mediaKeyboardMode: MediaKeyboardMode
     get() = MediaKeyboardMode.valueOf(getNonNullString(MEDIA_KEYBOARD_MODE, MediaKeyboardMode.EMOJI.name))
@@ -791,8 +806,13 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     ENABLED_AUTOMATICALLY(2),
     DISABLED_BY_USER(3);
 
-    val isEnabled: Boolean
-      get() = this == ENABLED_BY_USER || this == ENABLED_AUTOMATICALLY
+    /** Keep receiving messages through the websocket when the selected push method is unavailable. */
+    fun shouldStayConnected(pushAvailable: Boolean): Boolean {
+      return when (this) {
+        ENABLED_BY_USER, ENABLED_AUTOMATICALLY -> true
+        DISABLED_BY_USER, DISABLED_AUTOMATICALLY -> !pushAvailable
+      }
+    }
 
     fun serialize(): Int = value
 

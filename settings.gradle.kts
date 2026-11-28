@@ -23,12 +23,12 @@ buildCache {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    // RingRTC stays on the original immutable repository.
+    // Collie native inputs come only from the published v3 repository.
     exclusiveContent {
       forRepository {
         maven {
-          name = "CollieNativeInputsV1"
-          url = uri("https://repo.collie.im/native-inputs/v1/maven/")
+          name = "CollieNativeInputsV3RingRtc"
+          url = uri("https://repo.collie.im/native-inputs/v3/maven/")
           metadataSources { mavenPom(); ignoreGradleMetadataRedirection() }
         }
       }
@@ -39,8 +39,8 @@ dependencyResolutionManagement {
     exclusiveContent {
       forRepository {
         maven {
-          name = "CollieNativeInputsV2"
-          url = uri("https://repo.collie.im/native-inputs/v2/maven/")
+          name = "CollieNativeInputsV3Libsignal"
+          url = uri("https://repo.collie.im/native-inputs/v3/maven/")
           metadataSources { mavenPom(); ignoreGradleMetadataRedirection() }
         }
       }

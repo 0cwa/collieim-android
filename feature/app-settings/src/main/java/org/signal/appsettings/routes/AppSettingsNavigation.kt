@@ -24,18 +24,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import org.signal.appsettings.R
 import org.signal.appsettings.chats.ChatsSettingsScreen
 import org.signal.appsettings.chats.chatsSettingsPreviewState
 import org.signal.appsettings.home.AppSettingsScreen
 import org.signal.appsettings.home.PreviewAvatar
 import org.signal.appsettings.home.appSettingsPreviewState
 import org.signal.core.ui.compose.BreakpointPreviews
+import org.signal.core.ui.compose.DialogResult
+import org.signal.core.ui.compose.Dialogs
 import org.signal.core.ui.compose.LocalSplitPaneSettingsEnabled
 import org.signal.core.ui.compose.SignalPreviewWrapper
 import org.signal.core.ui.compose.navigationBarsCompat
@@ -47,6 +52,7 @@ import org.signal.core.ui.compose.split.hasDetail
 import org.signal.core.ui.compose.split.listEntry
 import org.signal.core.ui.compose.split.rememberCurrentDecoratedNavEntries
 import org.signal.core.ui.compose.split.rememberListDetailPaneLayout
+import org.signal.core.ui.compose.split.rememberListDetailPaneMetrics
 import org.signal.core.ui.compose.systemBarsCompat
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.navigation.LocalResultEventBus
@@ -97,7 +103,28 @@ fun AppSettingsNavigation(
   }
 
   LaunchedEffect(router) {
-    router.events.collect(navigate)
+    router.events.collect { event ->
+      if (router.losesEdits(event)) {
+        if (router.discardEditsDialog.show(Unit) != DialogResult.POSITIVE) {
+          return@collect
+        }
+        router.discardEdits()
+      }
+
+      navigate(event)
+    }
+  }
+
+  router.discardEditsDialog.Content { _, onDismissRequest, onConfirm, _, onDeny ->
+    Dialogs.SimpleAlertDialog(
+      title = stringResource(R.string.AppSettingsNavigation__discard_changes),
+      body = stringResource(R.string.AppSettingsNavigation__you_will_lose_changes),
+      confirm = stringResource(R.string.AppSettingsNavigation__discard),
+      dismiss = stringResource(android.R.string.cancel),
+      onConfirm = onConfirm,
+      onDeny = onDeny,
+      onDismissRequest = onDismissRequest
+    )
   }
 
   LaunchedEffect(isSplitPane, defaultDetailRoute) {
@@ -132,7 +159,7 @@ fun AppSettingsNavigation(
   BoxWithConstraints(
     modifier = modifier
       .fillMaxSize()
-      .background(if (isSplitPane) SignalTheme.colors.colorSurface4 else MaterialTheme.colorScheme.background)
+      .background(if (isSplitPane) SignalTheme.colors.colorSurface1 else MaterialTheme.colorScheme.background)
       .then(insetsModifier)
   ) {
     // Settings screens are shared with the fragment host, which keeps their current look until it goes away.
@@ -150,7 +177,10 @@ fun AppSettingsNavigation(
           paneAnchor = PaneAnchor.SPLIT,
           maxWidth = maxWidth,
           onAnchorSelected = {},
-          isResizable = false
+          isResizable = false,
+          metrics = rememberListDetailPaneMetrics(
+            partitionWidthProvider = { 0.dp }
+          )
         ),
         emptyDetailContent = emptyDetailContent
       )

@@ -8,10 +8,12 @@ package org.signal.appsettings.privacy
 import android.app.Application
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -82,6 +84,39 @@ class PrivacySettingsScreenTest {
     composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_BLOCKED).performClick()
 
     assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.BlockedClicked)
+  }
+
+  @Test
+  fun `the hidden row is left out unless hidden contacts are shown`() {
+    setContent(PrivacySettingsState(showHiddenContacts = false))
+
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_HIDDEN).assertDoesNotExist()
+  }
+
+  @Test
+  fun `the hidden and blocked header is left out unless hidden contacts are shown`() {
+    setContent(PrivacySettingsState(showHiddenContacts = false))
+
+    composeTestRule.onNodeWithText("Hidden and blocked").assertDoesNotExist()
+    composeTestRule.onNodeWithText("None").assertDoesNotExist()
+  }
+
+  @Test
+  fun `the hidden and blocked rows say none when there is nobody and hidden contacts are shown`() {
+    setContent(PrivacySettingsState(showHiddenContacts = true, hiddenCount = 0, blockedCount = 0))
+
+    composeTestRule.onNodeWithText("Hidden and blocked").assertIsDisplayed()
+    composeTestRule.onAllNodesWithText("None").assertCountEquals(2)
+  }
+
+  @Test
+  fun `the hidden row shows the hidden count and emits HiddenContactsClicked`() {
+    setContent(PrivacySettingsState(showHiddenContacts = true, hiddenCount = 2))
+
+    composeTestRule.onNodeWithText("2 contacts").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(PrivacySettingsTestTags.ROW_HIDDEN).performClick()
+
+    assertThat(interactionEvents).containsExactly(PrivacySettingsEvent.HiddenContactsClicked)
   }
 
   @Test

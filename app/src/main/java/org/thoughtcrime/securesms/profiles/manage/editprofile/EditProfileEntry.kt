@@ -51,7 +51,6 @@ fun EditProfileEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit) {
   val self = remember { Recipient.self() }
   val featuredBadge by rememberRecipientField(self) { featuredBadge?.takeIf { it.visible && !it.isExpired() } }
   val context = LocalContext.current
-  val activity = LocalActivity.current
   val sharedTransitionScope = checkNotNull(LocalSharedTransitionScope.current) { "EditProfileEntry needs a WindowOverlayHost above it." }
 
   ResultEffect<AvatarPickerResult> { result ->

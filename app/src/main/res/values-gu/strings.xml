@@ -1217,6 +1217,7 @@
         <item quantity="other">મેમ્બર ઉમેરી શકાતા નથી.</item>
     </plurals>
 
+
     <!-- LeaveGroupDialog -->
     <string name="LeaveGroupDialog_leave_group">ગ્રુપ છોડવુ છે?</string>
     <string name="LeaveGroupDialog_you_will_no_longer_be_able_to_send_or_receive_messages_in_this_group">તમે હવે આ ગ્રુપમાં મેસેજ મોકલવા અથવા પ્રાપ્ત કરવામાં સમર્થ હશો નહીં.</string>
@@ -4223,6 +4224,12 @@
     <string name="CallNotificationBuilder__ongoing_signal_group_call">ચાલુ Collie ગ્રૂપ કૉલ</string>
 
     <string name="CallNotificationBuilder_connecting">કનેક્ટ કરી રહ્યું છે…</string>
+    <!-- Notification title shown when Signal needs to be opened to use the microphone during a call -->
+    <string name="CallNotificationBuilder__open_signal">Signal ખોલો</string>
+    <!-- Notification body shown when a call was answered from a watch or other device but Signal needs microphone permission before it can connect -->
+    <string name="CallNotificationBuilder__to_answer_this_call_allow_signal_access_to_your_microphone">આ કૉલનો જવાબ આપવા માટે, Signalને તમારા માઇક્રોફોન પર ઍક્સેસ આપો.</string>
+    <!-- Notification body shown during a call when Android blocked microphone access because Signal was in the background -->
+    <string name="CallNotificationBuilder__the_other_person_cant_hear_you_until_you_open_signal">તમે Signal ન ખોલો ત્યાં સુધી સામેની વ્યક્તિ તમને સાંભળી શકશે નહીં.</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">બેકઅપ પાસફ્રેઝ</string>
     <string name="backup_enable_dialog__backups_will_be_saved_to_external_storage_and_encrypted_with_the_passphrase_below_you_must_have_this_passphrase_in_order_to_restore_a_backup">બૅકઅપ બાહ્ય સ્ટોરેજ માં સાચવવામાં આવશે અને નીચે પાસફ્રેઝ થી એન્ક્રિપ્ટ થશે. બેકઅપને રિસ્ટોર કરવા માટે તમારી પાસે આ પાસફ્રેઝ હોવો આવશ્યક છે.</string>
     <string name="backup_enable_dialog__you_must_have_this_passphrase">બૅકઅપને રિસ્ટોર કરવા માટે તમારી પાસે આ પાસફ્રેઝ હોવો આવશ્યક છે.</string>
@@ -5130,6 +5137,8 @@
     <string name="NewConversationActivity__video_call">વિડિયો કૉલ</string>
     <!-- Context menu item remove -->
     <string name="NewConversationActivity__remove">દૂર કરો</string>
+    <!-- Context menu item that hides a contact -->
+    <string name="NewConversationActivity__hide">છુપાવો</string>
     <!-- Context menu item block -->
     <string name="NewConversationActivity__block">બ્લૉક કરો</string>
     <!-- Dialog title when removing a contact -->
@@ -5138,6 +5147,12 @@
     <string name="NewConversationActivity__you_wont_see_this_person">શોધ કરતી વખતે તમે આ વ્યક્તિને જોશો નહીં. જો તેઓ ભવિષ્યમાં તમને મેસેજ મોકલશે તો તમને એક મેસેજ વિનંતી મળશે.</string>
     <!-- Snackbar message after removing a contact -->
     <string name="NewConversationActivity__s_has_been_removed">%1$sને દૂર કરવામાં આવ્યા છે</string>
+    <!-- Dialog title when hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__hide_s">%1$sને છુપાવવા છે?</string>
+    <!-- Dialog body when hiding a contact -->
+    <string name="NewConversationActivity__this_person_wont_appear">આ વ્યક્તિ તમારા સંપર્કોનું લિસ્ટ અને શોધમાં દેખાશે નહીં. જો તેઓ ભવિષ્યમાં તમને મેસેજ કરે, તો તમને મેસેજ વિનંતી મળશે. તમે છુપાવ્યા હોય તે લોકોને તમે સેટિંગ્સમાંથી બદલી શકો છો.</string>
+    <!-- Snackbar message after hiding a contact. Placeholder is the contact\'s name. -->
+    <string name="NewConversationActivity__s_has_been_hidden">%1$sને છુપાવવામાં આવ્યા છે</string>
     <!-- Snackbar message after blocking a contact -->
     <string name="NewConversationActivity__s_has_been_blocked">%1$sને બ્લૉક કરવામાં આવ્યા છે</string>
     <!-- Error message shown when looking up a person by phone number and that phone number is not associated with a signal account -->

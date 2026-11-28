@@ -11,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.SavedStateHandle
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -130,6 +132,33 @@ class AppSettingsNavigationTest {
     composeTestRule.waitForIdle()
     composeTestRule.waitUntil(10_000) { router.selectedRoute.value == AppSettingsRoute.AppearanceRoute.Appearance }
     composeTestRule.onNodeWithText("selected appearance").assertIsDisplayed()
+  }
+
+  @Test
+  @Config(qualifiers = "w800dp-h700dp")
+  fun `discarding edits carries out the section change they held`() {
+    setContent(defaultDetailRoute = AppSettingsRoute.ChatsRoute.Chats)
+    router.onEvent(AppSettingsNavigationEvent.BeginEditSession)
+    router.onEvent(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AppearanceRoute.Appearance, replacesDetail = true))
+    composeTestRule.waitForIdle()
+    assertThat(router.navigator.detail.value).isEqualTo(AppSettingsRoute.ChatsRoute.Chats)
+    composeTestRule.onNodeWithText("Discard").performClick()
+    composeTestRule.waitForIdle()
+    assertThat(router.navigator.detail.value).isEqualTo(AppSettingsRoute.AppearanceRoute.Appearance)
+  }
+
+  @Test
+  @Config(qualifiers = "w800dp-h700dp")
+  fun `cancelling keeps the edited screen open`() {
+    setContent(defaultDetailRoute = AppSettingsRoute.ChatsRoute.Chats)
+    router.onEvent(AppSettingsNavigationEvent.BeginEditSession)
+    router.onEvent(AppSettingsNavigationEvent.Close)
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Cancel").performClick()
+    composeTestRule.waitForIdle()
+    assertThat(closed).isEqualTo(0)
+    assertThat(router.navigator.detail.value).isEqualTo(AppSettingsRoute.ChatsRoute.Chats)
+    assertThat(router.losesEdits(AppSettingsNavigationEvent.Close)).isTrue()
   }
 
   private fun setContent(defaultDetailRoute: AppSettingsRoute, home: @Composable (AppSettingsRoute?) -> Unit = { Text("Home") }) {

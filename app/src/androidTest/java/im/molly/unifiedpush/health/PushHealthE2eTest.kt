@@ -219,7 +219,7 @@ class PushHealthE2eTest {
     assertEquals(2, values.health.failures)
     assertTrue(values.health.fallback)
     assertEquals(ForceWebsocketMode.ENABLED_AUTOMATICALLY, SignalStore.settings.forceWebsocketMode)
-    assertTrue("WebSocket mode must be forced", SignalStore.settings.forceWebsocketMode.isEnabled)
+    assertTrue("WebSocket mode must be forced", SignalStore.settings.forceWebsocketMode.shouldStayConnected(pushAvailable = true))
     instrumentation.runOnMainSync { viewModel.refresh() }
     Thread.sleep(500)
     assertTrue(state().pushFallback)

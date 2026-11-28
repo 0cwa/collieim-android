@@ -116,6 +116,8 @@ open class V2ConversationItemTextOnlyViewHolder<Model : MappingModel<Model>>(
   private val footerDrawable = ChatColorsDrawable(conversationContext::getChatColorsData)
   private val senderDrawable = ChatColorsDrawable(conversationContext::getChatColorsData)
   private val bodyBubbleLayoutTransition = BodyBubbleLayoutTransition()
+  private val footerFadeTransition = V2FooterFadeTransition()
+  private val bubbleBoundsAnimator = V2BubbleBoundsAnimator(binding.bodyWrapper)
 
   private val gestureDetector = GestureDetector(
     context,
@@ -219,6 +221,23 @@ open class V2ConversationItemTextOnlyViewHolder<Model : MappingModel<Model>>(
         hasProcessedSupportedPayload = true
       }
     }
+
+    val isSameMessage = this::conversationMessage.isInitialized &&
+      model is ConversationMessageElement &&
+      model.conversationMessage.messageRecord.id == conversationMessage.messageRecord.id
+
+    val rootLayoutTransition = if (isSameMessage) footerFadeTransition else null
+    if (binding.root.layoutTransition !== rootLayoutTransition) {
+      binding.root.layoutTransition = rootLayoutTransition
+    }
+
+    if (isSameMessage) {
+      bubbleBoundsAnimator.animateNextLayout()
+    } else {
+      bubbleBoundsAnimator.cancel()
+    }
+
+    binding.deliveryStatus?.setAnimateStateChanges(isSameMessage)
 
     check(model is ConversationMessageElement)
 
@@ -510,7 +529,7 @@ open class V2ConversationItemTextOnlyViewHolder<Model : MappingModel<Model>>(
   private fun presentFooterExpiry() {
     val timer = binding.footerExpiry
     val record = conversationMessage.messageRecord
-    if (record.expiresIn > 0 && !record.isPending) {
+    if (record.expiresIn > 0) {
       timer.setColorFilter(themeDelegate.getFooterForegroundColor(conversationMessage), PorterDuff.Mode.SRC_IN)
 
       timer.visible = true

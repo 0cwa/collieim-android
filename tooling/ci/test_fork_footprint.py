@@ -189,6 +189,15 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertLessEqual(len(written), 90)
             self.assertEqual(json.loads(written), [row])
 
+    def test_json_parts_keep_pretty_json_when_each_split_part_fits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            rows = [{"a": "b"}, {"c": "d"}]
+            pointer, parts = fp.write_json_parts(out, "pretty", rows, 25)
+            self.assertEqual(len(parts), 2)
+            for name, row in zip(parts, rows):
+                self.assertEqual((out / name).read_text(), json.dumps([row], indent=2) + "\n")
+
     def test_json_fitting_reduces_serialized_ascii_bytes_until_tiny_budget_fails(self):
         fitted = fp._fit_json_record({"a": "雪" * 10, "b": "x" * 10}, 40)
         self.assertLessEqual(len(json.dumps([fitted], ensure_ascii=True, separators=(",", ":")).encode("ascii")) + 1, 40)

@@ -3,7 +3,6 @@
 
 import argparse
 import base64
-import copy
 from collections import Counter
 import fnmatch
 import hashlib
@@ -343,19 +342,19 @@ def write_json_parts(out, stem, rows, limit):
     for i, part in enumerate(parts, 1):
         name = f"{stem}-{i:03}.json"
         rendered = json.dumps(json_safe(part), ensure_ascii=True, indent=2) + "\n"
-        # Compact before shortening: pretty-printing can be the only reason a
-        # complete record exceeds the byte limit.
-        compact = json.dumps(json_safe(part), ensure_ascii=True, separators=(",", ":")) + "\n"
-        if len(compact.encode("ascii")) <= limit:
-            rendered = compact
-        elif len(part) == 1:
-            # ASCII escaping can expand CJK text sixfold, so measure the
-            # serialized representation after every shortening step.
-            compact_rows = [_fit_json_record(part[0], max(1, limit - 3))]
-            rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
-        else:
-            compact_rows = [_fit_json_record(row, max(1, limit - 3)) for row in part]
-            rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
+        if len(rendered.encode("ascii")) > limit:
+            # Compact only when pretty JSON itself exceeds the byte limit.
+            compact = json.dumps(json_safe(part), ensure_ascii=True, separators=(",", ":")) + "\n"
+            if len(compact.encode("ascii")) <= limit:
+                rendered = compact
+            elif len(part) == 1:
+                # ASCII escaping can expand CJK text sixfold, so measure the
+                # serialized representation after every shortening step.
+                compact_rows = [_fit_json_record(part[0], max(1, limit - 3))]
+                rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
+            else:
+                compact_rows = [_fit_json_record(row, max(1, limit - 3)) for row in part]
+                rendered = json.dumps(json_safe(compact_rows), ensure_ascii=True, separators=(",", ":")) + "\n"
         if len(rendered.encode("utf-8")) > limit:
             raise ValueError(f"JSON record in {stem} cannot fit the {limit}-byte part limit")
         (out / name).write_text(rendered)
@@ -368,9 +367,8 @@ def write_json_parts(out, stem, rows, limit):
 def _fit_json_record(row, budget):
     """Shorten string values as needed to fit one valid record in a JSON part."""
     result = json_safe(row)
-    def encoded_size():
-        return len(json.dumps([result], ensure_ascii=True, separators=(",", ":")).encode("utf-8")) + 1
-    while encoded_size() > budget:
+    current_size = len(json.dumps([result], ensure_ascii=True, separators=(",", ":")).encode("ascii")) + 1
+    while current_size > budget:
         candidates = []
         def collect(value, path):
             if isinstance(value, dict):
@@ -381,25 +379,17 @@ def _fit_json_record(row, budget):
                 marker = "…"
                 reduced = value[: max(0, len(value) // 2)] + marker
                 if reduced != value:
-                    # Evaluate candidate byte reductions using an isolated copy.
-                    candidate_result = copy.deepcopy(result)
-                    if path:
-                        candidate_parent = candidate_result
-                        for item in path[:-1]:
-                            candidate_parent = candidate_parent[item]
-                        candidate_parent[path[-1]] = reduced
-                    else:
-                        candidate_result = reduced
-                    candidate_size = len(json.dumps([candidate_result], ensure_ascii=True,
-                                                    separators=(",", ":")).encode("ascii")) + 1
-                    reduction = encoded_size() - candidate_size
+                    # String contents are independently JSON-escaped, so the
+                    # serialized string delta is the exact record byte saving.
+                    reduction = (len(json.dumps(value, ensure_ascii=True)) -
+                                 len(json.dumps(reduced, ensure_ascii=True)))
                     if reduction > 0:
                         candidates.append((reduction, path, reduced))
         collect(result, [])
         if not candidates:
             raise ValueError("JSON record cannot be shortened enough to fit the byte limit")
-        _, path, reduced = max(candidates, key=lambda item: item[0])
-        previous_size = encoded_size()
+        reduction, path, reduced = max(candidates, key=lambda item: item[0])
+        previous_size = current_size
         if path:
             parent = result
             for item in path[:-1]:
@@ -407,7 +397,8 @@ def _fit_json_record(row, budget):
             parent[path[-1]] = reduced
         else:
             result = reduced
-        if encoded_size() >= previous_size:
+        current_size -= reduction
+        if current_size >= previous_size:
             raise ValueError("JSON record cannot be shortened enough to fit the byte limit")
     return result
 

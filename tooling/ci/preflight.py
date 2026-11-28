@@ -158,6 +158,41 @@ CANONICAL_REMOTE = re.compile(
     re.IGNORECASE,
 )
 
+RECURRING_HOTSPOTS = {
+    "ApplicationContext.java", "AndroidManifest.xml", "app/build.gradle.kts",
+    "AppSettingsActivity.kt", "AttachmentTable.kt", "MediaTable.kt",
+    "ContactsSyncAdapter.java", "IncomingMessageObserver.kt", "LinkPreviewUtil.java",
+}
+
+
+def report_soft_fork_advisories(base):
+    """Print review hints; these do not participate in preflight's pass count."""
+    result = subprocess.run(
+        ["git", "diff", "--no-ext-diff", "--unified=0", f"{base}...HEAD"],
+        text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    if result.returncode:
+        print(f"Soft-fork advisory unavailable: {result.stderr.strip()}")
+        return
+    changed_path = ""
+    hotspot_hunks = {}
+    inline_strings = []
+    for line in result.stdout.splitlines():
+        if line.startswith("diff --git "):
+            changed_path = ""
+        elif line.startswith("+++ b/"):
+            changed_path = line[6:]
+        elif line.startswith("@@") and Path(changed_path).name in RECURRING_HOTSPOTS:
+            hotspot_hunks[changed_path] = hotspot_hunks.get(changed_path, 0) + 1
+        elif (line.startswith("+") and not line.startswith("+++")
+              and re.fullmatch(r"app/src/main/res/values[^/]*/strings\.xml", changed_path)):
+            inline_strings.append(changed_path)
+    for path in sorted(set(inline_strings)):
+        print(f"WARN: inline addition in upstream strings file {path}; consider isolated Collie strings.")
+    for path, count in sorted(hotspot_hunks.items()):
+        if count > 1:
+            print(f"WARN: {path} has {count} diff hunks; review for scattered upstream changes.")
+
 
 def default_base():
     remotes = subprocess.check_output(["git", "remote", "-v"], text=True)
@@ -184,6 +219,8 @@ def main(argv=None):
     except subprocess.CalledProcessError:
         print("Cannot detect the preflight base. Run preflight from the repository root.", file=sys.stderr)
         return 1
+
+    report_soft_fork_advisories(base)
 
     checks = [
         check_pairing_manifest(),

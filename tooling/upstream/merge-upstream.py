@@ -15,6 +15,7 @@ import subprocess
 
 
 MANIFEST = Path("tooling/upstream/signal-donation-removals.json")
+PERSISTENT_MANIFEST = Path("tooling/upstream/persistent-removals.json")
 LITERAL_PATH = re.compile(r"[A-Za-z0-9_.+@$/-]+")
 UPSTREAM_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]*")
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
@@ -40,12 +41,17 @@ def paths(root, *args):
     return {os.fsdecode(path) for path in git(root, *args, "-z").split(b"\0")[:-1]}
 
 
-def removal_paths(root):
-    document = json.loads((root / MANIFEST).read_text(encoding="utf-8"))
-    if document["schema"] != 1:
-        raise ValueError("unknown Signal donation removal manifest schema")
+def removal_manifest(root, manifest, label):
+    document = json.loads((root / manifest).read_text(encoding="utf-8"))
+    if not isinstance(document, dict) or document.get("schema") != 1:
+        raise ValueError(f"unknown {label} removal manifest schema")
+    entries = document.get("removed")
+    if not isinstance(entries, list):
+        raise ValueError(f"invalid {label} removal manifest entries")
     paths = set()
-    for entry in document["removed"]:
+    for entry in entries:
+        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str) or not isinstance(entry.get("reason"), str):
+            raise ValueError(f"invalid {label} removal entry")
         name, reason = entry["path"], entry["reason"]
         if (
             not LITERAL_PATH.fullmatch(name)
@@ -56,8 +62,20 @@ def removal_paths(root):
         ):
             raise ValueError(f"invalid or duplicate removal path: {name!r}")
         paths.add(name)
-    if not paths:
+    if label == "Signal donation" and not paths:
         raise ValueError("empty Signal donation removal manifest")
+    return paths
+
+
+def removal_paths(root):
+    # Keep the existing donation manifest authoritative while allowing an optional
+    # companion list for other reviewed, intentional removals. Overlap is harmless.
+    paths = removal_manifest(root, MANIFEST, "Signal donation")
+    companion = root / PERSISTENT_MANIFEST
+    if companion.exists():
+        paths.update(removal_manifest(root, PERSISTENT_MANIFEST, "persistent"))
+    if not paths:
+        raise ValueError("empty Signal donation and persistent removal manifests")
     return paths
 
 
@@ -107,8 +125,8 @@ def merge(root, upstream, name, url, join, expected=None):
     if not git_path(root, "MERGE_HEAD").exists():
         raise ValueError(f"git merge did not start; is {label} {name} already merged?")
 
-    # Collie deleted the reviewed donation files; upstream edits to them do not
-    # bring them back. Other conflicts, including renames, stay for review.
+    # Reviewed removals stay deleted when upstream edits the same path. Other
+    # conflicts, including renames, stay for review.
     kept = sorted(path for path, stages in unmerged(root).items() if stages == {1, 3} and path in removed)
     if kept:
         git(root, "rm", "-q", "-f", "--", *(f":(top,literal){path}" for path in kept))
@@ -117,9 +135,9 @@ def merge(root, upstream, name, url, join, expected=None):
 
     body = []
     if kept:
-        body.append(f"Kept {len(kept)} files deleted by the Signal donation removal.")
+        body.append(f"Kept {len(kept)} reviewed removal-list files deleted.")
     if readded:
-        body.append("Upstream adds files on the donation removal list; review them:")
+        body.append("Upstream adds files on a reviewed removal list; review them:")
         body.extend(f"- {path}" for path in readded)
     if conflicts:
         body.append("Conflicts at merge time:")
@@ -131,9 +149,9 @@ def merge(root, upstream, name, url, join, expected=None):
     message += f"Layer: upgrade\nUpstream: {trailer}\n"
     git_path(root, "MERGE_MSG").write_text(message, encoding="utf-8")
 
-    print(f"Merging {label} {name} ({commit}); kept {len(kept)} donation files deleted.")
+    print(f"Merging {label} {name} ({commit}); kept {len(kept)} reviewed removal-list files deleted.")
     for path in readded:
-        print(f"Review: upstream adds {path}, which is on the donation removal list.")
+        print(f"Review: upstream adds {path}, which is on a reviewed removal list.")
     if conflicts:
         print(f"Resolve {len(conflicts)} conflicts, then run git commit; the message is prepared.")
     else:

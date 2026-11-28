@@ -85,18 +85,20 @@ def conflict_paths(section):
     return result
 
 
-def diff_text(a, b, paths=None):
+def diff_text(a, b, paths=None, attr_source=None):
     if paths == []:
         return ""
-    args = ["--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3", a, b, "--"]
+    args = ([f"--attr-source={attr_source}"] if attr_source else [])
+    args.extend(["--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3", a, b, "--"])
     if paths is not None:
         args.extend(paths)
     return git(*args).decode(errors="replace")
 
 
-def diff_numstat(a, b):
+def diff_numstat(a, b, attr_source=None):
     """Return per-path added/deleted counts from Git's NUL-delimited output."""
-    raw = git("--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+    args = ([f"--attr-source={attr_source}"] if attr_source else [])
+    raw = git(*args, "--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
               "--numstat", "-z", a, b, "--")
     result = {}
     for record in raw.split(b"\0"):
@@ -111,7 +113,7 @@ def diff_numstat(a, b):
     return result
 
 
-def diff_hunk_metadata(a, b, paths):
+def diff_hunk_metadata(a, b, paths, attr_source=None):
     """Attribute hunks to exact tree paths, excluding descendants of replaced files."""
     counts, spans = Counter(), {}
     # Use the trusted source tree's attributes, independent of the checkout.
@@ -120,7 +122,7 @@ def diff_hunk_metadata(a, b, paths):
     for path in paths:
         path_bytes = os.fsencode(path)
         patch = subprocess.run(
-            ["git", f"--attr-source={a}", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
+            ["git", f"--attr-source={attr_source or a}", "-c", "core.quotePath=true", "--literal-pathspecs", "diff",
              "--no-ext-diff", "--no-textconv", "--no-renames", "--default-prefix", "--unified=3",
              a, b, "--", path], cwd=REPO, check=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
@@ -366,7 +368,10 @@ def _fit_json_record(row, budget):
         _, parent, key, value = max(strings, key=lambda item: item[0])
         marker = "…"
         reduced = value[: max(0, len(value) // 2)] + marker
+        previous_size = encoded_size()
         parent[key] = reduced
+        if encoded_size() >= previous_size:
+            raise ValueError("JSON record cannot be shortened enough to fit the byte limit")
     return result
 
 
@@ -620,8 +625,9 @@ def entanglement(base_ref, head_ref, history_ref=None):
         second = paths_between(merge["upstream_parent"], merge["commit"])
         # Files changed from both parents are conflict-resolution / integration hotspots, not proof of a textual conflict.
         overlap = sorted(set(first) & set(second))
-        numstat = diff_numstat(merge["upstream_parent"], merge["commit"])
-        hunks, path_hunks, spans = diff_hunk_metadata(merge["upstream_parent"], merge["commit"], second)
+        numstat = diff_numstat(merge["upstream_parent"], merge["commit"], attr_source=history if history_ref else None)
+        hunks, path_hunks, spans = diff_hunk_metadata(merge["upstream_parent"], merge["commit"], second,
+                                                      attr_source=history if history_ref else None)
         added_lines = 0
         for path in second:
             added_lines += numstat.get(path, (0, 0))[0]
@@ -662,7 +668,7 @@ def entanglement(base_ref, head_ref, history_ref=None):
     else:
         drift = []
     code_added = strings_added = 0
-    for path, (added, _deleted) in diff_numstat(delta_base, head).items():
+    for path, (added, _deleted) in diff_numstat(delta_base, head, attr_source=history if history_ref else None).items():
         if is_string_path(path):
             strings_added += added
         else:
@@ -717,7 +723,7 @@ def pr_markdown(report):
     upstream_owned = set().union(*(set(tree_blobs(ref)) for ref in refs.values())) if refs else set()
     delta_base = report.get("delta_base") or base
     touched = sorted(upstream_owned & set(paths_between(delta_base, head)))
-    injected_hunks, injected_lines = upstream_delta_stats(delta_base, head, touched)
+    injected_hunks, injected_lines = upstream_delta_stats(delta_base, head, touched, attr_source=base)
     repeated = {r["path"] for r in report["upgrade_conflict_recurrence"] if r["count"] > 1}
     hotspots = sorted(repeated & set(touched))
     domains = Counter(domain(p)[0] for p in touched if runtime_path(p))
@@ -735,12 +741,12 @@ def pr_markdown(report):
     return "\n".join(lines).rstrip() + "\n"
 
 
-def upstream_delta_stats(base, head, exact_paths):
+def upstream_delta_stats(base, head, exact_paths, attr_source=None):
     """Count only exact upstream-owned files, using Git's path-aware metadata."""
     if not exact_paths:
         return 0, 0
-    hunks, _path_hunks, _spans = diff_hunk_metadata(base, head, exact_paths)
-    numstat = diff_numstat(base, head)
+    hunks, _path_hunks, _spans = diff_hunk_metadata(base, head, exact_paths, attr_source=attr_source)
+    numstat = diff_numstat(base, head, attr_source=attr_source)
     added_lines = sum(numstat.get(path, (0, 0))[0] for path in exact_paths)
     return hunks, added_lines
 
@@ -930,13 +936,13 @@ def main(argv=None):
     p.add_argument("--markdown", action="store_true"); p.add_argument("--json", action="store_true")
     p = sub.add_parser("post-report", help="validate and post a bounded report from the trusted validation job")
     p.add_argument("--repository", required=True); p.add_argument("--pr", required=True)
-    p.add_argument("--base", required=True); p.add_argument("--head", required=True); p.add_argument("--report-b64", required=True)
+    p.add_argument("--base", required=True); p.add_argument("--head", required=True)
     p = sub.add_parser("validate-run", help="validate a workflow_run artifact against its live pull request")
     p.add_argument("--event", type=Path, required=True); p.add_argument("--meta", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "post-report":
-            post_report(args.repository, args.pr, args.base, args.head, args.report_b64)
+            post_report(args.repository, args.pr, args.base, args.head, os.environ.get("REPORT_B64", ""))
         elif args.command == "validate-run":
             with args.event.open(encoding="utf-8") as f:
                 event = json.load(f)

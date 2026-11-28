@@ -144,7 +144,9 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertIn("ref: ${{ github.event.repository.default_branch }}", privileged)
         self.assertIn("group: fork-footprint-pr-${{ github.event.pull_request.number }}", workflow)
         self.assertIn("group: fork-footprint-comment-pr-${{ needs.validate.outputs.pr_number }}", consumer)
-        self.assertIn("group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository_id }}-${{ github.event.workflow_run.head_branch }}", consumer)
+        self.assertIn("group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository.id || github.repository_id }}-${{ github.event.workflow_run.head_branch || github.event.workflow_run.id }}", consumer)
+        self.assertIn('post-report --repository "$REPORTED_REPOSITORY" --pr "$PR_NUMBER" --base "$BASE_SHA" --head "$HEAD_SHA"', consumer)
+        self.assertNotIn('--report-b64', consumer)
         self.assertIn("cancel-in-progress: false", consumer.split("jobs:", 1)[0])
         self.assertNotEqual(
             consumer.split("group: ", 1)[1].splitlines()[0],
@@ -178,6 +180,10 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertIn("…", rows[0]["path"])
             self.assertIn("…", rows[0]["label"])
 
+    def test_json_record_fitting_terminates_when_ellipsis_cannot_shrink(self):
+        with self.assertRaisesRegex(ValueError, "cannot be shortened"):
+            fp._fit_json_record({"path": "…"}, 1)
+
     def test_post_report_validates_identity_marker_head_and_bound(self):
         base = "b" * 40
         head = "a" * 40
@@ -201,6 +207,18 @@ class ForkFootprintTests(unittest.TestCase):
             with patch.object(fp, "MAX_COMMENT_BYTES", 12):
                 with self.assertRaisesRegex(ValueError, "size limit"):
                     fp.post_report("owner/repo", "7", base, head, encoded)
+
+    def test_post_report_reads_encoded_payload_from_environment(self):
+        base, head = "b" * 40, "a" * 40
+        report = f"<!-- collie-fork-footprint -->\nBase: `{base}` · Head: `{head}`\n"
+        encoded = fp.base64.b64encode(report.encode()).decode()
+        env = {"GITHUB_REPOSITORY": "owner/repo", "PR_NUMBER": "7", "EXPECTED_REPOSITORY": "owner/repo",
+               "EXPECTED_PR_NUMBER": "7", "EXPECTED_BASE_SHA": base, "EXPECTED_HEAD_SHA": head,
+               "REPORT_B64": encoded}
+        with patch.dict("os.environ", env), patch.object(fp, "sticky_comment", return_value={"id": 1}) as post:
+            self.assertEqual(fp.main(["post-report", "--repository", "owner/repo", "--pr", "7",
+                                      "--base", base, "--head", head]), 0)
+        post.assert_called_once_with(report, base, head)
 
     def test_workflow_run_fork_fallback_uses_encoded_head_and_validates_live_pr(self):
         sha = "a" * 40; base = "b" * 40; merge = "c" * 40
@@ -294,7 +312,7 @@ class ForkFootprintTests(unittest.TestCase):
         with patch.object(fp, "diff_numstat", return_value={"node": (2, 1), "node/child.kt": (90, 0)}), \
                 patch.object(fp, "diff_hunk_metadata", return_value=(3, {"node": 3}, {})) as hunks:
             self.assertEqual(fp.upstream_delta_stats("base", "head", ["node"]), (3, 2))
-        hunks.assert_called_once_with("base", "head", ["node"])
+        hunks.assert_called_once_with("base", "head", ["node"], attr_source=None)
 
     def test_domain_assignment_is_stable_and_covers_unknown_paths(self):
         self.assertEqual(fp.domain("app/src/main/java/AuthManager.kt")[0], "D2")
@@ -439,10 +457,12 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertEqual(attr(base), [b"sample.txt", b"diff", b"set", b""])
             self.assertEqual(attr(head), [b"sample.txt", b"diff", b"unset", b""])
             self.assertEqual(attr(), [b"sample.txt", b"diff", b"unset", b""])
-            count, path_counts, spans = fp.diff_hunk_metadata(base, head, ["sample.txt"])
+            count, path_counts, spans = fp.diff_hunk_metadata(base, head, ["sample.txt"], attr_source=base)
             self.assertEqual(count, 1)
             self.assertEqual(path_counts, {"sample.txt": 1})
             self.assertEqual(spans["sample.txt"][0]["old_count"], 1)
+            self.assertEqual(fp.diff_numstat(base, head, attr_source=base)["sample.txt"], (1, 1))
+            self.assertIn("-before", fp.diff_text(base, head, ["sample.txt"], attr_source=base))
 
     def test_hunks_for_file_replaced_by_directory_count_exact_paths(self):
         import subprocess

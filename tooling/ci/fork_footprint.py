@@ -67,14 +67,14 @@ def upstream_merges(head):
 
 
 def paths_between(a, b):
-    raw = git("diff", "--no-ext-diff", "--no-textconv", "--name-only", "--no-renames", a, b, "--").decode(errors="replace")
-    return sorted(set(raw.splitlines()))
+    raw = git("diff", "--no-ext-diff", "--no-textconv", "--name-only", "-z", "--no-renames", a, b, "--")
+    return sorted({path.decode("utf-8", errors="surrogateescape") for path in raw.split(b"\0") if path})
 
 
 def diff_text(a, b, paths=None):
     if paths == []:
         return ""
-    args = ["diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3", a, b, "--"]
+    args = ["--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--unified=3", a, b, "--"]
     if paths is not None:
         args.extend(paths)
     return git(*args).decode(errors="replace")
@@ -164,11 +164,11 @@ def drift_paths(changed, signal_tree, molly_tree, head_tree, merge_trees=()):
     result = []
     for path in changed:
         signal, molly, current = signal_tree.get(path), molly_tree.get(path), head_tree.get(path)
-        if signal == molly or current in (signal, molly):
+        if signal == molly or (current is not None and current in (signal, molly)):
             continue
         # A merge result that is still present at head is imported integration
         # output, not a later Collie edit to the upstream divergence.
-        if any(tree.get(path) == current for tree in merge_trees):
+        if current is not None and any(tree.get(path) == current for tree in merge_trees):
             continue
         result.append(path)
     return sorted(result)
@@ -273,6 +273,9 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
     upstream_refs = latest_upstreams(discovered_merges)
     upstream_trees = {kind: tree_blobs(ref) for kind, ref in upstream_refs.items()}
     head_tree = tree_blobs(head)
+    empty_tree = subprocess.run(["git", "hash-object", "-t", "tree", "--stdin"], cwd=REPO,
+                                input=b"", check=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE).stdout.decode().strip()
     if since:
         candidate_paths = set(paths_between(since, head))
     else:
@@ -309,6 +312,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
                   "provenance": classification}
         domains[key]["files"].append(record)
         manifest.append(record)
+        wrote_diff = False
         for kind, ref in upstream_refs.items():
             if upstream_trees[kind].get(path) is None:
                 continue
@@ -325,6 +329,15 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
                 name = f"{key.lower()}-{kind}-{hashlib.sha1(path.encode()).hexdigest()[:10]}-{i:03}.diff"
                 (out / name).write_text(part)
                 domains[key]["diff_parts"].append(name)
+                wrote_diff = True
+        if classification == "collie-original" and not wrote_diff:
+            source = since or empty_tree
+            text = diff_text(source, head, [path])
+            if text:
+                for i, part in enumerate(chunks(text, max_bytes), 1):
+                    name = f"{key.lower()}-original-{hashlib.sha1(path.encode()).hexdigest()[:10]}-{i:03}.diff"
+                    (out / name).write_text(part)
+                    domains[key]["diff_parts"].append(name)
     security = security_leads(head, merges)
     for key, entry in domains.items():
         lines = [f"# {key}: {entry['title']}", "", f"Head: `{head}`", "", f"Since: `{since or 'latest upstream baseline'}`", "",
@@ -360,7 +373,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
     if len(index_text.encode("utf-8")) <= max_bytes:
         (out / "index.json").write_text(index_text)
     else:
-        compact = {key: index[key] for key in ("head", "since", "bounded_part_bytes")}
+        compact = {key: value for key, value in index.items() if key not in ("domains", "upstream_merges")}
         part_base = {**compact, "domains": {}, "upstream_merges": []}
         groups = []
         current = {"domains": {}, "upstream_merges": []}
@@ -380,7 +393,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
             name = f"index-{i:03}.json"
             (out / name).write_text(json.dumps({**part_base, **group}, separators=(",", ":")) + "\n")
             names.append(name)
-        (out / "index.json").write_text(json.dumps({"parts": names}, separators=(",", ":")) + "\n")
+        (out / "index.json").write_text(json.dumps({**compact, "parts": names}, separators=(",", ":")) + "\n")
     md = ["# Fork security review dossiers", "", f"Head: `{head}`", f"Since: `{since or 'all history'}`", "", "| Domain | Runtime files | Diff parts |", "|---|---:|---:|"]
     for key, entry in domains.items():
         md.append(f"| [{key}: {entry['title']}]({key.lower()}.md) | {entry['file_count']} | {entry['diff_part_count']} |")
@@ -448,9 +461,10 @@ def security_leads(head, merges):
     return result
 
 
-def entanglement(base_ref, head_ref):
+def entanglement(base_ref, head_ref, history_ref=None):
     head = resolve(head_ref)
-    merges = upstream_merges(head)
+    history = resolve(history_ref) if history_ref else head
+    merges = upstream_merges(history)
     if base_ref:
         base = resolve(base_ref)
     elif merges:
@@ -488,7 +502,8 @@ def entanglement(base_ref, head_ref):
                "hunk_scatter": dict(path_hunks.most_common()), "hunk_spans": spans, "shared_paths": overlap, "upstream_paths": second}
         upgrade_rows.append(row)
         hunk_scatter.append({"commit": merge["commit"], "files": len(second), "hunks": hunks, "spans": spans})
-    changed = paths_between(base, head)
+    delta_base = git("merge-base", base, head).decode().strip()
+    changed = paths_between(delta_base, head)
     layer_paths = {}
     commits = git("rev-list", "--no-merges", f"{base}..{head}").decode().splitlines()
     for commit in commits:
@@ -500,7 +515,8 @@ def entanglement(base_ref, head_ref):
     feature_collisions = {path: sorted(layers) for path, layers in layer_paths.items()
                           if path in changed and len(layers) > 2}
     try:
-        catalog = tomllib.loads((REPO / "tooling/features.toml").read_text())
+        catalog_ref = history if history_ref else head
+        catalog = tomllib.loads(ref_text(catalog_ref, "tooling/features.toml") or "")
         feature_paths = {}
         for name, spec in catalog.get("features", {}).items():
             patterns = spec.get("paths", []) + spec.get("shared_paths", [])
@@ -517,7 +533,7 @@ def entanglement(base_ref, head_ref):
         drift = drift_paths(changed, signal_tree, molly_tree, tree_blobs(head), merge_trees)
     else:
         drift = []
-    text = diff_text(base, head)
+    text = diff_text(delta_base, head)
     code_added = strings_added = 0
     current_path = ""
     for line in text.splitlines():
@@ -540,13 +556,13 @@ def entanglement(base_ref, head_ref):
             continue
         conflicts.update(paths)
         # Count a follow-up only when a later resolution/fix commit actually edits the conflicted path.
-        followups = git("rev-list", "--first-parent", f"{merge['commit']}..{head}").decode().splitlines()
+        followups = git("rev-list", "--first-parent", f"{merge['commit']}..{history}").decode().splitlines()
         for commit in followups:
             message = git("show", "-s", "--format=%s%n%b", commit).decode(errors="replace")
             if not re.search(r"(fix|resolve|conflict)", message, re.I):
                 continue
             conflicts.update(set(paths_between(f"{commit}^", commit)) & paths)
-    return {"base": base, "head": head, "upgrade_conflict_recurrence": [{"path": p, "count": n} for p, n in conflicts.most_common()],
+    return {"base": base, "delta_base": delta_base, "head": head, "upgrade_conflict_recurrence": [{"path": p, "count": n} for p, n in conflicts.most_common()],
              "upgrade_hunk_scatter": hunk_scatter, "upgrade_merges": upgrade_rows,
             "feature_collisions": [{"path": p, "layers": labels} for p, labels in sorted(feature_collisions.items())],
              "drift_intersection": drift, "added_code_to_localized_string_ratio": {"code": code_added, "localized_strings": strings_added,
@@ -577,16 +593,17 @@ def markdown(report):
 def pr_markdown(report):
     base, head = report["base"], report["head"]
     merges = report["upgrade_merges"]
-    refs = latest_upstreams(upstream_merges(head))
+    refs = latest_upstreams(upstream_merges(base))
     upstream_owned = set().union(*(set(tree_blobs(ref)) for ref in refs.values())) if refs else set()
-    touched = sorted(upstream_owned & set(paths_between(base, head)))
-    patch = diff_text(base, head, touched)
+    delta_base = report.get("delta_base") or base
+    touched = sorted(upstream_owned & set(paths_between(delta_base, head)))
+    patch = diff_text(delta_base, head, touched)
     injected_hunks = sum(line.startswith("@@") for line in patch.splitlines())
     injected_lines = sum(line.startswith("+") and not line.startswith("+++") for line in patch.splitlines())
     repeated = {r["path"] for r in report["upgrade_conflict_recurrence"] if r["count"] > 1}
     hotspots = sorted(repeated & set(touched))
     domains = Counter(domain(p)[0] for p in touched if runtime_path(p))
-    string_edits = [p for p in paths_between(base, head) if is_string_path(p) and p in touched]
+    string_edits = [p for p in paths_between(delta_base, head) if is_string_path(p) and p in touched]
     lines = ["## Fork footprint delta", "", f"Base: {inline_code(base)} · Head: {inline_code(head)}", "",
              f"- Upstream files touched: **{len(touched)}**; new hunks in those files: **{injected_hunks}**, added lines: **{injected_lines}**.",
              f"- Historical repeat-conflict hotspots hit: **{len(hotspots)}**.",
@@ -650,6 +667,10 @@ def sticky_comment(body, expected_base, expected_head):
     number = os.environ.get("PR_NUMBER") or os.environ.get("GITHUB_PR_NUMBER")
     if not (token and repo and number):
         raise ValueError("posting requires GITHUB_TOKEN, GITHUB_REPOSITORY and PR_NUMBER")
+    if not re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9_.-]+", repo):
+        raise ValueError("GITHUB_REPOSITORY must be an owner/repository name")
+    if not re.fullmatch(r"[1-9][0-9]*", number):
+        raise ValueError("PR_NUMBER must be a positive decimal number")
     marker = "<!-- collie-fork-footprint -->"
     content = bounded_comment(body)
     api = f"https://api.github.com/repos/{repo}"
@@ -709,7 +730,7 @@ def main(argv=None):
             report = entanglement(args.base, args.head)
             print(markdown(report) if args.markdown else json.dumps(report, indent=2))
         else:
-            report = entanglement(args.base, args.head)
+            report = entanglement(args.base, args.head, history_ref=args.base)
             body = pr_markdown(report)
             summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
             if summary_path:

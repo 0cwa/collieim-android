@@ -74,6 +74,14 @@ class ForkFootprintTests(unittest.TestCase):
             self.assertIsNone(fp.sticky_comment("report", "base-full-sha", "head-full-sha"))
         self.assertEqual([req.get_method() for req in requests], ["GET", "GET", "GET"])
 
+    def test_sticky_comment_rejects_repo_and_pr_number_url_injection(self):
+        for env, message in (({"GITHUB_REPOSITORY": "owner/repo?x=1"}, "owner/repository"),
+                             ({"GITHUB_REPOSITORY": "owner/repo", "PR_NUMBER": "7/comments"}, "positive decimal")):
+            values = {"GITHUB_TOKEN": "test", "GITHUB_REPOSITORY": "owner/repo", "PR_NUMBER": "7", **env}
+            with patch.dict("os.environ", values):
+                with self.assertRaisesRegex(ValueError, message):
+                    fp.sticky_comment("body", "base", "head")
+
     def test_redirect_rejects_destinations_outside_github_api_origin(self):
         req = fp.Request("https://api.github.com/path", headers={"Authorization": "Bearer test"})
         handler = fp.GitHubApiRedirectHandler()
@@ -98,12 +106,40 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertLessEqual(len(content.encode("utf-8")), fp.MAX_COMMENT_BYTES)
         self.assertIn("shortened to fit", content)
 
-    def test_workflow_keeps_pull_request_permissions_and_serializes_per_pr(self):
+    def test_workflows_generate_trusted_advisory_and_privileged_job_validates_artifact(self):
         workflow = (SCRIPT.parent.parent.parent / ".github/workflows/fork-footprint.yml").read_text()
+        privileged = (SCRIPT.parent.parent.parent / ".github/workflows/fork-footprint-comment.yml").read_text()
+        self.assertIn("name: Fork footprint (advisory)", workflow)
+        self.assertIn("repository: ${{ github.event.pull_request.base.repo.full_name }}", workflow)
+        self.assertIn("ref: ${{ github.event.pull_request.base.sha }}", workflow)
+        self.assertIn("persist-credentials: false", workflow)
+        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
+        self.assertIn("actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1", workflow)
+        self.assertIn("git fetch --no-tags origin \"refs/pull/$PR_NUMBER/head\"", workflow)
+        self.assertIn("tooling/ci/fork_footprint.py pr-report --base", workflow)
+        self.assertIn("GITHUB_STEP_SUMMARY", workflow)
+        self.assertIn("does not contain the advisory generator yet", workflow)
+        self.assertNotIn("GITHUB_TOKEN", workflow)
+        self.assertIn("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", workflow)
+        self.assertIn("name: Fork footprint comment", privileged)
+        self.assertIn("workflows: [Fork footprint (advisory)]", privileged)
+        self.assertIn("persist-credentials: false", privileged)
+        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", privileged)
         self.assertIn("  pull_request:", workflow)
-        self.assertIn("  pull-requests: write", workflow)
+        self.assertIn("  contents: read", workflow)
+        self.assertNotIn("pull-requests: write", workflow)
         self.assertIn("group: fork-footprint-pr-${{ github.event.pull_request.number }}", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
+        self.assertIn("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", workflow)
+        self.assertIn("RUN_HEAD_SHA: ${{ github.event.pull_request.head.sha }}", workflow)
+        self.assertIn("MERGE_SHA: ${{ github.sha }}", workflow)
+        self.assertIn("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333", privileged)
+        self.assertIn("workflow_run:", privileged)
+        self.assertIn("pull-requests: write", privileged)
+        self.assertNotIn("pull_request_target", privileged)
+        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
+        self.assertIn("refs/pull/{number}/merge", privileged)
+        self.assertIn("git cat-file -e", privileged)
 
     def test_sticky_comment_skips_when_live_pr_shas_changed(self):
         response = self.Response({"head": {"sha": "new-head"}, "base": {"sha": "base-full-sha"}})
@@ -189,6 +225,27 @@ class ForkFootprintTests(unittest.TestCase):
             fp.diff_text(first, second)
             self.assertFalse(marker.exists())
 
+    def test_git_path_lists_are_nul_delimited_and_per_file_diffs_are_literal(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fp.REPO = root
+            def run(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).stdout.decode().strip()
+            run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
+            run("config", "commit.gpgsign", "false")
+            names = ["line\nbreak.kt", ":(glob)other*.kt"]
+            for i, name in enumerate(names):
+                path = root / name; path.write_text(f"before-{i}\n")
+            run("add", "."); run("commit", "-qm", "base"); base = run("rev-parse", "HEAD")
+            for i, name in enumerate(names):
+                (root / name).write_text(f"after-{i}\n")
+            run("add", "."); run("commit", "-qm", "head"); head = run("rev-parse", "HEAD")
+            self.assertEqual(fp.paths_between(base, head), sorted(names))
+            patch = fp.diff_text(base, head, [names[1]])
+            self.assertIn("after-1", patch)
+            self.assertNotIn("after-0", patch)
+
     def test_provenance_uses_upstream_contents_and_merge_evidence(self):
         head = {"local.kt": b"local", "signal.kt": b"signal", "molly.kt": b"molly", "common.kt": b"common",
                 "edited.kt": b"collie", "seam.kt": b"resolution"}
@@ -240,6 +297,9 @@ class ForkFootprintTests(unittest.TestCase):
         head = {"shared.kt": b"collie", "upstream-only.kt": b"signal"}
         self.assertEqual(fp.drift_paths({"shared.kt", "upstream-only.kt"}, signal, molly, head), ["shared.kt"])
         self.assertEqual(fp.drift_paths({"shared.kt"}, signal, molly, head, [{"shared.kt": b"collie"}]), [])
+        self.assertEqual(fp.drift_paths({"deleted.kt"}, {"deleted.kt": b"signal"},
+                                        {"deleted.kt": b"molly"}, {}, [{"deleted.kt": b"signal"}]),
+                         ["deleted.kt"])
 
     def test_manifest_and_dossier_follow_requested_head(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -288,6 +348,43 @@ class ForkFootprintTests(unittest.TestCase):
             with contextlib.redirect_stdout(output):
                 self.assertEqual(fp.main(["entanglement", "--base", base, "--head", head, "--json"]), 0)
             self.assertEqual(json.loads(output.getvalue())["head"], head)
+
+    def test_pr_delta_uses_merge_base_and_feature_catalog_uses_trusted_base(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fp.REPO = root
+            def run(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).stdout.decode().strip()
+            run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
+            run("config", "commit.gpgsign", "false")
+            source = root / "app/src/main/java/Feature.kt"; source.parent.mkdir(parents=True)
+            source.write_text("class Feature { val original = true }\n")
+            catalog = root / "tooling/features.toml"; catalog.parent.mkdir(parents=True)
+            catalog.write_text('[features.one]\npaths=["app/**"]\n[features.two]\npaths=["app/**"]\n')
+            run("add", "."); run("commit", "-qm", "common"); common = run("rev-parse", "HEAD")
+            run("checkout", "-qb", "target")
+            (root / "target-only.kt").write_text("target\n"); run("add", "."); run("commit", "-qm", "target advance")
+            base = run("rev-parse", "HEAD")
+            run("checkout", "-q", common); run("checkout", "-qb", "pr")
+            source.write_text("class Feature { val changed = true }\n")
+            catalog.write_text('[features.one]\npaths=["app/**"]\n[features.two]\npaths=["app/**"]\n[features.three]\npaths=["app/**"]\n')
+            run("add", "."); run("commit", "-qm", "PR change"); head = run("rev-parse", "HEAD")
+            standalone = fp.entanglement(base, head)
+            pr = fp.entanglement(base, head, history_ref=base)
+            self.assertEqual(pr["base"], base)
+            self.assertEqual(pr["delta_base"], common)
+            self.assertEqual(pr["added_code_to_localized_string_ratio"]["code"], 3)
+            self.assertEqual(standalone["feature_collisions"][0]["layers"], ["one", "three", "two"])
+            self.assertEqual(pr["feature_collisions"], [])
+            standalone_output = io.StringIO()
+            with contextlib.redirect_stdout(standalone_output):
+                self.assertEqual(fp.main(["entanglement", "--base", base, "--head", head, "--json"]), 0)
+            self.assertEqual(json.loads(standalone_output.getvalue())["feature_collisions"], standalone["feature_collisions"])
+            pr_output = io.StringIO()
+            with contextlib.redirect_stdout(pr_output):
+                self.assertEqual(fp.main(["pr-report", "--base", base, "--head", head, "--json"]), 0)
+            self.assertEqual(json.loads(pr_output.getvalue())["feature_collisions"], [])
 
     def test_dossier_discovers_signal_merge_and_security_lead_from_ref(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -368,6 +465,12 @@ class ForkFootprintTests(unittest.TestCase):
             incremental_files = [f for d in incremental["domains"].values()
                                  for f in self.manifest_rows(root / "incremental", d["manifest_parts"])]
             self.assertTrue(any(f["path"] == "app/src/main/java/registration/LockManager.kt" for f in incremental_files))
+            self.assertTrue(any("CollieLock" in path.read_text()
+                                for path in (root / "dossier").glob("d2-original-*.diff")))
+            index_pointer = json.loads((root / "dossier/index.json").read_text())
+            self.assertIn("runtime_file_rows", index_pointer)
+            self.assertIn("provenance_counts", index_pointer)
+            self.assertIn("security_leads", index_pointer)
 
 
 if __name__ == "__main__":

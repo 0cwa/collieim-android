@@ -47,7 +47,7 @@ jobs:
       contents: read
       pull-requests: write
     concurrency:
-      group: fork-footprint-pr-${{ needs.validate.outputs.pr_number }}
+      group: fork-footprint-comment-pr-${{ needs.validate.outputs.pr_number }}
       cancel-in-progress: false
     steps:
       - name: Check out trusted default branch code

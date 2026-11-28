@@ -13,7 +13,7 @@ import subprocess
 import sys
 import tomllib
 from urllib.error import HTTPError
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
@@ -78,6 +78,58 @@ def diff_text(a, b, paths=None):
     if paths is not None:
         args.extend(paths)
     return git(*args).decode(errors="replace")
+
+
+def diff_numstat(a, b):
+    """Return per-path added/deleted counts from Git's NUL-delimited output."""
+    raw = git("--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+              "--numstat", "-z", a, b, "--")
+    result = {}
+    for record in raw.split(b"\0"):
+        if not record:
+            continue
+        added, deleted, path = record.split(b"\t", 2)
+        if added == b"-" or deleted == b"-":  # binary file
+            counts = (0, 0)
+        else:
+            counts = (int(added), int(deleted))
+        result[path.decode("utf-8", errors="surrogateescape")] = counts
+    return result
+
+
+def diff_hunk_metadata(a, b, paths):
+    """Attribute hunk ranges by asking Git for each literal path separately."""
+    counts, spans = Counter(), {}
+    for path in paths:
+        patch = diff_text(a, b, [path])
+        for line in patch.splitlines():
+            if not line.startswith("@@"):
+                continue
+            counts[path] += 1
+            match = re.match(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", line)
+            if match:
+                spans.setdefault(path, []).append({"old_start": int(match[1]), "old_count": int(match[2] or 1),
+                                                   "new_start": int(match[3]), "new_count": int(match[4] or 1)})
+    return sum(counts.values()), counts, spans
+
+
+def display_text(value):
+    """Make arbitrary Git path bytes safe for UTF-8 JSON and Markdown output."""
+    return "".join(f"\\x{ord(char) - 0xdc00:02x}" if 0xdc80 <= ord(char) <= 0xdcff else char
+                   for char in str(value))
+
+
+def json_safe(value):
+    """Replace surrogateescaped path bytes before writing user-facing JSON."""
+    if isinstance(value, str):
+        return display_text(value)
+    if isinstance(value, list):
+        return [json_safe(item) for item in value]
+    if isinstance(value, tuple):
+        return [json_safe(item) for item in value]
+    if isinstance(value, dict):
+        return {json_safe(key): json_safe(item) for key, item in value.items()}
+    return value
 
 
 def domain(path):
@@ -213,7 +265,7 @@ def write_text_parts(out, stem, text, limit):
 
 def write_json_parts(out, stem, rows, limit):
     """Write complete JSON rows in bounded arrays and a compact pointer file."""
-    encoded = json.dumps(rows, ensure_ascii=False, indent=2) + "\n"
+    encoded = json.dumps(json_safe(rows), ensure_ascii=True, indent=2) + "\n"
     if len(encoded.encode("utf-8")) <= limit:
         name = f"{stem}.json"
         (out / name).write_text(encoded)
@@ -221,7 +273,7 @@ def write_json_parts(out, stem, rows, limit):
     parts, current = [], []
     for row in rows:
         candidate = current + [row]
-        rendered = json.dumps(candidate, ensure_ascii=False, indent=2) + "\n"
+        rendered = json.dumps(json_safe(candidate), ensure_ascii=True, indent=2) + "\n"
         if current and len(rendered.encode("utf-8")) > limit:
             parts.append(current)
             current = [row]
@@ -232,11 +284,11 @@ def write_json_parts(out, stem, rows, limit):
     names = []
     for i, part in enumerate(parts, 1):
         name = f"{stem}-{i:03}.json"
-        rendered = json.dumps(part, ensure_ascii=False, indent=2) + "\n"
+        rendered = json.dumps(json_safe(part), ensure_ascii=True, indent=2) + "\n"
         if len(rendered.encode("utf-8")) > limit:
             # A single unusually large record is serialized compactly. Current
             # producers cap extracted source lines, so this is a safe fallback.
-            rendered = json.dumps(part, ensure_ascii=False, separators=(",", ":")) + "\n"
+            rendered = json.dumps(json_safe(part), ensure_ascii=True, separators=(",", ":")) + "\n"
         (out / name).write_text(rendered)
         names.append(name)
     pointer = f"{stem}.json"
@@ -326,7 +378,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
                 continue
             pieces = chunks(text, max_bytes)
             for i, part in enumerate(pieces, 1):
-                name = f"{key.lower()}-{kind}-{hashlib.sha1(path.encode()).hexdigest()[:10]}-{i:03}.diff"
+                name = f"{key.lower()}-{kind}-{hashlib.sha1(path.encode('utf-8', errors='surrogateescape')).hexdigest()[:10]}-{i:03}.diff"
                 (out / name).write_text(part)
                 domains[key]["diff_parts"].append(name)
                 wrote_diff = True
@@ -335,14 +387,14 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
             text = diff_text(source, head, [path])
             if text:
                 for i, part in enumerate(chunks(text, max_bytes), 1):
-                    name = f"{key.lower()}-original-{hashlib.sha1(path.encode()).hexdigest()[:10]}-{i:03}.diff"
+                    name = f"{key.lower()}-original-{hashlib.sha1(path.encode('utf-8', errors='surrogateescape')).hexdigest()[:10]}-{i:03}.diff"
                     (out / name).write_text(part)
                     domains[key]["diff_parts"].append(name)
     security = security_leads(head, merges)
     for key, entry in domains.items():
         lines = [f"# {key}: {entry['title']}", "", f"Head: `{head}`", "", f"Since: `{since or 'latest upstream baseline'}`", "",
                  "Current runtime files are compared with the latest discovered Signal and Molly trees. `upgrade-seam` includes paths identified in recorded merge conflict messages.", ""]
-        lines += [f"- `{row['path']}` — {row['provenance']}" for row in entry["files"]]
+        lines += [f"- `{inline_code(row['path'])}` — {row['provenance']}" for row in entry["files"]]
         lines += ["", "#### Diff parts", "", *[f"- [{name}]({name})" for name in entry["diff_parts"]], ""]
         stem = key.lower()
         body = "\n".join(lines) + "\n"
@@ -369,7 +421,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
              "security_leads": len(security), "security_lead_manifest": security_pointer, "security_lead_parts": security_parts,
              "runtime_file_rows": len(manifest), "excluded_non_runtime_rows": excluded_noise,
              "provenance_counts": dict(provenance_counts), "bounded_part_bytes": max_bytes}
-    index_text = json.dumps(index, indent=2) + "\n"
+    index_text = json.dumps(json_safe(index), indent=2, ensure_ascii=True) + "\n"
     if len(index_text.encode("utf-8")) <= max_bytes:
         (out / "index.json").write_text(index_text)
     else:
@@ -381,7 +433,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
         entries += [("upstream_merges", str(i), merge) for i, merge in enumerate(merges)]
         for section, key, value in entries:
             candidate = {**current, section: {**current[section], key: value} if section == "domains" else current[section] + [value]}
-            if (current["domains"] or current["upstream_merges"]) and len((json.dumps({**part_base, **candidate}, separators=(",", ":")) + "\n").encode()) > max_bytes:
+            if (current["domains"] or current["upstream_merges"]) and len((json.dumps({**part_base, **candidate}, separators=(",", ":"), ensure_ascii=True) + "\n").encode()) > max_bytes:
                 groups.append(current)
                 current = {"domains": {}, "upstream_merges": []}
                 candidate = {**current, section: {key: value} if section == "domains" else [value]}
@@ -391,7 +443,7 @@ def dossiers(head_ref, out, since_ref=None, max_kb=150):
         names = []
         for i, group in enumerate(groups, 1):
             name = f"index-{i:03}.json"
-            (out / name).write_text(json.dumps({**part_base, **group}, separators=(",", ":")) + "\n")
+            (out / name).write_text(json.dumps({**part_base, **group}, separators=(",", ":"), ensure_ascii=True) + "\n")
             names.append(name)
         (out / "index.json").write_text(json.dumps({**compact, "parts": names}, separators=(",", ":")) + "\n")
     md = ["# Fork security review dossiers", "", f"Head: `{head}`", f"Since: `{since or 'all history'}`", "", "| Domain | Runtime files | Diff parts |", "|---|---:|---:|"]
@@ -406,7 +458,7 @@ def manifest_delta(head, merges):
     paths = sorted({p for m in merges for p in paths_between(m["parent"], m["commit"])
                     if p.endswith(("AndroidManifest.xml", "build.gradle", "build.gradle.kts", "gradle.properties", "libs.versions.toml"))})
     rows = ["# Manifest and build delta", "", f"Head: `{head}`", "", "| Path | Upstream merge |", "|---|---|"]
-    rows += [f"| `{p}` | `{m['commit'][:12]}` |" for m in merges for p in paths if p in paths_between(m["parent"], m["commit"])]
+    rows += [f"| {inline_code(p)} | `{m['commit'][:12]}` |" for m in merges for p in paths if p in paths_between(m["parent"], m["commit"])]
     return "\n".join(rows + (["", "No manifest or build files changed in discovered upgrades."] if not paths else ["", f"{len(paths)} distinct manifest/build paths."])) + "\n"
 
 
@@ -477,26 +529,11 @@ def entanglement(base_ref, head_ref, history_ref=None):
         second = paths_between(merge["upstream_parent"], merge["commit"])
         # Files changed from both parents are conflict-resolution / integration hotspots, not proof of a textual conflict.
         overlap = sorted(set(first) & set(second))
-        upstream_patch = diff_text(merge["upstream_parent"], merge["commit"])
-        hunks = sum(line.startswith("@@") for line in upstream_patch.splitlines())
-        added_lines = sum(line.startswith("+") and not line.startswith("+++") for line in upstream_patch.splitlines())
-        path_hunks = Counter()
-        current = ""
-        for line in upstream_patch.splitlines():
-            if line.startswith("diff --git "):
-                current = line.split(" b/", 1)[-1]
-            elif line.startswith("@@"):
-                path_hunks[current] += 1
-        spans = {}
-        current_path = ""
-        for line in upstream_patch.splitlines():
-            if line.startswith("diff --git "):
-                current_path = line.split(" b/", 1)[-1]
-            elif line.startswith("@@"):
-                match = re.match(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", line)
-                if match:
-                    spans.setdefault(current_path, []).append({"old_start": int(match[1]), "old_count": int(match[2] or 1),
-                                                               "new_start": int(match[3]), "new_count": int(match[4] or 1)})
+        numstat = diff_numstat(merge["upstream_parent"], merge["commit"])
+        hunks, path_hunks, spans = diff_hunk_metadata(merge["upstream_parent"], merge["commit"], second)
+        added_lines = 0
+        for path in second:
+            added_lines += numstat.get(path, (0, 0))[0]
         row = {"commit": merge["commit"], "kind": merge["kind"], "ref": merge["ref"], "first_parent_files": len(first),
                "upstream_files": len(second), "shared_files": len(overlap), "hunks": hunks, "added_lines": added_lines,
                "hunk_scatter": dict(path_hunks.most_common()), "hunk_spans": spans, "shared_paths": overlap, "upstream_paths": second}
@@ -533,17 +570,12 @@ def entanglement(base_ref, head_ref, history_ref=None):
         drift = drift_paths(changed, signal_tree, molly_tree, tree_blobs(head), merge_trees)
     else:
         drift = []
-    text = diff_text(delta_base, head)
     code_added = strings_added = 0
-    current_path = ""
-    for line in text.splitlines():
-        if line.startswith("diff --git "):
-            current_path = line.split(" b/", 1)[-1]
-        elif line.startswith("+") and not line.startswith("+++"):
-            if is_string_path(current_path):
-                strings_added += 1
-            else:
-                code_added += 1
+    for path, (added, _deleted) in diff_numstat(delta_base, head).items():
+        if is_string_path(path):
+            strings_added += added
+        else:
+            code_added += added
     conflicts = Counter()
     for merge in merges:
         message = git("show", "-s", "--format=%B", merge["commit"]).decode(errors="replace")
@@ -582,11 +614,11 @@ def markdown(report):
         lines.append(f"| `{row['commit'][:12]}` | {row['files']} | {row['hunks']} | {next((m['shared_files'] for m in report['upgrade_merges'] if m['commit']==row['commit']), 0)} |")
     lines += ["", "### Repeated integration paths", ""]
     repeated = [r for r in report["upgrade_conflict_recurrence"] if r["count"] > 1]
-    lines += [f"- `{r['path']}` ({r['count']} recorded conflicts or follow-up fixes)" for r in repeated[:30]] or ["- None found."]
+    lines += [f"- {inline_code(r['path'])} ({r['count']} recorded conflicts or follow-up fixes)" for r in repeated[:30]] or ["- None found."]
     lines += ["", "### Feature collisions", ""]
-    lines += [f"- `{row['path']}`: {', '.join(row['layers'])}" for row in report["feature_collisions"][:30]] or ["- None found."]
+    lines += [f"- {inline_code(row['path'])}: {', '.join(row['layers'])}" for row in report["feature_collisions"][:30]] or ["- None found."]
     lines += ["", f"### Changed paths overlapping upstream integration: {len(report['drift_intersection'])}", ""]
-    lines += [f"- `{p}`" for p in report["drift_intersection"][:50]] or ["- None."]
+    lines += [f"- {inline_code(p)}" for p in report["drift_intersection"][:50]] or ["- None."]
     return "\n".join(lines) + "\n"
 
 
@@ -619,7 +651,7 @@ def pr_markdown(report):
 
 def inline_code(value, limit=240):
     """Render untrusted text as one bounded Markdown code span."""
-    text = "".join(" " if ord(char) < 32 or ord(char) == 127 else char for char in str(value))
+    text = "".join(" " if ord(char) < 32 or ord(char) == 127 else char for char in display_text(value))
     if len(text) > limit:
         text = text[:limit - 1] + "…"
     delimiter = "`" * (max((len(match.group(0)) for match in re.finditer(r"`+", text)), default=0) + 1)
@@ -659,6 +691,55 @@ class GitHubApiRedirectHandler(HTTPRedirectHandler):
 def urlopen(req, timeout=20):
     """Open a GitHub API URL without following redirects off the API origin."""
     return build_opener(GitHubApiRedirectHandler()).open(req, timeout=timeout)
+
+
+def validate_workflow_run(event, meta, repository, token):
+    """Resolve a workflow_run to exactly one live PR using trusted event fields."""
+    run = event.get("workflow_run", event)
+    head_repo = (run.get("head_repository") or {}).get("full_name")
+    head_branch, run_head = run.get("head_branch"), run.get("head_sha")
+    if (run.get("event") != "pull_request" or not isinstance(head_repo, str) or
+            not re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9_.-]+", head_repo) or
+            not isinstance(head_branch, str) or not head_branch or
+            not isinstance(run_head, str) or not re.fullmatch(r"[0-9a-f]{40,64}", run_head) or
+            not re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9_.-]+", repository)):
+        return None
+    owner = head_repo.split("/", 1)[0]
+    query = urlencode({"state": "open", "per_page": 100, "head": f"{owner}:{head_branch}"})
+    url = f"https://api.github.com/repos/{repository}/pulls?{query}"
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+               "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "collie-fork-footprint"}
+    with urlopen(Request(url, headers=headers), timeout=20) as response:
+        prs = json.load(response)
+    matches = [pr for pr in prs if pr.get("head", {}).get("sha") == run_head and
+               pr.get("head", {}).get("repo", {}).get("full_name") == head_repo and
+               pr.get("base", {}).get("repo", {}).get("full_name") == repository]
+    if len(matches) != 1:
+        return None
+    pr = matches[0]
+    number = pr.get("number")
+    if (not isinstance(number, int) or number < 1 or meta.get("pr_number") != number or
+            meta.get("run_id") != run.get("id") or meta.get("run_head_sha") != run_head or
+            meta.get("head_sha") != run_head):
+        return None
+    for key in ("base_sha", "head_sha", "merge_sha"):
+        if not isinstance(meta.get(key), str) or not re.fullmatch(r"[0-9a-f]{40,64}", meta[key]):
+            return None
+    subprocess.run(["git", "fetch", "--no-tags", "origin", f"refs/pull/{number}/merge"],
+                   cwd=REPO, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    merge_sha = subprocess.check_output(["git", "rev-parse", "FETCH_HEAD"], cwd=REPO, text=True).strip()
+    merge_parents = subprocess.check_output(["git", "show", "-s", "--format=%P", merge_sha], cwd=REPO, text=True).split()
+    if merge_sha != meta["merge_sha"] or merge_parents != [meta["base_sha"], meta["head_sha"]]:
+        return None
+    pr_url = f"https://api.github.com/repos/{repository}/pulls/{number}"
+    with urlopen(Request(pr_url, headers=headers), timeout=20) as response:
+        live_pr = json.load(response)
+    if (live_pr.get("number") != number or live_pr.get("head", {}).get("repo", {}).get("full_name") != head_repo or
+            live_pr.get("base", {}).get("repo", {}).get("full_name") != repository or
+            live_pr.get("base", {}).get("sha") != meta["base_sha"] or
+            live_pr.get("head", {}).get("sha") != meta["head_sha"]):
+        return None
+    return {"pr_number": number, "base_sha": meta["base_sha"], "head_sha": meta["head_sha"]}
 
 
 def sticky_comment(body, expected_base, expected_head):
@@ -719,16 +800,33 @@ def main(argv=None):
     p = sub.add_parser("pr-report", help="write a PR report and optionally post a sticky comment")
     p.add_argument("--base", required=True); p.add_argument("--head", required=True); p.add_argument("--post-comment", action="store_true")
     p.add_argument("--markdown", action="store_true"); p.add_argument("--json", action="store_true")
+    p = sub.add_parser("validate-run", help="validate a workflow_run artifact against its live pull request")
+    p.add_argument("--event", type=Path, required=True); p.add_argument("--meta", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        if args.command == "dossiers":
+        if args.command == "validate-run":
+            with args.event.open(encoding="utf-8") as f:
+                event = json.load(f)
+            with args.meta.open(encoding="utf-8") as f:
+                meta = json.load(f)
+            result = validate_workflow_run(event, meta, os.environ.get("GITHUB_REPOSITORY", ""),
+                                           os.environ.get("GITHUB_TOKEN", ""))
+            with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+                if result is None:
+                    f.write("should_comment=false\n")
+                    print("Comment skipped: workflow run did not map to one current validated pull request.")
+                else:
+                    f.write("should_comment=true\n")
+                    for key, value in result.items():
+                        f.write(f"{key}={value}\n")
+        elif args.command == "dossiers":
             if args.max_kb < 1:
                 raise ValueError("--max-kb must be positive")
             report = dossiers(args.head, args.out, args.since, args.max_kb)
-            print(json.dumps({"head": report["head"], "out": str(args.out), "domains": len(report["domains"]), "leads": report["security_leads"]}))
+            print(json.dumps({"head": report["head"], "out": str(args.out), "domains": len(report["domains"]), "leads": report["security_leads"]}, ensure_ascii=True))
         elif args.command == "entanglement":
             report = entanglement(args.base, args.head)
-            print(markdown(report) if args.markdown else json.dumps(report, indent=2))
+            print(markdown(report) if args.markdown else json.dumps(json_safe(report), indent=2, ensure_ascii=True))
         else:
             report = entanglement(args.base, args.head, history_ref=args.base)
             body = pr_markdown(report)
@@ -745,7 +843,7 @@ def main(argv=None):
                     if exc.code != 403:
                         raise
                     print(f"Comment unavailable; full report is in GITHUB_STEP_SUMMARY: {exc}", file=sys.stderr)
-            print(json.dumps(report, indent=2) if args.json else body, end="" if args.json or body.endswith("\n") else "\n")
+            print(json.dumps(json_safe(report), indent=2, ensure_ascii=True) if args.json else body, end="" if args.json or body.endswith("\n") else "\n")
         return 0
     except (subprocess.CalledProcessError, OSError, ValueError) as exc:
         print(f"fork_footprint: {exc}", file=sys.stderr)

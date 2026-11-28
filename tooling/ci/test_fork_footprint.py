@@ -4,6 +4,7 @@ import importlib.util
 import contextlib
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -138,8 +139,50 @@ class ForkFootprintTests(unittest.TestCase):
         self.assertIn("pull-requests: write", privileged)
         self.assertNotIn("pull_request_target", privileged)
         self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
-        self.assertIn("refs/pull/{number}/merge", privileged)
+        self.assertIn("validate-run --event", privileged)
+        self.assertIn("head_branch", (SCRIPT.parent / "fork_footprint.py").read_text())
+        self.assertIn("needs: validate", privileged)
+        self.assertIn("should_comment == 'true'", privileged)
+        self.assertIn("pull-requests: read", privileged)
+        self.assertIn("actions: read", privileged)
+        self.assertNotIn("pull-requests: write", privileged.split("  comment:", 1)[0])
+        self.assertIn("pull-requests: write", privileged.split("  comment:", 1)[1])
+        self.assertIn("group: fork-footprint-pr-${{ needs.validate.outputs.pr_number }}", privileged)
+        self.assertIn('git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"', privileged)
         self.assertIn("git cat-file -e", privileged)
+
+    def test_workflow_run_fork_fallback_uses_encoded_head_and_validates_live_pr(self):
+        sha = "a" * 40; base = "b" * 40; merge = "c" * 40
+        run = {"event": "pull_request", "id": 12, "head_sha": sha, "head_branch": "feature/a b",
+               "head_repository": {"full_name": "fork-owner/repo"}}
+        pr = {"number": 7, "head": {"sha": sha, "repo": {"full_name": "fork-owner/repo"}},
+              "base": {"sha": base, "repo": {"full_name": "owner/repo"}}}
+        meta = {"run_id": 12, "run_head_sha": sha, "pr_number": 7, "base_sha": base,
+                "head_sha": sha, "merge_sha": merge}
+        responses = [self.Response([pr]), self.Response(pr)]
+        requests = []
+        def open_request(req, timeout):
+            requests.append(req)
+            return responses.pop(0)
+        with patch.object(fp, "REPO", Path(".")), patch.object(fp, "urlopen", side_effect=open_request), \
+                patch.object(fp.subprocess, "run") as fetch, \
+                patch.object(fp.subprocess, "check_output", side_effect=[merge + "\n", base + " " + sha]):
+            result = fp.validate_workflow_run({"workflow_run": run, "pull_requests": []}, meta, "owner/repo", "token")
+        self.assertEqual(result, {"pr_number": 7, "base_sha": base, "head_sha": sha})
+        self.assertIn("head=fork-owner%3Afeature%2Fa+b", requests[0].full_url)
+        self.assertEqual(len(requests), 2)
+        fetch.assert_called_once()
+
+    def test_workflow_run_validation_skips_ambiguous_or_mismatched_pr(self):
+        sha = "a" * 40
+        run = {"event": "pull_request", "id": 12, "head_sha": sha, "head_branch": "feature",
+               "head_repository": {"full_name": "fork/repo"}}
+        matching = {"number": 7, "head": {"sha": sha, "repo": {"full_name": "fork/repo"}},
+                    "base": {"repo": {"full_name": "owner/repo"}}}
+        for prs in ([matching, matching], [dict(matching, number=8)], []):
+            with patch.object(fp, "urlopen", return_value=self.Response(prs)):
+                self.assertIsNone(fp.validate_workflow_run({"workflow_run": run}, {"pr_number": 7},
+                                                           "owner/repo", "token"))
 
     def test_sticky_comment_skips_when_live_pr_shas_changed(self):
         response = self.Response({"head": {"sha": "new-head"}, "base": {"sha": "base-full-sha"}})
@@ -245,6 +288,39 @@ class ForkFootprintTests(unittest.TestCase):
             patch = fp.diff_text(base, head, [names[1]])
             self.assertIn("after-1", patch)
             self.assertNotIn("after-0", patch)
+
+    def test_numstat_and_hunks_handle_quoted_unicode_and_non_utf8_paths(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); fp.REPO = root
+            def run(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE).stdout.decode().strip()
+            run("init", "-q"); run("config", "user.name", "Test"); run("config", "user.email", "test@example.invalid")
+            run("config", "commit.gpgsign", "false")
+            names = ['quote " and 雪.kt', os.fsdecode(b"invalid-\xff.kt")]
+            for i, name in enumerate(names):
+                path = root / name; path.write_text(f"before-{i}\n")
+            localized = root / "app/src/main/res/values-fr/strings.xml"
+            localized.parent.mkdir(parents=True); localized.write_text("<resources/>\n")
+            binary = root / "binary.dat"; binary.write_bytes(b"\x00\xffbefore")
+            run("add", "."); run("commit", "-qm", "base"); base = run("rev-parse", "HEAD")
+            for i, name in enumerate(names):
+                (root / name).write_text(f"after-{i}\n")
+            localized.write_text("<resources>texte</resources>\n")
+            binary.write_bytes(b"\x00\xfeafter")
+            run("add", "."); run("commit", "-qm", "head"); head = run("rev-parse", "HEAD")
+            stat = fp.diff_numstat(base, head)
+            self.assertEqual(stat[names[0]], (1, 1))
+            self.assertEqual(stat[names[1]], (1, 1))
+            self.assertEqual(stat["app/src/main/res/values-fr/strings.xml"], (1, 1))
+            self.assertEqual(stat["binary.dat"], (0, 0))
+            count, path_counts, spans = fp.diff_hunk_metadata(base, head, names)
+            self.assertEqual(count, 2)
+            self.assertEqual(path_counts, {name: 1 for name in names})
+            self.assertEqual(set(spans), set(names))
+            self.assertEqual(fp.json_safe({names[1]: names[1]}), {r"invalid-\xff.kt": r"invalid-\xff.kt"})
+            self.assertIn(r"invalid-\xff.kt", fp.inline_code(names[1]))
 
     def test_provenance_uses_upstream_contents_and_merge_evidence(self):
         head = {"local.kt": b"local", "signal.kt": b"signal", "molly.kt": b"molly", "common.kt": b"common",

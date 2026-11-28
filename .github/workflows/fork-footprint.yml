@@ -1,0 +1,53 @@
+name: Fork footprint (advisory)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: fork-footprint-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  generate:
+    name: Generate advisory fork report
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out trusted base revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name }}
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check out PR history without executing it
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name }}
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          path: pr
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Generate and post advisory report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if test -f tooling/ci/fork_footprint.py; then
+            if git fetch --no-tags ./pr "$PR_HEAD_SHA" && git cat-file -e "$PR_HEAD_SHA^{commit}"; then
+              python3 tooling/ci/fork_footprint.py pr-report \
+                --base "$PR_BASE_SHA" --head "$PR_HEAD_SHA" --markdown --post-comment || {
+                  printf '%s\n' '## Fork footprint report unavailable' '' 'The advisory generator could not complete. See the Actions log for details.' >> "$GITHUB_STEP_SUMMARY"
+                }
+            else
+              printf '%s\n' '## Fork footprint report unavailable' '' 'The PR history could not be fetched. The advisory report was not generated.' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            printf '%s\n' '## Fork footprint report unavailable' '' 'This pull request adds the advisory generator, so the trusted base revision does not contain it yet. The workflow will not execute the pull request script.' >> "$GITHUB_STEP_SUMMARY"
+          fi

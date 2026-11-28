@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository_id }}-${{ github.event.workflow_run.head_branch }}
+  group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository.id || github.repository_id }}-${{ github.event.workflow_run.head_branch || github.event.workflow_run.id }}
   cancel-in-progress: false
 jobs:
   validate:
@@ -72,4 +72,4 @@ jobs:
           BASE_SHA: ${{ needs.validate.outputs.base_sha }}
           HEAD_SHA: ${{ needs.validate.outputs.head_sha }}
           REPORT_B64: ${{ needs.validate.outputs.report_b64 }}
-        run: python3 tooling/ci/fork_footprint.py post-report --repository "$REPORTED_REPOSITORY" --pr "$PR_NUMBER" --base "$BASE_SHA" --head "$HEAD_SHA" --report-b64 "$REPORT_B64"
+        run: python3 tooling/ci/fork_footprint.py post-report --repository "$REPORTED_REPOSITORY" --pr "$PR_NUMBER" --base "$BASE_SHA" --head "$HEAD_SHA"

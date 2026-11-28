@@ -1,7 +1,7 @@
 name: Fork footprint (advisory)
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
 permissions:
   contents: read
 concurrency:
@@ -10,7 +10,10 @@ concurrency:
 jobs:
   metadata:
     name: Generate trusted advisory and record pull request revision
+    if: ${{ github.event.action != 'edited' || github.event.changes.base != null }}
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: Check out trusted base revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,7 +32,7 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           if test -f tooling/ci/fork_footprint.py; then
-            if git fetch --no-tags origin "refs/pull/$PR_NUMBER/head" && git cat-file -e "$PR_HEAD_SHA^{commit}"; then
+            if git -c core.hooksPath=/dev/null -c core.fsmonitor=false fetch --no-tags --no-recurse-submodules origin "refs/pull/$PR_NUMBER/head" && git cat-file -e "$PR_HEAD_SHA^{commit}"; then
               python3 tooling/ci/fork_footprint.py pr-report --base "$PR_BASE_SHA" --head "$PR_HEAD_SHA" || {
                 printf '%s\n' '## Fork footprint report unavailable' '' 'The trusted advisory generator could not complete. See the Actions log for details.' >> "$GITHUB_STEP_SUMMARY"
               }

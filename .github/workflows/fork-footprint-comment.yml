@@ -5,6 +5,9 @@ on:
     types: [completed]
 permissions:
   contents: read
+concurrency:
+  group: fork-footprint-validation-${{ github.event.workflow_run.head_repository.id || github.event.workflow_run.repository_id }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
 jobs:
   validate:
     if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
@@ -15,9 +18,11 @@ jobs:
       pull-requests: read
     outputs:
       should_comment: ${{ steps.validate.outputs.should_comment }}
+      repository: ${{ steps.validate.outputs.repository }}
       pr_number: ${{ steps.validate.outputs.pr_number }}
       base_sha: ${{ steps.validate.outputs.base_sha }}
       head_sha: ${{ steps.validate.outputs.head_sha }}
+      report_b64: ${{ steps.validate.outputs.report_b64 }}
     steps:
       - name: Check out trusted default branch code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -32,7 +37,7 @@ jobs:
           path: pr-meta
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Validate metadata against the run, merge commit, and live pull request
+      - name: Validate metadata, fetch commit objects, and generate bounded report
         id: validate
         env:
           EVENT_PATH: ${{ github.event_path }}
@@ -54,20 +59,17 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
-      - name: Fetch validated pull request commit objects only
-        env:
-          PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
-          HEAD_SHA: ${{ needs.validate.outputs.head_sha }}
-        run: |
-          git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"
-          git cat-file -e "$HEAD_SHA^{commit}"
-      - name: Generate report using trusted code and post comment
+      - name: Validate and post bounded report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          REPORTED_REPOSITORY: ${{ needs.validate.outputs.repository }}
           PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
+          EXPECTED_PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
           BASE_SHA: ${{ needs.validate.outputs.base_sha }}
           HEAD_SHA: ${{ needs.validate.outputs.head_sha }}
-        run: python3 tooling/ci/fork_footprint.py pr-report --base "$BASE_SHA" --head "$HEAD_SHA" --post-comment
+          REPORT_B64: ${{ needs.validate.outputs.report_b64 }}
+        run: python3 tooling/ci/fork_footprint.py post-report --repository "$REPORTED_REPOSITORY" --pr "$PR_NUMBER" --base "$BASE_SHA" --head "$HEAD_SHA" --report-b64 "$REPORT_B64"

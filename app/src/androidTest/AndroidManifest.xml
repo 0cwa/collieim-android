@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application android:label="Collie Pack">
+    <application android:label="Test distributor">
         <receiver
             android:name="im.molly.unifiedpush.enrollment.RelayDisclosureFixtureDistributor"
             android:exported="true">

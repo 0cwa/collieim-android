@@ -95,7 +95,6 @@ import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.TurnOnNotificationsBottomSheet
-import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.RingtoneUtil
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.signal.core.ui.R as CoreUiR
@@ -455,16 +454,13 @@ open class DefaultNotificationsSettingsCallbacks(
             return
           }
           MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.NotificationsSettingsFragment__mollysocket_server)
-            .setMessage(R.string.NotificationsSettingsFragment__to_use_unifiedpush_you_need_access_to_a_mollysocket_server)
+            .setTitle(R.string.NotificationsSettingsFragment__qr_setup_title)
+            .setMessage(R.string.NotificationsSettingsFragment__qr_setup_description)
             .setPositiveButton(R.string.AddLinkDeviceFragment__scan_qr_code) { _, _ ->
               viewModel.scanDisclosure = disclosure
               qrScanLauncher.launch()
             }
             .setNegativeButton(android.R.string.cancel, null)
-            .setNeutralButton(CoreUiR.string.LearnMoreTextView_learn_more) { _, _ ->
-              CommunicationActions.openBrowserLink(activity, activity.getString(R.string.mollysocket_setup_url))
-            }
             .show()
         } else {
           onNavigationUnifiedPushSettings()

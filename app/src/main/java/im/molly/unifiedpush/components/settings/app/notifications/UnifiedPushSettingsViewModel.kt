@@ -3,10 +3,8 @@ package im.molly.unifiedpush.components.settings.app.notifications
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.widget.Toast
-import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,10 +14,7 @@ import androidx.lifecycle.viewModelScope
 import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.control.ReceiverControlState
 import im.molly.unifiedpush.enrollment.PairingV1
-import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.PairingTransport
-import im.molly.unifiedpush.enrollment.EnrollmentFile
-import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
@@ -27,7 +22,6 @@ import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
-import org.signal.core.util.concurrent.SignalExecutors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -38,8 +32,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.R
-import org.signal.core.util.ThreadUtil
-import java.io.IOException
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.UnifiedPushHealthJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
@@ -49,16 +41,12 @@ import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.livedata.Store
 import org.unifiedpush.android.connector.UnifiedPush
-import java.util.UUID
 import kotlin.coroutines.resume
-
-private data class ExportSummary(val file: java.io.File?, val epoch: Long, val highestUsed: Long, val collides: Boolean)
 
 class UnifiedPushSettingsViewModel(private val application: Application) : ViewModel() {
 
   // Keep confirmation bound to the original state across same-process scanner recreation.
   internal var scanDisclosure: RelayDisclosure.Snapshot? = null
-  internal var pendingPairingSaveId: String? = null
   internal var pairingFlowActive = false
     private set
   private var handledInitialPairingOffer: String? = null
@@ -67,8 +55,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     val scan: PairingTransport.Scan,
     val disclosure: RelayDisclosure.Snapshot,
     val distributor: Distributor? = null,
-    var serverEpoch: String = "",
-    var allowRecovery: Boolean = false,
   )
   internal var pendingPairingConsent: PendingPairingConsent? = null
   private val pairingCoordinator = PairingV1Coordinator(application)
@@ -117,20 +103,21 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   internal fun pairingSelectedDistributor(): String? =
     distributorForNextPairing ?: UnifiedPush.getSavedDistributor(application)
 
+  internal fun hasExistingBridgeSetup(): Boolean = pairingCoordinator.hasExistingBridgeSetup()
+
   internal fun pair(
     scan: PairingTransport.Scan,
     disclosure: RelayDisclosure.Snapshot,
     distributorId: String,
     approvedOrigin: String?,
-    serverEpoch: Long?,
-    allowRecovery: Boolean,
+    replaceApproved: Boolean,
   ) {
     if (pairingBusy) return
     pairingResult.value = PairingUi.Working
     refresh()
     viewModelScope.launch {
       try {
-        val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin, serverEpoch, allowRecovery)
+        val result = pairAfterApproval(scan, disclosure, distributorId, approvedOrigin, replaceApproved)
         if (result is PairingUi.Paired) distributorForNextPairing = null
         pairingResult.value = result
         refresh()
@@ -146,11 +133,13 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     disclosure: RelayDisclosure.Snapshot,
     distributorId: String,
     approvedOrigin: String?,
-    serverEpoch: Long?,
-    allowRecovery: Boolean,
+    replaceApproved: Boolean,
   ): PairingUi {
     val offer = scan.offer
     if (System.currentTimeMillis() / 1000 >= offer.expiresAt) return pairingError(R.string.PairingV1__offer_expired)
+    if (offer.intent == "pair_bridge" && !replaceApproved && hasExistingBridgeSetup()) {
+      return pairingError(R.string.UnifiedPushSettingsFragment__disclosure_stale)
+    }
 
     var approved: RelayDisclosure.Snapshot? = null
     RelayDisclosure.runIfCurrent(disclosure) {
@@ -203,7 +192,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     }
 
     return withContext(Dispatchers.IO) {
-      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent, serverEpoch, allowRecovery, scan.bridgeDeviceId)
+      val sealed = pairingCoordinator.sealAfterConsent(offer, snapshot, consent, replaceApproved, scan.bridgeDeviceId)
       if (sealed is PairingV1Coordinator.SealResult.Failed) {
         pairingCoordinator.cancelOfferAttempt(offer.sessionId)
         return@withContext PairingUi.Error(sealed.message)
@@ -224,6 +213,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
               "invalid_session" -> R.string.PairingV1__session_unavailable
               "capacity_exceeded", "queue_full", "state_unavailable" -> R.string.PairingV1__server_busy
               "invalid_endpoint" -> R.string.PairingV1__server_endpoint_rejected
+              "epoch_conflict", "idempotency_conflict" -> R.string.PairingV1__relay_conflict
               else -> R.string.PairingV1__request_rejected
             }
             else -> R.string.PairingV1__receipt_invalid
@@ -237,26 +227,16 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   internal fun sharePairingRequest(context: Context, sessionId: String): Boolean = pairingCoordinator.shareRequest(context, sessionId)
 
-  internal fun completePairingSave(uri: Uri?) {
-    val sessionId = pendingPairingSaveId
-    pendingPairingSaveId = null
-    if (uri == null) {
-      pairingResult.value = pairingResult.value
-      return
-    }
-    viewModelScope.launch {
-      val saved = sessionId != null && withContext(Dispatchers.IO) { pairingCoordinator.writeRequest(application, sessionId, uri) }
-      if (saved) consumePairingResult()
-      else {
-        Toast.makeText(application, R.string.PairingV1__file_action_failed, Toast.LENGTH_LONG).show()
-        pairingResult.value = pairingResult.value
-      }
-    }
-  }
-
-  internal fun cancelOfflinePairing(sessionId: String) {
-    pairingCoordinator.cancelOfferAttempt(sessionId)
+  internal fun closeOfflinePairing(sessionId: String) {
     consumePairingResult()
+    viewModelScope.launch {
+      try {
+        withContext(Dispatchers.IO) { pairingCoordinator.closeOfflinePairing(sessionId) }
+      } catch (_: KeyValuePersistenceException) {
+        Toast.makeText(application, R.string.PairingV1__recovery_blocked, Toast.LENGTH_LONG).show()
+      }
+      refresh()
+    }
   }
 
   override fun onCleared() {
@@ -267,34 +247,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   private val store = Store(getState())
 
   val state: LiveData<UnifiedPushSettingsState> = store.stateLiveData
-  internal val exportState: LiveData<ExportState?> = pendingExport
-
-  internal data class ExportState(
-    val id: String,
-    val accountId: String,
-    val deviceId: Int,
-    val generation: Long,
-    val message: String? = null,
-  ) {
-    fun belongsToCurrentAccount() = synchronized(UnifiedPushLifecycle.monitor) {
-      UnifiedPushLifecycle.isCurrentGeneration(generation) && !KeyCachingService.isLocked() &&
-        SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived &&
-        accountId == SignalStore.account.aci?.toString() && deviceId == SignalStore.account.deviceId
-    }
-  }
-
-  private data class PendingDestinationExport(
-    val serverEpochText: String,
-    val mode: ExportMode,
-    val requestId: String?,
-    val disclosure: RelayDisclosure.Snapshot,
-  )
-
-  private var pendingDestinationExport: PendingDestinationExport? = null
-
-  internal fun isExportPending(): Boolean = pendingDestinationExport != null ||
-    pendingExport.value?.let { it.message == null || it.belongsToCurrentAccount() } == true
-
   fun refresh() {
     store.update { getState() }
   }
@@ -358,7 +310,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       pairingOrigin = pairing?.endpointOrigin ?: receiver?.target?.endpoint?.let(PairingV1::canonicalOrigin),
       encryptedEnrollment = pairing != null || controlRead?.key != null || receiverJson != null,
       awaitingPushConfirmation = awaitingV3 || awaitingV4,
-      enrollmentEpoch = controlRead?.activeEpoch ?: receiver?.epoch ?: 0L,
       pushFallback = SignalStore.unifiedpush.health.fallback,
       pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),
       pushTestResultAt = SignalStore.unifiedpush.health.lastResultAt,
@@ -366,9 +317,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       pushTestRunning = pushTestStartedAt > 0 && SignalStore.unifiedpush.health.lastResultAt * 1000 < pushTestStartedAt &&
         System.currentTimeMillis() - pushTestStartedAt < UnifiedPushHealthJob.timeoutMs + TEST_GRACE_MS,
       controlStateCorrupt = SignalStore.unifiedpush.hasCorruptControlState,
-      savedExports = controlRead?.intents?.map { SavedExport(it.requestId, it.epoch, it.eligible) } ?: emptyList(),
-      pendingExportCount = controlRead?.pendingIntentCount ?: 0,
-      hasLegacyPendingExport = controlRead?.legacyPending != null,
       relayDisclosure = RelayDisclosure.capture(application),
     )
   }
@@ -457,159 +405,9 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     updateRegistration(pingOnRegister = true)
   }
 
-  fun copyParamsToClipboard(context: Context, disclosure: RelayDisclosure.Snapshot?) {
-    if (!RelayDisclosure.runIfCurrent(disclosure) {
-        val account = checkNotNull(disclosure).account
-        val device = account.pushDevice
-        val endpoint = account.endpoint
-        if (device != null && endpoint != null && !SignalStore.unifiedpush.isProvisioningPending(device)) {
-          writeTextToClipboard(context, "Server parameters", "connection add ${account.accountId} ${device.deviceId} ${device.password} $endpoint")
-        }
-      }) {
-      showStaleDisclosure()
-    }
-  }
-
   fun copyAciToClipboard(context: Context) {
     val aci = state.value?.aci ?: ""
     writeTextToClipboard(context, "Account ID", aci)
-  }
-
-  /** Holds the confirmed action while Android asks where to save the CollieSocket enrollment file. */
-  @MainThread
-  fun prepareEnrollmentExport(
-    serverEpochText: String,
-    mode: ExportMode,
-    requestId: String? = null,
-    disclosure: RelayDisclosure.Snapshot?,
-  ): String? {
-    if (isExportPending()) return null
-    if (disclosure == null || !RelayDisclosure.runIfCurrent(disclosure) {}) {
-      showStaleDisclosure()
-      return null
-    }
-    pendingDestinationExport = PendingDestinationExport(serverEpochText, mode, requestId, disclosure)
-    return EnrollmentExporter.FILE_NAME
-  }
-
-  /** Starts the export only after the user selects a document; cancelling leaves enrollment state unchanged. */
-  @MainThread
-  fun completeEnrollmentExport(destination: Uri?) {
-    val request = pendingDestinationExport
-    pendingDestinationExport = null
-    if (destination != null) {
-      if (request == null) {
-        Toast.makeText(application, R.string.UnifiedPushSettingsFragment__export_enrollment_interrupted, Toast.LENGTH_LONG).show()
-        return
-      }
-      exportEnrollment(application, request.serverEpochText, request.mode, request.requestId, request.disclosure, destination)
-    }
-  }
-
-  /** Writes the enrollment off the main thread and reports its result. */
-  @MainThread
-  fun exportEnrollment(
-    context: Context,
-    serverEpochText: String,
-    mode: ExportMode,
-    requestId: String? = null,
-    disclosure: RelayDisclosure.Snapshot?,
-    destination: Uri? = null,
-  ) {
-    if (isExportPending()) return
-    if (disclosure == null || !RelayDisclosure.runIfCurrent(disclosure) {}) return showStaleDisclosure()
-    val request = ExportState(UUID.randomUUID().toString(), disclosure.account.accountId, disclosure.account.localDeviceId, disclosure.generation)
-    pendingExport.value = request
-    val app = context.applicationContext
-    SignalExecutors.BOUNDED.execute {
-      var successMessage: String? = null
-      var documentWriteStarted = false
-      val failureMessage = try {
-        val lease = UnifiedPushLifecycle.acquireLease(request.generation) { request.takeIf { it.belongsToCurrentAccount() } }
-          ?: throw EnrollmentFile.Invalid("not_ready")
-        val export = lease.use {
-          fun authorizedEpoch(): Long? {
-            // An authorized invalid epoch still removes the old password file.
-            EnrollmentExporter.removeFiles(app)
-            return serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-          }
-          if (destination != null) {
-            val document = RelayDisclosure.exportIfCurrent(disclosure, mode, requestId) {
-              EnrollmentExporter.prepareDocument(app, authorizedEpoch(), mode, requestId)
-            }
-            if (!request.belongsToCurrentAccount() || !RelayDisclosure.runIfCurrent(disclosure) {}) {
-              throw EnrollmentFile.Invalid("disclosure_changed")
-            }
-            documentWriteStarted = true
-            document.writeTo(app, destination)
-            if (!request.belongsToCurrentAccount() || !RelayDisclosure.runIfCurrent(disclosure) {}) {
-              throw IOException("Enrollment authorization changed during document write")
-            }
-            ExportSummary(null, document.epoch, document.highestUsed, document.collides)
-          } else {
-            RelayDisclosure.exportIfCurrent(disclosure, mode, requestId) {
-              val written = EnrollmentExporter.exportWithEpoch(app, authorizedEpoch(), mode, requestId)
-              if (!request.belongsToCurrentAccount()) {
-                EnrollmentExporter.removeFiles(app)
-                throw EnrollmentFile.Invalid("disclosure_changed")
-              }
-              ExportSummary(written.file, written.epoch, written.highestUsed, written.collides)
-            }
-          }
-        }
-        successMessage = if (destination != null && export.collides) {
-          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_saved_collides, export.epoch, export.highestUsed)
-        } else if (destination != null) {
-          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_saved)
-        } else if (export.collides) {
-          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, checkNotNull(export.file).absolutePath, export.epoch, export.highestUsed)
-        } else {
-          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, checkNotNull(export.file).absolutePath)
-        }
-        null
-      } catch (e: EnrollmentFile.Invalid) {
-        app.getString(
-          when (e.code) {
-            "disclosure_changed" -> R.string.UnifiedPushSettingsFragment__disclosure_stale
-            "not_ready" -> R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready
-            "invalid_epoch" -> R.string.UnifiedPushSettingsFragment__export_enrollment_invalid_epoch
-            "unsupported_android" -> R.string.UnifiedPushSettingsFragment__export_enrollment_unsupported_android
-            "state_unavailable" -> R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
-            "recovery_ack_required" -> R.string.UnifiedPushSettingsFragment__export_enrollment_recovery_ack_required
-            "pending_limit" -> R.string.UnifiedPushSettingsFragment__export_enrollment_pending_limit
-            "sequence_exhausted" -> R.string.UnifiedPushSettingsFragment__export_enrollment_sequence_exhausted
-            "same_epoch_conflict" -> R.string.UnifiedPushSettingsFragment__export_enrollment_same_epoch_conflict
-            "intent_unavailable" -> R.string.UnifiedPushSettingsFragment__export_enrollment_intent_unavailable
-            else -> R.string.UnifiedPushSettingsFragment__export_enrollment_failed
-          }
-        )
-      } catch (e: IOException) {
-        app.getString(
-          if (destination != null) R.string.UnifiedPushSettingsFragment__export_enrollment_failed_destination
-          else R.string.UnifiedPushSettingsFragment__export_enrollment_failed
-        )
-      } catch (e: SecurityException) {
-        app.getString(
-          if (destination != null) R.string.UnifiedPushSettingsFragment__export_enrollment_failed_destination
-          else R.string.UnifiedPushSettingsFragment__export_enrollment_failed
-        )
-      } finally {
-        if (destination != null) EnrollmentExporter.removeFiles(app)
-      }
-      ThreadUtil.runOnMain {
-        if (!request.belongsToCurrentAccount()) {
-          pendingExport.value = null
-          if (documentWriteStarted) {
-            Toast.makeText(app, R.string.UnifiedPushSettingsFragment__export_enrollment_failed_destination, Toast.LENGTH_LONG).show()
-          }
-        } else if (successMessage != null) {
-          pendingExport.value = request.copy(message = successMessage)
-        } else {
-          pendingExport.value = null
-          Toast.makeText(app, failureMessage, Toast.LENGTH_LONG).show()
-        }
-      }
-    }
   }
 
   private fun showStaleDisclosure() {
@@ -618,30 +416,10 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   /** Clears unreadable local control state only after the user confirms server-side removal. */
   fun recoverCorruptControlState() {
-    runPersistedControlAction { ControlReset.recoverCorrupt(application) }
-  }
-
-  fun forgetExport(requestId: String) {
-    runPersistedControlAction { EnrollmentExporter.forgetIntent(requestId) }
-  }
-
-  fun forgetLegacyExport() {
-    runPersistedControlAction {
-      im.molly.unifiedpush.control.EndpointUpdates.forgetLegacyPending(
-        im.molly.unifiedpush.control.UnifiedPushControlStore(SignalStore.unifiedpush)
-      )
-    }
-  }
-
-  private inline fun runPersistedControlAction(action: () -> Unit) {
-    val persistenceFailed = try {
-      action()
-      false
+    try {
+      ControlReset.recoverCorrupt(application)
     } catch (_: KeyValuePersistenceException) {
-      true
-    }
-    if (persistenceFailed) {
-      Toast.makeText(application, R.string.UnifiedPushSettingsFragment__export_enrollment_failed, Toast.LENGTH_LONG).show()
+      Toast.makeText(application, R.string.UnifiedPushSettingsFragment__control_state_reset_failed, Toast.LENGTH_LONG).show()
     }
     refresh()
   }
@@ -654,15 +432,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   companion object {
     private const val TEST_GRACE_MS = 15_000L
-
-    // An export can finish after the settings screen is closed. Keep its unread result in memory.
-    private val pendingExport = MutableLiveData<ExportState?>()
-
-    internal fun unreadExport(): ExportState? = pendingExport.value?.takeIf { it.message != null && it.belongsToCurrentAccount() }
-
-    internal fun acknowledgeExportResult(id: String) {
-      if (unreadExport()?.id == id) pendingExport.value = null
-    }
   }
 }
 

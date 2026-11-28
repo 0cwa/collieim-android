@@ -83,20 +83,10 @@ class RelayDisclosureDialogsTest {
   }
 
   @Test
-  fun `manual enrollment copy and export do not invent a destination`() {
+  fun `an air-gapped QR does not invent a destination`() {
     val manual = requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87))) {})
     assertTrue(message(manual).contains(activity.getString(R.string.RelayDisclosureDialog__manual_destination)))
     assertFalse(message(manual).contains(address))
-    manual.dismiss()
-
-    val copy = RelayDisclosureDialogs.showCopy(activity) {}
-    assertTrue(message(copy).contains(activity.getString(R.string.RelayDisclosureDialog__copy_message)))
-    assertFalse(message(copy).contains(address))
-    copy.dismiss()
-
-    val export = RelayDisclosureDialogs.showExport(activity) {}
-    assertTrue(message(export).contains(activity.getString(R.string.RelayDisclosureDialog__export_message)))
-    assertFalse(message(export).contains(address))
   }
 
   private fun message(dialog: AlertDialog): String = dialog.findViewById<TextView>(android.R.id.message)!!.text.toString()
@@ -104,7 +94,5 @@ class RelayDisclosureDialogsTest {
   private fun routes(): List<(() -> Unit) -> AlertDialog> = listOf(
     { action -> requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.WebServer("v".repeat(87), address), action)) },
     { action -> requireNotNull(RelayDisclosureDialogs.showRelay(activity, MollySocket.AirGapped("v".repeat(87)), action)) },
-    { action -> RelayDisclosureDialogs.showCopy(activity, action) },
-    { action -> RelayDisclosureDialogs.showExport(activity, action) },
   )
 }

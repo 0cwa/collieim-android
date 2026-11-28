@@ -1,10 +1,10 @@
 package im.molly.unifiedpush.enrollment
 
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import androidx.annotation.VisibleForTesting
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.ImportIntent
@@ -16,7 +16,6 @@ import im.molly.unifiedpush.receiver.EncryptedPush
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.ReplayStateUnavailableException
 import java.io.File
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.UUID
@@ -34,18 +33,8 @@ object EnrollmentExporter {
     val collides get() = epoch <= highestUsed
   }
 
-  internal class DocumentExport(val epoch: Long, val highestUsed: Long, private val contents: String) {
-    val collides get() = epoch <= highestUsed
-
-    fun writeTo(context: Context, destination: Uri) {
-      val stream = context.contentResolver.openOutputStream(destination, "wt")
-        ?: throw IOException("Could not open the selected document")
-      stream.use { it.write(contents.toByteArray(Charsets.UTF_8)) }
-    }
-  }
-
   private data class PreparedExport(
-    val file: File?, val json: String, val epoch: Long, val highestUsed: Long, val requestId: String,
+    val file: File?, val epoch: Long, val highestUsed: Long, val requestId: String,
     val intent: ImportIntent,
   )
 
@@ -73,11 +62,12 @@ object EnrollmentExporter {
     instance: String,
     serverEpoch: Long? = null,
     allowRecovery: Boolean = false,
+    selectEpoch: ((ControlState) -> Long)? = null,
     validateSealed: (ImportIntent, MollySocketDevice, String) -> Unit,
   ): ImportIntent {
     return export(
       context, serverEpoch, ExportMode.NEW_INTENT, null, System.currentTimeMillis() / 1000, isDistributorActive, false,
-      validateBeforeCommit, validateSealed, PairingRoute(target, instance, allowRecovery),
+      validateBeforeCommit, validateSealed, PairingRoute(target, instance, allowRecovery, selectEpoch),
     ).intent
   }
 
@@ -95,22 +85,12 @@ object EnrollmentExporter {
     return Export(checkNotNull(prepared.file), prepared.epoch, prepared.highestUsed, prepared.requestId)
   }
 
-  /** Commits the enrollment intent and prepares its immutable document before provider I/O. */
-  @Synchronized
-  internal fun prepareDocument(
-    context: Context,
-    serverEpoch: Long?,
-    mode: ExportMode,
-    requestId: String?,
-  ): DocumentExport {
-    val prepared = export(
-      context, serverEpoch, mode, requestId, System.currentTimeMillis() / 1000,
-      UnifiedPushDistributor::checkIfActive, false, validateSealed = { _, _, _ -> },
-    )
-    return DocumentExport(prepared.epoch, prepared.highestUsed, prepared.json)
-  }
-
-  private data class PairingRoute(val target: Target, val instance: String, val allowRecovery: Boolean)
+  private data class PairingRoute(
+    val target: Target,
+    val instance: String,
+    val allowRecovery: Boolean,
+    val selectEpoch: ((ControlState) -> Long)?,
+  )
 
   private fun export(
     context: Context,
@@ -171,11 +151,11 @@ object EnrollmentExporter {
           }
           Triple(device, aci.toString(), Target(endpoint, p256dh, auth) to (pairingRoute?.instance ?: (values.endpointInstance ?: "default")))
         }
-        val epoch = EndpointUpdates.exportEpoch(serverEpoch)
+        val explicitEpoch = EndpointUpdates.exportEpoch(serverEpoch)
         val (target, instance) = route
         val exported = Target(target.endpoint, EnrollmentFile.canonicalKey(target.p256dh, 65), EnrollmentFile.canonicalKey(target.auth, 16))
         val newPairingInstance = pairingRoute != null && instance != (values.endpointInstance ?: "default")
-        val activeNow = mode == ExportMode.RECOVERY || pairingRoute?.allowRecovery == true && epoch <= before.activeEpoch
+        val activeNow = mode == ExportMode.RECOVERY || pairingRoute?.allowRecovery == true && explicitEpoch <= before.activeEpoch
         var rendered: String? = null
         intent = requireReplayStateAvailability {
           EndpointUpdates.recordIntent(
@@ -184,6 +164,7 @@ object EnrollmentExporter {
             replayIfAbsent = replayIfAbsent,
             validateCandidate = { intent -> validateBeforeCommit?.invoke(intent) },
           ) { old, sequence ->
+            val epoch = pairingRoute?.selectEpoch?.invoke(old) ?: explicitEpoch
             highestUsed = old.highestEpoch
             if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
 
@@ -245,7 +226,7 @@ object EnrollmentExporter {
         temp?.delete()
       }
     }
-    return PreparedExport(if (writeToDisk) output else null, contents, intent.epoch, highestUsed, intent.requestId, intent)
+    return PreparedExport(if (writeToDisk) output else null, intent.epoch, highestUsed, intent.requestId, intent)
   }
 
   /** Forget a chosen candidate only after the settings UI has warned that its file may still exist. */

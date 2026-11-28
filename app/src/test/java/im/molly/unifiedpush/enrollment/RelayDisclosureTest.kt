@@ -1,11 +1,8 @@
 package im.molly.unifiedpush.enrollment
 
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.MollySocket
@@ -191,22 +188,6 @@ class RelayDisclosureTest {
     unauthorized = true
     assertNull(RelayDisclosure.capture())
     assertFalse(RelayDisclosure.runIfCurrent(snapshot) {})
-  }
-
-  @Test fun `clipboard copies only the confirmed account credential`() {
-    val snapshot = capture()
-    val viewModel = UnifiedPushSettingsViewModel(application)
-    viewModel.copyParamsToClipboard(application, snapshot)
-    val clipboard = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val authorizedText = "connection add $accountId 2 $password ${values.endpoint}"
-    assertEquals(authorizedText, clipboard.primaryClip?.getItemAt(0)?.text.toString())
-
-    val replacement = "Unrelated clipboard contents"
-    clipboard.setPrimaryClip(ClipData.newPlainText("fixture", replacement))
-    accountId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
-    viewModel.refresh()
-    viewModel.copyParamsToClipboard(application, snapshot)
-    assertEquals(replacement, clipboard.primaryClip?.getItemAt(0)?.text.toString())
   }
 
   @Test fun `accepting a relay commits only that destination and returns its bound authorization`() = runBlocking {

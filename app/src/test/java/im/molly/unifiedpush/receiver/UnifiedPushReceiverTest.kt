@@ -984,7 +984,7 @@ class UnifiedPushReceiverTest {
         PairingV1.SealedRequest("{}", ByteArray(32), byteArrayOf(), byteArrayOf(), byteArrayOf())
       val coordinator = PairingV1Coordinator(context)
       val consent = checkNotNull(coordinator.consentDetails(secondOffer))
-      val secondResult = coordinator.sealAfterConsent(secondOffer, scope, consent, null, false, bridgeDeviceId = 2)
+      val secondResult = coordinator.sealAfterConsent(secondOffer, scope, consent, replaceApproved = false, bridgeDeviceId = 2)
       assertTrue("a second approval is refused while the retained v4 approval remains live",
         secondResult is PairingV1Coordinator.SealResult.Failed)
       verify(exactly = 0) { PairingV1.seal(secondOffer, any(), endpoint) }
@@ -1114,9 +1114,11 @@ class UnifiedPushReceiverTest {
       val consent = checkNotNull(coordinator.consentDetails(offer))
       assertEquals(fixtureP256dh, consent.p256dh)
       assertEquals(fixtureAuth, consent.auth)
-      val result = coordinator.sealAfterConsent(offer, RelayDisclosure.capture(context), consent, null, false)
+      val result = coordinator.sealAfterConsent(offer, RelayDisclosure.capture(context), consent, replaceApproved = false)
       assertTrue("padded subscription should seal, got $result", result is PairingV1Coordinator.SealResult.Ready)
       val session = (result as PairingV1Coordinator.SealResult.Ready).session
+      assertEquals(1L, session.importEpoch)
+      assertFalse(context.getExternalFilesDir(null)?.resolve(EnrollmentExporter.FILE_NAME)?.exists() == true)
       assertEquals(Target(endpoint, fixtureP256dh, fixtureAuth), values.controlState.intents.single().target)
       verify(exactly = 1) { LockedPushState.savePairingConfirmation(context, match { it.instance == "default" && it.importId == session.importRequestId }) }
       assertEquals(PairingTransport.Result.Offline, coordinator.submit(session, null))
@@ -1131,6 +1133,92 @@ class UnifiedPushReceiverTest {
     } finally {
       coordinator.clear()
       unmockkObject(PairingV1)
+      unmockkStatic(UnifiedPush::class)
+    }
+  }
+
+  @Test
+  fun `replacement uses the confirmed relay epoch and keeps the old route until verification`() {
+    fakeAccount()
+    val owner = "org.example.distributor"
+    val offer = freshPairingOffer()
+    val accountId = checkNotNull(accountIdentityId)
+    val oldInstance = "pairing-v1-old"
+    val oldImport = "99999999-9999-4999-8999-999999999999"
+    val oldTarget = Target("https://push.example.test/confirmed", fixtureP256dh, fixtureAuth)
+    val endpoint = "https://push.example.test/replacement"
+    val confirmed = ControlState(
+      key = fixtureKey,
+      activeKeyId = ControlKeyId.derive(fixtureKey, accountId, 2, oldInstance),
+      activeImportId = oldImport,
+      activeImportSeq = 7,
+      activeAccountId = accountId,
+      activeDeviceId = 2,
+      activeInstance = oldInstance,
+      activeEpoch = 3,
+      highestEpoch = 3,
+      importSequence = 7,
+      serverTarget = oldTarget,
+    )
+    values.setPairingEndpointRegistration(
+      oldTarget.endpoint, fixtureP256dh, fixtureAuth,
+      UnifiedPushValues.PairingEndpointBinding(
+        oldInstance, owner, offer.vapidPublicKey, offer.providerOrigin, "https://push.example.test",
+        "old-session", offer.expiresAt, accountId, 1, "Confirmed relay", oldImport,
+      ),
+    )
+    values.mutateControl { confirmed }
+    values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    mockPendingEndpointStorage()
+    mockkStatic(UnifiedPush::class)
+    val coordinator = PairingV1Coordinator(context)
+    try {
+      every { UnifiedPush.getSavedDistributor(any()) } returns owner
+      every { UnifiedPush.getAckDistributor(any()) } returns owner
+      every { UnifiedPush.unregisterApp(any(), any()) } returns Unit
+      every { LockedPushState.savePairingConfirmation(context, any()) } returns true
+      every { LockedPushState.clearPairingConfirmation(context, any()) } returns Unit
+
+      val scope = checkNotNull(RelayDisclosure.capture(context))
+      val registration = checkNotNull(PairingRegistrationGate.begin(
+        owner, offer, accountId, 1, scope.generation,
+        previousEndpoint = oldTarget.endpoint, previousP256dh = fixtureP256dh, previousAuth = fixtureAuth,
+        previousInstance = oldInstance, previousDistributorId = owner, disclosure = scope,
+      ) { })
+      val claimed = PairingRegistrationGate.Endpoint(endpoint, fixtureP256dh, fixtureAuth, registration.instance)
+      assertNotNull(PairingRegistrationGate.claim(registration.instance, owner, owner, accountId, 1, claimed))
+      val consent = checkNotNull(coordinator.consentDetails(offer))
+      assertTrue(coordinator.hasExistingBridgeSetup())
+      assertTrue(coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = false) is PairingV1Coordinator.SealResult.Failed)
+      assertEquals(confirmed, values.controlState)
+
+      val unknown = confirmed.copy(highestEpoch = 4)
+      values.mutateControl { unknown }
+      assertEquals(
+        PairingV1Coordinator.SealResult.Failed(context.getString(R.string.PairingV1__recovery_blocked)),
+        coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true),
+      )
+      assertEquals(unknown, values.controlState)
+      values.mutateControl { confirmed }
+
+      val result = coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true)
+      assertTrue("the confirmed route should allow replacement: $result", result is PairingV1Coordinator.SealResult.Ready)
+      val session = (result as PairingV1Coordinator.SealResult.Ready).session
+      val candidate = values.controlState.intents.single()
+      assertEquals(4L, candidate.epoch)
+      assertEquals(8L, candidate.sequence)
+      assertTrue(candidate.controlKey != fixtureKey)
+      assertFalse(candidate.recovery)
+      assertEquals(oldImport, values.controlState.activeImportId)
+      assertEquals(oldTarget.endpoint, values.endpoint)
+      assertEquals(PairingTransport.Result.Offline, coordinator.submit(session, null))
+      assertEquals(result, coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = true))
+
+      coordinator.closeOfflinePairing(session.id)
+      assertEquals(confirmed.copy(importSequence = 8), values.controlState)
+      assertEquals(oldTarget.endpoint, values.endpoint)
+    } finally {
+      coordinator.clear()
       unmockkStatic(UnifiedPush::class)
     }
   }
@@ -1288,7 +1376,7 @@ class UnifiedPushReceiverTest {
       assertNotNull(PairingRegistrationGate.claim(binding.instance, owner, owner, checkNotNull(accountIdentityId), 1, endpoint))
       val coordinator = PairingV1Coordinator(context)
       val consent = checkNotNull(coordinator.consentDetails(offer))
-      val sealed = coordinator.sealAfterConsent(offer, scope, consent, null, false, bridgeDeviceId = 3)
+      val sealed = coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = false, bridgeDeviceId = 3)
       assertTrue("candidate consent should seal a v4 receiver request: $sealed", sealed is PairingV1Coordinator.SealResult.Ready)
       val session = (sealed as PairingV1Coordinator.SealResult.Ready).session
       val pending = checkNotNull(ReceiverControlState.parse(values.v4PendingReceiverState))
@@ -1404,7 +1492,7 @@ class UnifiedPushReceiverTest {
 
       val coordinator = PairingV1Coordinator(context)
       val consent = checkNotNull(coordinator.consentDetails(offer))
-      val sealed = coordinator.sealAfterConsent(offer, scope, consent, null, false, bridgeDeviceId = 3)
+      val sealed = coordinator.sealAfterConsent(offer, scope, consent, replaceApproved = false, bridgeDeviceId = 3)
       assertTrue("candidate consent should seal a v4 receiver request: $sealed", sealed is PairingV1Coordinator.SealResult.Ready)
       val session = (sealed as PairingV1Coordinator.SealResult.Ready).session
       if (confirmationFirst) {

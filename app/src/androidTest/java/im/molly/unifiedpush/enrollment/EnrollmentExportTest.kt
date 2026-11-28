@@ -128,20 +128,4 @@ class EnrollmentExportTest {
     while (file.exists() && System.currentTimeMillis() < deadline) Thread.sleep(50)
     assertFalse(file.exists())
   }
-
-  @Test
-  fun anOverflowingEpochInTheDialogStillRemovesTheOldFile() {
-    seed()
-    val file = export(null).file
-    assertTrue(file.exists())
-
-    InstrumentationRegistry.getInstrumentation().runOnMainSync {
-      im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel(context.applicationContext as android.app.Application)
-        .exportEnrollment(context, "99999999999999999999", ExportMode.NEW_INTENT, disclosure = checkNotNull(RelayDisclosure.capture(context)))
-    }
-
-    val deadline = System.currentTimeMillis() + 5000
-    while (file.exists() && System.currentTimeMillis() < deadline) Thread.sleep(50)
-    assertFalse(file.exists())
-  }
 }
